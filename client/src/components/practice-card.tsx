@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { GermanVerb } from '@/lib/verbs';
 import { PracticeMode, Settings } from '@/lib/types';
-import { AlertCircle, CheckCircle2, HelpCircle } from 'lucide-react';
+import { AlertCircle, CheckCircle2, HelpCircle, Volume2 } from 'lucide-react';
+import { speak } from '@/lib/utils';
 
 interface PracticeCardProps {
   verb: GermanVerb;
@@ -81,11 +82,38 @@ export function PracticeCard({ verb, mode, settings, onCorrect, onIncorrect }: P
     }
   };
 
+  const handlePronounce = () => {
+    // Get the word to pronounce based on the mode
+    let wordToPronounce = verb.infinitive;
+    if (status === 'correct' || status === 'incorrect') {
+      switch (mode) {
+        case 'präteritum':
+          wordToPronounce = verb.präteritum;
+          break;
+        case 'partizipII':
+          wordToPronounce = verb.partizipII;
+          break;
+        case 'auxiliary':
+          wordToPronounce = verb.auxiliary;
+          break;
+      }
+    }
+    speak(wordToPronounce);
+  };
+
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
-        <CardTitle className="text-center">
+        <CardTitle className="text-center flex items-center justify-center gap-2">
           <span className="text-2xl font-bold">{verb.infinitive}</span>
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={handlePronounce}
+            title="Listen to pronunciation"
+          >
+            <Volume2 className="h-4 w-4" />
+          </Button>
           {mode !== 'english' && (
             <span className="text-sm text-muted-foreground block">
               ({verb.english})
