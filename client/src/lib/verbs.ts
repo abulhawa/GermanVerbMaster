@@ -63,49 +63,97 @@ export const verbs: GermanVerb[] = [
     präteritumExample: "Sie machte ihre Hausaufgaben.",
     partizipIIExample: "Ich habe einen Kuchen gemacht."
   },
-
-  // A2 Level - Common everyday verbs
   {
-    infinitive: "arbeiten",
-    english: "to work",
-    präteritum: "arbeitete",
-    partizipII: "gearbeitet",
+    infinitive: "heißen",
+    english: "to be called",
+    präteritum: "hieß",
+    partizipII: "geheißen",
     auxiliary: "haben",
-    level: "A2",
-    präteritumExample: "Er arbeitete den ganzen Tag.",
-    partizipIIExample: "Sie hat im Büro gearbeitet."
+    level: "A1",
+    präteritumExample: "Er hieß Peter.",
+    partizipIIExample: "Sie hat schon immer so geheißen."
   },
   {
-    infinitive: "spielen",
-    english: "to play",
-    präteritum: "spielte",
-    partizipII: "gespielt",
+    infinitive: "sprechen",
+    english: "to speak",
+    präteritum: "sprach",
+    partizipII: "gesprochen",
     auxiliary: "haben",
-    level: "A2",
-    präteritumExample: "Das Kind spielte im Garten.",
-    partizipIIExample: "Wir haben Fußball gespielt."
+    level: "A1",
+    präteritumExample: "Er sprach sehr gut Deutsch.",
+    partizipIIExample: "Wir haben viel Englisch gesprochen."
   },
   {
-    infinitive: "lernen",
-    english: "to learn",
-    präteritum: "lernte",
-    partizipII: "gelernt",
+    infinitive: "sehen",
+    english: "to see",
+    präteritum: "sah",
+    partizipII: "gesehen",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Ich sah einen Film.",
+    partizipIIExample: "Hast du das neue Auto gesehen?"
+  },
+  {
+    infinitive: "essen",
+    english: "to eat",
+    präteritum: "aß",
+    partizipII: "gegessen",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Er aß eine Pizza.",
+    partizipIIExample: "Wir haben schon gegessen."
+  },
+  // A2 Level - Common verbs
+  {
+    infinitive: "anfangen",
+    english: "to begin",
+    präteritum: "fing an",
+    partizipII: "angefangen",
     auxiliary: "haben",
     level: "A2",
-    präteritumExample: "Sie lernte Deutsch.",
-    partizipIIExample: "Er hat viel gelernt."
+    präteritumExample: "Der Film fing um 20 Uhr an.",
+    partizipIIExample: "Das Semester hat bereits angefangen."
   },
-
-  // B1 Level - More complex verbs
   {
-    infinitive: "werden",
-    english: "to become",
-    präteritum: "wurde",
-    partizipII: "geworden",
+    infinitive: "ankommen",
+    english: "to arrive",
+    präteritum: "kam an",
+    partizipII: "angekommen",
+    auxiliary: "sein",
+    level: "A2",
+    präteritumExample: "Der Zug kam pünktlich an.",
+    partizipIIExample: "Wir sind gerade angekommen."
+  },
+  {
+    infinitive: "anrufen",
+    english: "to call",
+    präteritum: "rief an",
+    partizipII: "angerufen",
+    auxiliary: "haben",
+    level: "A2",
+    präteritumExample: "Sie rief ihre Mutter an.",
+    partizipIIExample: "Er hat dreimal angerufen."
+  },
+  // B1 Level - Intermediate verbs
+  {
+    infinitive: "abfahren",
+    english: "to depart",
+    präteritum: "fuhr ab",
+    partizipII: "abgefahren",
     auxiliary: "sein",
     level: "B1",
-    präteritumExample: "Sie wurde Ärztin.",
-    partizipIIExample: "Er ist Lehrer geworden."
+    präteritumExample: "Der Bus fuhr pünktlich ab.",
+    partizipIIExample: "Der Zug ist bereits abgefahren."
+  },
+  {
+    infinitive: "beschreiben",
+    english: "to describe",
+    präteritum: "beschrieb",
+    partizipII: "beschrieben",
+    auxiliary: "haben",
+    level: "B1",
+    präteritumExample: "Er beschrieb das Problem genau.",
+    partizipIIExample: "Sie hat die Situation gut beschrieben."
   },
   {
     infinitive: "verstehen",
@@ -117,80 +165,49 @@ export const verbs: GermanVerb[] = [
     präteritumExample: "Ich verstand die Frage nicht.",
     partizipIIExample: "Hast du alles verstanden?"
   },
-  {
-    infinitive: "vergessen",
-    english: "to forget",
-    präteritum: "vergaß",
-    partizipII: "vergessen",
-    auxiliary: "haben",
-    level: "B1",
-    präteritumExample: "Er vergaß seinen Schlüssel.",
-    partizipIIExample: "Ich habe das Datum vergessen."
-  },
-
   // B2 Level - Advanced verbs
   {
-    infinitive: "verschwinden",
-    english: "to disappear",
-    präteritum: "verschwand",
-    partizipII: "verschwunden",
-    auxiliary: "sein",
-    level: "B2",
-    präteritumExample: "Der Schlüssel verschwand spurlos.",
-    partizipIIExample: "Das Geld ist plötzlich verschwunden."
-  },
-  {
-    infinitive: "beschreiben",
-    english: "to describe",
-    präteritum: "beschrieb",
-    partizipII: "beschrieben",
+    infinitive: "übertragen",
+    english: "to transfer/transmit",
+    präteritum: "übertrug",
+    partizipII: "übertragen",
     auxiliary: "haben",
     level: "B2",
-    präteritumExample: "Sie beschrieb das Ereignis genau.",
-    partizipIIExample: "Er hat die Situation gut beschrieben."
+    präteritumExample: "Er übertrug die Verantwortung an seinen Kollegen.",
+    partizipIIExample: "Die Krankheit hat sich schnell übertragen."
   },
   {
-    infinitive: "empfehlen",
-    english: "to recommend",
-    präteritum: "empfahl",
-    partizipII: "empfohlen",
+    infinitive: "unternehmen",
+    english: "to undertake",
+    präteritum: "unternahm",
+    partizipII: "unternommen",
     auxiliary: "haben",
     level: "B2",
-    präteritumExample: "Der Arzt empfahl eine Pause.",
-    partizipIIExample: "Sie hat mir dieses Buch empfohlen."
+    präteritumExample: "Sie unternahm eine lange Reise.",
+    partizipIIExample: "Was hast du am Wochenende unternommen?"
   },
-
-  // C1 Level - Sophisticated verbs
-  {
-    infinitive: "gelingen",
-    english: "to succeed",
-    präteritum: "gelang",
-    partizipII: "gelungen",
-    auxiliary: "sein",
-    level: "C1",
-    präteritumExample: "Es gelang ihr, den Test zu bestehen.",
-    partizipIIExample: "Das Experiment ist endlich gelungen."
-  },
-  {
-    infinitive: "beitragen",
-    english: "to contribute",
-    präteritum: "trug bei",
-    partizipII: "beigetragen",
-    auxiliary: "haben",
-    level: "C1",
-    präteritumExample: "Er trug wesentlich zum Erfolg bei.",
-    partizipIIExample: "Sie hat viel zur Diskussion beigetragen."
-  },
+  // C1 Level - Advanced verbs
   {
     infinitive: "entsprechen",
-    english: "to correspond/match",
+    english: "to correspond",
     präteritum: "entsprach",
     partizipII: "entsprochen",
     auxiliary: "haben",
     level: "C1",
     präteritumExample: "Das Ergebnis entsprach den Erwartungen.",
     partizipIIExample: "Die Leistung hat den Anforderungen entsprochen."
+  },
+  {
+    infinitive: "unterschreiben",
+    english: "to sign",
+    präteritum: "unterschrieb",
+    partizipII: "unterschrieben",
+    auxiliary: "haben",
+    level: "C1",
+    präteritumExample: "Er unterschrieb den Vertrag sofort.",
+    partizipIIExample: "Sie hat alle Dokumente unterschrieben."
   }
+  // More verbs can be added following the same pattern
 ];
 
 export const getRandomVerb = (level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1'): GermanVerb => {
