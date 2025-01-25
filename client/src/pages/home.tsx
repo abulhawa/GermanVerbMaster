@@ -5,6 +5,7 @@ import { SettingsDialog } from '@/components/settings-dialog';
 import { Settings, Progress, PracticeMode } from '@/lib/types';
 import { getRandomVerb } from '@/lib/verbs';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 const DEFAULT_SETTINGS: Settings = {
   level: 'A1',
@@ -34,6 +35,11 @@ export default function Home() {
 
   const [currentMode, setCurrentMode] = useState<PracticeMode>('präteritum');
   const [currentVerb, setCurrentVerb] = useState(() => getRandomVerb(settings.level));
+
+  // Update currentVerb when level changes
+  useEffect(() => {
+    setCurrentVerb(getRandomVerb(settings.level));
+  }, [settings.level]);
 
   useEffect(() => {
     localStorage.setItem('settings', JSON.stringify(settings));
@@ -71,8 +77,22 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-md mx-auto space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-primary">German Verb Practice</h1>
-          <SettingsDialog settings={settings} onSettingsChange={setSettings} />
+          <div>
+            <h1 className="text-2xl font-bold text-primary">German Verb Practice</h1>
+            <Badge variant="secondary" className="mt-2">
+              Level: {settings.level}
+            </Badge>
+          </div>
+          <SettingsDialog 
+            settings={settings} 
+            onSettingsChange={(newSettings) => {
+              setSettings(newSettings);
+              // Reset progress when changing levels
+              if (newSettings.level !== settings.level) {
+                setProgress(DEFAULT_PROGRESS);
+              }
+            }} 
+          />
         </div>
 
         <ProgressDisplay progress={progress} />
