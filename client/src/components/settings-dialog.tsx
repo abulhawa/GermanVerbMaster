@@ -5,6 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -71,6 +72,12 @@ export function SettingsDialog({ settings, onSettingsChange }: SettingsDialogPro
                 onSettingsChange({ ...settings, showExamples: checked })
               }
             />
+          </div>
+
+          <div className="flex justify-end pt-4">
+            <DialogClose asChild>
+              <Button>OK</Button>
+            </DialogClose>
           </div>
         </div>
       </DialogContent>
