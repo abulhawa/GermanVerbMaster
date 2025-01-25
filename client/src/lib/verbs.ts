@@ -4,8 +4,9 @@ export interface GermanVerb {
   präteritum: string;
   partizipII: string;
   auxiliary: 'haben' | 'sein';
-  level: 'A1' | 'A2';
-  example: string;
+  level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1';
+  präteritumExample: string;
+  partizipIIExample: string;
 }
 
 export const verbs: GermanVerb[] = [
@@ -16,7 +17,8 @@ export const verbs: GermanVerb[] = [
     partizipII: "gewesen",
     auxiliary: "sein",
     level: "A1",
-    example: "Ich bin gestern zu Hause gewesen."
+    präteritumExample: "Gestern war ich im Kino.",
+    partizipIIExample: "Ich bin lange in Berlin gewesen."
   },
   {
     infinitive: "haben",
@@ -25,21 +27,42 @@ export const verbs: GermanVerb[] = [
     partizipII: "gehabt",
     auxiliary: "haben",
     level: "A1",
-    example: "Ich habe einen Hund gehabt."
+    präteritumExample: "Er hatte keine Zeit.",
+    partizipIIExample: "Wir haben viel Spaß gehabt."
   },
   {
-    infinitive: "gehen",
-    english: "to go",
-    präteritum: "ging",
-    partizipII: "gegangen",
+    infinitive: "werden",
+    english: "to become",
+    präteritum: "wurde",
+    partizipII: "geworden",
     auxiliary: "sein",
-    level: "A1",
-    example: "Er ist in die Stadt gegangen."
+    level: "B1",
+    präteritumExample: "Sie wurde Ärztin.",
+    partizipIIExample: "Er ist Lehrer geworden."
   },
-  // Add more verbs as needed
+  {
+    infinitive: "verschwinden",
+    english: "to disappear",
+    präteritum: "verschwand",
+    partizipII: "verschwunden",
+    auxiliary: "sein",
+    level: "B2",
+    präteritumExample: "Der Schlüssel verschwand spurlos.",
+    partizipIIExample: "Das Geld ist plötzlich verschwunden."
+  },
+  {
+    infinitive: "gelingen",
+    english: "to succeed",
+    präteritum: "gelang",
+    partizipII: "gelungen",
+    auxiliary: "sein",
+    level: "C1",
+    präteritumExample: "Es gelang ihr, den Test zu bestehen.",
+    partizipIIExample: "Das Experiment ist endlich gelungen."
+  }
 ];
 
-export const getRandomVerb = (level: 'A1' | 'A2'): GermanVerb => {
+export const getRandomVerb = (level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1'): GermanVerb => {
   const filteredVerbs = verbs.filter(verb => verb.level === level);
   return filteredVerbs[Math.floor(Math.random() * filteredVerbs.length)];
 };

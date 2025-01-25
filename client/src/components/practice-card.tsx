@@ -23,7 +23,7 @@ export function PracticeCard({ verb, mode, settings, onCorrect, onIncorrect }: P
   const checkAnswer = () => {
     let correct = false;
     const cleanAnswer = answer.trim().toLowerCase();
-    
+
     switch (mode) {
       case 'präteritum':
         correct = cleanAnswer === verb.präteritum;
@@ -33,6 +33,9 @@ export function PracticeCard({ verb, mode, settings, onCorrect, onIncorrect }: P
         break;
       case 'auxiliary':
         correct = cleanAnswer === verb.auxiliary;
+        break;
+      case 'english':
+        correct = cleanAnswer === verb.english;
         break;
     }
 
@@ -44,21 +47,55 @@ export function PracticeCard({ verb, mode, settings, onCorrect, onIncorrect }: P
     }
   };
 
+  const getQuestionText = () => {
+    switch (mode) {
+      case 'präteritum':
+        return "What is the Präteritum form?";
+      case 'partizipII':
+        return "What is the Partizip II form?";
+      case 'auxiliary':
+        return "Which auxiliary verb? (haben/sein)";
+      case 'english':
+        return "What is the English meaning?";
+      default:
+        return "";
+    }
+  };
+
+  const getHintText = () => {
+    if (!settings.showHints) return null;
+
+    switch (mode) {
+      case 'präteritum':
+        return settings.showExamples ? verb.präteritumExample : 
+          `The correct form is: ${verb.präteritum}`;
+      case 'partizipII':
+        return settings.showExamples ? verb.partizipIIExample :
+          `The correct form is: ${verb.partizipII}`;
+      case 'auxiliary':
+        return `The correct auxiliary is: ${verb.auxiliary}`;
+      case 'english':
+        return `The English translation is: ${verb.english}`;
+      default:
+        return null;
+    }
+  };
+
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
         <CardTitle className="text-center">
           <span className="text-2xl font-bold">{verb.infinitive}</span>
-          <span className="text-sm text-muted-foreground block">
-            ({verb.english})
-          </span>
+          {mode !== 'english' && (
+            <span className="text-sm text-muted-foreground block">
+              ({verb.english})
+            </span>
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="text-center text-lg mb-4">
-          {mode === 'präteritum' && "What is the Präteritum form?"}
-          {mode === 'partizipII' && "What is the Partizip II form?"}
-          {mode === 'auxiliary' && "Which auxiliary verb? (haben/sein)"}
+          {getQuestionText()}
         </div>
 
         <Input
@@ -73,9 +110,7 @@ export function PracticeCard({ verb, mode, settings, onCorrect, onIncorrect }: P
           <Alert>
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              {settings.showExamples ? verb.example : 
-                `The correct form is: ${mode === 'präteritum' ? verb.präteritum : 
-                  mode === 'partizipII' ? verb.partizipII : verb.auxiliary}`}
+              {getHintText()}
             </AlertDescription>
           </Alert>
         )}
@@ -96,7 +131,8 @@ export function PracticeCard({ verb, mode, settings, onCorrect, onIncorrect }: P
               Not quite. The correct answer is: {
                 mode === 'präteritum' ? verb.präteritum :
                 mode === 'partizipII' ? verb.partizipII :
-                verb.auxiliary
+                mode === 'auxiliary' ? verb.auxiliary :
+                verb.english
               }
             </AlertDescription>
           </Alert>

@@ -34,7 +34,7 @@ export function SettingsDialog({ settings, onSettingsChange }: SettingsDialogPro
             <Label htmlFor="level">Language Level</Label>
             <Select
               value={settings.level}
-              onValueChange={(value: 'A1' | 'A2') => 
+              onValueChange={(value: 'A1' | 'A2' | 'B1' | 'B2' | 'C1') => 
                 onSettingsChange({ ...settings, level: value })
               }
             >
@@ -44,6 +44,9 @@ export function SettingsDialog({ settings, onSettingsChange }: SettingsDialogPro
               <SelectContent>
                 <SelectItem value="A1">A1</SelectItem>
                 <SelectItem value="A2">A2</SelectItem>
+                <SelectItem value="B1">B1</SelectItem>
+                <SelectItem value="B2">B2</SelectItem>
+                <SelectItem value="C1">C1</SelectItem>
               </SelectContent>
             </Select>
           </div>
