@@ -33,6 +33,15 @@ export const getRandomVerb = (
   if (patternGroup) {
     filteredVerbs = filteredVerbs.filter(verb => verb.pattern?.group === patternGroup);
   }
+  // If no verbs found for the level, return the first verb from the previous level
+  if (filteredVerbs.length === 0) {
+    const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+    const currentLevelIndex = levels.indexOf(level);
+    if (currentLevelIndex > 0) {
+      const previousLevel = levels[currentLevelIndex - 1];
+      filteredVerbs = verbs.filter(verb => verb.level === previousLevel);
+    }
+  }
   return filteredVerbs[Math.floor(Math.random() * filteredVerbs.length)];
 };
 
@@ -291,6 +300,36 @@ export const verbs: GermanVerb[] = [
     präteritumExample: "Er unterschrieb den Vertrag sofort.",
     partizipIIExample: "Sie hat alle Dokumente unterschrieben.",
     source: { name: "Duden", levelReference: "C1 Advanced Verbs" }
+  },
+  // Adding C2 level verbs
+  {
+    infinitive: "erwerben",
+    english: "to acquire/obtain",
+    präteritum: "erwarb",
+    partizipII: "erworben",
+    auxiliary: "haben",
+    level: "C2",
+    präteritumExample: "Er erwarb umfangreiche Kenntnisse in der deutschen Literatur.",
+    partizipIIExample: "Die Firma hat mehrere Startups erworben.",
+    source: { name: "Duden", levelReference: "C2 Professional Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "e -> a -> o"
+    }
+  },
+  {
+    infinitive: "obliegen",
+    english: "to be incumbent upon",
+    präteritum: "oblag",
+    partizipII: "oblegen",
+    auxiliary: "haben",
+    level: "C2",
+    präteritumExample: "Es oblag dem Vorstand, diese Entscheidung zu treffen.",
+    partizipIIExample: "Die Verantwortung hat ihm oblegen.",
+    source: { name: "Duden", levelReference: "C2 Professional Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "ie -> a -> e"
+    }
   }
-  // More verbs can be added following the same pattern
 ];
