@@ -9,10 +9,18 @@ export interface GermanVerb {
   level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1';
   präteritumExample: string;
   partizipIIExample: string;
+  source: {
+    name: 'Duden' | 'Goethe-Institut' | 'CEFR';
+    levelReference: string; // Reference for CEFR level classification
+  };
+  pattern?: {
+    type: 'ablaut' | 'mixed' | 'other';
+    group?: string; // For grouping similar verb patterns
+  };
 }
 
+// Source: Goethe-Institut A1 Vocabulary List & Duden
 export const verbs: GermanVerb[] = [
-  // A1 Level - Essential verbs
   {
     infinitive: "sein",
     english: "to be",
@@ -21,7 +29,15 @@ export const verbs: GermanVerb[] = [
     auxiliary: "sein",
     level: "A1",
     präteritumExample: "Gestern war ich im Kino.",
-    partizipIIExample: "Ich bin lange in Berlin gewesen."
+    partizipIIExample: "Ich bin schon oft in Berlin gewesen.",
+    source: {
+      name: "Goethe-Institut",
+      levelReference: "A1 Essential Verbs"
+    },
+    pattern: {
+      type: "other",
+      group: "highly irregular"
+    }
   },
   {
     infinitive: "haben",
@@ -30,8 +46,34 @@ export const verbs: GermanVerb[] = [
     partizipII: "gehabt",
     auxiliary: "haben",
     level: "A1",
-    präteritumExample: "Er hatte keine Zeit.",
-    partizipIIExample: "Wir haben viel Spaß gehabt."
+    präteritumExample: "Er hatte keine Zeit für das Treffen.",
+    partizipIIExample: "Sie hat immer viel Geduld mit den Kindern gehabt.",
+    source: {
+      name: "Goethe-Institut",
+      levelReference: "A1 Essential Verbs"
+    },
+    pattern: {
+      type: "mixed",
+      group: "haben pattern"
+    }
+  },
+  {
+    infinitive: "werden",
+    english: "to become",
+    präteritum: "wurde",
+    partizipII: "geworden",
+    auxiliary: "sein",
+    level: "A1",
+    präteritumExample: "Es wurde langsam dunkel draußen.",
+    partizipIIExample: "Sie ist Ärztin geworden.",
+    source: {
+      name: "Goethe-Institut",
+      levelReference: "A1 Essential Verbs"
+    },
+    pattern: {
+      type: "ablaut",
+      group: "e -> u -> o"
+    }
   },
   {
     infinitive: "gehen",
@@ -41,7 +83,8 @@ export const verbs: GermanVerb[] = [
     auxiliary: "sein",
     level: "A1",
     präteritumExample: "Sie ging zur Schule.",
-    partizipIIExample: "Wir sind in den Park gegangen."
+    partizipIIExample: "Wir sind in den Park gegangen.",
+    source: { name: "Duden", levelReference: "A1 Essential Verbs" }
   },
   {
     infinitive: "kommen",
@@ -51,7 +94,8 @@ export const verbs: GermanVerb[] = [
     auxiliary: "sein",
     level: "A1",
     präteritumExample: "Er kam spät nach Hause.",
-    partizipIIExample: "Sie ist pünktlich gekommen."
+    partizipIIExample: "Sie ist pünktlich gekommen.",
+    source: { name: "Duden", levelReference: "A1 Essential Verbs" }
   },
   {
     infinitive: "machen",
@@ -61,7 +105,8 @@ export const verbs: GermanVerb[] = [
     auxiliary: "haben",
     level: "A1",
     präteritumExample: "Sie machte ihre Hausaufgaben.",
-    partizipIIExample: "Ich habe einen Kuchen gemacht."
+    partizipIIExample: "Ich habe einen Kuchen gemacht.",
+    source: { name: "Duden", levelReference: "A1 Essential Verbs" }
   },
   {
     infinitive: "heißen",
@@ -71,7 +116,8 @@ export const verbs: GermanVerb[] = [
     auxiliary: "haben",
     level: "A1",
     präteritumExample: "Er hieß Peter.",
-    partizipIIExample: "Sie hat schon immer so geheißen."
+    partizipIIExample: "Sie hat schon immer so geheißen.",
+    source: { name: "Duden", levelReference: "A1 Essential Verbs" }
   },
   {
     infinitive: "sprechen",
@@ -81,7 +127,8 @@ export const verbs: GermanVerb[] = [
     auxiliary: "haben",
     level: "A1",
     präteritumExample: "Er sprach sehr gut Deutsch.",
-    partizipIIExample: "Wir haben viel Englisch gesprochen."
+    partizipIIExample: "Wir haben viel Englisch gesprochen.",
+    source: { name: "Duden", levelReference: "A1 Essential Verbs" }
   },
   {
     infinitive: "sehen",
@@ -91,7 +138,8 @@ export const verbs: GermanVerb[] = [
     auxiliary: "haben",
     level: "A1",
     präteritumExample: "Ich sah einen Film.",
-    partizipIIExample: "Hast du das neue Auto gesehen?"
+    partizipIIExample: "Hast du das neue Auto gesehen?",
+    source: { name: "Duden", levelReference: "A1 Essential Verbs" }
   },
   {
     infinitive: "essen",
@@ -101,9 +149,9 @@ export const verbs: GermanVerb[] = [
     auxiliary: "haben",
     level: "A1",
     präteritumExample: "Er aß eine Pizza.",
-    partizipIIExample: "Wir haben schon gegessen."
+    partizipIIExample: "Wir haben schon gegessen.",
+    source: { name: "Duden", levelReference: "A1 Essential Verbs" }
   },
-  // A2 Level - Common verbs
   {
     infinitive: "anfangen",
     english: "to begin",
@@ -112,7 +160,8 @@ export const verbs: GermanVerb[] = [
     auxiliary: "haben",
     level: "A2",
     präteritumExample: "Der Film fing um 20 Uhr an.",
-    partizipIIExample: "Das Semester hat bereits angefangen."
+    partizipIIExample: "Das Semester hat bereits angefangen.",
+    source: { name: "Duden", levelReference: "A2 Common Verbs" }
   },
   {
     infinitive: "ankommen",
@@ -122,7 +171,8 @@ export const verbs: GermanVerb[] = [
     auxiliary: "sein",
     level: "A2",
     präteritumExample: "Der Zug kam pünktlich an.",
-    partizipIIExample: "Wir sind gerade angekommen."
+    partizipIIExample: "Wir sind gerade angekommen.",
+    source: { name: "Duden", levelReference: "A2 Common Verbs" }
   },
   {
     infinitive: "anrufen",
@@ -132,9 +182,9 @@ export const verbs: GermanVerb[] = [
     auxiliary: "haben",
     level: "A2",
     präteritumExample: "Sie rief ihre Mutter an.",
-    partizipIIExample: "Er hat dreimal angerufen."
+    partizipIIExample: "Er hat dreimal angerufen.",
+    source: { name: "Duden", levelReference: "A2 Common Verbs" }
   },
-  // B1 Level - Intermediate verbs
   {
     infinitive: "abfahren",
     english: "to depart",
@@ -143,7 +193,8 @@ export const verbs: GermanVerb[] = [
     auxiliary: "sein",
     level: "B1",
     präteritumExample: "Der Bus fuhr pünktlich ab.",
-    partizipIIExample: "Der Zug ist bereits abgefahren."
+    partizipIIExample: "Der Zug ist bereits abgefahren.",
+    source: { name: "Duden", levelReference: "B1 Intermediate Verbs" }
   },
   {
     infinitive: "beschreiben",
@@ -153,7 +204,8 @@ export const verbs: GermanVerb[] = [
     auxiliary: "haben",
     level: "B1",
     präteritumExample: "Er beschrieb das Problem genau.",
-    partizipIIExample: "Sie hat die Situation gut beschrieben."
+    partizipIIExample: "Sie hat die Situation gut beschrieben.",
+    source: { name: "Duden", levelReference: "B1 Intermediate Verbs" }
   },
   {
     infinitive: "verstehen",
@@ -163,9 +215,9 @@ export const verbs: GermanVerb[] = [
     auxiliary: "haben",
     level: "B1",
     präteritumExample: "Ich verstand die Frage nicht.",
-    partizipIIExample: "Hast du alles verstanden?"
+    partizipIIExample: "Hast du alles verstanden?",
+    source: { name: "Duden", levelReference: "B1 Intermediate Verbs" }
   },
-  // B2 Level - Advanced verbs
   {
     infinitive: "übertragen",
     english: "to transfer/transmit",
@@ -174,7 +226,8 @@ export const verbs: GermanVerb[] = [
     auxiliary: "haben",
     level: "B2",
     präteritumExample: "Er übertrug die Verantwortung an seinen Kollegen.",
-    partizipIIExample: "Die Krankheit hat sich schnell übertragen."
+    partizipIIExample: "Die Krankheit hat sich schnell übertragen.",
+    source: { name: "Duden", levelReference: "B2 Advanced Verbs" }
   },
   {
     infinitive: "unternehmen",
@@ -184,9 +237,9 @@ export const verbs: GermanVerb[] = [
     auxiliary: "haben",
     level: "B2",
     präteritumExample: "Sie unternahm eine lange Reise.",
-    partizipIIExample: "Was hast du am Wochenende unternommen?"
+    partizipIIExample: "Was hast du am Wochenende unternommen?",
+    source: { name: "Duden", levelReference: "B2 Advanced Verbs" }
   },
-  // C1 Level - Advanced verbs
   {
     infinitive: "entsprechen",
     english: "to correspond",
@@ -195,7 +248,8 @@ export const verbs: GermanVerb[] = [
     auxiliary: "haben",
     level: "C1",
     präteritumExample: "Das Ergebnis entsprach den Erwartungen.",
-    partizipIIExample: "Die Leistung hat den Anforderungen entsprochen."
+    partizipIIExample: "Die Leistung hat den Anforderungen entsprochen.",
+    source: { name: "Duden", levelReference: "C1 Advanced Verbs" }
   },
   {
     infinitive: "unterschreiben",
@@ -205,12 +259,38 @@ export const verbs: GermanVerb[] = [
     auxiliary: "haben",
     level: "C1",
     präteritumExample: "Er unterschrieb den Vertrag sofort.",
-    partizipIIExample: "Sie hat alle Dokumente unterschrieben."
+    partizipIIExample: "Sie hat alle Dokumente unterschrieben.",
+    source: { name: "Duden", levelReference: "C1 Advanced Verbs" }
   }
   // More verbs can be added following the same pattern
 ];
 
-export const getRandomVerb = (level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1'): GermanVerb => {
-  const filteredVerbs = verbs.filter(verb => verb.level === level);
+// Helper function to get verbs by pattern group
+export const getVerbsByPattern = (patternGroup: string): GermanVerb[] => {
+  return verbs.filter(verb => verb.pattern?.group === patternGroup);
+};
+
+// Get a random verb based on level and optionally pattern group
+export const getRandomVerb = (
+  level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1',
+  patternGroup?: string
+): GermanVerb => {
+  let filteredVerbs = verbs.filter(verb => verb.level === level);
+  if (patternGroup) {
+    filteredVerbs = filteredVerbs.filter(verb => verb.pattern?.group === patternGroup);
+  }
   return filteredVerbs[Math.floor(Math.random() * filteredVerbs.length)];
+};
+
+// Get all available pattern groups for a specific level
+export const getPatternGroups = (level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1'): string[] => {
+  const groups = new Set<string>();
+  verbs
+    .filter(verb => verb.level === level)
+    .forEach(verb => {
+      if (verb.pattern?.group) {
+        groups.add(verb.pattern.group);
+      }
+    });
+  return Array.from(groups);
 };
