@@ -3,9 +3,15 @@ import { PracticeCard } from '@/components/practice-card';
 import { ProgressDisplay } from '@/components/progress-display';
 import { SettingsDialog } from '@/components/settings-dialog';
 import { Settings, Progress, PracticeMode } from '@/lib/types';
-import { getRandomVerb } from '@/lib/verbs';
+import { getRandomVerb, GermanVerb } from '@/lib/verbs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { ArrowLeft } from 'lucide-react';
+
+interface VerbHistoryItem {
+  verb: GermanVerb;
+  mode: PracticeMode;
+}
 
 const DEFAULT_SETTINGS: Settings = {
   level: 'A1',
@@ -53,9 +59,14 @@ export default function Home() {
 
   const [currentMode, setCurrentMode] = useState<PracticeMode>('präteritum');
   const [currentVerb, setCurrentVerb] = useState(() => getRandomVerb(settings.level));
+  const [verbHistory, setVerbHistory] = useState<VerbHistoryItem[]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
 
   useEffect(() => {
     setCurrentVerb(getRandomVerb(settings.level));
+    // Reset history when level changes
+    setVerbHistory([]);
+    setHistoryIndex(-1);
   }, [settings.level]);
 
   useEffect(() => {
@@ -94,8 +105,22 @@ export default function Home() {
   };
 
   const nextQuestion = () => {
+    // Add current verb to history
+    setVerbHistory(prev => [...prev.slice(0, historyIndex + 1), { verb: currentVerb, mode: currentMode }]);
+    setHistoryIndex(prev => prev + 1);
+
+    // Get new verb and mode
     setCurrentVerb(getRandomVerb(settings.level));
     setCurrentMode(PRACTICE_MODES[Math.floor(Math.random() * PRACTICE_MODES.length)]);
+  };
+
+  const goBack = () => {
+    if (historyIndex > 0) {
+      const previousItem = verbHistory[historyIndex - 1];
+      setCurrentVerb(previousItem.verb);
+      setCurrentMode(previousItem.mode);
+      setHistoryIndex(prev => prev - 1);
+    }
   };
 
   return (
@@ -130,13 +155,25 @@ export default function Home() {
           onIncorrect={handleIncorrect}
         />
 
-        <Button 
-          variant="outline" 
-          className="w-full"
-          onClick={nextQuestion}
-        >
-          Skip to next
-        </Button>
+        <div className="flex gap-2">
+          {historyIndex > 0 && (
+            <Button 
+              variant="outline" 
+              className="flex-1"
+              onClick={goBack}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Previous verb
+            </Button>
+          )}
+          <Button 
+            variant="outline" 
+            className="flex-1"
+            onClick={nextQuestion}
+          >
+            Skip to next
+          </Button>
+        </div>
       </div>
     </div>
   );
