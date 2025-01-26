@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -14,13 +14,19 @@ interface PracticeCardProps {
   settings: Settings;
   onCorrect: () => void;
   onIncorrect: () => void;
-  nextQuestion: () => void; // Added nextQuestion prop
 }
 
-export function PracticeCard({ verb, mode, settings, onCorrect, onIncorrect, nextQuestion }: PracticeCardProps) {
+export function PracticeCard({ verb, mode, settings, onCorrect, onIncorrect }: PracticeCardProps) {
   const [answer, setAnswer] = useState('');
   const [showHint, setShowHint] = useState(false);
   const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
+
+  // Reset state when verb changes
+  useEffect(() => {
+    setAnswer('');
+    setStatus('idle');
+    setShowHint(false);
+  }, [verb]);
 
   const checkAnswer = () => {
     if (!answer.trim()) return; // Don't check empty answers
@@ -92,7 +98,6 @@ export function PracticeCard({ verb, mode, settings, onCorrect, onIncorrect, nex
   };
 
   const handlePronounce = () => {
-    // Get the word to pronounce based on the mode
     let wordToPronounce = verb.infinitive;
     if (status === 'correct' || status === 'incorrect') {
       switch (mode) {
@@ -168,9 +173,9 @@ export function PracticeCard({ verb, mode, settings, onCorrect, onIncorrect, nex
             <AlertDescription className="text-red-600">
               Not quite. The correct answer is: {
                 mode === 'präteritum' ? verb.präteritum :
-                  mode === 'partizipII' ? verb.partizipII :
-                    mode === 'auxiliary' ? verb.auxiliary :
-                      verb.english
+                mode === 'partizipII' ? verb.partizipII :
+                mode === 'auxiliary' ? verb.auxiliary :
+                verb.english
               }
             </AlertDescription>
           </Alert>
@@ -188,14 +193,12 @@ export function PracticeCard({ verb, mode, settings, onCorrect, onIncorrect, nex
               )}
             </>
           )}
-          <Button onClick={nextQuestion}>Next</Button> {/* Added Next button */}
         </div>
       </CardContent>
     </Card>
   );
 }
 
-//This part is added based on the assumption that there is a function to get random verb and PRACTICE_MODES array exists in the scope.  These need to be added to the code.
 const getRandomVerb = (level: number) => {
   // Replace this with your actual logic to fetch a random verb based on the level
   return {infinitive: 'laufen', präteritum: 'lief', partizipII: 'gelaufen', auxiliary: 'haben', english: 'to run'} as GermanVerb;
