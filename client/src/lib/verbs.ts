@@ -11,11 +11,11 @@ export interface GermanVerb {
   partizipIIExample: string;
   source: {
     name: 'Duden' | 'Goethe-Institut' | 'CEFR';
-    levelReference: string; // Reference for CEFR level classification
+    levelReference: string;
   };
   pattern?: {
     type: 'ablaut' | 'mixed' | 'other';
-    group?: string; // For grouping similar verb patterns
+    group?: string;
   };
 }
 
@@ -423,6 +423,21 @@ export const verbs: GermanVerb[] = [
       group: "a -> ie -> a"
     }
   },
+    {
+    infinitive: "schreiben",
+    english: "to write",
+    präteritum: "schrieb",
+    partizipII: "geschrieben",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Er schrieb einen Brief an seine Mutter.",
+    partizipIIExample: "Sie hat ihre Hausaufgaben geschrieben.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "ei -> ie -> ie"
+    }
+  },
   // Adding more A2 verbs
   {
     infinitive: "verstecken",
@@ -566,7 +581,6 @@ export const verbs: GermanVerb[] = [
     partizipIIExample: "Die Vernunft hat über die Emotion obsiegt.",
     source: { name: "Duden", levelReference: "C2 Professional Verbs" }
   },
-    // Adding more A1 level verbs
   {
     infinitive: "lesen",
     english: "to read",
