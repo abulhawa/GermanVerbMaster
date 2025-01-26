@@ -22,6 +22,8 @@ export function PracticeCard({ verb, mode, settings, onCorrect, onIncorrect }: P
   const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
 
   const checkAnswer = () => {
+    if (!answer.trim()) return; // Don't check empty answers
+
     let correct = false;
     const cleanAnswer = answer.trim().toLowerCase();
 
@@ -45,6 +47,12 @@ export function PracticeCard({ verb, mode, settings, onCorrect, onIncorrect }: P
       onCorrect();
     } else {
       onIncorrect();
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && status === 'idle') {
+      checkAnswer();
     }
   };
 
@@ -129,6 +137,7 @@ export function PracticeCard({ verb, mode, settings, onCorrect, onIncorrect }: P
         <Input
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder="Type your answer..."
           className="text-center text-lg"
           disabled={status !== 'idle'}
