@@ -423,7 +423,7 @@ export const verbs: GermanVerb[] = [
       group: "a -> ie -> a"
     }
   },
-    {
+  {
     infinitive: "schreiben",
     english: "to write",
     präteritum: "schrieb",
@@ -694,6 +694,36 @@ export const verbs: GermanVerb[] = [
       group: "ei -> ie -> ie"
     }
   },
+    {
+    infinitive: "aufgeben",
+    english: "to give up",
+    präteritum: "gab auf",
+    partizipII: "aufgegeben",
+    auxiliary: "haben",
+    level: "A2",
+    präteritumExample: "Er gab den Kampf auf.",
+    partizipIIExample: "Sie hat ihre alte Wohnung aufgegeben.",
+    source: { name: "Duden", levelReference: "A2 Common Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "e -> a -> e"
+    }
+  },
+  {
+    infinitive: "mitkommen",
+    english: "to come along",
+    präteritum: "kam mit",
+    partizipII: "mitgekommen",
+    auxiliary: "sein",
+    level: "A2",
+    präteritumExample: "Sie kam mit ins Kino.",
+    partizipIIExample: "Bist du gestern mitgekommen?",
+    source: { name: "Duden", levelReference: "A2 Common Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "o -> a -> o"
+    }
+  },
   // Adding more B1 level verbs
   {
     infinitive: "aufwachen",
@@ -720,6 +750,32 @@ export const verbs: GermanVerb[] = [
       type: "ablaut",
       group: "i -> a -> o"
     }
+  },
+  {
+    infinitive: "eintreten",
+    english: "to enter/occur",
+    präteritum: "trat ein",
+    partizipII: "eingetreten",
+    auxiliary: "sein",
+    level: "B1",
+    präteritumExample: "Er trat in das Zimmer ein.",
+    partizipIIExample: "Die vorhergesagten Ereignisse sind eingetreten.",
+    source: { name: "Duden", levelReference: "B1 Intermediate Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "e -> a -> e"
+    }
+  },
+  {
+    infinitive: "durchführen",
+    english: "to carry out/conduct",
+    präteritum: "führte durch",
+    partizipII: "durchgeführt",
+    auxiliary: "haben",
+    level: "B1",
+    präteritumExample: "Sie führte das Experiment sorgfältig durch.",
+    partizipIIExample: "Wir haben die Studie erfolgreich durchgeführt.",
+    source: { name: "Duden", levelReference: "B1 Intermediate Verbs" }
   },
   // Adding more B2 level verbs
   {
@@ -752,7 +808,7 @@ export const verbs: GermanVerb[] = [
       group: "e -> a -> o"
     }
   },
-    {
+  {
     infinitive: "verschwinden",
     english: "to disappear",
     präteritum: "verschwand",
@@ -798,7 +854,7 @@ export const verbs: GermanVerb[] = [
   {
     infinitive: "beschreiten",
     english: "to embark upon",
-    präteritum: "beschritt",
+präteritum: "beschritt",
     partizipII: "beschritten",
     auxiliary: "haben",
     level: "C2",
