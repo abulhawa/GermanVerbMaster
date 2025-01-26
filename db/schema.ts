@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, foreignKey, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, foreignKey, pgEnum, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { sql } from "drizzle-orm";
 
@@ -9,6 +9,22 @@ export const users = pgTable("users", {
 });
 
 export const practiceResultEnum = pgEnum('practice_result', ['correct', 'incorrect']);
+
+export const verbs = pgTable("verbs", {
+  id: serial("id").primaryKey(),
+  infinitive: text("infinitive").unique().notNull(),
+  english: text("english").notNull(),
+  präteritum: text("präteritum").notNull(),
+  partizipII: text("partizipII").notNull(),
+  auxiliary: text("auxiliary").notNull(),
+  level: text("level").notNull(),
+  präteritumExample: text("präteritumExample").notNull(),
+  partizipIIExample: text("partizipIIExample").notNull(),
+  source: jsonb("source").notNull(),
+  pattern: jsonb("pattern"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
 
 export const verbPracticeHistory = pgTable("verb_practice_history", {
   id: serial("id").primaryKey(),
@@ -36,6 +52,11 @@ export const insertUserSchema = createInsertSchema(users);
 export const selectUserSchema = createSelectSchema(users);
 export type InsertUser = typeof users.$inferInsert;
 export type SelectUser = typeof users.$inferSelect;
+
+export const insertVerbSchema = createInsertSchema(verbs);
+export const selectVerbSchema = createSelectSchema(verbs);
+export type InsertVerb = typeof verbs.$inferInsert;
+export type SelectVerb = typeof verbs.$inferSelect;
 
 export type VerbPracticeHistory = typeof verbPracticeHistory.$inferSelect;
 export type InsertVerbPracticeHistory = typeof verbPracticeHistory.$inferInsert;

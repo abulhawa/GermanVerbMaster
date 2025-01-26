@@ -6,8 +6,9 @@ import { Settings, Progress, PracticeMode } from '@/lib/types';
 import { getRandomVerb, GermanVerb } from '@/lib/verbs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, BarChart2 } from 'lucide-react';
+import { ArrowLeft, BarChart2, Loader2 } from 'lucide-react';
 import { Link } from 'wouter';
+import { useQuery } from '@tanstack/react-query';
 
 interface VerbHistoryItem {
   verb: GermanVerb;
@@ -59,15 +60,14 @@ export default function Home() {
   });
 
   const [currentMode, setCurrentMode] = useState<PracticeMode>('präteritum');
-  const [currentVerb, setCurrentVerb] = useState(() => getRandomVerb(settings.level));
   const [verbHistory, setVerbHistory] = useState<VerbHistoryItem[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
 
-  useEffect(() => {
-    setCurrentVerb(getRandomVerb(settings.level));
-    setVerbHistory([]);
-    setHistoryIndex(-1);
-  }, [settings.level]);
+  const { data: currentVerb, isLoading: verbLoading, refetch: refetchVerb } = useQuery({
+    queryKey: ['verb', settings.level, historyIndex],
+    queryFn: () => getRandomVerb(settings.level),
+    enabled: true,
+  });
 
   useEffect(() => {
     localStorage.setItem('settings', JSON.stringify(settings));
@@ -77,7 +77,15 @@ export default function Home() {
     localStorage.setItem('progress', JSON.stringify(progress));
   }, [progress]);
 
+  useEffect(() => {
+    refetchVerb();
+    setVerbHistory([]);
+    setHistoryIndex(-1);
+  }, [settings.level]);
+
   const handleCorrect = () => {
+    if (!currentVerb) return;
+
     setProgress(prev => {
       const updatedPracticedVerbs = {
         ...prev.practicedVerbs,
@@ -105,21 +113,30 @@ export default function Home() {
   };
 
   const nextQuestion = () => {
+    if (!currentVerb) return;
+
     setVerbHistory(prev => [...prev.slice(0, historyIndex + 1), { verb: currentVerb, mode: currentMode }]);
     setHistoryIndex(prev => prev + 1);
 
-    setCurrentVerb(getRandomVerb(settings.level));
+    refetchVerb();
     setCurrentMode(PRACTICE_MODES[Math.floor(Math.random() * PRACTICE_MODES.length)]);
   };
 
   const goBack = () => {
     if (historyIndex > 0) {
       const previousItem = verbHistory[historyIndex - 1];
-      setCurrentVerb(previousItem.verb);
-      setCurrentMode(previousItem.mode);
       setHistoryIndex(prev => prev - 1);
+      setCurrentMode(previousItem.mode);
     }
   };
+
+  if (verbLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
@@ -151,13 +168,15 @@ export default function Home() {
 
         <ProgressDisplay progress={progress} currentLevel={settings.level} />
 
-        <PracticeCard
-          verb={currentVerb}
-          mode={currentMode}
-          settings={settings}
-          onCorrect={handleCorrect}
-          onIncorrect={handleIncorrect}
-        />
+        {currentVerb && (
+          <PracticeCard
+            verb={currentVerb}
+            mode={currentMode}
+            settings={settings}
+            onCorrect={handleCorrect}
+            onIncorrect={handleIncorrect}
+          />
+        )}
 
         <div className="flex gap-2">
           {historyIndex > 0 && (

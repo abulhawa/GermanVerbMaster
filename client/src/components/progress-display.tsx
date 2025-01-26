@@ -2,8 +2,9 @@ import { Progress } from "@/lib/types";
 import { Progress as ProgressBar } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, Flame, BookOpen } from "lucide-react";
+import { Trophy, Flame, BookOpen, Loader2 } from "lucide-react";
 import { getVerbsByLevel } from "@/lib/verbs";
+import { useQuery } from "@tanstack/react-query";
 
 interface ProgressDisplayProps {
   progress: Progress;
@@ -11,13 +12,28 @@ interface ProgressDisplayProps {
 }
 
 export function ProgressDisplay({ progress, currentLevel }: ProgressDisplayProps) {
+  const { data: verbsInLevel, isLoading } = useQuery({
+    queryKey: ['verbs', currentLevel],
+    queryFn: () => getVerbsByLevel(currentLevel),
+  });
+
   const percentage = progress.total > 0 
     ? Math.round((progress.correct / progress.total) * 100) 
     : 0;
 
-  const totalVerbsInLevel = getVerbsByLevel(currentLevel).length;
+  const totalVerbsInLevel = verbsInLevel?.length ?? 0;
   const practicedVerbsCount = (progress.practicedVerbs?.[currentLevel] || []).length;
   const remainingVerbsCount = totalVerbsInLevel - practicedVerbsCount;
+
+  if (isLoading) {
+    return (
+      <Card className="w-full max-w-md mx-auto">
+        <CardContent className="py-6 flex justify-center">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="w-full max-w-md mx-auto">

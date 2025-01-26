@@ -1,9 +1,9 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { db } from "@db";
-import { verbPracticeHistory, verbAnalytics } from "@db/schema";
+import { verbPracticeHistory, verbAnalytics, verbs } from "@db/schema";
 import { z } from "zod";
-import { eq, desc, sql } from "drizzle-orm";
+import { eq, desc, sql, and } from "drizzle-orm";
 
 const recordPracticeSchema = z.object({
   verb: z.string(),
@@ -15,6 +15,48 @@ const recordPracticeSchema = z.object({
 });
 
 export function registerRoutes(app: Express): Server {
+  // Get all verbs or filter by level
+  app.get("/api/verbs", async (req, res) => {
+    try {
+      const level = req.query.level as string;
+      const pattern = req.query.pattern as string;
+
+      let query = db.select().from(verbs);
+
+      if (level) {
+        query = query.where(eq(verbs.level, level));
+      }
+
+      if (pattern) {
+        query = query.where(sql`verbs.pattern->>'group' = ${pattern}`);
+      }
+
+      const verbsList = await query;
+      res.json(verbsList);
+    } catch (error) {
+      console.error('Error fetching verbs:', error);
+      res.status(500).json({ error: 'Failed to fetch verbs' });
+    }
+  });
+
+  // Get a single verb by infinitive
+  app.get("/api/verbs/:infinitive", async (req, res) => {
+    try {
+      const verb = await db.query.verbs.findFirst({
+        where: eq(verbs.infinitive, req.params.infinitive)
+      });
+
+      if (!verb) {
+        return res.status(404).json({ error: 'Verb not found' });
+      }
+
+      res.json(verb);
+    } catch (error) {
+      console.error('Error fetching verb:', error);
+      res.status(500).json({ error: 'Failed to fetch verb' });
+    }
+  });
+
   // Record a practice attempt
   app.post("/api/practice-history", async (req, res) => {
     try {
@@ -23,7 +65,7 @@ export function registerRoutes(app: Express): Server {
       // Record the practice attempt
       await db.insert(verbPracticeHistory).values({
         ...data,
-        userId: req.user?.id // Optional: If using authentication
+        userId: req.user?.id
       });
 
       // Update analytics
