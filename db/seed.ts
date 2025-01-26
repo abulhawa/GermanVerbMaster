@@ -1,10 +1,14 @@
 import { db } from "@db";
 import { verbs as verbsTable } from "@db/schema";
-import { verbs as verbsData } from "../client/src/lib/verbs";
+import { verbsData } from "./seed-data";
 
 async function seedVerbs() {
   try {
     console.log('Starting verb seeding...');
+
+    // First, let's clear the existing verbs
+    await db.delete(verbsTable);
+    console.log('Cleared existing verbs');
 
     for (const verb of verbsData) {
       await db.insert(verbsTable).values({

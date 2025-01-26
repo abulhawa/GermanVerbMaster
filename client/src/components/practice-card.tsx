@@ -236,9 +236,4 @@ export function PracticeCard({ verb, mode, settings, onCorrect, onIncorrect }: P
   );
 }
 
-const getRandomVerb = (level: number) => {
-  // Replace this with your actual logic to fetch a random verb based on the level
-  return {infinitive: 'laufen', präteritum: 'lief', partizipII: 'gelaufen', auxiliary: 'haben', english: 'to run'} as GermanVerb;
-}
-
-const PRACTICE_MODES: PracticeMode[] = ['präteritum', 'partizipII', 'auxiliary', 'english'];
+export const PRACTICE_MODES: PracticeMode[] = ['präteritum', 'partizipII', 'auxiliary', 'english'];
