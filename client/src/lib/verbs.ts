@@ -565,6 +565,170 @@ export const verbs: GermanVerb[] = [
     präteritumExample: "Die Mannschaft obsiegte im Finale.",
     partizipIIExample: "Die Vernunft hat über die Emotion obsiegt.",
     source: { name: "Duden", levelReference: "C2 Professional Verbs" }
+  },
+    // Adding more A1 level verbs
+  {
+    infinitive: "lesen",
+    english: "to read",
+    präteritum: "las",
+    partizipII: "gelesen",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Sie las ein interessantes Buch.",
+    partizipIIExample: "Ich habe den Brief gelesen.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "e -> a -> e"
+    }
+  },
+  {
+    infinitive: "nehmen",
+    english: "to take",
+    präteritum: "nahm",
+    partizipII: "genommen",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Er nahm den Bus zur Arbeit.",
+    partizipIIExample: "Hast du deine Medizin genommen?",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "e -> a -> o"
+    }
+  },
+  {
+    infinitive: "helfen",
+    english: "to help",
+    präteritum: "half",
+    partizipII: "geholfen",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Sie half ihrer Mutter in der Küche.",
+    partizipIIExample: "Er hat mir bei den Hausaufgaben geholfen.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "e -> a -> o"
+    }
+  },
+  {
+    infinitive: "geben",
+    english: "to give",
+    präteritum: "gab",
+    partizipII: "gegeben",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Er gab mir das Buch zurück.",
+    partizipIIExample: "Sie hat mir ihre Adresse gegeben.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "e -> a -> e"
+    }
+  },
+  {
+    infinitive: "finden",
+    english: "to find",
+    präteritum: "fand",
+    partizipII: "gefunden",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Er fand seinen Schlüssel nicht.",
+    partizipIIExample: "Ich habe meine Brille gefunden.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "i -> a -> u"
+    }
+  },
+  // Adding more A2 level verbs
+  {
+    infinitive: "aussteigen",
+    english: "to get out/off",
+    präteritum: "stieg aus",
+    partizipII: "ausgestiegen",
+    auxiliary: "sein",
+    level: "A2",
+    präteritumExample: "Sie stieg aus dem Bus aus.",
+    partizipIIExample: "Wir sind am Hauptbahnhof ausgestiegen.",
+    source: { name: "Duden", levelReference: "A2 Common Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "ei -> ie -> ie"
+    }
+  },
+  {
+    infinitive: "einsteigen",
+    english: "to get in/on",
+    präteritum: "stieg ein",
+    partizipII: "eingestiegen",
+    auxiliary: "sein",
+    level: "A2",
+    präteritumExample: "Er stieg in den Zug ein.",
+    partizipIIExample: "Sie ist in das falsche Auto eingestiegen.",
+    source: { name: "Duden", levelReference: "A2 Common Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "ei -> ie -> ie"
+    }
+  },
+  // Adding more B1 level verbs
+  {
+    infinitive: "aufwachen",
+    english: "to wake up",
+    präteritum: "wachte auf",
+    partizipII: "aufgewacht",
+    auxiliary: "sein",
+    level: "B1",
+    präteritumExample: "Er wachte früh auf.",
+    partizipIIExample: "Sie ist spät aufgewacht.",
+    source: { name: "Duden", levelReference: "B1 Intermediate Verbs" }
+  },
+  {
+    infinitive: "beginnen",
+    english: "to begin",
+    präteritum: "begann",
+    partizipII: "begonnen",
+    auxiliary: "haben",
+    level: "B1",
+    präteritumExample: "Der Kurs begann um 9 Uhr.",
+    partizipIIExample: "Das Semester hat bereits begonnen.",
+    source: { name: "Duden", levelReference: "B1 Intermediate Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "i -> a -> o"
+    }
+  },
+  // Adding more B2 level verbs
+  {
+    infinitive: "erscheinen",
+    english: "to appear",
+    präteritum: "erschien",
+    partizipII: "erschienen",
+    auxiliary: "sein",
+    level: "B2",
+    präteritumExample: "Der Artikel erschien in der Zeitung.",
+    partizipIIExample: "Das Buch ist letzten Monat erschienen.",
+    source: { name: "Duden", levelReference: "B2 Advanced Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "ei -> ie -> ie"
+    }
+  },
+  {
+    infinitive: "verschwinden",
+    english: "to disappear",
+    präteritum: "verschwand",
+    partizipII: "verschwunden",
+    auxiliary: "sein",
+    level: "B2",
+    präteritumExample: "Der Verdächtige verschwand in der Menge.",
+    partizipIIExample: "Die Sonne ist hinter den Wolken verschwunden.",
+    source: { name: "Duden", levelReference: "B2 Advanced Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "i -> a -> u"
+    }
   }
-  // More verbs will be added in subsequent updates
 ];
