@@ -20,7 +20,7 @@ const DEFAULT_PROGRESS: Progress = {
   streak: 0,
 };
 
-const PRACTICE_MODES: PracticeMode[] = ['präteritum', 'partizipII', 'auxiliary', 'english'];
+const PRACTICE_MODES: PracticeMode[] = ['präteritum', 'partizipII', 'auxiliary'];
 
 export default function Home() {
   const [settings, setSettings] = useState<Settings>(() => {

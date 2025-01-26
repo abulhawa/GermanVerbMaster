@@ -11,4 +11,4 @@ export interface Progress {
   streak: number;
 }
 
-export type PracticeMode = 'präteritum' | 'partizipII' | 'auxiliary' | 'english';
+export type PracticeMode = 'präteritum' | 'partizipII' | 'auxiliary';
