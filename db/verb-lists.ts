@@ -233,6 +233,65 @@ export const a1Verbs: GermanVerb[] = [
     präteritumExample: "Sie hörte Musik.",
     partizipIIExample: "Ich habe ein Geräusch gehört.",
     source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" }
+  },
+  {
+    infinitive: "sprechen",
+    english: "to speak",
+    präteritum: "sprach",
+    partizipII: "gesprochen",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Er sprach sehr gut Deutsch.",
+    partizipIIExample: "Sie hat mit ihrer Mutter gesprochen.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" },
+    pattern: { type: "ablaut", group: "e -> a -> o" }
+  },
+  {
+    infinitive: "lesen",
+    english: "to read",
+    präteritum: "las",
+    partizipII: "gelesen",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Sie las ein interessantes Buch.",
+    partizipIIExample: "Er hat die Zeitung gelesen.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" },
+    pattern: { type: "ablaut", group: "e -> a -> e" }
+  },
+  {
+    infinitive: "schreiben",
+    english: "to write",
+    präteritum: "schrieb",
+    partizipII: "geschrieben",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Er schrieb einen Brief.",
+    partizipIIExample: "Sie hat eine E-Mail geschrieben.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" },
+    pattern: { type: "ablaut", group: "ei -> ie -> ie" }
+  },
+  {
+    infinitive: "kaufen",
+    english: "to buy",
+    präteritum: "kaufte",
+    partizipII: "gekauft",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Sie kaufte neue Schuhe.",
+    partizipIIExample: "Er hat ein Auto gekauft.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" }
+  },
+  {
+    infinitive: "heißen",
+    english: "to be called",
+    präteritum: "hieß",
+    partizipII: "geheißen",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Er hieß Peter.",
+    partizipIIExample: "Sie hat anders geheißen.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" },
+    pattern: { type: "ablaut", group: "ei -> ie -> ei" }
   }
 ];
 
@@ -457,4 +516,13 @@ export const c2Verbs: GermanVerb[] = [
     partizipIIExample: "Sie hat genau zwischen den Optionen differenziert.",
     source: { name: "Duden", levelReference: "C2 Academic Verbs" }
   }
+];
+
+export const verbsData: GermanVerb[] = [
+  ...a1Verbs,
+  ...a2Verbs,
+  ...b1Verbs,
+  ...b2Verbs,
+  ...c1Verbs,
+  ...c2Verbs
 ];

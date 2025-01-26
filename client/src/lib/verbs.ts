@@ -14,7 +14,7 @@ export interface GermanVerb {
     levelReference: string;
   };
   pattern?: {
-    type: 'ablaut' | 'mixed' | 'other';
+    type: 'ablaut' | 'mixed' | 'modal' | 'other';
     group?: string;
   };
 }
@@ -39,7 +39,7 @@ export const getRandomVerb = async (
     const verbs: GermanVerb[] = await response.json();
     if (verbs.length === 0) {
       // Fallback to previous level if no verbs found
-      const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+      const levels: ('A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2')[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
       const currentLevelIndex = levels.indexOf(level);
       if (currentLevelIndex > 0) {
         const previousLevel = levels[currentLevelIndex - 1];
