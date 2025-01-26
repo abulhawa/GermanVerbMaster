@@ -61,7 +61,7 @@ export default function Home() {
     setProgress(prev => {
       const updatedPracticedVerbs = {
         ...prev.practicedVerbs,
-        [settings.level]: [...new Set([...prev.practicedVerbs[settings.level], currentVerb.infinitive])]
+        [settings.level]: Array.from(new Set([...prev.practicedVerbs[settings.level], currentVerb.infinitive]))
       };
 
       return {
