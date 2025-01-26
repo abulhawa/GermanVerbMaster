@@ -376,5 +376,195 @@ export const verbs: GermanVerb[] = [
       type: "ablaut",
       group: "ei -> i -> i"
     }
+  },
+  // Adding more A1 verbs
+  {
+    infinitive: "trinken",
+    english: "to drink",
+    präteritum: "trank",
+    partizipII: "getrunken",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Er trank einen Kaffee.",
+    partizipIIExample: "Ich habe schon Wasser getrunken.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "i -> a -> u"
+    }
+  },
+  {
+    infinitive: "fahren",
+    english: "to drive/ride",
+    präteritum: "fuhr",
+    partizipII: "gefahren",
+    auxiliary: "sein",
+    level: "A1",
+    präteritumExample: "Sie fuhr mit dem Bus zur Arbeit.",
+    partizipIIExample: "Wir sind nach Berlin gefahren.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "a -> u -> a"
+    }
+  },
+  {
+    infinitive: "schlafen",
+    english: "to sleep",
+    präteritum: "schlief",
+    partizipII: "geschlafen",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Das Kind schlief den ganzen Nachmittag.",
+    partizipIIExample: "Hast du gut geschlafen?",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "a -> ie -> a"
+    }
+  },
+  // Adding more A2 verbs
+  {
+    infinitive: "verstecken",
+    english: "to hide",
+    präteritum: "versteckte",
+    partizipII: "versteckt",
+    auxiliary: "haben",
+    level: "A2",
+    präteritumExample: "Er versteckte das Geschenk im Schrank.",
+    partizipIIExample: "Die Kinder haben sich gut versteckt.",
+    source: { name: "Duden", levelReference: "A2 Common Verbs" }
+  },
+  {
+    infinitive: "verlieren",
+    english: "to lose",
+    präteritum: "verlor",
+    partizipII: "verloren",
+    auxiliary: "haben",
+    level: "A2",
+    präteritumExample: "Sie verlor ihre Brieftasche.",
+    partizipIIExample: "Er hat den Schlüssel verloren.",
+    source: { name: "Duden", levelReference: "A2 Common Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "ie -> o -> o"
+    }
+  },
+  // Adding more B1 verbs
+  {
+    infinitive: "empfehlen",
+    english: "to recommend",
+    präteritum: "empfahl",
+    partizipII: "empfohlen",
+    auxiliary: "haben",
+    level: "B1",
+    präteritumExample: "Der Arzt empfahl mir eine Pause.",
+    partizipIIExample: "Sie hat mir dieses Restaurant empfohlen.",
+    source: { name: "Duden", levelReference: "B1 Intermediate Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "e -> a -> o"
+    }
+  },
+  {
+    infinitive: "verschwinden",
+    english: "to disappear",
+    präteritum: "verschwand",
+    partizipII: "verschwunden",
+    auxiliary: "sein",
+    level: "B1",
+    präteritumExample: "Der Hund verschwand im Wald.",
+    partizipIIExample: "Das Geld ist plötzlich verschwunden.",
+    source: { name: "Duden", levelReference: "B1 Intermediate Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "i -> a -> u"
+    }
+  },
+  // Adding more B2 verbs
+  {
+    infinitive: "bewerben",
+    english: "to apply",
+    präteritum: "bewarb",
+    partizipII: "beworben",
+    auxiliary: "haben",
+    level: "B2",
+    präteritumExample: "Sie bewarb sich um die Stelle.",
+    partizipIIExample: "Er hat sich bei vielen Firmen beworben.",
+    source: { name: "Duden", levelReference: "B2 Advanced Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "e -> a -> o"
+    }
+  },
+  {
+    infinitive: "widersprechen",
+    english: "to contradict",
+    präteritum: "widersprach",
+    partizipII: "widersprochen",
+    auxiliary: "haben",
+    level: "B2",
+    präteritumExample: "Er widersprach dem Chef höflich.",
+    partizipIIExample: "Sie hat seiner Meinung widersprochen.",
+    source: { name: "Duden", levelReference: "B2 Advanced Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "e -> a -> o"
+    }
+  },
+  // Adding more C1 verbs
+  {
+    infinitive: "unterlassen",
+    english: "to refrain from",
+    präteritum: "unterließ",
+    partizipII: "unterlassen",
+    auxiliary: "haben",
+    level: "C1",
+    präteritumExample: "Er unterließ jeglichen Kommentar.",
+    partizipIIExample: "Sie hat es unterlassen, die Dokumente zu prüfen.",
+    source: { name: "Duden", levelReference: "C1 Advanced Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "a -> ie -> a"
+    }
+  },
+  {
+    infinitive: "auferlegen",
+    english: "to impose",
+    präteritum: "erlegte auf",
+    partizipII: "auferlegt",
+    auxiliary: "haben",
+    level: "C1",
+    präteritumExample: "Das Gericht erlegte ihm eine Strafe auf.",
+    partizipIIExample: "Der Vertrag hat uns viele Pflichten auferlegt.",
+    source: { name: "Duden", levelReference: "C1 Advanced Verbs" }
+  },
+  // Adding more C2 verbs
+  {
+    infinitive: "beschreiten",
+    english: "to embark upon",
+    präteritum: "beschritt",
+    partizipII: "beschritten",
+    auxiliary: "haben",
+    level: "C2",
+    präteritumExample: "Sie beschritt einen neuen Weg in der Forschung.",
+    partizipIIExample: "Er hat einen ungewöhnlichen Karriereweg beschritten.",
+    source: { name: "Duden", levelReference: "C2 Professional Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "ei -> i -> i"
+    }
+  },
+  {
+    infinitive: "obsiegen",
+    english: "to prevail",
+    präteritum: "obsiegte",
+    partizipII: "obsiegt",
+    auxiliary: "haben",
+    level: "C2",
+    präteritumExample: "Die Mannschaft obsiegte im Finale.",
+    partizipIIExample: "Die Vernunft hat über die Emotion obsiegt.",
+    source: { name: "Duden", levelReference: "C2 Professional Verbs" }
   }
+  // More verbs will be added in subsequent updates
 ];
