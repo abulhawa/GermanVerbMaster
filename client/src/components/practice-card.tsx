@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import { GermanVerb } from '@/lib/verbs';
 import { PracticeMode, Settings } from '@/lib/types';
 import { AlertCircle, CheckCircle2, HelpCircle, Volume2 } from 'lucide-react';
 import { speak } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 interface PracticeCardProps {
   verb: GermanVerb;
@@ -20,15 +21,49 @@ export function PracticeCard({ verb, mode, settings, onCorrect, onIncorrect }: P
   const [answer, setAnswer] = useState('');
   const [showHint, setShowHint] = useState(false);
   const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
+  const startTimeRef = useRef(Date.now());
+  const { toast } = useToast();
 
   // Reset state when verb changes
   useEffect(() => {
     setAnswer('');
     setStatus('idle');
     setShowHint(false);
+    startTimeRef.current = Date.now();
   }, [verb]);
 
-  const checkAnswer = () => {
+  const recordPracticeAttempt = async (isCorrect: boolean) => {
+    const timeSpent = Date.now() - startTimeRef.current;
+    try {
+      const response = await fetch('/api/practice-history', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          verb: verb.infinitive,
+          mode,
+          result: isCorrect ? 'correct' : 'incorrect',
+          attemptedAnswer: answer,
+          timeSpent,
+          level: settings.level
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to record practice attempt');
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to record practice attempt",
+        variant: "destructive",
+      });
+      console.error('Error recording practice:', error);
+    }
+  };
+
+  const checkAnswer = async () => {
     if (!answer.trim()) return; // Don't check empty answers
 
     let correct = false;
@@ -50,6 +85,8 @@ export function PracticeCard({ verb, mode, settings, onCorrect, onIncorrect }: P
     }
 
     setStatus(correct ? 'correct' : 'incorrect');
+    await recordPracticeAttempt(correct);
+
     if (correct) {
       onCorrect();
     } else {

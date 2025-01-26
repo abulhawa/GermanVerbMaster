@@ -11,7 +11,7 @@ import {
   BarChart,
   Bar,
 } from "recharts";
-import { VerbAnalytics, VerbPracticeHistory } from "@db/schema";
+import type { VerbAnalytics, VerbPracticeHistory } from "@db/schema";
 import { Loader2 } from "lucide-react";
 
 export function AnalyticsDashboard() {
