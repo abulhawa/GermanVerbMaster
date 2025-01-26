@@ -16,7 +16,7 @@ export function ProgressDisplay({ progress, currentLevel }: ProgressDisplayProps
     : 0;
 
   const totalVerbsInLevel = getVerbsByLevel(currentLevel).length;
-  const practicedVerbsCount = progress.practicedVerbs[currentLevel].length;
+  const practicedVerbsCount = (progress.practicedVerbs?.[currentLevel] || []).length;
   const remainingVerbsCount = totalVerbsInLevel - practicedVerbsCount;
 
   return (

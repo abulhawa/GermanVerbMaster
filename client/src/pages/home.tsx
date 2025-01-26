@@ -38,13 +38,22 @@ export default function Home() {
 
   const [progress, setProgress] = useState<Progress>(() => {
     const saved = localStorage.getItem('progress');
-    return saved ? JSON.parse(saved) : DEFAULT_PROGRESS;
+    if (!saved) return DEFAULT_PROGRESS;
+
+    const parsedProgress = JSON.parse(saved);
+    return {
+      ...DEFAULT_PROGRESS,
+      ...parsedProgress,
+      practicedVerbs: {
+        ...DEFAULT_PROGRESS.practicedVerbs,
+        ...(parsedProgress.practicedVerbs || {}),
+      },
+    };
   });
 
   const [currentMode, setCurrentMode] = useState<PracticeMode>('präteritum');
   const [currentVerb, setCurrentVerb] = useState(() => getRandomVerb(settings.level));
 
-  // Update currentVerb when level changes
   useEffect(() => {
     setCurrentVerb(getRandomVerb(settings.level));
   }, [settings.level]);
