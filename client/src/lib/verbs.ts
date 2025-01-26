@@ -19,47 +19,8 @@ export interface GermanVerb {
   };
 }
 
-// Helper function to get verbs by pattern group
-export const getVerbsByPattern = (patternGroup: string): GermanVerb[] => {
-  return verbs.filter(verb => verb.pattern?.group === patternGroup);
-};
-
-// Get a random verb based on level and optionally pattern group
-export const getRandomVerb = (
-  level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2',
-  patternGroup?: string
-): GermanVerb => {
-  let filteredVerbs = verbs.filter(verb => verb.level === level);
-  if (patternGroup) {
-    filteredVerbs = filteredVerbs.filter(verb => verb.pattern?.group === patternGroup);
-  }
-  if (filteredVerbs.length === 0) {
-    const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
-    const currentLevelIndex = levels.indexOf(level);
-    if (currentLevelIndex > 0) {
-      const previousLevel = levels[currentLevelIndex - 1];
-      filteredVerbs = verbs.filter(verb => verb.level === previousLevel);
-    }
-  }
-  return filteredVerbs[Math.floor(Math.random() * filteredVerbs.length)];
-};
-
-// Get all available pattern groups for a specific level
-export const getPatternGroups = (level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2'): string[] => {
-  const groups = new Set<string>();
-  verbs
-    .filter(verb => verb.level === level)
-    .forEach(verb => {
-      if (verb.pattern?.group) {
-        groups.add(verb.pattern.group);
-      }
-    });
-  return Array.from(groups);
-};
-
-// Source: Goethe-Institut A1-C2 Vocabulary Lists & Duden
-export const verbs: GermanVerb[] = [
-  // A1 Level Verbs (most common verbs for beginners)
+// Organize verbs by CEFR level for better management and lookup
+const A1_VERBS: GermanVerb[] = [
   {
     infinitive: "sein",
     english: "to be",
@@ -192,193 +153,6 @@ export const verbs: GermanVerb[] = [
     source: { name: "Duden", levelReference: "A1 Essential Verbs" }
   },
   {
-    infinitive: "anfangen",
-    english: "to begin",
-    präteritum: "fing an",
-    partizipII: "angefangen",
-    auxiliary: "haben",
-    level: "A2",
-    präteritumExample: "Der Film fing um 20 Uhr an.",
-    partizipIIExample: "Das Semester hat bereits angefangen.",
-    source: { name: "Duden", levelReference: "A2 Common Verbs" }
-  },
-  {
-    infinitive: "ankommen",
-    english: "to arrive",
-    präteritum: "kam an",
-    partizipII: "angekommen",
-    auxiliary: "sein",
-    level: "A2",
-    präteritumExample: "Der Zug kam pünktlich an.",
-    partizipIIExample: "Wir sind gerade angekommen.",
-    source: { name: "Duden", levelReference: "A2 Common Verbs" }
-  },
-  {
-    infinitive: "anrufen",
-    english: "to call",
-    präteritum: "rief an",
-    partizipII: "angerufen",
-    auxiliary: "haben",
-    level: "A2",
-    präteritumExample: "Sie rief ihre Mutter an.",
-    partizipIIExample: "Er hat dreimal angerufen.",
-    source: { name: "Duden", levelReference: "A2 Common Verbs" }
-  },
-  {
-    infinitive: "abfahren",
-    english: "to depart",
-    präteritum: "fuhr ab",
-    partizipII: "abgefahren",
-    auxiliary: "sein",
-    level: "B1",
-    präteritumExample: "Der Bus fuhr pünktlich ab.",
-    partizipIIExample: "Der Zug ist bereits abgefahren.",
-    source: { name: "Duden", levelReference: "B1 Intermediate Verbs" }
-  },
-  {
-    infinitive: "beschreiben",
-    english: "to describe",
-    präteritum: "beschrieb",
-    partizipII: "beschrieben",
-    auxiliary: "haben",
-    level: "B1",
-    präteritumExample: "Er beschrieb das Problem genau.",
-    partizipIIExample: "Sie hat die Situation gut beschrieben.",
-    source: { name: "Duden", levelReference: "B1 Intermediate Verbs" }
-  },
-  {
-    infinitive: "verstehen",
-    english: "to understand",
-    präteritum: "verstand",
-    partizipII: "verstanden",
-    auxiliary: "haben",
-    level: "B1",
-    präteritumExample: "Ich verstand die Frage nicht.",
-    partizipIIExample: "Hast du alles verstanden?",
-    source: { name: "Duden", levelReference: "B1 Intermediate Verbs" }
-  },
-  {
-    infinitive: "übertragen",
-    english: "to transfer/transmit",
-    präteritum: "übertrug",
-    partizipII: "übertragen",
-    auxiliary: "haben",
-    level: "B2",
-    präteritumExample: "Er übertrug die Verantwortung an seinen Kollegen.",
-    partizipIIExample: "Die Krankheit hat sich schnell übertragen.",
-    source: { name: "Duden", levelReference: "B2 Advanced Verbs" }
-  },
-  {
-    infinitive: "unternehmen",
-    english: "to undertake",
-    präteritum: "unternahm",
-    partizipII: "unternommen",
-    auxiliary: "haben",
-    level: "B2",
-    präteritumExample: "Sie unternahm eine lange Reise.",
-    partizipIIExample: "Was hast du am Wochenende unternommen?",
-    source: { name: "Duden", levelReference: "B2 Advanced Verbs" }
-  },
-  {
-    infinitive: "entsprechen",
-    english: "to correspond",
-    präteritum: "entsprach",
-    partizipII: "entsprochen",
-    auxiliary: "haben",
-    level: "C1",
-    präteritumExample: "Das Ergebnis entsprach den Erwartungen.",
-    partizipIIExample: "Die Leistung hat den Anforderungen entsprochen.",
-    source: { name: "Duden", levelReference: "C1 Advanced Verbs" }
-  },
-  {
-    infinitive: "unterschreiben",
-    english: "to sign",
-    präteritum: "unterschrieb",
-    partizipII: "unterschrieben",
-    auxiliary: "haben",
-    level: "C1",
-    präteritumExample: "Er unterschrieb den Vertrag sofort.",
-    partizipIIExample: "Sie hat alle Dokumente unterschrieben.",
-    source: { name: "Duden", levelReference: "C1 Advanced Verbs" }
-  },
-  // Adding C2 level verbs
-  {
-    infinitive: "erwerben",
-    english: "to acquire/obtain",
-    präteritum: "erwarb",
-    partizipII: "erworben",
-    auxiliary: "haben",
-    level: "C2",
-    präteritumExample: "Er erwarb umfangreiche Kenntnisse in der deutschen Literatur.",
-    partizipIIExample: "Die Firma hat mehrere Startups erworben.",
-    source: { name: "Duden", levelReference: "C2 Professional Verbs" },
-    pattern: {
-      type: "ablaut",
-      group: "e -> a -> o"
-    }
-  },
-  {
-    infinitive: "obliegen",
-    english: "to be incumbent upon",
-    präteritum: "oblag",
-    partizipII: "oblegen",
-    auxiliary: "haben",
-    level: "C2",
-    präteritumExample: "Es oblag dem Vorstand, diese Entscheidung zu treffen.",
-    partizipIIExample: "Die Verantwortung hat ihm oblegen.",
-    source: { name: "Duden", levelReference: "C2 Professional Verbs" },
-    pattern: {
-      type: "ablaut",
-      group: "ie -> a -> e"
-    }
-  },
-  {
-    infinitive: "bedingen",
-    english: "to necessitate/require",
-    präteritum: "bedang",
-    partizipII: "bedungen",
-    auxiliary: "haben",
-    level: "C2",
-    präteritumExample: "Diese Situation bedang eine sofortige Entscheidung.",
-    partizipIIExample: "Die Qualität hat den hohen Preis bedungen.",
-    source: { name: "Duden", levelReference: "C2 Professional Verbs" },
-    pattern: {
-      type: "ablaut",
-      group: "i -> a -> u"
-    }
-  },
-  {
-    infinitive: "gedeihen",
-    english: "to thrive/flourish",
-    präteritum: "gedieh",
-    partizipII: "gediehen",
-    auxiliary: "sein",
-    level: "C2",
-    präteritumExample: "Das Unternehmen gedieh unter seiner Führung.",
-    partizipIIExample: "Die Pflanzen sind in diesem Klima prächtig gediehen.",
-    source: { name: "Duden", levelReference: "C2 Professional Verbs" },
-    pattern: {
-      type: "ablaut",
-      group: "ei -> ie -> ie"
-    }
-  },
-  {
-    infinitive: "verbleichen",
-    english: "to fade away/pass away (formal)",
-    präteritum: "verblich",
-    partizipII: "verblichen",
-    auxiliary: "sein",
-    level: "C2",
-    präteritumExample: "Die Farbe verblich im Sonnenlicht.",
-    partizipIIExample: "Die alten Schriften sind mit der Zeit verblichen.",
-    source: { name: "Duden", levelReference: "C2 Professional Verbs" },
-    pattern: {
-      type: "ablaut",
-      group: "ei -> i -> i"
-    }
-  },
-  // Adding more A1 verbs
-  {
     infinitive: "trinken",
     english: "to drink",
     präteritum: "trank",
@@ -499,96 +273,6 @@ export const verbs: GermanVerb[] = [
     }
   },
   {
-    infinitive: "steigen",
-    english: "to climb/rise",
-    präteritum: "stieg",
-    partizipII: "gestiegen",
-    auxiliary: "sein",
-    level: "A2",
-    präteritumExample: "Die Temperatur stieg schnell.",
-    partizipIIExample: "Der Preis ist stark gestiegen.",
-    source: { name: "Duden", levelReference: "A2 Common Verbs" },
-    pattern: {
-      type: "ablaut",
-      group: "ei -> ie -> ie"
-    }
-  },
-  {
-    infinitive: "vergessen",
-    english: "to forget",
-    präteritum: "vergaß",
-    partizipII: "vergessen",
-    auxiliary: "haben",
-    level: "A2",
-    präteritumExample: "Er vergaß seinen Schlüssel.",
-    partizipIIExample: "Ich habe das Passwort vergessen.",
-    source: { name: "Duden", levelReference: "A2 Common Verbs" },
-    pattern: {
-      type: "ablaut",
-      group: "e -> a -> e"
-    }
-  },
-  {
-    infinitive: "erhalten",
-    english: "to receive",
-    präteritum: "erhielt",
-    partizipII: "erhalten",
-    auxiliary: "haben",
-    level: "B1",
-    präteritumExample: "Sie erhielt eine wichtige Nachricht.",
-    partizipIIExample: "Wir haben die Dokumente erhalten.",
-    source: { name: "Duden", levelReference: "B1 Intermediate Verbs" },
-    pattern: {
-      type: "ablaut",
-      group: "a -> ie -> a"
-    }
-  },
-  {
-    infinitive: "geschehen",
-    english: "to happen",
-    präteritum: "geschah",
-    partizipII: "geschehen",
-    auxiliary: "sein",
-    level: "B1",
-    präteritumExample: "Der Unfall geschah am Morgen.",
-    partizipIIExample: "Was ist hier geschehen?",
-    source: { name: "Duden", levelReference: "B1 Intermediate Verbs" },
-    pattern: {
-      type: "ablaut",
-      group: "e -> a -> e"
-    }
-  },
-  {
-    infinitive: "verziehen",
-    english: "to forgive",
-    präteritum: "verzieh",
-    partizipII: "verziehen",
-    auxiliary: "haben",
-    level: "B2",
-    präteritumExample: "Sie verzieh ihm den Fehler.",
-    partizipIIExample: "Er hat mir nie verziehen.",
-    source: { name: "Duden", levelReference: "B2 Advanced Verbs" },
-    pattern: {
-      type: "ablaut",
-      group: "ie -> ie -> ie"
-    }
-  },
-  {
-    infinitive: "ergreifen",
-    english: "to seize/grasp",
-    präteritum: "ergriff",
-    partizipII: "ergriffen",
-    auxiliary: "haben",
-    level: "B2",
-    präteritumExample: "Er ergriff die Gelegenheit.",
-    partizipIIExample: "Sie hat sofort Maßnahmen ergriffen.",
-    source: { name: "Duden", levelReference: "B2 Advanced Verbs" },
-    pattern: {
-      type: "ablaut",
-      group: "ei -> i -> i"
-    }
-  },
-  {
     infinitive: "lesen",
     english: "to read",
     präteritum: "las",
@@ -662,8 +346,73 @@ export const verbs: GermanVerb[] = [
       type: "ablaut",
       group: "i -> a -> u"
     }
+  }
+];
+
+const A2_VERBS: GermanVerb[] = [
+  {
+    infinitive: "anfangen",
+    english: "to begin",
+    präteritum: "fing an",
+    partizipII: "angefangen",
+    auxiliary: "haben",
+    level: "A2",
+    präteritumExample: "Der Film fing um 20 Uhr an.",
+    partizipIIExample: "Das Semester hat bereits angefangen.",
+    source: { name: "Duden", levelReference: "A2 Common Verbs" }
   },
-  // Adding more A2 level verbs
+  {
+    infinitive: "ankommen",
+    english: "to arrive",
+    präteritum: "kam an",
+    partizipII: "angekommen",
+    auxiliary: "sein",
+    level: "A2",
+    präteritumExample: "Der Zug kam pünktlich an.",
+    partizipIIExample: "Wir sind gerade angekommen.",
+    source: { name: "Duden", levelReference: "A2 Common Verbs" }
+  },
+  {
+    infinitive: "anrufen",
+    english: "to call",
+    präteritum: "rief an",
+    partizipII: "angerufen",
+    auxiliary: "haben",
+    level: "A2",
+    präteritumExample: "Sie rief ihre Mutter an.",
+    partizipIIExample: "Er hat dreimal angerufen.",
+    source: { name: "Duden", levelReference: "A2 Common Verbs" }
+  },
+  {
+    infinitive: "steigen",
+    english: "to climb/rise",
+    präteritum: "stieg",
+    partizipII: "gestiegen",
+    auxiliary: "sein",
+    level: "A2",
+    präteritumExample: "Die Temperatur stieg schnell.",
+    partizipIIExample: "Der Preis ist stark gestiegen.",
+    source: { name: "Duden", levelReference: "A2 Common Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "ei -> ie -> ie"
+    }
+  },
+  {
+    infinitive: "vergessen",
+    english: "to forget",
+    präteritum: "vergaß",
+    partizipII: "vergessen",
+    auxiliary: "haben",
+    level: "A2",
+    präteritumExample: "Er vergaß seinen Schlüssel.",
+    partizipIIExample: "Ich habe das Passwort vergessen.",
+    source: { name: "Duden", levelReference: "A2 Common Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "e -> a -> e"
+    }
+  },
   {
     infinitive: "aussteigen",
     english: "to get out/off",
@@ -723,8 +472,43 @@ export const verbs: GermanVerb[] = [
       type: "ablaut",
       group: "o -> a -> o"
     }
+  }
+];
+
+const B1_VERBS: GermanVerb[] = [
+  {
+    infinitive: "abfahren",
+    english: "to depart",
+    präteritum: "fuhr ab",
+    partizipII: "abgefahren",
+    auxiliary: "sein",
+    level: "B1",
+    präteritumExample: "Der Bus fuhr pünktlich ab.",
+    partizipIIExample: "Der Zug ist bereits abgefahren.",
+    source: { name: "Duden", levelReference: "B1 Intermediate Verbs" }
   },
-  // Adding more B1 level verbs
+  {
+    infinitive: "beschreiben",
+    english: "to describe",
+    präteritum: "beschrieb",
+    partizipII: "beschrieben",
+    auxiliary: "haben",
+    level: "B1",
+    präteritumExample: "Er beschrieb das Problem genau.",
+    partizipIIExample: "Sie hat die Situation gut beschrieben.",
+    source: { name: "Duden", levelReference: "B1 Intermediate Verbs" }
+  },
+  {
+    infinitive: "verstehen",
+    english: "to understand",
+    präteritum: "verstand",
+    partizipII: "verstanden",
+    auxiliary: "haben",
+    level: "B1",
+    präteritumExample: "Ich verstand die Frage nicht.",
+    partizipIIExample: "Hast du alles verstanden?",
+    source: { name: "Duden", levelReference: "B1 Intermediate Verbs" }
+  },
   {
     infinitive: "aufwachen",
     english: "to wake up",
@@ -777,118 +561,6 @@ export const verbs: GermanVerb[] = [
     partizipIIExample: "Wir haben die Studie erfolgreich durchgeführt.",
     source: { name: "Duden", levelReference: "B1 Intermediate Verbs" }
   },
-  // Adding more B2 level verbs
-  {
-    infinitive: "bewerben",
-    english: "to apply",
-    präteritum: "bewarb",
-    partizipII: "beworben",
-    auxiliary: "haben",
-    level: "B2",
-    präteritumExample: "Sie bewarb sich um die Stelle.",
-    partizipIIExample: "Er hat sich bei vielen Firmen beworben.",
-    source: { name: "Duden", levelReference: "B2 Advanced Verbs" },
-    pattern: {
-      type: "ablaut",
-      group: "e -> a -> o"
-    }
-  },
-  {
-    infinitive: "widersprechen",
-    english: "to contradict",
-    präteritum: "widersprach",
-    partizipII: "widersprochen",
-    auxiliary: "haben",
-    level: "B2",
-    präteritumExample: "Er widersprach dem Chef höflich.",
-    partizipIIExample: "Sie hat seiner Meinung widersprochen.",
-    source: { name: "Duden", levelReference: "B2 Advanced Verbs" },
-    pattern: {
-      type: "ablaut",
-      group: "e -> a -> o"
-    }
-  },
-  {
-    infinitive: "verschwinden",
-    english: "to disappear",
-    präteritum: "verschwand",
-    partizipII: "verschwunden",
-    auxiliary: "sein",
-    level: "B2",
-    präteritumExample: "Der Verdächtige verschwand in der Menge.",
-    partizipIIExample: "Die Sonne ist hinter den Wolken verschwunden.",
-    source: { name: "Duden", levelReference: "B2 Advanced Verbs" },
-    pattern: {
-      type: "ablaut",
-      group: "i -> a -> u"
-    }
-  },
-    // Adding more C1 verbs
-  {
-    infinitive: "unterlassen",
-    english: "to refrain from",
-    präteritum: "unterließ",
-    partizipII: "unterlassen",
-    auxiliary: "haben",
-    level: "C1",
-    präteritumExample: "Er unterließ jeglichen Kommentar.",
-    partizipIIExample: "Sie hat es unterlassen, die Dokumente zu prüfen.",
-    source: { name: "Duden", levelReference: "C1 Advanced Verbs" },
-    pattern: {
-      type: "ablaut",
-      group: "a -> ie -> a"
-    }
-  },
-  {
-    infinitive: "auferlegen",
-    english: "to impose",
-    präteritum: "erlegte auf",
-    partizipII: "auferlegt",
-    auxiliary: "haben",
-    level: "C1",
-    präteritumExample: "Das Gericht erlegte ihm eine Strafe auf.",
-    partizipIIExample: "Der Vertrag hat uns viele Pflichten auferlegt.",
-    source: { name: "Duden", levelReference: "C1 Advanced Verbs" }
-  },
-  // Adding more C2 verbs
-  {
-    infinitive: "beschreiten",
-    english: "to embark upon",
-    präteritum: "beschritt",
-    partizipII: "beschritten",
-    auxiliary: "haben",
-    level: "C2",
-    präteritumExample: "Sie beschritt einen neuen Weg in der Forschung.",
-    partizipIIExample: "Er hat einen ungewöhnlichen Karriereweg beschritten.",
-    source: { name: "Duden", levelReference: "C2 Professional Verbs" },
-    pattern: {
-      type: "ablaut",
-      group: "ei -> i -> i"
-    }
-  },
-  {
-    infinitive: "obsiegen",
-    english: "to prevail",
-    präteritum: "obsiegte",
-    partizipII: "obsiegt",
-    auxiliary: "haben",
-    level: "C2",
-    präteritumExample: "Die Mannschaft obsiegte im Finale.",
-    partizipIIExample: "Die Vernunft hat über die Emotion obsiegt.",
-    source: { name: "Duden", levelReference: "C2 Professional Verbs" }
-  },
-  // Adding hundreds more verbs to reach 500+ total
-  {
-    infinitive: "abstammen",
-    english: "to descend from",
-    präteritum: "stammte ab",
-    partizipII: "abgestammt",
-    auxiliary: "haben",
-    level: "B2",
-    präteritumExample: "Die Wörter stammten aus dem Lateinischen ab.",
-    partizipIIExample: "Diese Tradition hat von unseren Vorfahren abgestammt.",
-    source: { name: "Duden", levelReference: "B2 Advanced Verbs" }
-  },
   {
     infinitive: "zuschlagen",
     english: "to slam/strike",
@@ -934,7 +606,6 @@ export const verbs: GermanVerb[] = [
       group: "i -> a -> u"
     }
   },
-  // Add several hundred more verbs here...
   {
     infinitive: "abbrechen",
     english: "to break off/cancel",
@@ -950,5 +621,379 @@ export const verbs: GermanVerb[] = [
       group: "e -> a -> o"
     }
   },
-  // Continue adding more verbs...
+  {
+    infinitive: "erhalten",
+    english: "to receive",
+    präteritum: "erhielt",
+    partizipII: "erhalten",
+    auxiliary: "haben",
+    level: "B1",
+    präteritumExample: "Sie erhielt eine wichtige Nachricht.",
+    partizipIIExample: "Wir haben die Dokumente erhalten.",
+    source: { name: "Duden", levelReference: "B1 Intermediate Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "a -> ie -> a"
+    }
+  },
+  {
+    infinitive: "geschehen",
+    english: "to happen",
+    präteritum: "geschah",
+    partizipII: "geschehen",
+    auxiliary: "sein",
+    level: "B1",
+    präteritumExample: "Der Unfall geschah am Morgen.",
+    partizipIIExample: "Was ist hier geschehen?",
+    source: { name: "Duden", levelReference: "B1 Intermediate Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "e -> a -> e"
+    }
+  }
+
 ];
+
+const B2_VERBS: GermanVerb[] = [
+  {
+    infinitive: "übertragen",
+    english: "to transfer/transmit",
+    präteritum: "übertrug",
+    partizipII: "übertragen",
+    auxiliary: "haben",
+    level: "B2",
+    präteritumExample: "Er übertrug die Verantwortung an seinen Kollegen.",
+    partizipIIExample: "Die Krankheit hat sich schnell übertragen.",
+    source: { name: "Duden", levelReference: "B2 Advanced Verbs" }
+  },
+  {
+    infinitive: "unternehmen",
+    english: "to undertake",
+    präteritum: "unternahm",
+    partizipII: "unternommen",
+    auxiliary: "haben",
+    level: "B2",
+    präteritumExample: "Sie unternahm eine lange Reise.",
+    partizipIIExample: "Was hast du am Wochenende unternommen?",
+    source: { name: "Duden", levelReference: "B2 Advanced Verbs" }
+  },
+  {
+    infinitive: "verziehen",
+    english: "to forgive",
+    präteritum: "verzieh",
+    partizipII: "verziehen",
+    auxiliary: "haben",
+    level: "B2",
+    präteritumExample: "Sie verzieh ihm den Fehler.",
+    partizipIIExample: "Er hat mir nie verziehen.",
+    source: { name: "Duden", levelReference: "B2 Advanced Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "ie -> ie -> ie"
+    }
+  },
+  {
+    infinitive: "ergreifen",
+    english: "to seize/grasp",
+    präteritum: "ergriff",
+    partizipII: "ergriffen",
+    auxiliary: "haben",
+    level: "B2",
+    präteritumExample: "Er ergriff die Gelegenheit.",
+    partizipIIExample: "Sie hat sofort Maßnahmen ergriffen.",
+    source: { name: "Duden", levelReference: "B2 Advanced Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "ei -> i -> i"
+    }
+  },
+  {
+    infinitive: "bewerben",
+    english: "to apply",
+    präteritum: "bewarb",
+    partizipII: "beworben",
+    auxiliary: "haben",
+    level: "B2",
+    präteritumExample: "Sie bewarb sich um die Stelle.",
+    partizipIIExample: "Er hat sich bei vielen Firmen beworben.",
+    source: { name: "Duden", levelReference: "B2 Advanced Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "e -> a -> o"
+    }
+  },
+  {
+    infinitive: "widersprechen",
+    english: "to contradict",
+    präteritum: "widersprach",
+    partizipII: "widersprochen",
+    auxiliary: "haben",
+    level: "B2",
+    präteritumExample: "Er widersprach dem Chef höflich.",
+    partizipIIExample: "Sie hat seiner Meinung widersprochen.",
+    source: { name: "Duden", levelReference: "B2 Advanced Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "e -> a -> o"
+    }
+  },
+  {
+    infinitive: "verschwinden",
+    english: "to disappear",
+    präteritum: "verschwand",
+    partizipII: "verschwunden",
+    auxiliary: "sein",
+    level: "B2",
+    präteritumExample: "Der Verdächtige verschwand in der Menge.",
+    partizipIIExample: "Die Sonne ist hinter den Wolken verschwunden.",
+    source: { name: "Duden", levelReference: "B2 Advanced Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "i -> a -> u"
+    }
+  },
+  {
+    infinitive: "abstammen",
+    english: "to descend from",
+    präteritum: "stammte ab",
+    partizipII: "abgestammt",
+    auxiliary: "haben",
+    level: "B2",
+    präteritumExample: "Die Wörter stammten aus dem Lateinischen ab.",
+    partizipIIExample: "Diese Tradition hat von unseren Vorfahren abgestammt.",
+    source: { name: "Duden", levelReference: "B2 Advanced Verbs" }
+  }
+];
+
+const C1_VERBS: GermanVerb[] = [
+  {
+    infinitive: "entsprechen",
+    english: "to correspond",
+    präteritum: "entsprach",
+    partizipII: "entsprochen",
+    auxiliary: "haben",
+    level: "C1",
+    präteritumExample: "Das Ergebnis entsprach den Erwartungen.",
+    partizipIIExample: "Die Leistung hat den Anforderungen entsprochen.",
+    source: { name: "Duden", levelReference: "C1 Advanced Verbs" }
+  },
+  {
+    infinitive: "unterschreiben",
+    english: "to sign",
+    präteritum: "unterschrieb",
+    partizipII: "unterschrieben",
+    auxiliary: "haben",
+    level: "C1",
+    präteritumExample: "Er unterschrieb den Vertrag sofort.",
+    partizipIIExample: "Sie hat alle Dokumente unterschrieben.",
+    source: { name: "Duden", levelReference: "C1 Advanced Verbs" }
+  },
+  {
+    infinitive: "unterlassen",
+    english: "to refrain from",
+    präteritum: "unterließ",
+    partizipII: "unterlassen",
+    auxiliary: "haben",
+    level: "C1",
+    präteritumExample: "Er unterließ jeglichen Kommentar.",
+    partizipIIExample: "Sie hat es unterlassen, die Dokumente zu prüfen.",
+    source: { name: "Duden", levelReference: "C1 Advanced Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "a -> ie -> a"
+    }
+  },
+  {
+    infinitive: "auferlegen",
+    english: "to impose",
+    präteritum: "erlegte auf",
+    partizipII: "auferlegt",
+    auxiliary: "haben",
+    level: "C1",
+    präteritumExample: "Das Gericht erlegte ihm eine Strafe auf.",
+    partizipIIExample: "Der Vertrag hat uns viele Pflichten auferlegt.",
+    source: { name: "Duden", levelReference: "C1 Advanced Verbs" }
+  }
+];
+
+const C2_VERBS: GermanVerb[] = [
+  {
+    infinitive: "erwerben",
+    english: "to acquire/obtain",
+    präteritum: "erwarb",
+    partizipII: "erworben",
+    auxiliary: "haben",
+    level: "C2",
+    präteritumExample: "Er erwarb umfangreiche Kenntnisse in der deutschen Literatur.",
+    partizipIIExample: "Die Firma hat mehrere Startups erworben.",
+    source: { name: "Duden", levelReference: "C2 Professional Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "e -> a -> o"
+    }
+  },
+  {
+    infinitive: "obliegen",
+    english: "to be incumbent upon",
+    präteritum: "oblag",
+    partizipII: "oblegen",
+    auxiliary: "haben",
+    level: "C2",
+    präteritumExample: "Es oblag dem Vorstand, diese Entscheidung zu treffen.",
+    partizipIIExample: "Die Verantwortung hat ihm oblegen.",
+    source: { name: "Duden", levelReference: "C2 Professional Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "ie -> a -> e"
+    }
+  },
+  {
+    infinitive: "bedingen",
+    english: "to necessitate/require",
+    präteritum: "bedang",
+    partizipII: "bedungen",
+    auxiliary: "haben",
+    level: "C2",
+    präteritumExample: "Diese Situation bedang eine sofortige Entscheidung.",
+    partizipIIExample: "Die Qualität hat den hohen Preis bedungen.",
+    source: { name: "Duden", levelReference: "C2 Professional Verbs" },
+    pattern: {      type: "ablaut",
+      group: "i -> a -> u"
+    }
+  },
+  {
+    infinitive: "gedeihen",
+    english: "to thrive/flourish",
+    präteritum: "gedieh",
+    partizipII: "gediehen",
+    auxiliary: "sein",
+    level: "C2",
+    präteritumExample: "Das Unternehmen gedieh unter seiner Führung.",
+    partizipIIExample: "Die Pflanzen sind in diesem Klima prächtig gediehen.",
+    source: { name: "Duden", levelReference: "C2 Professional Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "ei -> ie -> ie"
+    }
+  },
+  {
+    infinitive: "verbleichen",
+    english: "to fade away/pass away (formal)",
+    präteritum: "verblich",
+    partizipII: "verblichen",
+    auxiliary: "sein",
+    level: "C2",
+    präteritumExample: "Die Farbe verblich im Sonnenlicht.",
+    partizipIIExample: "Die alten Schriften sind mit der Zeit verblichen.",
+    source: { name: "Duden", levelReference: "C2 Professional Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "ei -> i -> i"
+    }
+  },
+  {
+    infinitive: "beschreiten",
+    english: "to embark upon",
+    präteritum: "beschritt",
+    partizipII: "beschritten",
+    auxiliary: "haben",
+    level: "C2",
+    präteritumExample: "Sie beschritt einen neuen Weg in der Forschung.",
+    partizipIIExample: "Er hat einen ungewöhnlichen Karriereweg beschritten.",
+    source: { name: "Duden", levelReference: "C2 Professional Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "ei -> i -> i"
+    }
+  },
+  {
+    infinitive: "obsiegen",
+    english: "to prevail",
+    präteritum: "obsiegte",
+    partizipII: "obsiegt",
+    auxiliary: "haben",
+    level: "C2",
+    präteritumExample: "Die Mannschaft obsiegte im Finale.",
+    partizipIIExample: "Die Vernunft hat über die Emotion obsiegt.",
+    source: { name: "Duden", levelReference: "C2 Professional Verbs" }
+  }
+];
+
+// Combine all verbs into a single array
+export const verbs: GermanVerb[] = [
+  ...A1_VERBS,
+  ...A2_VERBS,
+  ...B1_VERBS,
+  ...B2_VERBS,
+  ...C1_VERBS,
+  ...C2_VERBS
+];
+
+// Cache for pattern groups to improve performance
+const patternGroupCache = new Map<string, GermanVerb[]>();
+
+// Helper function to get verbs by pattern group with caching
+export const getVerbsByPattern = (patternGroup: string): GermanVerb[] => {
+  if (!patternGroupCache.has(patternGroup)) {
+    const filteredVerbs = verbs.filter(verb => verb.pattern?.group === patternGroup);
+    patternGroupCache.set(patternGroup, filteredVerbs);
+  }
+  return patternGroupCache.get(patternGroup) || [];
+};
+
+// Get a random verb based on level and optionally pattern group
+export const getRandomVerb = (
+  level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2',
+  patternGroup?: string
+): GermanVerb => {
+  // Get verbs for the specified level
+  let filteredVerbs = verbs.filter(verb => verb.level === level);
+
+  // Apply pattern group filter if specified
+  if (patternGroup) {
+    filteredVerbs = filteredVerbs.filter(verb => verb.pattern?.group === patternGroup);
+  }
+
+  // Fallback to previous level if no verbs found
+  if (filteredVerbs.length === 0) {
+    const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+    const currentLevelIndex = levels.indexOf(level);
+    if (currentLevelIndex > 0) {
+      const previousLevel = levels[currentLevelIndex - 1];
+      filteredVerbs = verbs.filter(verb => verb.level === previousLevel);
+    }
+  }
+
+  return filteredVerbs[Math.floor(Math.random() * filteredVerbs.length)];
+};
+
+// Get all available pattern groups for a specific level
+export const getPatternGroups = (level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2'): string[] => {
+  const groups = new Set<string>();
+  verbs
+    .filter(verb => verb.level === level)
+    .forEach(verb => {
+      if (verb.pattern?.group) {
+        groups.add(verb.pattern.group);
+      }
+    });
+  return Array.from(groups);
+};
+
+// Add indexes for faster lookups
+const verbsByInfinitive = new Map(verbs.map(verb => [verb.infinitive, verb]));
+const verbsByLevel = new Map<string, GermanVerb[]>();
+
+// Initialize level-based index
+['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].forEach(level => {
+  verbsByLevel.set(level, verbs.filter(verb => verb.level === level));
+});
+
+// Helper functions for efficient lookups
+export const getVerbByInfinitive = (infinitive: string): GermanVerb | undefined => {
+  return verbsByInfinitive.get(infinitive);
+};
+
+export const getVerbsByLevel = (level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2'): GermanVerb[] => {
+  return verbsByLevel.get(level) || [];
+};

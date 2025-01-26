@@ -18,6 +18,14 @@ const DEFAULT_PROGRESS: Progress = {
   total: 0,
   lastPracticed: new Date().toISOString(),
   streak: 0,
+  practicedVerbs: {
+    A1: [],
+    A2: [],
+    B1: [],
+    B2: [],
+    C1: [],
+    C2: [],
+  },
 };
 
 const PRACTICE_MODES: PracticeMode[] = ['präteritum', 'partizipII', 'auxiliary'];
@@ -50,12 +58,20 @@ export default function Home() {
   }, [progress]);
 
   const handleCorrect = () => {
-    setProgress(prev => ({
-      ...prev,
-      correct: prev.correct + 1,
-      total: prev.total + 1,
-      lastPracticed: new Date().toISOString(),
-    }));
+    setProgress(prev => {
+      const updatedPracticedVerbs = {
+        ...prev.practicedVerbs,
+        [settings.level]: [...new Set([...prev.practicedVerbs[settings.level], currentVerb.infinitive])]
+      };
+
+      return {
+        ...prev,
+        correct: prev.correct + 1,
+        total: prev.total + 1,
+        lastPracticed: new Date().toISOString(),
+        practicedVerbs: updatedPracticedVerbs,
+      };
+    });
     setTimeout(nextQuestion, 1500);
   };
 
@@ -95,7 +111,7 @@ export default function Home() {
           />
         </div>
 
-        <ProgressDisplay progress={progress} />
+        <ProgressDisplay progress={progress} currentLevel={settings.level} />
 
         <PracticeCard
           verb={currentVerb}
