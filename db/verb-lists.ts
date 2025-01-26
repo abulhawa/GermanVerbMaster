@@ -1,0 +1,460 @@
+import { GermanVerb } from "../client/src/lib/verbs";
+
+export const a1Verbs: GermanVerb[] = [
+  {
+    infinitive: "sein",
+    english: "to be",
+    präteritum: "war",
+    partizipII: "gewesen",
+    auxiliary: "sein",
+    level: "A1",
+    präteritumExample: "Er war gestern krank.",
+    partizipIIExample: "Sie ist lange in Berlin gewesen.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" },
+    pattern: { type: "other", group: "highly irregular" }
+  },
+  {
+    infinitive: "haben",
+    english: "to have",
+    präteritum: "hatte",
+    partizipII: "gehabt",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Ich hatte keine Zeit.",
+    partizipIIExample: "Er hat viel Geld gehabt.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" },
+    pattern: { type: "mixed", group: "haben pattern" }
+  },
+  {
+    infinitive: "werden",
+    english: "to become",
+    präteritum: "wurde",
+    partizipII: "geworden",
+    auxiliary: "sein",
+    level: "A1",
+    präteritumExample: "Sie wurde Lehrerin.",
+    partizipIIExample: "Er ist Arzt geworden.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" },
+    pattern: { type: "ablaut", group: "e -> u -> o" }
+  },
+  {
+    infinitive: "können",
+    english: "can/to be able to",
+    präteritum: "konnte",
+    partizipII: "gekonnt",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Er konnte gut schwimmen.",
+    partizipIIExample: "Das hat er immer gut gekonnt.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" },
+    pattern: { type: "modal", group: "modal verbs" }
+  },
+  {
+    infinitive: "müssen",
+    english: "must/to have to",
+    präteritum: "musste",
+    partizipII: "gemusst",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Ich musste früh aufstehen.",
+    partizipIIExample: "Er hat arbeiten gemusst.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" },
+    pattern: { type: "modal", group: "modal verbs" }
+  },
+  {
+    infinitive: "gehen",
+    english: "to go",
+    präteritum: "ging",
+    partizipII: "gegangen",
+    auxiliary: "sein",
+    level: "A1",
+    präteritumExample: "Er ging zur Schule.",
+    partizipIIExample: "Wir sind nach Hause gegangen.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" },
+    pattern: { type: "ablaut", group: "e -> i -> a" }
+  },
+  {
+    infinitive: "kommen",
+    english: "to come",
+    präteritum: "kam",
+    partizipII: "gekommen",
+    auxiliary: "sein",
+    level: "A1",
+    präteritumExample: "Sie kam spät.",
+    partizipIIExample: "Der Bus ist pünktlich gekommen.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" },
+    pattern: { type: "ablaut", group: "o -> a -> o" }
+  },
+  {
+    infinitive: "wollen",
+    english: "to want",
+    präteritum: "wollte",
+    partizipII: "gewollt",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Er wollte nach Hause.",
+    partizipIIExample: "Sie hat das nicht gewollt.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" },
+    pattern: { type: "modal", group: "modal verbs" }
+  },
+  {
+    infinitive: "sollen",
+    english: "should/ought to",
+    präteritum: "sollte",
+    partizipII: "gesollt",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Du solltest mehr lernen.",
+    partizipIIExample: "Das hätte ich nicht gesollt.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" },
+    pattern: { type: "modal", group: "modal verbs" }
+  },
+  {
+    infinitive: "machen",
+    english: "to make/do",
+    präteritum: "machte",
+    partizipII: "gemacht",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Er machte seine Hausaufgaben.",
+    partizipIIExample: "Sie hat das Essen gemacht.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" }
+  },
+  {
+    infinitive: "spielen",
+    english: "to play",
+    präteritum: "spielte",
+    partizipII: "gespielt",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Das Kind spielte im Garten.",
+    partizipIIExample: "Wir haben Fußball gespielt.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" }
+  },
+  {
+    infinitive: "lernen",
+    english: "to learn",
+    präteritum: "lernte",
+    partizipII: "gelernt",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Sie lernte Deutsch.",
+    partizipIIExample: "Er hat viel gelernt.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" }
+  },
+  {
+    infinitive: "leben",
+    english: "to live",
+    präteritum: "lebte",
+    partizipII: "gelebt",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Er lebte in Berlin.",
+    partizipIIExample: "Sie hat lange in Paris gelebt.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" }
+  },
+  {
+    infinitive: "arbeiten",
+    english: "to work",
+    präteritum: "arbeitete",
+    partizipII: "gearbeitet",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Sie arbeitete in einer Bank.",
+    partizipIIExample: "Er hat als Koch gearbeitet.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" }
+  },
+  {
+    infinitive: "wohnen",
+    english: "to live/reside",
+    präteritum: "wohnte",
+    partizipII: "gewohnt",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Er wohnte im Zentrum.",
+    partizipIIExample: "Sie hat in einem Apartment gewohnt.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" }
+  },
+  {
+    infinitive: "essen",
+    english: "to eat",
+    präteritum: "aß",
+    partizipII: "gegessen",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Er aß ein Sandwich.",
+    partizipIIExample: "Wir haben zu Mittag gegessen.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" },
+    pattern: { type: "ablaut", group: "e -> a -> e" }
+  },
+  {
+    infinitive: "trinken",
+    english: "to drink",
+    präteritum: "trank",
+    partizipII: "getrunken",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Sie trank Wasser.",
+    partizipIIExample: "Er hat Kaffee getrunken.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" },
+    pattern: { type: "ablaut", group: "i -> a -> u" }
+  },
+  {
+    infinitive: "schlafen",
+    english: "to sleep",
+    präteritum: "schlief",
+    partizipII: "geschlafen",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Das Kind schlief tief.",
+    partizipIIExample: "Ich habe gut geschlafen.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" },
+    pattern: { type: "ablaut", group: "a -> ie -> a" }
+  },
+  {
+    infinitive: "sehen",
+    english: "to see",
+    präteritum: "sah",
+    partizipII: "gesehen",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Er sah einen Film.",
+    partizipIIExample: "Wir haben uns gestern gesehen.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" },
+    pattern: { type: "ablaut", group: "e -> a -> e" }
+  },
+  {
+    infinitive: "hören",
+    english: "to hear",
+    präteritum: "hörte",
+    partizipII: "gehört",
+    auxiliary: "haben",
+    level: "A1",
+    präteritumExample: "Sie hörte Musik.",
+    partizipIIExample: "Ich habe ein Geräusch gehört.",
+    source: { name: "Goethe-Institut", levelReference: "A1 Essential Verbs" }
+  }
+];
+
+export const a2Verbs: GermanVerb[] = [
+  {
+    infinitive: "laufen",
+    english: "to run/walk",
+    präteritum: "lief",
+    partizipII: "gelaufen",
+    auxiliary: "sein",
+    level: "A2",
+    präteritumExample: "Er lief schnell.",
+    partizipIIExample: "Sie ist einen Marathon gelaufen.",
+    source: { name: "Goethe-Institut", levelReference: "A2 Common Verbs" },
+    pattern: { type: "ablaut", group: "au -> ie -> au" }
+  },
+  {
+    infinitive: "fahren",
+    english: "to drive/ride",
+    präteritum: "fuhr",
+    partizipII: "gefahren",
+    auxiliary: "sein",
+    level: "A2",
+    präteritumExample: "Sie fuhr nach Berlin.",
+    partizipIIExample: "Er ist Auto gefahren.",
+    source: { name: "Goethe-Institut", levelReference: "A2 Common Verbs" },
+    pattern: { type: "ablaut", group: "a -> u -> a" }
+  },
+  {
+    infinitive: "fliegen",
+    english: "to fly",
+    präteritum: "flog",
+    partizipII: "geflogen",
+    auxiliary: "sein",
+    level: "A2",
+    präteritumExample: "Das Flugzeug flog nach Paris.",
+    partizipIIExample: "Wir sind nach London geflogen.",
+    source: { name: "Goethe-Institut", levelReference: "A2 Common Verbs" },
+    pattern: { type: "ablaut", group: "ie -> o -> o" }
+  },
+  {
+    infinitive: "schwimmen",
+    english: "to swim",
+    präteritum: "schwamm",
+    partizipII: "geschwommen",
+    auxiliary: "sein",
+    level: "A2",
+    präteritumExample: "Er schwamm im See.",
+    partizipIIExample: "Sie ist einen Kilometer geschwommen.",
+    source: { name: "Goethe-Institut", levelReference: "A2 Common Verbs" },
+    pattern: { type: "ablaut", group: "i -> a -> o" }
+  },
+  {
+    infinitive: "tanzen",
+    english: "to dance",
+    präteritum: "tanzte",
+    partizipII: "getanzt",
+    auxiliary: "haben",
+    level: "A2",
+    präteritumExample: "Sie tanzten die ganze Nacht.",
+    partizipIIExample: "Wir haben Salsa getanzt.",
+    source: { name: "Goethe-Institut", levelReference: "A2 Common Verbs" }
+  }
+];
+
+export const b1Verbs: GermanVerb[] = [
+  {
+    infinitive: "erreichen",
+    english: "to reach/achieve",
+    präteritum: "erreichte",
+    partizipII: "erreicht",
+    auxiliary: "haben",
+    level: "B1",
+    präteritumExample: "Sie erreichte ihr Ziel.",
+    partizipIIExample: "Er hat den Gipfel erreicht.",
+    source: { name: "Duden", levelReference: "B1 Intermediate Verbs" }
+  },
+  {
+    infinitive: "beschließen",
+    english: "to decide",
+    präteritum: "beschloss",
+    partizipII: "beschlossen",
+    auxiliary: "haben",
+    level: "B1",
+    präteritumExample: "Das Komitee beschloss die Änderungen.",
+    partizipIIExample: "Sie haben eine neue Strategie beschlossen.",
+    source: { name: "Duden", levelReference: "B1 Intermediate Verbs" },
+    pattern: { type: "ablaut", group: "ie -> o -> o" }
+  },
+  {
+    infinitive: "entstehen",
+    english: "to develop/arise",
+    präteritum: "entstand",
+    partizipII: "entstanden",
+    auxiliary: "sein",
+    level: "B1",
+    präteritumExample: "Daraus entstand eine neue Idee.",
+    partizipIIExample: "Das Problem ist plötzlich entstanden.",
+    source: { name: "Duden", levelReference: "B1 Intermediate Verbs" },
+    pattern: { type: "ablaut", group: "e -> a -> a" }
+  },
+  {
+    infinitive: "verbinden",
+    english: "to connect/combine",
+    präteritum: "verband",
+    partizipII: "verbunden",
+    auxiliary: "haben",
+    level: "B1",
+    präteritumExample: "Er verband die beiden Kabel.",
+    partizipIIExample: "Sie hat Tradition mit Innovation verbunden.",
+    source: { name: "Duden", levelReference: "B1 Intermediate Verbs" },
+    pattern: { type: "ablaut", group: "i -> a -> u" }
+  }
+];
+
+export const b2Verbs: GermanVerb[] = [
+  {
+    infinitive: "bewerten",
+    english: "to evaluate/assess",
+    präteritum: "bewertete",
+    partizipII: "bewertet",
+    auxiliary: "haben",
+    level: "B2",
+    präteritumExample: "Der Professor bewertete die Arbeiten.",
+    partizipIIExample: "Die Jury hat die Leistungen bewertet.",
+    source: { name: "Duden", levelReference: "B2 Advanced Verbs" }
+  },
+  {
+    infinitive: "übertragen",
+    english: "to transfer/transmit",
+    präteritum: "übertrug",
+    partizipII: "übertragen",
+    auxiliary: "haben",
+    level: "B2",
+    präteritumExample: "Er übertrug die Verantwortung.",
+    partizipIIExample: "Die Krankheit hat sich schnell übertragen.",
+    source: { name: "Duden", levelReference: "B2 Advanced Verbs" },
+    pattern: { type: "ablaut", group: "a -> u -> a" }
+  },
+  {
+    infinitive: "durchführen",
+    english: "to carry out/conduct",
+    präteritum: "führte durch",
+    partizipII: "durchgeführt",
+    auxiliary: "haben",
+    level: "B2",
+    präteritumExample: "Das Team führte das Experiment durch.",
+    partizipIIExample: "Sie haben eine Studie durchgeführt.",
+    source: { name: "Duden", levelReference: "B2 Advanced Verbs" }
+  }
+];
+
+export const c1Verbs: GermanVerb[] = [
+  {
+    infinitive: "erörtern",
+    english: "to discuss/debate",
+    präteritum: "erörterte",
+    partizipII: "erörtert",
+    auxiliary: "haben",
+    level: "C1",
+    präteritumExample: "Das Gremium erörterte die Vorschläge.",
+    partizipIIExample: "Die Experten haben die Problematik erörtert.",
+    source: { name: "Duden", levelReference: "C1 Professional Verbs" }
+  },
+  {
+    infinitive: "entsprechen",
+    english: "to correspond",
+    präteritum: "entsprach",
+    partizipII: "entsprochen",
+    auxiliary: "haben",
+    level: "C1",
+    präteritumExample: "Das Ergebnis entsprach den Erwartungen.",
+    partizipIIExample: "Die Leistung hat den Anforderungen entsprochen.",
+    source: { name: "Duden", levelReference: "C1 Professional Verbs" },
+    pattern: { type: "ablaut", group: "e -> a -> o" }
+  },
+  {
+    infinitive: "beinhalten",
+    english: "to contain/include",
+    präteritum: "beinhaltete",
+    partizipII: "beinhaltet",
+    auxiliary: "haben",
+    level: "C1",
+    präteritumExample: "Der Vertrag beinhaltete wichtige Klauseln.",
+    partizipIIExample: "Das Angebot hat viele Vorteile beinhaltet.",
+    source: { name: "Duden", levelReference: "C1 Professional Verbs" }
+  }
+];
+
+export const c2Verbs: GermanVerb[] = [
+  {
+    infinitive: "suggerieren",
+    english: "to suggest/imply",
+    präteritum: "suggerierte",
+    partizipII: "suggeriert",
+    auxiliary: "haben",
+    level: "C2",
+    präteritumExample: "Der Text suggerierte eine andere Interpretation.",
+    partizipIIExample: "Die Studie hat einen Zusammenhang suggeriert.",
+    source: { name: "Duden", levelReference: "C2 Academic Verbs" }
+  },
+  {
+    infinitive: "gedeihen",
+    english: "to thrive/flourish",
+    präteritum: "gedieh",
+    partizipII: "gediehen",
+    auxiliary: "sein",
+    level: "C2",
+    präteritumExample: "Das Unternehmen gedieh unter seiner Führung.",
+    partizipIIExample: "Die Pflanzen sind prächtig gediehen.",
+    source: { name: "Duden", levelReference: "C2 Academic Verbs" },
+    pattern: { type: "ablaut", group: "ei -> ie -> ie" }
+  },
+  {
+    infinitive: "differenzieren",
+    english: "to differentiate",
+    präteritum: "differenzierte",
+    partizipII: "differenziert",
+    auxiliary: "haben",
+    level: "C2",
+    präteritumExample: "Der Experte differenzierte zwischen den Konzepten.",
+    partizipIIExample: "Sie hat genau zwischen den Optionen differenziert.",
+    source: { name: "Duden", levelReference: "C2 Academic Verbs" }
+  }
+];
