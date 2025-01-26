@@ -6,7 +6,8 @@ import { Settings, Progress, PracticeMode } from '@/lib/types';
 import { getRandomVerb, GermanVerb } from '@/lib/verbs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, BarChart2 } from 'lucide-react';
+import { Link } from 'wouter';
 
 interface VerbHistoryItem {
   verb: GermanVerb;
@@ -64,7 +65,6 @@ export default function Home() {
 
   useEffect(() => {
     setCurrentVerb(getRandomVerb(settings.level));
-    // Reset history when level changes
     setVerbHistory([]);
     setHistoryIndex(-1);
   }, [settings.level]);
@@ -105,11 +105,9 @@ export default function Home() {
   };
 
   const nextQuestion = () => {
-    // Add current verb to history
     setVerbHistory(prev => [...prev.slice(0, historyIndex + 1), { verb: currentVerb, mode: currentMode }]);
     setHistoryIndex(prev => prev + 1);
 
-    // Get new verb and mode
     setCurrentVerb(getRandomVerb(settings.level));
     setCurrentMode(PRACTICE_MODES[Math.floor(Math.random() * PRACTICE_MODES.length)]);
   };
@@ -133,16 +131,22 @@ export default function Home() {
               Level: {settings.level}
             </Badge>
           </div>
-          <SettingsDialog 
-            settings={settings} 
-            onSettingsChange={(newSettings) => {
-              setSettings(newSettings);
-              // Reset progress when changing levels
-              if (newSettings.level !== settings.level) {
-                setProgress(DEFAULT_PROGRESS);
-              }
-            }} 
-          />
+          <div className="flex gap-2">
+            <Link href="/analytics">
+              <Button variant="outline" size="icon" title="View Analytics">
+                <BarChart2 className="h-4 w-4" />
+              </Button>
+            </Link>
+            <SettingsDialog 
+              settings={settings} 
+              onSettingsChange={(newSettings) => {
+                setSettings(newSettings);
+                if (newSettings.level !== settings.level) {
+                  setProgress(DEFAULT_PROGRESS);
+                }
+              }} 
+            />
+          </div>
         </div>
 
         <ProgressDisplay progress={progress} currentLevel={settings.level} />
