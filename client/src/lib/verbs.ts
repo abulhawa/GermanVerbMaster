@@ -331,5 +331,50 @@ export const verbs: GermanVerb[] = [
       type: "ablaut",
       group: "ie -> a -> e"
     }
+  },
+  {
+    infinitive: "bedingen",
+    english: "to necessitate/require",
+    präteritum: "bedang",
+    partizipII: "bedungen",
+    auxiliary: "haben",
+    level: "C2",
+    präteritumExample: "Diese Situation bedang eine sofortige Entscheidung.",
+    partizipIIExample: "Die Qualität hat den hohen Preis bedungen.",
+    source: { name: "Duden", levelReference: "C2 Professional Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "i -> a -> u"
+    }
+  },
+  {
+    infinitive: "gedeihen",
+    english: "to thrive/flourish",
+    präteritum: "gedieh",
+    partizipII: "gediehen",
+    auxiliary: "sein",
+    level: "C2",
+    präteritumExample: "Das Unternehmen gedieh unter seiner Führung.",
+    partizipIIExample: "Die Pflanzen sind in diesem Klima prächtig gediehen.",
+    source: { name: "Duden", levelReference: "C2 Professional Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "ei -> ie -> ie"
+    }
+  },
+  {
+    infinitive: "verbleichen",
+    english: "to fade away/pass away (formal)",
+    präteritum: "verblich",
+    partizipII: "verblichen",
+    auxiliary: "sein",
+    level: "C2",
+    präteritumExample: "Die Farbe verblich im Sonnenlicht.",
+    partizipIIExample: "Die alten Schriften sind mit der Zeit verblichen.",
+    source: { name: "Duden", levelReference: "C2 Professional Verbs" },
+    pattern: {
+      type: "ablaut",
+      group: "ei -> i -> i"
+    }
   }
 ];
