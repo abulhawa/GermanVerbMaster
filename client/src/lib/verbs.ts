@@ -6,7 +6,7 @@ export interface GermanVerb {
   präteritum: string;
   partizipII: string;
   auxiliary: 'haben' | 'sein';
-  level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1';
+  level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
   präteritumExample: string;
   partizipIIExample: string;
   source: {
@@ -18,6 +18,36 @@ export interface GermanVerb {
     group?: string; // For grouping similar verb patterns
   };
 }
+
+// Helper function to get verbs by pattern group
+export const getVerbsByPattern = (patternGroup: string): GermanVerb[] => {
+  return verbs.filter(verb => verb.pattern?.group === patternGroup);
+};
+
+// Get a random verb based on level and optionally pattern group
+export const getRandomVerb = (
+  level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2',
+  patternGroup?: string
+): GermanVerb => {
+  let filteredVerbs = verbs.filter(verb => verb.level === level);
+  if (patternGroup) {
+    filteredVerbs = filteredVerbs.filter(verb => verb.pattern?.group === patternGroup);
+  }
+  return filteredVerbs[Math.floor(Math.random() * filteredVerbs.length)];
+};
+
+// Get all available pattern groups for a specific level
+export const getPatternGroups = (level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2'): string[] => {
+  const groups = new Set<string>();
+  verbs
+    .filter(verb => verb.level === level)
+    .forEach(verb => {
+      if (verb.pattern?.group) {
+        groups.add(verb.pattern.group);
+      }
+    });
+  return Array.from(groups);
+};
 
 // Source: Goethe-Institut A1 Vocabulary List & Duden
 export const verbs: GermanVerb[] = [
@@ -264,33 +294,3 @@ export const verbs: GermanVerb[] = [
   }
   // More verbs can be added following the same pattern
 ];
-
-// Helper function to get verbs by pattern group
-export const getVerbsByPattern = (patternGroup: string): GermanVerb[] => {
-  return verbs.filter(verb => verb.pattern?.group === patternGroup);
-};
-
-// Get a random verb based on level and optionally pattern group
-export const getRandomVerb = (
-  level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1',
-  patternGroup?: string
-): GermanVerb => {
-  let filteredVerbs = verbs.filter(verb => verb.level === level);
-  if (patternGroup) {
-    filteredVerbs = filteredVerbs.filter(verb => verb.pattern?.group === patternGroup);
-  }
-  return filteredVerbs[Math.floor(Math.random() * filteredVerbs.length)];
-};
-
-// Get all available pattern groups for a specific level
-export const getPatternGroups = (level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1'): string[] => {
-  const groups = new Set<string>();
-  verbs
-    .filter(verb => verb.level === level)
-    .forEach(verb => {
-      if (verb.pattern?.group) {
-        groups.add(verb.pattern.group);
-      }
-    });
-  return Array.from(groups);
-};
