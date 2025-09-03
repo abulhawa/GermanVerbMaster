@@ -21,17 +21,19 @@ export function registerRoutes(app: Express): Server {
       const level = req.query.level as string;
       const pattern = req.query.pattern as string;
 
-      let query = db.select().from(verbs);
-
+      const conditions = [] as any[];
       if (level) {
-        query = query.where(eq(verbs.level, level));
+        conditions.push(eq(verbs.level, level));
       }
-
       if (pattern) {
-        query = query.where(sql`verbs.pattern->>'group' = ${pattern}`);
+        conditions.push(sql`verbs.pattern->>'group' = ${pattern}`);
       }
 
-      const verbsList = await query;
+      const verbsList = await (
+        conditions.length
+          ? db.select().from(verbs).where(and(...conditions))
+          : db.select().from(verbs)
+      );
       res.json(verbsList);
     } catch (error) {
       console.error('Error fetching verbs:', error);
@@ -65,7 +67,7 @@ export function registerRoutes(app: Express): Server {
       // Record the practice attempt
       await db.insert(verbPracticeHistory).values({
         ...data,
-        userId: req.user?.id
+        userId: (req as any).user?.id
       });
 
       // Update analytics
@@ -107,7 +109,9 @@ export function registerRoutes(app: Express): Server {
   app.get("/api/practice-history", async (req, res) => {
     try {
       const history = await db.query.verbPracticeHistory.findMany({
-        where: req.user?.id ? eq(verbPracticeHistory.userId, req.user.id) : undefined,
+        where: (req as any).user?.id
+          ? eq(verbPracticeHistory.userId, (req as any).user.id)
+          : undefined,
         orderBy: [desc(verbPracticeHistory.createdAt)],
         limit: 100 // Limit to recent 100 attempts
       });
