@@ -8,7 +8,6 @@ export default defineConfig({
   out: "./migrations",
   schema: "./db/schema.ts",
   dialect: "sqlite",
-  driver: "better-sqlite",
   dbCredentials: {
     url: databaseFile,
   },
