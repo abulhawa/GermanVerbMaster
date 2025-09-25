@@ -1,18 +1,19 @@
-import { pgTable, text, serial, integer, boolean, timestamp, foreignKey, pgEnum, jsonb } from "drizzle-orm/pg-core";
-import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import type { GermanVerb, PracticeResult } from "@shared";
 import { sql } from "drizzle-orm";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  username: text("username").unique().notNull(),
+export const users = sqliteTable("users", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  username: text("username").notNull().unique(),
   password: text("password").notNull(),
 });
 
-export const practiceResultEnum = pgEnum('practice_result', ['correct', 'incorrect']);
+const practiceResult = ["correct", "incorrect"] as const satisfies ReadonlyArray<PracticeResult>;
 
-export const verbs = pgTable("verbs", {
-  id: serial("id").primaryKey(),
-  infinitive: text("infinitive").unique().notNull(),
+export const verbs = sqliteTable("verbs", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  infinitive: text("infinitive").notNull().unique(),
   english: text("english").notNull(),
   präteritum: text("präteritum").notNull(),
   partizipII: text("partizipII").notNull(),
@@ -20,32 +21,38 @@ export const verbs = pgTable("verbs", {
   level: text("level").notNull(),
   präteritumExample: text("präteritumExample").notNull(),
   partizipIIExample: text("partizipIIExample").notNull(),
-  source: jsonb("source").notNull(),
-  pattern: jsonb("pattern"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  source: text("source", { mode: "json" }).$type<GermanVerb["source"]>().notNull(),
+  pattern: text("pattern", { mode: "json" }).$type<GermanVerb["pattern"] | null>(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .default(sql`(unixepoch('now'))`)
+    .notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .default(sql`(unixepoch('now'))`)
+    .notNull(),
 });
 
-export const verbPracticeHistory = pgTable("verb_practice_history", {
-  id: serial("id").primaryKey(),
+export const verbPracticeHistory = sqliteTable("verb_practice_history", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   userId: integer("user_id").references(() => users.id),
   verb: text("verb").notNull(),
   mode: text("mode").notNull(),
-  result: practiceResultEnum("result").notNull(),
+  result: text("result", { enum: practiceResult }).notNull(),
   attemptedAnswer: text("attempted_answer").notNull(),
   timeSpent: integer("time_spent").notNull(), // in milliseconds
   level: text("level").notNull(),
   deviceId: text("device_id").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .default(sql`(unixepoch('now'))`)
+    .notNull(),
 });
 
-export const verbAnalytics = pgTable("verb_analytics", {
-  id: serial("id").primaryKey(),
+export const verbAnalytics = sqliteTable("verb_analytics", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   verb: text("verb").notNull(),
   totalAttempts: integer("total_attempts").notNull().default(0),
   correctAttempts: integer("correct_attempts").notNull().default(0),
   averageTimeSpent: integer("average_time_spent").notNull().default(0), // in milliseconds
-  lastPracticedAt: timestamp("last_practiced_at"),
+  lastPracticedAt: integer("last_practiced_at", { mode: "timestamp" }),
   level: text("level").notNull(),
 });
 

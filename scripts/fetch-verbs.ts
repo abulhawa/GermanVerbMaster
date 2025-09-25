@@ -126,7 +126,7 @@ async function main() {
     console.log('Starting verb import process...');
 
     // Clear existing Wiktionary verbs
-    await db.delete(verbs).where(sql`source->>'name' = 'Wiktionary'`);
+    await db.delete(verbs).where(sql`json_extract(${verbs.source}, '$.name') = 'Wiktionary'`);
     console.log('Cleared existing Wiktionary verbs');
 
     // Process categories sequentially

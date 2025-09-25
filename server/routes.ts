@@ -56,7 +56,7 @@ export function registerRoutes(app: Express): Server {
         conditions.push(eq(verbs.level, level));
       }
       if (pattern) {
-        conditions.push(sql`verbs.pattern->>'group' = ${pattern}`);
+        conditions.push(sql`json_extract(${verbs.pattern}, '$.group') = ${pattern}`);
       }
 
       const verbsList = await (

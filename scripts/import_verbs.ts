@@ -149,7 +149,7 @@ async function importVerbs() {
     console.log('Sample verb data:', JSON.stringify(verbsData[0], null, 2));
 
     // Clear existing verbs that were auto-imported
-    await db.delete(verbs).where(sql`source->>'name' = 'German_Verbs_Dataset'`);
+    await db.delete(verbs).where(sql`json_extract(${verbs.source}, '$.name') = 'German_Verbs_Dataset'`);
     console.log('Cleared existing imported verbs');
 
     let imported = 0;

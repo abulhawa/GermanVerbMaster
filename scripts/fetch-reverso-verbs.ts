@@ -134,7 +134,7 @@ async function importVerbs() {
     console.log(`Fetched ${verbsData.length} verbs from Reverso`);
 
     // Clear existing verbs that were auto-imported from Reverso
-    await db.delete(verbs).where(sql`source->>'name' = 'Reverso'`);
+    await db.delete(verbs).where(sql`json_extract(${verbs.source}, '$.name') = 'Reverso'`);
     console.log('Cleared existing Reverso-imported verbs');
 
     let imported = 0;

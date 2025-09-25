@@ -7,21 +7,29 @@ GermanVerbMaster is a full-stack web application for practicing German verbs. It
    ```bash
    npm install
    ```
-2. Copy `.env.example` to `.env` and configure `DATABASE_URL` plus `APP_ORIGIN` (used to tighten CORS in production).
-3. Generate the cached verb JSON used for offline mode (optional when a database is connected):
+2. (Optional) Copy `.env.example` to `.env` and override the defaults. You can change:
+   - `DATABASE_FILE` – where the SQLite database file lives (defaults to `db/data.sqlite`).
+   - `APP_ORIGIN` – a comma-separated allow list used for CORS in production builds.
+3. Create or update the SQLite database and migrations:
+   ```bash
+   npm run db:push
+   ```
+4. Seed the verbs table so the API and offline cache have data:
    ```bash
    npm run seed:verbs
    ```
-4. Start the development server (Express + Vite dev server):
+5. Start the development server (Express API + Vite dev server):
    ```bash
    npm run dev
    ```
-5. Additional scripts:
+6. Additional scripts:
    ```bash
    npm run check   # type-check the project
    npm run build   # create production bundles and server output
    npm run test    # run unit and API tests
    ```
+
+The app runs entirely on your machine—no container or managed database is required. All data is stored in the SQLite file defined by `DATABASE_FILE`, which keeps small vocab collections under version control or inside your backup strategy.
 
 ## Progressive Web App
 - The client is bundled with `vite-plugin-pwa` using an auto-updating service worker.
@@ -36,6 +44,6 @@ GermanVerbMaster is a full-stack web application for practicing German verbs. It
 - Each device receives a persistent `deviceId` stored in `localStorage`; it is sent with every practice submission and stored in the database.
 
 ## Database utilities
-- The schema is managed with Drizzle. After editing `db/schema.ts`, run `npm run db:push` and commit any generated migrations.
-- `npm run seed:verbs` exports the canonical verbs from Postgres (or local seed data) into `attached_assets/verbs.json` for offline usage.
+- The schema is managed with Drizzle + SQLite. After editing `db/schema.ts`, run `npm run db:push` to apply the migration to your local database file.
+- `npm run seed:verbs` fills the SQLite database and exports `attached_assets/verbs.json` for offline usage. Repeat this after importing new verbs.
 
