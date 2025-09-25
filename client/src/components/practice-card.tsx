@@ -8,6 +8,7 @@ import { PracticeMode, Settings } from '@/lib/types';
 import { AlertCircle, CheckCircle2, HelpCircle, Volume2 } from 'lucide-react';
 import { speak } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { submitPracticeAttempt } from '@/lib/api';
 
 interface PracticeCardProps {
   verb: GermanVerb;
@@ -35,23 +36,21 @@ export function PracticeCard({ verb, mode, settings, onCorrect, onIncorrect }: P
   const recordPracticeAttempt = async (isCorrect: boolean) => {
     const timeSpent = Date.now() - startTimeRef.current;
     try {
-      const response = await fetch('/api/practice-history', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          verb: verb.infinitive,
-          mode,
-          result: isCorrect ? 'correct' : 'incorrect',
-          attemptedAnswer: answer,
-          timeSpent,
-          level: settings.level
-        }),
+      const { queued } = await submitPracticeAttempt({
+        verb: verb.infinitive,
+        mode,
+        result: isCorrect ? 'correct' : 'incorrect',
+        attemptedAnswer: answer,
+        timeSpent,
+        level: settings.level,
+        queuedAt: new Date(startTimeRef.current).toISOString(),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to record practice attempt');
+      if (queued) {
+        toast({
+          title: "Saved offline",
+          description: "We'll sync this attempt once you're back online.",
+        });
       }
     } catch (error) {
       toast({

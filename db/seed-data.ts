@@ -1,4 +1,4 @@
-import { GermanVerb } from "../client/src/lib/verbs";
+import type { GermanVerb } from "@shared";
 import { 
   a1Verbs,
   a2Verbs,

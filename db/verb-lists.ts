@@ -1,4 +1,4 @@
-import { GermanVerb } from "../client/src/lib/verbs";
+import type { GermanVerb } from "@shared";
 
 export const a1Verbs: GermanVerb[] = [
   {

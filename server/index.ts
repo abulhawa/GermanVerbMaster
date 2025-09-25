@@ -1,8 +1,28 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import cors, { type CorsOptions } from "cors";
 
 const app = express();
+const appOrigins = (process.env.APP_ORIGIN ?? "")
+  .split(",")
+  .map(origin => origin.trim())
+  .filter(Boolean);
+
+const corsOptions: CorsOptions = app.get("env") === "production"
+  ? {
+      origin(origin, callback) {
+        if (!origin || appOrigins.length === 0 || appOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error("Not allowed by CORS"));
+        }
+      },
+    }
+  : { origin: true };
+
+app.use(cors(corsOptions));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -43,7 +63,7 @@ app.use((req, res, next) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
-    res.status(status).json({ message });
+    res.status(status).json({ error: message });
     throw err;
   });
 

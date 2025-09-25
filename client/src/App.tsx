@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Analytics from "@/pages/analytics";
+import { useSyncQueue } from "@/hooks/use-sync-queue";
 
 function Router() {
   return (
@@ -16,9 +17,15 @@ function Router() {
   );
 }
 
+function SyncManager() {
+  useSyncQueue();
+  return null;
+}
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <SyncManager />
       <Router />
       <Toaster />
     </QueryClientProvider>

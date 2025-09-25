@@ -1,5 +1,5 @@
 {
-  "include": ["client/src/**/*", "db/**/*", "server/**/*"],
+  "include": ["client/src/**/*", "db/**/*", "server/**/*", "shared/**/*"],
   "exclude": ["node_modules", "build", "dist", "**/*.test.ts"],
   "compilerOptions": {
     "incremental": true,
@@ -11,14 +11,19 @@
     "jsx": "preserve",
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
     "moduleResolution": "bundler",
     "baseUrl": ".",
-    "types": ["node", "vite/client"],
+    "types": ["node", "vite/client", "vite-plugin-pwa/client"],
     "paths": {
       "@db": ["./db/index.ts"],
       "@db/*": ["./db/*"],
-      "@/*": ["./client/src/*"]
+      "@/*": ["./client/src/*"],
+      "@shared": ["./shared/index.ts"],
+      "@shared/*": ["./shared/*"],
+      "@assets": ["./attached_assets"],
+      "@assets/*": ["./attached_assets/*"]
     }
   }
 }

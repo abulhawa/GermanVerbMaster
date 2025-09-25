@@ -35,6 +35,7 @@ export const verbPracticeHistory = pgTable("verb_practice_history", {
   attemptedAnswer: text("attempted_answer").notNull(),
   timeSpent: integer("time_spent").notNull(), // in milliseconds
   level: text("level").notNull(),
+  deviceId: text("device_id").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

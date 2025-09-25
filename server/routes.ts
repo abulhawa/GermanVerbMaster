@@ -4,15 +4,45 @@ import { db } from "@db";
 import { verbPracticeHistory, verbAnalytics, verbs } from "@db/schema";
 import { z } from "zod";
 import { eq, desc, sql, and } from "drizzle-orm";
+import rateLimit from "express-rate-limit";
+import type { Response } from "express";
+
+const practiceModeSchema = z.enum(['präteritum', 'partizipII', 'auxiliary', 'english']);
+const levelSchema = z.enum(['A1', 'A2', 'B1', 'B2', 'C1', 'C2']);
 
 const recordPracticeSchema = z.object({
-  verb: z.string(),
-  mode: z.string(),
+  verb: z.string().trim().min(1).max(100),
+  mode: practiceModeSchema,
   result: z.enum(['correct', 'incorrect']),
-  attemptedAnswer: z.string(),
-  timeSpent: z.number(),
-  level: z.string()
+  attemptedAnswer: z.string().trim().min(1).max(200),
+  timeSpent: z.number().int().min(0).max(1000 * 60 * 15),
+  level: levelSchema,
+  deviceId: z.string().trim().min(6).max(64),
+  queuedAt: z.string().datetime({ offset: true }).optional(),
 });
+
+const practiceHistoryLimiter = rateLimit({
+  windowMs: 60_000,
+  limit: 30,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  keyGenerator: (req) => {
+    if (req.body && typeof req.body.deviceId === 'string') {
+      return req.body.deviceId;
+    }
+    return req.ip ?? 'global';
+  },
+  handler: (_req, res) => {
+    res.status(429).json({ error: 'Too many practice submissions', code: 'RATE_LIMITED' });
+  },
+});
+
+function sendError(res: Response, status: number, message: string, code?: string) {
+  if (code) {
+    return res.status(status).json({ error: message, code });
+  }
+  return res.status(status).json({ error: message });
+}
 
 export function registerRoutes(app: Express): Server {
   // Get all verbs or filter by level
@@ -37,7 +67,7 @@ export function registerRoutes(app: Express): Server {
       res.json(verbsList);
     } catch (error) {
       console.error('Error fetching verbs:', error);
-      res.status(500).json({ error: 'Failed to fetch verbs' });
+      sendError(res, 500, 'Failed to fetch verbs', 'VERBS_FETCH_FAILED');
     }
   });
 
@@ -49,25 +79,29 @@ export function registerRoutes(app: Express): Server {
       });
 
       if (!verb) {
-        return res.status(404).json({ error: 'Verb not found' });
+        return sendError(res, 404, 'Verb not found', 'VERB_NOT_FOUND');
       }
 
       res.json(verb);
     } catch (error) {
       console.error('Error fetching verb:', error);
-      res.status(500).json({ error: 'Failed to fetch verb' });
+      sendError(res, 500, 'Failed to fetch verb', 'VERB_FETCH_FAILED');
     }
   });
 
   // Record a practice attempt
-  app.post("/api/practice-history", async (req, res) => {
+  app.post("/api/practice-history", practiceHistoryLimiter, async (req, res) => {
     try {
-      const data = recordPracticeSchema.parse(req.body);
+      const parsed = recordPracticeSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return sendError(res, 400, 'Invalid practice data', 'INVALID_INPUT');
+      }
+      const { queuedAt: _queuedAt, ...data } = parsed.data;
 
       // Record the practice attempt
       await db.insert(verbPracticeHistory).values({
         ...data,
-        userId: (req as any).user?.id
+        userId: (req as any).user?.id,
       });
 
       // Update analytics
@@ -101,7 +135,10 @@ export function registerRoutes(app: Express): Server {
       res.json({ success: true });
     } catch (error) {
       console.error('Error recording practice:', error);
-      res.status(400).json({ error: 'Invalid practice data' });
+      if (error instanceof z.ZodError) {
+        return sendError(res, 400, 'Invalid practice data', 'INVALID_INPUT');
+      }
+      sendError(res, 500, 'Failed to record practice attempt', 'PRACTICE_SAVE_FAILED');
     }
   });
 
@@ -119,7 +156,7 @@ export function registerRoutes(app: Express): Server {
       res.json(history);
     } catch (error) {
       console.error('Error fetching practice history:', error);
-      res.status(500).json({ error: 'Failed to fetch practice history' });
+      sendError(res, 500, 'Failed to fetch practice history', 'HISTORY_FETCH_FAILED');
     }
   });
 
@@ -133,7 +170,7 @@ export function registerRoutes(app: Express): Server {
       res.json(analytics);
     } catch (error) {
       console.error('Error fetching analytics:', error);
-      res.status(500).json({ error: 'Failed to fetch analytics' });
+      sendError(res, 500, 'Failed to fetch analytics', 'ANALYTICS_FETCH_FAILED');
     }
   });
 
