@@ -1,5 +1,10 @@
 #!/usr/bin/env tsx
-import fetch from "node-fetch";
+
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+
+const fetchFn = globalThis.fetch?.bind(globalThis) ?? null;
+const execFileAsync = promisify(execFile);
 
 type GraphQLResponse<T> = {
   data?: T;
@@ -57,15 +62,71 @@ if (Number.isNaN(PROJECT_NUMBER)) {
 
 const token = process.env.GITHUB_TOKEN ?? process.env.GH_TOKEN ?? "";
 
-if (!token) {
-  console.error(
-    "A GitHub token is required. Set GITHUB_TOKEN (with repo + project scopes) in the environment.",
-  );
-  process.exit(1);
+type GraphQLVariables = Record<string, unknown>;
+
+const ghCliAvailability = detectGhCli();
+
+async function detectGhCli(): Promise<boolean> {
+  try {
+    await execFileAsync("gh", ["--version"]);
+    return true;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (process.env.DEBUG_PRODUCT_ROADMAP_SCRIPT) {
+      console.warn(`GitHub CLI unavailable (${message}). Falling back to Fetch API.`);
+    }
+    return false;
+  }
 }
 
-async function githubGraphql<T>(query: string, variables: Record<string, unknown>): Promise<T> {
-  const response = await fetch("https://api.github.com/graphql", {
+function compactQuery(query: string): string {
+  return query
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .join(" ");
+}
+
+async function requestWithGhCli<T>(query: string, variables: GraphQLVariables): Promise<GraphQLResponse<T>> {
+  const { stdout } = await execFileAsync(
+    "gh",
+    [
+      "api",
+      "graphql",
+      "-f",
+      `query=${compactQuery(query)}`,
+      "-f",
+      `variables=${JSON.stringify(variables)}`,
+    ],
+    {
+      env: token
+        ? {
+            ...process.env,
+            GITHUB_TOKEN: token,
+            GH_TOKEN: token,
+          }
+        : undefined,
+      maxBuffer: 10 * 1024 * 1024,
+    },
+  );
+
+  return JSON.parse(stdout) as GraphQLResponse<T>;
+}
+
+async function requestWithFetch<T>(query: string, variables: GraphQLVariables): Promise<GraphQLResponse<T>> {
+  if (!fetchFn) {
+    throw new Error(
+      "The Fetch API is not available in this runtime. Run the script with Node.js 18+ or install a fetch polyfill, or install and authenticate the GitHub CLI (gh).",
+    );
+  }
+
+  if (!token) {
+    throw new Error(
+      "A GitHub token is required when using the Fetch API. Set GITHUB_TOKEN (with repo + project scopes) in the environment or authenticate with the GitHub CLI (gh).",
+    );
+  }
+
+  const response = await fetchFn("https://api.github.com/graphql", {
     method: "POST",
     headers: {
       Authorization: `bearer ${token}`,
@@ -80,7 +141,23 @@ async function githubGraphql<T>(query: string, variables: Record<string, unknown
     throw new Error(`GitHub GraphQL request failed: ${response.status} ${response.statusText} -> ${text}`);
   }
 
-  const payload = (await response.json()) as GraphQLResponse<T>;
+  return (await response.json()) as GraphQLResponse<T>;
+}
+
+async function githubGraphql<T>(query: string, variables: GraphQLVariables): Promise<T> {
+  let payload: GraphQLResponse<T> | null = null;
+  if (await ghCliAvailability) {
+    try {
+      payload = await requestWithGhCli<T>(query, variables);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.warn(`GitHub CLI request failed (${message}). Retrying with Fetch API.`);
+    }
+  }
+
+  if (!payload) {
+    payload = await requestWithFetch<T>(query, variables);
+  }
 
   if (payload.errors?.length) {
     throw new Error(`GitHub GraphQL errors: ${payload.errors.map((err) => err.message).join("; ")}`);
