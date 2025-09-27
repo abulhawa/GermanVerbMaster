@@ -1,175 +1,685 @@
 level,infinitive,source_id,source_name,source_url,license,notes
-A1,abfliegen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,an sein,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,antworten,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,anziehen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,arbeiten,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,arbeiten,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,auf sein,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,aufhören,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,aufstehen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,aus sein,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,ausfüllen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,ausmachen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,aussehen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,aussteigen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,ausziehen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,baden,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,bedeuten,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,beginnen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,bekommen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,benutzen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,besichtigen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,bestellen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,besuchen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,bezahlen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,bitten,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,bleiben,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,brauchen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,brauchen,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,bringen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,buchstabieren,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,danken,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,dauern,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,denken,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,drucken,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,dürfen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,duschen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,einkaufen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,einladen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,einsteigen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,empfehlen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,enden,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,entschuldigen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,erklären,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,erzählen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,essen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,essen,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,fahren,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,fahren,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,fehlen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,feiern,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,fernsehen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,finden,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,finden,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,fliegen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,fragen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,freuen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,frühstücken,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,geben,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,geben,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,gefallen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,gehen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,gehen,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,gehören,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,gewinnen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,glauben,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,gratulieren,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,grillen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,haben,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,haben,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,halten,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,heiraten,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,heißen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,heißen,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,helfen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,holen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,hören,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,kaufen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,kaufen,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,kennen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,kennen,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,kennenlernen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,kochen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,kommen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,kommen,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,können,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,kosten,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,kriegen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,lachen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,laufen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,laufen,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,leben,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,leben,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,legen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,lernen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,lernen,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,lesen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,lesen,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,lieben,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,lieben,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,liegen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,machen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,machen,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,mieten,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,mitbringen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,mitkommen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,mitmachen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,mitnehmen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,mögen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,mögen,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,müssen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,nehmen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,nehmen,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,öffnen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,rad fahren,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,rauchen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,regnen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,reisen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,reparieren,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,riechen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,sagen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,sagen,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,scheinen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,schicken,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,schlafen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,schließen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,schmecken,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,schreiben,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,schreiben,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,schwimmen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,sehen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,sehen,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,sein,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,sitzen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,spielen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,spielen,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,sprechen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,sprechen,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,stehen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,stellen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,studieren,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,suchen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,suchen,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,tanzen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,telefonieren,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,tragen,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,treffen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,trinken,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,trinken,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,tun,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,übernachten,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,überweisen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,umziehen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,unterschreiben,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,verdienen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,verkaufen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,vermieten,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,verstehen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,verstehen,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,vorstellen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,wandern,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,warten,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,warten,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,waschen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,weg sein,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,weh tun,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,werden,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,wiederholen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,wissen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,wissen,cukowski_wordsA1.txt,GermanWordListByLevel,https://github.com/Cukowski/GermanWordListByLevel,Unknown,Needs license confirmation
-A1,wohin,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,wohnen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,wollen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,zahlen,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
-A1,zu sein,goethe_a1_2018,Goethe-Zertifikat A1 Wortliste (2018),https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv,MIT,Derived from Goethe official vocabulary export
+A1,abfahren,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,abfliegen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,abgeben,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,abholen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,anbieten,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,anfangen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,anklicken,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,ankommen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,ankreuzen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,anmachen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,anmelden,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,anrufen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,antworten,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,anziehen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,arbeiten,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,auf sein,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,aufhören,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,aufstehen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,aus sein,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,ausfüllen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,ausmachen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,aussehen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,aussteigen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,ausziehen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,baden,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,bedeuten,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,beginnen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,bekommen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,benutzen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,besichtigen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,bestellen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,besuchen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,bezahlen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,bitten,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,bleiben,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,brauchen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,bringen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,buchstabieren,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,danken,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,dauern,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,drucken,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,drücken,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,dürfen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,duschen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,einkaufen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,einladen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,einsteigen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,empfehlen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,enden,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,entschuldigen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,erklären,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,erlauben,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,erzählen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,essen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,fahren,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,fehlen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,feiern,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,fernsehen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,finden,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,fliegen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,fragen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,freuen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,frühstücken,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,geben,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,gefallen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,gehen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,gehören,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,gewinnen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,glauben,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,gratulieren,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,grillen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,haben,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,halten,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,heiraten,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,heißen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,helfen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,holen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,hören,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,kaufen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,kennen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,kennen lernen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,kennenlernen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,kochen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,kommen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,können,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,kosten,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,kriegen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,kümmern,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,lachen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,laufen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,leben,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,legen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,lernen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,lesen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,lieben,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,liegen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,machen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,mieten,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,mitbringen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,mitkommen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,mitmachen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,mögen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,müssen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,nehmen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,öffnen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,rauchen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,regnen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,reisen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,reparieren,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,riechen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,sagen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,scheinen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,schicken,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,schlafen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,schließen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,schmecken,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,schreiben,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,schwimmen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,sehen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,sein,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,sitzen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,sollen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,spielen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,sprechen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,stehen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,stellen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,studieren,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,suchen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,tanzen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,telefonieren,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,treffen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,trinken,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,tun,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,übernachten,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,überweisen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,umziehen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,unterschreiben,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,verdienen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,verkaufen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,vermieten,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,verstehen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,vorstellen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,wandern,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,warten,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,waschen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,weg sein,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,weh tun,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,wehtun,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,werden,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,wieder holen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,wiederholen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,wissen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,wohnen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,wollen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,zahlen,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A1,zu sein,dwds_goethe_a1,DWDS Goethe-Zertifikat A1,https://www.dwds.de/api/lemma/goethe/A1.csv,DWDS terms (attribution required),POS: Verb
+A2,abschließen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,ändern,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,ansehen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,ärgern,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,aufmachen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,aufpassen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,aufräumen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,aufregen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,ausgeben,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,ausgehen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,auspacken,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,ausruhen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,aussprechen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,austauschen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,austragen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,backen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,basteln,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,bauen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,beantworten,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,bedanken,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,beeilen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,beenden,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,begründen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,beraten,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,berichten,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,beschreiben,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,beschweren,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,bestätigen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,bestehen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,bewerben,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,braten,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,buchen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,chatten,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,denken,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,diskutieren,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,einpacken,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,eintragen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,einziehen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,erinnern,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,erreichen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,fallen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,fotografieren,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,fühlen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,hängen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,herstellen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,herunterladen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,hoffen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,husten,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,informieren,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,interessieren,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,joggen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,klappen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,kontrollieren,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,kündigen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,lassen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,leidtun,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,leihen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,liefern,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,lügen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,malen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,meinen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,merken,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,nennen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,notieren,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,organisieren,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,packen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,parken,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,passen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,passieren,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,planen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,probieren,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,prüfen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,putzen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,raten,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,rechnen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,reden,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,reiten,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,renovieren,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,reservieren,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,rufen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,sammeln,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,schaffen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,schenken,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,schimpfen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,schneiden,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,schneien,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,setzen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,singen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,sparen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,spazieren,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,stattfinden,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,sterben,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,stören,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,streiten,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,surfen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,tauschen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,teilen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,teilnehmen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,tragen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,trainieren,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,träumen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,üben,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,übersetzen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,umsteigen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,unterhalten,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,unternehmen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,untersuchen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,verabreden,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,verbieten,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,vereinbaren,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,vergessen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,vergleichen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,verletzen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,verlieben,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,verlieren,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,verpassen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,verreisen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,verschieben,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,versuchen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,vorbereiten,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,wählen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,wechseln,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,wecken,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,weinen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,wünschen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,zeichnen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,zeigen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,ziehen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,zuhören,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,zumachen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,zurückfahren,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,zurückgeben,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,zurückgehen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,zurückkommen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+A2,zurücklaufen,dwds_goethe_a2,DWDS Goethe-Zertifikat A2,https://www.dwds.de/api/lemma/goethe/A2.csv,DWDS terms (attribution required),POS: Verb
+B1,abbiegen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,abhangen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,abhängen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,abheben,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,ablehnen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,abmachen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,abnehmen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,abonnieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,absagen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,abschreiben,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,abstimmen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,abwaschen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,achten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,akzeptieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,amüsieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,analysieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,anerkennen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,angeben,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,anhaben,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,ankündigen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,annehmen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,anschaffen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,anschließen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,anschnallen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,ansprechen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,anstellen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,anstrengen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,anwenden,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,anzeigen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,atmen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,auffallen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,auffordern,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,aufführen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,aufgeben,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,aufhalten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,aufheben,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,aufladen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,auflösen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,aufnehmen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,aufschreiben,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,auftreten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,aufwachen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,ausbilden,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,ausdrucken,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,ausfallen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,ausreichen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,ausrichten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,ausschließen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,ausstellen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,aussuchen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,auswählen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,beachten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,beantragen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,bedienen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,beeinflussen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,befinden,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,begegnen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,begleiten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,begrüßen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,behalten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,behandeln,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,behaupten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,behindern,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,beißen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,bekannt geben,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,bekanntgeben,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,beleidigen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,bemerken,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,bemühen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,benötigen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,beobachten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,berechnen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,beruhigen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,beschädigen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,beschäftigen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,beschließen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,beschränken,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,besetzen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,besorgen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,besprechen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,bestrafen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,beteiligen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,betreuen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,betrügen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,beweisen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,bieten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,blitzen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,blühen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,bluten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,brechen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,bremsen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,brennen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,darstellen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,dekorieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,dienen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,donnern,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,drehen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,duzen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,eignen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,eilen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,einbrechen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,einfallen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,einfügen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,einführen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,einigen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,einnehmen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,einrichten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,einschalten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,einsetzen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,einstellen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,eintreten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,einzahlen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,empfangen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,entdecken,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,entfernen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,entgegenkommen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,enthalten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,entlassen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,entscheiden,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,entschließen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,entsorgen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,entspannen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,entstehen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,enttäuschen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,entwickeln,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,ereignen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,erfahren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,erfinden,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,erfordern,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,erfüllen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,ergänzen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,erhalten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,erhöhen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,erholen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,erkälten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,erkennen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,erkundigen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,erleben,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,erledigen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,erleichtern,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,ernähren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,eröffnen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,erschrecken,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,ersetzen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,erstellen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,erwarten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,erziehen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,fangen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,fassen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,faulenzen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,festhalten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,festlegen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,festnehmen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,festsetzen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,feststehen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,feststellen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,finanzieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,fliehen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,fließen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,folgen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,fordern,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,fördern,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,fortsetzen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,fressen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,frieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,führen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,funktionieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,fürchten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,füttern,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,garantieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,gebrauchen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,gelingen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,gelten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,genehmigen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,genießen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,genügen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,geschehen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,gewöhnen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,gießen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,greifen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,grillieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,gründen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,grüßen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,gucken,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,hageln,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,handeln,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,hassen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,heben,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,heizen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,herausfinden,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,herunterfahren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,hinterlassen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,hinweisen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,hochladen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,hupen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,installieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,integrieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,irren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,kämpfen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,kaputt machen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,kaputtgehen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,kaputtmachen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,klagen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,klären,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,kleben,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,klettern,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,klicken,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,klingeln,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,klingen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,klopfen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,konsumieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,konzentrieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,kopieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,korrigieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,kritisieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,küssen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,lächeln,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,landen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,langweilen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,leiden,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,leisten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,leiten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,loben,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,lohnen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,löschen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,lösen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,losfahren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,markieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,melden,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,messen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,mischen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,mitteilen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,nachdenken,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,nachschlagen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,nähen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,nähern,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,nutzen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,nützen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,operieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,ordnen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,parkieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,pensionieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,pflanzen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,pflegen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,präsentieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,produzieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,protestieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,rasieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,reagieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,realisieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,reduzieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,regeln,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,reichen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,reinigen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,rennen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,retten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,runterwerfen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,schaden,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,schalten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,schätzen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,schauen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,scheiden,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,schieben,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,schießen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,schminken,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,schreien,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,schütteln,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,schützen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,schweigen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,schwitzen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,senden,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,sichern,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,siegen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,siezen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,sinken,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,sorgen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,spazieren gehen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,springen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,spülen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,spüren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,stammen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,starten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,staub saugen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,staubsaugen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,stechen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,stecken,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,stehen bleiben,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,stehenbleiben,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,stehlen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,steigen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,stimmen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,stinken,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,stoppen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,streiken,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,stürzen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,tanken,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,tauchen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,testen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,tippen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,transportieren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,treiben,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,trennen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,treten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,trocknen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,twittern,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,überfahren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,überholen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,überlegen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,übernehmen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,überprüfen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,überqueren,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,überraschen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,überreden,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,übertreiben,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,überzeugen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,umarmen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,umdrehen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,umgehen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,umtauschen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,unterbrechen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,unterlassen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,unterrichten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,unterscheiden,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,unterstreichen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,unterstützen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verabschieden,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verändern,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verbessern,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verbinden,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verbrauchen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verbrennen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verbringen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,vergnügen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,vergrößern,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verhaften,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verhalten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verhindern,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verlangen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verlängern,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verlassen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verlaufen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,vermeiden,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,vermissen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,vermuten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,veröffentlichen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verpacken,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verpflegen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verpflichten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verraten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,versäumen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verschmutzen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verschreiben,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verschwinden,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,versichern,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,versprechen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verstecken,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verteilen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,vertrauen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,vertreten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verursachen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verurteilen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verwechseln,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verwenden,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verzeihen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,verzichten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,vorhaben,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,vorkommen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,vorlesen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,vorschlagen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,wachsen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,warnen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,weigern,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,wenden,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,werfen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,wetten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,widersprechen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,wiegen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,winken,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,wirken,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,wundern,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,zählen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,zelten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,zerstören,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,zubereiten,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,zugehen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,zunehmen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,zurechtkommen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,zusagen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,zusammenfassen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,zuschauen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,zustimmen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,zweifeln,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb
+B1,zwingen,dwds_goethe_b1,DWDS Goethe-Zertifikat B1,https://www.dwds.de/api/lemma/goethe/B1.csv,DWDS terms (attribution required),POS: Verb

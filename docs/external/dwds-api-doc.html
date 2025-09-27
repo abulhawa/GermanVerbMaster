@@ -1,0 +1,339 @@
+Title: API (Schnittstellen zum DWDS)
+
+URL Source: https://www.dwds.de/d/api
+
+Markdown Content:
+Überblick
+---------
+
+*   [Worthäufigkeit (Frequenzbarometer)](https://www.dwds.de/d/api#frequency)
+*   [Wörterbuchinformationen](https://www.dwds.de/d/api#wb)
+    *   [Abfragen](https://www.dwds.de/d/api#wb-api)
+    *   [Wortlisten](https://www.dwds.de/d/api#wb-list)
+    *   [Zufällige Einträge](https://www.dwds.de/d/api#wb-random)
+    *   [Listen Wortschatz Goethe-Zertifikat](https://www.dwds.de/d/api#wb-list-goethe)
+
+*   [Korpusergebnisse](https://www.dwds.de/d/api#export)
+    *   [`COUNT()`-Abfragen](https://www.dwds.de/d/api#count-export)
+
+*   [Aussprache (IPA)](https://www.dwds.de/d/api#ipa)
+*   [Artikel des Tages](https://www.dwds.de/d/api#adt)
+*   [Neueste Artikel](https://www.dwds.de/d/api#latest)
+*   [Blog](https://www.dwds.de/d/api#blog)
+*   [DWDS-Themenglossare](https://www.dwds.de/d/api#glossare)
+*   [dstar](https://www.dwds.de/d/api#dstar)
+*   [Firefox Add-on „Im DWDS nachschlagen“](https://www.dwds.de/d/api#ff-dwds)
+
+Worthäufigkeit (Frequenzbarometer)
+----------------------------------
+
+Die Datenbasis für die Worthäufigkeit (Frequenzbarometer) bilden gegenwartssprachliche Korpora für Wörter mit einer Mindestfrequenz von 5. Weitere Informationen finden Sie in der [Dokumentation zur Worthäufigkeit](https://www.dwds.de/d/worthaeufigkeit).
+
+Um an die Daten für das Frequenzbarometer zu kommen, können Sie die Schnittstelle unter [https://www.dwds.de/api/frequency](https://www.dwds.de/api/frequency) nutzen. Der Parameter `q` ist dabei das Wort, dessen Frequenz angezeigt werden soll. Beispiel: [https://www.dwds.de/api/frequency/?q=Haus](https://www.dwds.de/api/frequency/?q=Haus). Bitte beachten Sie, dass das Eingabewort lemmatisiert wird und sie die kumulierten Frequenzen für alle Wörter mit diesem Lemma erhalten. Das heißt: Bei einer Eingabe von `Haus` (oder `Häuser`) erhalten Sie die aufaddierten Frequenzen für die Wörter _Haus_, _Hauses_, _Häuser_, _Häusern_ etc.
+
+Hinweis
+
+Für Mehrwortausdrücke, Affixe und Einträge, deren Stichwörter aus mehreren Wörtern bestehen, sowie für bzgl. ihrer Lemmatisierung problematische Wörter ist diese Angabe nicht verfügbar.
+
+Sie können mehrere Wörter mittels Trennung durch `|` (Pipe-Symbol) gleichzeitig abfragen, die Frequenzen werden dabei kumuliert errechnet. Das heißt beispielhaft: für die Abfrage [`q=Internetseite|Internet-Seite`](https://www.dwds.de/api/frequency/?q=Internetseite%7CInternet-Seite) hat (Stand 8. April 2025) das Lemma _Internetseite_ 1 372 898 Treffer mit einem Frequenzwert von 3 und das Lemma _Internet-Seite_ 77 363 Treffer mit einem Frequenzwert von 2. Die API liefert Ihnen eine Gesamttrefferzahl von 1 450 261 und den kumuliert berechneten Frequenzwert 3.
+
+Die Schnittstelle liefert JSON mit folgenden Feldern:
+
+`q`Eingabewort/-wörter
+`lemma`Lemmatisierung(en) im DWDS (bitte beachten Sie, dass diese Angaben nur Repräsentationsformen der [morphologischen Analyse](https://www.dwds.de/d/tagh) widerspiegeln und nicht die Ansetzungsformen im Wörterbuch darstellen müssen)
+`total`Gesamtanzahl der Tokens in den Korpora
+`hits`Anzahl Treffer passend zum bzw. zu den Eingabelemma(ta)
+`frequency`Frequenzangabe (Integer zwischen 0 und 6, logarithmische Skala)
+
+Die Worthäufigkeit errechnet sich wie folgt (Perl-Code):
+
+# $hits  == Anzahl der Treffer in Korpora
+# $total == Gesamtzahl der Tokens in Korpora
+$frequency = log10( $hits / $total * 1_000_000 );
+
+sub log10 {
+    my $n = shift;
+    return 0 unless $n;
+    my $log = log($n) / log(10) + 2;
+    return $log < 0  ? 0
+         : $log >= 6 ? 6
+         :             sprintf('%.0f', $log);
+}
+Hinweis
+
+In der [Lemmadatenbank des DWDS](https://www.dwds.de/lemma/list) finden Sie ebenfalls Angaben zur Häufigkeitsklasse. Dort können Sie auch einen kompletten Datensatz herunterladen.
+
+Wörterbuchinformationen
+-----------------------
+
+### Abfragen
+
+Auch wenn wir viele der Daten im Wortauskunftssystem des DWDS aus rechtlichen Gründen nicht für eine API öffnen dürfen, so können doch zumindest rudimentäre Informationen über Wörterbucheinträge abgerufen werden. Der URL [https://www.dwds.de/api/wb/snippet](https://www.dwds.de/api/wb/snippet) bietet die Möglichkeit, die Existenz von Wörterbucheinträgen und (falls vorhanden) Informationen über die Wortart eines Eintrages abzufragen. Der Parameter "q" ist dabei das Lemma, über das Informationen abgefragt werden wollen. Mehrere Lemmata können mittels Trennung durch `|` (Pipe-Symbol) gleichzeitig abgefragt werden.
+
+Beispiele:
+
+[https://www.dwds.de/api/wb/snippet/?q=Haus](https://www.dwds.de/api/wb/snippet/?q=Haus)einfacher Eintrag mit allen Informationen
+[https://www.dwds.de/api/wb/snippet/?q=Haus|Baum](https://www.dwds.de/api/wb/snippet/?q=Haus%7CBaum)Abfrage mehrere Lemmata
+[https://www.dwds.de/api/wb/snippet/?q=Bank](https://www.dwds.de/api/wb/snippet/?q=Bank)mehrere Wörterbucheinträge (bei Homografen)
+[https://www.dwds.de/api/wb/snippet/?q=Ablaß](https://www.dwds.de/api/wb/snippet/?q=Abla%C3%9F)Abfrage mit nicht (mehr) gültiger Schreibung
+[https://www.dwds.de/api/wb/snippet/?q=Industrieholz](https://www.dwds.de/api/wb/snippet/?q=Industrieholz)Eintrag ohne verzeichnete Wortart
+[https://www.dwds.de/api/wb/snippet/?q=Krmbmbl](https://www.dwds.de/api/wb/snippet/?q=Krmbmbl)kein Eintrag im DWDS-Wörterbuch
+
+Die Schnittstelle liefert eine JSON-Liste mit folgenden Feldern pro entsprechendem Wörterbucheintrag:
+
+`input`Eingabe
+`wortart`Wortart (Substantiv, Verb etc.), falls verzeichnet (sonst `null`)
+`lemma`(erste) gültige Schreibung des Eingabelemmas
+`url`URL zur Wortinformationsseite im DWDS
+
+Wortarten im DWDS:
+
+*   Adjektiv
+*   Adverb
+*   Affix
+*   bestimmter Artikel
+*   Bruchzahlwort
+*   Demonstrativpronomen
+*   Eigenname
+*   Imperativ
+*   Indefinitpronomen
+*   Interjektion
+*   Interrogativpronomen
+*   Kardinalzahlwort
+*   Komparativ
+*   Konjunktion
+*   Mehrwortausdruck
+*   Ordinalzahlwort
+*   Partikel
+*   partizipiales Adjektiv
+*   partizipiales Adverb
+*   Personalpronomen
+*   Possessivpronomen
+*   Präposition
+*   Präposition + Artikel
+*   Pronomen
+*   Pronominaladverb
+*   Reflexivpronomen
+*   Relativpronomen
+*   reziprokes Pronomen
+*   Substantiv
+*   Superlativ
+*   Verb
+
+### Wortlisten
+
+| Wörterbuch | Zugang | DOI |
+| --- | --- | --- |
+| DWDS-Wörterbuch | [Lemmadatenbank](https://www.dwds.de/lemma/list) (mit Download) |  |
+| DWDS-Wörterbuch | [JSON – Download](https://www.dwds.de/dwds_static/wb/dwdswb-headwords.json) |  |
+| DWDS-Wörterbuch | [Lexical Markup Framework (LMF) – Download](https://www.dwds.de/dwds_static/wb/dwdswb-headwords.lmf.xml) |  |
+| Etymologisches Wörterbuch des Deutschen | [JSON – Download](https://www.dwds.de/dwds_static/wb/etymwb-headwords.json) | [![Image 1: DOI](https://www.dwds.de/dwds_static/d/zenodo/zenodo.14013687.svg)](https://doi.org/10.5281/zenodo.14013687) |
+| Etymologisches Wörterbuch des Deutschen | [Lexical Markup Framework (LMF) – Download](https://www.dwds.de/dwds_static/wb/etymwb-headwords.lmf.xml) |  |
+| ZDL-Teilprojekt »Wortgeschichte digital« | [API](https://zdl.org/wb/wgd/api) (mit Download) |  |
+| Historische Wörterbücher |
+| Wörterbuch der deutschen Gegenwartssprache | [JSON – Download](https://www.dwds.de/dwds_static/wb/wdg-headwords.json) |  |
+| Wörterbuch der deutschen Gegenwartssprache | [Lexical Markup Framework (LMF) – Download](https://www.dwds.de/dwds_static/wb/wdg-headwords.lmf.xml) |  |
+| Deutsches Wörterbuch von Jacob Grimm und Wilhelm Grimm, Erstbearbeitung (¹DWB) | [JSON – Download](https://www.dwds.de/dwds_static/wb/dwb-headwords.json) |  |
+
+### Listen Wortschatz Goethe-Zertifikat
+
+Sie können sich die Listen zu den jeweiligen [Sprachstufen zur Erreichung der Goethe-Zertifikate](https://www.dwds.de/lemma/wortschatz-goethe-zertifikat) im JSON-Format herunterladen. Das DWDS bietet 3 Listen an, die Struktur der JSON-Daten finden Sie in der nachfolgenden Tabelle dokumentiert:
+
+*   [Wortschatz für das Goethe-Zertifikat A1 als CSV](https://www.dwds.de/api/lemma/goethe/A1.csv)
+*   [Wortschatz für das Goethe-Zertifikat A1 als JSON](https://www.dwds.de/api/lemma/goethe/A1.json)
+*   [Wortschatz für das Goethe-Zertifikat A2 als CSV](https://www.dwds.de/api/lemma/goethe/A2.csv)
+*   [Wortschatz für das Goethe-Zertifikat A2 als JSON](https://www.dwds.de/api/lemma/goethe/A2.json)
+*   [Wortschatz für das Goethe-Zertifikat B1 als CSV](https://www.dwds.de/api/lemma/goethe/B1.csv)
+*   [Wortschatz für das Goethe-Zertifikat B1 als JSON](https://www.dwds.de/api/lemma/goethe/B1.json)
+
+Die CSV-Dateien sind derart gegliedert, dass es für jede gültige Schreibung eines Wortes bzw. Ausdrucks eine separate Zeile mit allen im DWDS-Wörterbuch dazu vorhandenen Angaben gibt. Sind bei einem Eintrag mehrere Genera bzw. bestimmte Artikel möglich, werden diese durch Komma getrennt. Beispielauszug:
+
+"Lemma","URL","Wortart","Genus","Artikel","nur_im_Plural"
+"abschließen","https://www.dwds.de/wb/abschlie%C3%9Fen","Verb","","","0"
+"Ahnung","https://www.dwds.de/wb/Ahnung","Substantiv","fem.","die","0"
+"Leute","https://www.dwds.de/wb/Leute","Substantiv","","","1"
+"Teil","https://www.dwds.de/wb/Teil","Substantiv","mask., neutr.","der, das","0"
+Die Struktur der JSON-Daten finden Sie in der nachfolgenden Tabelle dokumentiert:
+
+`articles`optional, bei Nomen: Liste mit entsprechenden bestimmten Artikeln (_der_, _die_, _das_)
+`genera`optional: Liste der zum Lemma gehörigen Genera (_mask._, _fem._, _neutr._)
+`onlypl`optional: fester Wert `nur im Plural`, falls ein Wort nur im Plural verwendet werden kann
+`pos`Wortart, siehe [Wortarten im DWDS](https://www.dwds.de/d/api#wortarten-im-dwds)
+`sch`Liste mit Schreibungen bzw. Formen im Wörterbuchartikel
+`sch` / `lemma`Schreibung des Lemmas
+`sch` / `hidx`optional: Homographenindex (bei mehreren Wörterbucheinträgen wie _¹Bank_ und _²Bank_)
+`url`kanonische URL zum zugehörigen Wörterbuchartikel
+
+### Zufällige Einträge
+
+Sie können sich eine Liste von zufällig ausgewählten Wörtern (genauer: Lemmata bzw. Stichwortansetzungen von Wörterbuchartikeln) über die Abfrage der URL `https://www.dwds.de/api/wb/random` erstellen lassen. Ausgeliefert werden 5 Einträge. Bitte beachten Sie, dass Schreibungen, die im Wörterbuch als ungültig oder ausschließlich in Österreich bzw. der Schweiz gültig gekennzeichnet sind, nicht gelistet werden. Ausgeliefert wird JSON mit einer Liste, in der die einzelnen Einträge folgendem Format entsprechen:
+
+`articles`optional, bei Nomen: Liste mit entsprechenden bestimmten Artikeln (_der_, _die_, _das_)
+`date`Datum der letzten Änderung des Wörterbuchartikels
+`genera`optional: Liste der zum Lemma gehörigen Genera (_mask._, _fem._, _neutr._)
+`hidx`optional: Homographenindex (bei mehreren Wörterbucheinträgen wie _¹Bank_ und _²Bank_)
+`lemma`Schreibung des Lemmas
+`onlypl`optional: fester Wert `nur im Plural`, falls ein Wort nur im Plural verwendet werden kann
+`pos`Wortart, siehe [Wortarten im DWDS](https://www.dwds.de/d/api#wortarten-im-dwds)
+`type`Typ des zugehörigen Wörterbuchartikels
+`url`kanonische URL zum zugehörigen Wörterbuchartikel
+
+Korpusergebnisse exportieren
+----------------------------
+
+Korpusergebnisse lassen sich in verschiedenen Formaten exportieren. Als Basis gilt der URL `https://www.dwds.de/r`, welcher folgende Parameter akzeptiert:
+
+| Parameter |  |
+| --- |
+| `q` | [DDC-Abfrage](https://www.dwds.de/d/korpussuche) (obligatorisch) |
+| `corpus` | [abzufragendes Korpus](https://www.dwds.de/r) (Default: `dwdsxl`, _Gegenwartskorpora mit freiem Zugang_) |
+| `date-start` | Datumseinschränkung Treffer (Beginn), als Jahreszahl |
+| `date-end` | Datumseinschränkung Treffer (Ende), als Jahreszahl |
+| `genre` | Textklassen (wenn nicht angegeben, werden Treffer aller Textklassen geliefert) |
+| `format` | Format der Treffer: `kwic`keyword in context `full`ganzer Satz (Default) `max`ganzer Satz + jeweils 1 Satz Kontext |
+| `sort` | Sortierung der Treffer: `date_asc`nach Datum aufsteigend `date_desc`nach Datum absteigend (Default) `left_asc`nach linkem Token vom Trefferwort aufsteigend `left_desc`nach linkem Token vom Trefferwort bsteigend `mid_asc`nach Trefferwort aufsteigend `mid_desc`nach Trefferwort absteigend `right_asc`nach rechtem Token vom Trefferwort aufsteigend `right_desc`nach rechtem Token vom Trefferwort absteigend `length_asc`nach Beleglänge (Anzahl Tokens) aufsteigend `length_desc`nach Beleglänge (Anzahl Tokens) absteigend `random`zufällig |
+| `limit` | Anzahl der Treffer (max. 5 000, Default: 50, ZDL-Regionalkorpus: 100) |
+| `p` | n te Ergebnisseite (beginnend mit 1) |
+| `view` | `csv`kommaseparierte Liste für MS Excel etc. `json`JSON `tcf`[TCF 0.4](https://weblicht.sfs.uni-tuebingen.de/weblichtwiki/The_TCF_Format.html) `tsv`Tab-separierte Liste |
+
+Beispiele:
+
+### COUNT()-Abfragen
+
+[`COUNT()`-Abfragen](https://www.dwds.de/d/korpussuche#count) lassen sich als tabseparierter (= TSV) oder kommaseparierter (= CSV) Datensatz exportieren.
+
+Aussprache (IPA)
+----------------
+
+Einige Artikel im DWDS verfügen bereits über eine redaktionell geprüfte Angabe der Aussprache in [IPA-Notation](https://de.wikipedia.org/wiki/Internationales_Phonetisches_Alphabet). Die Basis für diese Arbeiten im DWDS wird durch die Software [gramophone](https://kaskade.dwds.de/gramophone/) gestellt. Sie können Ausspracheinformationen über die Adresse `https://www.dwds.de/api/ipa` in Verbindung mit dem obligatorischen Parameter `q` (max. 20 alphanumerische Zeichen oder Bindestrich) abfragen. Als Ergebnis wird eine JSON-Datenstruktur als Liste ausgeliefert, mit folgenden Werten:
+
+| field | data type | description |
+| --- | --- | --- |
+| `ipa` | string | IPA notation for input |
+| `status` | string | `"auto"`: generated by [gramophone](https://kaskade.dwds.de/gramophone/) | `"proved"`: edited by DWDS |
+
+### Beispielabfragen
+
+| Abfrage | Erläuterung |
+| --- | --- |
+| [https://www.dwds.de/api/ipa/?q=Haus](https://www.dwds.de/api/ipa/?q=Haus) | Abfrage für „[Haus](https://www.dwds.de/wb/Haus)“, automatisch generierte Angabe: [ {"ipa":"ˈhaʊ̯s", "status":"auto"} ] |
+| [https://www.dwds.de/api/ipa/?q=Caucus](https://www.dwds.de/api/ipa/?q=Caucus) | Abfrage für „[Caucus](https://www.dwds.de/wb/Caucus)“, redaktionelle Angabe: [ {"ipa":"ˈkɔːkəs", "status":"proved"} ] |
+| [https://www.dwds.de/api/ipa/?q=Boot](https://www.dwds.de/api/ipa/?q=Boot) | Abfrage für „[Boot](https://www.dwds.de/wb/Boot)“, redaktionelle und automatisch generierte Angabe, jeweils für die entsprechenden Wörter: [ {"ipa":"buːt", "status":"proved"}, {"ipa":"boːt", "status":"auto"} ] |
+
+Artikel des Tages
+-----------------
+
+Den Artikel des Tages im DWDS können Sie als Atom-Feed unter der Adresse [https://www.dwds.de/api/feed/adt](https://www.dwds.de/api/feed/adt) abonnieren.
+
+Neueste Artikel
+---------------
+
+Die neuesten Artikel im DWDS können Sie als Atom-Feed unter der Adresse [https://www.dwds.de/api/feed/latest](https://www.dwds.de/api/feed/latest) abonnieren.
+
+Blog
+----
+
+Beiträge im Blog des DWDS können Sie als RSS-Feed unter der Adresse [https://www.dwds.de/b/feed/](https://www.dwds.de/b/feed/) abonnieren.
+
+DWDS-Themenglossare
+-------------------
+
+### Atom-Feed
+
+Die DWDS-Themenglossare können als Atom-Feed abonniert werden:
+
+| Glossar | Atom-URL |
+| --- | --- |
+| [DWDS-Themenglossar zur COVID-19-Pandemie](https://www.dwds.de/themenglossar/Corona) | `https://www.dwds.de/api/feed/themenglossar/Corona` |
+| [DWDS-Themenglossar „Wählen in Deutschland“](https://www.dwds.de/themenglossar/D-Wahl) | `https://www.dwds.de/api/feed/themenglossar/D-Wahl` |
+| [DWDS-Themenglossar zur Europawahl](https://www.dwds.de/themenglossar/EU-Wahl) | `https://www.dwds.de/api/feed/themenglossar/EU-Wahl` |
+| [DWDS-Themenglossar zur Fußballsprache](https://www.dwds.de/themenglossar/Fu%C3%9Fball) | `https://www.dwds.de/api/feed/themenglossar/Fu%C3%9Fball` |
+| [DWDS-Themenglossar zur US-Präsidentschaftswahl](https://www.dwds.de/themenglossar/US-Wahl) | `https://www.dwds.de/api/feed/themenglossar/US-Wahl` |
+| [DWDS-Weihnachtsglossar](https://www.dwds.de/themenglossar/Weihnachten) | `https://www.dwds.de/api/feed/themenglossar/Weihnachten` |
+
+Folgende URL-Parameter sind möglich:
+
+| Parameter | Werte | Erklärung |
+| --- | --- | --- |
+| `type` | `html` (Default), `text` | Inhalt von `<subtitle>` bzw. `<summary>` als HTML oder Plaintext |
+| `view` | `compact`, `full` (Default) | alle (`full`) oder nur glossarspezifische (`compact`) Lesarten listen, bei `compact` werden die anderen Lesarten mit ihrer Zählung (z. B. `1.`, `a)`) gefolgt von `...` angedeutet |
+| `sort` | `alpha`, `date` (Default) | alphabetische oder nach Datum absteigende Sortierung der Einträge |
+| `start` | Integer, Default: `1` | Paging: Nummer des ersten Eintrages (Beginn bei `1`) |
+| `limit` | Integer, Default: `1000` | Paging: anzuzeigende Einträge pro Seite |
+
+Beispiele:
+
+| URL | Erklärung |
+| --- | --- |
+| `.../themenglossar/Corona?type=text` | DWDS-Themenglossar zur COVID-19-Pandemie: Einträge im Plaintextformat |
+| `.../Weihnachten?start=20&limit=10` | DWDS-Weihnachtsglossar: Einträge 20 bis 29 |
+| `.../Fußball?sort=alpha&view=compact` | DWDS-Themenglossar zur Fußballsprache: alphabetisch sortiert, kompakte Darstellung |
+
+### JSON
+
+Darüberhinaus lassen sich die Einträge in den [DWDS-Themenglossaren](https://www.dwds.de/themenglossar) als JSON bei entsprechend gesetztem `Accept`-Header abfragen:
+
+curl -X GET "https://www.dwds.de/themenglossar/Corona" -H "accept: application/json"curl -X GET "https://www.dwds.de/themenglossar/Fu%C3%9Fball" -H "accept: application/json"
+Folgende Datenstruktur liegt dem zugrunde:
+
+| field | data type | description |
+| --- | --- | --- |
+| `date` | string | date of last modification |
+| `entries` | list | list of entries |
+| `image` | string | image of glossary |
+| `name` | string | unique name of glossary |
+| `teaser` | string | teaser text of glossary as HTML fragment |
+| `title` | string | title of glossary |
+| `url` | string | URL of glossary |
+
+Innerhalb von `entries`:
+
+| field | data type | description |
+| --- | --- | --- |
+| `form` | string | part of speech (e. g. `Substantiv`, `Adjektiv` etc.) |
+| `genera` | list | optional, nouns only: list of genera (as string), encoded as `der`, `die` oder `das` |
+| `lemma` | string | lemma |
+| `toc` | string | list of meanings encoded as HTML fragment |
+| `url` | string | URL to dictionary entry in DWDS |
+
+Beispiel:
+
+{
+  "name": "Corona",
+  "url": "https://www.dwds.de/themenglossar/Corona",
+  "date": "2020-04-29T14:32:00",
+  "image": "https://www.dwds.de/dwds_static/d/glossare/corona-4916954_600.jpg",
+  "title": "DWDS-Themenglossar zur COVID-19-Pandemie",
+  "teaser": "<p>Die COVID-19-Pandemie löst weltweit zahlreiche Prozesse des Wandels aus, [...]</p>",
+  "entries": [
+    {
+      "toc": "<ol style=\"list-style-type:none\"><li>1. (hoher) Grad der Verbreitung eines Krankheitserregers, (hohe) Zahl der Infektionen in einem Gebiet ode
+r einer Population; Durchgang eines Krankheitserregers durch eine gesamte Population</li><li>2. [übertragen, abwertend] die flächendeckende Verbreitung eines
+als negativ empfundenen Phänomens</li><li>3. [Medizin, veraltet] Ausdehnung eines Krankheitserregers auf den gesamten Körper</li></ol>",
+      "genera": [
+        "die"
+      ],
+      "form": "Substantiv",
+      "lemma": "Durchseuchung",
+      "url": "https://www.dwds.de/wb/Durchseuchung"
+    },
+    ...
+  ]
+}
+
+Bitte beachten Sie die [Nutzungsbedingungen](https://www.dwds.de/d/nutzungsbedingungen) des DWDS.
+
+dstar
+-----
+
+Viele weitere Möglichkeiten zur Recherche und APIs finden Sie in unserer Korpusplattform [dstar](https://ddc.dwds.de/dstar/).
+
+Bitte beachten Sie, dass dort manche Korpora zugangsgeschützt sind. Alle Korpora, die wir frei zur Verfügung stellen können, sind auch auf der Webseite dwds.de zugänglich (z. T. erst nach [Login](https://www.dwds.de/profile/login)).
+
+Firefox Add-on „Im DWDS nachschlagen“
+-------------------------------------
+
+Diese Browsererweiterung erlaubt die direkte Weiterleitung von Suchanfragen an das digitale Wörterbuch der deutschen Sprache (dwds.de). Sie ermöglicht es, das DWDS als zusätzliche Suchmaschine im Suchfenster auszuwählen sowie beliebige Wörter im Fließtext per Rechtsklick im Wörterbuch nachzuschlagen. Wenn `dwds` als Erstes in der Adressleiste eingegeben wird, wird ein Link für die Abfrage vorgeschlagen.
+
+*   [Firefox Add-on „Im DWDS nachschlagen“ installieren](https://addons.mozilla.org/firefox/addon/dwds/)
+*   [Quellcode der Erweiterung](https://github.com/zentrum-lexikographie/dwds-addon) (bei GitHub)

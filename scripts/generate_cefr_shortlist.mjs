@@ -19,8 +19,48 @@ function normalizeWhitespace(value) {
 
 function looksLikeInfinitive(word) {
   if (!word) return false;
-  const compact = word.replace(/\s+/g, "");
-  return compact.endsWith("n");
+  return /[a-zäöüß]+$/i.test(word);
+}
+
+function parseCsvLine(line) {
+  const result = [];
+  let current = "";
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i += 1) {
+    const char = line[i];
+    if (char === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        current += '"';
+        i += 1;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (char === ',' && !inQuotes) {
+      result.push(current);
+      current = "";
+    } else {
+      current += char;
+    }
+  }
+  result.push(current);
+  return result;
+}
+
+function parseCsvFile(filePath) {
+  const raw = fs.readFileSync(filePath, "utf8");
+  const lines = raw.split(/\r?\n/).filter((line) => line.trim().length > 0);
+  if (lines.length === 0) {
+    return [];
+  }
+  const headers = parseCsvLine(lines[0]).map((header) => header.trim());
+  return lines.slice(1).map((line) => {
+    const values = parseCsvLine(line);
+    const entry = {};
+    headers.forEach((header, index) => {
+      entry[header] = values[index] ? values[index].trim() : "";
+    });
+    return entry;
+  });
 }
 
 function addRow(level, infinitive, sourceId, sourceName, sourceUrl, license, notes = "") {
@@ -32,50 +72,34 @@ function addRow(level, infinitive, sourceId, sourceName, sourceUrl, license, not
   rows.push({ level, infinitive, source_id: sourceId, source_name: sourceName, source_url: sourceUrl, license, notes });
 }
 
-const goetheA1Path = path.join(externalDir, "Goethe_A1_Wordlist.csv");
-if (fs.existsSync(goetheA1Path)) {
-  const raw = fs.readFileSync(goetheA1Path, "utf8");
-  const lines = raw.split(/\r?\n/);
-  for (const line of lines) {
-    if (!line.trim()) continue;
-    const parts = line.split("\t");
-    if (parts.length < 4) continue;
-    const germanRaw = parts[1]?.trim();
-    const englishRaw = parts[3]?.trim();
-    if (!germanRaw || !englishRaw) continue;
-    const english = normalizeWhitespace(englishRaw).toLowerCase();
-    if (!english.startsWith("to ")) continue;
-    const infinitive = normalizeWhitespace(germanRaw.replace(/,.*$/, "")).toLowerCase();
-    addRow("A1", infinitive, "goethe_a1_2018", "Goethe-Zertifikat A1 Wortliste (2018)", "https://raw.githubusercontent.com/harrymatthews50/ich_lerne_deutsch/main/data/Goethe_A1_Wordlist.csv", "MIT", "Derived from Goethe official vocabulary export");
-  }
-}
-
-const cukowskiSources = [
-  { level: "A1", filename: "wordsA1.txt" },
-  { level: "A2", filename: "wordsA2.txt" },
-  { level: "B1", filename: "wordsB1.txt" },
-  { level: "B2", filename: "wordsB2.txt" }
+const dwdsSources = [
+  { level: "A1", filename: "dwds-goethe-A1.csv", sourceId: "dwds_goethe_a1", sourceName: "DWDS Goethe-Zertifikat A1", apiUrl: "https://www.dwds.de/api/lemma/goethe/A1.csv" },
+  { level: "A2", filename: "dwds-goethe-A2.csv", sourceId: "dwds_goethe_a2", sourceName: "DWDS Goethe-Zertifikat A2", apiUrl: "https://www.dwds.de/api/lemma/goethe/A2.csv" },
+  { level: "B1", filename: "dwds-goethe-B1.csv", sourceId: "dwds_goethe_b1", sourceName: "DWDS Goethe-Zertifikat B1", apiUrl: "https://www.dwds.de/api/lemma/goethe/B1.csv" }
 ];
 
-for (const { level, filename } of cukowskiSources) {
+for (const { level, filename, sourceId, sourceName, apiUrl } of dwdsSources) {
   const filePath = path.join(externalDir, filename);
   if (!fs.existsSync(filePath)) continue;
-  const raw = fs.readFileSync(filePath, "utf8");
-  const lines = raw.split(/\r?\n/);
-  for (const line of lines) {
-    if (!line.includes("|")) continue;
-    const parts = line.split("|");
-    if (parts.length < 4) continue;
-    const pos = parts[1]?.trim();
-    if (pos !== "Infinitiv") continue;
-    const infinitive = parts[0]?.trim().toLowerCase();
-    addRow(level, infinitive, `cukowski_${filename}`, "GermanWordListByLevel", "https://github.com/Cukowski/GermanWordListByLevel", "Unknown", "Needs license confirmation");
+  const entries = parseCsvFile(filePath);
+  for (const entry of entries) {
+    const lemma = normalizeWhitespace(entry.Lemma ?? "");
+    if (!lemma) continue;
+    const pos = normalizeWhitespace(entry.Wortart ?? "");
+    if (!pos.includes("Verb")) continue;
+    const infinitive = lemma.toLowerCase();
+    addRow(level, infinitive, sourceId, sourceName, apiUrl, "DWDS terms (attribution required)", `POS: ${pos}`);
   }
 }
 
-rows.sort((a, b) => a.level.localeCompare(b.level) || a.infinitive.localeCompare(b.infinitive));
+rows.sort((a, b) => {
+  if (a.level === b.level) {
+    return a.infinitive.localeCompare(b.infinitive, "de");
+  }
+  return a.level.localeCompare(b.level);
+});
 
-const header = ["level","infinitive","source_id","source_name","source_url","license","notes"];
+const header = ["level", "infinitive", "source_id", "source_name", "source_url", "license", "notes"];
 const csvLines = [header.join(",")];
 for (const row of rows) {
   const values = header.map((key) => {
@@ -90,7 +114,7 @@ for (const row of rows) {
 
 fs.writeFileSync(path.join(outputDir, "cefr-verb-shortlist.csv"), csvLines.join("\n"));
 
-const summaryLevels = ["A1","A2","B1","B2","C1","C2"];
+const summaryLevels = ["A1", "A2", "B1", "B2", "C1", "C2"];
 const summary = Object.fromEntries(summaryLevels.map((level) => [level, 0]));
 for (const row of rows) {
   if (summary[row.level] !== undefined) {
