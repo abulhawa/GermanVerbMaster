@@ -14,9 +14,32 @@ import { eq, desc, sql, and } from "drizzle-orm";
 import rateLimit from "express-rate-limit";
 import type { Response } from "express";
 import { createHash, randomUUID } from "node:crypto";
+import type { GermanVerb } from "@shared";
 
 const practiceModeSchema = z.enum(['präteritum', 'partizipII', 'auxiliary', 'english']);
 const levelSchema = z.enum(['A1', 'A2', 'B1', 'B2', 'C1', 'C2']);
+
+const adminVerbSchema = z.object({
+  infinitive: z.string().trim().min(1).max(100),
+  english: z.string().trim().min(1).max(200),
+  präteritum: z.string().trim().min(1).max(200),
+  partizipII: z.string().trim().min(1).max(200),
+  auxiliary: z.enum(['haben', 'sein']),
+  level: levelSchema,
+  präteritumExample: z.string().trim().min(1).max(500),
+  partizipIIExample: z.string().trim().min(1).max(500),
+  source: z.object({
+    name: z.string().trim().min(1).max(100),
+    levelReference: z.string().trim().min(1).max(200),
+  }),
+  pattern: z
+    .object({
+      type: z.string().trim().min(1).max(100),
+      group: z.string().trim().min(1).max(100).optional(),
+    })
+    .nullable()
+    .optional(),
+});
 
 declare global {
   namespace Express {
@@ -143,6 +166,22 @@ function sendError(res: Response, status: number, message: string, code?: string
   return res.status(status).json({ error: message });
 }
 
+function requireAdminToken(req: Request, res: Response, next: NextFunction) {
+  const expectedToken = process.env.ADMIN_API_TOKEN;
+
+  if (!expectedToken) {
+    return sendError(res, 500, 'Admin API not configured', 'ADMIN_AUTH_DISABLED');
+  }
+
+  const providedToken = normalizeStringParam(req.headers['x-admin-token']);
+
+  if (!providedToken || providedToken !== expectedToken) {
+    return sendError(res, 401, 'Invalid admin token', 'ADMIN_AUTH_FAILED');
+  }
+
+  return next();
+}
+
 export function registerRoutes(app: Express): Server {
   // Get all verbs or filter by level
   app.get("/api/verbs", async (req, res) => {
@@ -167,6 +206,44 @@ export function registerRoutes(app: Express): Server {
     } catch (error) {
       console.error('Error fetching verbs:', error);
       sendError(res, 500, 'Failed to fetch verbs', 'VERBS_FETCH_FAILED');
+    }
+  });
+
+  app.post("/api/admin/verbs", requireAdminToken, async (req, res) => {
+    try {
+      const parsed = adminVerbSchema.safeParse(req.body satisfies Partial<GermanVerb>);
+
+      if (!parsed.success) {
+        return sendError(res, 400, 'Invalid verb payload', 'INVALID_VERB_INPUT');
+      }
+
+      const payload = parsed.data;
+
+      const existingVerb = await db.query.verbs.findFirst({
+        where: eq(verbs.infinitive, payload.infinitive),
+      });
+
+      if (existingVerb) {
+        return sendError(res, 409, 'Verb already exists', 'VERB_EXISTS');
+      }
+
+      await db.insert(verbs).values({
+        ...payload,
+        pattern: payload.pattern ?? null,
+      });
+
+      const createdVerb = await db.query.verbs.findFirst({
+        where: eq(verbs.infinitive, payload.infinitive),
+      });
+
+      if (!createdVerb) {
+        return sendError(res, 500, 'Failed to create verb', 'VERB_CREATE_FAILED');
+      }
+
+      return res.status(201).json(createdVerb);
+    } catch (error) {
+      console.error('Error creating verb:', error);
+      return sendError(res, 500, 'Failed to create verb', 'VERB_CREATE_FAILED');
     }
   });
 

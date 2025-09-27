@@ -7,6 +7,7 @@ import { useSyncQueue } from "@/hooks/use-sync-queue";
 
 const HomePage = lazy(() => import("@/pages/home"));
 const AnalyticsPage = lazy(() => import("@/pages/analytics"));
+const AdminPage = lazy(() => import("@/pages/admin"));
 const NotFoundPage = lazy(() => import("@/pages/not-found"));
 
 function Router() {
@@ -15,6 +16,7 @@ function Router() {
       <Switch>
         <Route path="/" component={HomePage} />
         <Route path="/analytics" component={AnalyticsPage} />
+        <Route path="/admin" component={AdminPage} />
         <Route component={NotFoundPage} />
       </Switch>
     </Suspense>

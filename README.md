@@ -47,6 +47,11 @@ The app runs entirely on your machine—no container or managed database is requ
 - The schema is managed with Drizzle + SQLite. After editing `db/schema.ts`, run `npm run db:push` to apply the migration to your local database file.
 - `npm run seed:verbs` fills the SQLite database and exports `attached_assets/verbs.json` for offline usage. Repeat this after importing new verbs.
 
+## Verb corpus admin tools
+- Configure an `ADMIN_API_TOKEN` in your `.env` file (see `.env.example`) to protect ingestion routes. Restart the dev server after changing environment variables.
+- Visit `http://localhost:5000/admin` to access the new moderation dashboard. The UI lets you add verbs, attach CEFR metadata, and optionally tag pattern groups before publishing.
+- Saving a verb sends a `POST /api/admin/verbs` request with the `x-admin-token` header. Successful submissions are immediately visible in the dashboard table and available to clients on next sync.
+
 ## Partner integrations
 - Generate sandbox API keys with `npm run integration:create-key` and follow the workflow documented in [`docs/integration-api.md`](docs/integration-api.md).
 - Authenticated partners can fetch embeddable drill bundles and review their request analytics via the new `/api/partner/*` routes.
