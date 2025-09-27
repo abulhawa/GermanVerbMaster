@@ -14,6 +14,7 @@ import type { GermanVerb } from "@shared";
 
 const LEVEL_OPTIONS: GermanVerb["level"][] = ["A1", "A2", "B1", "B2", "C1", "C2"];
 const PATTERN_TYPES = ["ablaut", "mixed", "modal", "other"];
+const PATTERN_TYPE_NONE = "__none__" as const;
 
 interface AdminVerbFormState {
   infinitive: string;
@@ -30,11 +31,18 @@ interface AdminVerbFormState {
   patternGroup: string;
 }
 
-interface VerbRecord extends GermanVerb {
+type VerbRecord = Omit<GermanVerb, "source" | "pattern"> & {
   id: number;
-  createdAt?: number | string | null;
-  updatedAt?: number | string | null;
-}
+  createdAt?: number | string | Date | null;
+  updatedAt?: number | string | Date | null;
+  source: GermanVerb["source"] | string | null;
+  pattern?: GermanVerb["pattern"] | string | null;
+};
+
+type NormalizedVerbRecord = Omit<VerbRecord, "source" | "pattern"> & {
+  source: GermanVerb["source"] | null;
+  pattern: NonNullable<GermanVerb["pattern"]> | null;
+};
 
 function createDefaultFormState(): AdminVerbFormState {
   return {
@@ -48,7 +56,7 @@ function createDefaultFormState(): AdminVerbFormState {
     partizipIIExample: "",
     sourceName: "",
     sourceLevelReference: "",
-    patternType: "",
+    patternType: PATTERN_TYPE_NONE,
     patternGroup: "",
   };
 }
@@ -79,6 +87,26 @@ function toDate(value: VerbRecord["createdAt"]): Date | undefined {
   return undefined;
 }
 
+function parseJsonField<T>(value: unknown): T | null {
+  if (value === null || value === undefined) {
+    return null;
+  }
+
+  if (typeof value === "string") {
+    try {
+      return JSON.parse(value) as T;
+    } catch {
+      return null;
+    }
+  }
+
+  if (typeof value === "object") {
+    return value as T;
+  }
+
+  return null;
+}
+
 export default function AdminPage() {
   const { toast } = useToast();
   const [adminToken, setAdminToken] = useState(() => {
@@ -104,6 +132,14 @@ export default function AdminPage() {
   const { data: verbs = [], isFetching, refetch } = useQuery<VerbRecord[]>({
     queryKey: ["/api/verbs"],
   });
+
+  const normalizedVerbs = useMemo<NormalizedVerbRecord[]>(() => {
+    return verbs.map((verb) => ({
+      ...verb,
+      source: parseJsonField<GermanVerb["source"]>(verb.source) ?? null,
+      pattern: parseJsonField<NonNullable<GermanVerb["pattern"]>>(verb.pattern) ?? null,
+    }));
+  }, [verbs]);
 
   const mutation = useMutation({
     mutationFn: async (payload: GermanVerb) => {
@@ -143,21 +179,21 @@ export default function AdminPage() {
   const levelSummary = useMemo(() => {
     return LEVEL_OPTIONS.map((level) => ({
       level,
-      count: verbs.filter((verb) => verb.level === level).length,
+      count: normalizedVerbs.filter((verb) => verb.level === level).length,
     }));
-  }, [verbs]);
+  }, [normalizedVerbs]);
 
   const recentVerbs = useMemo(() => {
-    return [...verbs]
+    return [...normalizedVerbs]
       .sort((a, b) => {
         const aDate = toDate(a.updatedAt ?? a.createdAt)?.getTime() ?? 0;
         const bDate = toDate(b.updatedAt ?? b.createdAt)?.getTime() ?? 0;
         return bDate - aDate;
       })
       .slice(0, 10);
-  }, [verbs]);
+  }, [normalizedVerbs]);
 
-  const totalVerbs = verbs.length;
+  const totalVerbs = normalizedVerbs.length;
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -184,7 +220,7 @@ export default function AdminPage() {
         name: formState.sourceName.trim(),
         levelReference: formState.sourceLevelReference.trim(),
       },
-      pattern: formState.patternType
+      pattern: formState.patternType !== PATTERN_TYPE_NONE
         ? {
             type: formState.patternType,
             ...(formState.patternGroup.trim()
@@ -198,10 +234,20 @@ export default function AdminPage() {
   };
 
   const updateForm = (field: keyof AdminVerbFormState, value: string) => {
-    setFormState((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    setFormState((prev) => {
+      if (field === "patternType") {
+        return {
+          ...prev,
+          patternType: value,
+          patternGroup: value === PATTERN_TYPE_NONE ? "" : prev.patternGroup,
+        };
+      }
+
+      return {
+        ...prev,
+        [field]: value,
+      };
+    });
   };
 
   return (
@@ -393,7 +439,7 @@ export default function AdminPage() {
                     <SelectValue placeholder="Optional" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">None</SelectItem>
+                    <SelectItem value={PATTERN_TYPE_NONE}>None</SelectItem>
                     {PATTERN_TYPES.map((type) => (
                       <SelectItem key={type} value={type}>
                         {type}
@@ -409,7 +455,7 @@ export default function AdminPage() {
                   placeholder="Optional grouping tag"
                   value={formState.patternGroup}
                   onChange={(event) => updateForm("patternGroup", event.target.value)}
-                  disabled={!formState.patternType}
+                  disabled={formState.patternType === PATTERN_TYPE_NONE}
                 />
               </div>
               <div className="md:col-span-2 flex justify-end">
@@ -450,7 +496,7 @@ export default function AdminPage() {
                         {verb.pattern?.type ?? "—"}
                         {verb.pattern?.group ? ` (${verb.pattern.group})` : ""}
                       </TableCell>
-                      <TableCell>{verb.source.name}</TableCell>
+                      <TableCell>{verb.source?.name ?? "—"}</TableCell>
                       <TableCell className="text-right text-muted-foreground">
                         {updated ? updated.toLocaleDateString() : "—"}
                       </TableCell>
