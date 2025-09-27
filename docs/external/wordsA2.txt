@@ -1,0 +1,64 @@
+die|Nominativ|the (plural definite article)|Die Bücher sind interessant.
+ein|Akkusativ|a/an (masculine/neuter indefinite article, accusative case)|Ich sehe einen Hund.
+eine|Akkusativ|a/an (feminine indefinite article, accusative case)|Ich kaufe eine Blume.
+einen|Akkusativ|a/an (masculine indefinite article, accusative case)|Er hat einen Stift.
+kein|Akkusativ|no/not a (masculine/feminine/neuter indefinite article, accusative case)|Ich habe keine Zeit.
+keine|Akkusativ|no/not a (feminine indefinite article, accusative case)|Das ist keine Katze.
+kein|Akkusativ|no/not a (neuter indefinite article, accusative case)|Das ist kein Buch.
+der|Dativ|the (masculine definite article, dative case)|Das gehört dem Mann.
+die|Dativ|the (feminine definite article, dative case)|Das gehört der Frau.
+das|Dativ|the (neuter definite article, dative case)|Das gehört dem Kind.
+ein|Dativ|a/an (masculine/neuter indefinite article, dative case)|Ich gebe einem Freund ein Buch.
+eine|Dativ|a/an (feminine indefinite article, dative case)|Ich gebe einer Freundin eine Blume.
+einen|Dativ|a/an (masculine indefinite article, dative case)|Ich gebe einem Mann einen Apfel.
+kein|Dativ|no/not a (masculine/feminine/neuter indefinite article, dative case)|Ich gebe keinem Hund Futter.
+keine|Dativ|no/not a (feminine indefinite article, dative case)|Das gehört keiner Katze.
+kein|Dativ|no/not a (neuter indefinite article, dative case)|Das gehört keinem Kind.
+nach|Dativ|to/after (preposition indicating direction or time)|Ich gehe nach Hause.
+in|Dativ|in (preposition indicating location)|Die Katze ist in der Küche.
+mit|Dativ|with (preposition indicating accompaniment or means)|Ich gehe mit Freunden ins Kino.
+bei|Dativ|at/by/near (preposition indicating location)|Ich bin bei meiner Familie.
+zu|Dativ|to (preposition indicating direction)|Wir gehen zum Bahnhof.
+für|Dativ|for (preposition indicating purpose or beneficiary)|Das ist für dich.
+von|Dativ|from (preposition indicating origin or possession)|Das Buch ist von mir.
+auf|Dativ|on (preposition indicating location)|Die Tasse steht auf dem Tisch.
+über|Dativ|over/about (preposition indicating location or topic)|Er spricht über das Wetter.
+unter|Dativ|under (preposition indicating location)|Das Buch ist unter dem Bett.
+zwischen|Dativ|between (preposition indicating location)|Das Kind steht zwischen den Bäumen.
+hinter|Dativ|behind (preposition indicating location)|Die Katze ist hinter dem Sofa.
+vor|Dativ|in front of (preposition indicating location)|Er steht vor dem Haus.
+an|Dativ|at/on (preposition indicating location)|Das Bild hängt an der Wand.
+neben|Dativ|next to (preposition indicating location)|Der Stuhl steht neben dem Tisch.
+überall|Adverb|everywhere|Die Kinder spielen überall.
+auch|Adverb|also/too|Ich bin auch müde.
+immer|Adverb|always|Er kommt immer pünktlich.
+oft|Adverb|often|Ich gehe oft ins Kino.
+manchmal|Adverb|sometimes|Manchmal gehe ich spazieren.
+nie|Adverb|never|Ich habe nie Zeit.
+schon|Adverb|already|Hast du schon gegessen?
+noch|Adverb|still/yet|Ich bin noch nicht fertig.
+vielleicht|Adverb|maybe/perhaps|Vielleicht gehe ich morgen.
+jetzt|Adverb|now|Wir gehen jetzt.
+dann|Adverb|then|Wir essen jetzt, und dann gehen wir spazieren.
+sehr|Adverb|very|Das ist sehr schön.
+ziemlich|Adverb|quite/rather|Das ist ziemlich schwer.
+fast|Adverb|almost|Es ist fast fertig.
+gern|Adverb|gladly|Ich esse gern Pizza.
+oft|Adverb|often|Wir gehen oft ins Kino.
+meistens|Adverb|mostly|Ich arbeite meistens von zu Hause aus.
+zusammen|Adverb|together|Wir gehen zusammen einkaufen.
+allein|Adverb|alone|Ich bleibe lieber allein.
+natürlich|Adverb|of course/naturally|Natürlich helfe ich dir.
+gar nicht|Adverb|not at all|Das verstehe ich gar nicht.
+fast|Adverb|almost|Es ist fast fertig.
+viele|Pronomen|many|Es gibt viele Bücher.
+einige|Pronomen|some|Ich habe einige Freunde.
+wenige|Pronomen|few|Es gibt wenige Äpfel.
+alle|Pronomen|all|Wir gehen alle zusammen.
+jeder|Pronomen|each/every|Jeder kennt diese Regel.
+manche|Pronomen|some|Manche Leute mögen Kaffee nicht.
+niemand|Pronomen|nobody/no one|Niemand ist perfekt.
+nichts|Pronomen|nothing|Es gibt nichts zu essen.
+alles|Pronomen|everything|Alles ist in Ordnung.
+etwas|Pronomen|something|Ich habe etwas für dich.
+jemand|Pronomen|someone|Jemand hat angerufen.

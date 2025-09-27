@@ -1,0 +1,73 @@
+derjenige|Nominativ|that one (masculine singular)|Derjenige Mann ist mein Bruder.
+diejenige|Nominativ|that one (feminine singular)|Diejenige Frau ist meine Schwester.
+dasjenige|Nominativ|that one (neuter singular)|Dasjenige Buch ist interessant.
+diejenigen|Nominativ|those (plural)|Diejenigen Menschen sind meine Freunde.
+einer|Nominativ|one (masculine singular)|Einer von ihnen ist mein Freund.
+eine|Nominativ|one (feminine singular)|Eine von ihnen ist meine Freundin.
+eines|Nominativ|one (neuter singular)|Eines von ihnen ist mein Auto.
+einige|Nominativ|some (plural)|Einige von ihnen sind meine Kollegen.
+meiner|Genitiv|my (masculine/neuter singular)|Das ist der Hund meiner Schwester.
+meiner|Genitiv|my (feminine singular)|Das ist das Buch meiner Mutter.
+meiner|Genitiv|my (plural)|Das sind die Eltern meiner Freunde.
+deiner|Genitiv|your (masculine/neuter singular)|Das ist das Auto deines Bruders.
+deiner|Genitiv|your (feminine singular)|Das ist die Blume deiner Schwester.
+deiner|Genitiv|your (plural)|Das sind die Geschwister deiner Freunde.
+unser|Genitiv|our (masculine/neuter singular)|Das ist der Hund unseres Nachbarn.
+unser|Genitiv|our (feminine singular)|Das ist die Katze unserer Nachbarin.
+unser|Genitiv|our (plural)|Das sind die Kinder unserer Freunde.
+euer|Genitiv|your (masculine/neuter singular)|Das ist das Auto eures Nachbarn.
+euer|Genitiv|your (feminine singular)|Das ist die Blume eurer Nachbarin.
+euer|Genitiv|your (plural)|Das sind die Eltern eurer Freunde.
+ihr|Genitiv|their (masculine/neuter singular)|Das ist das Buch ihrer Mutter.
+ihr|Genitiv|their (feminine singular)|Das ist die Tasche ihrer Freundin.
+ihr|Genitiv|their (plural)|Das sind die Geschwister ihrer Freunde.
+meinem|Dativ|my (masculine/neuter singular)|Das gehört meinem Bruder.
+meiner|Dativ|my (feminine singular)|Das gehört meiner Schwester.
+meinen|Akkusativ|my (masculine/neuter singular)|Das ist mein Auto.
+meine|Akkusativ|my (feminine singular)|Das ist meine Katze.
+meine|Akkusativ|my (plural)|Das sind meine Eltern.
+deinen|Akkusativ|your (masculine/neuter singular)|Das ist dein Buch.
+deine|Akkusativ|your (feminine singular)|Das ist deine Tasche.
+deine|Akkusativ|your (plural)|Das sind deine Geschwister.
+euren|Akkusativ|your (masculine/neuter singular)|Das ist euer Auto.
+eure|Akkusativ|your (feminine singular)|Das ist eure Katze.
+eure|Akkusativ|your (plural)|Das sind eure Kinder.
+ihrem|Akkusativ|their (masculine/neuter singular)|Das ist das Buch ihres Vaters.
+ihrer|Akkusativ|their (feminine singular)|Das ist die Tasche ihrer Mutter.
+ihren|Akkusativ|their (plural)|Das sind die Eltern ihrer Freunde.
+meinen|Dativ|my (masculine/neuter singular)|Das gehört meinem Bruder.
+meiner|Dativ|my (feminine singular)|Das gehört meiner Schwester.
+meinen|Dativ|my (plural)|Das gehört meinen Freunden.
+deinem|Dativ|your (masculine/neuter singular)|Das gehört deinem Vater.
+deiner|Dativ|your (feminine singular)|Das gehört deiner Mutter.
+deinen|Dativ|your (plural)|Das gehört deinen Eltern.
+ihrem|Dativ|their (masculine/neuter singular)|Das gehört ihrem Bruder.
+ihrer|Dativ|their (feminine singular)|Das gehört ihrer Schwester.
+ihren|Dativ|their (plural)|Das gehört ihren Eltern.
+unserem|Dativ|our (masculine/neuter singular)|Das gehört unserem Nachbarn.
+unserer|Dativ|our (feminine singular)|Das gehört unserer Nachbarin.
+unseren|Dativ|our (plural)|Das gehört unseren Freunden.
+eurem|Dativ|your (masculine/neuter singular)|Das gehört eurem Nachbarn.
+eurer|Dativ|your (feminine singular)|Das gehört eurer Nachbarin.
+euren|Dativ|your (plural)|Das gehört euren Freunden.
+ihrem|Dativ|their (masculine/neuter singular)|Das gehört ihrem Vater.
+ihrer|Dativ|their (feminine singular)|Das gehört ihrer Mutter.
+ihren|Dativ|their (plural)|Das gehört ihren Eltern.
+meinem|Akkusativ|my (masculine/neuter singular)|Das gehört meinem Bruder.
+meiner|Akkusativ|my (feminine singular)|Das gehört meiner Schwester.
+meinen|Akkusativ|my (plural)|Das gehört meinen Freunden.
+deinem|Akkusativ|your (masculine/neuter singular)|Das gehört deinem Vater.
+deiner|Akkusativ|your (feminine singular)|Das gehört deiner Mutter.
+deinen|Akkusativ|your (plural)|Das gehört deinen Eltern.
+ihrem|Akkusativ|their (masculine/neuter singular)|Das gehört ihrem Bruder.
+ihrer|Akkusativ|their (feminine singular)|Das gehört ihrer Schwester.
+ihren|Akkusativ|their (plural)|Das gehört ihren Eltern.
+unseren|Akkusativ|our (masculine/neuter singular)|Das gehört unserem Nachbarn.
+unserer|Akkusativ|our (feminine singular)|Das gehört unserer Nachbarin.
+unseren|Akkusativ|our (plural)|Das gehört unseren Freunden.
+euren|Akkusativ|your (masculine/neuter singular)|Das gehört eurem Nachbarn.
+eurer|Akkusativ|your (feminine singular)|Das gehört eurer Nachbarin.
+euren|Akkusativ|your (plural)|Das gehört euren Freunden.
+ihren|Akkusativ|their (masculine/neuter singular)|Das gehört ihrem Vater.
+ihrer|Akkusativ|their (feminine singular)|Das gehört ihrer Mutter.
+ihren|Akkusativ|their (plural)|Das gehört ihren Eltern.

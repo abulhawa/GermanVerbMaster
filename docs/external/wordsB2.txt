@@ -1,0 +1,60 @@
+jeder|Nominativ|each/everyone|Jeder hat seine eigenen Probleme.
+jede|Nominativ|each/every (feminine)|Jede von ihnen ist einzigartig.
+jedes|Nominativ|each/every (neuter)|Jedes Kind hat Träume.
+alle|Nominativ|all/everyone|Alle sind eingeladen.
+jeder|Genitiv|each one's|Das ist das Auto jedes Einzelnen.
+jede|Genitiv|each one's (feminine)|Das ist die Entscheidung jeder Einzelnen.
+jedes|Genitiv|each one's (neuter)|Das ist der Traum jedes Einzelnen.
+aller|Genitiv|all's|Das sind die Gedanken aller.
+aller|Dativ|of all|Das gehört dem Glück aller.
+allen|Akkusativ|to all|Das ist ein Geschenk für alle.
+alle|Akkusativ|all/everyone|Wir kennen alle.
+aller|Akkusativ|all's|Das ist das Ende aller.
+allen|Akkusativ|to all|Wir danken allen.
+niemand|Nominativ|nobody|Niemand hat das Recht dazu.
+keiner|Nominativ|none/nobody (masculine)|Keiner von ihnen war da.
+keine|Nominativ|none/nobody (feminine)|Keine hat es bemerkt.
+keines|Nominativ|none/nobody (neuter)|Keines der Kinder war dort.
+nichts|Nominativ|nothing|Nichts ist unmöglich.
+niemandes|Genitiv|nobody's|Das ist das Eigentum niemandes.
+keines|Genitiv|none/nobody's|Das ist das Buch keines Einzelnen.
+niemandem|Dativ|to nobody|Ich werde niemandem davon erzählen.
+keinem|Dativ|to none/nobody (masculine/neuter)|Das gehört keinem.
+keiner|Dativ|to none/nobody (feminine)|Das gehört keiner.
+niemanden|Akkusativ|nobody|Wir haben niemanden verletzt.
+keinen|Akkusativ|none/nobody (masculine/neuter)|Das trifft keinen.
+keine|Akkusativ|none/nobody (feminine)|Das betrifft keine.
+wenige|Nominativ|few|Nur wenige haben es geschafft.
+weniger|Genitiv|less/fewer|Wir haben weniger Zeit als erwartet.
+wenigem|Dativ|to few|Das gehört wenigem.
+wenigen|Akkusativ|to few|Wir haben zu wenigen vertraut.
+mehr|Nominativ|more|Wir brauchen mehr.
+mehrere|Nominativ|several|Mehrere haben es versucht.
+meiner|Nominativ|mine|Das ist meiner.
+meines|Nominativ|mine (neuter)|Das ist meines.
+deiner|Nominativ|yours (informal)|Das ist deiner.
+deines|Nominativ|yours (informal, neuter)|Das ist deines.
+unser|Nominativ|ours|Das ist unseres.
+euer|Nominativ|yours (plural, informal)|Das ist euer.
+ihr|Nominativ|theirs|Das ist ihrs.
+meiner|Genitiv|mine|Das ist das Auto meiner Eltern.
+meiner|Dativ|to me|Das gehört meiner.
+meinem|Dativ|to me (neuter)|Das gehört meinem.
+meinen|Akkusativ|mine|Das ist meinen.
+meines|Akkusativ|mine (neuter)|Das ist meines.
+deiner|Akkusativ|yours (informal)|Das ist deinen.
+deines|Akkusativ|yours (informal, neuter)|Das ist deines.
+unser|Akkusativ|ours|Das ist unseres.
+euer|Akkusativ|yours (plural, informal)|Das ist euer.
+ihr|Akkusativ|theirs|Das ist ihrs.
+deines|Genitiv|yours (informal, neuter)|Das ist das Buch deines Bruders.
+deinen|Dativ|to you (informal, plural)|Das gehört deinen Freunden.
+eurer|Dativ|to you (plural, informal)|Das gehört eurer Familie.
+eurem|Akkusativ|yours (plural, informal)|Das gehört eurem Lehrer.
+ihr|Genitiv|theirs|Das ist das Auto ihrer Eltern.
+ihr|Dativ|to them|Das gehört ihr.
+ihrem|Dativ|to them (masculine/neuter)|Das gehört ihrem Bruder.
+ihren|Akkusativ|to them|Das betrifft ihren Vater.
+ihrem|Akkusativ|to them (masculine/neuter)|Das gehört ihrem Bruder.
+ihr|Akkusativ|to them (feminine)|Das gehört ihrer Schwester.
+ihre|Akkusativ|to them (plural)|Das gehört ihren Eltern.

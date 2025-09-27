@@ -1,0 +1,65 @@
+der|Nominativ|the (masculine definite article)|Das ist der Tisch.
+die|Nominativ|the (feminine definite article)|Das ist die Lampe.
+das|Nominativ|the (neuter definite article)|Das ist das Buch.
+ein|Nominativ|a/an (masculine/feminine/neuter indefinite article)|Ich habe einen Stift.
+eine|Nominativ|a/an (feminine indefinite article)|Das ist eine Blume.
+ein|Nominativ|a/an (neuter indefinite article)|Das ist ein Kind.
+ich|Nominativ|I|Ich bin müde.
+du|Nominativ|you (informal singular)|Kannst du mir helfen?
+er|Nominativ|he|Er ist mein Bruder.
+sie|Nominativ|she|Sie ist meine Schwester.
+es|Nominativ|it|Das ist mein Buch, es ist groß.
+wir|Nominativ|we|Wir gehen spazieren.
+ihr|Nominativ|you (informal plural)|Kommt ihr mit?
+sie|Nominativ|they|Sie sind meine Freunde.
+Sie|Nominativ|you (formal singular or plural)|Wie heißen Sie?
+der|Akkusativ|the (masculine definite article, accusative case)|Ich sehe den Mann.
+die|Akkusativ|the (feminine definite article, accusative case)|Ich sehe die Frau.
+das|Akkusativ|the (neuter definite article, accusative case)|Ich sehe das Auto.
+einen|Akkusativ|a/an (masculine indefinite article, accusative case)|Ich kaufe einen Apfel.
+eine|Akkusativ|a/an (feminine indefinite article, accusative case)|Ich trinke eine Tasse Kaffee.
+ein|Akkusativ|a/an (neuter indefinite article, accusative case)|Er hat ein Buch.
+mögen|Infinitiv|to like|Ich mag Eiscreme.
+haben|Infinitiv|to have|Ich habe einen Hund.
+sein|Infinitiv|to be|Ich bin glücklich.
+kommen|Infinitiv|to come|Kommst du mit?
+gehen|Infinitiv|to go|Wir gehen ins Kino.
+spielen|Infinitiv|to play|Kinder spielen gerne.
+sprechen|Infinitiv|to speak|Ich spreche Deutsch.
+lernen|Infinitiv|to learn|Ich lerne Deutsch.
+verstehen|Infinitiv|to understand|Verstehst du mich?
+schreiben|Infinitiv|to write|Ich schreibe einen Brief.
+lesen|Infinitiv|to read|Ich lese ein Buch.
+kaufen|Infinitiv|to buy|Kannst du das kaufen?
+essen|Infinitiv|to eat|Wir essen Pizza.
+trinken|Infinitiv|to drink|Ich trinke Wasser.
+machen|Infinitiv|to do/make|Was machst du?
+sehen|Infinitiv|to see|Ich sehe den Hund.
+geben|Infinitiv|to give|Er gibt mir ein Geschenk.
+kommen|Infinitiv|to come|Wir kommen aus Deutschland.
+arbeiten|Infinitiv|to work|Ich arbeite im Büro.
+fahren|Infinitiv|to drive|Ich fahre ein Auto.
+warten|Infinitiv|to wait|Ich warte auf dich.
+finden|Infinitiv|to find|Ich finde meinen Schlüssel nicht.
+kennen|Infinitiv|to know (be acquainted with)|Ich kenne ihn nicht.
+nehmen|Infinitiv|to take|Kann ich dein Buch nehmen?
+brauchen|Infinitiv|to need|Ich brauche Hilfe.
+sehen|Infinitiv|to see|Ich sehe einen Film.
+wissen|Infinitiv|to know (facts)|Ich weiß nicht.
+suchen|Infinitiv|to search|Wir suchen eine Wohnung.
+fahren|Infinitiv|to go (by vehicle)|Wir fahren in die Stadt.
+heißen|Infinitiv|to be called|Wie heißt du?
+denken|Infinitiv|to think|Was denkst du?
+sagen|Infinitiv|to say|Er sagt, er kommt später.
+kennen|Infinitiv|to know (be familiar with)|Ich kenne diese Stadt.
+lieben|Infinitiv|to love|Ich liebe dich.
+warten|Infinitiv|to wait|Wir warten auf den Bus.
+spielen|Infinitiv|to play|Ich spiele Tennis.
+laufen|Infinitiv|to walk|Ich laufe jeden Morgen.
+arbeiten|Infinitiv|to work|Sie arbeitet viel.
+sprechen|Infinitiv|to speak|Er spricht Englisch.
+tragen|Infinitiv|to wear|Sie trägt einen Hut.
+leben|Infinitiv|to live|Er lebt in Berlin.
+kommen|Infinitiv|to come|Sie kommt aus Frankreich.
+lesen|Infinitiv|to read|Sie liest ein Buch.
+fahren|Infinitiv|to drive|Sie fährt ein Auto.
