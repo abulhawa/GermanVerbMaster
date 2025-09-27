@@ -140,15 +140,23 @@ for (const { level, filename, sourceId, sourceName, apiUrl } of dwdsSources) {
   }
 }
 
-let dtzVerbs = new Set();
+let dtzUniqueVerbs = [];
+let dtzOverlapVerbs = [];
 const dtzTxtPath = path.join(externalDir, "goethe-dtz-wortliste.txt");
 if (fs.existsSync(dtzTxtPath)) {
-  dtzVerbs = extractDtzVerbs(dtzTxtPath);
+  const dtzVerbs = Array.from(extractDtzVerbs(dtzTxtPath)).sort((a, b) => a.localeCompare(b, "de"));
+  const existingInfinitives = new Set(rows.map((row) => row.infinitive));
   const sourceId = "goethe_dtz";
   const sourceName = "Goethe DTZ Wortliste";
   const sourceUrl = "https://www.goethe.de/resources/files/pdf209/dtz_wortliste.pdf";
   for (const verb of dtzVerbs) {
+    if (existingInfinitives.has(verb)) {
+      dtzOverlapVerbs.push(verb);
+      continue;
+    }
     addRow("DTZ", verb, sourceId, sourceName, sourceUrl, "Goethe-Institut terms (internal use)", "Extracted from DTZ alphabetical list");
+    dtzUniqueVerbs.push(verb);
+    existingInfinitives.add(verb);
   }
 }
 
@@ -189,12 +197,19 @@ for (const row of rows) {
 }
 fs.writeFileSync(path.join(outputDir, "cefr-verb-shortlist-summary.json"), JSON.stringify(summary, null, 2));
 
-if (dtzVerbs.size > 0) {
-  const dtzList = ["infinitive", ...Array.from(dtzVerbs).sort((a, b) => a.localeCompare(b, "de"))];
+if (dtzUniqueVerbs.length > 0) {
+  const dtzList = ["infinitive", ...dtzUniqueVerbs];
   fs.writeFileSync(path.join(outputDir, "dtz-verb-list.csv"), dtzList.join("\n"));
+}
+if (dtzOverlapVerbs.length > 0) {
+  const overlapList = ["infinitive", ...dtzOverlapVerbs];
+  fs.writeFileSync(path.join(outputDir, "dtz-verb-overlap.csv"), overlapList.join("\n"));
 }
 
 if (lingsterCandidates.size > 0) {
   const lingsterList = ["infinitive", ...Array.from(lingsterCandidates).sort((a, b) => a.localeCompare(b, "de"))];
   fs.writeFileSync(path.join(outputDir, "lingster-verb-candidates.csv"), lingsterList.join("\n"));
 }
+
+
+
