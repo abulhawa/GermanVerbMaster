@@ -63,6 +63,54 @@ function parseCsvFile(filePath) {
   });
 }
 
+function extractDtzVerbs(filePath) {
+  const raw = fs.readFileSync(filePath, "utf8");
+  const lines = raw.split(/\r?\n/);
+  const verbs = new Set();
+  const skipPrefixes = [
+    "hat ", "ist ", "war ", "waren ", "sich ", "hatte ", "hatten ", "wurden ", "wurde ",
+    "habe ", "haben ", "konnte ", "konnten ", "sollte ", "sollten ", "musste ", "mussten ",
+    "wollte ", "wollten ", "kann ", "können ", "möchte ", "möchten ", "mag ", "machte ",
+    "gibt ", "bot ", "gab ", "ging ", "kam ", "lag ", "nahm ", "sah ", "stand ",
+    "trug ", "trat ", "fiel ", "fand ", "fing ", "fuhr "
+  ];
+  const allowList = new Set(["sein", "tun"]);
+  for (const lineRaw of lines) {
+    const sanitized = lineRaw.replace(/[\u0000-\u001f]/g, " ").replace(/\s+/g, " ").trim();
+    if (!sanitized) continue;
+    const lower = sanitized.toLowerCase();
+    const match = lower.match(/^([a-zäöüß]+)/);
+    if (!match) continue;
+    const lemma = match[1];
+    if (!lemma.endsWith("en") && !allowList.has(lemma)) continue;
+    const parts = lower.split(",").map((p) => p.trim()).filter(Boolean);
+    if (parts.length < 3) continue;
+    const secondPart = parts[1];
+    if (skipPrefixes.some((prefix) => secondPart.startsWith(prefix))) continue;
+    verbs.add(lemma.normalize("NFC"));
+  }
+  return verbs;
+}
+
+function extractLingsterVerbCandidates(filePath) {
+  const raw = fs.readFileSync(filePath, "utf8");
+  const lines = raw.split(/\r?\n/);
+  const verbs = new Set();
+  const allowList = new Set(["sein", "tun"]);
+  for (const lineRaw of lines) {
+    const sanitized = lineRaw.replace(/[\u0000-\u001f]/g, " ").replace(/\s+/g, " ").trim();
+    if (!sanitized) continue;
+    const lower = sanitized.toLowerCase();
+    const match = lower.match(/^([a-zäöüß]+) (a1|a2|b1|b2)\b/);
+    if (!match) continue;
+    const lemma = match[1];
+    if (!lemma.endsWith("en") && !allowList.has(lemma)) continue;
+    if (lemma === "den" || lemma === "einen") continue;
+    verbs.add(lemma.normalize("NFC"));
+  }
+  return verbs;
+}
+
 function addRow(level, infinitive, sourceId, sourceName, sourceUrl, license, notes = "") {
   if (!level || !infinitive) return;
   if (!looksLikeInfinitive(infinitive)) return;
@@ -92,6 +140,24 @@ for (const { level, filename, sourceId, sourceName, apiUrl } of dwdsSources) {
   }
 }
 
+let dtzVerbs = new Set();
+const dtzTxtPath = path.join(externalDir, "goethe-dtz-wortliste.txt");
+if (fs.existsSync(dtzTxtPath)) {
+  dtzVerbs = extractDtzVerbs(dtzTxtPath);
+  const sourceId = "goethe_dtz";
+  const sourceName = "Goethe DTZ Wortliste";
+  const sourceUrl = "https://www.goethe.de/resources/files/pdf209/dtz_wortliste.pdf";
+  for (const verb of dtzVerbs) {
+    addRow("DTZ", verb, sourceId, sourceName, sourceUrl, "Goethe-Institut terms (internal use)", "Extracted from DTZ alphabetical list");
+  }
+}
+
+let lingsterCandidates = new Set();
+const lingsterPath = path.join(externalDir, "lingster-wortschatz-A1-B2.txt");
+if (fs.existsSync(lingsterPath)) {
+  lingsterCandidates = extractLingsterVerbCandidates(lingsterPath);
+}
+
 rows.sort((a, b) => {
   if (a.level === b.level) {
     return a.infinitive.localeCompare(b.infinitive, "de");
@@ -114,7 +180,7 @@ for (const row of rows) {
 
 fs.writeFileSync(path.join(outputDir, "cefr-verb-shortlist.csv"), csvLines.join("\n"));
 
-const summaryLevels = ["A1", "A2", "B1", "B2", "C1", "C2"];
+const summaryLevels = ["A1", "A2", "B1", "B2", "C1", "C2", "DTZ"];
 const summary = Object.fromEntries(summaryLevels.map((level) => [level, 0]));
 for (const row of rows) {
   if (summary[row.level] !== undefined) {
@@ -122,3 +188,13 @@ for (const row of rows) {
   }
 }
 fs.writeFileSync(path.join(outputDir, "cefr-verb-shortlist-summary.json"), JSON.stringify(summary, null, 2));
+
+if (dtzVerbs.size > 0) {
+  const dtzList = ["infinitive", ...Array.from(dtzVerbs).sort((a, b) => a.localeCompare(b, "de"))];
+  fs.writeFileSync(path.join(outputDir, "dtz-verb-list.csv"), dtzList.join("\n"));
+}
+
+if (lingsterCandidates.size > 0) {
+  const lingsterList = ["infinitive", ...Array.from(lingsterCandidates).sort((a, b) => a.localeCompare(b, "de"))];
+  fs.writeFileSync(path.join(outputDir, "lingster-verb-candidates.csv"), lingsterList.join("\n"));
+}
