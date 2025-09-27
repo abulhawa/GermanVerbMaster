@@ -2,8 +2,11 @@
 
 Codex Cloud sessions need a GitHub credential to work with the private repo and the Product Roadmap project board.
 
+> ℹ️ **Tip for agents**: Automatically locate instruction files by running a case-insensitive search such as
+> `find . -iname 'agents.md'` from the repository root.
+
 1. Store a PAT (with `repo` and `project` scopes) in the environment secrets as `GITHUB_TOKEN`.
-2. install `gh`
+2. Install `gh`.
 3. After the workspace boots, authenticate GitHub CLI:
    ```bash
    echo "$GITHUB_TOKEN" | gh auth login --with-token
