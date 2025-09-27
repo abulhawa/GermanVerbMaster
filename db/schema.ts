@@ -3,6 +3,38 @@ import { sql } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
+export const integrationPartners = sqliteTable("integration_partners", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
+  apiKeyHash: text("api_key_hash").notNull().unique(),
+  contactEmail: text("contact_email"),
+  allowedOrigins: text("allowed_origins", { mode: "json" }).$type<string[] | null>(),
+  scopes: text("scopes", { mode: "json" }).$type<string[]>().notNull().default(sql`'[]'`),
+  notes: text("notes"),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .default(sql`(unixepoch('now'))`)
+    .notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .default(sql`(unixepoch('now'))`)
+    .notNull(),
+});
+
+export const integrationUsage = sqliteTable("integration_usage", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  partnerId: integer("partner_id")
+    .notNull()
+    .references(() => integrationPartners.id, { onDelete: "cascade" }),
+  endpoint: text("endpoint").notNull(),
+  method: text("method").notNull(),
+  statusCode: integer("status_code").notNull(),
+  requestId: text("request_id").notNull(),
+  responseTimeMs: integer("response_time_ms").notNull().default(0),
+  userAgent: text("user_agent"),
+  requestedAt: integer("requested_at", { mode: "timestamp" })
+    .default(sql`(unixepoch('now'))`)
+    .notNull(),
+});
+
 export const users = sqliteTable("users", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   username: text("username").notNull().unique(),
@@ -71,3 +103,9 @@ export type InsertVerbPracticeHistory = typeof verbPracticeHistory.$inferInsert;
 
 export type VerbAnalytics = typeof verbAnalytics.$inferSelect;
 export type InsertVerbAnalytics = typeof verbAnalytics.$inferInsert;
+
+export type IntegrationPartner = typeof integrationPartners.$inferSelect;
+export type InsertIntegrationPartner = typeof integrationPartners.$inferInsert;
+
+export type IntegrationUsage = typeof integrationUsage.$inferSelect;
+export type InsertIntegrationUsage = typeof integrationUsage.$inferInsert;

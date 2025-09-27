@@ -47,3 +47,7 @@ The app runs entirely on your machine—no container or managed database is requ
 - The schema is managed with Drizzle + SQLite. After editing `db/schema.ts`, run `npm run db:push` to apply the migration to your local database file.
 - `npm run seed:verbs` fills the SQLite database and exports `attached_assets/verbs.json` for offline usage. Repeat this after importing new verbs.
 
+## Partner integrations
+- Generate sandbox API keys with `npm run integration:create-key` and follow the workflow documented in [`docs/integration-api.md`](docs/integration-api.md).
+- Authenticated partners can fetch embeddable drill bundles and review their request analytics via the new `/api/partner/*` routes.
+

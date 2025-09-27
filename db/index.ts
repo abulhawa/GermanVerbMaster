@@ -75,8 +75,8 @@ function initializeSchema() {
 
   const practiceHistoryColumns = sqlite
     .prepare(`PRAGMA table_info('verb_practice_history');`)
-    .all();
-  const hasDeviceId = practiceHistoryColumns.some(column => column.name === "device_id");
+    .all() as Array<{ name?: string }>;
+  const hasDeviceId = practiceHistoryColumns.some(column => column?.name === "device_id");
 
   if (!hasDeviceId) {
     sqlite.exec(
@@ -86,8 +86,10 @@ function initializeSchema() {
 }
 
 function seedVerbsIfEmpty() {
-  const countRow = sqlite.prepare(`SELECT COUNT(*) as count FROM "verbs";`).get();
-  if (countRow && countRow.count > 0) {
+  const countRow = sqlite
+    .prepare(`SELECT COUNT(*) as count FROM "verbs";`)
+    .get() as { count?: number } | undefined;
+  if (countRow && typeof countRow.count === 'number' && countRow.count > 0) {
     return;
   }
 
