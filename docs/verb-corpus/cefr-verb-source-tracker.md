@@ -1,4 +1,4 @@
-﻿# CEFR Verb Source Audit & Shortlist Tracker
+# CEFR Verb Source Audit & Shortlist Tracker
 
 This tracker documents the source audit performed for epic #31 and captures the preliminary verb candidate pools we are assembling ahead of normalization.
 
@@ -8,7 +8,7 @@ This tracker documents the source audit performed for epic #31 and captures the 
 | dwds_goethe_a1 | DWDS Goethe-Zertifikat A1 API export | A1 | https://www.dwds.de/api/lemma/goethe/A1.csv | DWDS terms (attribution required) | ? Imported into shortlist (156 verbs)
 | dwds_goethe_a2 | DWDS Goethe-Zertifikat A2 API export | A2 | https://www.dwds.de/api/lemma/goethe/A2.csv | DWDS terms (attribution required) | ? Imported into shortlist (135 verbs)
 | dwds_goethe_b1 | DWDS Goethe-Zertifikat B1 API export | B1 | https://www.dwds.de/api/lemma/goethe/B1.csv | DWDS terms (attribution required) | ? Imported into shortlist (393 verbs)
-| goethe_dtz | Alphabetical DTZ Wortliste (Goethe-Institut) | DTZ (A2–B1) | https://www.goethe.de/resources/files/pdf209/dtz_wortliste.pdf | Copyright © Goethe-Institut | ✅ Imported 18 DTZ-only verbs (see `dtz-verb-list.csv`); 462 overlaps logged in `dtz-verb-overlap.csv`; text capture stored (`goethe-dtz-wortliste.txt`)
+| goethe_dtz | Alphabetical DTZ Wortliste (Goethe-Institut) | DTZ (A2–B1) | https://www.goethe.de/resources/files/pdf209/dtz_wortliste.pdf | Copyright © Goethe-Institut | ✅ Imported 16 DTZ-only verbs (see `dtz-verb-list.csv`); 459 overlaps logged in `dtz-verb-overlap.csv`; text capture stored (`goethe-dtz-wortliste.txt`)
 | goethe_b2_official | Goethe-Zertifikat B2 Wortliste (PDF) | B2 | https://www.goethe.de/pro/relaunch/prf/de/B2_Wortliste_2018.pdf | Copyright © Goethe-Institut | ?? Requires manual download workflow
 | goethe_c1_official | Goethe-Zertifikat C1 Wortliste (PDF) | C1 | https://www.goethe.de/pro/relaunch/prf/de/C1_Wortliste.pdf | Copyright © Goethe-Institut | ?? Manual extraction required
 | goethe_c2_official | Goethe-Zertifikat C2 Wortliste (PDF) | C2 | https://www.goethe.de/pro/relaunch/prf/de/C2_Wortliste.pdf | Copyright © Goethe-Institut | ?? Manual extraction required
@@ -23,7 +23,7 @@ Verb candidates extracted so far are stored in `docs/verb-corpus/cefr-verb-short
 | A1 | 156 | dwds_goethe_a1 | Meets =100 target; needs dedupe vs. existing DB and auxiliary tagging.
 | A2 | 135 | dwds_goethe_a2 | Meets =100 target; pending normalization + QA.
 | B1 | 393 | dwds_goethe_b1 | Ample coverage; scope examples + difficulty alignment during normalization.
-| DTZ | 18 | goethe_dtz | Unique DTZ verbs not already in A1–B1; overlap list in `dtz-verb-overlap.csv`.
+| DTZ | 16 | goethe_dtz | Unique DTZ verbs not already in A1–B1; overlap list in `dtz-verb-overlap.csv`.
 | B2 | 0 | — | Awaiting manual extraction from Goethe PDFs (or alternate corpora).
 | C1 | 0 | — | Same as B2; consider Duden “Sprachniveau” to prioritize verbs.
 | C2 | 0 | — | Requires advanced sources; TBD after B2/C1 pipeline.

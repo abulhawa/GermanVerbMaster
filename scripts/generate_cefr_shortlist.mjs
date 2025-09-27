@@ -1,4 +1,4 @@
-﻿import fs from "fs";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -82,10 +82,14 @@ function extractDtzVerbs(filePath) {
     const match = lower.match(/^([a-zäöüß]+)/);
     if (!match) continue;
     const lemma = match[1];
+    const charAfterLemma = sanitized.charAt(lemma.length);
+    if (charAfterLemma !== ",") continue;
     if (!lemma.endsWith("en") && !allowList.has(lemma)) continue;
     const parts = lower.split(",").map((p) => p.trim()).filter(Boolean);
     if (parts.length < 3) continue;
     const secondPart = parts[1];
+    if (!/^[a-zäöüß]/.test(secondPart)) continue;
+    if (["der", "die", "das", "den", "dem", "des"].some((article) => secondPart.startsWith(`${article} `))) continue;
     if (skipPrefixes.some((prefix) => secondPart.startsWith(prefix))) continue;
     verbs.add(lemma.normalize("NFC"));
   }
