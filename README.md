@@ -16,7 +16,7 @@ GermanVerbMaster is a full-stack web application for practicing German verbs. It
    ```
 4. Seed the verbs table so the API and offline cache have data:
    ```bash
-   npm run seed:verbs
+   npm run seed
    ```
 5. Start the development server (Express API + Vite dev server):
    ```bash
@@ -34,18 +34,19 @@ The app runs entirely on your machine—no container or managed database is requ
 ## Progressive Web App
 - The client is bundled with `vite-plugin-pwa` using an auto-updating service worker.
 - `client/public/manifest.webmanifest` defines install metadata, icons, and standalone display mode.
-- Runtime caching keeps `/api/verbs*` responses and the static `verbs.json` available offline.
+- Runtime caching keeps `/api/verbs*` responses available offline, while level-specific bundles from `data/generated/verbs.*.json` ship with the client for instant fallbacks.
 - A `virtual:pwa-register` hook registers the service worker on load; the app earns an 80+ Lighthouse PWA score when built.
 
 ## Offline + Sync
-- Verb data is fetched from `/api/verbs` when online and automatically falls back to the committed `attached_assets/verbs.json` when offline.
+- Verb data is fetched from `/api/verbs` when online and automatically falls back to the generated `data/generated/verbs.<level>.json` bundles when offline.
 - Practice attempts are written to an IndexedDB queue (via Dexie) whenever the network is unavailable or the API is rate limited.
 - The `useSyncQueue` hook listens to `online` and `visibilitychange` events and flushes queued attempts back to `/api/practice-history`.
 - Each device receives a persistent `deviceId` stored in `localStorage`; it is sent with every practice submission and stored in the database.
+- `data/verbs_canonical.csv` is the human-editable corpus; running `npm run seed` refreshes the derived JSON bundles in `data/generated/`.
 
 ## Database utilities
 - The schema is managed with Drizzle + SQLite. After editing `db/schema.ts`, run `npm run db:push` to apply the migration to your local database file.
-- `npm run seed:verbs` fills the SQLite database and exports `attached_assets/verbs.json` for offline usage. Repeat this after importing new verbs.
+- `npm run seed` regenerates client bundles, writes `data/generated/verbs.seed.json`, and idempotently upserts verbs into the SQLite database. Run this after editing `data/verbs_canonical.csv`.
 
 ## Verb corpus admin tools
 - Configure an `ADMIN_API_TOKEN` in your `.env` file (see `.env.example`) to protect ingestion routes. Restart the dev server after changing environment variables.

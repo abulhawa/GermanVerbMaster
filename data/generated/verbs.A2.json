@@ -1,0 +1,89 @@
+[
+  {
+    "infinitive": "fahren",
+    "english": "to drive/ride",
+    "präteritum": "fuhr",
+    "partizipII": "gefahren",
+    "auxiliary": "sein",
+    "level": "A2",
+    "präteritumExample": "Sie fuhr nach Berlin.",
+    "partizipIIExample": "Er ist Auto gefahren.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A2 Common Verbs"
+    },
+    "pattern": {
+      "type": "ablaut",
+      "group": "a -> u -> a"
+    }
+  },
+  {
+    "infinitive": "fliegen",
+    "english": "to fly",
+    "präteritum": "flog",
+    "partizipII": "geflogen",
+    "auxiliary": "sein",
+    "level": "A2",
+    "präteritumExample": "Das Flugzeug flog nach Paris.",
+    "partizipIIExample": "Wir sind nach London geflogen.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A2 Common Verbs"
+    },
+    "pattern": {
+      "type": "ablaut",
+      "group": "ie -> o -> o"
+    }
+  },
+  {
+    "infinitive": "laufen",
+    "english": "to run/walk",
+    "präteritum": "lief",
+    "partizipII": "gelaufen",
+    "auxiliary": "sein",
+    "level": "A2",
+    "präteritumExample": "Er lief schnell.",
+    "partizipIIExample": "Sie ist einen Marathon gelaufen.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A2 Common Verbs"
+    },
+    "pattern": {
+      "type": "ablaut",
+      "group": "au -> ie -> au"
+    }
+  },
+  {
+    "infinitive": "schwimmen",
+    "english": "to swim",
+    "präteritum": "schwamm",
+    "partizipII": "geschwommen",
+    "auxiliary": "sein",
+    "level": "A2",
+    "präteritumExample": "Er schwamm im See.",
+    "partizipIIExample": "Sie ist einen Kilometer geschwommen.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A2 Common Verbs"
+    },
+    "pattern": {
+      "type": "ablaut",
+      "group": "i -> a -> o"
+    }
+  },
+  {
+    "infinitive": "tanzen",
+    "english": "to dance",
+    "präteritum": "tanzte",
+    "partizipII": "getanzt",
+    "auxiliary": "haben",
+    "level": "A2",
+    "präteritumExample": "Sie tanzten die ganze Nacht.",
+    "partizipIIExample": "Wir haben Salsa getanzt.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A2 Common Verbs"
+    },
+    "pattern": null
+  }
+]

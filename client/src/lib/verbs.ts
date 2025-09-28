@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import type { GermanVerb, CEFRLevel } from '@shared';
-import localVerbsRaw from '@assets/verbs.json';
 
 export type { GermanVerb };
 
@@ -31,6 +30,19 @@ type VerbSchema = z.infer<typeof verbSchema>;
 
 const LEVELS: CEFRLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
+type VerbJsonModule = { default: VerbSchema[] };
+
+const localVerbModules = import.meta.glob<VerbJsonModule>('@verbs-data/verbs.[A-C][1-2].json');
+
+const localVerbLoaders: Partial<Record<CEFRLevel, () => Promise<VerbSchema[]>>> = {};
+for (const [modulePath, loader] of Object.entries(localVerbModules)) {
+  const match = modulePath.match(/verbs\.(A1|A2|B1|B2|C1|C2)\.json$/);
+  if (match) {
+    const level = match[1] as CEFRLevel;
+    localVerbLoaders[level] = async () => (await loader()).default;
+  }
+}
+
 function normaliseVerb(verb: VerbSchema): GermanVerb {
   return {
     ...verb,
@@ -38,10 +50,47 @@ function normaliseVerb(verb: VerbSchema): GermanVerb {
   };
 }
 
-const localVerbs: GermanVerb[] = z
-  .array(verbSchema)
-  .parse(localVerbsRaw)
-  .map(normaliseVerb);
+const localVerbsCache = new Map<CEFRLevel, GermanVerb[]>();
+let allLocalVerbsCache: GermanVerb[] | null = null;
+
+async function loadLocalVerbs(level: CEFRLevel): Promise<GermanVerb[]> {
+  if (localVerbsCache.has(level)) {
+    return localVerbsCache.get(level)!;
+  }
+
+  const loader = localVerbLoaders[level];
+  if (!loader) {
+    throw new Error(`Missing local verb bundle for level ${level}`);
+  }
+
+  const rawVerbs = await loader();
+  const parsed = z
+    .array(verbSchema)
+    .parse(rawVerbs)
+    .map(normaliseVerb);
+  localVerbsCache.set(level, parsed);
+  return parsed;
+}
+
+async function getAllLocalVerbs(): Promise<GermanVerb[]> {
+  if (allLocalVerbsCache) {
+    return allLocalVerbsCache;
+  }
+
+  const lists = await Promise.all(
+    LEVELS.map(async (level) => {
+      try {
+        return await loadLocalVerbs(level);
+      } catch (error) {
+        console.warn(`Unable to load local verbs for level ${level}`, error);
+        return [] as GermanVerb[];
+      }
+    })
+  );
+
+  allLocalVerbsCache = lists.flat();
+  return allLocalVerbsCache;
+}
 
 async function fetchVerbsFromApi(url: string): Promise<GermanVerb[]> {
   const response = await fetch(url);
@@ -56,16 +105,17 @@ async function fetchVerbsFromApi(url: string): Promise<GermanVerb[]> {
     .map(normaliseVerb);
 }
 
-function filterLocalVerbs(level: CEFRLevel, patternGroup?: string): GermanVerb[] {
-  return localVerbs.filter((verb) => {
+async function filterLocalVerbs(level: CEFRLevel, patternGroup?: string): Promise<GermanVerb[]> {
+  const verbs = await loadLocalVerbs(level);
+  return verbs.filter((verb) => {
     if (verb.level !== level) return false;
     if (!patternGroup) return true;
     return verb.pattern?.group === patternGroup;
   });
 }
 
-function fallbackRandomVerb(level: CEFRLevel, patternGroup?: string): GermanVerb | undefined {
-  const verbs = filterLocalVerbs(level, patternGroup);
+async function fallbackRandomVerb(level: CEFRLevel, patternGroup?: string): Promise<GermanVerb | undefined> {
+  const verbs = await filterLocalVerbs(level, patternGroup);
   if (!verbs.length) return undefined;
   return verbs[Math.floor(Math.random() * verbs.length)];
 }
@@ -94,7 +144,7 @@ export const getRandomVerb = async (
   }
 
   if (!verbs.length) {
-    const fallbackVerb = fallbackRandomVerb(level, patternGroup);
+    const fallbackVerb = await fallbackRandomVerb(level, patternGroup);
     if (fallbackVerb) {
       return fallbackVerb;
     }
@@ -119,7 +169,7 @@ export const getVerbByInfinitive = async (
     const response = await fetch(`/api/verbs/${encodeURIComponent(infinitive)}`);
     if (!response.ok) {
       if (response.status === 404) {
-        return localVerbs.find((verb) => verb.infinitive === infinitive);
+        return findLocalVerb(infinitive);
       }
       throw new Error('Failed to fetch verb');
     }
@@ -127,9 +177,14 @@ export const getVerbByInfinitive = async (
     return normaliseVerb(verbSchema.parse(payload));
   } catch (error) {
     console.warn('Using local verb data due to fetch error:', error);
-    return localVerbs.find((verb) => verb.infinitive === infinitive);
+    return findLocalVerb(infinitive);
   }
 };
+
+async function findLocalVerb(infinitive: string): Promise<GermanVerb | undefined> {
+  const verbs = await getAllLocalVerbs();
+  return verbs.find((verb) => verb.infinitive === infinitive);
+}
 
 // Get all available pattern groups for a specific level
 export const getPatternGroups = async (level: CEFRLevel): Promise<string[]> => {
@@ -149,6 +204,6 @@ export const getVerbsByLevel = async (level: CEFRLevel): Promise<GermanVerb[]> =
     return await fetchVerbsFromApi(`/api/verbs?level=${level}`);
   } catch (error) {
     console.warn('Falling back to local verb list for level', level, error);
-    return filterLocalVerbs(level);
+    return loadLocalVerbs(level);
   }
 };

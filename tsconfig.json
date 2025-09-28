@@ -23,7 +23,9 @@
       "@shared": ["./shared/index.ts"],
       "@shared/*": ["./shared/*"],
       "@assets": ["./attached_assets"],
-      "@assets/*": ["./attached_assets/*"]
+      "@assets/*": ["./attached_assets/*"],
+      "@verbs-data": ["./data/generated"],
+      "@verbs-data/*": ["./data/generated/*"]
     }
   }
 }

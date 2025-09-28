@@ -1,0 +1,428 @@
+[
+  {
+    "infinitive": "arbeiten",
+    "english": "to work",
+    "präteritum": "arbeitete",
+    "partizipII": "gearbeitet",
+    "auxiliary": "haben",
+    "level": "A1",
+    "präteritumExample": "Sie arbeitete in einer Bank.",
+    "partizipIIExample": "Er hat als Koch gearbeitet.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A1 Essential Verbs"
+    },
+    "pattern": null
+  },
+  {
+    "infinitive": "essen",
+    "english": "to eat",
+    "präteritum": "aß",
+    "partizipII": "gegessen",
+    "auxiliary": "haben",
+    "level": "A1",
+    "präteritumExample": "Er aß ein Sandwich.",
+    "partizipIIExample": "Wir haben zu Mittag gegessen.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A1 Essential Verbs"
+    },
+    "pattern": {
+      "type": "ablaut",
+      "group": "e -> a -> e"
+    }
+  },
+  {
+    "infinitive": "gehen",
+    "english": "to go",
+    "präteritum": "ging",
+    "partizipII": "gegangen",
+    "auxiliary": "sein",
+    "level": "A1",
+    "präteritumExample": "Er ging zur Schule.",
+    "partizipIIExample": "Wir sind nach Hause gegangen.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A1 Essential Verbs"
+    },
+    "pattern": {
+      "type": "ablaut",
+      "group": "e -> i -> a"
+    }
+  },
+  {
+    "infinitive": "haben",
+    "english": "to have",
+    "präteritum": "hatte",
+    "partizipII": "gehabt",
+    "auxiliary": "haben",
+    "level": "A1",
+    "präteritumExample": "Ich hatte keine Zeit.",
+    "partizipIIExample": "Er hat viel Geld gehabt.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A1 Essential Verbs"
+    },
+    "pattern": {
+      "type": "mixed",
+      "group": "haben pattern"
+    }
+  },
+  {
+    "infinitive": "heißen",
+    "english": "to be called",
+    "präteritum": "hieß",
+    "partizipII": "geheißen",
+    "auxiliary": "haben",
+    "level": "A1",
+    "präteritumExample": "Er hieß Peter.",
+    "partizipIIExample": "Sie hat anders geheißen.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A1 Essential Verbs"
+    },
+    "pattern": {
+      "type": "ablaut",
+      "group": "ei -> ie -> ei"
+    }
+  },
+  {
+    "infinitive": "hören",
+    "english": "to hear",
+    "präteritum": "hörte",
+    "partizipII": "gehört",
+    "auxiliary": "haben",
+    "level": "A1",
+    "präteritumExample": "Sie hörte Musik.",
+    "partizipIIExample": "Ich habe ein Geräusch gehört.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A1 Essential Verbs"
+    },
+    "pattern": null
+  },
+  {
+    "infinitive": "kaufen",
+    "english": "to buy",
+    "präteritum": "kaufte",
+    "partizipII": "gekauft",
+    "auxiliary": "haben",
+    "level": "A1",
+    "präteritumExample": "Sie kaufte neue Schuhe.",
+    "partizipIIExample": "Er hat ein Auto gekauft.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A1 Essential Verbs"
+    },
+    "pattern": null
+  },
+  {
+    "infinitive": "kommen",
+    "english": "to come",
+    "präteritum": "kam",
+    "partizipII": "gekommen",
+    "auxiliary": "sein",
+    "level": "A1",
+    "präteritumExample": "Sie kam spät.",
+    "partizipIIExample": "Der Bus ist pünktlich gekommen.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A1 Essential Verbs"
+    },
+    "pattern": {
+      "type": "ablaut",
+      "group": "o -> a -> o"
+    }
+  },
+  {
+    "infinitive": "können",
+    "english": "can/to be able to",
+    "präteritum": "konnte",
+    "partizipII": "gekonnt",
+    "auxiliary": "haben",
+    "level": "A1",
+    "präteritumExample": "Er konnte gut schwimmen.",
+    "partizipIIExample": "Das hat er immer gut gekonnt.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A1 Essential Verbs"
+    },
+    "pattern": {
+      "type": "modal",
+      "group": "modal verbs"
+    }
+  },
+  {
+    "infinitive": "leben",
+    "english": "to live",
+    "präteritum": "lebte",
+    "partizipII": "gelebt",
+    "auxiliary": "haben",
+    "level": "A1",
+    "präteritumExample": "Er lebte in Berlin.",
+    "partizipIIExample": "Sie hat lange in Paris gelebt.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A1 Essential Verbs"
+    },
+    "pattern": null
+  },
+  {
+    "infinitive": "lernen",
+    "english": "to learn",
+    "präteritum": "lernte",
+    "partizipII": "gelernt",
+    "auxiliary": "haben",
+    "level": "A1",
+    "präteritumExample": "Sie lernte Deutsch.",
+    "partizipIIExample": "Er hat viel gelernt.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A1 Essential Verbs"
+    },
+    "pattern": null
+  },
+  {
+    "infinitive": "lesen",
+    "english": "to read",
+    "präteritum": "las",
+    "partizipII": "gelesen",
+    "auxiliary": "haben",
+    "level": "A1",
+    "präteritumExample": "Sie las ein interessantes Buch.",
+    "partizipIIExample": "Er hat die Zeitung gelesen.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A1 Essential Verbs"
+    },
+    "pattern": {
+      "type": "ablaut",
+      "group": "e -> a -> e"
+    }
+  },
+  {
+    "infinitive": "machen",
+    "english": "to make/do",
+    "präteritum": "machte",
+    "partizipII": "gemacht",
+    "auxiliary": "haben",
+    "level": "A1",
+    "präteritumExample": "Er machte seine Hausaufgaben.",
+    "partizipIIExample": "Sie hat das Essen gemacht.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A1 Essential Verbs"
+    },
+    "pattern": null
+  },
+  {
+    "infinitive": "müssen",
+    "english": "must/to have to",
+    "präteritum": "musste",
+    "partizipII": "gemusst",
+    "auxiliary": "haben",
+    "level": "A1",
+    "präteritumExample": "Ich musste früh aufstehen.",
+    "partizipIIExample": "Er hat arbeiten gemusst.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A1 Essential Verbs"
+    },
+    "pattern": {
+      "type": "modal",
+      "group": "modal verbs"
+    }
+  },
+  {
+    "infinitive": "schlafen",
+    "english": "to sleep",
+    "präteritum": "schlief",
+    "partizipII": "geschlafen",
+    "auxiliary": "haben",
+    "level": "A1",
+    "präteritumExample": "Das Kind schlief tief.",
+    "partizipIIExample": "Ich habe gut geschlafen.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A1 Essential Verbs"
+    },
+    "pattern": {
+      "type": "ablaut",
+      "group": "a -> ie -> a"
+    }
+  },
+  {
+    "infinitive": "schreiben",
+    "english": "to write",
+    "präteritum": "schrieb",
+    "partizipII": "geschrieben",
+    "auxiliary": "haben",
+    "level": "A1",
+    "präteritumExample": "Er schrieb einen Brief.",
+    "partizipIIExample": "Sie hat eine E-Mail geschrieben.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A1 Essential Verbs"
+    },
+    "pattern": {
+      "type": "ablaut",
+      "group": "ei -> ie -> ie"
+    }
+  },
+  {
+    "infinitive": "sehen",
+    "english": "to see",
+    "präteritum": "sah",
+    "partizipII": "gesehen",
+    "auxiliary": "haben",
+    "level": "A1",
+    "präteritumExample": "Er sah einen Film.",
+    "partizipIIExample": "Wir haben uns gestern gesehen.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A1 Essential Verbs"
+    },
+    "pattern": {
+      "type": "ablaut",
+      "group": "e -> a -> e"
+    }
+  },
+  {
+    "infinitive": "sein",
+    "english": "to be",
+    "präteritum": "war",
+    "partizipII": "gewesen",
+    "auxiliary": "sein",
+    "level": "A1",
+    "präteritumExample": "Er war gestern krank.",
+    "partizipIIExample": "Sie ist lange in Berlin gewesen.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A1 Essential Verbs"
+    },
+    "pattern": {
+      "type": "other",
+      "group": "highly irregular"
+    }
+  },
+  {
+    "infinitive": "sollen",
+    "english": "should/ought to",
+    "präteritum": "sollte",
+    "partizipII": "gesollt",
+    "auxiliary": "haben",
+    "level": "A1",
+    "präteritumExample": "Du solltest mehr lernen.",
+    "partizipIIExample": "Das hätte ich nicht gesollt.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A1 Essential Verbs"
+    },
+    "pattern": {
+      "type": "modal",
+      "group": "modal verbs"
+    }
+  },
+  {
+    "infinitive": "spielen",
+    "english": "to play",
+    "präteritum": "spielte",
+    "partizipII": "gespielt",
+    "auxiliary": "haben",
+    "level": "A1",
+    "präteritumExample": "Das Kind spielte im Garten.",
+    "partizipIIExample": "Wir haben Fußball gespielt.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A1 Essential Verbs"
+    },
+    "pattern": null
+  },
+  {
+    "infinitive": "sprechen",
+    "english": "to speak",
+    "präteritum": "sprach",
+    "partizipII": "gesprochen",
+    "auxiliary": "haben",
+    "level": "A1",
+    "präteritumExample": "Er sprach sehr gut Deutsch.",
+    "partizipIIExample": "Sie hat mit ihrer Mutter gesprochen.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A1 Essential Verbs"
+    },
+    "pattern": {
+      "type": "ablaut",
+      "group": "e -> a -> o"
+    }
+  },
+  {
+    "infinitive": "trinken",
+    "english": "to drink",
+    "präteritum": "trank",
+    "partizipII": "getrunken",
+    "auxiliary": "haben",
+    "level": "A1",
+    "präteritumExample": "Sie trank Wasser.",
+    "partizipIIExample": "Er hat Kaffee getrunken.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A1 Essential Verbs"
+    },
+    "pattern": {
+      "type": "ablaut",
+      "group": "i -> a -> u"
+    }
+  },
+  {
+    "infinitive": "werden",
+    "english": "to become",
+    "präteritum": "wurde",
+    "partizipII": "geworden",
+    "auxiliary": "sein",
+    "level": "A1",
+    "präteritumExample": "Sie wurde Lehrerin.",
+    "partizipIIExample": "Er ist Arzt geworden.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A1 Essential Verbs"
+    },
+    "pattern": {
+      "type": "ablaut",
+      "group": "e -> u -> o"
+    }
+  },
+  {
+    "infinitive": "wohnen",
+    "english": "to live/reside",
+    "präteritum": "wohnte",
+    "partizipII": "gewohnt",
+    "auxiliary": "haben",
+    "level": "A1",
+    "präteritumExample": "Er wohnte im Zentrum.",
+    "partizipIIExample": "Sie hat in einem Apartment gewohnt.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A1 Essential Verbs"
+    },
+    "pattern": null
+  },
+  {
+    "infinitive": "wollen",
+    "english": "to want",
+    "präteritum": "wollte",
+    "partizipII": "gewollt",
+    "auxiliary": "haben",
+    "level": "A1",
+    "präteritumExample": "Er wollte nach Hause.",
+    "partizipIIExample": "Sie hat das nicht gewollt.",
+    "source": {
+      "name": "Goethe-Institut",
+      "levelReference": "A1 Essential Verbs"
+    },
+    "pattern": {
+      "type": "modal",
+      "group": "modal verbs"
+    }
+  }
+]

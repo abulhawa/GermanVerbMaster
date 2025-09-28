@@ -48,19 +48,6 @@ export default defineConfig({
               },
             },
           },
-          {
-            urlPattern: ({ url }) =>
-              url.pathname.endsWith("/attached_assets/verbs.json"),
-            handler: "CacheFirst",
-            method: "GET",
-            options: {
-              cacheName: "verbs-static",
-              expiration: {
-                maxEntries: 1,
-                maxAgeSeconds: 60 * 60 * 24 * 30,
-              },
-            },
-          },
         ],
       },
     }),
@@ -71,6 +58,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "client", "src"),
       "@shared": path.resolve(__dirname, "shared"),
       "@assets": path.resolve(__dirname, "attached_assets"),
+      "@verbs-data": path.resolve(__dirname, "data", "generated"),
     },
   },
   root: path.resolve(__dirname, "client"),
@@ -119,7 +107,7 @@ export default defineConfig({
   },
   server: {
     fs: {
-      allow: [path.resolve(__dirname, "attached_assets")],
+      allow: [path.resolve(__dirname, "attached_assets"), path.resolve(__dirname, "data")],
     },
   },
   test: {
