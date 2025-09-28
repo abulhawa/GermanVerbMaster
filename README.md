@@ -14,7 +14,7 @@ GermanVerbMaster is a full-stack web application for practicing German verbs. It
    ```bash
    npm run db:push
    ```
-4. Seed the verbs table so the API and offline cache have data:
+4. Seed the words table so the API and offline cache have data:
    ```bash
    npm run seed
    ```
@@ -34,24 +34,25 @@ The app runs entirely on your machine—no container or managed database is requ
 ## Progressive Web App
 - The client is bundled with `vite-plugin-pwa` using an auto-updating service worker.
 - `client/public/manifest.webmanifest` defines install metadata, icons, and standalone display mode.
-- Runtime caching keeps `/api/verbs*` responses available offline, while level-specific bundles from `data/generated/verbs.*.json` ship with the client for instant fallbacks.
+- Runtime caching keeps `/api/quiz/verbs` responses available offline, while a QA bundle at `/verbs/verbs.seed.json` acts as the final fallback.
 - A `virtual:pwa-register` hook registers the service worker on load; the app earns an 80+ Lighthouse PWA score when built.
 
 ## Offline + Sync
-- Verb data is fetched from `/api/verbs` when online and automatically falls back to the generated `data/generated/verbs.<level>.json` bundles when offline.
+- Verb data is fetched from `/api/quiz/verbs` when online and automatically falls back to the generated `/verbs/verbs.seed.json` bundle when offline.
 - Practice attempts are written to an IndexedDB queue (via Dexie) whenever the network is unavailable or the API is rate limited.
 - The `useSyncQueue` hook listens to `online` and `visibilitychange` events and flushes queued attempts back to `/api/practice-history`.
 - Each device receives a persistent `deviceId` stored in `localStorage`; it is sent with every practice submission and stored in the database.
-- `data/verbs_canonical.csv` is the human-editable corpus; running `npm run seed` refreshes the derived JSON bundles in `data/generated/`.
+- `data/words_manual.csv` stores handcrafted rows that supplement the scraped sources.
+- `data/words_all_sources.csv` is regenerated on each `npm run seed` by combining `docs/external/**` with the manual rows, and `data/words_canonical.csv` marks the curated canonical subset. Running `npm run seed` normalises, merges, and upserts that data into SQLite.
 
 ## Database utilities
 - The schema is managed with Drizzle + SQLite. After editing `db/schema.ts`, run `npm run db:push` to apply the migration to your local database file.
-- `npm run seed` regenerates client bundles, writes `data/generated/verbs.seed.json`, and idempotently upserts verbs into the SQLite database. Run this after editing `data/verbs_canonical.csv`.
+- `npm run seed` recomputes completeness, writes `public/verbs/verbs.seed.json`, and idempotently upserts words into the SQLite database. Run this after editing `data/words_manual.csv`, adding sources under `docs/external`, or changing `data/words_canonical.csv`.
 
 ## Verb corpus admin tools
 - Configure an `ADMIN_API_TOKEN` in your `.env` file (see `.env.example`) to protect ingestion routes. Restart the dev server after changing environment variables.
-- Visit `http://localhost:5000/admin` to access the new moderation dashboard. The UI lets you add verbs, attach CEFR metadata, and optionally tag pattern groups before publishing.
-- Saving a verb sends a `POST /api/admin/verbs` request with the `x-admin-token` header. Successful submissions are immediately visible in the dashboard table and available to clients on next sync.
+- Visit `http://localhost:5000/admin` to access the words dashboard. Filter by POS, level, canonical status, or completeness and edit entries inline.
+- Updates are issued via `PATCH /api/words/:id` with the `x-admin-token` header. Canonical toggles and field edits immediately invalidate the admin cache.
 
 ## Partner integrations
 - Generate sandbox API keys with `npm run integration:create-key` and follow the workflow documented in [`docs/integration-api.md`](docs/integration-api.md).

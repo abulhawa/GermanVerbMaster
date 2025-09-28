@@ -1,45 +1,24 @@
-import type { Express, NextFunction, Request } from "express";
+import type { Express, NextFunction, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { db } from "@db";
 import {
   verbPracticeHistory,
   verbAnalytics,
-  verbs,
+  words,
   integrationPartners,
   integrationUsage,
   type IntegrationPartner,
+  type Word,
 } from "@db/schema";
 import { z } from "zod";
-import { eq, desc, sql, and } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import rateLimit from "express-rate-limit";
-import type { Response } from "express";
 import { createHash, randomUUID } from "node:crypto";
 import type { GermanVerb } from "@shared";
 
-const practiceModeSchema = z.enum(['präteritum', 'partizipII', 'auxiliary', 'english']);
-const levelSchema = z.enum(['A1', 'A2', 'B1', 'B2', 'C1', 'C2']);
-
-const adminVerbSchema = z.object({
-  infinitive: z.string().trim().min(1).max(100),
-  english: z.string().trim().min(1).max(200),
-  präteritum: z.string().trim().min(1).max(200),
-  partizipII: z.string().trim().min(1).max(200),
-  auxiliary: z.enum(['haben', 'sein']),
-  level: levelSchema,
-  präteritumExample: z.string().trim().min(1).max(500),
-  partizipIIExample: z.string().trim().min(1).max(500),
-  source: z.object({
-    name: z.string().trim().min(1).max(100),
-    levelReference: z.string().trim().min(1).max(200),
-  }),
-  pattern: z
-    .object({
-      type: z.string().trim().min(1).max(100),
-      group: z.string().trim().min(1).max(100).optional(),
-    })
-    .nullable()
-    .optional(),
-});
+const practiceModeSchema = z.enum(["präteritum", "partizipII", "auxiliary", "english"]);
+const levelSchema = z.enum(["A1", "A2", "B1", "B2", "C1", "C2"]);
+const LEVEL_ORDER = ["A1", "A2", "B1", "B2", "C1", "C2"] as const;
 
 declare global {
   namespace Express {
@@ -50,11 +29,105 @@ declare global {
   }
 }
 
-const PARTNER_KEY_HEADER = 'x-partner-key';
+const optionalText = (max: number) =>
+  z
+    .preprocess((value) => {
+      if (value === undefined) return undefined;
+      if (value === null) return null;
+      if (typeof value === "string") {
+        const trimmed = value.trim();
+        return trimmed.length ? trimmed : null;
+      }
+      return value;
+    }, z.union([z.string().max(max), z.null()]))
+    .optional();
+
+const optionalBoolean = z
+  .preprocess((value) => {
+    if (value === undefined) return undefined;
+    if (typeof value === "boolean") return value;
+    if (typeof value === "string") {
+      const normalized = value.trim().toLowerCase();
+      if (["1", "true", "yes", "y", "ja", "only"].includes(normalized)) return true;
+      if (["0", "false", "no", "n", "nein", "non"].includes(normalized)) return false;
+    }
+    return value;
+  }, z.boolean())
+  .optional();
+
+const optionalNullableBoolean = z
+  .preprocess((value) => {
+    if (value === undefined) return undefined;
+    if (value === null) return null;
+    if (typeof value === "boolean") return value;
+    if (typeof value === "string") {
+      const normalized = value.trim().toLowerCase();
+      if (!normalized) return null;
+      if (["1", "true", "yes", "y", "ja"].includes(normalized)) return true;
+      if (["0", "false", "no", "n", "nein"].includes(normalized)) return false;
+    }
+    return value;
+  }, z.union([z.boolean(), z.null()]))
+  .optional();
+
+const optionalAux = z
+  .preprocess((value) => {
+    if (value === undefined) return undefined;
+    if (value === null) return null;
+    if (typeof value === "string") {
+      const normalized = value.trim().toLowerCase();
+      if (!normalized) return null;
+      if (normalized === "haben" || normalized === "sein") return normalized;
+    }
+    return value;
+  }, z.union([z.literal("haben"), z.literal("sein"), z.null()]))
+  .optional();
+
+const optionalLevel = z
+  .preprocess((value) => {
+    if (value === undefined) return undefined;
+    if (value === null) return null;
+    if (typeof value === "string") {
+      const trimmed = value.trim();
+      if (!trimmed) return null;
+      const upper = trimmed.toUpperCase();
+      if (LEVEL_ORDER.includes(upper as typeof LEVEL_ORDER[number])) {
+        return upper;
+      }
+      return trimmed;
+    }
+    return value;
+  }, z.union([z.string().max(10), z.null()]))
+  .optional();
+
+const wordUpdateSchema = z
+  .object({
+    level: optionalLevel,
+    english: optionalText(200),
+    exampleDe: optionalText(500),
+    exampleEn: optionalText(500),
+    gender: optionalText(20),
+    plural: optionalText(200),
+    separable: optionalNullableBoolean,
+    aux: optionalAux,
+    praesensIch: optionalText(100),
+    praesensEr: optionalText(100),
+    praeteritum: optionalText(100),
+    partizipIi: optionalText(100),
+    perfekt: optionalText(150),
+    comparative: optionalText(100),
+    superlative: optionalText(100),
+    canonical: optionalBoolean,
+    sourcesCsv: optionalText(500),
+    sourceNotes: optionalText(500),
+  })
+  .strict();
+
+const PARTNER_KEY_HEADER = "x-partner-key";
 const PARTNER_DRILL_LIMIT = 100;
 
 function normalizeStringParam(value: unknown): string | undefined {
-  if (typeof value === 'string') {
+  if (typeof value === "string") {
     return value;
   }
   if (Array.isArray(value) && value.length > 0) {
@@ -63,57 +136,122 @@ function normalizeStringParam(value: unknown): string | undefined {
   return undefined;
 }
 
+function parseTriState(value: unknown): boolean | undefined {
+  if (value === undefined) return undefined;
+  const normalized = String(value).trim().toLowerCase();
+  if (!normalized || normalized === "all") return undefined;
+  if (["1", "true", "yes", "y", "ja", "only"].includes(normalized)) return true;
+  if (["0", "false", "no", "n", "nein", "non"].includes(normalized)) return false;
+  return undefined;
+}
+
+function parseRandomFlag(value: unknown): boolean {
+  if (value === undefined) return false;
+  const normalized = String(value).trim().toLowerCase();
+  return ["1", "true", "yes", "y"].includes(normalized);
+}
+
+function parseLimitParam(value: unknown, fallback: number): number {
+  if (value === undefined) return fallback;
+  const parsed = Number.parseInt(String(value), 10);
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    return fallback;
+  }
+  return parsed;
+}
+
+function computeWordCompleteness(word: Pick<Word, "pos"> & Partial<Word>): boolean {
+  switch (word.pos) {
+    case "V":
+      return Boolean(word.praeteritum && word.partizipIi && word.perfekt);
+    case "N":
+      return Boolean(word.gender && word.plural);
+    case "Adj":
+      return Boolean(word.comparative && word.superlative);
+    default:
+      return Boolean(word.english || word.exampleDe);
+  }
+}
+
+function toGermanVerb(word: Word): GermanVerb {
+  const english = word.english ?? "";
+  const prateritum = word.praeteritum ?? "";
+  const partizip = word.partizipIi ?? "";
+  const auxiliary = word.aux === "sein" ? "sein" : "haben";
+  const level = LEVEL_ORDER.includes((word.level ?? "A1") as typeof LEVEL_ORDER[number])
+    ? (word.level as GermanVerb["level"])
+    : "A1";
+  const sourceName = word.sourcesCsv?.split(";")[0]?.trim() || "words_all_sources";
+  const levelReference = word.sourceNotes?.split(";")[0]?.trim() || word.level || "N/A";
+
+  return {
+    infinitive: word.lemma,
+    english,
+    präteritum: prateritum,
+    partizipII: partizip,
+    auxiliary,
+    level,
+    präteritumExample: word.exampleDe ?? "",
+    partizipIIExample: word.exampleEn ?? "",
+    source: {
+      name: sourceName,
+      levelReference,
+    },
+    pattern: null,
+  };
+}
+
 async function authenticatePartner(req: Request, res: Response, next: NextFunction) {
   const apiKey = normalizeStringParam(req.headers[PARTNER_KEY_HEADER]) ?? normalizeStringParam((req as any).query?.apiKey);
 
   if (!apiKey) {
-    return sendError(res, 401, 'Missing partner API key', 'MISSING_PARTNER_KEY');
+    return sendError(res, 401, "Missing partner API key", "MISSING_PARTNER_KEY");
   }
 
   try {
-    const apiKeyHash = createHash('sha256').update(apiKey).digest('hex');
+    const apiKeyHash = createHash("sha256").update(apiKey).digest("hex");
     const partner = await db.query.integrationPartners.findFirst({
       where: eq(integrationPartners.apiKeyHash, apiKeyHash),
     });
 
     if (!partner) {
-      return sendError(res, 401, 'Invalid partner API key', 'INVALID_PARTNER_KEY');
+      return sendError(res, 401, "Invalid partner API key", "INVALID_PARTNER_KEY");
     }
 
     let allowedOrigins: string[] | null = null;
     if (Array.isArray(partner.allowedOrigins)) {
-      allowedOrigins = partner.allowedOrigins.filter((origin): origin is string => typeof origin === 'string');
-    } else if (typeof partner.allowedOrigins === 'string') {
+      allowedOrigins = partner.allowedOrigins.filter((origin): origin is string => typeof origin === "string");
+    } else if (typeof partner.allowedOrigins === "string") {
       try {
         const parsed = JSON.parse(partner.allowedOrigins);
         if (Array.isArray(parsed)) {
-          allowedOrigins = parsed.filter((origin): origin is string => typeof origin === 'string');
+          allowedOrigins = parsed.filter((origin): origin is string => typeof origin === "string");
         }
       } catch (error) {
-        console.warn('Unable to parse allowedOrigins JSON for partner', partner.id, error);
+        console.warn("Unable to parse allowedOrigins JSON for partner", partner.id, error);
       }
     }
 
     const requestOrigin = normalizeStringParam(req.headers.origin ?? req.query.origin ?? req.query.embedOrigin);
 
     if (allowedOrigins && allowedOrigins.length > 0 && requestOrigin && !allowedOrigins.includes(requestOrigin)) {
-      return sendError(res, 403, 'Origin is not allowed for this partner', 'PARTNER_ORIGIN_BLOCKED');
+      return sendError(res, 403, "Origin is not allowed for this partner", "PARTNER_ORIGIN_BLOCKED");
     }
 
     const requestId = randomUUID();
     req.partner = partner;
     req.partnerRequestId = requestId;
-    res.setHeader('X-Partner-Request', requestId);
+    res.setHeader("X-Partner-Request", requestId);
 
     const startedAt = Date.now();
-    const userAgentHeader = req.headers['user-agent'];
+    const userAgentHeader = req.headers["user-agent"];
     const userAgent = Array.isArray(userAgentHeader) ? userAgentHeader[0] : userAgentHeader;
 
-    res.on('finish', () => {
+    res.on("finish", () => {
       db.insert(integrationUsage)
         .values({
           partnerId: partner.id,
-          endpoint: req.originalUrl.split('?')[0] ?? req.path,
+          endpoint: req.originalUrl.split("?")[0] ?? req.path,
           method: req.method,
           statusCode: res.statusCode,
           requestId,
@@ -121,21 +259,21 @@ async function authenticatePartner(req: Request, res: Response, next: NextFuncti
           userAgent: userAgent ?? undefined,
         })
         .catch((error) => {
-          console.error('Failed to log partner usage', error);
+          console.error("Failed to log partner usage", error);
         });
     });
 
     return next();
   } catch (error) {
-    console.error('Partner authentication failed:', error);
-    return sendError(res, 500, 'Partner authentication failed', 'PARTNER_AUTH_FAILED');
+    console.error("Partner authentication failed:", error);
+    return sendError(res, 500, "Partner authentication failed", "PARTNER_AUTH_FAILED");
   }
 }
 
 const recordPracticeSchema = z.object({
   verb: z.string().trim().min(1).max(100),
   mode: practiceModeSchema,
-  result: z.enum(['correct', 'incorrect']),
+  result: z.enum(["correct", "incorrect"]),
   attemptedAnswer: z.string().trim().min(1).max(200),
   timeSpent: z.number().int().min(0).max(1000 * 60 * 15),
   level: levelSchema,
@@ -146,16 +284,16 @@ const recordPracticeSchema = z.object({
 const practiceHistoryLimiter = rateLimit({
   windowMs: 60_000,
   limit: 30,
-  standardHeaders: 'draft-7',
+  standardHeaders: "draft-7",
   legacyHeaders: false,
   keyGenerator: (req) => {
-    if (req.body && typeof req.body.deviceId === 'string') {
+    if (req.body && typeof req.body.deviceId === "string") {
       return req.body.deviceId;
     }
-    return req.ip ?? 'global';
+    return req.ip ?? "global";
   },
   handler: (_req, res) => {
-    res.status(429).json({ error: 'Too many practice submissions', code: 'RATE_LIMITED' });
+    res.status(429).json({ error: "Too many practice submissions", code: "RATE_LIMITED" });
   },
 });
 
@@ -170,119 +308,185 @@ function requireAdminToken(req: Request, res: Response, next: NextFunction) {
   const expectedToken = process.env.ADMIN_API_TOKEN;
 
   if (!expectedToken) {
-    return sendError(res, 500, 'Admin API not configured', 'ADMIN_AUTH_DISABLED');
+    return sendError(res, 500, "Admin API not configured", "ADMIN_AUTH_DISABLED");
   }
 
-  const providedToken = normalizeStringParam(req.headers['x-admin-token']);
+  const providedToken = normalizeStringParam(req.headers["x-admin-token"]);
 
   if (!providedToken || providedToken !== expectedToken) {
-    return sendError(res, 401, 'Invalid admin token', 'ADMIN_AUTH_FAILED');
+    return sendError(res, 401, "Invalid admin token", "ADMIN_AUTH_FAILED");
   }
 
   return next();
 }
 
 export function registerRoutes(app: Express): Server {
-  // Get all verbs or filter by level
-  app.get("/api/verbs", async (req, res) => {
+  app.get("/api/words", requireAdminToken, async (req, res) => {
     try {
-      const level = req.query.level as string;
-      const pattern = req.query.pattern as string;
+      const pos = normalizeStringParam(req.query.pos)?.trim();
+      const level = normalizeStringParam(req.query.level)?.trim();
+      const canonicalFilter = parseTriState(req.query.canonical);
+      const completeFilter = parseTriState(req.query.complete);
+      const search = normalizeStringParam(req.query.search)?.trim().toLowerCase();
 
-      const conditions = [] as any[];
+      const conditions: any[] = [];
+      if (pos) {
+        conditions.push(eq(words.pos, pos));
+      }
       if (level) {
-        conditions.push(eq(verbs.level, level));
+        conditions.push(eq(words.level, level));
       }
-      if (pattern) {
-        conditions.push(sql`json_extract(${verbs.pattern}, '$.group') = ${pattern}`);
+      if (typeof canonicalFilter === "boolean") {
+        conditions.push(eq(words.canonical, canonicalFilter));
+      }
+      if (typeof completeFilter === "boolean") {
+        conditions.push(eq(words.complete, completeFilter));
+      }
+      if (search) {
+        const term = `%${search}%`;
+        conditions.push(
+          sql`(lower(${words.lemma}) LIKE ${term} OR lower(${words.english}) LIKE ${term})`
+        );
       }
 
-      const verbsList = await (
-        conditions.length
-          ? db.select().from(verbs).where(and(...conditions))
-          : db.select().from(verbs)
-      );
-      res.json(verbsList);
+      const query = conditions.length
+        ? db.select().from(words).where(and(...conditions))
+        : db.select().from(words);
+
+      const rows = await query.orderBy(sql`lower(${words.lemma})`, sql`lower(${words.pos})`);
+      res.setHeader("Cache-Control", "no-store");
+      res.json(rows);
     } catch (error) {
-      console.error('Error fetching verbs:', error);
-      sendError(res, 500, 'Failed to fetch verbs', 'VERBS_FETCH_FAILED');
+      console.error("Error fetching words:", error);
+      sendError(res, 500, "Failed to fetch words", "WORDS_FETCH_FAILED");
     }
   });
 
-  app.post("/api/admin/verbs", requireAdminToken, async (req, res) => {
+  app.patch("/api/words/:id", requireAdminToken, async (req, res) => {
     try {
-      const parsed = adminVerbSchema.safeParse(req.body satisfies Partial<GermanVerb>);
+      const id = Number.parseInt(req.params.id, 10);
+      if (!Number.isFinite(id) || id <= 0) {
+        return sendError(res, 400, "Invalid word id", "INVALID_WORD_ID");
+      }
 
+      const parsed = wordUpdateSchema.safeParse(req.body ?? {});
       if (!parsed.success) {
-        return sendError(res, 400, 'Invalid verb payload', 'INVALID_VERB_INPUT');
+        return sendError(res, 400, "Invalid word payload", "INVALID_WORD_INPUT");
       }
 
-      const payload = parsed.data;
-
-      const existingVerb = await db.query.verbs.findFirst({
-        where: eq(verbs.infinitive, payload.infinitive),
+      const existing = await db.query.words.findFirst({
+        where: eq(words.id, id),
       });
 
-      if (existingVerb) {
-        return sendError(res, 409, 'Verb already exists', 'VERB_EXISTS');
+      if (!existing) {
+        return sendError(res, 404, "Word not found", "WORD_NOT_FOUND");
       }
 
-      await db.insert(verbs).values({
-        ...payload,
-        pattern: payload.pattern ?? null,
+      const updates: Record<string, unknown> = {};
+      const data = parsed.data;
+
+      const assign = <K extends keyof typeof data, C extends keyof Word>(key: K, column: C) => {
+        if (Object.prototype.hasOwnProperty.call(data, key) && data[key] !== undefined) {
+          updates[column] = data[key];
+        }
+      };
+
+      assign("level", "level");
+      assign("english", "english");
+      assign("exampleDe", "exampleDe");
+      assign("exampleEn", "exampleEn");
+      assign("gender", "gender");
+      assign("plural", "plural");
+      assign("separable", "separable");
+      assign("aux", "aux");
+      assign("praesensIch", "praesensIch");
+      assign("praesensEr", "praesensEr");
+      assign("praeteritum", "praeteritum");
+      assign("partizipIi", "partizipIi");
+      assign("perfekt", "perfekt");
+      assign("comparative", "comparative");
+      assign("superlative", "superlative");
+      assign("sourcesCsv", "sourcesCsv");
+      assign("sourceNotes", "sourceNotes");
+
+      const canonical = data.canonical ?? existing.canonical;
+      const merged: Pick<Word, "pos"> & Partial<Word> = {
+        ...existing,
+        ...updates,
+        canonical,
+      };
+
+      const complete = computeWordCompleteness(merged);
+
+      updates.canonical = canonical;
+      updates.complete = complete;
+      updates.updatedAt = sql`unixepoch('now')`;
+
+      await db.update(words).set(updates).where(eq(words.id, id));
+
+      const refreshed = await db.query.words.findFirst({
+        where: eq(words.id, id),
       });
 
-      const createdVerb = await db.query.verbs.findFirst({
-        where: eq(verbs.infinitive, payload.infinitive),
-      });
-
-      if (!createdVerb) {
-        return sendError(res, 500, 'Failed to create verb', 'VERB_CREATE_FAILED');
+      if (!refreshed) {
+        return sendError(res, 500, "Failed to update word", "WORD_UPDATE_FAILED");
       }
 
-      return res.status(201).json(createdVerb);
+      res.json(refreshed);
     } catch (error) {
-      console.error('Error creating verb:', error);
-      return sendError(res, 500, 'Failed to create verb', 'VERB_CREATE_FAILED');
+      console.error("Error updating word:", error);
+      if (error instanceof z.ZodError) {
+        return sendError(res, 400, "Invalid word payload", "INVALID_WORD_INPUT");
+      }
+      sendError(res, 500, "Failed to update word", "WORD_UPDATE_FAILED");
     }
   });
 
-  // Get a single verb by infinitive
-  app.get("/api/verbs/:infinitive", async (req, res) => {
+  app.get("/api/quiz/verbs", async (req, res) => {
     try {
-      const verb = await db.query.verbs.findFirst({
-        where: eq(verbs.infinitive, req.params.infinitive)
-      });
+      const level = normalizeStringParam(req.query.level)?.trim();
+      const random = parseRandomFlag(req.query.random);
+      const limit = parseLimitParam(req.query.limit, 50);
 
-      if (!verb) {
-        return sendError(res, 404, 'Verb not found', 'VERB_NOT_FOUND');
+      const conditions: any[] = [
+        eq(words.pos, "V"),
+        eq(words.canonical, true),
+        eq(words.complete, true),
+      ];
+      if (level) {
+        conditions.push(eq(words.level, level));
       }
 
-      res.json(verb);
+      const baseQuery = db.select().from(words).where(and(...conditions));
+      const orderedQuery = random
+        ? baseQuery.orderBy(sql`random()`)
+        : baseQuery.orderBy(sql`lower(${words.lemma})`);
+
+      const rows = await orderedQuery.limit(limit);
+      const verbs = rows.map(toGermanVerb);
+      res.setHeader("Cache-Control", "no-store");
+      res.json(verbs);
     } catch (error) {
-      console.error('Error fetching verb:', error);
-      sendError(res, 500, 'Failed to fetch verb', 'VERB_FETCH_FAILED');
+      console.error("Error fetching quiz verbs:", error);
+      sendError(res, 500, "Failed to fetch verbs", "QUIZ_VERBS_FAILED");
     }
   });
 
-  // Record a practice attempt
   app.post("/api/practice-history", practiceHistoryLimiter, async (req, res) => {
     try {
       const parsed = recordPracticeSchema.safeParse(req.body);
       if (!parsed.success) {
-        return sendError(res, 400, 'Invalid practice data', 'INVALID_INPUT');
+        return sendError(res, 400, "Invalid practice data", "INVALID_INPUT");
       }
       const { queuedAt: _queuedAt, ...data } = parsed.data;
 
-      // Record the practice attempt
       await db.insert(verbPracticeHistory).values({
         ...data,
         userId: (req as any).user?.id,
       });
 
-      // Update analytics
       const analytics = await db.query.verbAnalytics.findFirst({
-        where: eq(verbAnalytics.verb, data.verb)
+        where: eq(verbAnalytics.verb, data.verb),
       });
 
       if (analytics) {
@@ -290,35 +494,35 @@ export function registerRoutes(app: Express): Server {
           .update(verbAnalytics)
           .set({
             totalAttempts: sql`${verbAnalytics.totalAttempts} + 1`,
-            correctAttempts: data.result === 'correct' 
-              ? sql`${verbAnalytics.correctAttempts} + 1` 
-              : verbAnalytics.correctAttempts,
+            correctAttempts:
+              data.result === "correct"
+                ? sql`${verbAnalytics.correctAttempts} + 1`
+                : verbAnalytics.correctAttempts,
             averageTimeSpent: sql`(${verbAnalytics.averageTimeSpent} * ${verbAnalytics.totalAttempts} + ${data.timeSpent}) / (${verbAnalytics.totalAttempts} + 1)`,
-            lastPracticedAt: new Date()
+            lastPracticedAt: new Date(),
           })
           .where(eq(verbAnalytics.verb, data.verb));
       } else {
         await db.insert(verbAnalytics).values({
           verb: data.verb,
           totalAttempts: 1,
-          correctAttempts: data.result === 'correct' ? 1 : 0,
+          correctAttempts: data.result === "correct" ? 1 : 0,
           averageTimeSpent: data.timeSpent,
           lastPracticedAt: new Date(),
-          level: data.level
+          level: data.level,
         });
       }
 
       res.json({ success: true });
     } catch (error) {
-      console.error('Error recording practice:', error);
+      console.error("Error recording practice:", error);
       if (error instanceof z.ZodError) {
-        return sendError(res, 400, 'Invalid practice data', 'INVALID_INPUT');
+        return sendError(res, 400, "Invalid practice data", "INVALID_INPUT");
       }
-      sendError(res, 500, 'Failed to record practice attempt', 'PRACTICE_SAVE_FAILED');
+      sendError(res, 500, "Failed to record practice attempt", "PRACTICE_SAVE_FAILED");
     }
   });
 
-  // Get practice history
   app.get("/api/practice-history", async (req, res) => {
     try {
       const history = await db.query.verbPracticeHistory.findMany({
@@ -326,89 +530,79 @@ export function registerRoutes(app: Express): Server {
           ? eq(verbPracticeHistory.userId, (req as any).user.id)
           : undefined,
         orderBy: [desc(verbPracticeHistory.createdAt)],
-        limit: 100 // Limit to recent 100 attempts
+        limit: 100,
       });
 
       res.json(history);
     } catch (error) {
-      console.error('Error fetching practice history:', error);
-      sendError(res, 500, 'Failed to fetch practice history', 'HISTORY_FETCH_FAILED');
+      console.error("Error fetching practice history:", error);
+      sendError(res, 500, "Failed to fetch practice history", "HISTORY_FETCH_FAILED");
     }
   });
 
-  // Get analytics data
   app.get("/api/analytics", async (req, res) => {
     try {
       const analytics = await db.query.verbAnalytics.findMany({
-        orderBy: [desc(verbAnalytics.lastPracticedAt)]
+        orderBy: [desc(verbAnalytics.lastPracticedAt)],
       });
 
       res.json(analytics);
     } catch (error) {
-      console.error('Error fetching analytics:', error);
-      sendError(res, 500, 'Failed to fetch analytics', 'ANALYTICS_FETCH_FAILED');
+      console.error("Error fetching analytics:", error);
+      sendError(res, 500, "Failed to fetch analytics", "ANALYTICS_FETCH_FAILED");
     }
   });
 
-  // Partner-facing drills endpoint
   app.get("/api/partner/drills", authenticatePartner, async (req, res) => {
     try {
       const partner = req.partner!;
       const limitParam = normalizeStringParam(req.query.limit);
       const level = normalizeStringParam(req.query.level);
-      const patternGroup = normalizeStringParam(req.query.patternGroup ?? req.query.pattern);
-
       const parsedLimit = limitParam ? Number.parseInt(limitParam, 10) : 20;
       const limit = Number.isFinite(parsedLimit) && parsedLimit > 0
         ? Math.min(parsedLimit, PARTNER_DRILL_LIMIT)
         : 20;
 
-      const conditions = [] as any[];
+      const conditions: any[] = [eq(words.pos, "V"), eq(words.canonical, true)];
       if (level) {
-        conditions.push(eq(verbs.level, level));
-      }
-      if (patternGroup) {
-        conditions.push(sql`json_extract(${verbs.pattern}, '$.group') = ${patternGroup}`);
+        conditions.push(eq(words.level, level));
       }
 
-      const baseQuery = db.select().from(verbs);
-      const verbsQuery = conditions.length > 0
-        ? baseQuery.where(and(...conditions))
-        : baseQuery;
+      const drillsQuery = db.select().from(words).where(and(...conditions)).orderBy(desc(words.updatedAt)).limit(limit);
+      const wordRows = await drillsQuery;
 
-      const verbsList = await verbsQuery.orderBy(desc(verbs.updatedAt)).limit(limit);
-
-      const drills = verbsList.map((verb) => ({
-        infinitive: verb.infinitive,
-        english: verb.english,
-        auxiliary: verb.auxiliary,
-        level: verb.level,
-        patternGroup: verb.pattern && typeof verb.pattern === 'object' ? (verb.pattern as any)?.group ?? null : null,
+      const drills = wordRows.map((word) => ({
+        infinitive: word.lemma,
+        english: word.english ?? "",
+        auxiliary: word.aux === "sein" ? "sein" : "haben",
+        level: word.level ?? null,
+        patternGroup: null,
         prompts: {
           praeteritum: {
-            question: `Was ist die Präteritum-Form von “${verb.infinitive}”?`,
-            answer: verb.präteritum,
-            example: verb.präteritumExample,
+            question: `Was ist die Präteritum-Form von “${word.lemma}”?`,
+            answer: word.praeteritum ?? "",
+            example: word.exampleDe ?? null,
           },
           partizipII: {
-            question: `Was ist das Partizip II von “${verb.infinitive}”?`,
-            answer: verb.partizipII,
-            example: verb.partizipIIExample,
+            question: `Was ist das Partizip II von “${word.lemma}”?`,
+            answer: word.partizipIi ?? "",
+            example: word.exampleEn ?? null,
           },
           auxiliary: {
-            question: `Welches Hilfsverb wird mit “${verb.infinitive}” verwendet?`,
-            answer: verb.auxiliary,
+            question: `Welches Hilfsverb wird mit “${word.lemma}” verwendet?`,
+            answer: word.aux === "sein" ? "sein" : "haben",
+            example: null,
           },
           english: {
-            question: `What is the English meaning of “${verb.infinitive}”?`,
-            answer: verb.english,
+            question: `What is the English meaning of “${word.lemma}”?`,
+            answer: word.english ?? "",
           },
         },
-        source: verb.source,
-        updatedAt: verb.updatedAt,
+        source: word.sourcesCsv ?? null,
+        updatedAt: word.updatedAt,
       }));
 
-      res.setHeader('Cache-Control', 'no-store');
+      res.setHeader("Cache-Control", "no-store");
       res.json({
         partner: {
           id: partner.id,
@@ -417,7 +611,7 @@ export function registerRoutes(app: Express): Server {
         },
         filters: {
           level: level ?? null,
-          patternGroup: patternGroup ?? null,
+          patternGroup: null,
           limit,
         },
         count: drills.length,
@@ -425,12 +619,11 @@ export function registerRoutes(app: Express): Server {
         drills,
       });
     } catch (error) {
-      console.error('Error fetching partner drills:', error);
-      sendError(res, 500, 'Failed to fetch partner drills', 'PARTNER_DRILLS_FAILED');
+      console.error("Error fetching partner drills:", error);
+      sendError(res, 500, "Failed to fetch partner drills", "PARTNER_DRILLS_FAILED");
     }
   });
 
-  // Partner usage summary
   app.get("/api/partner/usage-summary", authenticatePartner, async (req, res) => {
     try {
       const partner = req.partner!;
@@ -464,7 +657,7 @@ export function registerRoutes(app: Express): Server {
             acc.failures += 1;
           }
           acc.responseTimeSum += row.responseTimeMs ?? 0;
-          const key = row.endpoint ?? 'unknown';
+          const key = row.endpoint ?? "unknown";
           acc.endpointCounts.set(key, (acc.endpointCounts.get(key) ?? 0) + 1);
           if (!acc.lastRequestAt || (row.requestedAt && row.requestedAt > acc.lastRequestAt)) {
             acc.lastRequestAt = row.requestedAt ?? acc.lastRequestAt;
@@ -512,8 +705,8 @@ export function registerRoutes(app: Express): Server {
         })),
       });
     } catch (error) {
-      console.error('Error building partner usage summary:', error);
-      sendError(res, 500, 'Failed to build partner usage summary', 'PARTNER_USAGE_FAILED');
+      console.error("Error building partner usage summary:", error);
+      sendError(res, 500, "Failed to build partner usage summary", "PARTNER_USAGE_FAILED");
     }
   });
 

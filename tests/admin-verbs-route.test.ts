@@ -1,20 +1,26 @@
 import express from 'express';
 import request from 'supertest';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { Word } from '@shared';
 import { registerRoutes } from '../server/routes';
 
-const { insertValuesMock, findFirstMock } = vi.hoisted(() => ({
-  insertValuesMock: vi.fn(() => Promise.resolve()),
+const { selectMock, fromMock, whereMock, orderByMock, updateMock, updateSetMock, updateWhereMock, findFirstMock } = vi.hoisted(() => ({
+  selectMock: vi.fn(),
+  fromMock: vi.fn(),
+  whereMock: vi.fn(),
+  orderByMock: vi.fn(),
+  updateMock: vi.fn(),
+  updateSetMock: vi.fn(),
+  updateWhereMock: vi.fn(),
   findFirstMock: vi.fn(),
 }));
 
 vi.mock('@db', () => ({
   db: {
-    insert: vi.fn(() => ({
-      values: insertValuesMock,
-    })),
+    select: selectMock,
+    update: updateMock,
     query: {
-      verbs: {
+      words: {
         findFirst: findFirstMock,
       },
     },
@@ -26,106 +32,140 @@ vi.mock('@db/schema', async () => {
   return actual;
 });
 
-describe('POST /api/admin/verbs', () => {
+describe('Admin words API', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubEnv('ADMIN_API_TOKEN', 'secret');
+
+    selectMock.mockReturnValue({
+      from: fromMock.mockReturnValue({
+        where: whereMock.mockReturnValue({ orderBy: orderByMock }),
+        orderBy: orderByMock,
+      }),
+    });
+
+    updateMock.mockReturnValue({
+      set: updateSetMock.mockReturnValue({ where: updateWhereMock }),
+    });
   });
 
   afterEach(() => {
     vi.unstubAllEnvs();
   });
 
-  it('rejects requests without the admin token', async () => {
+  it('rejects GET /api/words without the admin token', async () => {
     const app = express();
-    app.use(express.json());
     const server = registerRoutes(app);
 
-    const response = await request(app).post('/api/admin/verbs').send({});
+    const response = await request(app).get('/api/words');
 
     expect(response.status).toBe(401);
-    expect(response.body).toMatchObject({
-      code: 'ADMIN_AUTH_FAILED',
-    });
+    expect(response.body).toMatchObject({ code: 'ADMIN_AUTH_FAILED' });
 
     server.close();
   });
 
-  it('returns a 409 error when the verb already exists', async () => {
-    const existingVerb = {
-      id: 1,
-      infinitive: 'gehen',
-      english: 'to go',
-      präteritum: 'ging',
-      partizipII: 'gegangen',
-      auxiliary: 'sein',
-      level: 'A1',
-      präteritumExample: 'Er ging nach Hause.',
-      partizipIIExample: 'Er ist nach Hause gegangen.',
-      source: { name: 'Duden', levelReference: 'A1' },
-      pattern: { type: 'ablaut', group: 'gehen' },
-      createdAt: 123,
-      updatedAt: 123,
-    };
+  it('returns words for GET /api/words when authorised', async () => {
+    const rows = [
+      {
+        id: 1,
+        lemma: 'sein',
+        pos: 'V',
+        level: 'A1',
+        english: 'to be',
+        exampleDe: 'Ich bin hier.',
+        exampleEn: 'I am here.',
+        gender: null,
+        plural: null,
+        separable: null,
+        aux: 'sein',
+        praesensIch: 'bin',
+        praesensEr: 'ist',
+        praeteritum: 'war',
+        partizipIi: 'gewesen',
+        perfekt: 'ist gewesen',
+        comparative: null,
+        superlative: null,
+        canonical: true,
+        complete: true,
+        sourcesCsv: 'test-source',
+        sourceNotes: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ];
 
-    findFirstMock.mockResolvedValueOnce(existingVerb);
+    orderByMock.mockResolvedValueOnce(rows);
 
     const app = express();
-    app.use(express.json());
     const server = registerRoutes(app);
 
     const response = await request(app)
-      .post('/api/admin/verbs')
-      .set('x-admin-token', 'secret')
-      .send(existingVerb);
+      .get('/api/words')
+      .set('x-admin-token', 'secret');
 
-    expect(response.status).toBe(409);
-    expect(response.body).toMatchObject({ code: 'VERB_EXISTS' });
-    expect(insertValuesMock).not.toHaveBeenCalled();
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveLength(1);
+    expect(selectMock).toHaveBeenCalled();
+    expect(orderByMock).toHaveBeenCalled();
 
     server.close();
   });
 
-  it('creates a verb when provided valid data and the admin token', async () => {
-    const newVerb = {
-      infinitive: 'laufen',
-      english: 'to run',
-      präteritum: 'lief',
-      partizipII: 'gelaufen',
-      auxiliary: 'sein' as const,
-      level: 'A2' as const,
-      präteritumExample: 'Sie lief jeden Morgen.',
-      partizipIIExample: 'Sie ist heute gelaufen.',
-      source: { name: 'Duden', levelReference: 'A2 Kapitel 1' },
-      pattern: { type: 'ablaut', group: 'laufen' },
-    };
-
-    findFirstMock.mockResolvedValueOnce(null);
-    findFirstMock.mockResolvedValueOnce({
-      id: 2,
-      ...newVerb,
-      createdAt: 111,
-      updatedAt: 222,
-    });
-
-    const app = express();
-    app.use(express.json());
-    const server = registerRoutes(app);
-
-    const response = await request(app)
-      .post('/api/admin/verbs')
-      .set('x-admin-token', 'secret')
-      .send(newVerb);
-
-    expect(response.status).toBe(201);
-    expect(insertValuesMock).toHaveBeenCalledWith(expect.objectContaining({
-      infinitive: 'laufen',
-      pattern: newVerb.pattern,
-    }));
-    expect(response.body).toMatchObject({
-      infinitive: 'laufen',
+  it('recomputes completeness when updating a verb', async () => {
+    const existing = {
+      id: 3,
+      lemma: 'laufen',
+      pos: 'V' as const,
       level: 'A2',
-    });
+      english: 'to run',
+      exampleDe: null,
+      exampleEn: null,
+      gender: null,
+      plural: null,
+      separable: null,
+      aux: 'sein' as const,
+      praesensIch: null,
+      praesensEr: null,
+      praeteritum: null,
+      partizipIi: null,
+      perfekt: null,
+      comparative: null,
+      superlative: null,
+      canonical: true,
+      complete: false,
+      sourcesCsv: null,
+      sourceNotes: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } satisfies Word;
+
+    const updated = { ...existing, praeteritum: 'lief', partizipIi: 'gelaufen', perfekt: 'ist gelaufen', complete: true };
+
+    findFirstMock
+      .mockResolvedValueOnce(existing)
+      .mockResolvedValueOnce(updated);
+
+    const app = express();
+    app.use(express.json());
+    const server = registerRoutes(app);
+
+    const response = await request(app)
+      .patch('/api/words/3')
+      .set('x-admin-token', 'secret')
+      .send({
+        praeteritum: 'lief',
+        partizipIi: 'gelaufen',
+        perfekt: 'ist gelaufen',
+      });
+
+    expect(response.status).toBe(200);
+    expect(updateSetMock).toHaveBeenCalledWith(expect.objectContaining({
+      praeteritum: 'lief',
+      partizipIi: 'gelaufen',
+      perfekt: 'ist gelaufen',
+      complete: true,
+    }));
 
     server.close();
   });

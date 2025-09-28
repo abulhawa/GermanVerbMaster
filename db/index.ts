@@ -1,9 +1,8 @@
-﻿import Database from "better-sqlite3";
+import Database from "better-sqlite3";
 import { mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import * as schema from "@db/schema";
-import { verbsData } from "./seed-data";
 
 const defaultDatabasePath = join(process.cwd(), "db", "data.sqlite");
 const databaseFile = process.env.DATABASE_FILE ?? defaultDatabasePath;
@@ -15,7 +14,6 @@ sqlite.pragma("journal_mode = WAL");
 sqlite.pragma("foreign_keys = ON");
 
 initializeSchema();
-seedVerbsIfEmpty();
 
 export const db = drizzle(sqlite, { schema });
 
@@ -25,6 +23,34 @@ function initializeSchema() {
       "id" integer PRIMARY KEY AUTOINCREMENT,
       "username" text NOT NULL UNIQUE,
       "password" text NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS "words" (
+      "id" integer PRIMARY KEY AUTOINCREMENT,
+      "lemma" text NOT NULL,
+      "pos" text NOT NULL,
+      "level" text,
+      "english" text,
+      "example_de" text,
+      "example_en" text,
+      "gender" text,
+      "plural" text,
+      "separable" integer,
+      "aux" text,
+      "praesens_ich" text,
+      "praesens_er" text,
+      "praeteritum" text,
+      "partizip_ii" text,
+      "perfekt" text,
+      "comparative" text,
+      "superlative" text,
+      "canonical" integer NOT NULL DEFAULT 0,
+      "complete" integer NOT NULL DEFAULT 0,
+      "sources_csv" text,
+      "source_notes" text,
+      "created_at" integer NOT NULL DEFAULT (unixepoch('now')),
+      "updated_at" integer NOT NULL DEFAULT (unixepoch('now')),
+      CONSTRAINT "words_lemma_pos_unique" UNIQUE("lemma", "pos")
     );
 
     CREATE TABLE IF NOT EXISTS "verbs" (
@@ -67,10 +93,37 @@ function initializeSchema() {
       "level" text NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS "integration_partners" (
+      "id" integer PRIMARY KEY AUTOINCREMENT,
+      "name" text NOT NULL,
+      "api_key_hash" text NOT NULL UNIQUE,
+      "contact_email" text,
+      "allowed_origins" text,
+      "scopes" text NOT NULL DEFAULT '[]',
+      "notes" text,
+      "created_at" integer NOT NULL DEFAULT (unixepoch('now')),
+      "updated_at" integer NOT NULL DEFAULT (unixepoch('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS "integration_usage" (
+      "id" integer PRIMARY KEY AUTOINCREMENT,
+      "partner_id" integer NOT NULL,
+      "endpoint" text NOT NULL,
+      "method" text NOT NULL,
+      "status_code" integer NOT NULL,
+      "request_id" text NOT NULL,
+      "response_time_ms" integer NOT NULL DEFAULT 0,
+      "user_agent" text,
+      "requested_at" integer NOT NULL DEFAULT (unixepoch('now')),
+      FOREIGN KEY ("partner_id") REFERENCES "integration_partners"("id") ON DELETE CASCADE
+    );
+
     CREATE UNIQUE INDEX IF NOT EXISTS "users_username_idx" ON "users" ("username");
+    CREATE UNIQUE INDEX IF NOT EXISTS "words_lemma_pos_idx" ON "words" ("lemma", "pos");
     CREATE UNIQUE INDEX IF NOT EXISTS "verbs_infinitive_idx" ON "verbs" ("infinitive");
     CREATE INDEX IF NOT EXISTS "verb_practice_history_user_idx" ON "verb_practice_history" ("user_id");
     CREATE INDEX IF NOT EXISTS "verb_analytics_verb_idx" ON "verb_analytics" ("verb");
+    CREATE UNIQUE INDEX IF NOT EXISTS "integration_partners_api_key_idx" ON "integration_partners" ("api_key_hash");
   `);
 
   const practiceHistoryColumns = sqlite
@@ -83,47 +136,4 @@ function initializeSchema() {
       `ALTER TABLE "verb_practice_history" ADD COLUMN "device_id" text NOT NULL DEFAULT 'legacy-device';`
     );
   }
-}
-
-function seedVerbsIfEmpty() {
-  const countRow = sqlite
-    .prepare(`SELECT COUNT(*) as count FROM "verbs";`)
-    .get() as { count?: number } | undefined;
-  if (countRow && typeof countRow.count === 'number' && countRow.count > 0) {
-    return;
-  }
-
-  const insert = sqlite.prepare(
-    `INSERT INTO "verbs" (
-      "infinitive",
-      "english",
-      "präteritum",
-      "partizipII",
-      "auxiliary",
-      "level",
-      "präteritumExample",
-      "partizipIIExample",
-      "source",
-      "pattern"
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`
-  );
-
-  const insertMany = sqlite.transaction((rows: typeof verbsData) => {
-    for (const verb of rows) {
-      insert.run(
-        verb.infinitive,
-        verb.english,
-        verb.präteritum,
-        verb.partizipII,
-        verb.auxiliary,
-        verb.level,
-        verb.präteritumExample,
-        verb.partizipIIExample,
-        JSON.stringify(verb.source),
-        verb.pattern ? JSON.stringify(verb.pattern) : null
-      );
-    }
-  });
-
-  insertMany(verbsData);
 }

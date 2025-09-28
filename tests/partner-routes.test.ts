@@ -105,17 +105,20 @@ beforeEach(() => {
   it('returns drills for authenticated partners and logs usage', async () => {
     setSelectResultData([
       {
-        infinitive: 'gehen',
+        lemma: 'gehen',
         english: 'to go',
-        auxiliary: 'sein',
+        aux: 'sein',
         level: 'A1',
-        pattern: { group: 'irregular' },
-        präteritum: 'ging',
-        präteritumExample: 'Ich ging nach Hause.',
-        partizipII: 'gegangen',
-        partizipIIExample: 'Ich bin zur Schule gegangen.',
-        source: { name: 'Duden', levelReference: 'A1' },
+        exampleDe: 'Ich ging nach Hause.',
+        exampleEn: 'I went home.',
+        separable: null,
+        praeteritum: 'ging',
+        partizipIi: 'gegangen',
+        perfekt: 'ist gegangen',
+        sourcesCsv: 'Duden',
         updatedAt: new Date('2024-01-01T00:00:00Z'),
+        canonical: true,
+        complete: true,
       },
     ]);
 

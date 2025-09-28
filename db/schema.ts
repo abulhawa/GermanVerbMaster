@@ -1,7 +1,7 @@
-import type { GermanVerb, PracticeResult } from "@shared";
+import type { PracticeResult } from "@shared";
 import { sql } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 export const integrationPartners = sqliteTable("integration_partners", {
   id: integer("id").primaryKey({ autoIncrement: true }),
@@ -43,25 +43,46 @@ export const users = sqliteTable("users", {
 
 const practiceResult = ["correct", "incorrect"] as const satisfies ReadonlyArray<PracticeResult>;
 
-export const verbs = sqliteTable("verbs", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  infinitive: text("infinitive").notNull().unique(),
-  english: text("english").notNull(),
-  präteritum: text("präteritum").notNull(),
-  partizipII: text("partizipII").notNull(),
-  auxiliary: text("auxiliary").notNull(),
-  level: text("level").notNull(),
-  präteritumExample: text("präteritumExample").notNull(),
-  partizipIIExample: text("partizipIIExample").notNull(),
-  source: text("source", { mode: "json" }).$type<GermanVerb["source"]>().notNull(),
-  pattern: text("pattern", { mode: "json" }).$type<GermanVerb["pattern"] | null>(),
-  createdAt: integer("created_at", { mode: "timestamp" })
-    .default(sql`(unixepoch('now'))`)
-    .notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp" })
-    .default(sql`(unixepoch('now'))`)
-    .notNull(),
-});
+export const words = sqliteTable(
+  "words",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    lemma: text("lemma").notNull(),
+    pos: text("pos").notNull(),
+    level: text("level"),
+    english: text("english"),
+    exampleDe: text("example_de"),
+    exampleEn: text("example_en"),
+    gender: text("gender"),
+    plural: text("plural"),
+    separable: integer("separable", { mode: "boolean" }),
+    aux: text("aux"),
+    praesensIch: text("praesens_ich"),
+    praesensEr: text("praesens_er"),
+    praeteritum: text("praeteritum"),
+    partizipIi: text("partizip_ii"),
+    perfekt: text("perfekt"),
+    comparative: text("comparative"),
+    superlative: text("superlative"),
+    canonical: integer("canonical", { mode: "boolean" })
+      .default(false)
+      .notNull(),
+    complete: integer("complete", { mode: "boolean" })
+      .default(false)
+      .notNull(),
+    sourcesCsv: text("sources_csv"),
+    sourceNotes: text("source_notes"),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .default(sql`(unixepoch('now'))`)
+      .notNull(),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .default(sql`(unixepoch('now'))`)
+      .notNull(),
+  },
+  (table) => ({
+    lemmaPosIndex: uniqueIndex("words_lemma_pos_idx").on(table.lemma, table.pos),
+  }),
+);
 
 export const verbPracticeHistory = sqliteTable("verb_practice_history", {
   id: integer("id").primaryKey({ autoIncrement: true }),
@@ -93,10 +114,10 @@ export const selectUserSchema = createSelectSchema(users);
 export type InsertUser = typeof users.$inferInsert;
 export type SelectUser = typeof users.$inferSelect;
 
-export const insertVerbSchema = createInsertSchema(verbs);
-export const selectVerbSchema = createSelectSchema(verbs);
-export type InsertVerb = typeof verbs.$inferInsert;
-export type SelectVerb = typeof verbs.$inferSelect;
+export const insertWordSchema = createInsertSchema(words);
+export const selectWordSchema = createSelectSchema(words);
+export type InsertWord = typeof words.$inferInsert;
+export type Word = typeof words.$inferSelect;
 
 export type VerbPracticeHistory = typeof verbPracticeHistory.$inferSelect;
 export type InsertVerbPracticeHistory = typeof verbPracticeHistory.$inferInsert;

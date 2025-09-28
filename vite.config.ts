@@ -26,26 +26,11 @@ export default defineConfig({
         globPatterns: ["**/*.{js,css,html,svg,png,webmanifest,json}"],
         runtimeCaching: [
           {
-            urlPattern: ({ url }) => url.pathname === "/api/verbs",
+            urlPattern: ({ url }) => url.pathname === "/api/quiz/verbs",
             handler: "StaleWhileRevalidate",
             method: "GET",
             options: {
               cacheName: "verbs-list",
-            },
-          },
-          {
-            urlPattern: ({ url }) => url.pathname.startsWith("/api/verbs/"),
-            handler: "CacheFirst",
-            method: "GET",
-            options: {
-              cacheName: "verb-details",
-              expiration: {
-                maxEntries: 200,
-                maxAgeSeconds: 60 * 60 * 24 * 7,
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
             },
           },
         ],

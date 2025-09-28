@@ -1,1022 +1,648 @@
-import { useEffect, useMemo, useState } from "react";
-import type { FormEvent, ReactNode } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/hooks/use-toast";
-import type { GermanVerb } from "@shared";
-import type { VerbAnalytics } from "@db/schema";
-import type { CheckedState } from "@radix-ui/react-checkbox";
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+import { useEffect, useMemo, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { z } from 'zod';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
+import type { Word } from '@shared';
 
-const LEVEL_OPTIONS: GermanVerb["level"][] = ["A1", "A2", "B1", "B2", "C1", "C2"];
-const PATTERN_TYPES = ["ablaut", "mixed", "modal", "other"];
-const PATTERN_TYPE_NONE = "__none__" as const;
+const wordSchema = z.object({
+  id: z.number(),
+  lemma: z.string(),
+  pos: z.enum(['V', 'N', 'Adj', 'Adv', 'Pron', 'Det', 'Präp', 'Konj', 'Num', 'Part', 'Interj']),
+  level: z.string().nullable(),
+  english: z.string().nullable(),
+  exampleDe: z.string().nullable(),
+  exampleEn: z.string().nullable(),
+  gender: z.string().nullable(),
+  plural: z.string().nullable(),
+  separable: z.boolean().nullable(),
+  aux: z.enum(['haben', 'sein']).nullable(),
+  praesensIch: z.string().nullable(),
+  praesensEr: z.string().nullable(),
+  praeteritum: z.string().nullable(),
+  partizipIi: z.string().nullable(),
+  perfekt: z.string().nullable(),
+  comparative: z.string().nullable(),
+  superlative: z.string().nullable(),
+  canonical: z.boolean(),
+  complete: z.boolean(),
+  sourcesCsv: z.string().nullable(),
+  sourceNotes: z.string().nullable(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
+});
 
-interface AdminVerbFormState {
-  infinitive: string;
-  english: string;
-  präteritum: string;
-  partizipII: string;
-  auxiliary: GermanVerb["auxiliary"];
-  level: GermanVerb["level"];
-  präteritumExample: string;
-  partizipIIExample: string;
-  sourceName: string;
-  sourceLevelReference: string;
-  patternType: string;
-  patternGroup: string;
-}
+const wordsResponseSchema = z.array(wordSchema);
 
-type VerbRecord = Omit<GermanVerb, "source" | "pattern"> & {
-  id: number;
-  createdAt?: number | string | Date | null;
-  updatedAt?: number | string | Date | null;
-  source: GermanVerb["source"] | string | null;
-  pattern?: GermanVerb["pattern"] | string | null;
-};
+type CanonicalFilter = 'all' | 'only' | 'non';
+type CompleteFilter = 'all' | 'complete' | 'incomplete';
 
-type NormalizedVerbRecord = Omit<VerbRecord, "source" | "pattern"> & {
-  source: GermanVerb["source"] | null;
-  pattern: NonNullable<GermanVerb["pattern"]> | null;
-};
-
-type OverviewColumnKey =
-  | "index"
-  | "infinitive"
-  | "english"
-  | "level"
-  | "pattern"
-  | "source"
-  | "attempts"
-  | "successRate"
-  | "lastPracticed"
-  | "updated";
-
-interface VerbOverviewRow {
-  verb: NormalizedVerbRecord;
-  analytics: {
-    totalAttempts: number;
-    correctAttempts: number;
-    successRate: number | null;
-    lastPracticed: Date | undefined;
-  };
-  updated: Date | undefined;
-  patternLabel: string;
-  sourceLabel: string;
-}
-
-interface OverviewTableColumn {
-  key: OverviewColumnKey;
-  label: string;
-  className?: string;
-  align?: "left" | "right";
-  sortable?: boolean;
-  getSortValue: (row: VerbOverviewRow) => string | number;
-  render: (
-    row: VerbOverviewRow,
-    options: { isAnalyticsFetching: boolean; rowIndex: number }
-  ) => ReactNode;
-}
-
-const OVERVIEW_COLUMNS: OverviewTableColumn[] = [
-  {
-    key: "index",
-    label: "#",
-    className: "w-12 text-right",
-    align: "right",
-    sortable: false,
-    getSortValue: () => 0,
-    render: (_row, { rowIndex }) => rowIndex + 1,
-  },
-  {
-    key: "infinitive",
-    label: "Infinitive",
-    className: "min-w-[140px]",
-    sortable: true,
-    getSortValue: (row) => row.verb.infinitive.toLowerCase(),
-    render: (row, _context) => <span className="font-medium">{row.verb.infinitive}</span>,
-  },
-  {
-    key: "english",
-    label: "English",
-    className: "min-w-[160px]",
-    sortable: true,
-    getSortValue: (row) => row.verb.english.toLowerCase(),
-    render: (row, _context) => <span className="text-muted-foreground">{row.verb.english}</span>,
-  },
-  {
-    key: "level",
-    label: "Level",
-    sortable: true,
-    getSortValue: (row) => row.verb.level,
-    render: (row, _context) => row.verb.level,
-  },
-  {
-    key: "pattern",
-    label: "Pattern",
-    className: "min-w-[160px]",
-    sortable: true,
-    getSortValue: (row) => row.patternLabel.toLowerCase(),
-    render: (row, _context) => row.patternLabel || "—",
-  },
-  {
-    key: "source",
-    label: "Source",
-    className: "min-w-[160px]",
-    sortable: true,
-    getSortValue: (row) => row.sourceLabel.toLowerCase(),
-    render: (row, _context) => row.sourceLabel || "—",
-  },
-  {
-    key: "attempts",
-    label: "Attempts",
-    className: "min-w-[120px] text-right",
-    align: "right",
-    sortable: true,
-    getSortValue: (row) => row.analytics.totalAttempts,
-    render: (row, { isAnalyticsFetching }) =>
-      isAnalyticsFetching ? "…" : row.analytics.totalAttempts,
-  },
-  {
-    key: "successRate",
-    label: "Success rate",
-    className: "min-w-[120px] text-right",
-    align: "right",
-    sortable: true,
-    getSortValue: (row) => row.analytics.successRate ?? -1,
-    render: (row, { isAnalyticsFetching }) =>
-      isAnalyticsFetching
-        ? "…"
-        : row.analytics.successRate !== null
-          ? `${row.analytics.successRate}%`
-          : "—",
-  },
-  {
-    key: "lastPracticed",
-    label: "Last practiced",
-    className: "min-w-[140px] text-right",
-    align: "right",
-    sortable: true,
-    getSortValue: (row) => row.analytics.lastPracticed?.getTime() ?? 0,
-    render: (row, { isAnalyticsFetching }) =>
-      isAnalyticsFetching
-        ? "…"
-        : row.analytics.lastPracticed
-          ? row.analytics.lastPracticed.toLocaleDateString()
-          : "—",
-  },
-  {
-    key: "updated",
-    label: "Updated",
-    className: "min-w-[140px] text-right",
-    align: "right",
-    sortable: true,
-    getSortValue: (row) => row.updated?.getTime() ?? 0,
-    render: (row, _context) => (row.updated ? row.updated.toLocaleDateString() : "—"),
-  },
+const POS_OPTIONS: Array<{ label: string; value: Word['pos'] | 'ALL' }> = [
+  { label: 'All', value: 'ALL' },
+  { label: 'Verbs', value: 'V' },
+  { label: 'Nouns', value: 'N' },
+  { label: 'Adjectives', value: 'Adj' },
+  { label: 'Adverbs', value: 'Adv' },
+  { label: 'Pronouns', value: 'Pron' },
+  { label: 'Determiners', value: 'Det' },
+  { label: 'Prepositions', value: 'Präp' },
+  { label: 'Conjunctions', value: 'Konj' },
+  { label: 'Numbers', value: 'Num' },
+  { label: 'Particles', value: 'Part' },
+  { label: 'Interjections', value: 'Interj' },
 ];
 
-function createDefaultFormState(): AdminVerbFormState {
+const LEVEL_OPTIONS = ['All', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
+
+const canonicalOptions: Array<{ label: string; value: CanonicalFilter }> = [
+  { label: 'All', value: 'all' },
+  { label: 'Canonical only', value: 'only' },
+  { label: 'Non-canonical', value: 'non' },
+];
+
+const completeOptions: Array<{ label: string; value: CompleteFilter }> = [
+  { label: 'All', value: 'all' },
+  { label: 'Complete', value: 'complete' },
+  { label: 'Incomplete', value: 'incomplete' },
+];
+
+interface EditFieldConfig {
+  key:
+    | 'level'
+    | 'english'
+    | 'exampleDe'
+    | 'exampleEn'
+    | 'gender'
+    | 'plural'
+    | 'separable'
+    | 'aux'
+    | 'praesensIch'
+    | 'praesensEr'
+    | 'praeteritum'
+    | 'partizipIi'
+    | 'perfekt'
+    | 'comparative'
+    | 'superlative'
+    | 'sourcesCsv'
+    | 'sourceNotes';
+  label: string;
+  type?: 'text' | 'textarea' | 'select' | 'boolean';
+  options?: Array<{ label: string; value: string }>;
+}
+
+const commonFields: EditFieldConfig[] = [
+  { key: 'level', label: 'Level' },
+  { key: 'english', label: 'English' },
+  { key: 'exampleDe', label: 'Example (DE)', type: 'textarea' },
+  { key: 'exampleEn', label: 'Example (EN)', type: 'textarea' },
+  { key: 'sourcesCsv', label: 'Sources' },
+  { key: 'sourceNotes', label: 'Source notes', type: 'textarea' },
+];
+
+const verbFields: EditFieldConfig[] = [
+  { key: 'aux', label: 'Auxiliary', type: 'select', options: [
+    { label: 'Unset', value: 'unset' },
+    { label: 'haben', value: 'haben' },
+    { label: 'sein', value: 'sein' },
+  ] },
+  { key: 'separable', label: 'Separable', type: 'select', options: [
+    { label: 'Unset', value: 'unset' },
+    { label: 'Yes', value: 'true' },
+    { label: 'No', value: 'false' },
+  ] },
+  { key: 'praesensIch', label: 'Präsens (ich)' },
+  { key: 'praesensEr', label: 'Präsens (er/sie/es)' },
+  { key: 'praeteritum', label: 'Präteritum' },
+  { key: 'partizipIi', label: 'Partizip II' },
+  { key: 'perfekt', label: 'Perfekt' },
+];
+
+const nounFields: EditFieldConfig[] = [
+  { key: 'gender', label: 'Gender / Artikel' },
+  { key: 'plural', label: 'Plural' },
+];
+
+const adjectiveFields: EditFieldConfig[] = [
+  { key: 'comparative', label: 'Comparative' },
+  { key: 'superlative', label: 'Superlative' },
+];
+
+const wordFormSchema = z.object({
+  level: z.string(),
+  english: z.string(),
+  exampleDe: z.string(),
+  exampleEn: z.string(),
+  gender: z.string(),
+  plural: z.string(),
+  separable: z.string(),
+  aux: z.string(),
+  praesensIch: z.string(),
+  praesensEr: z.string(),
+  praeteritum: z.string(),
+  partizipIi: z.string(),
+  perfekt: z.string(),
+  comparative: z.string(),
+  superlative: z.string(),
+  sourcesCsv: z.string(),
+  sourceNotes: z.string(),
+});
+
+type WordFormState = z.infer<typeof wordFormSchema>;
+
+function createFormState(word: Word): WordFormState {
   return {
-    infinitive: "",
-    english: "",
-    präteritum: "",
-    partizipII: "",
-    auxiliary: "haben",
-    level: "A1",
-    präteritumExample: "",
-    partizipIIExample: "",
-    sourceName: "",
-    sourceLevelReference: "",
-    patternType: PATTERN_TYPE_NONE,
-    patternGroup: "",
+    level: word.level ?? '',
+    english: word.english ?? '',
+    exampleDe: word.exampleDe ?? '',
+    exampleEn: word.exampleEn ?? '',
+    gender: word.gender ?? '',
+    plural: word.plural ?? '',
+    separable: word.separable === null ? 'unset' : word.separable ? 'true' : 'false',
+    aux: word.aux ?? 'unset',
+    praesensIch: word.praesensIch ?? '',
+    praesensEr: word.praesensEr ?? '',
+    praeteritum: word.praeteritum ?? '',
+    partizipIi: word.partizipIi ?? '',
+    perfekt: word.perfekt ?? '',
+    comparative: word.comparative ?? '',
+    superlative: word.superlative ?? '',
+    sourcesCsv: word.sourcesCsv ?? '',
+    sourceNotes: word.sourceNotes ?? '',
   };
 }
 
-function toDate(value: VerbRecord["createdAt"]): Date | undefined {
-  if (value === null || value === undefined) {
-    return undefined;
-  }
+function preparePayload(form: WordFormState, pos: Word['pos']) {
+  const payload: Record<string, unknown> = {};
 
-  if (value instanceof Date) {
-    return value;
-  }
+  const assignText = (key: keyof WordFormState, column: keyof Word) => {
+    const raw = form[key].trim();
+    payload[column] = raw.length ? raw : null;
+  };
 
-  const numericValue = typeof value === "string" ? Number(value) : value;
+  assignText('level', 'level');
+  assignText('english', 'english');
+  assignText('exampleDe', 'exampleDe');
+  assignText('exampleEn', 'exampleEn');
+  assignText('sourcesCsv', 'sourcesCsv');
+  assignText('sourceNotes', 'sourceNotes');
 
-  if (typeof numericValue === "number" && !Number.isNaN(numericValue)) {
-    const ms = numericValue > 1_000_000_000_000 ? numericValue : numericValue * 1000;
-    return new Date(ms);
-  }
-
-  if (typeof value === "string") {
-    const parsed = Date.parse(value);
-    if (!Number.isNaN(parsed)) {
-      return new Date(parsed);
+  if (pos === 'V') {
+    if (form.aux === 'unset') {
+      payload.aux = null;
+    } else if (form.aux === 'haben' || form.aux === 'sein') {
+      payload.aux = form.aux;
     }
+
+    if (form.separable === 'unset') {
+      payload.separable = null;
+    } else if (form.separable === 'true') {
+      payload.separable = true;
+    } else if (form.separable === 'false') {
+      payload.separable = false;
+    }
+
+    assignText('praesensIch', 'praesensIch');
+    assignText('praesensEr', 'praesensEr');
+    assignText('praeteritum', 'praeteritum');
+    assignText('partizipIi', 'partizipIi');
+    assignText('perfekt', 'perfekt');
   }
 
-  return undefined;
+  if (pos === 'N') {
+    assignText('gender', 'gender');
+    assignText('plural', 'plural');
+  }
+
+  if (pos === 'Adj') {
+    assignText('comparative', 'comparative');
+    assignText('superlative', 'superlative');
+  }
+
+  return payload;
 }
 
-function parseJsonField<T>(value: unknown): T | null {
-  if (value === null || value === undefined) {
-    return null;
-  }
+const AdminWordsPage = () => {
+  const [adminToken, setAdminToken] = useState(() => localStorage.getItem('gvm-admin-token') ?? '');
+  const [search, setSearch] = useState('');
+  const [pos, setPos] = useState<Word['pos'] | 'ALL'>('ALL');
+  const [level, setLevel] = useState<string>('All');
+  const [canonicalFilter, setCanonicalFilter] = useState<CanonicalFilter>('all');
+  const [completeFilter, setCompleteFilter] = useState<CompleteFilter>('all');
+  const [selectedWord, setSelectedWord] = useState<Word | null>(null);
+  const [formState, setFormState] = useState<WordFormState | null>(null);
 
-  if (typeof value === "string") {
-    try {
-      return JSON.parse(value) as T;
-    } catch {
-      return null;
-    }
-  }
-
-  if (typeof value === "object") {
-    return value as T;
-  }
-
-  return null;
-}
-
-export default function AdminPage() {
   const { toast } = useToast();
-  const [adminToken, setAdminToken] = useState(() => {
-    if (typeof window === "undefined") {
-      return "";
-    }
-    return localStorage.getItem("gvm-admin-token") ?? "";
-  });
-  const [formState, setFormState] = useState<AdminVerbFormState>(() => createDefaultFormState());
+  const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    if (adminToken) {
-      localStorage.setItem("gvm-admin-token", adminToken);
-    } else {
-      localStorage.removeItem("gvm-admin-token");
-    }
+    localStorage.setItem('gvm-admin-token', adminToken);
   }, [adminToken]);
 
-  const { data: verbs = [], isFetching, refetch } = useQuery<VerbRecord[]>({
-    queryKey: ["/api/verbs"],
-  });
+  const filters = useMemo(
+    () => ({ search, pos, level, canonicalFilter, completeFilter }),
+    [search, pos, level, canonicalFilter, completeFilter],
+  );
 
-  const {
-    data: analytics = [],
-    isFetching: isAnalyticsFetching,
-  } = useQuery<VerbAnalytics[]>({
-    queryKey: ["/api/analytics"],
-  });
+  const queryKey = useMemo(
+    () => ['words', filters],
+    [filters],
+  );
 
-  const normalizedVerbs = useMemo<NormalizedVerbRecord[]>(() => {
-    return verbs.map((verb) => ({
-      ...verb,
-      source: parseJsonField<GermanVerb["source"]>(verb.source) ?? null,
-      pattern: parseJsonField<NonNullable<GermanVerb["pattern"]>>(verb.pattern) ?? null,
-    }));
-  }, [verbs]);
+  const wordsQuery = useQuery({
+    queryKey,
+    enabled: Boolean(adminToken),
+    queryFn: async () => {
+      const params = new URLSearchParams({ admin: '1' });
+      if (filters.pos !== 'ALL') params.set('pos', filters.pos);
+      if (filters.level !== 'All') params.set('level', filters.level);
+      if (filters.search.trim()) params.set('search', filters.search.trim());
+      if (filters.canonicalFilter === 'only') params.set('canonical', 'only');
+      if (filters.canonicalFilter === 'non') params.set('canonical', 'non');
+      if (filters.completeFilter === 'complete') params.set('complete', 'only');
+      if (filters.completeFilter === 'incomplete') params.set('complete', 'non');
 
-  const mutation = useMutation({
-    mutationFn: async (payload: GermanVerb) => {
-      const response = await fetch("/api/admin/verbs", {
-        method: "POST",
+      const response = await fetch(`/api/words?${params.toString()}`, {
         headers: {
-          "Content-Type": "application/json",
-          "x-admin-token": adminToken,
+          'x-admin-token': adminToken,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to load words (${response.status})`);
+      }
+
+      const payload = await response.json();
+      const parsed = wordsResponseSchema.parse(payload);
+      return parsed;
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, payload }: { id: number; payload: Record<string, unknown> }) => {
+      const response = await fetch(`/api/words/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-token': adminToken,
         },
         body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(errorText || response.statusText);
+        throw new Error(errorText || 'Failed to update word');
       }
 
-      return response.json() as Promise<VerbRecord>;
+      const result = await response.json();
+      return wordSchema.parse(result);
     },
-    onSuccess: (verb) => {
-      toast({
-        title: "Verb saved",
-        description: `${verb.infinitive} added for level ${verb.level}.`,
-      });
-      setFormState(createDefaultFormState());
-      refetch();
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
+      toast({ title: 'Word updated' });
     },
-    onError: (error: Error) => {
-      toast({
-        title: "Unable to save verb",
-        description: error.message,
-        variant: "destructive",
-      });
+    onError: (error) => {
+      toast({ title: 'Update failed', description: error instanceof Error ? error.message : String(error), variant: 'destructive' });
     },
   });
 
-  const levelSummary = useMemo(() => {
-    return LEVEL_OPTIONS.map((level) => ({
-      level,
-      count: normalizedVerbs.filter((verb) => verb.level === level).length,
-    }));
-  }, [normalizedVerbs]);
-
-  const recentVerbs = useMemo(() => {
-    return [...normalizedVerbs]
-      .sort((a, b) => {
-        const aDate = toDate(a.updatedAt ?? a.createdAt)?.getTime() ?? 0;
-        const bDate = toDate(b.updatedAt ?? b.createdAt)?.getTime() ?? 0;
-        return bDate - aDate;
-      })
-      .slice(0, 10);
-  }, [normalizedVerbs]);
-
-  const totalVerbs = normalizedVerbs.length;
-
-  const verbsWithAnalytics = useMemo<VerbOverviewRow[]>(() => {
-    const analyticsByVerb = new Map<string, VerbAnalytics>();
-    for (const item of analytics) {
-      analyticsByVerb.set(item.verb, item);
-    }
-
-    return [...normalizedVerbs]
-      .map((verb) => {
-        const analyticsForVerb = analyticsByVerb.get(verb.infinitive);
-        const totalAttempts = analyticsForVerb?.totalAttempts ?? 0;
-        const correctAttempts = analyticsForVerb?.correctAttempts ?? 0;
-        const successRate =
-          totalAttempts > 0 ? Math.round((correctAttempts / totalAttempts) * 100) : null;
-        const lastPracticed = analyticsForVerb?.lastPracticedAt
-          ? toDate(analyticsForVerb.lastPracticedAt)
-          : undefined;
-        const updated = toDate(verb.updatedAt ?? verb.createdAt);
-        const patternLabel = verb.pattern
-          ? `${verb.pattern.type}${verb.pattern.group ? ` (${verb.pattern.group})` : ""}`
-          : "";
-        const sourceLabel = verb.source
-          ? `${verb.source.name}${verb.source.levelReference ? ` · ${verb.source.levelReference}` : ""}`
-          : "";
-
-        return {
-          verb,
-          analytics: {
-            totalAttempts,
-            correctAttempts,
-            successRate,
-            lastPracticed,
-          },
-          updated,
-          patternLabel,
-          sourceLabel,
-        };
-      })
-      .sort((a, b) => a.verb.infinitive.localeCompare(b.verb.infinitive));
-  }, [analytics, normalizedVerbs]);
-
-  const progressSummary = useMemo(() => {
-    if (analytics.length === 0) {
-      return {
-        trackedVerbs: 0,
-        totalAttempts: 0,
-        overallSuccessRate: null as number | null,
-      };
-    }
-
-    const trackedVerbs = analytics.length;
-    const totalAttempts = analytics.reduce((sum, item) => sum + item.totalAttempts, 0);
-    const correctAttempts = analytics.reduce((sum, item) => sum + item.correctAttempts, 0);
-    const overallSuccessRate = totalAttempts > 0 ? Math.round((correctAttempts / totalAttempts) * 100) : null;
-
-    return {
-      trackedVerbs,
-      totalAttempts,
-      overallSuccessRate,
-    };
-  }, [analytics]);
-
-  const [levelFilter, setLevelFilter] = useState<GermanVerb["level"] | "all">("all");
-  const [minAttemptsFilter, setMinAttemptsFilter] = useState("");
-  const [maxAttemptsFilter, setMaxAttemptsFilter] = useState("");
-  const [sortColumn, setSortColumn] = useState<OverviewColumnKey>("infinitive");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-  const [visibleColumns, setVisibleColumns] = useState<Record<OverviewColumnKey, boolean>>(() => {
-    return OVERVIEW_COLUMNS.reduce((acc, column) => {
-      acc[column.key] = true;
-      return acc;
-    }, {} as Record<OverviewColumnKey, boolean>);
-  });
-
-  const visibleColumnList = useMemo(() => {
-    return OVERVIEW_COLUMNS.filter((column) => visibleColumns[column.key]);
-  }, [visibleColumns]);
-
-  const filteredVerbs = useMemo(() => {
-    const minAttempts = minAttemptsFilter.trim() === "" ? null : Number(minAttemptsFilter);
-    const maxAttempts = maxAttemptsFilter.trim() === "" ? null : Number(maxAttemptsFilter);
-    const normalizedMin = minAttempts !== null && !Number.isNaN(minAttempts) ? minAttempts : null;
-    const normalizedMax = maxAttempts !== null && !Number.isNaN(maxAttempts) ? maxAttempts : null;
-
-    return verbsWithAnalytics.filter((item) => {
-      if (levelFilter !== "all" && item.verb.level !== levelFilter) {
-        return false;
-      }
-
-      if (normalizedMin !== null && item.analytics.totalAttempts < normalizedMin) {
-        return false;
-      }
-
-      if (normalizedMax !== null && item.analytics.totalAttempts > normalizedMax) {
-        return false;
-      }
-
-      return true;
-    });
-  }, [levelFilter, maxAttemptsFilter, minAttemptsFilter, verbsWithAnalytics]);
-
-  const sortedVerbs = useMemo(() => {
-    const column = OVERVIEW_COLUMNS.find((item) => item.key === sortColumn);
-    if (!column) {
-      return filteredVerbs;
-    }
-
-    const sorted = [...filteredVerbs].sort((a, b) => {
-      const aValue = column.getSortValue(a);
-      const bValue = column.getSortValue(b);
-
-      if (typeof aValue === "string" && typeof bValue === "string") {
-        return aValue.localeCompare(bValue, undefined, { sensitivity: "base" });
-      }
-
-      if (typeof aValue === "number" && typeof bValue === "number") {
-        return aValue - bValue;
-      }
-
-      return String(aValue).localeCompare(String(bValue));
-    });
-
-    return sortDirection === "asc" ? sorted : sorted.reverse();
-  }, [filteredVerbs, sortColumn, sortDirection]);
-
-  const hasActiveFilters =
-    levelFilter !== "all" || minAttemptsFilter.trim() !== "" || maxAttemptsFilter.trim() !== "";
-
-  const emptyStateMessage = isFetching
-    ? "Loading…"
-    : verbsWithAnalytics.length === 0
-      ? "No verbs available yet."
-      : "No verbs match the current filters.";
-
-  const handleColumnToggle = (key: OverviewColumnKey, checked: CheckedState) => {
-    const nextChecked = checked === true;
-    setVisibleColumns((prev) => {
-      const currentlyVisible = Object.values(prev).filter(Boolean).length;
-      if (!nextChecked && currentlyVisible <= 1) {
-        return prev;
-      }
-
-      return {
-        ...prev,
-        [key]: nextChecked,
-      };
-    });
+  const openEditor = (word: Word) => {
+    setSelectedWord(word);
+    setFormState(createFormState(word));
   };
 
-  const handleSort = (key: OverviewColumnKey) => {
-    setSortColumn((currentColumn) => {
-      if (currentColumn === key) {
-        setSortDirection((prevDirection) => (prevDirection === "asc" ? "desc" : "asc"));
-        return currentColumn;
-      }
-
-      setSortDirection("asc");
-      return key;
-    });
+  const closeEditor = () => {
+    setSelectedWord(null);
+    setFormState(null);
   };
 
-  const handleResetFilters = () => {
-    setLevelFilter("all");
-    setMinAttemptsFilter("");
-    setMaxAttemptsFilter("");
-  };
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!selectedWord || !formState) return;
 
-    if (!adminToken) {
-      toast({
-        title: "Admin token required",
-        description: "Set the admin API token before saving verbs.",
-        variant: "destructive",
-      });
-      return;
+    const payload = preparePayload(formState, selectedWord.pos);
+    updateMutation.mutate({ id: selectedWord.id, payload });
+    closeEditor();
+  };
+
+  const toggleCanonical = (word: Word) => {
+    updateMutation.mutate({ id: word.id, payload: { canonical: !word.canonical } });
+  };
+
+  const words = wordsQuery.data ?? [];
+  const activePos = pos;
+
+  const columns = useMemo(() => {
+    const base = [
+      { key: 'lemma', label: 'Lemma' },
+      { key: 'pos', label: 'POS' },
+      { key: 'level', label: 'Level' },
+      { key: 'english', label: 'English' },
+    ];
+
+    if (activePos === 'V') {
+      base.push(
+        { key: 'praeteritum', label: 'Präteritum' },
+        { key: 'partizipIi', label: 'Partizip II' },
+        { key: 'perfekt', label: 'Perfekt' },
+        { key: 'aux', label: 'Aux' },
+      );
+    } else if (activePos === 'N') {
+      base.push(
+        { key: 'gender', label: 'Gender' },
+        { key: 'plural', label: 'Plural' },
+      );
+    } else if (activePos === 'Adj') {
+      base.push(
+        { key: 'comparative', label: 'Comparative' },
+        { key: 'superlative', label: 'Superlative' },
+      );
+    } else {
+      base.push(
+        { key: 'exampleDe', label: 'Example (DE)' },
+        { key: 'exampleEn', label: 'Example (EN)' },
+      );
     }
 
-    const payload: GermanVerb = {
-      infinitive: formState.infinitive.trim(),
-      english: formState.english.trim(),
-      präteritum: formState.präteritum.trim(),
-      partizipII: formState.partizipII.trim(),
-      auxiliary: formState.auxiliary,
-      level: formState.level,
-      präteritumExample: formState.präteritumExample.trim(),
-      partizipIIExample: formState.partizipIIExample.trim(),
-      source: {
-        name: formState.sourceName.trim(),
-        levelReference: formState.sourceLevelReference.trim(),
-      },
-      pattern: formState.patternType !== PATTERN_TYPE_NONE
-        ? {
-            type: formState.patternType,
-            ...(formState.patternGroup.trim()
-              ? { group: formState.patternGroup.trim() }
-              : {}),
-          }
-        : null,
-    };
+    base.push({ key: 'canonical', label: 'Canonical' });
+    base.push({ key: 'complete', label: 'Complete' });
+    base.push({ key: 'actions', label: 'Actions' });
 
-    mutation.mutate(payload);
-  };
-
-  const updateForm = (field: keyof AdminVerbFormState, value: string) => {
-    setFormState((prev) => {
-      if (field === "patternType") {
-        return {
-          ...prev,
-          patternType: value,
-          patternGroup: value === PATTERN_TYPE_NONE ? "" : prev.patternGroup,
-        };
-      }
-
-      return {
-        ...prev,
-        [field]: value,
-      };
-    });
-  };
+    return base;
+  }, [activePos]);
 
   return (
-    <div className="min-h-screen bg-muted/30 py-10">
-      <div className="container mx-auto max-w-5xl space-y-8 px-4">
-        <div>
-          <h1 className="text-3xl font-bold">Verb Corpus Admin</h1>
-          <p className="text-muted-foreground">
-            Upload new verbs, manage tagging metadata, and track distribution readiness.
-          </p>
-        </div>
-
-        <Tabs defaultValue="manage" className="space-y-6">
-          <TabsList className="grid w-full gap-2 bg-background p-2 sm:grid-cols-2">
-            <TabsTrigger value="manage">Manage corpus</TabsTrigger>
-            <TabsTrigger value="overview">Corpus overview</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="manage" className="space-y-6">
-            <div className="grid gap-6 md:grid-cols-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Admin Access</CardTitle>
-                  <CardDescription>
-                    Provide the API token configured on the server to enable write access.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="admin-token">Admin API token</Label>
-                    <Input
-                      id="admin-token"
-                      type="password"
-                      placeholder="••••••••"
-                      value={adminToken}
-                      onChange={(event) => setAdminToken(event.target.value)}
-                    />
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    The token is stored locally in your browser so you do not have to re-enter it on every visit.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Corpus snapshot</CardTitle>
-                  <CardDescription>
-                    Overview of verbs currently available to learners.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex flex-wrap gap-2">
-                    {levelSummary.map(({ level, count }) => (
-                      <Badge key={level} variant="outline" className="px-3 py-1 text-sm">
-                        {level}: {count}
-                      </Badge>
-                    ))}
-                  </div>
-                  <Separator />
-                  <div className="text-sm text-muted-foreground">
-                    <p>Total verbs: {isFetching ? "…" : totalVerbs}</p>
-                    <p>Recently updated verbs appear in the table below.</p>
-                  </div>
-                </CardContent>
-              </Card>
+    <div className="container mx-auto space-y-6 py-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Admin: Words</CardTitle>
+          <CardDescription>Review and edit the aggregated lexicon. Filters update the API query in real time.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end">
+            <div className="flex-1 space-y-2">
+              <Label htmlFor="admin-token">Admin token</Label>
+              <Input
+                id="admin-token"
+                type="password"
+                value={adminToken}
+                onChange={(event) => setAdminToken(event.target.value)}
+                placeholder="Enter x-admin-token"
+              />
             </div>
+            <div className="flex-1 space-y-2">
+              <Label htmlFor="search">Search</Label>
+              <Input
+                id="search"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Search by lemma or English"
+              />
+            </div>
+          </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Add a new verb</CardTitle>
-                <CardDescription>
-                  Fill out the form with grammatical forms, CEFR level, and tagging metadata. Examples help generate practice prompts.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form className="grid gap-4 md:grid-cols-2" onSubmit={handleSubmit}>
-                  <div className="space-y-2">
-                    <Label htmlFor="infinitive">Infinitive</Label>
-                    <Input
-                  id="infinitive"
-                  required
-                  value={formState.infinitive}
-                  onChange={(event) => updateForm("infinitive", event.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="english">English meaning</Label>
-                <Input
-                  id="english"
-                  required
-                  value={formState.english}
-                  onChange={(event) => updateForm("english", event.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="prateritum">Präteritum</Label>
-                <Input
-                  id="prateritum"
-                  required
-                  value={formState.präteritum}
-                  onChange={(event) => updateForm("präteritum", event.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="partizip">
-                  Partizip II
-                </Label>
-                <Input
-                  id="partizip"
-                  required
-                  value={formState.partizipII}
-                  onChange={(event) => updateForm("partizipII", event.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Auxiliary</Label>
-                <Select
-                  value={formState.auxiliary}
-                  onValueChange={(value) => updateForm("auxiliary", value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select auxiliary" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="haben">haben</SelectItem>
-                    <SelectItem value="sein">sein</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>CEFR level</Label>
-                <Select
-                  value={formState.level}
-                  onValueChange={(value) => updateForm("level", value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {LEVEL_OPTIONS.map((level) => (
-                      <SelectItem key={level} value={level}>
-                        {level}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="praeteritum-example">Präteritum example sentence</Label>
-                <Textarea
-                  id="praeteritum-example"
-                  required
-                  rows={2}
-                  value={formState.präteritumExample}
-                  onChange={(event) => updateForm("präteritumExample", event.target.value)}
-                />
-              </div>
-              <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="partizip-example">Partizip II example sentence</Label>
-                <Textarea
-                  id="partizip-example"
-                  required
-                  rows={2}
-                  value={formState.partizipIIExample}
-                  onChange={(event) => updateForm("partizipIIExample", event.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="source-name">Source name</Label>
-                <Input
-                  id="source-name"
-                  required
-                  placeholder="e.g. Duden"
-                  value={formState.sourceName}
-                  onChange={(event) => updateForm("sourceName", event.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="source-ref">Source reference</Label>
-                <Input
-                  id="source-ref"
-                  required
-                  placeholder="e.g. B1 Kapitel 3"
-                  value={formState.sourceLevelReference}
-                  onChange={(event) => updateForm("sourceLevelReference", event.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Pattern type</Label>
-                <Select
-                  value={formState.patternType}
-                  onValueChange={(value) => updateForm("patternType", value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Optional" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={PATTERN_TYPE_NONE}>None</SelectItem>
-                    {PATTERN_TYPES.map((type) => (
-                      <SelectItem key={type} value={type}>
-                        {type}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="pattern-group">Pattern group</Label>
-                <Input
-                  id="pattern-group"
-                  placeholder="Optional grouping tag"
-                  value={formState.patternGroup}
-                  onChange={(event) => updateForm("patternGroup", event.target.value)}
-                  disabled={formState.patternType === PATTERN_TYPE_NONE}
-                />
-              </div>
-              <div className="md:col-span-2 flex justify-end">
-                <Button type="submit" disabled={mutation.isPending}>
-                  {mutation.isPending ? "Saving…" : "Save verb"}
-                </Button>
-              </div>
-                </form>
-              </CardContent>
-            </Card>
+          <div className="grid gap-3 md:grid-cols-4">
+            <div>
+              <Label>Part of speech</Label>
+              <Select value={pos} onValueChange={(value) => setPos(value as Word['pos'] | 'ALL')}>
+                <SelectTrigger>
+                  <SelectValue placeholder="POS" />
+                </SelectTrigger>
+                <SelectContent>
+                  {POS_OPTIONS.map((option) => (
+                    <SelectItem key={option.value || 'all'} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Level</Label>
+              <Select value={level} onValueChange={setLevel}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Level" />
+                </SelectTrigger>
+                <SelectContent>
+                  {LEVEL_OPTIONS.map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {option}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Canonical</Label>
+              <Select value={canonicalFilter} onValueChange={(value: CanonicalFilter) => setCanonicalFilter(value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Canonical" />
+                </SelectTrigger>
+                <SelectContent>
+                  {canonicalOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Completeness</Label>
+              <Select value={completeFilter} onValueChange={(value: CompleteFilter) => setCompleteFilter(value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Completeness" />
+                </SelectTrigger>
+                <SelectContent>
+                  {completeOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent updates</CardTitle>
-                <CardDescription>
-                  Track the latest verbs and tagging information that will sync to offline bundles.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Infinitive</TableHead>
-                      <TableHead>Level</TableHead>
-                      <TableHead>Pattern</TableHead>
-                      <TableHead>Source</TableHead>
-                      <TableHead className="text-right">Updated</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {recentVerbs.map((verb) => {
-                      const updated = toDate(verb.updatedAt ?? verb.createdAt);
-                      return (
-                        <TableRow key={verb.id}>
-                          <TableCell className="font-medium">{verb.infinitive}</TableCell>
-                          <TableCell>{verb.level}</TableCell>
-                          <TableCell>
-                            {verb.pattern?.type ?? "—"}
-                            {verb.pattern?.group ? ` (${verb.pattern.group})` : ""}
-                          </TableCell>
-                          <TableCell>{verb.source?.name ?? "—"}</TableCell>
-                          <TableCell className="text-right text-muted-foreground">
-                            {updated ? updated.toLocaleDateString() : "—"}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                    {recentVerbs.length === 0 && (
-                      <TableRow>
-                        <TableCell colSpan={5} className="text-center text-muted-foreground">
-                          {isFetching ? "Loading…" : "No verbs available yet."}
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="overview" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Learning progress</CardTitle>
-                <CardDescription>
-                  Aggregated analytics from learner practice sessions.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="grid gap-4 sm:grid-cols-3">
-                <div>
-                  <p className="text-sm text-muted-foreground">Tracked verbs</p>
-                  <p className="text-2xl font-semibold">
-                    {isAnalyticsFetching ? "…" : progressSummary.trackedVerbs}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Total attempts</p>
-                  <p className="text-2xl font-semibold">
-                    {isAnalyticsFetching ? "…" : progressSummary.totalAttempts}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Overall success rate</p>
-                  <p className="text-2xl font-semibold">
-                    {isAnalyticsFetching
-                      ? "…"
-                      : progressSummary.overallSuccessRate !== null
-                        ? `${progressSummary.overallSuccessRate}%`
-                        : "—"}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Verb corpus</CardTitle>
-                <CardDescription>
-                  Review every verb, its tagging metadata, and live learner progress.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                  <div className="grid w-full gap-4 sm:grid-cols-2 md:grid-cols-3">
-                    <div className="space-y-2">
-                      <Label>Level</Label>
-                      <Select
-                        value={levelFilter}
-                        onValueChange={(value) =>
-                          setLevelFilter(value === "all" ? "all" : (value as GermanVerb["level"]))
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="All levels" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All levels</SelectItem>
-                          {LEVEL_OPTIONS.map((level) => (
-                            <SelectItem key={level} value={level}>
-                              {level}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="min-attempts">Min attempts</Label>
-                      <Input
-                        id="min-attempts"
-                        type="number"
-                        min={0}
-                        inputMode="numeric"
-                        value={minAttemptsFilter}
-                        onChange={(event) => setMinAttemptsFilter(event.target.value)}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="max-attempts">Max attempts</Label>
-                      <Input
-                        id="max-attempts"
-                        type="number"
-                        min={0}
-                        inputMode="numeric"
-                        value={maxAttemptsFilter}
-                        onChange={(event) => setMaxAttemptsFilter(event.target.value)}
-                      />
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          Columns
+      <Card>
+        <CardHeader>
+          <CardTitle>Words</CardTitle>
+          <CardDescription>
+            {wordsQuery.isLoading && 'Loading words…'}
+            {wordsQuery.isError && 'Failed to load words. Check the token and try again.'}
+            {wordsQuery.isSuccess && `${words.length} word${words.length === 1 ? '' : 's'} found.`}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {columns.map((column) => (
+                  <TableHead key={column.key}>{column.label}</TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {words.map((word) => (
+                <TableRow key={word.id}>
+                  <TableCell className="font-medium">{word.lemma}</TableCell>
+                  <TableCell>{word.pos}</TableCell>
+                  <TableCell>{word.level ?? '—'}</TableCell>
+                  <TableCell>{word.english ?? '—'}</TableCell>
+                  {activePos === 'V' && (
+                    <>
+                      <TableCell>{word.praeteritum ?? '—'}</TableCell>
+                      <TableCell>{word.partizipIi ?? '—'}</TableCell>
+                      <TableCell>{word.perfekt ?? '—'}</TableCell>
+                      <TableCell>{word.aux ?? '—'}</TableCell>
+                    </>
+                  )}
+                  {activePos === 'N' && (
+                    <>
+                      <TableCell>{word.gender ?? '—'}</TableCell>
+                      <TableCell>{word.plural ?? '—'}</TableCell>
+                    </>
+                  )}
+                  {activePos === 'Adj' && (
+                    <>
+                      <TableCell>{word.comparative ?? '—'}</TableCell>
+                      <TableCell>{word.superlative ?? '—'}</TableCell>
+                    </>
+                  )}
+                  {activePos === 'ALL' && (
+                    <>
+                      <TableCell>{word.exampleDe ?? '—'}</TableCell>
+                      <TableCell>{word.exampleEn ?? '—'}</TableCell>
+                    </>
+                  )}
+                  <TableCell>
+                    <Badge variant={word.canonical ? 'default' : 'secondary'}>
+                      {word.canonical ? 'Canonical' : 'Shadow'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={word.complete ? 'default' : 'outline'}>
+                      {word.complete ? 'Complete' : 'Incomplete'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="space-x-2">
+                    <Button
+                      size="sm"
+                      variant={word.canonical ? 'outline' : 'secondary'}
+                      onClick={() => toggleCanonical(word)}
+                    >
+                      {word.canonical ? 'Unset canonical' : 'Set canonical'}
+                    </Button>
+                    <Drawer open={selectedWord?.id === word.id} onOpenChange={(open) => {
+                      if (open) {
+                        openEditor(word);
+                      } else {
+                        closeEditor();
+                      }
+                    }}>
+                      <DrawerTrigger asChild>
+                        <Button size="sm" variant="outline" onClick={() => openEditor(word)}>
+                          Edit
                         </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-48">
-                        {OVERVIEW_COLUMNS.map((column) => (
-                          <DropdownMenuCheckboxItem
-                            key={column.key}
-                            checked={visibleColumns[column.key]}
-                            onCheckedChange={(checked) => handleColumnToggle(column.key, checked)}
-                          >
-                            {column.label}
-                          </DropdownMenuCheckboxItem>
-                        ))}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                    {hasActiveFilters && (
-                      <Button variant="ghost" size="sm" onClick={handleResetFilters}>
-                        Reset filters
-                      </Button>
-                    )}
-                  </div>
-                </div>
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        {visibleColumnList.map((column) => {
-                          const isSorted = sortColumn === column.key;
-                          return (
-                            <TableHead key={column.key} className={column.className}>
-                              {column.sortable ? (
-                                <button
-                                  type="button"
-                                  className={cn(
-                                    "flex w-full items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground",
-                                    column.align === "right" ? "justify-end text-right" : "justify-start text-left"
-                                  )}
-                                  onClick={() => handleSort(column.key)}
-                                >
-                                  <span>{column.label}</span>
-                                  {isSorted && (
-                                    <span aria-hidden="true" className="text-xs">
-                                      {sortDirection === "asc" ? "▲" : "▼"}
-                                    </span>
-                                  )}
-                                  <span className="sr-only">
-                                    {isSorted
-                                      ? `Sort ${sortDirection === "asc" ? "descending" : "ascending"}`
-                                      : "Enable sorting"}
-                                  </span>
-                                </button>
-                              ) : (
-                                column.label
+                      </DrawerTrigger>
+                      <DrawerContent>
+                        <DrawerHeader>
+                          <DrawerTitle>Edit {word.lemma}</DrawerTitle>
+                        </DrawerHeader>
+                        <form onSubmit={submitForm} className="space-y-4 p-4">
+                          {[...commonFields,
+                            ...(word.pos === 'V' ? verbFields : []),
+                            ...(word.pos === 'N' ? nounFields : []),
+                            ...(word.pos === 'Adj' ? adjectiveFields : []),
+                          ].map((field) => (
+                            <div key={field.key} className="space-y-2">
+                              <Label className="text-sm font-medium">{field.label}</Label>
+                                {field.type === 'textarea' ? (
+                                  <Textarea
+                                    value={formState?.[field.key] ?? ''}
+                                    onChange={(event) =>
+                                      setFormState((state) =>
+                                        state ? { ...state, [field.key]: event.target.value } : state,
+                                      )
+                                    }
+                                  />
+                                ) : field.type === 'select' && field.options ? (
+                                  (() => {
+                                    const fallbackOption =
+                                      field.options.find((option) => option.value === 'unset')?.value ??
+                                      field.options[0]?.value ??
+                                      '';
+                                    const currentValue = formState?.[field.key] ?? fallbackOption;
+                                    return (
+                                      <Select
+                                        value={currentValue}
+                                        onValueChange={(value) =>
+                                          setFormState((state) =>
+                                            state ? { ...state, [field.key]: value } : state,
+                                          )
+                                        }
+                                      >
+                                        <SelectTrigger>
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          {field.options.map((option) => (
+                                            <SelectItem key={option.value} value={option.value}>
+                                              {option.label}
+                                            </SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
+                                    );
+                                  })()
+                                ) : (
+                                  <Input
+                                    value={formState?.[field.key] ?? ''}
+                                    onChange={(event) =>
+                                      setFormState((state) =>
+                                      state ? { ...state, [field.key]: event.target.value } : state,
+                                    )
+                                  }
+                                />
                               )}
-                            </TableHead>
-                          );
-                        })}
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {sortedVerbs.map((row, rowIndex) => (
-                        <TableRow key={row.verb.id}>
-                          {visibleColumnList.map((column) => (
-                            <TableCell key={column.key} className={column.className}>
-                              {column.render(row, { isAnalyticsFetching, rowIndex })}
-                            </TableCell>
+                            </div>
                           ))}
-                        </TableRow>
-                      ))}
-                      {sortedVerbs.length === 0 && (
-                        <TableRow>
-                          <TableCell
-                            colSpan={visibleColumnList.length || 1}
-                            className="text-center text-muted-foreground"
-                          >
-                            {emptyStateMessage}
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
+                          <DrawerFooter>
+                            <Button type="submit" disabled={updateMutation.isPending}>
+                              Save changes
+                            </Button>
+                            <Button type="button" variant="outline" onClick={closeEditor}>
+                              Cancel
+                            </Button>
+                          </DrawerFooter>
+                        </form>
+                      </DrawerContent>
+                    </Drawer>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {!words.length && !wordsQuery.isLoading && (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="text-center text-muted-foreground">
+                    No words match the current filters.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
-}
+};
+
+export default AdminWordsPage;
