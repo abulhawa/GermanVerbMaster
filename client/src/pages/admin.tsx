@@ -242,9 +242,11 @@ const AdminWordsPage = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  const normalizedAdminToken = adminToken.trim();
+
   useEffect(() => {
-    localStorage.setItem('gvm-admin-token', adminToken);
-  }, [adminToken]);
+    localStorage.setItem('gvm-admin-token', normalizedAdminToken);
+  }, [normalizedAdminToken]);
 
   const filters = useMemo(
     () => ({ search, pos, level, canonicalFilter, completeFilter }),
@@ -256,9 +258,11 @@ const AdminWordsPage = () => {
     [filters],
   );
 
+  const hasAdminToken = Boolean(normalizedAdminToken);
+
   const wordsQuery = useQuery({
     queryKey,
-    enabled: Boolean(adminToken),
+    enabled: hasAdminToken,
     queryFn: async () => {
       const params = new URLSearchParams({ admin: '1' });
       if (filters.pos !== 'ALL') params.set('pos', filters.pos);
@@ -271,7 +275,7 @@ const AdminWordsPage = () => {
 
       const response = await fetch(`/api/words?${params.toString()}`, {
         headers: {
-          'x-admin-token': adminToken,
+          'x-admin-token': normalizedAdminToken,
         },
       });
 
@@ -291,7 +295,7 @@ const AdminWordsPage = () => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'x-admin-token': adminToken,
+          'x-admin-token': normalizedAdminToken,
         },
         body: JSON.stringify(payload),
       });
@@ -477,9 +481,10 @@ const AdminWordsPage = () => {
         <CardHeader>
           <CardTitle>Words</CardTitle>
           <CardDescription>
-            {wordsQuery.isLoading && 'Loading words…'}
-            {wordsQuery.isError && 'Failed to load words. Check the token and try again.'}
-            {wordsQuery.isSuccess && `${words.length} word${words.length === 1 ? '' : 's'} found.`}
+            {!hasAdminToken && 'Enter the admin token to load words.'}
+            {hasAdminToken && wordsQuery.isLoading && 'Loading words…'}
+            {hasAdminToken && wordsQuery.isError && 'Failed to load words. Check the token and try again.'}
+            {hasAdminToken && wordsQuery.isSuccess && `${words.length} word${words.length === 1 ? '' : 's'} found.`}
           </CardDescription>
         </CardHeader>
         <CardContent className="overflow-x-auto">
@@ -630,7 +635,14 @@ const AdminWordsPage = () => {
                   </TableCell>
                 </TableRow>
               ))}
-              {!words.length && !wordsQuery.isLoading && (
+              {!hasAdminToken && (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="text-center text-muted-foreground">
+                    Enter the admin token to load words.
+                  </TableCell>
+                </TableRow>
+              )}
+              {hasAdminToken && !words.length && !wordsQuery.isLoading && (
                 <TableRow>
                   <TableCell colSpan={columns.length} className="text-center text-muted-foreground">
                     No words match the current filters.
