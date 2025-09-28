@@ -254,15 +254,12 @@ const AdminWordsPage = () => {
   );
 
   const queryKey = useMemo(
-    () => ['words', filters],
-    [filters],
+    () => ['words', filters, normalizedAdminToken],
+    [filters, normalizedAdminToken],
   );
-
-  const hasAdminToken = Boolean(normalizedAdminToken);
 
   const wordsQuery = useQuery({
     queryKey,
-    enabled: hasAdminToken,
     queryFn: async () => {
       const params = new URLSearchParams({ admin: '1' });
       if (filters.pos !== 'ALL') params.set('pos', filters.pos);
@@ -273,10 +270,13 @@ const AdminWordsPage = () => {
       if (filters.completeFilter === 'complete') params.set('complete', 'only');
       if (filters.completeFilter === 'incomplete') params.set('complete', 'non');
 
+      const headers: Record<string, string> = {};
+      if (normalizedAdminToken) {
+        headers['x-admin-token'] = normalizedAdminToken;
+      }
+
       const response = await fetch(`/api/words?${params.toString()}`, {
-        headers: {
-          'x-admin-token': normalizedAdminToken,
-        },
+        headers,
       });
 
       if (!response.ok) {
@@ -295,7 +295,7 @@ const AdminWordsPage = () => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'x-admin-token': normalizedAdminToken,
+          ...(normalizedAdminToken ? { 'x-admin-token': normalizedAdminToken } : {}),
         },
         body: JSON.stringify(payload),
       });
@@ -342,6 +342,11 @@ const AdminWordsPage = () => {
 
   const words = wordsQuery.data ?? [];
   const activePos = pos;
+
+  const isUnauthorized =
+    wordsQuery.isError &&
+    wordsQuery.error instanceof Error &&
+    wordsQuery.error.message.includes('(401)');
 
   const columns = useMemo(() => {
     const base = [
@@ -392,7 +397,7 @@ const AdminWordsPage = () => {
         <CardContent className="space-y-4">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end">
             <div className="flex-1 space-y-2">
-              <Label htmlFor="admin-token">Admin token</Label>
+              <Label htmlFor="admin-token">Admin token (if configured)</Label>
               <Input
                 id="admin-token"
                 type="password"
@@ -481,10 +486,10 @@ const AdminWordsPage = () => {
         <CardHeader>
           <CardTitle>Words</CardTitle>
           <CardDescription>
-            {!hasAdminToken && 'Enter the admin token to load words.'}
-            {hasAdminToken && wordsQuery.isLoading && 'Loading words…'}
-            {hasAdminToken && wordsQuery.isError && 'Failed to load words. Check the token and try again.'}
-            {hasAdminToken && wordsQuery.isSuccess && `${words.length} word${words.length === 1 ? '' : 's'} found.`}
+            {isUnauthorized && 'Enter the admin token to load words.'}
+            {wordsQuery.isLoading && 'Loading words…'}
+            {wordsQuery.isError && !isUnauthorized && 'Failed to load words. Check the token and try again.'}
+            {wordsQuery.isSuccess && `${words.length} word${words.length === 1 ? '' : 's'} found.`}
           </CardDescription>
         </CardHeader>
         <CardContent className="overflow-x-auto">
@@ -635,14 +640,14 @@ const AdminWordsPage = () => {
                   </TableCell>
                 </TableRow>
               ))}
-              {!hasAdminToken && (
+              {isUnauthorized && (
                 <TableRow>
                   <TableCell colSpan={columns.length} className="text-center text-muted-foreground">
                     Enter the admin token to load words.
                   </TableCell>
                 </TableRow>
               )}
-              {hasAdminToken && !words.length && !wordsQuery.isLoading && (
+              {!isUnauthorized && !words.length && !wordsQuery.isLoading && (
                 <TableRow>
                   <TableCell colSpan={columns.length} className="text-center text-muted-foreground">
                     No words match the current filters.

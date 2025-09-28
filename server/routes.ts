@@ -304,14 +304,22 @@ function sendError(res: Response, status: number, message: string, code?: string
   return res.status(status).json({ error: message });
 }
 
+let adminAuthWarningLogged = false;
+
 function requireAdminToken(req: Request, res: Response, next: NextFunction) {
-  const expectedToken = process.env.ADMIN_API_TOKEN;
+  const expectedToken = process.env.ADMIN_API_TOKEN?.trim();
 
   if (!expectedToken) {
-    return sendError(res, 500, "Admin API not configured", "ADMIN_AUTH_DISABLED");
+    if (!adminAuthWarningLogged) {
+      console.warn(
+        "ADMIN_API_TOKEN is not configured; skipping admin authentication. This should only happen in local development."
+      );
+      adminAuthWarningLogged = true;
+    }
+    return next();
   }
 
-  const providedToken = normalizeStringParam(req.headers["x-admin-token"]);
+  const providedToken = normalizeStringParam(req.headers["x-admin-token"])?.trim();
 
   if (!providedToken || providedToken !== expectedToken) {
     return sendError(res, 401, "Invalid admin token", "ADMIN_AUTH_FAILED");
