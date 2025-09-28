@@ -4,11 +4,28 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Word } from '@shared';
 import { registerRoutes } from '../server/routes';
 
-const { selectMock, fromMock, whereMock, orderByMock, updateMock, updateSetMock, updateWhereMock, findFirstMock } = vi.hoisted(() => ({
+const {
+  selectMock,
+  fromMock,
+  whereMock,
+  orderByMock,
+  limitMock,
+  offsetMock,
+  countFromMock,
+  countWhereMock,
+  updateMock,
+  updateSetMock,
+  updateWhereMock,
+  findFirstMock,
+} = vi.hoisted(() => ({
   selectMock: vi.fn(),
   fromMock: vi.fn(),
   whereMock: vi.fn(),
   orderByMock: vi.fn(),
+  limitMock: vi.fn(),
+  offsetMock: vi.fn(),
+  countFromMock: vi.fn(),
+  countWhereMock: vi.fn(),
   updateMock: vi.fn(),
   updateSetMock: vi.fn(),
   updateWhereMock: vi.fn(),
@@ -37,12 +54,20 @@ describe('Admin words API', () => {
     vi.clearAllMocks();
     vi.stubEnv('ADMIN_API_TOKEN', 'secret');
 
-    selectMock.mockReturnValue({
-      from: fromMock.mockReturnValue({
-        where: whereMock.mockReturnValue({ orderBy: orderByMock }),
-        orderBy: orderByMock,
-      }),
+    const dataSelectChain = { from: fromMock };
+    const countSelectChain = { from: countFromMock };
+
+    selectMock.mockImplementation((arg) => {
+      if (arg && typeof arg === 'object' && 'value' in arg) {
+        return countSelectChain;
+      }
+      return dataSelectChain;
     });
+
+    orderByMock.mockReturnValue({ limit: limitMock });
+    limitMock.mockReturnValue({ offset: offsetMock });
+    whereMock.mockReturnValue({ orderBy: orderByMock });
+    fromMock.mockReturnValue({ where: whereMock, orderBy: orderByMock });
 
     updateMock.mockReturnValue({
       set: updateSetMock.mockReturnValue({ where: updateWhereMock }),
@@ -95,7 +120,16 @@ describe('Admin words API', () => {
       },
     ];
 
-    orderByMock.mockResolvedValueOnce(rows);
+    const countRows = [{ value: rows.length }];
+    const countPromise = Promise.resolve(countRows);
+
+    countWhereMock.mockReturnValueOnce(countPromise);
+    countFromMock.mockReturnValueOnce({
+      where: countWhereMock,
+      then: (onFulfilled: any, onRejected: any) => countPromise.then(onFulfilled, onRejected),
+    });
+
+    offsetMock.mockResolvedValueOnce(rows);
 
     const app = express();
     const server = registerRoutes(app);
@@ -105,9 +139,17 @@ describe('Admin words API', () => {
       .set('x-admin-token', 'secret');
 
     expect(response.status).toBe(200);
-    expect(response.body).toHaveLength(1);
+    expect(response.body.data).toHaveLength(1);
+    expect(response.body.pagination).toMatchObject({
+      page: 1,
+      perPage: 50,
+      total: rows.length,
+      totalPages: 1,
+    });
     expect(selectMock).toHaveBeenCalled();
     expect(orderByMock).toHaveBeenCalled();
+    expect(limitMock).toHaveBeenCalledWith(50);
+    expect(offsetMock).toHaveBeenCalledWith(0);
 
     server.close();
   });

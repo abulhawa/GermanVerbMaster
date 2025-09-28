@@ -40,10 +40,20 @@ const wordSchema = z.object({
   updatedAt: z.coerce.date(),
 });
 
-const wordsResponseSchema = z.array(wordSchema);
+const wordsResponseSchema = z.object({
+  data: z.array(wordSchema),
+  pagination: z.object({
+    page: z.number().int().min(1),
+    perPage: z.number().int().min(1),
+    total: z.number().int().min(0),
+    totalPages: z.number().int().min(0),
+  }),
+});
 
 type CanonicalFilter = 'all' | 'only' | 'non';
 type CompleteFilter = 'all' | 'complete' | 'incomplete';
+
+const PER_PAGE_OPTIONS = [25, 50, 100, 200] as const;
 
 const POS_OPTIONS: Array<{ label: string; value: Word['pos'] | 'ALL' }> = [
   { label: 'All', value: 'ALL' },
@@ -236,6 +246,8 @@ const AdminWordsPage = () => {
   const [level, setLevel] = useState<string>('All');
   const [canonicalFilter, setCanonicalFilter] = useState<CanonicalFilter>('all');
   const [completeFilter, setCompleteFilter] = useState<CompleteFilter>('all');
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState<number>(50);
   const [selectedWord, setSelectedWord] = useState<Word | null>(null);
   const [formState, setFormState] = useState<WordFormState | null>(null);
 
@@ -248,9 +260,13 @@ const AdminWordsPage = () => {
     localStorage.setItem('gvm-admin-token', normalizedAdminToken);
   }, [normalizedAdminToken]);
 
+  useEffect(() => {
+    setPage(1);
+  }, [search, pos, level, canonicalFilter, completeFilter]);
+
   const filters = useMemo(
-    () => ({ search, pos, level, canonicalFilter, completeFilter }),
-    [search, pos, level, canonicalFilter, completeFilter],
+    () => ({ search, pos, level, canonicalFilter, completeFilter, page, perPage }),
+    [search, pos, level, canonicalFilter, completeFilter, page, perPage],
   );
 
   const queryKey = useMemo(
@@ -274,6 +290,9 @@ const AdminWordsPage = () => {
       if (normalizedAdminToken) {
         headers['x-admin-token'] = normalizedAdminToken;
       }
+
+      params.set('page', String(filters.page));
+      params.set('perPage', String(filters.perPage));
 
       const response = await fetch(`/api/words?${params.toString()}`, {
         headers,
@@ -340,8 +359,17 @@ const AdminWordsPage = () => {
     updateMutation.mutate({ id: word.id, payload: { canonical: !word.canonical } });
   };
 
-  const words = wordsQuery.data ?? [];
+  const words = wordsQuery.data?.data ?? [];
+  const pagination = wordsQuery.data?.pagination;
   const activePos = pos;
+
+  const totalWords = pagination?.total ?? 0;
+  const totalPages = pagination?.totalPages ?? 0;
+  const currentPage = pagination?.page ?? page;
+  const currentPerPage = pagination?.perPage ?? perPage;
+  const displayTotalPages = totalPages > 0 ? totalPages : 1;
+  const pageStart = totalWords > 0 ? (currentPage - 1) * currentPerPage + 1 : 0;
+  const pageEnd = totalWords > 0 ? pageStart + words.length - 1 : 0;
 
   const isUnauthorized =
     wordsQuery.isError &&
@@ -489,10 +517,40 @@ const AdminWordsPage = () => {
             {isUnauthorized && 'Enter the admin token to load words.'}
             {wordsQuery.isLoading && 'Loading words…'}
             {wordsQuery.isError && !isUnauthorized && 'Failed to load words. Check the token and try again.'}
-            {wordsQuery.isSuccess && `${words.length} word${words.length === 1 ? '' : 's'} found.`}
+            {wordsQuery.isSuccess &&
+              (totalWords
+                ? `Showing ${pageStart}–${pageEnd} of ${totalWords} words.`
+                : 'No words match the current filters.')}
           </CardDescription>
         </CardHeader>
-        <CardContent className="overflow-x-auto">
+        <CardContent className="space-y-4 overflow-x-auto">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="text-sm text-muted-foreground">Page {currentPage} of {displayTotalPages}</div>
+            <div className="flex items-center gap-2">
+              <Label className="text-sm" htmlFor="per-page">
+                Rows per page
+              </Label>
+              <Select
+                value={String(perPage)}
+                onValueChange={(value) => {
+                  const next = Number.parseInt(value, 10) || perPage;
+                  setPerPage(next);
+                  setPage(1);
+                }}
+              >
+                <SelectTrigger id="per-page" className="w-[120px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PER_PAGE_OPTIONS.map((option) => (
+                    <SelectItem key={option} value={String(option)}>
+                      {option}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
           <Table>
             <TableHeader>
               <TableRow>
@@ -656,6 +714,35 @@ const AdminWordsPage = () => {
               )}
             </TableBody>
           </Table>
+          <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="text-sm text-muted-foreground">
+              {totalWords
+                ? `Showing ${pageStart}–${pageEnd} of ${totalWords} words`
+                : 'No words to display'}
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setPage((current) => Math.max(1, current - 1))}
+                disabled={currentPage <= 1 || wordsQuery.isLoading}
+              >
+                Previous
+              </Button>
+              <div className="text-sm text-muted-foreground">Page {currentPage} of {displayTotalPages}</div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setPage((current) => current + 1)}
+                disabled={
+                  wordsQuery.isLoading ||
+                  (totalPages > 0 ? currentPage >= totalPages : !totalWords)
+                }
+              >
+                Next
+              </Button>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -11,7 +11,7 @@ import {
   type Word,
 } from "@db/schema";
 import { z } from "zod";
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, count, desc, eq, sql } from "drizzle-orm";
 import rateLimit from "express-rate-limit";
 import { createHash, randomUUID } from "node:crypto";
 import type { GermanVerb } from "@shared";
@@ -152,6 +152,15 @@ function parseRandomFlag(value: unknown): boolean {
 }
 
 function parseLimitParam(value: unknown, fallback: number): number {
+  if (value === undefined) return fallback;
+  const parsed = Number.parseInt(String(value), 10);
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    return fallback;
+  }
+  return parsed;
+}
+
+function parsePageParam(value: unknown, fallback: number): number {
   if (value === undefined) return fallback;
   const parsed = Number.parseInt(String(value), 10);
   if (!Number.isFinite(parsed) || parsed <= 0) {
@@ -336,6 +345,8 @@ export function registerRoutes(app: Express): Server {
       const canonicalFilter = parseTriState(req.query.canonical);
       const completeFilter = parseTriState(req.query.complete);
       const search = normalizeStringParam(req.query.search)?.trim().toLowerCase();
+      const page = parsePageParam(req.query.page, 1);
+      const perPage = Math.min(parseLimitParam(req.query.perPage, 50), 200);
 
       const conditions: any[] = [];
       if (pos) {
@@ -357,13 +368,33 @@ export function registerRoutes(app: Express): Server {
         );
       }
 
-      const query = conditions.length
+      const baseQuery = conditions.length
         ? db.select().from(words).where(and(...conditions))
         : db.select().from(words);
 
-      const rows = await query.orderBy(sql`lower(${words.lemma})`, sql`lower(${words.pos})`);
+      const countQuery = conditions.length
+        ? db.select({ value: count() }).from(words).where(and(...conditions))
+        : db.select({ value: count() }).from(words);
+
+      const countResult = await countQuery;
+      const total = countResult[0]?.value ?? 0;
+      const totalPages = total > 0 ? Math.ceil(total / perPage) : 0;
+      const safePage = totalPages > 0 ? Math.min(page, totalPages) : 1;
+      const offset = (safePage - 1) * perPage;
+
+      const orderedQuery = baseQuery.orderBy(sql`lower(${words.lemma})`, sql`lower(${words.pos})`);
+      const rows = await orderedQuery.limit(perPage).offset(offset);
+
       res.setHeader("Cache-Control", "no-store");
-      res.json(rows);
+      res.json({
+        data: rows,
+        pagination: {
+          page: safePage,
+          perPage,
+          total,
+          totalPages,
+        },
+      });
     } catch (error) {
       console.error("Error fetching words:", error);
       sendError(res, 500, "Failed to fetch words", "WORDS_FETCH_FAILED");
