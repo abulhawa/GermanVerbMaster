@@ -132,39 +132,42 @@ export default function Home() {
 
   if (verbLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
+      <div className="min-h-screen bg-muted/30 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-md mx-auto space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-primary">German Verb Practice</h1>
-            <Badge variant="secondary" className="mt-2">
-              Level: {settings.level}
-            </Badge>
+    <div className="min-h-screen bg-muted/30 px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
+        <header className="flex flex-col gap-4 rounded-xl border border-border bg-card/70 p-6 shadow-sm backdrop-blur sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-semibold tracking-tight text-foreground">German Verb Practice</h1>
+            <p className="text-sm text-muted-foreground">
+              Build your conjugation skills with smart spaced repetition and track your streak.
+            </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2 self-end sm:self-auto">
+            <Badge variant="secondary" className="px-3 py-1 text-sm">
+              Level {settings.level}
+            </Badge>
             <Link href="/analytics">
-              <Button variant="outline" size="icon" title="View Analytics">
+              <Button variant="outline" size="icon" title="View analytics">
                 <BarChart2 className="h-4 w-4" />
               </Button>
             </Link>
-            <SettingsDialog 
-              settings={settings} 
+            <SettingsDialog
+              settings={settings}
               onSettingsChange={(newSettings) => {
                 setSettings(newSettings);
                 if (newSettings.level !== settings.level) {
                   setProgress(DEFAULT_PROGRESS);
                 }
-              }} 
+              }}
             />
           </div>
-        </div>
+        </header>
 
         <ProgressDisplay progress={progress} currentLevel={settings.level} />
 
@@ -178,19 +181,19 @@ export default function Home() {
           />
         )}
 
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row">
           {historyIndex > 0 && (
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="flex-1"
               onClick={goBack}
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
+              <ArrowLeft className="mr-2 h-4 w-4" />
               Previous verb
             </Button>
           )}
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="flex-1"
             onClick={nextQuestion}
           >
