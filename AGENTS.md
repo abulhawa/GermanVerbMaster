@@ -5,3 +5,15 @@ using a case-insensitive match (for example, `find . -iname 'agents.md'`).
 
 For GitHub authentication details and additional setup guidance, refer to
 [`docs/agents.md`](docs/agents.md).
+
+## Runtime Requirements
+
+- Install Node.js **24.9.0** and use it for all tooling (npm, pnpm, vite, etc.).
+- If `nvm` is available:
+  ```bash
+  nvm install 24.9.0
+  nvm use 24.9.0
+  ```
+- Otherwise, install Node 24.9.0 via your preferred version manager (such as `fnm`, `asdf`, or a
+  direct tarball download) and ensure the `node` and `npm` binaries exposed in `$PATH` report
+  version 24.9.0 before running repository commands.
