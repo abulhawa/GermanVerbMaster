@@ -3,6 +3,8 @@
 GermanVerbMaster is a full-stack web application for practicing German verbs. It provides a React-based interface to quiz yourself on verb forms and an Express API backed by a Drizzle ORM database. The app can be installed as a Progressive Web App and now works fully offline.
 
 ## Local setup
+Requires Node.js 24.5.2 or newer and npm 10+ (see `package.json` engines field).
+
 1. Install dependencies:
    ```bash
    npm install

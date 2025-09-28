@@ -12,7 +12,7 @@ import {
 } from "@db/schema";
 import { z } from "zod";
 import { and, count, desc, eq, sql } from "drizzle-orm";
-import rateLimit from "express-rate-limit";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 import { createHash, randomUUID } from "node:crypto";
 import type { GermanVerb } from "@shared";
 
@@ -299,7 +299,8 @@ const practiceHistoryLimiter = rateLimit({
     if (req.body && typeof req.body.deviceId === "string") {
       return req.body.deviceId;
     }
-    return req.ip ?? "global";
+    const ip = typeof req.ip === "string" ? req.ip : undefined;
+    return ip ? ipKeyGenerator(ip) : "global";
   },
   handler: (_req, res) => {
     res.status(429).json({ error: "Too many practice submissions", code: "RATE_LIMITED" });
