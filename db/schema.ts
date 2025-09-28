@@ -1,4 +1,4 @@
-import type { PracticeResult } from "@shared";
+import type { GermanVerb, PracticeResult } from "@shared";
 import { sql } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
@@ -84,6 +84,32 @@ export const words = sqliteTable(
   }),
 );
 
+export const verbs = sqliteTable(
+  "verbs",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    infinitive: text("infinitive").notNull(),
+    english: text("english").notNull(),
+    praeteritum: text("präteritum").notNull(),
+    partizipIi: text("partizipII").notNull(),
+    auxiliary: text("auxiliary").notNull(),
+    level: text("level").notNull(),
+    praeteritumExample: text("präteritumExample").notNull(),
+    partizipIiExample: text("partizipIIExample").notNull(),
+    source: text("source", { mode: "json" }).$type<GermanVerb["source"]>().notNull(),
+    pattern: text("pattern", { mode: "json" }).$type<GermanVerb["pattern"]>(),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .default(sql`(unixepoch('now'))`)
+      .notNull(),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .default(sql`(unixepoch('now'))`)
+      .notNull(),
+  },
+  (table) => ({
+    infinitiveIndex: uniqueIndex("verbs_infinitive_idx").on(table.infinitive),
+  }),
+);
+
 export const verbPracticeHistory = sqliteTable("verb_practice_history", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   userId: integer("user_id").references(() => users.id),
@@ -118,6 +144,9 @@ export const insertWordSchema = createInsertSchema(words);
 export const selectWordSchema = createSelectSchema(words);
 export type InsertWord = typeof words.$inferInsert;
 export type Word = typeof words.$inferSelect;
+
+export type InsertVerb = typeof verbs.$inferInsert;
+export type Verb = typeof verbs.$inferSelect;
 
 export type VerbPracticeHistory = typeof verbPracticeHistory.$inferSelect;
 export type InsertVerbPracticeHistory = typeof verbPracticeHistory.$inferInsert;
