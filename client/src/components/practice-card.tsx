@@ -152,9 +152,9 @@ export function PracticeCard({ verb, mode, settings, onCorrect, onIncorrect }: P
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
+    <Card>
       <CardHeader>
-        <CardTitle className="text-center flex items-center justify-center gap-2">
+        <CardTitle className="flex items-center justify-center gap-2 text-center">
           <span className="text-2xl font-bold">{verb.infinitive}</span>
           <Button
             variant="ghost"
@@ -172,7 +172,7 @@ export function PracticeCard({ verb, mode, settings, onCorrect, onIncorrect }: P
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="text-center text-lg mb-4">
+        <div className="mb-4 text-center text-lg">
           {getQuestionText()}
         </div>
 
@@ -195,18 +195,18 @@ export function PracticeCard({ verb, mode, settings, onCorrect, onIncorrect }: P
         )}
 
         {status === 'correct' && (
-          <Alert className="bg-green-50 border-green-200">
-            <CheckCircle2 className="h-4 w-4 text-green-600" />
-            <AlertDescription className="text-green-600">
+          <Alert>
+            <CheckCircle2 className="h-4 w-4" />
+            <AlertDescription>
               Correct! Well done!
             </AlertDescription>
           </Alert>
         )}
 
         {status === 'incorrect' && (
-          <Alert className="bg-red-50 border-red-200">
-            <AlertCircle className="h-4 w-4 text-red-600" />
-            <AlertDescription className="text-red-600">
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
               Not quite. The correct answer is: {
                 mode === 'präteritum' ? verb.präteritum :
                 mode === 'partizipII' ? verb.partizipII :
@@ -217,7 +217,7 @@ export function PracticeCard({ verb, mode, settings, onCorrect, onIncorrect }: P
           </Alert>
         )}
 
-        <div className="flex gap-2 justify-center">
+        <div className="flex justify-center gap-2">
           {status === 'idle' && (
             <>
               <Button onClick={checkAnswer}>Check</Button>

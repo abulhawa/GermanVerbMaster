@@ -31,7 +31,7 @@ export function SettingsDialog({ settings, onSettingsChange }: SettingsDialogPro
           <DialogTitle>Settings</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-4">
             <Label htmlFor="level">Language Level</Label>
             <Select
               value={settings.level}
@@ -53,7 +53,7 @@ export function SettingsDialog({ settings, onSettingsChange }: SettingsDialogPro
             </Select>
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-4">
             <Label htmlFor="hints">Show Hints</Label>
             <Switch
               id="hints"
@@ -64,7 +64,7 @@ export function SettingsDialog({ settings, onSettingsChange }: SettingsDialogPro
             />
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-4">
             <Label htmlFor="examples">Show Example Sentences</Label>
             <Switch
               id="examples"

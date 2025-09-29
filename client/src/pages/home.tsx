@@ -132,26 +132,24 @@ export default function Home() {
 
   if (verbLoading) {
     return (
-      <div className="min-h-screen bg-muted/30 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-muted/30 px-4 py-8 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
-        <header className="flex flex-col gap-4 rounded-xl border border-border bg-card/70 p-6 shadow-sm backdrop-blur sm:flex-row sm:items-center sm:justify-between">
+        <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-2">
-            <h1 className="text-3xl font-semibold tracking-tight text-foreground">German Verb Practice</h1>
+            <h1 className="text-3xl font-semibold tracking-tight">German Verb Practice</h1>
             <p className="text-sm text-muted-foreground">
               Build your conjugation skills with smart spaced repetition and track your streak.
             </p>
           </div>
           <div className="flex items-center gap-2 self-end sm:self-auto">
-            <Badge variant="secondary" className="px-3 py-1 text-sm">
-              Level {settings.level}
-            </Badge>
+            <Badge variant="secondary">Level {settings.level}</Badge>
             <Link href="/analytics">
               <Button variant="outline" size="icon" title="View analytics">
                 <BarChart2 className="h-4 w-4" />
@@ -181,7 +179,7 @@ export default function Home() {
           />
         )}
 
-        <div className="flex flex-col gap-2 sm:flex-row">
+        <div className="flex w-full flex-col gap-2 sm:flex-row">
           {historyIndex > 0 && (
             <Button
               variant="outline"

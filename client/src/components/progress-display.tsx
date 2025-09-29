@@ -27,8 +27,8 @@ export function ProgressDisplay({ progress, currentLevel }: ProgressDisplayProps
 
   if (isLoading) {
     return (
-      <Card className="w-full max-w-md mx-auto">
-        <CardContent className="py-6 flex justify-center">
+      <Card>
+        <CardContent className="flex justify-center py-6">
           <Loader2 className="h-8 w-8 animate-spin" />
         </CardContent>
       </Card>
@@ -36,9 +36,9 @@ export function ProgressDisplay({ progress, currentLevel }: ProgressDisplayProps
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto">
+    <Card>
       <CardHeader>
-        <CardTitle className="flex justify-between items-center">
+        <CardTitle className="flex items-center justify-between">
           <span>Your Progress</span>
           <Badge variant="secondary" className="flex items-center gap-1">
             <Flame className="h-4 w-4" />
@@ -48,14 +48,16 @@ export function ProgressDisplay({ progress, currentLevel }: ProgressDisplayProps
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center gap-2">
-          <Trophy className="h-5 w-5 text-yellow-500" />
-          <span className="text-lg font-medium">{progress.correct} correct out of {progress.total}</span>
+          <Trophy className="h-5 w-5" />
+          <span className="text-lg font-medium">
+            {progress.correct} correct out of {progress.total}
+          </span>
         </div>
 
         <ProgressBar value={percentage} className="h-2" />
 
         <div className="flex items-center gap-2">
-          <BookOpen className="h-5 w-5 text-primary" />
+          <BookOpen className="h-5 w-5" />
           <div>
             <div className="text-sm font-medium">
               Level {currentLevel}: {practicedVerbsCount} of {totalVerbsInLevel} verbs practiced
