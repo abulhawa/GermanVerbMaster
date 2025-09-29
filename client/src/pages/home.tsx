@@ -73,7 +73,7 @@ function SessionProgressBar({ value, practiced, target }: { value: number; pract
       </div>
       <div className="mt-4 h-3 w-full overflow-hidden rounded-full border border-border/60 bg-muted">
         <motion.span
-          className="block h-full rounded-full bg-gradient-to-r from-sky-500 via-primary to-emerald-500"
+          className="block h-full rounded-full bg-gradient-to-r from-brand-gradient-start via-primary to-brand-gradient-end"
           initial={{ width: 0 }}
           animate={{ width: `${Math.min(100, Math.max(0, value))}%` }}
           transition={{ duration: 0.6, ease: "easeOut" }}
@@ -444,7 +444,7 @@ export default function Home() {
             </div>
             <div className="mt-4 h-3 w-full overflow-hidden rounded-full border border-border/60 bg-muted">
               <motion.span
-                className="block h-full rounded-full bg-gradient-to-r from-sky-500 via-primary to-emerald-500"
+                className="block h-full rounded-full bg-gradient-to-r from-brand-gradient-start via-primary to-brand-gradient-end"
                 initial={{ width: 0 }}
                 animate={{ width: `${milestoneProgress}%` }}
                 transition={{ duration: 0.6, ease: "easeOut" }}

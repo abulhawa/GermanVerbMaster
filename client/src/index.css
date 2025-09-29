@@ -36,6 +36,25 @@
     --chart-4: 214 17% 82%;
     --chart-5: 0 69% 52%;
 
+    --success: 199 89% 48%;
+    --success-foreground: 210 20% 98%;
+    --success-border: 201 96% 32%;
+    --success-strong: 202 80% 24%;
+    --success-strong-foreground: 204 94% 94%;
+    --success-muted: 204 94% 94%;
+    --success-muted-foreground: 201 90% 27%;
+
+    --warning: 32 95% 44%;
+    --warning-foreground: 210 20% 98%;
+    --warning-border: 26 90% 37%;
+    --warning-strong: 22 78% 26%;
+    --warning-strong-foreground: 48 100% 96%;
+    --warning-muted: 48 96% 89%;
+    --warning-muted-foreground: 26 90% 37%;
+
+    --brand-gradient-start: 199 89% 48%;
+    --brand-gradient-end: 160 84% 36%;
+
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 222 47% 12%;
     --sidebar-primary: var(--primary);
@@ -84,6 +103,25 @@
     --chart-3: 214 20% 85%;
     --chart-4: 214 17% 65%;
     --chart-5: 0 69% 52%;
+
+    --success: 199 89% 48%;
+    --success-foreground: 210 20% 96%;
+    --success-border: 199 89% 48%;
+    --success-strong: 202 80% 24%;
+    --success-strong-foreground: 204 94% 94%;
+    --success-muted: 202 80% 24%;
+    --success-muted-foreground: 204 94% 94%;
+
+    --warning: 32 95% 44%;
+    --warning-foreground: 210 20% 96%;
+    --warning-border: 38 92% 50%;
+    --warning-strong: 22 78% 26%;
+    --warning-strong-foreground: 48 100% 96%;
+    --warning-muted: 22 78% 26%;
+    --warning-muted-foreground: 48 96% 89%;
+
+    --brand-gradient-start: 199 89% 48%;
+    --brand-gradient-end: 160 84% 36%;
 
     --sidebar-background: 222 47% 14%;
     --sidebar-foreground: 210 20% 96%;

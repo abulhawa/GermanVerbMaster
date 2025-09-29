@@ -313,8 +313,8 @@ export function PracticeCard({
               className={cn(
                 "mt-4 w-full rounded-2xl border px-5 py-4 text-sm font-semibold shadow-sm",
                 status === "correct"
-                  ? "border-sky-700 bg-sky-900 text-sky-50 dark:border-sky-500 dark:bg-sky-900/80 dark:text-sky-100"
-                  : "border-amber-700 bg-amber-900 text-amber-50 dark:border-amber-500 dark:bg-amber-900/80 dark:text-amber-100",
+                  ? "border-success-border bg-success-strong text-success-strong-foreground"
+                  : "border-warning-border bg-warning-strong text-warning-strong-foreground",
               )}
             >
               <div className="flex flex-wrap items-center justify-between gap-3">
@@ -328,7 +328,7 @@ export function PracticeCard({
                 </div>
                 {status === "incorrect" && (
                   <span
-                    className="rounded-full border border-amber-400 bg-amber-700/40 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-amber-50 dark:border-amber-300 dark:bg-amber-600/50 dark:text-amber-100"
+                    className="rounded-full border border-warning-border bg-warning-strong/40 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-warning-strong-foreground"
                     aria-label={`Correct answer: ${correctAnswer}`}
                     title={`Correct answer: ${correctAnswer}`}
                   >

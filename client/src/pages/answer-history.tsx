@@ -115,11 +115,15 @@ export default function AnswerHistoryPage() {
             </div>
             <div className="flex items-center justify-between">
               <span>Correct</span>
-              <Badge className="rounded-full bg-sky-100 text-sky-800 dark:bg-sky-900/50 dark:text-sky-100">{totalCorrect}</Badge>
+              <Badge className="rounded-full border-success-border/50 bg-success-muted text-success-muted-foreground">
+                {totalCorrect}
+              </Badge>
             </div>
             <div className="flex items-center justify-between">
               <span>Incorrect</span>
-              <Badge className="rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-100">{totalIncorrect}</Badge>
+              <Badge className="rounded-full border-warning-border/50 bg-warning-muted text-warning-muted-foreground">
+                {totalIncorrect}
+              </Badge>
             </div>
             <div className="flex items-center justify-between">
               <span>Accuracy</span>

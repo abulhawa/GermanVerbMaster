@@ -75,10 +75,10 @@ export function AnsweredQuestionsPanel({
                   <div className="flex flex-col items-end gap-2 text-right">
                     <Badge
                       className={cn(
-                        "rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-white",
+                        "rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em]",
                         item.result === "correct"
-                          ? "bg-sky-700 dark:bg-sky-600"
-                          : "bg-amber-600 dark:bg-amber-500",
+                          ? "border-success-border bg-success text-success-foreground"
+                          : "border-warning-border bg-warning text-warning-foreground",
                       )}
                     >
                       {item.result === "correct" ? "Correct" : "Incorrect"}
