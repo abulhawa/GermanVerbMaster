@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
+import { Sparkles, Compass, Settings2, PenSquare, Trash2 } from 'lucide-react';
+import { Link } from 'wouter';
+
+import { AppShell } from '@/components/layout/app-shell';
+import { SidebarNavButton } from '@/components/layout/sidebar-nav-button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -71,12 +76,6 @@ const POS_OPTIONS: Array<{ label: string; value: Word['pos'] | 'ALL' }> = [
 ];
 
 const LEVEL_OPTIONS = ['All', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
-
-const canonicalOptions: Array<{ label: string; value: CanonicalFilter }> = [
-  { label: 'All', value: 'all' },
-  { label: 'Canonical only', value: 'only' },
-  { label: 'Non-canonical', value: 'non' },
-];
 
 const completeOptions: Array<{ label: string; value: CompleteFilter }> = [
   { label: 'All', value: 'all' },
@@ -415,88 +414,146 @@ const AdminWordsPage = () => {
     return base;
   }, [activePos]);
 
-  return (
-    <div className="container mx-auto space-y-6 py-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Admin: Words</CardTitle>
-          <CardDescription>Review and edit the aggregated lexicon. Filters update the API query in real time.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-end">
-            <div className="flex-1 space-y-2">
-              <Label htmlFor="admin-token">Admin token (if configured)</Label>
-              <Input
-                id="admin-token"
-                type="password"
-                value={adminToken}
-                onChange={(event) => setAdminToken(event.target.value)}
-                placeholder="Enter x-admin-token"
-              />
-            </div>
-            <div className="flex-1 space-y-2">
-              <Label htmlFor="search">Search</Label>
-              <Input
-                id="search"
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder="Search by lemma or English"
-              />
-            </div>
-          </div>
+  const topBar = (
+    <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Admin Console</p>
+        <h1 className="mt-2 flex items-center gap-3 text-3xl font-semibold text-foreground lg:text-4xl">
+          <Settings2 className="h-7 w-7 text-primary" aria-hidden />
+          Lexicon management
+        </h1>
+        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+          Curate the verb bank, manage metadata, and keep entries aligned across CEFR levels.
+        </p>
+      </div>
+      <div className="flex items-center gap-2">
+        <Link href="/">
+          <Button variant="secondary" className="rounded-2xl px-6">
+            Back to practice
+          </Button>
+        </Link>
+        <Link href="/analytics">
+          <Button className="rounded-2xl px-6">Open analytics</Button>
+        </Link>
+      </div>
+    </div>
+  );
 
-          <div className="grid gap-3 md:grid-cols-4">
-            <div>
-              <Label>Part of speech</Label>
-              <Select value={pos} onValueChange={(value) => setPos(value as Word['pos'] | 'ALL')}>
-                <SelectTrigger>
-                  <SelectValue placeholder="POS" />
-                </SelectTrigger>
-                <SelectContent>
-                  {POS_OPTIONS.map((option) => (
-                    <SelectItem key={option.value || 'all'} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+  const sidebar = (
+    <div className="flex h-full flex-col justify-between gap-8">
+      <div className="space-y-6">
+        <div className="space-y-3">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Navigate</p>
+          <div className="grid gap-2">
+            <SidebarNavButton href="/" icon={Sparkles} label="Practice" />
+            <SidebarNavButton href="/analytics" icon={Compass} label="Analytics" />
+            <SidebarNavButton href="/admin" icon={Settings2} label="Admin tools" exact />
+          </div>
+        </div>
+      </div>
+      <div className="rounded-3xl border border-dashed border-border/60 bg-card/70 p-4 text-xs text-muted-foreground">
+        Tip: Adjust rows per page to speed through audits on large datasets.
+      </div>
+    </div>
+  );
+
+  return (
+    <AppShell sidebar={sidebar} topBar={topBar}>
+      <div className="space-y-6">
+        <Card className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5">
+          <CardHeader className="space-y-2">
+            <CardTitle>Admin: Words</CardTitle>
+            <CardDescription>Review and edit the aggregated lexicon. Filters update the API query in real time.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid gap-4 lg:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="admin-token">Admin token (if configured)</Label>
+                <Input
+                  id="admin-token"
+                  type="password"
+                  value={adminToken}
+                  onChange={(event) => setAdminToken(event.target.value)}
+                  placeholder="Enter x-admin-token"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="search">Search</Label>
+                <Input
+                  id="search"
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder="Search by lemma or English"
+                />
+              </div>
             </div>
-            <div>
-              <Label>Level</Label>
-              <Select value={level} onValueChange={setLevel}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Level" />
-                </SelectTrigger>
-                <SelectContent>
-                  {LEVEL_OPTIONS.map((option) => (
-                    <SelectItem key={option} value={option}>
-                      {option}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>Canonical</Label>
-              <Select value={canonicalFilter} onValueChange={(value: CanonicalFilter) => setCanonicalFilter(value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Canonical" />
-                </SelectTrigger>
-                <SelectContent>
-                  {canonicalOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>Completeness</Label>
-              <Select value={completeFilter} onValueChange={(value: CompleteFilter) => setCompleteFilter(value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Completeness" />
-                </SelectTrigger>
+
+            <div className="grid gap-4 md:grid-cols-4">
+              <div className="space-y-2">
+                <Label>Part of speech</Label>
+                <Select value={pos} onValueChange={(value) => setPos(value as Word['pos'] | 'ALL')}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="POS" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {POS_OPTIONS.map((option) => (
+                      <SelectItem key={option.value || 'all'} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Level</Label>
+                <Select value={level} onValueChange={setLevel}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LEVEL_OPTIONS.map((option) => (
+                      <SelectItem key={option} value={option}>
+                        {option}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Canonical</Label>
+                <div className="flex rounded-2xl border border-border/60 bg-card/60 p-1 shadow-sm">
+                  <Button
+                    size="sm"
+                    variant={canonicalFilter === 'all' ? 'default' : 'secondary'}
+                    className="flex-1 rounded-2xl"
+                    onClick={() => setCanonicalFilter('all')}
+                  >
+                    All
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={canonicalFilter === 'only' ? 'default' : 'secondary'}
+                    className="flex-1 rounded-2xl"
+                    onClick={() => setCanonicalFilter('only')}
+                  >
+                    Canonical
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={canonicalFilter === 'non' ? 'default' : 'secondary'}
+                    className="flex-1 rounded-2xl"
+                    onClick={() => setCanonicalFilter('non')}
+                  >
+                    Non-canonical
+                  </Button>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Completeness</Label>
+                <Select value={completeFilter} onValueChange={(value: CompleteFilter) => setCompleteFilter(value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Completeness" />
+                  </SelectTrigger>
                 <SelectContent>
                   {completeOptions.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
@@ -505,12 +562,12 @@ const AdminWordsPage = () => {
                   ))}
                 </SelectContent>
               </Select>
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      <Card>
+      <Card className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5">
         <CardHeader>
           <CardTitle>Words</CardTitle>
           <CardDescription>
@@ -523,7 +580,7 @@ const AdminWordsPage = () => {
                 : 'No words match the current filters.')}
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4 overflow-x-auto">
+        <CardContent className="space-y-4">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="text-sm text-muted-foreground">Page {currentPage} of {displayTotalPages}</div>
             <div className="flex items-center gap-2">
@@ -551,15 +608,16 @@ const AdminWordsPage = () => {
               </Select>
             </div>
           </div>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                {columns.map((column) => (
-                  <TableHead key={column.key}>{column.label}</TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+          <div className="max-h-[520px] overflow-auto rounded-3xl border border-border/60">
+            <Table>
+              <TableHeader className="sticky top-0 z-20 bg-card/95 backdrop-blur">
+                <TableRow>
+                  {columns.map((column) => (
+                    <TableHead key={column.key}>{column.label}</TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
               {words.map((word) => (
                 <TableRow key={word.id}>
                   <TableCell className="font-medium">{word.lemma}</TableCell>
@@ -602,13 +660,20 @@ const AdminWordsPage = () => {
                       {word.complete ? 'Complete' : 'Incomplete'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="space-x-2">
+                  <TableCell className="flex items-center gap-2">
                     <Button
-                      size="sm"
-                      variant={word.canonical ? 'outline' : 'secondary'}
+                      size="icon"
+                      variant={word.canonical ? 'destructive' : 'secondary'}
+                      className="rounded-xl"
+                      title={word.canonical ? 'Remove canonical flag' : 'Mark as canonical'}
+                      aria-label={word.canonical ? 'Remove canonical flag' : 'Mark as canonical'}
                       onClick={() => toggleCanonical(word)}
                     >
-                      {word.canonical ? 'Unset canonical' : 'Set canonical'}
+                      {word.canonical ? (
+                        <Trash2 className="h-4 w-4" aria-hidden />
+                      ) : (
+                        <Sparkles className="h-4 w-4" aria-hidden />
+                      )}
                     </Button>
                     <Drawer open={selectedWord?.id === word.id} onOpenChange={(open) => {
                       if (open) {
@@ -618,8 +683,15 @@ const AdminWordsPage = () => {
                       }
                     }}>
                       <DrawerTrigger asChild>
-                        <Button size="sm" variant="outline" onClick={() => openEditor(word)}>
-                          Edit
+                        <Button
+                          size="icon"
+                          variant="secondary"
+                          className="rounded-xl"
+                          onClick={() => openEditor(word)}
+                          title="Edit entry"
+                          aria-label="Edit entry"
+                        >
+                          <PenSquare className="h-4 w-4" aria-hidden />
                         </Button>
                       </DrawerTrigger>
                       <DrawerContent>
@@ -712,9 +784,10 @@ const AdminWordsPage = () => {
                   </TableCell>
                 </TableRow>
               )}
-            </TableBody>
-          </Table>
-          <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+              </TableBody>
+            </Table>
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="text-sm text-muted-foreground">
               {totalWords
                 ? `Showing ${pageStart}–${pageEnd} of ${totalWords} words`
@@ -723,21 +796,23 @@ const AdminWordsPage = () => {
             <div className="flex items-center gap-2">
               <Button
                 size="sm"
-                variant="outline"
+                variant="secondary"
                 onClick={() => setPage((current) => Math.max(1, current - 1))}
                 disabled={currentPage <= 1 || wordsQuery.isLoading}
+                className="rounded-2xl"
               >
                 Previous
               </Button>
               <div className="text-sm text-muted-foreground">Page {currentPage} of {displayTotalPages}</div>
               <Button
                 size="sm"
-                variant="outline"
+                variant="secondary"
                 onClick={() => setPage((current) => current + 1)}
                 disabled={
                   wordsQuery.isLoading ||
                   (totalPages > 0 ? currentPage >= totalPages : !totalWords)
                 }
+                className="rounded-2xl"
               >
                 Next
               </Button>
@@ -746,6 +821,7 @@ const AdminWordsPage = () => {
         </CardContent>
       </Card>
     </div>
+    </AppShell>
   );
 };
 

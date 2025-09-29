@@ -1,16 +1,15 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { GermanVerb } from '@/lib/verbs';
-import { PracticeMode, Settings } from '@/lib/types';
-import { AlertCircle, CheckCircle2, HelpCircle, Volume2, XCircle } from 'lucide-react';
-import { speak } from '@/lib/utils';
-import { useToast } from '@/hooks/use-toast';
-import { submitPracticeAttempt } from '@/lib/api';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+import { Badge } from "@/components/ui/badge";
+import { cn, speak } from "@/lib/utils";
+import { GermanVerb } from "@/lib/verbs";
+import { PracticeMode, Settings } from "@/lib/types";
+import { useToast } from "@/hooks/use-toast";
+import { submitPracticeAttempt } from "@/lib/api";
+import { AlertCircle, CheckCircle2, HelpCircle, Volume2, XCircle } from "lucide-react";
 
 interface PracticeCardProps {
   verb: GermanVerb;
@@ -21,6 +20,8 @@ interface PracticeCardProps {
   className?: string;
 }
 
+type PracticeStatus = "idle" | "correct" | "incorrect";
+
 export function PracticeCard({
   verb,
   mode,
@@ -29,26 +30,25 @@ export function PracticeCard({
   onIncorrect,
   className,
 }: PracticeCardProps) {
-  const [answer, setAnswer] = useState('');
+  const [answer, setAnswer] = useState("");
   const [showHint, setShowHint] = useState(false);
-  const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
+  const [status, setStatus] = useState<PracticeStatus>("idle");
   const startTimeRef = useRef(Date.now());
   const { toast } = useToast();
 
   const modeLabel = {
-    präteritum: 'Präteritum form',
-    partizipII: 'Partizip II form',
-    auxiliary: 'Auxiliary verb',
-    english: 'English meaning',
+    präteritum: "Präteritum form",
+    partizipII: "Partizip II form",
+    auxiliary: "Auxiliary verb",
+    english: "English meaning",
   }[mode];
 
-  // Reset state when verb changes
   useEffect(() => {
-    setAnswer('');
-    setStatus('idle');
+    setAnswer("");
+    setStatus("idle");
     setShowHint(false);
     startTimeRef.current = Date.now();
-  }, [verb]);
+  }, [verb, mode]);
 
   const recordPracticeAttempt = async (isCorrect: boolean) => {
     const timeSpent = Date.now() - startTimeRef.current;
@@ -56,7 +56,7 @@ export function PracticeCard({
       const { queued } = await submitPracticeAttempt({
         verb: verb.infinitive,
         mode,
-        result: isCorrect ? 'correct' : 'incorrect',
+        result: isCorrect ? "correct" : "incorrect",
         attemptedAnswer: answer,
         timeSpent,
         level: settings.level,
@@ -75,56 +75,19 @@ export function PracticeCard({
         description: "Failed to record practice attempt",
         variant: "destructive",
       });
-      console.error('Error recording practice:', error);
-    }
-  };
-
-  const checkAnswer = async () => {
-    if (!answer.trim()) return; // Don't check empty answers
-
-    let correct = false;
-    const cleanAnswer = answer.trim().toLowerCase();
-
-    switch (mode) {
-      case 'präteritum':
-        correct = cleanAnswer === verb.präteritum;
-        break;
-      case 'partizipII':
-        correct = cleanAnswer === verb.partizipII;
-        break;
-      case 'auxiliary':
-        correct = cleanAnswer === verb.auxiliary;
-        break;
-      case 'english':
-        correct = cleanAnswer === verb.english;
-        break;
-    }
-
-    setStatus(correct ? 'correct' : 'incorrect');
-    await recordPracticeAttempt(correct);
-
-    if (correct) {
-      onCorrect();
-    } else {
-      onIncorrect();
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && status === 'idle') {
-      checkAnswer();
+      console.error("Error recording practice:", error);
     }
   };
 
   const getQuestionText = () => {
     switch (mode) {
-      case 'präteritum':
-        return "What is the Präteritum form?";
-      case 'partizipII':
-        return "What is the Partizip II form?";
-      case 'auxiliary':
-        return "Which auxiliary verb? (haben/sein)";
-      case 'english':
+      case "präteritum":
+        return "Give the Präteritum";
+      case "partizipII":
+        return "Give the Partizip II";
+      case "auxiliary":
+        return "Which auxiliary verb?";
+      case "english":
         return "What is the English meaning?";
       default:
         return "";
@@ -135,144 +98,220 @@ export function PracticeCard({
     if (!settings.showHints) return null;
 
     switch (mode) {
-      case 'präteritum':
-        return settings.showExamples ? verb.präteritumExample :
-          `The correct form is: ${verb.präteritum}`;
-      case 'partizipII':
-        return settings.showExamples ? verb.partizipIIExample :
-          `The correct form is: ${verb.partizipII}`;
-      case 'auxiliary':
-        return `The correct auxiliary is: ${verb.auxiliary}`;
-      case 'english':
-        return `The English translation is: ${verb.english}`;
+      case "präteritum":
+        return settings.showExamples ? verb.präteritumExample : `Correct form: ${verb.präteritum}`;
+      case "partizipII":
+        return settings.showExamples ? verb.partizipIIExample : `Correct form: ${verb.partizipII}`;
+      case "auxiliary":
+        return `Auxiliary: ${verb.auxiliary}`;
+      case "english":
+        return `English translation: ${verb.english}`;
       default:
         return null;
     }
   };
 
-  const handlePronounce = () => {
+  const pronounce = () => {
     let wordToPronounce = verb.infinitive;
-    if (status === 'correct' || status === 'incorrect') {
+    if (status !== "idle") {
       switch (mode) {
-        case 'präteritum':
+        case "präteritum":
           wordToPronounce = verb.präteritum;
           break;
-        case 'partizipII':
+        case "partizipII":
           wordToPronounce = verb.partizipII;
           break;
-        case 'auxiliary':
+        case "auxiliary":
           wordToPronounce = verb.auxiliary;
           break;
+        default:
+          wordToPronounce = verb.infinitive;
       }
     }
     speak(wordToPronounce);
   };
 
+  const checkAnswer = async () => {
+    if (!answer.trim()) return;
+
+    let correct = false;
+    const cleanAnswer = answer.trim().toLowerCase();
+
+    switch (mode) {
+      case "präteritum":
+        correct = cleanAnswer === verb.präteritum;
+        break;
+      case "partizipII":
+        correct = cleanAnswer === verb.partizipII;
+        break;
+      case "auxiliary":
+        correct = cleanAnswer === verb.auxiliary;
+        break;
+      case "english":
+        correct = cleanAnswer === verb.english;
+        break;
+    }
+
+    setStatus(correct ? "correct" : "incorrect");
+    await recordPracticeAttempt(correct);
+
+    if (correct) {
+      onCorrect();
+    } else {
+      onIncorrect();
+    }
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter" && status === "idle") {
+      checkAnswer();
+    }
+  };
+
+  const revealHint = () => {
+    setShowHint(true);
+  };
+
+  const feedbackCopy = status === "correct"
+    ? "Correct! Keep the momentum going."
+    : "Not quite. The correct answer is";
+
+  const correctAnswer = mode === "präteritum"
+    ? verb.präteritum
+    : mode === "partizipII"
+      ? verb.partizipII
+      : mode === "auxiliary"
+        ? verb.auxiliary
+        : verb.english;
+
   return (
-    <Card
-      className={cn(
-        "border border-border bg-card transition-all duration-300 hover:border-primary/60 hover:shadow-sm",
-        className,
-      )}
-    >
-      <CardHeader className="flex flex-col items-center gap-3 pb-4 text-center">
-        <Badge
-          variant="outline"
-          className="rounded-full border border-primary/30 bg-primary/10 text-xs uppercase tracking-[0.18em] text-primary"
-        >
-          {modeLabel}
-        </Badge>
-        <CardTitle className="flex flex-wrap items-center justify-center gap-3">
-          <span>{verb.infinitive}</span>
-          <Button
-            variant="secondary"
-            size="icon"
-            onClick={handlePronounce}
-            title="Listen to pronunciation"
-            className="h-10 w-10 rounded-full border border-border bg-muted text-foreground transition hover:bg-muted"
-          >
-            <Volume2 className="h-4 w-4" />
-          </Button>
-        </CardTitle>
-        {mode !== 'english' && (
-          <p className="text-sm text-muted-foreground">
-            {verb.english}
-          </p>
-        )}
-      </CardHeader>
-      <CardContent className="space-y-5">
-        <div className="text-center text-base font-medium text-foreground">
-          {getQuestionText()}
-        </div>
+    <AnimatePresence mode="wait">
+      <motion.section
+        key={`${verb.infinitive}-${mode}`}
+        initial={{ opacity: 0, y: 24, rotateX: -6 }}
+        animate={{ opacity: 1, y: 0, rotateX: 0 }}
+        exit={{ opacity: 0, y: -24, rotateX: 6 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className={cn("w-full", className)}
+      >
+        <Card className="w-full rounded-3xl border border-border/60 bg-card/90 p-2 shadow-2xl shadow-primary/10">
+          <CardHeader className="space-y-4 text-center">
+            <Badge className="mx-auto rounded-full bg-primary/15 px-4 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
+              {modeLabel}
+            </Badge>
+            <div className="flex flex-col items-center gap-3">
+              <div className="flex items-center gap-3">
+                <CardTitle className="text-4xl font-semibold text-foreground md:text-5xl">
+                  {verb.infinitive}
+                </CardTitle>
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  onClick={pronounce}
+                  title="Listen to pronunciation"
+                  className="h-12 w-12 rounded-2xl"
+                >
+                  <Volume2 className="h-5 w-5" aria-hidden />
+                </Button>
+              </div>
+              {mode !== "english" && (
+                <p className="text-sm text-muted-foreground">
+                  {verb.english}
+                </p>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-2 text-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                Prompt
+              </p>
+              <p className="text-lg font-semibold text-foreground">
+                {getQuestionText()}
+              </p>
+            </div>
 
-        <Input
-          value={answer}
-          onChange={(e) => setAnswer(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Type your answer..."
-          className="h-12 rounded-2xl border border-border bg-background text-center text-lg font-medium text-foreground placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30"
-          disabled={status !== 'idle'}
-        />
+            <Input
+              value={answer}
+              onChange={(event) => setAnswer(event.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Type your answer"
+              className="h-14 rounded-3xl border-2 border-border/80 bg-background text-center text-lg"
+              disabled={status !== "idle"}
+              autoFocus
+            />
 
-        {settings.showHints && showHint && (
-          <Alert className="border border-border bg-muted text-muted-foreground">
-            <AlertCircle className="h-4 w-4 text-primary" />
-            <AlertDescription>{getHintText()}</AlertDescription>
-          </Alert>
-        )}
+            <AnimatePresence>
+              {settings.showHints && showHint && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  className="rounded-2xl border border-primary/20 bg-primary/5 p-4 text-left text-sm text-muted-foreground"
+                >
+                  <div className="flex items-start gap-3">
+                    <AlertCircle className="mt-0.5 h-4 w-4 text-primary" aria-hidden />
+                    <span>{getHintText()}</span>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-        {status === 'correct' && (
-          <Alert className="border border-secondary/50 bg-secondary/10 text-secondary-foreground" role="status" aria-live="polite">
-            <CheckCircle2 className="h-4 w-4 text-secondary" />
-            <AlertDescription className="font-medium">Correct! Keep the momentum going.</AlertDescription>
-          </Alert>
-        )}
-
-        {status === 'incorrect' && (
-          <Alert className="border border-destructive/60 bg-background text-destructive" role="status" aria-live="polite">
-            <XCircle className="h-4 w-4 text-destructive" />
-            <AlertDescription className="flex flex-col gap-1 text-left">
-              Not quite. The correct answer is:
-              <span className="font-semibold text-destructive underline decoration-destructive/60 underline-offset-4">
-                {
-                  mode === 'präteritum'
-                    ? verb.präteritum
-                    : mode === 'partizipII'
-                      ? verb.partizipII
-                      : mode === 'auxiliary'
-                        ? verb.auxiliary
-                        : verb.english
-                }
-              </span>
-            </AlertDescription>
-          </Alert>
-        )}
-
-        <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-          {status === 'idle' && (
-            <>
-              <Button
-                onClick={checkAnswer}
-                className="h-11 rounded-full px-6 text-sm font-semibold"
-              >
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <Button onClick={checkAnswer} disabled={status !== "idle"} className="rounded-2xl px-8">
                 Check answer
               </Button>
-              {settings.showHints && (
+              {settings.showHints && !showHint && (
                 <Button
-                  variant="ghost"
-                  onClick={() => setShowHint(true)}
-                  className="h-11 rounded-full border border-border bg-muted px-5 text-sm font-medium text-muted-foreground hover:bg-muted"
+                  type="button"
+                  variant="secondary"
+                  onClick={revealHint}
+                  className="rounded-2xl px-6"
                 >
-                  <HelpCircle className="mr-2 h-4 w-4" />
+                  <HelpCircle className="mr-2 h-4 w-4" aria-hidden />
                   Reveal hint
                 </Button>
               )}
-            </>
+            </div>
+          </CardContent>
+        </Card>
+
+        <AnimatePresence mode="wait">
+          {status !== "idle" && (
+            <motion.div
+              key={status}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className={cn(
+                "mt-4 w-full rounded-2xl border px-5 py-4 text-sm font-medium",
+                status === "correct"
+                  ? "border-emerald-300/60 bg-emerald-500/10 text-emerald-600 dark:border-emerald-500/40 dark:text-emerald-200"
+                  : "border-destructive/70 bg-destructive/10 text-destructive",
+              )}
+            >
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  {status === "correct" ? (
+                    <CheckCircle2 className="h-4 w-4" aria-hidden />
+                  ) : (
+                    <XCircle className="h-4 w-4" aria-hidden />
+                  )}
+                  <span>{feedbackCopy}</span>
+                </div>
+                {status === "incorrect" && (
+                  <span className="rounded-full border border-destructive/60 bg-destructive/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]">
+                    {correctAnswer}
+                  </span>
+                )}
+              </div>
+            </motion.div>
           )}
-        </div>
-      </CardContent>
-    </Card>
+        </AnimatePresence>
+      </motion.section>
+    </AnimatePresence>
   );
 }
 
-export const PRACTICE_MODES: PracticeMode[] = ['präteritum', 'partizipII', 'auxiliary', 'english'];
+export const PRACTICE_MODES: PracticeMode[] = ["präteritum", "partizipII", "auxiliary", "english"];
