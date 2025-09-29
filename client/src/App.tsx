@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { useSyncQueue } from "@/hooks/use-sync-queue";
 
 const HomePage = lazy(() => import("@/pages/home"));
+const AnswerHistoryPage = lazy(() => import("@/pages/answer-history"));
 const AnalyticsPage = lazy(() => import("@/pages/analytics"));
 const AdminPage = lazy(() => import("@/pages/admin"));
 const NotFoundPage = lazy(() => import("@/pages/not-found"));
@@ -15,6 +16,7 @@ function Router() {
     <Suspense fallback={<RouteFallback />}>
       <Switch>
         <Route path="/" component={HomePage} />
+        <Route path="/answers" component={AnswerHistoryPage} />
         <Route path="/analytics" component={AnalyticsPage} />
         <Route path="/admin" component={AdminPage} />
         <Route component={NotFoundPage} />

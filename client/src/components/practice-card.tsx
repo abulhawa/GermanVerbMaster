@@ -11,12 +11,23 @@ import { useToast } from "@/hooks/use-toast";
 import { submitPracticeAttempt } from "@/lib/api";
 import { AlertCircle, CheckCircle2, HelpCircle, Volume2, XCircle } from "lucide-react";
 
+export interface PracticeAnswerDetails {
+  verb: GermanVerb;
+  mode: PracticeMode;
+  isCorrect: boolean;
+  attemptedAnswer: string;
+  correctAnswer: string;
+  prompt: string;
+  timeSpent: number;
+}
+
 interface PracticeCardProps {
   verb: GermanVerb;
   mode: PracticeMode;
   settings: Settings;
   onCorrect: () => void;
   onIncorrect: () => void;
+  onAnswer?: (details: PracticeAnswerDetails) => void;
   className?: string;
 }
 
@@ -28,6 +39,7 @@ export function PracticeCard({
   settings,
   onCorrect,
   onIncorrect,
+  onAnswer,
   className,
 }: PracticeCardProps) {
   const [answer, setAnswer] = useState("");
@@ -50,8 +62,7 @@ export function PracticeCard({
     startTimeRef.current = Date.now();
   }, [verb, mode]);
 
-  const recordPracticeAttempt = async (isCorrect: boolean) => {
-    const timeSpent = Date.now() - startTimeRef.current;
+  const recordPracticeAttempt = async (isCorrect: boolean, timeSpent: number) => {
     try {
       const { queued } = await submitPracticeAttempt({
         verb: verb.infinitive,
@@ -136,6 +147,7 @@ export function PracticeCard({
 
     let correct = false;
     const cleanAnswer = answer.trim().toLowerCase();
+    const promptText = getQuestionText();
 
     switch (mode) {
       case "präteritum":
@@ -152,8 +164,20 @@ export function PracticeCard({
         break;
     }
 
+    const timeSpent = Date.now() - startTimeRef.current;
+
     setStatus(correct ? "correct" : "incorrect");
-    await recordPracticeAttempt(correct);
+    await recordPracticeAttempt(correct, timeSpent);
+
+    onAnswer?.({
+      verb,
+      mode,
+      isCorrect: correct,
+      attemptedAnswer: answer.trim(),
+      correctAnswer,
+      prompt: promptText,
+      timeSpent,
+    });
 
     if (correct) {
       onCorrect();
@@ -284,11 +308,13 @@ export function PracticeCard({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.3, ease: "easeOut" }}
+              role="status"
+              aria-live="polite"
               className={cn(
-                "mt-4 w-full rounded-2xl border px-5 py-4 text-sm font-medium",
+                "mt-4 w-full rounded-2xl border px-5 py-4 text-sm font-semibold shadow-sm",
                 status === "correct"
-                  ? "border-emerald-300/60 bg-emerald-500/10 text-emerald-600 dark:border-emerald-500/40 dark:text-emerald-200"
-                  : "border-destructive/70 bg-destructive/10 text-destructive",
+                  ? "border-sky-700 bg-sky-900 text-sky-50 dark:border-sky-500 dark:bg-sky-900/80 dark:text-sky-100"
+                  : "border-amber-700 bg-amber-900 text-amber-50 dark:border-amber-500 dark:bg-amber-900/80 dark:text-amber-100",
               )}
             >
               <div className="flex flex-wrap items-center justify-between gap-3">
@@ -301,7 +327,11 @@ export function PracticeCard({
                   <span>{feedbackCopy}</span>
                 </div>
                 {status === "incorrect" && (
-                  <span className="rounded-full border border-destructive/60 bg-destructive/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]">
+                  <span
+                    className="rounded-full border border-amber-400 bg-amber-700/40 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-amber-50 dark:border-amber-300 dark:bg-amber-600/50 dark:text-amber-100"
+                    aria-label={`Correct answer: ${correctAnswer}`}
+                    title={`Correct answer: ${correctAnswer}`}
+                  >
                     {correctAnswer}
                   </span>
                 )}

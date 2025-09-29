@@ -6,6 +6,7 @@ import {
   ArrowLeft,
   BarChart2,
   BookOpen,
+  History,
   Compass,
   Flame,
   Loader2,
@@ -15,7 +16,7 @@ import {
 } from "lucide-react";
 
 import { AppShell } from "@/components/layout/app-shell";
-import { PracticeCard } from "@/components/practice-card";
+import { PracticeCard, PracticeAnswerDetails } from "@/components/practice-card";
 import { ProgressDisplay } from "@/components/progress-display";
 import { SettingsDialog } from "@/components/settings-dialog";
 import { Button } from "@/components/ui/button";
@@ -24,11 +25,20 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { SidebarNavButton } from "@/components/layout/sidebar-nav-button";
 import { Settings, Progress, PracticeMode } from "@/lib/types";
 import { GermanVerb, getRandomVerb } from "@/lib/verbs";
+import {
+  AnsweredQuestion,
+  appendAnswer,
+  loadAnswerHistory,
+  saveAnswerHistory,
+  DEFAULT_MAX_STORED_ANSWERS,
+} from "@/lib/answer-history";
 
 interface VerbHistoryItem {
   verb: GermanVerb;
   mode: PracticeMode;
 }
+
+const MAX_STORED_ANSWER_HISTORY = DEFAULT_MAX_STORED_ANSWERS;
 
 const DEFAULT_SETTINGS: Settings = {
   level: "A1",
@@ -100,6 +110,7 @@ export default function Home() {
   const [currentMode, setCurrentMode] = useState<PracticeMode>("präteritum");
   const [verbHistory, setVerbHistory] = useState<VerbHistoryItem[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
+  const [answerHistory, setAnswerHistory] = useState<AnsweredQuestion[]>(() => loadAnswerHistory());
 
   const {
     data: currentVerb,
@@ -152,6 +163,10 @@ export default function Home() {
     setHistoryIndex(-1);
   }, [settings.level, refetchVerb]);
 
+  useEffect(() => {
+    saveAnswerHistory(answerHistory);
+  }, [answerHistory]);
+
   const handleCorrect = () => {
     if (!currentVerb) return;
 
@@ -182,6 +197,27 @@ export default function Home() {
       lastPracticed: new Date().toISOString(),
     }));
     setTimeout(nextQuestion, 2500);
+  };
+
+  const handleAnswer = (details: PracticeAnswerDetails) => {
+    if (!currentVerb) return;
+
+    setAnswerHistory((prev) => {
+      const entry: AnsweredQuestion = {
+        id: `${details.verb.infinitive}-${Date.now()}`,
+        verb: details.verb,
+        mode: details.mode,
+        result: details.isCorrect ? "correct" : "incorrect",
+        attemptedAnswer: details.attemptedAnswer,
+        correctAnswer: details.correctAnswer,
+        prompt: details.prompt,
+        timeSpent: details.timeSpent,
+        answeredAt: new Date().toISOString(),
+        level: settings.level,
+      };
+
+      return appendAnswer(entry, prev, MAX_STORED_ANSWER_HISTORY);
+    });
   };
 
   const nextQuestion = () => {
@@ -285,6 +321,7 @@ export default function Home() {
           </p>
           <div className="grid gap-2">
             <SidebarNavButton href="/" icon={Sparkles} label="Practice" exact />
+            <SidebarNavButton href="/answers" icon={History} label="Answer history" />
             <SidebarNavButton href="/analytics" icon={Compass} label="Analytics" />
             <SidebarNavButton href="/admin" icon={Settings2} label="Admin tools" />
           </div>
@@ -354,6 +391,7 @@ export default function Home() {
                   settings={settings}
                   onCorrect={handleCorrect}
                   onIncorrect={handleIncorrect}
+                  onAnswer={handleAnswer}
                   className="mx-auto"
                 />
               )
@@ -385,6 +423,18 @@ export default function Home() {
 
         <aside className="space-y-6">
           <ProgressDisplay progress={progress} currentLevel={settings.level} />
+          <div className="rounded-3xl border border-border/60 bg-card/80 p-6 text-center shadow-lg shadow-primary/5">
+            <h2 className="text-lg font-semibold text-foreground">Need a recap?</h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Visit your answer history to revisit detailed breakdowns, correct forms, and usage examples.
+            </p>
+            <Link href="/answers">
+              <Button className="mt-4 w-full rounded-2xl">
+                <History className="mr-2 h-4 w-4" aria-hidden />
+                Review answer history
+              </Button>
+            </Link>
+          </div>
           <div className="rounded-3xl border border-border/60 bg-card/80 p-6 shadow-lg shadow-primary/5">
             <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
               Next milestone
