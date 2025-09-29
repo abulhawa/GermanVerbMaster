@@ -171,13 +171,13 @@ export function PracticeCard({
   return (
     <Card
       className={cn(
-        "relative overflow-hidden border border-white/10 bg-white/[0.05] shadow-2xl backdrop-blur-xl transition-all duration-500 hover:border-primary/60 hover:shadow-[0_24px_60px_rgba(99,102,241,0.35)]",
+        "relative overflow-hidden border border-slate-700/60 bg-slate-900/80 shadow-[0_16px_45px_rgba(15,23,42,0.45)] backdrop-blur-xl transition-all duration-500 hover:border-primary/50 hover:shadow-[0_22px_60px_rgba(88,28,135,0.35)]",
         className,
       )}
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.28),_transparent_65%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(129,140,248,0.22),_transparent_68%)]" />
       <CardHeader className="relative z-10 flex flex-col items-center gap-3 pb-4 text-center">
-        <Badge className="rounded-full border border-white/20 bg-white/10 text-xs uppercase tracking-[0.18em] text-slate-200">
+        <Badge className="rounded-full border border-primary/30 bg-primary/20 text-xs uppercase tracking-[0.18em] text-primary-foreground">
           {modeLabel}
         </Badge>
         <CardTitle className="flex flex-wrap items-center justify-center gap-3 text-3xl font-semibold">
@@ -187,19 +187,19 @@ export function PracticeCard({
             size="icon"
             onClick={handlePronounce}
             title="Listen to pronunciation"
-            className="h-10 w-10 rounded-full border border-white/10 bg-white/10 text-foreground hover:bg-white/20"
+            className="h-10 w-10 rounded-full border border-slate-700/70 bg-slate-800/80 text-foreground transition hover:bg-slate-700/80"
           >
             <Volume2 className="h-4 w-4" />
           </Button>
         </CardTitle>
         {mode !== 'english' && (
-          <p className="text-sm text-slate-300/80">
+          <p className="text-sm text-slate-300">
             {verb.english}
           </p>
         )}
       </CardHeader>
       <CardContent className="relative z-10 space-y-5">
-        <div className="text-center text-base font-medium text-slate-200">
+        <div className="text-center text-base font-medium text-slate-100">
           {getQuestionText()}
         </div>
 
@@ -208,30 +208,30 @@ export function PracticeCard({
           onChange={(e) => setAnswer(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Type your answer..."
-          className="h-12 rounded-2xl border-white/20 bg-white/5 text-center text-lg font-medium text-foreground placeholder:text-slate-400/70 focus-visible:border-primary/60 focus-visible:ring-0"
+          className="h-12 rounded-2xl border-slate-600/70 bg-slate-950/60 text-center text-lg font-medium text-slate-100 placeholder:text-slate-400 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/40"
           disabled={status !== 'idle'}
         />
 
         {settings.showHints && showHint && (
-          <Alert className="border-none bg-white/5 text-slate-200">
-            <AlertCircle className="h-4 w-4 text-primary" />
+          <Alert className="border border-slate-700/60 bg-slate-900/80 text-slate-200">
+            <AlertCircle className="h-4 w-4 text-accent" />
             <AlertDescription>{getHintText()}</AlertDescription>
           </Alert>
         )}
 
         {status === 'correct' && (
-          <Alert className="border-none bg-emerald-500/15 text-emerald-100">
-            <CheckCircle2 className="h-4 w-4 text-emerald-300" />
+          <Alert className="border border-emerald-500/40 bg-emerald-600/20 text-emerald-100" role="status" aria-live="polite">
+            <CheckCircle2 className="h-4 w-4 text-emerald-200" />
             <AlertDescription>Correct! Keep the momentum going.</AlertDescription>
           </Alert>
         )}
 
         {status === 'incorrect' && (
-          <Alert className="border-none bg-rose-500/15 text-rose-100">
+          <Alert className="border border-rose-500/40 bg-rose-600/20 text-rose-100" role="status" aria-live="polite">
             <AlertCircle className="h-4 w-4 text-rose-200" />
-            <AlertDescription>
+            <AlertDescription className="flex flex-col gap-1 text-left">
               Not quite. The correct answer is:
-              <span className="ml-1 font-semibold text-rose-50">
+              <span className="font-semibold text-rose-50">
                 {
                   mode === 'präteritum'
                     ? verb.präteritum
@@ -251,7 +251,7 @@ export function PracticeCard({
             <>
               <Button
                 onClick={checkAnswer}
-                className="h-11 rounded-full px-6 text-sm font-semibold shadow-lg shadow-primary/20"
+                className="h-11 rounded-full px-6 text-sm font-semibold shadow-lg shadow-primary/25"
               >
                 Check answer
               </Button>
@@ -259,7 +259,7 @@ export function PracticeCard({
                 <Button
                   variant="ghost"
                   onClick={() => setShowHint(true)}
-                  className="h-11 rounded-full border border-white/10 bg-white/5 px-5 text-sm font-medium text-slate-200 hover:bg-white/10"
+                  className="h-11 rounded-full border border-slate-700/70 bg-slate-900/60 px-5 text-sm font-medium text-slate-200 hover:bg-slate-800"
                 >
                   <HelpCircle className="mr-2 h-4 w-4" />
                   Reveal hint

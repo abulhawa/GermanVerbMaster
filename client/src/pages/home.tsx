@@ -166,19 +166,25 @@ export default function Home() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden px-4 py-12 sm:px-6 lg:px-8">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_15%,rgba(99,102,241,0.35),transparent_55%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_85%_0%,rgba(45,212,191,0.25),transparent_60%)]" />
+    <div className="relative min-h-screen overflow-hidden bg-slate-950 px-4 py-8 text-slate-100 sm:px-6 lg:px-8">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(94,234,212,0.18),transparent_58%)]"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_85%_0%,rgba(129,140,248,0.22),transparent_60%)]"
+      />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-10">
-        <header className="flex flex-col gap-6 rounded-3xl border border-white/10 bg-white/[0.04] p-6 shadow-[0_25px_80px_rgba(15,23,42,0.65)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-4">
-            <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-              <Badge className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-200">
+      <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-8 pb-16">
+        <header className="flex flex-col gap-6 rounded-3xl border border-slate-700/60 bg-slate-900/80 p-6 shadow-[0_18px_60px_rgba(15,23,42,0.45)] backdrop-blur-xl sm:p-8 lg:flex-row lg:items-center lg:justify-between">
+          <div className="space-y-5">
+            <div className="flex flex-wrap items-center gap-3 text-sm text-slate-300">
+              <Badge className="rounded-full border border-primary/30 bg-primary/20 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-primary-foreground">
                 Level {settings.level}
               </Badge>
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-slate-300">
-                <Sparkles className="h-3.5 w-3.5 text-primary" />
+              <span className="inline-flex items-center gap-2 rounded-full border border-slate-700/70 bg-slate-800/80 px-3 py-1 text-xs font-medium text-slate-200">
+                <Sparkles className="h-3.5 w-3.5 text-accent" />
                 Adaptive spaced repetition
               </span>
             </div>
@@ -190,23 +196,23 @@ export default function Home() {
                 Build fluency with a modern practice experience that celebrates your wins, adapts to your pace, and syncs seamlessly across devices.
               </p>
             </div>
-            <div className="flex flex-wrap gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            <div className="flex flex-wrap gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-300">
               {PRACTICE_MODES.map((mode) => (
                 <span
                   key={mode}
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-slate-300"
+                  className="rounded-full border border-slate-700/70 bg-slate-800/90 px-3 py-1 text-slate-100 shadow-sm shadow-slate-900/20"
                 >
                   {PRACTICE_MODE_LABELS[mode]}
                 </span>
               ))}
             </div>
           </div>
-          <div className="flex flex-col items-stretch gap-3 sm:w-auto sm:items-end">
+          <div className="flex flex-col items-stretch gap-4 sm:w-auto sm:items-end">
             <div className="flex items-center gap-2">
               <Link href="/analytics">
                 <Button
                   variant="secondary"
-                  className="h-11 rounded-full border border-white/10 bg-white/10 px-5 text-sm font-semibold text-slate-100 transition hover:bg-white/20"
+                  className="h-11 rounded-full border border-primary/30 bg-primary/20 px-5 text-sm font-semibold text-primary-foreground transition hover:bg-primary/30"
                   title="View analytics"
                 >
                   <BarChart2 className="mr-2 h-4 w-4" />
@@ -223,8 +229,8 @@ export default function Home() {
                 }}
               />
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-muted-foreground">
-              <p className="font-semibold text-foreground">Session snapshot</p>
+            <div className="rounded-2xl border border-slate-700/70 bg-slate-800/80 p-4 text-sm text-slate-300">
+              <p className="font-semibold text-slate-100">Session snapshot</p>
               <p className="mt-1 text-xs text-slate-300">
                 {progress.total > 0
                   ? `${accuracy}% accuracy across ${progress.total} attempt${progress.total === 1 ? '' : 's'} today.`
@@ -234,7 +240,7 @@ export default function Home() {
           </div>
         </header>
 
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-6 lg:grid-cols-[1.05fr_1fr]">
           <ProgressDisplay progress={progress} currentLevel={settings.level} />
 
           <div className="space-y-6">
@@ -249,10 +255,10 @@ export default function Home() {
               />
             )}
 
-            <div className="grid gap-4 rounded-3xl border border-white/10 bg-white/5 p-6 text-sm text-muted-foreground backdrop-blur">
+            <div className="grid gap-4 rounded-3xl border border-slate-700/60 bg-slate-900/60 p-6 text-sm text-slate-300 backdrop-blur">
               <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.2em]">
                 Next milestone
-                <span className="rounded-full bg-primary/10 px-3 py-1 text-primary">
+                <span className="rounded-full border border-primary/30 bg-primary/20 px-3 py-1 text-primary-foreground">
                   {nextMilestone} verbs
                 </span>
               </div>
@@ -273,7 +279,7 @@ export default function Home() {
           {historyIndex > 0 && (
             <Button
               variant="secondary"
-              className="flex-1 rounded-full border border-white/10 bg-white/10 text-sm font-semibold text-slate-100 transition hover:bg-white/20"
+              className="flex-1 rounded-full border border-slate-700/70 bg-slate-900/80 text-sm font-semibold text-slate-100 transition hover:bg-slate-800"
               onClick={goBack}
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
@@ -282,7 +288,7 @@ export default function Home() {
           )}
           <Button
             variant="secondary"
-            className="flex-1 rounded-full border border-white/10 bg-white/10 text-sm font-semibold text-slate-100 transition hover:bg-white/20"
+            className="flex-1 rounded-full border border-primary/30 bg-primary/25 text-sm font-semibold text-primary-foreground transition hover:bg-primary/35"
             onClick={nextQuestion}
           >
             Skip to next
