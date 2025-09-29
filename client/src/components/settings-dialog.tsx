@@ -22,11 +22,15 @@ export function SettingsDialog({ settings, onSettingsChange }: SettingsDialogPro
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" size="icon">
+        <Button
+          variant="secondary"
+          size="icon"
+          className="h-11 w-11 rounded-full border border-white/10 bg-white/10 text-slate-100 transition hover:bg-white/20"
+        >
           <SettingsIcon className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md border border-white/10 bg-white/[0.08] text-foreground shadow-2xl backdrop-blur-xl">
         <DialogHeader>
           <DialogTitle>Settings</DialogTitle>
         </DialogHeader>
@@ -77,7 +81,7 @@ export function SettingsDialog({ settings, onSettingsChange }: SettingsDialogPro
 
           <div className="flex justify-end pt-4">
             <DialogClose asChild>
-              <Button>OK</Button>
+              <Button className="rounded-full px-5">Save changes</Button>
             </DialogClose>
           </div>
         </div>

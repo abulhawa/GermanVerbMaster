@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,8 @@ import { AlertCircle, CheckCircle2, HelpCircle, Volume2 } from 'lucide-react';
 import { speak } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { submitPracticeAttempt } from '@/lib/api';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 interface PracticeCardProps {
   verb: GermanVerb;
@@ -16,14 +18,29 @@ interface PracticeCardProps {
   settings: Settings;
   onCorrect: () => void;
   onIncorrect: () => void;
+  className?: string;
 }
 
-export function PracticeCard({ verb, mode, settings, onCorrect, onIncorrect }: PracticeCardProps) {
+export function PracticeCard({
+  verb,
+  mode,
+  settings,
+  onCorrect,
+  onIncorrect,
+  className,
+}: PracticeCardProps) {
   const [answer, setAnswer] = useState('');
   const [showHint, setShowHint] = useState(false);
   const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
   const startTimeRef = useRef(Date.now());
   const { toast } = useToast();
+
+  const modeLabel = {
+    präteritum: 'Präteritum form',
+    partizipII: 'Partizip II form',
+    auxiliary: 'Auxiliary verb',
+    english: 'English meaning',
+  }[mode];
 
   // Reset state when verb changes
   useEffect(() => {
@@ -152,27 +169,37 @@ export function PracticeCard({ verb, mode, settings, onCorrect, onIncorrect }: P
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center justify-center gap-2 text-center">
-          <span className="text-2xl font-bold">{verb.infinitive}</span>
+    <Card
+      className={cn(
+        "relative overflow-hidden border border-white/10 bg-white/[0.05] shadow-2xl backdrop-blur-xl transition-all duration-500 hover:border-primary/60 hover:shadow-[0_24px_60px_rgba(99,102,241,0.35)]",
+        className,
+      )}
+    >
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.28),_transparent_65%)]" />
+      <CardHeader className="relative z-10 flex flex-col items-center gap-3 pb-4 text-center">
+        <Badge className="rounded-full border border-white/20 bg-white/10 text-xs uppercase tracking-[0.18em] text-slate-200">
+          {modeLabel}
+        </Badge>
+        <CardTitle className="flex flex-wrap items-center justify-center gap-3 text-3xl font-semibold">
+          <span>{verb.infinitive}</span>
           <Button
-            variant="ghost"
+            variant="secondary"
             size="icon"
             onClick={handlePronounce}
             title="Listen to pronunciation"
+            className="h-10 w-10 rounded-full border border-white/10 bg-white/10 text-foreground hover:bg-white/20"
           >
             <Volume2 className="h-4 w-4" />
           </Button>
-          {mode !== 'english' && (
-            <span className="text-sm text-muted-foreground block">
-              ({verb.english})
-            </span>
-          )}
         </CardTitle>
+        {mode !== 'english' && (
+          <p className="text-sm text-slate-300/80">
+            {verb.english}
+          </p>
+        )}
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="mb-4 text-center text-lg">
+      <CardContent className="relative z-10 space-y-5">
+        <div className="text-center text-base font-medium text-slate-200">
           {getQuestionText()}
         </div>
 
@@ -181,50 +208,61 @@ export function PracticeCard({ verb, mode, settings, onCorrect, onIncorrect }: P
           onChange={(e) => setAnswer(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Type your answer..."
-          className="text-center text-lg"
+          className="h-12 rounded-2xl border-white/20 bg-white/5 text-center text-lg font-medium text-foreground placeholder:text-slate-400/70 focus-visible:border-primary/60 focus-visible:ring-0"
           disabled={status !== 'idle'}
         />
 
         {settings.showHints && showHint && (
-          <Alert>
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              {getHintText()}
-            </AlertDescription>
+          <Alert className="border-none bg-white/5 text-slate-200">
+            <AlertCircle className="h-4 w-4 text-primary" />
+            <AlertDescription>{getHintText()}</AlertDescription>
           </Alert>
         )}
 
         {status === 'correct' && (
-          <Alert>
-            <CheckCircle2 className="h-4 w-4" />
-            <AlertDescription>
-              Correct! Well done!
-            </AlertDescription>
+          <Alert className="border-none bg-emerald-500/15 text-emerald-100">
+            <CheckCircle2 className="h-4 w-4 text-emerald-300" />
+            <AlertDescription>Correct! Keep the momentum going.</AlertDescription>
           </Alert>
         )}
 
         {status === 'incorrect' && (
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
+          <Alert className="border-none bg-rose-500/15 text-rose-100">
+            <AlertCircle className="h-4 w-4 text-rose-200" />
             <AlertDescription>
-              Not quite. The correct answer is: {
-                mode === 'präteritum' ? verb.präteritum :
-                mode === 'partizipII' ? verb.partizipII :
-                mode === 'auxiliary' ? verb.auxiliary :
-                verb.english
-              }
+              Not quite. The correct answer is:
+              <span className="ml-1 font-semibold text-rose-50">
+                {
+                  mode === 'präteritum'
+                    ? verb.präteritum
+                    : mode === 'partizipII'
+                      ? verb.partizipII
+                      : mode === 'auxiliary'
+                        ? verb.auxiliary
+                        : verb.english
+                }
+              </span>
             </AlertDescription>
           </Alert>
         )}
 
-        <div className="flex justify-center gap-2">
+        <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
           {status === 'idle' && (
             <>
-              <Button onClick={checkAnswer}>Check</Button>
+              <Button
+                onClick={checkAnswer}
+                className="h-11 rounded-full px-6 text-sm font-semibold shadow-lg shadow-primary/20"
+              >
+                Check answer
+              </Button>
               {settings.showHints && (
-                <Button variant="outline" onClick={() => setShowHint(true)}>
-                  <HelpCircle className="h-4 w-4 mr-2" />
-                  Hint
+                <Button
+                  variant="ghost"
+                  onClick={() => setShowHint(true)}
+                  className="h-11 rounded-full border border-white/10 bg-white/5 px-5 text-sm font-medium text-slate-200 hover:bg-white/10"
+                >
+                  <HelpCircle className="mr-2 h-4 w-4" />
+                  Reveal hint
                 </Button>
               )}
             </>
