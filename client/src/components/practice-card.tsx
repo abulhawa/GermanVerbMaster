@@ -171,13 +171,16 @@ export function PracticeCard({
   return (
     <Card
       className={cn(
-        "relative overflow-hidden border border-slate-700/60 bg-slate-900/80 shadow-[0_16px_45px_rgba(15,23,42,0.45)] backdrop-blur-xl transition-all duration-500 hover:border-primary/50 hover:shadow-[0_22px_60px_rgba(88,28,135,0.35)]",
+        "relative overflow-hidden border border-border bg-card shadow-[0_20px_60px_rgba(37,99,235,0.08)] backdrop-blur-sm transition-all duration-500 hover:border-primary/60 hover:shadow-[0_26px_75px_rgba(37,99,235,0.16)]",
         className,
       )}
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(129,140,248,0.22),_transparent_68%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_hsl(var(--primary)/0.18),_transparent_70%)]" />
       <CardHeader className="relative z-10 flex flex-col items-center gap-3 pb-4 text-center">
-        <Badge className="rounded-full border border-primary/30 bg-primary/20 text-xs uppercase tracking-[0.18em] text-primary-foreground">
+        <Badge
+          variant="outline"
+          className="rounded-full border border-primary/30 bg-primary/10 text-xs uppercase tracking-[0.18em] text-primary"
+        >
           {modeLabel}
         </Badge>
         <CardTitle className="flex flex-wrap items-center justify-center gap-3 text-3xl font-semibold">
@@ -187,19 +190,19 @@ export function PracticeCard({
             size="icon"
             onClick={handlePronounce}
             title="Listen to pronunciation"
-            className="h-10 w-10 rounded-full border border-slate-700/70 bg-slate-800/80 text-foreground transition hover:bg-slate-700/80"
+            className="h-10 w-10 rounded-full border border-border bg-muted/70 text-foreground transition hover:bg-muted"
           >
             <Volume2 className="h-4 w-4" />
           </Button>
         </CardTitle>
         {mode !== 'english' && (
-          <p className="text-sm text-slate-300">
+          <p className="text-sm text-muted-foreground">
             {verb.english}
           </p>
         )}
       </CardHeader>
       <CardContent className="relative z-10 space-y-5">
-        <div className="text-center text-base font-medium text-slate-100">
+        <div className="text-center text-base font-medium text-foreground">
           {getQuestionText()}
         </div>
 
@@ -208,30 +211,30 @@ export function PracticeCard({
           onChange={(e) => setAnswer(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Type your answer..."
-          className="h-12 rounded-2xl border-slate-600/70 bg-slate-950/60 text-center text-lg font-medium text-slate-100 placeholder:text-slate-400 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/40"
+          className="h-12 rounded-2xl border border-border bg-background/70 text-center text-lg font-medium text-foreground placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30"
           disabled={status !== 'idle'}
         />
 
         {settings.showHints && showHint && (
-          <Alert className="border border-slate-700/60 bg-slate-900/80 text-slate-200">
-            <AlertCircle className="h-4 w-4 text-accent" />
+          <Alert className="border border-border bg-muted/40 text-muted-foreground">
+            <AlertCircle className="h-4 w-4 text-primary" />
             <AlertDescription>{getHintText()}</AlertDescription>
           </Alert>
         )}
 
         {status === 'correct' && (
-          <Alert className="border border-emerald-500/40 bg-emerald-600/20 text-emerald-100" role="status" aria-live="polite">
-            <CheckCircle2 className="h-4 w-4 text-emerald-200" />
-            <AlertDescription>Correct! Keep the momentum going.</AlertDescription>
+          <Alert className="border border-secondary/60 bg-secondary/15 text-secondary-foreground shadow-[0_10px_35px_rgba(16,185,129,0.18)]" role="status" aria-live="polite">
+            <CheckCircle2 className="h-4 w-4 text-secondary" />
+            <AlertDescription className="font-medium">Correct! Keep the momentum going.</AlertDescription>
           </Alert>
         )}
 
         {status === 'incorrect' && (
-          <Alert className="border border-rose-500/40 bg-rose-600/20 text-rose-100" role="status" aria-live="polite">
-            <AlertCircle className="h-4 w-4 text-rose-200" />
+          <Alert className="border border-destructive/60 bg-destructive/10 text-destructive shadow-[0_10px_35px_rgba(220,38,38,0.18)]" role="status" aria-live="polite">
+            <AlertCircle className="h-4 w-4 text-destructive" />
             <AlertDescription className="flex flex-col gap-1 text-left">
               Not quite. The correct answer is:
-              <span className="font-semibold text-rose-50">
+              <span className="font-semibold text-destructive underline decoration-destructive/60 underline-offset-4">
                 {
                   mode === 'präteritum'
                     ? verb.präteritum
@@ -251,7 +254,7 @@ export function PracticeCard({
             <>
               <Button
                 onClick={checkAnswer}
-                className="h-11 rounded-full px-6 text-sm font-semibold shadow-lg shadow-primary/25"
+                className="h-11 rounded-full px-6 text-sm font-semibold shadow-lg shadow-primary/30 hover:shadow-primary/40"
               >
                 Check answer
               </Button>
@@ -259,7 +262,7 @@ export function PracticeCard({
                 <Button
                   variant="ghost"
                   onClick={() => setShowHint(true)}
-                  className="h-11 rounded-full border border-slate-700/70 bg-slate-900/60 px-5 text-sm font-medium text-slate-200 hover:bg-slate-800"
+                  className="h-11 rounded-full border border-border bg-muted/60 px-5 text-sm font-medium text-muted-foreground hover:bg-muted"
                 >
                   <HelpCircle className="mr-2 h-4 w-4" />
                   Reveal hint

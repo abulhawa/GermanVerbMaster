@@ -25,14 +25,14 @@ export function SettingsDialog({ settings, onSettingsChange }: SettingsDialogPro
         <Button
           variant="secondary"
           size="icon"
-          className="h-11 w-11 rounded-full border border-white/10 bg-white/10 text-slate-100 transition hover:bg-white/20"
+          className="h-11 w-11 rounded-full border border-primary/20 bg-primary/10 text-primary transition hover:bg-primary/20"
         >
           <SettingsIcon className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md border border-white/10 bg-white/[0.08] text-foreground shadow-2xl backdrop-blur-xl">
+      <DialogContent className="sm:max-w-md border border-border bg-card text-muted-foreground shadow-[0_24px_70px_rgba(17,24,39,0.15)] backdrop-blur">
         <DialogHeader>
-          <DialogTitle>Settings</DialogTitle>
+          <DialogTitle className="text-foreground">Settings</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="flex items-center justify-between gap-4">
@@ -81,7 +81,7 @@ export function SettingsDialog({ settings, onSettingsChange }: SettingsDialogPro
 
           <div className="flex justify-end pt-4">
             <DialogClose asChild>
-              <Button className="rounded-full px-5">Save changes</Button>
+              <Button className="rounded-full px-5 shadow-lg shadow-primary/20 hover:shadow-primary/30">Save changes</Button>
             </DialogClose>
           </div>
         </div>

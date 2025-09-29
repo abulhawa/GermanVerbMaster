@@ -36,79 +36,82 @@ export function ProgressDisplay({ progress, currentLevel }: ProgressDisplayProps
   }
 
   return (
-    <Card className="relative overflow-hidden border border-slate-700/60 bg-slate-900/80 shadow-[0_16px_45px_rgba(15,23,42,0.45)] backdrop-blur-xl">
-      <div className="pointer-events-none absolute -top-24 right-0 h-64 w-64 rounded-full bg-gradient-to-br from-primary/30 to-accent/20 blur-3xl" />
+    <Card className="relative overflow-hidden border border-border bg-card/90 shadow-[0_20px_60px_rgba(37,99,235,0.08)] backdrop-blur-sm">
+      <div className="pointer-events-none absolute -top-24 right-0 h-64 w-64 rounded-full bg-[radial-gradient(circle_at_top,_hsl(var(--primary)/0.18),transparent_70%)]" />
       <CardHeader className="relative z-10 space-y-4 pb-0">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
-            <CardTitle className="text-xl font-semibold text-slate-100">
+            <CardTitle className="text-xl font-semibold text-foreground">
               Progress overview
             </CardTitle>
-            <CardDescription className="text-sm text-slate-300">
+            <CardDescription className="text-sm text-muted-foreground">
               Track how consistently you are mastering verbs across {currentLevel}.
             </CardDescription>
           </div>
-          <Badge className="flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-500/20 text-xs uppercase tracking-[0.18em] text-amber-100">
+          <Badge
+            variant="outline"
+            className="flex items-center gap-1 rounded-full border border-secondary/40 bg-secondary/15 text-xs uppercase tracking-[0.18em] text-secondary-foreground"
+          >
             <Flame className="h-4 w-4" aria-hidden />
             {progress.streak} day{progress.streak === 1 ? '' : 's'} streak
           </Badge>
         </div>
       </CardHeader>
-      <CardContent className="relative z-10 space-y-6 pt-6 text-slate-200">
+      <CardContent className="relative z-10 space-y-6 pt-6 text-muted-foreground">
         <div className="grid gap-4 sm:grid-cols-3">
-          <div className="rounded-2xl border border-slate-700/60 bg-slate-900/70 p-4">
-            <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">
+          <div className="rounded-2xl border border-border bg-card/70 p-4">
+            <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
               Accuracy
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary/20 text-primary">
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
                 <Trophy className="h-4 w-4" aria-hidden />
               </span>
             </div>
-            <p className="mt-3 text-3xl font-semibold text-slate-100">{percentage}%</p>
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-3 text-3xl font-semibold text-foreground">{percentage}%</p>
+            <p className="mt-1 text-xs text-muted-foreground">
               Based on {progress.total} attempt{progress.total === 1 ? '' : 's'}
             </p>
           </div>
-          <div className="rounded-2xl border border-slate-700/60 bg-slate-900/70 p-4">
-            <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">
+          <div className="rounded-2xl border border-border bg-card/70 p-4">
+            <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
               Mastered verbs
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-accent/20 text-accent">
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
                 <BookOpen className="h-4 w-4" aria-hidden />
               </span>
             </div>
-            <p className="mt-3 text-3xl font-semibold text-slate-100">{practicedVerbsCount}</p>
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-3 text-3xl font-semibold text-foreground">{practicedVerbsCount}</p>
+            <p className="mt-1 text-xs text-muted-foreground">
               {remainingVerbsCount} remaining in level {currentLevel}
             </p>
           </div>
-          <div className="rounded-2xl border border-slate-700/60 bg-slate-900/70 p-4">
-            <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">
+          <div className="rounded-2xl border border-border bg-card/70 p-4">
+            <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
               Active streak
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-300">
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-secondary/15 text-secondary">
                 <Flame className="h-4 w-4" aria-hidden />
               </span>
             </div>
-            <p className="mt-3 text-3xl font-semibold text-slate-100">{progress.streak} day{progress.streak === 1 ? '' : 's'}</p>
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-3 text-3xl font-semibold text-foreground">{progress.streak} day{progress.streak === 1 ? '' : 's'}</p>
+            <p className="mt-1 text-xs text-muted-foreground">
               Last practiced {new Date(progress.lastPracticed).toLocaleDateString()}
             </p>
           </div>
         </div>
 
         <div className="space-y-3">
-          <div className="flex items-center justify-between text-sm text-slate-300">
+          <div className="flex items-center justify-between text-sm text-muted-foreground">
             <span>Overall mastery</span>
             <span>{percentage}%</span>
           </div>
-          <ProgressBar value={percentage} className="h-3 overflow-hidden rounded-full border border-slate-700/70 bg-slate-800/80" />
+          <ProgressBar value={percentage} className="h-3 overflow-hidden rounded-full border border-border bg-muted" />
         </div>
 
-        <div className="flex items-center gap-3 rounded-2xl border border-slate-700/60 bg-slate-900/70 p-4">
-          <BookOpen className="h-10 w-10 rounded-full bg-primary/25 p-2 text-primary" aria-hidden />
+        <div className="flex items-center gap-3 rounded-2xl border border-border bg-card/70 p-4">
+          <BookOpen className="h-10 w-10 rounded-full bg-primary/10 p-2 text-primary" aria-hidden />
           <div>
-            <p className="text-sm font-medium text-slate-100">
+            <p className="text-sm font-medium text-foreground">
               Level {currentLevel}: {practicedVerbsCount} of {totalVerbsInLevel} verbs practiced
             </p>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-muted-foreground">
               Keep going—consistency compounds your progress.
             </p>
           </div>

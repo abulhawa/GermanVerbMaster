@@ -166,25 +166,28 @@ export default function Home() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-slate-950 px-4 py-8 text-slate-100 sm:px-6 lg:px-8">
+    <div className="relative min-h-screen overflow-hidden bg-background px-4 py-8 text-muted-foreground sm:px-6 lg:px-8">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(94,234,212,0.18),transparent_58%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,hsl(var(--primary)/0.12),transparent_58%)]"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_85%_0%,rgba(129,140,248,0.22),transparent_60%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_85%_0%,hsl(var(--secondary)/0.12),transparent_60%)]"
       />
 
       <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-8 pb-16">
-        <header className="flex flex-col gap-6 rounded-3xl border border-slate-700/60 bg-slate-900/80 p-6 shadow-[0_18px_60px_rgba(15,23,42,0.45)] backdrop-blur-xl sm:p-8 lg:flex-row lg:items-center lg:justify-between">
+        <header className="flex flex-col gap-6 rounded-3xl border border-border bg-card/90 p-6 shadow-[0_24px_60px_rgba(37,99,235,0.12)] backdrop-blur sm:p-8 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-5">
-            <div className="flex flex-wrap items-center gap-3 text-sm text-slate-300">
-              <Badge className="rounded-full border border-primary/30 bg-primary/20 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-primary-foreground">
+            <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+              <Badge
+                variant="outline"
+                className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-primary"
+              >
                 Level {settings.level}
               </Badge>
-              <span className="inline-flex items-center gap-2 rounded-full border border-slate-700/70 bg-slate-800/80 px-3 py-1 text-xs font-medium text-slate-200">
-                <Sparkles className="h-3.5 w-3.5 text-accent" />
+              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/60 px-3 py-1 text-xs font-medium text-muted-foreground">
+                <Sparkles className="h-3.5 w-3.5 text-primary" />
                 Adaptive spaced repetition
               </span>
             </div>
@@ -192,15 +195,15 @@ export default function Home() {
               <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
                 German Verb Mastery
               </h1>
-              <p className="max-w-2xl text-sm text-muted-foreground sm:text-base">
+              <p className="max-w-2xl text-sm sm:text-base">
                 Build fluency with a modern practice experience that celebrates your wins, adapts to your pace, and syncs seamlessly across devices.
               </p>
             </div>
-            <div className="flex flex-wrap gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-300">
+            <div className="flex flex-wrap gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
               {PRACTICE_MODES.map((mode) => (
                 <span
                   key={mode}
-                  className="rounded-full border border-slate-700/70 bg-slate-800/90 px-3 py-1 text-slate-100 shadow-sm shadow-slate-900/20"
+                  className="rounded-full border border-border bg-muted/70 px-3 py-1 text-xs font-medium text-foreground shadow-sm shadow-primary/10"
                 >
                   {PRACTICE_MODE_LABELS[mode]}
                 </span>
@@ -212,7 +215,7 @@ export default function Home() {
               <Link href="/analytics">
                 <Button
                   variant="secondary"
-                  className="h-11 rounded-full border border-primary/30 bg-primary/20 px-5 text-sm font-semibold text-primary-foreground transition hover:bg-primary/30"
+                  className="h-11 rounded-full border border-primary/20 bg-primary/10 px-5 text-sm font-semibold text-primary transition hover:bg-primary/20"
                   title="View analytics"
                 >
                   <BarChart2 className="mr-2 h-4 w-4" />
@@ -229,9 +232,9 @@ export default function Home() {
                 }}
               />
             </div>
-            <div className="rounded-2xl border border-slate-700/70 bg-slate-800/80 p-4 text-sm text-slate-300">
-              <p className="font-semibold text-slate-100">Session snapshot</p>
-              <p className="mt-1 text-xs text-slate-300">
+            <div className="rounded-2xl border border-border bg-muted/50 p-4 text-sm text-muted-foreground">
+              <p className="font-semibold text-foreground">Session snapshot</p>
+              <p className="mt-1 text-xs text-muted-foreground">
                 {progress.total > 0
                   ? `${accuracy}% accuracy across ${progress.total} attempt${progress.total === 1 ? '' : 's'} today.`
                   : 'Take your first attempt to unlock personalized insights.'}
@@ -255,20 +258,20 @@ export default function Home() {
               />
             )}
 
-            <div className="grid gap-4 rounded-3xl border border-slate-700/60 bg-slate-900/60 p-6 text-sm text-slate-300 backdrop-blur">
-              <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.2em]">
+            <div className="grid gap-4 rounded-3xl border border-border bg-card/80 p-6 text-sm text-muted-foreground backdrop-blur">
+              <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 Next milestone
-                <span className="rounded-full border border-primary/30 bg-primary/20 px-3 py-1 text-primary-foreground">
+                <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-primary">
                   {nextMilestone} verbs
                 </span>
               </div>
-              <div className="relative h-2 w-full overflow-hidden rounded-full bg-white/10">
+              <div className="relative h-2 w-full overflow-hidden rounded-full bg-muted">
                 <span
-                  className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-primary to-accent"
+                  className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-primary to-secondary"
                   style={{ width: `${milestoneProgress}%` }}
                 />
               </div>
-              <p className="text-xs text-slate-300">
+              <p className="text-xs">
                 {practicedVerbsCount} of {nextMilestone} verbs mastered at level {settings.level}. Keep practicing to unlock new difficulty bands.
               </p>
             </div>
@@ -279,7 +282,7 @@ export default function Home() {
           {historyIndex > 0 && (
             <Button
               variant="secondary"
-              className="flex-1 rounded-full border border-slate-700/70 bg-slate-900/80 text-sm font-semibold text-slate-100 transition hover:bg-slate-800"
+              className="flex-1 rounded-full border border-border bg-card/80 text-sm font-semibold text-foreground transition hover:bg-muted"
               onClick={goBack}
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
@@ -288,7 +291,7 @@ export default function Home() {
           )}
           <Button
             variant="secondary"
-            className="flex-1 rounded-full border border-primary/30 bg-primary/25 text-sm font-semibold text-primary-foreground transition hover:bg-primary/35"
+            className="flex-1 rounded-full border border-primary/30 bg-primary/15 text-sm font-semibold text-primary transition hover:bg-primary/25"
             onClick={nextQuestion}
           >
             Skip to next

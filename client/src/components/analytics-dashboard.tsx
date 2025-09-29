@@ -12,7 +12,8 @@ import {
   Bar,
 } from "recharts";
 import type { VerbAnalytics, VerbPracticeHistory } from "@db/schema";
-import { Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2, XCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function AnalyticsDashboard() {
   const { data: analytics, isLoading: analyticsLoading } = useQuery<VerbAnalytics[]>({
@@ -33,7 +34,7 @@ export function AnalyticsDashboard() {
 
   if (!analytics || !history) {
     return (
-      <div className="rounded-3xl border border-dashed border-white/10 bg-white/5 p-10 text-center text-sm text-muted-foreground backdrop-blur">
+      <div className="rounded-3xl border border-dashed border-border bg-card/70 p-10 text-center text-sm text-muted-foreground backdrop-blur-sm">
         No analytics available yet. Practice a few verbs to unlock insights.
       </div>
     );
@@ -64,8 +65,8 @@ export function AnalyticsDashboard() {
 
   return (
     <div className="space-y-6">
-      <Card className="relative overflow-hidden border border-white/10 bg-white/[0.05] shadow-2xl backdrop-blur">
-        <div className="pointer-events-none absolute -top-32 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-primary/20 blur-3xl" />
+      <Card className="relative overflow-hidden border border-border bg-card/90 shadow-[0_24px_70px_rgba(17,24,39,0.12)] backdrop-blur-sm">
+        <div className="pointer-events-none absolute -top-32 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_top,_hsl(var(--primary)/0.16),transparent_65%)]" />
         <CardHeader className="relative z-10">
           <CardTitle className="text-xl font-semibold text-foreground">Success rate over time</CardTitle>
           <CardDescription className="text-sm text-muted-foreground">
@@ -79,7 +80,15 @@ export function AnalyticsDashboard() {
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(148, 163, 184, 0.2)" />
                 <XAxis dataKey="attempts" stroke="rgba(148,163,184,0.7)" tickLine={false} />
                 <YAxis stroke="rgba(148,163,184,0.7)" tickLine={false} domain={[0, 100]} />
-                <Tooltip contentStyle={{ backgroundColor: 'rgba(15,23,42,0.95)', borderRadius: '1rem', border: '1px solid rgba(148,163,184,0.2)', color: '#e2e8f0' }} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'hsl(var(--card))',
+                    borderRadius: '1rem',
+                    border: '1px solid hsl(var(--border))',
+                    color: 'hsl(var(--foreground))',
+                    boxShadow: '0 16px 45px rgba(17, 24, 39, 0.14)'
+                  }}
+                />
                 <Line
                   type="monotone"
                   dataKey="rate"
@@ -95,8 +104,8 @@ export function AnalyticsDashboard() {
         </CardContent>
       </Card>
 
-      <Card className="relative overflow-hidden border border-white/10 bg-white/[0.05] shadow-2xl backdrop-blur">
-        <div className="pointer-events-none absolute -right-16 top-10 h-48 w-48 rounded-full bg-accent/20 blur-3xl" />
+      <Card className="relative overflow-hidden border border-border bg-card/90 shadow-[0_24px_70px_rgba(17,24,39,0.12)] backdrop-blur-sm">
+        <div className="pointer-events-none absolute -right-16 top-10 h-48 w-48 rounded-full bg-[radial-gradient(circle_at_top,_hsl(var(--secondary)/0.18),transparent_65%)]" />
         <CardHeader className="relative z-10">
           <CardTitle className="text-xl font-semibold text-foreground">Most challenging verbs</CardTitle>
           <CardDescription className="text-sm text-muted-foreground">
@@ -110,7 +119,15 @@ export function AnalyticsDashboard() {
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(148, 163, 184, 0.2)" />
                 <XAxis dataKey="verb" stroke="rgba(148,163,184,0.7)" tickLine={false} />
                 <YAxis stroke="rgba(148,163,184,0.7)" tickLine={false} domain={[0, 100]} />
-                <Tooltip contentStyle={{ backgroundColor: 'rgba(15,23,42,0.95)', borderRadius: '1rem', border: '1px solid rgba(148,163,184,0.2)', color: '#e2e8f0' }} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'hsl(var(--card))',
+                    borderRadius: '1rem',
+                    border: '1px solid hsl(var(--border))',
+                    color: 'hsl(var(--foreground))',
+                    boxShadow: '0 16px 45px rgba(17, 24, 39, 0.14)'
+                  }}
+                />
                 <Bar
                   dataKey="successRate"
                   fill="hsl(var(--primary))"
@@ -123,8 +140,8 @@ export function AnalyticsDashboard() {
         </CardContent>
       </Card>
 
-      <Card className="relative overflow-hidden border border-white/10 bg-white/[0.05] shadow-2xl backdrop-blur">
-        <div className="pointer-events-none absolute -left-20 bottom-0 h-52 w-52 rounded-full bg-primary/15 blur-3xl" />
+      <Card className="relative overflow-hidden border border-border bg-card/90 shadow-[0_24px_70px_rgba(17,24,39,0.12)] backdrop-blur-sm">
+        <div className="pointer-events-none absolute -left-20 bottom-0 h-52 w-52 rounded-full bg-[radial-gradient(circle_at_bottom,_hsl(var(--primary)/0.16),transparent_65%)]" />
         <CardHeader className="relative z-10">
           <CardTitle className="text-xl font-semibold text-foreground">Recent practice history</CardTitle>
           <CardDescription className="text-sm text-muted-foreground">
@@ -136,21 +153,47 @@ export function AnalyticsDashboard() {
             {history.slice(0, 10).map((attempt, index) => (
               <div
                 key={index}
-                className={`rounded-2xl border border-white/10 p-4 backdrop-blur ${
+                className={cn(
+                  "rounded-2xl border p-4 backdrop-blur-sm transition-shadow",
                   attempt.result === 'correct'
-                    ? 'bg-emerald-500/10 text-emerald-100'
-                    : 'bg-rose-500/10 text-rose-100'
-                }`}
+                    ? 'border-secondary/50 bg-secondary/10 shadow-[0_10px_35px_rgba(16,185,129,0.16)]'
+                    : 'border-destructive/60 bg-destructive/10 shadow-[0_10px_35px_rgba(220,38,38,0.18)]'
+                )}
               >
                 <div className="flex items-center justify-between gap-4">
                   <div className="space-y-1">
-                    <p className="text-base font-semibold text-white">{attempt.verb}</p>
-                    <p className="text-xs uppercase tracking-[0.2em] text-white/70">
+                    <p
+                      className={cn(
+                        'flex items-center gap-2 text-base font-semibold',
+                        attempt.result === 'incorrect' ? 'text-destructive' : 'text-foreground'
+                      )}
+                    >
+                      {attempt.result === 'correct' ? (
+                        <CheckCircle2 className="h-4 w-4 text-secondary" aria-hidden />
+                      ) : (
+                        <XCircle className="h-4 w-4 text-destructive" aria-hidden />
+                      )}
+                      <span
+                        className={cn(
+                          attempt.result === 'incorrect'
+                            ? 'underline decoration-destructive/60 underline-offset-4'
+                            : undefined
+                        )}
+                      >
+                        {attempt.verb}
+                      </span>
+                    </p>
+                    <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
                       Mode {attempt.mode} · Level {attempt.level}
                     </p>
                   </div>
-                  <div className="text-right text-xs text-white/80">
-                    <p className="text-sm font-semibold">
+                  <div className="text-right text-xs text-muted-foreground">
+                    <p
+                      className={cn(
+                        'text-sm font-semibold',
+                        attempt.result === 'incorrect' ? 'text-destructive' : 'text-secondary-foreground'
+                      )}
+                    >
                       {attempt.result === 'correct' ? 'Correct' : 'Incorrect'}
                     </p>
                     <p>{Math.round(attempt.timeSpent / 1000)}s</p>
