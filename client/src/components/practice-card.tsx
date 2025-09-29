@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { GermanVerb } from '@/lib/verbs';
 import { PracticeMode, Settings } from '@/lib/types';
-import { AlertCircle, CheckCircle2, HelpCircle, Volume2 } from 'lucide-react';
+import { AlertCircle, CheckCircle2, HelpCircle, Volume2, XCircle } from 'lucide-react';
 import { speak } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { submitPracticeAttempt } from '@/lib/api';
@@ -171,26 +171,25 @@ export function PracticeCard({
   return (
     <Card
       className={cn(
-        "relative overflow-hidden border border-border bg-card shadow-[0_20px_60px_rgba(37,99,235,0.08)] backdrop-blur-sm transition-all duration-500 hover:border-primary/60 hover:shadow-[0_26px_75px_rgba(37,99,235,0.16)]",
+        "border border-border bg-card transition-all duration-300 hover:border-primary/60 hover:shadow-sm",
         className,
       )}
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_hsl(var(--primary)/0.18),_transparent_70%)]" />
-      <CardHeader className="relative z-10 flex flex-col items-center gap-3 pb-4 text-center">
+      <CardHeader className="flex flex-col items-center gap-3 pb-4 text-center">
         <Badge
           variant="outline"
           className="rounded-full border border-primary/30 bg-primary/10 text-xs uppercase tracking-[0.18em] text-primary"
         >
           {modeLabel}
         </Badge>
-        <CardTitle className="flex flex-wrap items-center justify-center gap-3 text-3xl font-semibold">
+        <CardTitle className="flex flex-wrap items-center justify-center gap-3">
           <span>{verb.infinitive}</span>
           <Button
             variant="secondary"
             size="icon"
             onClick={handlePronounce}
             title="Listen to pronunciation"
-            className="h-10 w-10 rounded-full border border-border bg-muted/70 text-foreground transition hover:bg-muted"
+            className="h-10 w-10 rounded-full border border-border bg-muted text-foreground transition hover:bg-muted"
           >
             <Volume2 className="h-4 w-4" />
           </Button>
@@ -201,7 +200,7 @@ export function PracticeCard({
           </p>
         )}
       </CardHeader>
-      <CardContent className="relative z-10 space-y-5">
+      <CardContent className="space-y-5">
         <div className="text-center text-base font-medium text-foreground">
           {getQuestionText()}
         </div>
@@ -211,27 +210,27 @@ export function PracticeCard({
           onChange={(e) => setAnswer(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Type your answer..."
-          className="h-12 rounded-2xl border border-border bg-background/70 text-center text-lg font-medium text-foreground placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30"
+          className="h-12 rounded-2xl border border-border bg-background text-center text-lg font-medium text-foreground placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30"
           disabled={status !== 'idle'}
         />
 
         {settings.showHints && showHint && (
-          <Alert className="border border-border bg-muted/40 text-muted-foreground">
+          <Alert className="border border-border bg-muted text-muted-foreground">
             <AlertCircle className="h-4 w-4 text-primary" />
             <AlertDescription>{getHintText()}</AlertDescription>
           </Alert>
         )}
 
         {status === 'correct' && (
-          <Alert className="border border-secondary/60 bg-secondary/15 text-secondary-foreground shadow-[0_10px_35px_rgba(16,185,129,0.18)]" role="status" aria-live="polite">
+          <Alert className="border border-secondary/50 bg-secondary/10 text-secondary-foreground" role="status" aria-live="polite">
             <CheckCircle2 className="h-4 w-4 text-secondary" />
             <AlertDescription className="font-medium">Correct! Keep the momentum going.</AlertDescription>
           </Alert>
         )}
 
         {status === 'incorrect' && (
-          <Alert className="border border-destructive/60 bg-destructive/10 text-destructive shadow-[0_10px_35px_rgba(220,38,38,0.18)]" role="status" aria-live="polite">
-            <AlertCircle className="h-4 w-4 text-destructive" />
+          <Alert className="border border-destructive/60 bg-background text-destructive" role="status" aria-live="polite">
+            <XCircle className="h-4 w-4 text-destructive" />
             <AlertDescription className="flex flex-col gap-1 text-left">
               Not quite. The correct answer is:
               <span className="font-semibold text-destructive underline decoration-destructive/60 underline-offset-4">
@@ -254,7 +253,7 @@ export function PracticeCard({
             <>
               <Button
                 onClick={checkAnswer}
-                className="h-11 rounded-full px-6 text-sm font-semibold shadow-lg shadow-primary/30 hover:shadow-primary/40"
+                className="h-11 rounded-full px-6 text-sm font-semibold"
               >
                 Check answer
               </Button>
@@ -262,7 +261,7 @@ export function PracticeCard({
                 <Button
                   variant="ghost"
                   onClick={() => setShowHint(true)}
-                  className="h-11 rounded-full border border-border bg-muted/60 px-5 text-sm font-medium text-muted-foreground hover:bg-muted"
+                  className="h-11 rounded-full border border-border bg-muted px-5 text-sm font-medium text-muted-foreground hover:bg-muted"
                 >
                   <HelpCircle className="mr-2 h-4 w-4" />
                   Reveal hint

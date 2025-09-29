@@ -166,18 +166,9 @@ export default function Home() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background px-4 py-8 text-muted-foreground sm:px-6 lg:px-8">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,hsl(var(--primary)/0.12),transparent_58%)]"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_85%_0%,hsl(var(--secondary)/0.12),transparent_60%)]"
-      />
-
-      <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-8 pb-16">
-        <header className="flex flex-col gap-6 rounded-3xl border border-border bg-card/90 p-6 shadow-[0_24px_60px_rgba(37,99,235,0.12)] backdrop-blur sm:p-8 lg:flex-row lg:items-center lg:justify-between">
+    <div className="min-h-screen bg-background px-4 py-8 text-muted-foreground sm:px-6 lg:px-8">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 pb-16">
+        <header className="flex flex-col gap-6 rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-8 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-5">
             <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
               <Badge
@@ -186,16 +177,16 @@ export default function Home() {
               >
                 Level {settings.level}
               </Badge>
-              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/60 px-3 py-1 text-xs font-medium text-muted-foreground">
+              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
                 <Sparkles className="h-3.5 w-3.5 text-primary" />
                 Adaptive spaced repetition
               </span>
             </div>
             <div className="space-y-2">
-              <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+              <h1 className="text-foreground">
                 German Verb Mastery
               </h1>
-              <p className="max-w-2xl text-sm sm:text-base">
+              <p className="max-w-2xl">
                 Build fluency with a modern practice experience that celebrates your wins, adapts to your pace, and syncs seamlessly across devices.
               </p>
             </div>
@@ -203,7 +194,7 @@ export default function Home() {
               {PRACTICE_MODES.map((mode) => (
                 <span
                   key={mode}
-                  className="rounded-full border border-border bg-muted/70 px-3 py-1 text-xs font-medium text-foreground shadow-sm shadow-primary/10"
+                  className="rounded-full border border-border bg-muted px-3 py-1 text-xs font-medium text-foreground"
                 >
                   {PRACTICE_MODE_LABELS[mode]}
                 </span>
@@ -215,7 +206,7 @@ export default function Home() {
               <Link href="/analytics">
                 <Button
                   variant="secondary"
-                  className="h-11 rounded-full border border-primary/20 bg-primary/10 px-5 text-sm font-semibold text-primary transition hover:bg-primary/20"
+                  className="h-11 rounded-full border border-border bg-background px-5 text-sm font-semibold text-primary transition hover:bg-muted"
                   title="View analytics"
                 >
                   <BarChart2 className="mr-2 h-4 w-4" />
@@ -232,9 +223,9 @@ export default function Home() {
                 }}
               />
             </div>
-            <div className="rounded-2xl border border-border bg-muted/50 p-4 text-sm text-muted-foreground">
+            <div className="rounded-2xl border border-border bg-muted p-4 text-sm text-muted-foreground">
               <p className="font-semibold text-foreground">Session snapshot</p>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-1 text-sm text-muted-foreground">
                 {progress.total > 0
                   ? `${accuracy}% accuracy across ${progress.total} attempt${progress.total === 1 ? '' : 's'} today.`
                   : 'Take your first attempt to unlock personalized insights.'}
@@ -258,7 +249,7 @@ export default function Home() {
               />
             )}
 
-            <div className="grid gap-4 rounded-3xl border border-border bg-card/80 p-6 text-sm text-muted-foreground backdrop-blur">
+            <div className="grid gap-4 rounded-3xl border border-border bg-card p-6 text-sm text-muted-foreground">
               <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 Next milestone
                 <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-primary">
@@ -267,7 +258,7 @@ export default function Home() {
               </div>
               <div className="relative h-2 w-full overflow-hidden rounded-full bg-muted">
                 <span
-                  className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-primary to-secondary"
+                  className="absolute inset-y-0 left-0 rounded-full bg-primary"
                   style={{ width: `${milestoneProgress}%` }}
                 />
               </div>
@@ -282,7 +273,7 @@ export default function Home() {
           {historyIndex > 0 && (
             <Button
               variant="secondary"
-              className="flex-1 rounded-full border border-border bg-card/80 text-sm font-semibold text-foreground transition hover:bg-muted"
+              className="flex-1 rounded-full border border-border bg-card text-sm font-semibold text-foreground transition hover:bg-muted"
               onClick={goBack}
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
@@ -291,7 +282,7 @@ export default function Home() {
           )}
           <Button
             variant="secondary"
-            className="flex-1 rounded-full border border-primary/30 bg-primary/15 text-sm font-semibold text-primary transition hover:bg-primary/25"
+            className="flex-1 rounded-full border border-primary/30 bg-primary/15 text-sm font-semibold text-primary transition hover:bg-primary/20"
             onClick={nextQuestion}
           >
             Skip to next

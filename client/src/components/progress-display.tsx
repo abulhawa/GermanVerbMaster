@@ -36,12 +36,11 @@ export function ProgressDisplay({ progress, currentLevel }: ProgressDisplayProps
   }
 
   return (
-    <Card className="relative overflow-hidden border border-border bg-card/90 shadow-[0_20px_60px_rgba(37,99,235,0.08)] backdrop-blur-sm">
-      <div className="pointer-events-none absolute -top-24 right-0 h-64 w-64 rounded-full bg-[radial-gradient(circle_at_top,_hsl(var(--primary)/0.18),transparent_70%)]" />
-      <CardHeader className="relative z-10 space-y-4 pb-0">
+    <Card className="border border-border bg-card shadow-sm">
+      <CardHeader className="space-y-4 pb-0">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
-            <CardTitle className="text-xl font-semibold text-foreground">
+            <CardTitle className="text-foreground">
               Progress overview
             </CardTitle>
             <CardDescription className="text-sm text-muted-foreground">
@@ -50,16 +49,16 @@ export function ProgressDisplay({ progress, currentLevel }: ProgressDisplayProps
           </div>
           <Badge
             variant="outline"
-            className="flex items-center gap-1 rounded-full border border-secondary/40 bg-secondary/15 text-xs uppercase tracking-[0.18em] text-secondary-foreground"
+            className="flex items-center gap-1 rounded-full border border-secondary/40 bg-secondary/10 text-xs uppercase tracking-[0.18em] text-secondary-foreground"
           >
             <Flame className="h-4 w-4" aria-hidden />
             {progress.streak} day{progress.streak === 1 ? '' : 's'} streak
           </Badge>
         </div>
       </CardHeader>
-      <CardContent className="relative z-10 space-y-6 pt-6 text-muted-foreground">
+      <CardContent className="space-y-6 pt-6 text-muted-foreground">
         <div className="grid gap-4 sm:grid-cols-3">
-          <div className="rounded-2xl border border-border bg-card/70 p-4">
+          <div className="rounded-2xl border border-border bg-card p-4">
             <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
               Accuracy
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
@@ -71,7 +70,7 @@ export function ProgressDisplay({ progress, currentLevel }: ProgressDisplayProps
               Based on {progress.total} attempt{progress.total === 1 ? '' : 's'}
             </p>
           </div>
-          <div className="rounded-2xl border border-border bg-card/70 p-4">
+          <div className="rounded-2xl border border-border bg-card p-4">
             <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
               Mastered verbs
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
@@ -83,10 +82,10 @@ export function ProgressDisplay({ progress, currentLevel }: ProgressDisplayProps
               {remainingVerbsCount} remaining in level {currentLevel}
             </p>
           </div>
-          <div className="rounded-2xl border border-border bg-card/70 p-4">
+          <div className="rounded-2xl border border-border bg-card p-4">
             <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
               Active streak
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-secondary/15 text-secondary">
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-secondary/10 text-secondary">
                 <Flame className="h-4 w-4" aria-hidden />
               </span>
             </div>
@@ -105,7 +104,7 @@ export function ProgressDisplay({ progress, currentLevel }: ProgressDisplayProps
           <ProgressBar value={percentage} className="h-3 overflow-hidden rounded-full border border-border bg-muted" />
         </div>
 
-        <div className="flex items-center gap-3 rounded-2xl border border-border bg-card/70 p-4">
+        <div className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4">
           <BookOpen className="h-10 w-10 rounded-full bg-primary/10 p-2 text-primary" aria-hidden />
           <div>
             <p className="text-sm font-medium text-foreground">

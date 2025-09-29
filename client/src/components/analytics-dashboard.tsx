@@ -34,7 +34,7 @@ export function AnalyticsDashboard() {
 
   if (!analytics || !history) {
     return (
-      <div className="rounded-3xl border border-dashed border-border bg-card/70 p-10 text-center text-sm text-muted-foreground backdrop-blur-sm">
+      <div className="rounded-3xl border border-dashed border-border bg-card p-10 text-center text-sm text-muted-foreground">
         No analytics available yet. Practice a few verbs to unlock insights.
       </div>
     );
@@ -65,15 +65,14 @@ export function AnalyticsDashboard() {
 
   return (
     <div className="space-y-6">
-      <Card className="relative overflow-hidden border border-border bg-card/90 shadow-[0_24px_70px_rgba(17,24,39,0.12)] backdrop-blur-sm">
-        <div className="pointer-events-none absolute -top-32 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_top,_hsl(var(--primary)/0.16),transparent_65%)]" />
-        <CardHeader className="relative z-10">
-          <CardTitle className="text-xl font-semibold text-foreground">Success rate over time</CardTitle>
+      <Card className="border border-border bg-card shadow-sm">
+        <CardHeader>
+          <CardTitle className="text-foreground">Success rate over time</CardTitle>
           <CardDescription className="text-sm text-muted-foreground">
             Track how your accuracy evolves with every ten practice attempts.
           </CardDescription>
         </CardHeader>
-        <CardContent className="relative z-10">
+        <CardContent>
           <div className="h-[320px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={successRateData}>
@@ -86,7 +85,7 @@ export function AnalyticsDashboard() {
                     borderRadius: '1rem',
                     border: '1px solid hsl(var(--border))',
                     color: 'hsl(var(--foreground))',
-                    boxShadow: '0 16px 45px rgba(17, 24, 39, 0.14)'
+                    boxShadow: '0 12px 30px rgba(17, 24, 39, 0.12)'
                   }}
                 />
                 <Line
@@ -104,15 +103,14 @@ export function AnalyticsDashboard() {
         </CardContent>
       </Card>
 
-      <Card className="relative overflow-hidden border border-border bg-card/90 shadow-[0_24px_70px_rgba(17,24,39,0.12)] backdrop-blur-sm">
-        <div className="pointer-events-none absolute -right-16 top-10 h-48 w-48 rounded-full bg-[radial-gradient(circle_at_top,_hsl(var(--secondary)/0.18),transparent_65%)]" />
-        <CardHeader className="relative z-10">
-          <CardTitle className="text-xl font-semibold text-foreground">Most challenging verbs</CardTitle>
+      <Card className="border border-border bg-card shadow-sm">
+        <CardHeader>
+          <CardTitle className="text-foreground">Most challenging verbs</CardTitle>
           <CardDescription className="text-sm text-muted-foreground">
             Focus your energy on the verbs with the lowest success rate.
           </CardDescription>
         </CardHeader>
-        <CardContent className="relative z-10">
+        <CardContent>
           <div className="h-[320px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={challengingVerbs}>
@@ -125,7 +123,7 @@ export function AnalyticsDashboard() {
                     borderRadius: '1rem',
                     border: '1px solid hsl(var(--border))',
                     color: 'hsl(var(--foreground))',
-                    boxShadow: '0 16px 45px rgba(17, 24, 39, 0.14)'
+                    boxShadow: '0 12px 30px rgba(17, 24, 39, 0.12)'
                   }}
                 />
                 <Bar
@@ -140,24 +138,23 @@ export function AnalyticsDashboard() {
         </CardContent>
       </Card>
 
-      <Card className="relative overflow-hidden border border-border bg-card/90 shadow-[0_24px_70px_rgba(17,24,39,0.12)] backdrop-blur-sm">
-        <div className="pointer-events-none absolute -left-20 bottom-0 h-52 w-52 rounded-full bg-[radial-gradient(circle_at_bottom,_hsl(var(--primary)/0.16),transparent_65%)]" />
-        <CardHeader className="relative z-10">
-          <CardTitle className="text-xl font-semibold text-foreground">Recent practice history</CardTitle>
+      <Card className="border border-border bg-card shadow-sm">
+        <CardHeader>
+          <CardTitle className="text-foreground">Recent practice history</CardTitle>
           <CardDescription className="text-sm text-muted-foreground">
             A snapshot of your latest attempts with time-on-task.
           </CardDescription>
         </CardHeader>
-        <CardContent className="relative z-10">
+        <CardContent>
           <div className="space-y-4">
             {history.slice(0, 10).map((attempt, index) => (
               <div
                 key={index}
                 className={cn(
-                  "rounded-2xl border p-4 backdrop-blur-sm transition-shadow",
+                  "rounded-2xl border p-4 transition-colors",
                   attempt.result === 'correct'
-                    ? 'border-secondary/50 bg-secondary/10 shadow-[0_10px_35px_rgba(16,185,129,0.16)]'
-                    : 'border-destructive/60 bg-destructive/10 shadow-[0_10px_35px_rgba(220,38,38,0.18)]'
+                    ? 'border-secondary/40 bg-secondary/10'
+                    : 'border-destructive/50 bg-destructive/10'
                 )}
               >
                 <div className="flex items-center justify-between gap-4">
