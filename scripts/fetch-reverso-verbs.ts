@@ -48,11 +48,11 @@ def get_verb_details(verb):
         return {
             "infinitive": verb,
             "english": english,
-            "präteritum": prateritum,
+            "praeteritum": prateritum,
             "partizipII": partizip,
             "auxiliary": auxiliary,
             "level": "A2",  # Default level, can be adjusted later
-            "präteritumExample": prateritum_example,
+            "praeteritumExample": prateritum_example,
             "partizipIIExample": partizip_example,
             "source": {
                 "name": "Reverso",
@@ -143,7 +143,7 @@ async function importVerbs() {
     for (const verb of verbsData) {
       try {
         // Skip if required fields are missing
-        if (!verb.infinitive || !verb.präteritum || !verb.partizipII) {
+        if (!verb.infinitive || !verb.praeteritum || !verb.partizipII) {
           console.log(`Skipping verb due to missing required fields:`, verb);
           skipped++;
           continue;
@@ -152,12 +152,12 @@ async function importVerbs() {
         await db.insert(verbs).values({
           infinitive: verb.infinitive,
           english: verb.english,
-          präteritum: verb.präteritum,
-          partizipII: verb.partizipII,
+          praeteritum: verb.praeteritum,
+          partizipIi: verb.partizipII,
           auxiliary: verb.auxiliary,
           level: verb.level,
-          präteritumExample: verb.präteritumExample,
-          partizipIIExample: verb.partizipIIExample,
+          praeteritumExample: verb.praeteritumExample,
+          partizipIiExample: verb.partizipIIExample,
           source: verb.source,
           pattern: verb.pattern
         }).onConflictDoNothing();

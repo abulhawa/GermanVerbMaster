@@ -17,7 +17,7 @@ try:
     # Rename columns to match our schema
     df = df.rename(columns={
         'Infinitiv': 'infinitive',
-        'Praeteritum': 'präteritum',
+        'Praeteritum': 'praeteritum',
         'Partizip II': 'partizipII',
         'English Meaning': 'english',
         'Auxiliary Verb': 'auxiliary',
@@ -30,7 +30,7 @@ try:
     # Fill NaN values with appropriate defaults
     df = df.fillna({
         'infinitive': '',
-        'präteritum': '',
+        'praeteritum': '',
         'partizipII': '',
         'english': '',
         'auxiliary': 'haben',
@@ -41,7 +41,7 @@ try:
     # Filter out rows with empty required fields
     df = df[
         (df['infinitive'].str.len() > 0) &
-        (df['präteritum'].str.len() > 0) &
+        (df['praeteritum'].str.len() > 0) &
         (df['partizipII'].str.len() > 0)
     ]
 
@@ -121,7 +121,7 @@ function determineLevel(verb: any): 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2' {
 }
 
 function detectPattern(verb: any): { type: string, group?: string } | null {
-  if (!verb.infinitive || !verb.präteritum || !verb.partizipII) {
+  if (!verb.infinitive || !verb.praeteritum || !verb.partizipII) {
     return null;
   }
 
@@ -129,7 +129,7 @@ function detectPattern(verb: any): { type: string, group?: string } | null {
   if (verb.isIrregular) {
     let group = "other irregular";
     // Detect common ablaut patterns
-    const forms = `${verb.infinitive}->${verb.präteritum}->${verb.partizipII}`;
+    const forms = `${verb.infinitive}->${verb.praeteritum}->${verb.partizipII}`;
     if (forms.match(/e.*->a.*->o.*/)) group = "e -> a -> o";
     else if (forms.match(/ei.*->ie.*->ie.*/)) group = "ei -> ie -> ie";
     else if (forms.match(/i.*->a.*->u.*/)) group = "i -> a -> u";
@@ -158,7 +158,7 @@ async function importVerbs() {
     for (const verb of verbsData) {
       try {
         // Skip if required fields are missing
-        if (!verb.infinitive || !verb.präteritum || !verb.partizipII) {
+        if (!verb.infinitive || !verb.praeteritum || !verb.partizipII) {
           console.log(`Skipping verb due to missing required fields:`, verb);
           skipped++;
           continue;
@@ -170,12 +170,12 @@ async function importVerbs() {
         await db.insert(verbs).values({
           infinitive: verb.infinitive,
           english: verb.english || `to ${verb.infinitive}`,
-          präteritum: verb.präteritum,
-          partizipII: verb.partizipII,
+          praeteritum: verb.praeteritum,
+          partizipIi: verb.partizipII,
           auxiliary: verb.auxiliary || 'haben',
           level,
-          präteritumExample: `Er ${verb.präteritum} gestern.`,
-          partizipIIExample: `Sie ${verb.auxiliary || 'haben'} heute ${verb.partizipII}.`,
+          praeteritumExample: `Er ${verb.praeteritum} gestern.`,
+          partizipIiExample: `Sie ${verb.auxiliary || 'haben'} heute ${verb.partizipII}.`,
           source: {
             name: "German_Verbs_Dataset",
             levelReference: "Automatically categorized based on verb properties"

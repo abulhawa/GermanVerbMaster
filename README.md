@@ -51,6 +51,9 @@ The app runs entirely on your machine—no container or managed database is requ
 - The schema is managed with Drizzle + SQLite. After editing `db/schema.ts`, run `npm run db:push` to apply the migration to your local database file.
 - `npm run seed` recomputes completeness, writes `public/verbs/verbs.seed.json`, and idempotently upserts words into the SQLite database. Run this after editing `data/words_manual.csv`, adding sources under `docs/external`, or changing `data/words_canonical.csv`.
 
+## Vocabulary enrichment helpers
+- Run `tsx scripts/enrich-non-canonical-words.ts` to gather translations, Wiktionary summaries, and OpenThesaurus synonym sets for the current non-canonical entries in the `words` table. The script stores its output under `data/generated/non-canonical-enrichment.json`; set `LIMIT=<n>` to override the default batch size of 25.
+
 ## Verb corpus admin tools
 - Configure an `ADMIN_API_TOKEN` in your `.env` file (see `.env.example`) to protect ingestion routes. Restart the dev server after changing environment variables.
 - Visit `http://localhost:5000/admin` to access the words dashboard. Filter by POS, level, canonical status, or completeness and edit entries inline.

@@ -157,10 +157,10 @@ async function main() {
         }
 
         // Get verb forms
-        const präteritum = irregularForms[verb]?.präteritum || 
+        const präteritum = irregularForms[verb]?.präteritum ||
           `${verb.slice(0, -2)}te`; // Regular conjugation
 
-        const partizipII = irregularForms[verb]?.partizipII || 
+        const partizipII = irregularForms[verb]?.partizipII ||
           `ge${verb.slice(0, -2)}t`; // Regular conjugation
 
         const auxiliary = irregularForms[verb]?.auxiliary || 'haben';
@@ -168,12 +168,12 @@ async function main() {
         await db.insert(verbs).values({
           infinitive: verb,
           english: verbTranslations[verb] || `to ${verb}`,
-          präteritum,
-          partizipII,
+          praeteritum: präteritum,
+          partizipIi: partizipII,
           auxiliary,
           level: 'A2', // Default level
-          präteritumExample: `Er ${präteritum} gestern.`,
-          partizipIIExample: `Sie ${auxiliary} heute ${partizipII}.`,
+          praeteritumExample: `Er ${präteritum} gestern.`,
+          partizipIiExample: `Sie ${auxiliary} heute ${partizipII}.`,
           source: {
             name: "Wiktionary",
             levelReference: "Auto-imported from Wiktionary"
