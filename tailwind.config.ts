@@ -12,6 +12,10 @@ export default {
           DEFAULT: "hsl(var(--card))",
           fg: "hsl(var(--card-fg))",
         },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          fg: "hsl(var(--popover-fg))",
+        },
         surface: {
           DEFAULT: "hsl(var(--surface))",
           fg: "hsl(var(--surface-fg))",

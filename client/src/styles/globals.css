@@ -9,6 +9,8 @@
     --muted-fg: 217 19% 27%;
     --card: 0 0% 100%;
     --card-fg: 222 47% 12%;
+    --popover: 0 0% 100%;
+    --popover-fg: 222 47% 12%;
     --surface: 210 20% 99%;
     --surface-fg: 217 19% 27%;
     --border: 214 17% 82%;
@@ -37,6 +39,8 @@
     --muted-fg: 214 20% 85%;
     --card: 222 47% 14%;
     --card-fg: 210 20% 96%;
+    --popover: 222 47% 16%;
+    --popover-fg: 210 20% 96%;
     --surface: 221 36% 18%;
     --surface-fg: 214 20% 85%;
     --border: 218 18% 26%;
