@@ -99,6 +99,10 @@
     outline: none;
   }
 
+  .surface-card {
+    background-color: hsl(var(--card, 0 0% 100%));
+  }
+
   .dark [data-radix-popper-content-wrapper] > *,
   .dark [data-radix-dialog-content],
   .dark [data-radix-hover-card-content],
@@ -110,6 +114,10 @@
     color: hsl(var(--fg, 210 20% 96%));
     border-color: hsl(var(--border, 218 18% 26%));
     box-shadow: 0 10px 30px -12px hsl(var(--shadow, 220 40% 8%) / 0.45);
+  }
+
+  .dark .surface-card {
+    background-color: hsl(var(--card, 222 47% 14%));
   }
 }
 

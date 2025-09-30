@@ -21,11 +21,10 @@ const popperFiles = new Set([
 ]);
 
 const requiredBaseTokens = [
+  "surface-card",
   "z-50",
   "border border-border",
-  "bg-[hsl(var(--card))]",
-  "bg-white",
-  "dark:bg-slate-950",
+  "bg-card",
   "text-fg",
   "shadow-md",
   "outline-none",
