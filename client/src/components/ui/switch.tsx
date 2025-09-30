@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/cn";
 
 const trackStyles = cva(
-  "focus-ring inline-flex shrink-0 cursor-pointer items-center rounded-full border transition-colors duration-200 data-[state=unchecked]:bg-muted data-[state=unchecked]:border-border data-[state=checked]:border-transparent",
+  "focus-ring inline-flex shrink-0 cursor-pointer items-center rounded-full border border-border/70 bg-[hsl(var(--fg)/0.08)] shadow-inner transition-colors duration-200 data-[state=checked]:border-transparent data-[state=checked]:bg-primary",
   {
     variants: {
       size: {
