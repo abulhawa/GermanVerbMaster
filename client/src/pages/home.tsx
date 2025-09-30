@@ -19,6 +19,14 @@ import { AppShell } from "@/components/layout/app-shell";
 import { PracticeCard, PracticeAnswerDetails } from "@/components/practice-card";
 import { ProgressDisplay } from "@/components/progress-display";
 import { SettingsDialog } from "@/components/settings-dialog";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/primitives/card";
+import { Section } from "@/components/primitives/section";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -65,24 +73,28 @@ const PRACTICE_MODES: PracticeMode[] = ["präteritum", "partizipII", "auxiliary"
 const LEVELS: Array<Settings["level"]> = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
 function SessionProgressBar({ value, practiced, target }: { value: number; practiced: number; target: number }) {
+  const percentage = Math.min(100, Math.max(0, value));
+
   return (
-    <div className="w-full rounded-3xl border border-border/70 bg-card/80 p-6 shadow-lg shadow-primary/5">
-      <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-        <span>Milestone progress</span>
-        <span>{Math.round(value)}%</span>
-      </div>
-      <div className="mt-4 h-3 w-full overflow-hidden rounded-full border border-border/60 bg-muted">
-        <motion.span
-          className="block h-full rounded-full bg-gradient-to-r from-brand-gradient-start via-primary to-brand-gradient-end"
-          initial={{ width: 0 }}
-          animate={{ width: `${Math.min(100, Math.max(0, value))}%` }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        />
-      </div>
-      <p className="mt-3 text-xs text-muted-foreground">
-        {practiced} of {target} verbs locked in for this streak cycle.
-      </p>
-    </div>
+    <Card className="w-full">
+      <CardContent className="space-y-4">
+        <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.22em] text-muted">
+          <span>Milestone progress</span>
+          <span>{Math.round(percentage)}%</span>
+        </div>
+        <div className="h-3 w-full overflow-hidden rounded-full border border-border/60 bg-muted">
+          <motion.span
+            className="block h-full rounded-full bg-gradient-to-r from-primary via-primary to-info"
+            initial={{ width: 0 }}
+            animate={{ width: `${percentage}%` }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+          />
+        </div>
+        <p className="text-xs text-muted">
+          {practiced} of {target} verbs locked in for this streak cycle.
+        </p>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -254,43 +266,43 @@ export default function Home() {
           <Sparkles className="h-4 w-4" aria-hidden />
           German Verb Mastery
         </p>
-        <h1 className="text-3xl font-semibold text-foreground lg:text-4xl">
+        <h1 className="text-3xl font-semibold text-fg lg:text-4xl">
           Practice that feels purposeful
         </h1>
-        <p className="max-w-xl text-sm text-muted-foreground">
+        <p className="max-w-xl text-sm text-muted">
           Learn faster with adaptive drills, beautiful visuals, and a motivating progress tracker that celebrates every streak.
         </p>
       </div>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <div className="flex items-center gap-4 rounded-3xl border border-border/60 bg-muted/40 p-4 shadow-sm">
+        <Card className="flex items-center gap-4 p-4">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/15 text-primary">
             <Flame className="h-6 w-6" aria-hidden />
           </div>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted">
               Streak
             </p>
-            <p className="text-lg font-semibold text-foreground">{progress.streak} day{progress.streak === 1 ? "" : "s"}</p>
+            <p className="text-lg font-semibold text-fg">{progress.streak} day{progress.streak === 1 ? "" : "s"}</p>
           </div>
-        </div>
-        <div className="flex items-center gap-4 rounded-3xl border border-border/60 bg-muted/40 p-4 shadow-sm">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary/15 text-secondary">
+        </Card>
+        <Card className="flex items-center gap-4 p-4">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-info/15 text-info">
             <Target className="h-6 w-6" aria-hidden />
           </div>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted">
               Accuracy
             </p>
-            <p className="text-lg font-semibold text-foreground">{accuracy}%</p>
+            <p className="text-lg font-semibold text-fg">{accuracy}%</p>
           </div>
-        </div>
+        </Card>
         <div className="flex items-center gap-3">
-          <Link href="/analytics">
-            <Button className="rounded-2xl px-6">
-              <BarChart2 className="mr-2 h-4 w-4" aria-hidden />
+          <Button asChild className="px-6">
+            <Link href="/analytics">
+              <BarChart2 className="h-4 w-4" aria-hidden />
               Insights
-            </Button>
-          </Link>
+            </Link>
+          </Button>
           <SettingsDialog
             settings={settings}
             onSettingsChange={(newSettings) => {
@@ -316,7 +328,7 @@ export default function Home() {
     <div className="flex h-full flex-col justify-between gap-8">
       <div className="space-y-8">
         <div className="space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted">
             Navigate
           </p>
           <div className="grid gap-2">
@@ -328,10 +340,10 @@ export default function Home() {
         </div>
         <div>
           <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted">
               CEFR Levels
             </p>
-            <Badge variant="outline" className="rounded-full border-primary/30 bg-primary/10 text-[10px] uppercase tracking-[0.22em] text-primary">
+            <Badge tone="primary" size="sm" className="rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.22em]">
               Adaptive
             </Badge>
           </div>
@@ -339,7 +351,8 @@ export default function Home() {
             {LEVELS.map((level) => (
               <Button
                 key={level}
-                variant={level === settings.level ? "default" : "secondary"}
+                tone={level === settings.level ? "primary" : "default"}
+                variant={level === settings.level ? "solid" : "outline"}
                 onClick={() => changeLevel(level)}
                 className="rounded-2xl px-0 py-3 text-sm font-semibold"
               >
@@ -349,14 +362,16 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="space-y-3 rounded-3xl border border-border/60 bg-muted/40 p-5 text-sm shadow-sm">
-        <p className="font-semibold text-foreground">Session recap</p>
-        <p className="text-xs text-muted-foreground">
-          {progress.total > 0
-            ? `${progress.total} attempt${progress.total === 1 ? "" : "s"} today · ${accuracy}% accuracy`
-            : "Take your first attempt to unlock personalized insights."}
-        </p>
-      </div>
+      <Card className="space-y-3 p-5 text-sm">
+        <CardHeader className="space-y-2 p-0">
+          <CardTitle className="text-base font-semibold text-fg">Session recap</CardTitle>
+          <CardDescription className="text-xs text-muted">
+            {progress.total > 0
+              ? `${progress.total} attempt${progress.total === 1 ? "" : "s"} today · ${accuracy}% accuracy`
+              : "Take your first attempt to unlock personalized insights."}
+          </CardDescription>
+        </CardHeader>
+      </Card>
     </div>
   );
 
@@ -365,23 +380,27 @@ export default function Home() {
   return (
     <AppShell sidebar={sidebar} topBar={topBar}>
       <div className="grid gap-8 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-        <section className="flex flex-col items-center gap-6">
-          <div className="flex w-full max-w-xl flex-col items-center gap-4 text-center">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
-              <Sparkles className="h-3 w-3" aria-hidden />
-              {PRACTICE_MODE_LABELS[currentMode]}
-            </div>
-            <h2 className="text-3xl font-semibold text-foreground">Focus mode</h2>
-            <p className="text-sm text-muted-foreground">
+        <Section className="flex flex-col items-center text-center">
+          <Badge
+            tone="primary"
+            size="sm"
+            className="gap-2 uppercase tracking-[0.22em]"
+          >
+            <Sparkles className="h-3 w-3" aria-hidden />
+            {PRACTICE_MODE_LABELS[currentMode]}
+          </Badge>
+          <div className="space-y-2">
+            <h2 className="text-3xl font-semibold text-fg">Focus mode</h2>
+            <p className="text-sm text-muted">
               Answer the prompt below to keep your streak alive and unlock deeper analytics.
             </p>
           </div>
 
           <div className="w-full max-w-2xl">
             {isInitialLoading ? (
-              <div className="flex h-[340px] items-center justify-center rounded-3xl border border-dashed border-border/70 bg-card/70">
+              <Card className="flex h-[340px] items-center justify-center">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              </div>
+              </Card>
             ) : (
               currentVerb && (
                 <PracticeCard
@@ -398,67 +417,73 @@ export default function Home() {
             )}
           </div>
 
-          <SessionProgressBar value={milestoneProgress} practiced={practicedVerbsCount} target={nextMilestone} />
+          <div className="w-full max-w-2xl">
+            <SessionProgressBar
+              value={milestoneProgress}
+              practiced={practicedVerbsCount}
+              target={nextMilestone}
+            />
+          </div>
 
           <div className="flex w-full flex-col gap-3 sm:flex-row">
             {historyIndex > 0 && (
-              <Button
-                variant="secondary"
-                className="flex-1 rounded-2xl"
-                onClick={goBack}
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" aria-hidden />
+              <Button variant="outline" tone="default" className="flex-1" onClick={goBack}>
+                <ArrowLeft className="h-4 w-4" aria-hidden />
                 Previous verb
               </Button>
             )}
-            <Button
-              variant="secondary"
-              className="flex-1 rounded-2xl"
-              onClick={nextQuestion}
-            >
+            <Button variant="outline" tone="primary" className="flex-1" onClick={nextQuestion}>
               Skip to next
             </Button>
           </div>
-        </section>
+        </Section>
 
-        <aside className="space-y-6">
+        <Section>
           <ProgressDisplay progress={progress} currentLevel={settings.level} />
-          <div className="rounded-3xl border border-border/60 bg-card/80 p-6 text-center shadow-lg shadow-primary/5">
-            <h2 className="text-lg font-semibold text-foreground">Need a recap?</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Visit your answer history to revisit detailed breakdowns, correct forms, and usage examples.
-            </p>
-            <Link href="/answers">
-              <Button className="mt-4 w-full rounded-2xl">
-                <History className="mr-2 h-4 w-4" aria-hidden />
-                Review answer history
+          <Card className="text-center">
+            <CardHeader className="space-y-2">
+              <CardTitle>Need a recap?</CardTitle>
+              <CardDescription>
+                Visit your answer history to revisit detailed breakdowns, correct forms, and usage examples.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <Button asChild className="w-full">
+                <Link href="/answers">
+                  <History className="h-4 w-4" aria-hidden />
+                  Review answer history
+                </Link>
               </Button>
-            </Link>
-          </div>
-          <div className="rounded-3xl border border-border/60 bg-card/80 p-6 shadow-lg shadow-primary/5">
-            <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-              Next milestone
-              <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
-                {nextMilestone} verbs
-              </span>
-            </div>
-            <div className="mt-4 h-3 w-full overflow-hidden rounded-full border border-border/60 bg-muted">
-              <motion.span
-                className="block h-full rounded-full bg-gradient-to-r from-brand-gradient-start via-primary to-brand-gradient-end"
-                initial={{ width: 0 }}
-                animate={{ width: `${milestoneProgress}%` }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
-              />
-            </div>
-            <p className="mt-3 text-sm text-muted-foreground">
-              {practicedVerbsCount} of {nextMilestone} verbs mastered at level {settings.level}. Keep practicing to unlock new difficulty bands.
-            </p>
-            <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-secondary/30 bg-secondary/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-secondary">
-              <BookOpen className="h-4 w-4" aria-hidden />
-              Level mastery snapshot
-            </div>
-          </div>
-        </aside>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="space-y-4">
+              <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.22em] text-muted">
+                Next milestone
+                <Badge tone="primary" size="sm" className="gap-2 uppercase tracking-[0.2em]">
+                  {nextMilestone} verbs
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="h-3 w-full overflow-hidden rounded-full border border-border/60 bg-muted">
+                <motion.span
+                  className="block h-full rounded-full bg-gradient-to-r from-primary via-primary to-info"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${milestoneProgress}%` }}
+                  transition={{ duration: 0.6, ease: "easeOut" }}
+                />
+              </div>
+              <p className="text-sm text-muted">
+                {practicedVerbsCount} of {nextMilestone} verbs mastered at level {settings.level}. Keep practicing to unlock new difficulty bands.
+              </p>
+              <Badge tone="info" size="sm" className="inline-flex items-center gap-2 uppercase tracking-[0.2em]">
+                <BookOpen className="h-4 w-4" aria-hidden />
+                Level mastery snapshot
+              </Badge>
+            </CardContent>
+          </Card>
+        </Section>
       </div>
     </AppShell>
   );

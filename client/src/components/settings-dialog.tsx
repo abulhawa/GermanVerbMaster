@@ -23,16 +23,16 @@ export function SettingsDialog({ settings, onSettingsChange }: SettingsDialogPro
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          variant="secondary"
-          size="icon"
-          className="h-11 w-11 rounded-full border border-border bg-background text-primary transition hover:bg-muted"
+          variant="outline"
+          tone="primary"
+          className="h-11 w-11 rounded-full px-0"
         >
           <SettingsIcon className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md border border-border bg-card text-muted-foreground shadow-sm">
+      <DialogContent className="sm:max-w-md border border-border bg-card text-muted shadow-sm">
         <DialogHeader>
-          <DialogTitle className="text-foreground">Settings</DialogTitle>
+          <DialogTitle className="text-fg">Settings</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="flex items-center justify-between gap-4">

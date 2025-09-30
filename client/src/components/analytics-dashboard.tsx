@@ -14,9 +14,9 @@ import {
 import { Flame, TrendingUp, CheckCircle2, XCircle } from "lucide-react";
 
 import type { VerbAnalytics, VerbPracticeHistory } from "@db/schema";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/primitives/card";
 import { Progress as ProgressBar } from "@/components/ui/progress";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 
 const LEVELS: Array<VerbAnalytics["level"]> = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
@@ -155,33 +155,35 @@ export function AnalyticsDashboard() {
 
   if (!analytics || !history) {
     return (
-      <div className="rounded-3xl border border-dashed border-border bg-card/80 p-10 text-center text-sm text-muted-foreground">
-        No analytics available yet. Practice a few verbs to unlock insights.
-      </div>
+      <Card className="border-dashed">
+        <CardContent className="py-8 text-center text-sm text-muted">
+          No analytics available yet. Practice a few verbs to unlock insights.
+        </CardContent>
+      </Card>
     );
   }
 
   return (
     <div className="space-y-6">
       <div className="grid gap-4 lg:grid-cols-3">
-        <Card className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5">
+        <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-              <Flame className="h-4 w-4 text-secondary" aria-hidden />
+            <CardTitle className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.22em] text-muted">
+              <Flame className="h-4 w-4 text-warning" aria-hidden />
               Current streak
             </CardTitle>
-            <CardDescription className="text-3xl font-semibold text-foreground">
+            <CardDescription className="text-3xl font-semibold text-fg">
               {streak} day{streak === 1 ? "" : "s"}
             </CardDescription>
           </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
+          <CardContent className="text-sm text-muted">
             Keep the fire going! Each day extends your momentum and unlocks richer insights.
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5">
+        <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+            <CardTitle className="text-sm font-semibold uppercase tracking-[0.22em] text-muted">
               CEFR progress snapshot
             </CardTitle>
             <CardDescription>
@@ -193,30 +195,30 @@ export function AnalyticsDashboard() {
               const stats = levelStats.get(level)!;
               return (
                 <div key={level} className="space-y-1">
-                  <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                  <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.2em] text-muted">
                     <span>Level {level}</span>
                     <span>{stats.accuracy}%</span>
                   </div>
                   <ProgressBar value={stats.accuracy} />
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-muted">
                     {stats.verbsPracticed} verb{stats.verbsPracticed === 1 ? "" : "s"} tracked
                   </p>
                 </div>
               );
             })}
             {!Array.from(levelStats.keys()).length && (
-              <p className="text-xs text-muted-foreground">Start practicing to see level-specific metrics.</p>
+              <p className="text-xs text-muted">Start practicing to see level-specific metrics.</p>
             )}
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5">
+        <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+            <CardTitle className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.22em] text-muted">
               <TrendingUp className="h-4 w-4 text-primary" aria-hidden />
               Accuracy trend
             </CardTitle>
-            <CardDescription className="text-xs text-muted-foreground">
+            <CardDescription className="text-xs text-muted">
               Rolling accuracy across your latest attempts.
             </CardDescription>
           </CardHeader>
@@ -230,26 +232,26 @@ export function AnalyticsDashboard() {
         </Card>
       </div>
 
-      <Card className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5">
+      <Card>
         <CardHeader>
-          <CardTitle className="text-foreground">Success rate over time</CardTitle>
-          <CardDescription className="text-sm text-muted-foreground">
+          <CardTitle className="text-fg">Success rate over time</CardTitle>
+          <CardDescription className="text-sm text-muted">
             Track how your accuracy evolves with every ten practice attempts.
           </CardDescription>
         </CardHeader>
         <CardContent className="h-[320px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={successRateData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.2)" />
-              <XAxis dataKey="attempts" stroke="rgba(148,163,184,0.7)" tickLine={false} />
-              <YAxis stroke="rgba(148,163,184,0.7)" tickLine={false} domain={[0, 100]} />
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border) / 0.35)" />
+              <XAxis dataKey="attempts" stroke="hsl(var(--muted) / 0.6)" tickLine={false} />
+              <YAxis stroke="hsl(var(--muted) / 0.6)" tickLine={false} domain={[0, 100]} />
               <Tooltip
                 contentStyle={{
                   backgroundColor: "hsl(var(--card))",
                   borderRadius: "1rem",
                   border: "1px solid hsl(var(--border))",
-                  color: "hsl(var(--foreground))",
-                  boxShadow: "0 12px 30px rgba(17, 24, 39, 0.12)",
+                  color: "hsl(var(--fg))",
+                  boxShadow: "0 12px 30px hsl(var(--shadow) / 0.25)",
                 }}
               />
               <Line
@@ -266,26 +268,26 @@ export function AnalyticsDashboard() {
         </CardContent>
       </Card>
 
-      <Card className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5">
+      <Card>
         <CardHeader>
-          <CardTitle className="text-foreground">Most challenging verbs</CardTitle>
-          <CardDescription className="text-sm text-muted-foreground">
+          <CardTitle className="text-fg">Most challenging verbs</CardTitle>
+          <CardDescription className="text-sm text-muted">
             Focus your energy on the verbs with the lowest success rate.
           </CardDescription>
         </CardHeader>
         <CardContent className="h-[320px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={challengingVerbs}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.2)" />
-              <XAxis dataKey="verb" stroke="rgba(148,163,184,0.7)" tickLine={false} />
-              <YAxis stroke="rgba(148,163,184,0.7)" tickLine={false} domain={[0, 100]} />
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border) / 0.35)" />
+              <XAxis dataKey="verb" stroke="hsl(var(--muted) / 0.6)" tickLine={false} />
+              <YAxis stroke="hsl(var(--muted) / 0.6)" tickLine={false} domain={[0, 100]} />
               <Tooltip
                 contentStyle={{
                   backgroundColor: "hsl(var(--card))",
                   borderRadius: "1rem",
                   border: "1px solid hsl(var(--border))",
-                  color: "hsl(var(--foreground))",
-                  boxShadow: "0 12px 30px rgba(17, 24, 39, 0.12)",
+                  color: "hsl(var(--fg))",
+                  boxShadow: "0 12px 30px hsl(var(--shadow) / 0.25)",
                 }}
               />
               <Bar
@@ -299,10 +301,10 @@ export function AnalyticsDashboard() {
         </CardContent>
       </Card>
 
-      <Card className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5">
+      <Card>
         <CardHeader>
-          <CardTitle className="text-foreground">Recent practice history</CardTitle>
-          <CardDescription className="text-sm text-muted-foreground">
+          <CardTitle className="text-fg">Recent practice history</CardTitle>
+          <CardDescription className="text-sm text-muted">
             A snapshot of your latest attempts with time-on-task.
           </CardDescription>
         </CardHeader>
@@ -313,8 +315,8 @@ export function AnalyticsDashboard() {
               className={cn(
                 "rounded-2xl border p-4 transition-colors",
                 attempt.result === "correct"
-                  ? "border-secondary/40 bg-secondary/10"
-                  : "border-destructive/60 bg-destructive/10",
+                  ? "border-success/40 bg-success/10"
+                  : "border-danger/60 bg-danger/10",
               )}
             >
               <div className="flex items-center justify-between gap-4">
@@ -322,33 +324,33 @@ export function AnalyticsDashboard() {
                   <p
                     className={cn(
                       "flex items-center gap-2 text-base font-semibold",
-                      attempt.result === "incorrect" ? "text-destructive" : "text-foreground",
+                      attempt.result === "incorrect" ? "text-danger" : "text-fg",
                     )}
                   >
                     {attempt.result === "correct" ? (
-                      <CheckCircle2 className="h-4 w-4 text-secondary" aria-hidden />
+                      <CheckCircle2 className="h-4 w-4 text-success" aria-hidden />
                     ) : (
-                      <XCircle className="h-4 w-4 text-destructive" aria-hidden />
+                      <XCircle className="h-4 w-4 text-danger" aria-hidden />
                     )}
                     <span
                       className={cn(
                         attempt.result === "incorrect"
-                          ? "underline decoration-destructive/60 underline-offset-4"
+                          ? "underline decoration-danger/60 underline-offset-4"
                           : undefined,
                       )}
                     >
                       {attempt.verb}
                     </span>
                   </p>
-                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                  <p className="text-xs uppercase tracking-[0.2em] text-muted">
                     Mode {attempt.mode} · Level {attempt.level}
                   </p>
                 </div>
-                <div className="text-right text-xs text-muted-foreground">
+                <div className="text-right text-xs text-muted">
                   <p
                     className={cn(
                       "text-sm font-semibold",
-                      attempt.result === "incorrect" ? "text-destructive" : "text-secondary-foreground",
+                      attempt.result === "incorrect" ? "text-danger" : "text-warning-foreground",
                     )}
                   >
                     {attempt.result === "correct" ? "Correct" : "Incorrect"}

@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import App from './App';
-import "./index.css";
+import App from "./App";
+import "./styles/globals.css";
 import { registerSW } from 'virtual:pwa-register';
 
 registerSW({ immediate: true });

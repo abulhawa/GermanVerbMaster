@@ -27,7 +27,7 @@ function Router() {
 
 function RouteFallback() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background text-muted-foreground">
+    <div className="flex min-h-screen items-center justify-center bg-bg text-muted">
       Loading...
     </div>
   );

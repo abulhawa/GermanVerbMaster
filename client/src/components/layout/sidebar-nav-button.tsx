@@ -15,14 +15,16 @@ export function SidebarNavButton({ href, label, icon: Icon, exact = false }: Sid
   const isActive = exact ? location === href : location.startsWith(href);
 
   return (
-    <Link href={href}>
-      <Button
-        variant={isActive ? "default" : "secondary"}
-        className="w-full justify-start rounded-2xl px-4 py-6 text-sm"
-      >
+    <Button
+      asChild
+      tone={isActive ? "primary" : "default"}
+      variant={isActive ? "solid" : "outline"}
+      className="w-full justify-start px-4 py-6 text-sm"
+    >
+      <Link href={href}>
         <Icon className="mr-3 h-5 w-5" aria-hidden />
         {label}
-      </Button>
-    </Link>
+      </Link>
+    </Button>
   );
 }
