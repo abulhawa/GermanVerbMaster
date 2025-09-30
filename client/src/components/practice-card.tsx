@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/primitives/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { cn, speak } from "@/lib/utils";
+import { cn } from "@/lib/cn";
+import { speak } from "@/lib/speech";
 import { GermanVerb } from "@/lib/verbs";
 import { PracticeMode, Settings } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
@@ -84,7 +85,7 @@ export function PracticeCard({
       toast({
         title: "Error",
         description: "Failed to record practice attempt",
-        variant: "destructive",
+        tone: "danger",
       });
       console.error("Error recording practice:", error);
     }
@@ -218,28 +219,32 @@ export function PracticeCard({
         transition={{ duration: 0.4, ease: "easeOut" }}
         className={cn("w-full", className)}
       >
-        <Card className="w-full rounded-3xl border border-border/60 bg-card/90 p-2 shadow-2xl shadow-primary/10">
+        <Card className="w-full p-2">
           <CardHeader className="space-y-4 text-center">
-            <Badge className="mx-auto rounded-full bg-primary/15 px-4 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
+            <Badge
+              tone="primary"
+              size="sm"
+              className="mx-auto rounded-full px-4 py-1 text-[11px] font-semibold uppercase tracking-[0.2em]"
+            >
               {modeLabel}
             </Badge>
             <div className="flex flex-col items-center gap-3">
               <div className="flex items-center gap-3">
-                <CardTitle className="text-4xl font-semibold text-foreground md:text-5xl">
+                <CardTitle className="text-4xl font-semibold text-fg md:text-5xl">
                   {verb.infinitive}
                 </CardTitle>
                 <Button
-                  variant="secondary"
-                  size="icon"
+                  variant="outline"
+                  tone="primary"
                   onClick={pronounce}
                   title="Listen to pronunciation"
-                  className="h-12 w-12 rounded-2xl"
+                  className="h-12 w-12 px-0"
                 >
                   <Volume2 className="h-5 w-5" aria-hidden />
                 </Button>
               </div>
               {mode !== "english" && (
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted">
                   {verb.english}
                 </p>
               )}
@@ -247,10 +252,10 @@ export function PracticeCard({
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2 text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted">
                 Prompt
               </p>
-              <p className="text-lg font-semibold text-foreground">
+              <p className="text-lg font-semibold text-fg">
                 {getQuestionText()}
               </p>
             </div>
@@ -260,7 +265,8 @@ export function PracticeCard({
               onChange={(event) => setAnswer(event.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Type your answer"
-              className="h-14 rounded-3xl border-2 border-border/80 bg-background text-center text-lg"
+              size="lg"
+              className="h-14 rounded-2xl border-2 text-center text-lg"
               disabled={status !== "idle"}
               autoFocus
             />
@@ -271,7 +277,7 @@ export function PracticeCard({
                   initial={{ opacity: 0, y: -8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
-                  className="rounded-2xl border border-primary/20 bg-primary/5 p-4 text-left text-sm text-muted-foreground"
+                  className="rounded-2xl border border-primary/20 bg-primary/5 p-4 text-left text-sm text-muted"
                 >
                   <div className="flex items-start gap-3">
                     <AlertCircle className="mt-0.5 h-4 w-4 text-primary" aria-hidden />
@@ -282,15 +288,16 @@ export function PracticeCard({
             </AnimatePresence>
 
             <div className="flex flex-wrap items-center justify-center gap-3">
-              <Button onClick={checkAnswer} disabled={status !== "idle"} className="rounded-2xl px-8">
+              <Button onClick={checkAnswer} disabled={status !== "idle"} className="px-8">
                 Check answer
               </Button>
               {settings.showHints && !showHint && (
                 <Button
                   type="button"
-                  variant="secondary"
+                  variant="outline"
+                  tone="primary"
                   onClick={revealHint}
-                  className="rounded-2xl px-6"
+                  className="px-6"
                 >
                   <HelpCircle className="mr-2 h-4 w-4" aria-hidden />
                   Reveal hint
@@ -313,8 +320,8 @@ export function PracticeCard({
               className={cn(
                 "mt-4 w-full rounded-2xl border px-5 py-4 text-sm font-semibold shadow-sm",
                 status === "correct"
-                  ? "border-success-border bg-success-strong text-success-strong-foreground"
-                  : "border-warning-border bg-warning-strong text-warning-strong-foreground",
+                  ? "border-success bg-success/15 text-success"
+                  : "border-danger bg-danger/10 text-danger",
               )}
             >
               <div className="flex flex-wrap items-center justify-between gap-3">
@@ -328,7 +335,7 @@ export function PracticeCard({
                 </div>
                 {status === "incorrect" && (
                   <span
-                    className="rounded-full border border-warning-border bg-warning-strong/40 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-warning-strong-foreground"
+                    className="rounded-full border border-danger bg-danger/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-danger"
                     aria-label={`Correct answer: ${correctAnswer}`}
                     title={`Correct answer: ${correctAnswer}`}
                   >

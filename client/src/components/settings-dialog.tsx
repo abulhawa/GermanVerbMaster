@@ -23,20 +23,22 @@ export function SettingsDialog({ settings, onSettingsChange }: SettingsDialogPro
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          variant="secondary"
-          size="icon"
-          className="h-11 w-11 rounded-full border border-border bg-background text-primary transition hover:bg-muted"
+          variant="outline"
+          tone="primary"
+          className="h-11 w-11 rounded-full px-0"
         >
           <SettingsIcon className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md border border-border bg-card text-muted-foreground shadow-sm">
+      <DialogContent className="sm:max-w-md border border-border bg-card text-fg shadow-sm">
         <DialogHeader>
-          <DialogTitle className="text-foreground">Settings</DialogTitle>
+          <DialogTitle className="text-fg">Settings</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="flex items-center justify-between gap-4">
-            <Label htmlFor="level">Language Level</Label>
+            <Label htmlFor="level" className="text-fg">
+              Language Level
+            </Label>
             <Select
               value={settings.level}
               onValueChange={(value: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2') => 
@@ -58,7 +60,9 @@ export function SettingsDialog({ settings, onSettingsChange }: SettingsDialogPro
           </div>
 
           <div className="flex items-center justify-between gap-4">
-            <Label htmlFor="hints">Show Hints</Label>
+            <Label htmlFor="hints" className="text-fg">
+              Show Hints
+            </Label>
             <Switch
               id="hints"
               checked={settings.showHints}
@@ -69,7 +73,9 @@ export function SettingsDialog({ settings, onSettingsChange }: SettingsDialogPro
           </div>
 
           <div className="flex items-center justify-between gap-4">
-            <Label htmlFor="examples">Show Example Sentences</Label>
+            <Label htmlFor="examples" className="text-fg">
+              Show Example Sentences
+            </Label>
             <Switch
               id="examples"
               checked={settings.showExamples}

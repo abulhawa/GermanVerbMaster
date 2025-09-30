@@ -13,6 +13,14 @@ import {
 import { AppShell } from "@/components/layout/app-shell";
 import { SidebarNavButton } from "@/components/layout/sidebar-nav-button";
 import { AnsweredQuestionsPanel } from "@/components/answered-questions-panel";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/primitives/card";
+import { Section } from "@/components/primitives/section";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -63,22 +71,23 @@ export default function AnswerHistoryPage() {
           <History className="h-4 w-4" aria-hidden />
           Answer review hub
         </p>
-        <h1 className="text-3xl font-semibold text-foreground lg:text-4xl">
+        <h1 className="text-3xl font-semibold text-fg lg:text-4xl">
           Answer history
         </h1>
-        <p className="max-w-xl text-sm text-muted-foreground">
+        <p className="max-w-xl text-sm text-muted">
           Explore every attempt you have made, filter by CEFR level or result, and revisit the verbs that need extra attention.
         </p>
       </div>
       <div className="flex flex-wrap items-center gap-3">
-        <Link href="/">
-          <Button variant="secondary" className="rounded-2xl px-6">
-            <ArrowLeft className="mr-2 h-4 w-4" aria-hidden />
+        <Button asChild variant="outline" tone="primary" className="rounded-2xl px-6">
+          <Link href="/">
+            <ArrowLeft className="h-4 w-4" aria-hidden />
             Back to practice
-          </Button>
-        </Link>
+          </Link>
+        </Button>
         <Button
           variant="outline"
+          tone="danger"
           onClick={handleClearHistory}
           disabled={totalAnswers === 0}
           className="rounded-2xl px-6"
@@ -92,9 +101,9 @@ export default function AnswerHistoryPage() {
 
   const sidebar = (
     <div className="flex h-full flex-col justify-between gap-8">
-      <div className="space-y-8">
+      <div className="space-y-6">
         <div className="space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted">
             Navigate
           </p>
           <div className="grid gap-2">
@@ -104,83 +113,93 @@ export default function AnswerHistoryPage() {
             <SidebarNavButton href="/admin" icon={Settings2} label="Admin tools" />
           </div>
         </div>
-        <div className="rounded-3xl border border-border/60 bg-muted/40 p-5 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-            Snapshot
-          </p>
-          <div className="mt-4 space-y-3 text-sm text-foreground">
+        <Card>
+          <CardHeader className="space-y-3 pb-0">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted">
+              Snapshot
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm text-fg">
             <div className="flex items-center justify-between">
               <span>Total answers</span>
-              <Badge className="rounded-full bg-primary/20 text-primary">{totalAnswers}</Badge>
+              <Badge tone="primary" size="sm" className="px-3 py-1 text-xs">
+                {totalAnswers}
+              </Badge>
             </div>
             <div className="flex items-center justify-between">
               <span>Correct</span>
-              <Badge className="rounded-full border-success-border/50 bg-success-muted text-success-muted-foreground">
+              <Badge tone="success" size="sm" className="px-3 py-1 text-xs">
                 {totalCorrect}
               </Badge>
             </div>
             <div className="flex items-center justify-between">
               <span>Incorrect</span>
-              <Badge className="rounded-full border-warning-border/50 bg-warning-muted text-warning-muted-foreground">
+              <Badge tone="danger" size="sm" className="px-3 py-1 text-xs">
                 {totalIncorrect}
               </Badge>
             </div>
             <div className="flex items-center justify-between">
               <span>Accuracy</span>
-              <Badge variant="outline" className="rounded-full border-primary/40 text-primary">
+              <Badge tone="primary" size="sm" className="px-3 py-1 text-xs">
                 {accuracy}%
               </Badge>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
-      <div className="space-y-3 rounded-3xl border border-border/60 bg-muted/40 p-5 text-sm shadow-sm">
-        <p className="font-semibold text-foreground">Why keep a log?</p>
-        <p className="text-xs text-muted-foreground">
-          Reviewing your past answers helps reinforce correct forms and spot patterns in mistakes so you can adjust your study plan.
-        </p>
-      </div>
+      <Card>
+        <CardHeader className="space-y-2">
+          <CardTitle className="text-base font-semibold text-fg">Why keep a log?</CardTitle>
+          <CardDescription className="text-xs text-muted">
+            Reviewing your past answers helps reinforce correct forms and spot patterns in mistakes so you can adjust your study plan.
+          </CardDescription>
+        </CardHeader>
+      </Card>
     </div>
   );
 
   const filterControls = (
-    <div className="grid gap-6 rounded-3xl border border-border/60 bg-card/80 p-6 shadow-lg shadow-primary/5">
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Filter by level</p>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {LEVEL_FILTERS.map((option) => (
-            <Button
-              key={option}
-              variant={option === levelFilter ? "default" : "secondary"}
-              className="rounded-2xl px-4"
-              onClick={() => setLevelFilter(option)}
-            >
-              {option === "all" ? "All" : option}
-            </Button>
-          ))}
+    <Card>
+      <CardContent className="grid gap-6">
+        <div className="space-y-3">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted">Filter by level</p>
+          <div className="flex flex-wrap gap-2">
+            {LEVEL_FILTERS.map((option) => (
+              <Button
+                key={option}
+                tone={option === levelFilter ? "primary" : "default"}
+                variant={option === levelFilter ? "solid" : "outline"}
+                className="px-4"
+                onClick={() => setLevelFilter(option)}
+              >
+                {option === "all" ? "All" : option}
+              </Button>
+            ))}
+          </div>
         </div>
-      </div>
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Filter by result</p>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {RESULT_FILTERS.map((option) => (
-            <Button
-              key={option}
-              variant={option === resultFilter ? "default" : "secondary"}
-              className="rounded-2xl px-4 capitalize"
-              onClick={() => setResultFilter(option)}
-            >
-              {option}
-            </Button>
-          ))}
+        <div className="space-y-3">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted">Filter by result</p>
+          <div className="flex flex-wrap gap-2">
+            {RESULT_FILTERS.map((option) => (
+              <Button
+                key={option}
+                tone={option === resultFilter ? "primary" : "default"}
+                variant={option === resultFilter ? "solid" : "outline"}
+                className="px-4 capitalize"
+                onClick={() => setResultFilter(option)}
+              >
+                {option}
+              </Button>
+            ))}
+          </div>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 
   return (
     <AppShell sidebar={sidebar} topBar={topBar}>
-      <div className="space-y-6">
+      <Section>
         {filterControls}
         <AnsweredQuestionsPanel
           history={filteredHistory}
@@ -188,7 +207,7 @@ export default function AnswerHistoryPage() {
           description="Track your responses across every practice session. Each entry includes the correct forms and contextual examples so you can revise with confidence."
           emptyStateMessage="Once you start practicing, your answers will appear here with all the details you need to review."
         />
-      </div>
+      </Section>
     </AppShell>
   );
 }

@@ -6,7 +6,8 @@ import { Link } from 'wouter';
 
 import { AppShell } from '@/components/layout/app-shell';
 import { SidebarNavButton } from '@/components/layout/sidebar-nav-button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/primitives/card';
+import { Section } from '@/components/primitives/section';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -328,10 +329,10 @@ const AdminWordsPage = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
-      toast({ title: 'Word updated' });
+      toast({ title: 'Word updated', tone: 'success' });
     },
     onError: (error) => {
-      toast({ title: 'Update failed', description: error instanceof Error ? error.message : String(error), variant: 'destructive' });
+      toast({ title: 'Update failed', description: error instanceof Error ? error.message : String(error), tone: 'danger' });
     },
   });
 
@@ -417,24 +418,22 @@ const AdminWordsPage = () => {
   const topBar = (
     <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Admin Console</p>
-        <h1 className="mt-2 flex items-center gap-3 text-3xl font-semibold text-foreground lg:text-4xl">
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted">Admin Console</p>
+        <h1 className="mt-2 flex items-center gap-3 text-3xl font-semibold text-fg lg:text-4xl">
           <Settings2 className="h-7 w-7 text-primary" aria-hidden />
           Lexicon management
         </h1>
-        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+        <p className="mt-2 max-w-2xl text-sm text-muted">
           Curate the verb bank, manage metadata, and keep entries aligned across CEFR levels.
         </p>
       </div>
       <div className="flex items-center gap-2">
-        <Link href="/">
-          <Button variant="secondary" className="rounded-2xl px-6">
-            Back to practice
-          </Button>
-        </Link>
-        <Link href="/analytics">
-          <Button className="rounded-2xl px-6">Open analytics</Button>
-        </Link>
+        <Button asChild variant="outline" tone="primary" className="px-6">
+          <Link href="/">Back to practice</Link>
+        </Button>
+        <Button asChild className="px-6">
+          <Link href="/analytics">Open analytics</Link>
+        </Button>
       </div>
     </div>
   );
@@ -443,7 +442,7 @@ const AdminWordsPage = () => {
     <div className="flex h-full flex-col justify-between gap-8">
       <div className="space-y-6">
         <div className="space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Navigate</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted">Navigate</p>
           <div className="grid gap-2">
             <SidebarNavButton href="/" icon={Sparkles} label="Practice" />
             <SidebarNavButton href="/analytics" icon={Compass} label="Analytics" />
@@ -451,16 +450,18 @@ const AdminWordsPage = () => {
           </div>
         </div>
       </div>
-      <div className="rounded-3xl border border-dashed border-border/60 bg-card/70 p-4 text-xs text-muted-foreground">
-        Tip: Adjust rows per page to speed through audits on large datasets.
-      </div>
+      <Card className="border-dashed">
+        <CardContent className="text-xs text-muted">
+          Tip: Adjust rows per page to speed through audits on large datasets.
+        </CardContent>
+      </Card>
     </div>
   );
 
   return (
     <AppShell sidebar={sidebar} topBar={topBar}>
-      <div className="space-y-6">
-        <Card className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5">
+      <Section className="space-y-6">
+        <Card>
           <CardHeader className="space-y-2">
             <CardTitle>Admin: Words</CardTitle>
             <CardDescription>Review and edit the aggregated lexicon. Filters update the API query in real time.</CardDescription>
@@ -524,7 +525,8 @@ const AdminWordsPage = () => {
                 <div className="flex rounded-2xl border border-border/60 bg-card/60 p-1 shadow-sm">
                   <Button
                     size="sm"
-                    variant={canonicalFilter === 'all' ? 'default' : 'secondary'}
+                    tone={canonicalFilter === 'all' ? 'primary' : 'default'}
+                    variant={canonicalFilter === 'all' ? 'solid' : 'outline'}
                     className="flex-1 rounded-2xl"
                     onClick={() => setCanonicalFilter('all')}
                   >
@@ -532,7 +534,8 @@ const AdminWordsPage = () => {
                   </Button>
                   <Button
                     size="sm"
-                    variant={canonicalFilter === 'only' ? 'default' : 'secondary'}
+                    tone={canonicalFilter === 'only' ? 'primary' : 'default'}
+                    variant={canonicalFilter === 'only' ? 'solid' : 'outline'}
                     className="flex-1 rounded-2xl"
                     onClick={() => setCanonicalFilter('only')}
                   >
@@ -540,7 +543,8 @@ const AdminWordsPage = () => {
                   </Button>
                   <Button
                     size="sm"
-                    variant={canonicalFilter === 'non' ? 'default' : 'secondary'}
+                    tone={canonicalFilter === 'non' ? 'primary' : 'default'}
+                    variant={canonicalFilter === 'non' ? 'solid' : 'outline'}
                     className="flex-1 rounded-2xl"
                     onClick={() => setCanonicalFilter('non')}
                   >
@@ -567,7 +571,7 @@ const AdminWordsPage = () => {
           </CardContent>
         </Card>
 
-      <Card className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5">
+      <Card>
         <CardHeader>
           <CardTitle>Words</CardTitle>
           <CardDescription>
@@ -582,7 +586,7 @@ const AdminWordsPage = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <div className="text-sm text-muted-foreground">Page {currentPage} of {displayTotalPages}</div>
+            <div className="text-sm text-muted">Page {currentPage} of {displayTotalPages}</div>
             <div className="flex items-center gap-2">
               <Label className="text-sm" htmlFor="per-page">
                 Rows per page
@@ -608,7 +612,7 @@ const AdminWordsPage = () => {
               </Select>
             </div>
           </div>
-          <div className="max-h-[520px] overflow-auto rounded-3xl border border-border/60">
+          <div className="max-h-[520px] overflow-auto rounded-2xl border border-border/60">
             <Table>
               <TableHeader className="sticky top-0 z-20 bg-card/95 backdrop-blur">
                 <TableRow>
@@ -651,20 +655,26 @@ const AdminWordsPage = () => {
                     </>
                   )}
                   <TableCell>
-                    <Badge variant={word.canonical ? 'default' : 'secondary'}>
+                    <Badge
+                      tone={word.canonical ? 'success' : 'warning'}
+                      className="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]"
+                    >
                       {word.canonical ? 'Canonical' : 'Shadow'}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={word.complete ? 'default' : 'outline'}>
+                    <Badge
+                      tone={word.complete ? 'success' : 'danger'}
+                      className="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]"
+                    >
                       {word.complete ? 'Complete' : 'Incomplete'}
                     </Badge>
                   </TableCell>
                   <TableCell className="flex items-center gap-2">
                     <Button
-                      size="icon"
-                      variant={word.canonical ? 'destructive' : 'secondary'}
-                      className="rounded-xl"
+                      variant="outline"
+                      tone={word.canonical ? 'danger' : 'primary'}
+                      className="h-10 w-10 rounded-xl"
                       title={word.canonical ? 'Remove canonical flag' : 'Mark as canonical'}
                       aria-label={word.canonical ? 'Remove canonical flag' : 'Mark as canonical'}
                       onClick={() => toggleCanonical(word)}
@@ -684,9 +694,9 @@ const AdminWordsPage = () => {
                     }}>
                       <DrawerTrigger asChild>
                         <Button
-                          size="icon"
-                          variant="secondary"
-                          className="rounded-xl"
+                          variant="outline"
+                          tone="primary"
+                          className="h-10 w-10 rounded-xl"
                           onClick={() => openEditor(word)}
                           title="Edit entry"
                           aria-label="Edit entry"
@@ -760,7 +770,7 @@ const AdminWordsPage = () => {
                             <Button type="submit" disabled={updateMutation.isPending}>
                               Save changes
                             </Button>
-                            <Button type="button" variant="outline" onClick={closeEditor}>
+                            <Button type="button" variant="outline" tone="default" onClick={closeEditor}>
                               Cancel
                             </Button>
                           </DrawerFooter>
@@ -772,14 +782,14 @@ const AdminWordsPage = () => {
               ))}
               {isUnauthorized && (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="text-center text-muted-foreground">
+                  <TableCell colSpan={columns.length} className="text-center text-muted">
                     Enter the admin token to load words.
                   </TableCell>
                 </TableRow>
               )}
               {!isUnauthorized && !words.length && !wordsQuery.isLoading && (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="text-center text-muted-foreground">
+                  <TableCell colSpan={columns.length} className="text-center text-muted">
                     No words match the current filters.
                   </TableCell>
                 </TableRow>
@@ -788,7 +798,7 @@ const AdminWordsPage = () => {
             </Table>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="text-sm text-muted-foreground">
+            <div className="text-sm text-muted">
               {totalWords
                 ? `Showing ${pageStart}–${pageEnd} of ${totalWords} words`
                 : 'No words to display'}
@@ -796,23 +806,23 @@ const AdminWordsPage = () => {
             <div className="flex items-center gap-2">
               <Button
                 size="sm"
-                variant="secondary"
+                variant="outline"
+                tone="default"
                 onClick={() => setPage((current) => Math.max(1, current - 1))}
                 disabled={currentPage <= 1 || wordsQuery.isLoading}
-                className="rounded-2xl"
               >
                 Previous
               </Button>
-              <div className="text-sm text-muted-foreground">Page {currentPage} of {displayTotalPages}</div>
+              <div className="text-sm text-muted">Page {currentPage} of {displayTotalPages}</div>
               <Button
                 size="sm"
-                variant="secondary"
+                variant="outline"
+                tone="primary"
                 onClick={() => setPage((current) => current + 1)}
                 disabled={
                   wordsQuery.isLoading ||
                   (totalPages > 0 ? currentPage >= totalPages : !totalWords)
                 }
-                className="rounded-2xl"
               >
                 Next
               </Button>
@@ -820,7 +830,7 @@ const AdminWordsPage = () => {
           </div>
         </CardContent>
       </Card>
-    </div>
+      </Section>
     </AppShell>
   );
 };
