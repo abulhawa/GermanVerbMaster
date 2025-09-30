@@ -6,7 +6,22 @@ import { cn } from "@/lib/cn";
 
 export const Select = SelectPrimitive.Root;
 export const SelectGroup = SelectPrimitive.Group;
-export const SelectValue = SelectPrimitive.Value;
+export const SelectValue = React.forwardRef<
+  React.ElementRef<typeof SelectPrimitive.Value>,
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Value>
+>(({ className, children, ...props }, ref) => (
+  <SelectPrimitive.Value
+    ref={ref}
+    className={cn(
+      "flex-1 truncate text-left text-fg data-[placeholder]:text-muted",
+      className
+    )}
+    {...props}
+  >
+    {children}
+  </SelectPrimitive.Value>
+));
+SelectValue.displayName = SelectPrimitive.Value.displayName;
 export const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
@@ -30,7 +45,7 @@ SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
 export const SelectContent = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
->(({ className, children, position = "popper", ...props }, ref) => (
+>(({ className, children, style, position = "popper", ...props }, ref) => (
   <SelectPrimitive.Portal>
     <SelectPrimitive.Content
       ref={ref}
@@ -39,6 +54,7 @@ export const SelectContent = React.forwardRef<
         position === "popper" && "data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1",
         className
       )}
+      style={{ backgroundColor: "hsl(var(--card))", ...style }}
       position={position}
       {...props}
     >

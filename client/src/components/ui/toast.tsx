@@ -35,7 +35,7 @@ export interface ToastProps
 export const Toast = React.forwardRef<
   React.ElementRef<typeof ToastPrimitive.Root>,
   ToastProps
->(({ className, tone, ...props }, ref) => (
+>(({ className, tone, style, ...props }, ref) => (
   <ToastPrimitive.Root
     ref={ref}
     className={cn(
@@ -43,6 +43,7 @@ export const Toast = React.forwardRef<
       "data-[state=open]:animate-in data-[state=open]:slide-in-from-right-full data-[state=closed]:animate-out data-[state=closed]:fade-out-0",
       className
     )}
+    style={{ backgroundColor: "hsl(var(--card))", ...style }}
     {...props}
   />
 ));

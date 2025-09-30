@@ -10,7 +10,7 @@ export const TooltipTrigger = TooltipPrimitive.Trigger;
 export const TooltipContent = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
->(({ className, sideOffset = 8, ...props }, ref) => (
+>(({ className, style, sideOffset = 8, ...props }, ref) => (
   <TooltipPrimitive.Portal>
     <TooltipPrimitive.Content
       ref={ref}
@@ -19,6 +19,7 @@ export const TooltipContent = React.forwardRef<
         "z-popover max-w-xs rounded-xl border border-border bg-surface px-3 py-2 text-xs text-fg shadow-sm",
         className
       )}
+      style={{ backgroundColor: "hsl(var(--surface))", ...style }}
       {...props}
     />
   </TooltipPrimitive.Portal>

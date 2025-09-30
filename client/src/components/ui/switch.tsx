@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/cn";
 
 const trackStyles = cva(
-  "focus-ring inline-flex shrink-0 cursor-pointer items-center rounded-full border border-transparent transition-colors duration-200 data-[state=unchecked]:bg-muted",
+  "focus-ring inline-flex shrink-0 cursor-pointer items-center rounded-full border transition-colors duration-200 data-[state=unchecked]:bg-muted data-[state=unchecked]:border-border data-[state=checked]:border-transparent",
   {
     variants: {
       size: {
@@ -29,7 +29,7 @@ const trackStyles = cva(
 );
 
 const thumbStyles = cva(
-  "pointer-events-none block rounded-full bg-card shadow-sm transition-transform duration-200",
+  "pointer-events-none block rounded-full bg-card shadow-sm ring-1 ring-inset ring-border/60 transition-transform duration-200",
   {
     variants: {
       size: {
