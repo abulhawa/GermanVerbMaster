@@ -2,6 +2,7 @@ import * as React from "react";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 
 import { cn } from "@/lib/cn";
+import { overlayClassName } from "@/ui/overlay";
 
 export const DropdownMenu = DropdownMenuPrimitive.Root;
 export const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
@@ -11,17 +12,18 @@ export const DropdownMenuPortal = DropdownMenuPrimitive.Portal;
 export const DropdownMenuContent = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
->(({ className, style, sideOffset = 8, align = "center", ...props }, ref) => (
+>(({ className, sideOffset = 8, align = "center", ...props }, ref) => (
   <DropdownMenuPortal>
     <DropdownMenuPrimitive.Content
       ref={ref}
       sideOffset={sideOffset}
       align={align}
-      className={cn(
-        "z-50 min-w-[12rem] rounded-2xl border border-border bg-card p-2 text-sm text-fg shadow-md duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
+      avoidCollisions
+      collisionPadding={8}
+      className={overlayClassName(
+        "min-w-[12rem] rounded-2xl p-2 text-sm duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
         className
       )}
-      style={{ backgroundColor: "hsl(var(--card))", ...style }}
       {...props}
     />
   </DropdownMenuPortal>

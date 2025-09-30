@@ -7,3 +7,5 @@ vite.config.ts.*
 *.tar.gz
 db/*.sqlite*
 .vscode/settings.json
+test-results/*
+tests/ui/overlay.spec.ts-snapshots/*

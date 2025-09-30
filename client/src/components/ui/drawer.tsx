@@ -2,6 +2,7 @@ import * as React from "react";
 import { Drawer as DrawerPrimitive } from "vaul";
 
 import { cn } from "@/lib/cn";
+import { overlayClassName } from "@/ui/overlay";
 
 export const Drawer = ({ shouldScaleBackground = true, ...props }: React.ComponentProps<typeof DrawerPrimitive.Root>) => (
   <DrawerPrimitive.Root shouldScaleBackground={shouldScaleBackground} {...props} />
@@ -31,16 +32,15 @@ DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName;
 export const DrawerContent = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>
->(({ className, children, style, ...props }, ref) => (
+>(({ className, children, ...props }, ref) => (
   <DrawerPortal>
     <DrawerOverlay />
     <DrawerPrimitive.Content
       ref={ref}
-      className={cn(
-        "focus-ring fixed inset-x-0 bottom-0 z-modal mt-24 flex max-h-[85vh] flex-col rounded-t-3xl border border-border bg-card p-6 text-fg shadow-md duration-200 data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom",
+      className={overlayClassName(
+        "focus-ring fixed inset-x-0 bottom-0 z-modal mt-24 flex max-h-[85vh] flex-col rounded-t-3xl p-6 duration-200 data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom",
         className
       )}
-      style={{ backgroundColor: "hsl(var(--card))", ...style }}
       {...props}
     >
       <div className="mx-auto h-1.5 w-12 rounded-full bg-muted" aria-hidden="true" />

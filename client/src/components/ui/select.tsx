@@ -3,6 +3,7 @@ import * as SelectPrimitive from "@radix-ui/react-select";
 import { Check, ChevronDown, ChevronUp } from "lucide-react";
 
 import { cn } from "@/lib/cn";
+import { overlayClassName } from "@/ui/overlay";
 
 export const Select = SelectPrimitive.Root;
 export const SelectGroup = SelectPrimitive.Group;
@@ -45,16 +46,17 @@ SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
 export const SelectContent = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
->(({ className, children, style, position = "popper", ...props }, ref) => (
+>(({ className, children, position = "popper", ...props }, ref) => (
   <SelectPrimitive.Portal>
     <SelectPrimitive.Content
       ref={ref}
-      className={cn(
-        "z-popover min-w-[12rem] overflow-hidden rounded-2xl border border-border bg-card text-fg shadow-md",
+      avoidCollisions
+      collisionPadding={8}
+      className={overlayClassName(
+        "min-w-[12rem] overflow-hidden rounded-2xl text-sm",
         position === "popper" && "data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1",
         className
       )}
-      style={{ backgroundColor: "hsl(var(--card))", ...style }}
       position={position}
       {...props}
     >

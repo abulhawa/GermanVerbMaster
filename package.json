@@ -13,9 +13,10 @@
     "start": "NODE_ENV=production node dist/index.js",
     "check": "tsc",
     "typecheck": "tsc --noEmit",
-    "lint": "npm run check && node scripts/check-ui-tokens.mjs",
+    "lint": "npm run check && node scripts/check-ui-tokens.mjs && node scripts/check-overlays.mjs",
     "db:push": "drizzle-kit push",
     "test": "vitest run",
+    "test:ui": "playwright test",
     "seed": "tsx scripts/seed.mjs",
     "seed:verbs": "npm run seed",
     "integration:create-key": "tsx scripts/create-partner-key.ts"
@@ -82,6 +83,7 @@
     "zod": "^4.1.11"
   },
   "devDependencies": {
+    "@playwright/test": "^1.55.1",
     "@replit/vite-plugin-runtime-error-modal": "^0.0.3",
     "@tailwindcss/postcss": "^4.1.13",
     "@tailwindcss/typography": "^0.5.19",
