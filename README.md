@@ -33,6 +33,11 @@ Requires Node.js 24.5.2 or newer and npm 10+ (see `package.json` engines field).
 
 The app runs entirely on your machine—no container or managed database is required. All data is stored in the SQLite file defined by `DATABASE_FILE`, which keeps small vocab collections under version control or inside your backup strategy.
 
+## Theme system
+- Global color tokens live in `client/src/index.css`. Light and dark palettes share the same variable names (`--bg`, `--fg`, `--accent`, etc.), so components only reference semantic utilities such as `bg-card`, `text-fg`, and `ring-accent`.
+- Accent usage is intentionally small: primary buttons, selected states, focus rings, and toggled controls. Most surfaces rely on muted neutrals for both themes.
+- The header now includes a theme toggle that persists the selection (`light`, `dark`, or `system`) in `localStorage` and respects the system preference when `system` is active. The helper logic lives in `client/src/lib/theme.ts`.
+
 ## Progressive Web App
 - The client is bundled with `vite-plugin-pwa` using an auto-updating service worker.
 - `client/public/manifest.webmanifest` defines install metadata, icons, and standalone display mode.

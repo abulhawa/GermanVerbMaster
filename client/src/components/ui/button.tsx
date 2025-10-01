@@ -5,27 +5,27 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-semibold shadow-sm ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-app text-sm font-semibold ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground hover:-translate-y-0.5 hover:shadow-md",
+          "bg-accent text-accent-foreground shadow-soft hover:bg-accent/90",
         destructive:
-          "bg-destructive text-destructive-foreground hover:-translate-y-0.5 hover:bg-destructive/90 hover:shadow-md",
+          "bg-destructive text-destructive-foreground shadow-soft hover:bg-destructive/90",
         outline:
-          "border border-border bg-background text-foreground hover:bg-muted/40",
+          "border border-border bg-background text-fg shadow-sm hover:bg-muted/60",
         secondary:
-          "border border-primary/60 bg-transparent text-primary hover:bg-primary/10",
+          "bg-muted text-fg shadow-sm hover:bg-muted/70",
         ghost:
-          "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+          "text-muted-foreground hover:bg-muted/50 hover:text-fg",
+        link: "text-accent underline-offset-4 hover:text-accent/80 hover:underline",
       },
       size: {
         default: "h-11 px-5",
         sm: "h-9 rounded-lg px-3",
         lg: "h-12 rounded-2xl px-7",
-        icon: "h-11 w-11",
+        icon: "h-11 w-11 rounded-full",
       },
     },
     defaultVariants: {

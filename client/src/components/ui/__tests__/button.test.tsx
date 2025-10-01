@@ -20,13 +20,11 @@ describe("Button", () => {
   });
 
   it("applies variant classes", () => {
-    expect(buttonVariants({ variant: "default" })).toContain("bg-primary");
+    expect(buttonVariants({ variant: "default" })).toContain("bg-accent");
     expect(buttonVariants({ variant: "destructive" })).toContain(
       "bg-destructive"
     );
-    expect(buttonVariants({ variant: "outline" })).toContain("border-border");
-    expect(buttonVariants({ variant: "ghost" })).toContain(
-      "text-muted-foreground"
-    );
+    expect(buttonVariants({ variant: "outline" })).toContain("bg-background");
+    expect(buttonVariants({ variant: "ghost" })).toContain("hover:bg-muted/50");
   });
 });
