@@ -10,8 +10,8 @@
     --card-fg: 222 47% 12%;
     --border: 214 17% 82%;
     --ring: 221 83% 54%;
-    --accent: 221 83% 54%;
-    --accent-fg: 210 20% 98%;
+    --accent: 221 83% 54% !important;
+    --accent-fg: 210 20% 98% !important;
 
     --z-overlay: 50;
     --z-modal: 60;
@@ -74,8 +74,8 @@
     --card-fg: 210 20% 98%;
     --border: 222 14% 24%;
     --ring: 221 83% 60%;
-    --accent: 221 83% 60%;
-    --accent-fg: 210 20% 98%;
+    --accent: 221 83% 60% !important;
+    --accent-fg: 210 20% 98% !important;
 
     --shadow: 0 18px 40px -20px hsl(210 40% 2% / 0.45);
 
