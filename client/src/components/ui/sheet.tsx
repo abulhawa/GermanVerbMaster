@@ -4,24 +4,49 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import {
+  type DebuggableComponentProps,
+  debugForwardRef,
+  getDevAttributes,
+} from "@/lib/dev-attributes"
 
-const Sheet = SheetPrimitive.Root
+const Sheet = debugForwardRef<
+  React.ElementRef<typeof SheetPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof SheetPrimitive.Root> &
+    DebuggableComponentProps
+>("Sheet", (props, ref, devAttributes) => (
+  <SheetPrimitive.Root ref={ref} {...devAttributes} {...props} />
+))
 
-const SheetTrigger = SheetPrimitive.Trigger
+const SheetTrigger = debugForwardRef<
+  React.ElementRef<typeof SheetPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof SheetPrimitive.Trigger> &
+    DebuggableComponentProps
+>("SheetTrigger", (props, ref, devAttributes) => (
+  <SheetPrimitive.Trigger ref={ref} {...devAttributes} {...props} />
+))
 
-const SheetClose = SheetPrimitive.Close
+const SheetClose = debugForwardRef<
+  React.ElementRef<typeof SheetPrimitive.Close>,
+  React.ComponentPropsWithoutRef<typeof SheetPrimitive.Close> &
+    DebuggableComponentProps
+>("SheetClose", (props, ref, devAttributes) => (
+  <SheetPrimitive.Close ref={ref} {...devAttributes} {...props} />
+))
 
 const SheetPortal = SheetPrimitive.Portal
 
 const SheetOverlay = React.forwardRef<
   React.ComponentRef<typeof SheetPrimitive.Overlay>,
-  React.ComponentPropsWithoutRef<typeof SheetPrimitive.Overlay>
->(({ className, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof SheetPrimitive.Overlay> &
+    DebuggableComponentProps
+>(({ className, debugId, ...props }, ref) => (
   <SheetPrimitive.Overlay
     className={cn(
       "fixed inset-0 z-50 bg-black/80  data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
       className
     )}
+    {...getDevAttributes("SheetOverlay", debugId)}
     {...props}
     ref={ref}
   />
@@ -54,12 +79,13 @@ interface SheetContentProps
 const SheetContent = React.forwardRef<
   React.ComponentRef<typeof SheetPrimitive.Content>,
   SheetContentProps
->(({ side = "right", className, children, ...props }, ref) => (
+>(({ side = "right", className, children, debugId, ...props }, ref) => (
   <SheetPortal>
     <SheetOverlay />
     <SheetPrimitive.Content
       ref={ref}
       className={cn(sheetVariants({ side }), className)}
+      {...getDevAttributes("SheetContent", debugId)}
       {...props}
     >
       {children}
@@ -74,13 +100,15 @@ SheetContent.displayName = SheetPrimitive.Content.displayName
 
 const SheetHeader = ({
   className,
+  debugId,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) => (
+}: React.HTMLAttributes<HTMLDivElement> & DebuggableComponentProps) => (
   <div
     className={cn(
       "flex flex-col space-y-2 text-center sm:text-left",
       className
     )}
+    {...getDevAttributes("SheetHeader", debugId)}
     {...props}
   />
 )
@@ -88,13 +116,15 @@ SheetHeader.displayName = "SheetHeader"
 
 const SheetFooter = ({
   className,
+  debugId,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) => (
+}: React.HTMLAttributes<HTMLDivElement> & DebuggableComponentProps) => (
   <div
     className={cn(
       "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
       className
     )}
+    {...getDevAttributes("SheetFooter", debugId)}
     {...props}
   />
 )
@@ -102,11 +132,13 @@ SheetFooter.displayName = "SheetFooter"
 
 const SheetTitle = React.forwardRef<
   React.ComponentRef<typeof SheetPrimitive.Title>,
-  React.ComponentPropsWithoutRef<typeof SheetPrimitive.Title>
->(({ className, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof SheetPrimitive.Title> &
+    DebuggableComponentProps
+>(({ className, debugId, ...props }, ref) => (
   <SheetPrimitive.Title
     ref={ref}
     className={cn("text-lg font-semibold text-foreground", className)}
+    {...getDevAttributes("SheetTitle", debugId)}
     {...props}
   />
 ))
@@ -114,11 +146,13 @@ SheetTitle.displayName = SheetPrimitive.Title.displayName
 
 const SheetDescription = React.forwardRef<
   React.ComponentRef<typeof SheetPrimitive.Description>,
-  React.ComponentPropsWithoutRef<typeof SheetPrimitive.Description>
->(({ className, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof SheetPrimitive.Description> &
+    DebuggableComponentProps
+>(({ className, debugId, ...props }, ref) => (
   <SheetPrimitive.Description
     ref={ref}
     className={cn("text-sm text-muted-foreground", className)}
+    {...getDevAttributes("SheetDescription", debugId)}
     {...props}
   />
 ))

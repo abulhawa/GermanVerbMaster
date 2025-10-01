@@ -2,13 +2,18 @@ import * as React from "react"
 import * as SeparatorPrimitive from "@radix-ui/react-separator"
 
 import { cn } from "@/lib/utils"
+import {
+  type DebuggableComponentProps,
+  getDevAttributes,
+} from "@/lib/dev-attributes"
 
 const Separator = React.forwardRef<
   React.ComponentRef<typeof SeparatorPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof SeparatorPrimitive.Root>
+  React.ComponentPropsWithoutRef<typeof SeparatorPrimitive.Root> &
+    DebuggableComponentProps
 >(
   (
-    { className, orientation = "horizontal", decorative = true, ...props },
+    { className, orientation = "horizontal", decorative = true, debugId, ...props },
     ref
   ) => (
     <SeparatorPrimitive.Root
@@ -20,6 +25,7 @@ const Separator = React.forwardRef<
         orientation === "horizontal" ? "h-[1px] w-full" : "h-full w-[1px]",
         className
       )}
+      {...getDevAttributes("Separator", debugId)}
       {...props}
     />
   )

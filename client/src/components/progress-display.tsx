@@ -7,13 +7,23 @@ import { getVerbsByLevel } from "@/lib/verbs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress as ProgressBar } from "@/components/ui/progress";
+import {
+  type DebuggableComponentProps,
+  getDevAttributes,
+} from "@/lib/dev-attributes";
 
-interface ProgressDisplayProps {
+interface ProgressDisplayProps extends DebuggableComponentProps {
   progress: ProgressModel;
   currentLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
 }
 
-export function ProgressDisplay({ progress, currentLevel }: ProgressDisplayProps) {
+export function ProgressDisplay({
+  progress,
+  currentLevel,
+  debugId,
+}: ProgressDisplayProps) {
+  const resolvedDebugId = debugId && debugId.trim().length > 0 ? debugId : "progress-overview";
+
   const { data: verbsInLevel, isLoading } = useQuery({
     queryKey: ["verbs", currentLevel],
     queryFn: () => getVerbsByLevel(currentLevel),
@@ -26,7 +36,10 @@ export function ProgressDisplay({ progress, currentLevel }: ProgressDisplayProps
 
   if (isLoading) {
     return (
-      <Card className="rounded-3xl border border-border/60 bg-card/85">
+      <Card
+        debugId={`${resolvedDebugId}-loading-card`}
+        className="rounded-3xl border border-border/60 bg-card/85"
+      >
         <CardContent className="flex justify-center py-8">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </CardContent>
@@ -35,7 +48,11 @@ export function ProgressDisplay({ progress, currentLevel }: ProgressDisplayProps
   }
 
   return (
-    <Card className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5">
+    <Card
+      debugId={`${resolvedDebugId}-card`}
+      className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5"
+      {...getDevAttributes("progress-overview-card", resolvedDebugId)}
+    >
       <CardHeader className="space-y-4 pb-0">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">

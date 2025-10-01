@@ -1,18 +1,24 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import {
+  type DebuggableComponentProps,
+  getDevAttributes,
+} from "@/lib/dev-attributes"
 
 export interface TextareaProps
-  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement>,
+    DebuggableComponentProps {}
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ className, ...props }, ref) => {
+  ({ className, debugId, ...props }, ref) => {
     return (
       <textarea
         className={cn(
           "flex min-h-[80px] w-full rounded-app border border-border bg-card px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50",
           className
         )}
+        {...getDevAttributes("Textarea", debugId)}
         ref={ref}
         {...props}
       />

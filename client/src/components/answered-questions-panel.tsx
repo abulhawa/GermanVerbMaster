@@ -2,6 +2,10 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { PracticeMode } from "@/lib/types";
 import type { AnsweredQuestion } from "@/lib/answer-history";
+import {
+  type DebuggableComponentProps,
+  getDevAttributes,
+} from "@/lib/dev-attributes";
 
 const MODE_LABELS: Record<PracticeMode, string> = {
   präteritum: "Präteritum",
@@ -26,7 +30,7 @@ const formatDuration = (milliseconds: number) => {
   return `${minutes} minute${minutes === 1 ? "" : "s"} ${seconds} second${seconds === 1 ? "" : "s"}`;
 };
 
-interface AnsweredQuestionsPanelProps {
+interface AnsweredQuestionsPanelProps extends DebuggableComponentProps {
   history: AnsweredQuestion[];
   title?: string;
   description?: string;
@@ -40,9 +44,15 @@ export function AnsweredQuestionsPanel({
   description = "Review each response, the correct forms, and contextual examples.",
   emptyStateMessage = "Answer a prompt to unlock a detailed breakdown of the verb, its meaning, and usage examples.",
   className,
+  debugId,
 }: AnsweredQuestionsPanelProps) {
+  const resolvedDebugId = debugId && debugId.trim().length > 0 ? debugId : "answered-questions-panel";
+
   return (
-    <section className={cn("rounded-3xl border border-border/60 bg-card/90 p-6 shadow-lg shadow-primary/5", className)}>
+    <section
+      {...getDevAttributes("answered-questions-panel-root", resolvedDebugId)}
+      className={cn("rounded-3xl border border-border/60 bg-card/90 p-6 shadow-lg shadow-primary/5", className)}
+    >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="text-lg font-semibold text-foreground">{title}</h2>
@@ -54,7 +64,12 @@ export function AnsweredQuestionsPanel({
       </div>
 
       {history.length === 0 ? (
-        <p className="mt-4 rounded-2xl bg-muted/40 p-4 text-sm text-muted-foreground">{emptyStateMessage}</p>
+        <p
+          {...getDevAttributes("answered-questions-panel-empty", resolvedDebugId)}
+          className="mt-4 rounded-2xl bg-muted/40 p-4 text-sm text-muted-foreground"
+        >
+          {emptyStateMessage}
+        </p>
       ) : (
         <div className="mt-5 space-y-4">
           {history.map((item) => {
@@ -66,6 +81,10 @@ export function AnsweredQuestionsPanel({
                 key={item.id}
                 className="rounded-2xl border border-border/70 bg-background/95 p-4 shadow-sm"
                 aria-label={`Answer review for ${item.verb.infinitive}`}
+                {...getDevAttributes(
+                  "answered-questions-panel-item",
+                  `${resolvedDebugId}-${item.id}`,
+                )}
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>

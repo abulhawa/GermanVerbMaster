@@ -10,6 +10,10 @@ import { PracticeMode, Settings } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { submitPracticeAttempt } from "@/lib/api";
 import { AlertCircle, CheckCircle2, HelpCircle, Volume2, XCircle } from "lucide-react";
+import {
+  type DebuggableComponentProps,
+  getDevAttributes,
+} from "@/lib/dev-attributes";
 
 export interface PracticeAnswerDetails {
   verb: GermanVerb;
@@ -21,7 +25,7 @@ export interface PracticeAnswerDetails {
   timeSpent: number;
 }
 
-interface PracticeCardProps {
+interface PracticeCardProps extends DebuggableComponentProps {
   verb: GermanVerb;
   mode: PracticeMode;
   settings: Settings;
@@ -41,12 +45,15 @@ export function PracticeCard({
   onIncorrect,
   onAnswer,
   className,
+  debugId,
 }: PracticeCardProps) {
   const [answer, setAnswer] = useState("");
   const [showHint, setShowHint] = useState(false);
   const [status, setStatus] = useState<PracticeStatus>("idle");
   const startTimeRef = useRef(Date.now());
   const { toast } = useToast();
+
+  const resolvedDebugId = debugId && debugId.trim().length > 0 ? debugId : "practice-card";
 
   const modeLabel = {
     präteritum: "Präteritum form",
@@ -217,6 +224,7 @@ export function PracticeCard({
         exit={{ opacity: 0, y: -24, rotateX: 6 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
         className={cn("w-full", className)}
+        {...getDevAttributes("practice-card-root", resolvedDebugId)}
       >
         <Card className="w-full rounded-3xl border border-border/60 bg-card/90 p-2 shadow-2xl shadow-primary/10">
           <CardHeader className="space-y-4 text-center">
@@ -229,6 +237,7 @@ export function PracticeCard({
                   {verb.infinitive}
                 </CardTitle>
                 <Button
+                  debugId={`${resolvedDebugId}-pronounce-button`}
                   variant="secondary"
                   size="icon"
                   onClick={pronounce}
@@ -256,6 +265,7 @@ export function PracticeCard({
             </div>
 
             <Input
+              debugId={`${resolvedDebugId}-answer-input`}
               value={answer}
               onChange={(event) => setAnswer(event.target.value)}
               onKeyDown={handleKeyDown}
@@ -282,13 +292,19 @@ export function PracticeCard({
             </AnimatePresence>
 
             <div className="flex flex-wrap items-center justify-center gap-3">
-              <Button onClick={checkAnswer} disabled={status !== "idle"} className="rounded-2xl px-8">
+              <Button
+                debugId={`${resolvedDebugId}-submit-button`}
+                onClick={checkAnswer}
+                disabled={status !== "idle"}
+                className="rounded-2xl px-8"
+              >
                 Check answer
               </Button>
               {settings.showHints && !showHint && (
                 <Button
                   type="button"
                   variant="secondary"
+                  debugId={`${resolvedDebugId}-hint-button`}
                   onClick={revealHint}
                   className="rounded-2xl px-6"
                 >

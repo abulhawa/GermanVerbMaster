@@ -25,6 +25,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { SidebarNavButton } from "@/components/layout/sidebar-nav-button";
 import { Settings, Progress, PracticeMode } from "@/lib/types";
 import { GermanVerb, getRandomVerb } from "@/lib/verbs";
+import { getDevAttributes, type DebuggableComponentProps } from "@/lib/dev-attributes";
 import {
   AnsweredQuestion,
   appendAnswer,
@@ -64,9 +65,19 @@ const DEFAULT_PROGRESS: Progress = {
 const PRACTICE_MODES: PracticeMode[] = ["präteritum", "partizipII", "auxiliary"];
 const LEVELS: Array<Settings["level"]> = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
-function SessionProgressBar({ value, practiced, target }: { value: number; practiced: number; target: number }) {
+function SessionProgressBar({
+  value,
+  practiced,
+  target,
+  debugId,
+}: { value: number; practiced: number; target: number } & DebuggableComponentProps) {
+  const resolvedDebugId = debugId && debugId.trim().length > 0 ? debugId : "session-progress";
+
   return (
-    <div className="w-full rounded-3xl border border-border/70 bg-card/80 p-6 shadow-lg shadow-primary/5">
+    <div
+      className="w-full rounded-3xl border border-border/70 bg-card/80 p-6 shadow-lg shadow-primary/5"
+      {...getDevAttributes("session-progress-bar", resolvedDebugId)}
+    >
       <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
         <span>Milestone progress</span>
         <span>{Math.round(value)}%</span>
@@ -286,12 +297,13 @@ export default function Home() {
         </div>
         <div className="flex items-center gap-3">
           <Link href="/analytics">
-            <Button className="rounded-2xl px-6">
+            <Button debugId="topbar-insights-button" className="rounded-2xl px-6">
               <BarChart2 className="mr-2 h-4 w-4" aria-hidden />
               Insights
             </Button>
           </Link>
           <SettingsDialog
+            debugId="topbar-settings-dialog"
             settings={settings}
             onSettingsChange={(newSettings) => {
               setSettings(newSettings);
@@ -339,6 +351,7 @@ export default function Home() {
             {LEVELS.map((level) => (
               <Button
                 key={level}
+                debugId={`level-select-${level.toLowerCase()}-button`}
                 variant={level === settings.level ? "default" : "secondary"}
                 onClick={() => changeLevel(level)}
                 className="rounded-2xl px-0 py-3 text-sm font-semibold"
@@ -363,7 +376,7 @@ export default function Home() {
   const isInitialLoading = verbLoading && !currentVerb;
 
   return (
-    <AppShell sidebar={sidebar} topBar={topBar}>
+    <AppShell sidebar={sidebar} topBar={topBar} debugId="home-app-shell">
       <div className="grid gap-8 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <section className="flex flex-col items-center gap-6">
           <div className="flex w-full max-w-xl flex-col items-center gap-4 text-center">
@@ -393,12 +406,18 @@ export default function Home() {
                   onIncorrect={handleIncorrect}
                   onAnswer={handleAnswer}
                   className="mx-auto"
+                  debugId="home-practice-card"
                 />
               )
             )}
           </div>
 
-          <SessionProgressBar value={milestoneProgress} practiced={practicedVerbsCount} target={nextMilestone} />
+          <SessionProgressBar
+            value={milestoneProgress}
+            practiced={practicedVerbsCount}
+            target={nextMilestone}
+            debugId="home-session-progress"
+          />
 
           <div className="flex w-full flex-col gap-3 sm:flex-row">
             {historyIndex > 0 && (
@@ -406,6 +425,7 @@ export default function Home() {
                 variant="secondary"
                 className="flex-1 rounded-2xl"
                 onClick={goBack}
+                debugId="practice-previous-button"
               >
                 <ArrowLeft className="mr-2 h-4 w-4" aria-hidden />
                 Previous verb
@@ -415,6 +435,7 @@ export default function Home() {
               variant="secondary"
               className="flex-1 rounded-2xl"
               onClick={nextQuestion}
+              debugId="practice-skip-button"
             >
               Skip to next
             </Button>
@@ -422,14 +443,18 @@ export default function Home() {
         </section>
 
         <aside className="space-y-6">
-          <ProgressDisplay progress={progress} currentLevel={settings.level} />
+          <ProgressDisplay
+            progress={progress}
+            currentLevel={settings.level}
+            debugId="sidebar-progress-display"
+          />
           <div className="rounded-3xl border border-border/60 bg-card/80 p-6 text-center shadow-lg shadow-primary/5">
             <h2 className="text-lg font-semibold text-foreground">Need a recap?</h2>
             <p className="mt-2 text-sm text-muted-foreground">
               Visit your answer history to revisit detailed breakdowns, correct forms, and usage examples.
             </p>
             <Link href="/answers">
-              <Button className="mt-4 w-full rounded-2xl">
+              <Button debugId="sidebar-review-history-button" className="mt-4 w-full rounded-2xl">
                 <History className="mr-2 h-4 w-4" aria-hidden />
                 Review answer history
               </Button>

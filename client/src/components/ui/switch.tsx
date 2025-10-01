@@ -2,16 +2,22 @@ import * as React from "react"
 import * as SwitchPrimitives from "@radix-ui/react-switch"
 
 import { cn } from "@/lib/utils"
+import {
+  type DebuggableComponentProps,
+  getDevAttributes,
+} from "@/lib/dev-attributes"
 
 const Switch = React.forwardRef<
   React.ComponentRef<typeof SwitchPrimitives.Root>,
-  React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root>
->(({ className, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root> &
+    DebuggableComponentProps
+>(({ className, debugId, ...props }, ref) => (
   <SwitchPrimitives.Root
     className={cn(
       "peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=unchecked]:bg-muted data-[state=unchecked]:border-border data-[state=checked]:bg-accent data-[state=checked]:border-accent",
       className
     )}
+    {...getDevAttributes("Switch", debugId)}
     {...props}
     ref={ref}
   >

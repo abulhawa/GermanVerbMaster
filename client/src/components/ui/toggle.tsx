@@ -3,6 +3,10 @@ import * as TogglePrimitive from "@radix-ui/react-toggle"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
+import {
+  type DebuggableComponentProps,
+  getDevAttributes,
+} from "@/lib/dev-attributes"
 
 const toggleVariants = cva(
   "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors hover:bg-muted hover:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=on]:bg-accent data-[state=on]:text-accent-foreground",
@@ -27,12 +31,13 @@ const toggleVariants = cva(
 )
 
 type ToggleProps = React.ComponentPropsWithoutRef<typeof TogglePrimitive.Root> &
-  VariantProps<typeof toggleVariants>
+  VariantProps<typeof toggleVariants> &
+  DebuggableComponentProps
 
 const Toggle = React.forwardRef<
   React.ComponentRef<typeof TogglePrimitive.Root>,
   ToggleProps
->(({ className, variant, size, pressed, defaultPressed, role, onPressedChange, ...props }, ref) => {
+>(({ className, variant, size, pressed, defaultPressed, role, onPressedChange, debugId, ...props }, ref) => {
   const isControlled = pressed !== undefined
   const [uncontrolledPressed, setUncontrolledPressed] = React.useState(
     defaultPressed ?? false
@@ -59,6 +64,7 @@ const Toggle = React.forwardRef<
       role={role ?? "switch"}
       aria-checked={currentPressed}
       className={cn(toggleVariants({ variant, size, className }))}
+      {...getDevAttributes("Toggle", debugId)}
       {...props}
     />
   )

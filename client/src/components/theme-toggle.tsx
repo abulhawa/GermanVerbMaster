@@ -19,12 +19,13 @@ import {
   subscribeToSystemTheme,
   type ThemeSetting,
 } from "@/lib/theme";
+import { type DebuggableComponentProps } from "@/lib/dev-attributes";
 
-interface ThemeToggleProps {
+interface ThemeToggleProps extends DebuggableComponentProps {
   className?: string;
 }
 
-export function ThemeToggle({ className }: ThemeToggleProps) {
+export function ThemeToggle({ className, debugId }: ThemeToggleProps) {
   const [setting, setSetting] = useState<ThemeSetting>(() => getInitialThemeSetting());
 
   const resolvedTheme = useMemo(() => resolveTheme(setting), [setting]);
@@ -48,10 +49,16 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
     applyThemeSetting(nextSetting);
   };
 
+  const resolvedDebugId = debugId && debugId.trim().length > 0 ? debugId : "theme-toggle";
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+    <DropdownMenu debugId={resolvedDebugId}>
+      <DropdownMenuTrigger
+        debugId={`${resolvedDebugId}-trigger`}
+        asChild
+      >
         <Button
+          debugId={`${resolvedDebugId}-button`}
           variant="outline"
           size="icon"
           className={cn(
@@ -77,21 +84,37 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-44">
-        <DropdownMenuLabel>Theme</DropdownMenuLabel>
+      <DropdownMenuContent
+        debugId={`${resolvedDebugId}-menu`}
+        align="end"
+        className="w-44"
+      >
+        <DropdownMenuLabel debugId={`${resolvedDebugId}-label`}>Theme</DropdownMenuLabel>
         <DropdownMenuRadioGroup
           value={setting}
           onValueChange={(value) => handleChange(value as ThemeSetting)}
         >
-          <DropdownMenuRadioItem value="light" className="flex items-center gap-2">
+          <DropdownMenuRadioItem
+            debugId={`${resolvedDebugId}-light`}
+            value="light"
+            className="flex items-center gap-2"
+          >
             <Sun className="h-4 w-4" aria-hidden />
             Light
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="dark" className="flex items-center gap-2">
+          <DropdownMenuRadioItem
+            debugId={`${resolvedDebugId}-dark`}
+            value="dark"
+            className="flex items-center gap-2"
+          >
             <Moon className="h-4 w-4" aria-hidden />
             Dark
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="system" className="flex items-center gap-2">
+          <DropdownMenuRadioItem
+            debugId={`${resolvedDebugId}-system`}
+            value="system"
+            className="flex items-center gap-2"
+          >
             <Monitor className="h-4 w-4" aria-hidden />
             System
           </DropdownMenuRadioItem>

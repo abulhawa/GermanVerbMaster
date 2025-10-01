@@ -4,6 +4,10 @@ import { type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 import { toggleVariants } from "@/components/ui/toggle"
+import {
+  type DebuggableComponentProps,
+  getDevAttributes,
+} from "@/lib/dev-attributes"
 
 const ToggleGroupContext = React.createContext<
   VariantProps<typeof toggleVariants>
@@ -15,11 +19,13 @@ const ToggleGroupContext = React.createContext<
 const ToggleGroup = React.forwardRef<
   React.ComponentRef<typeof ToggleGroupPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof ToggleGroupPrimitive.Root> &
-    VariantProps<typeof toggleVariants>
->(({ className, variant, size, children, ...props }, ref) => (
+    VariantProps<typeof toggleVariants> &
+    DebuggableComponentProps
+>(({ className, variant, size, children, debugId, ...props }, ref) => (
   <ToggleGroupPrimitive.Root
     ref={ref}
     className={cn("flex items-center justify-center gap-1", className)}
+    {...getDevAttributes("ToggleGroup", debugId)}
     {...props}
   >
     <ToggleGroupContext.Provider value={{ variant, size }}>
@@ -33,8 +39,9 @@ ToggleGroup.displayName = ToggleGroupPrimitive.Root.displayName
 const ToggleGroupItem = React.forwardRef<
   React.ComponentRef<typeof ToggleGroupPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof ToggleGroupPrimitive.Item> &
-    VariantProps<typeof toggleVariants>
->(({ className, children, variant, size, ...props }, ref) => {
+    VariantProps<typeof toggleVariants> &
+    DebuggableComponentProps
+>(({ className, children, variant, size, debugId, ...props }, ref) => {
   const context = React.useContext(ToggleGroupContext)
 
   return (
@@ -47,6 +54,7 @@ const ToggleGroupItem = React.forwardRef<
         }),
         className
       )}
+      {...getDevAttributes("ToggleGroupItem", debugId)}
       {...props}
     >
       {children}

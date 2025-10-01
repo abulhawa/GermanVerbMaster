@@ -4,19 +4,26 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import {
+  type DebuggableComponentProps,
+  debugForwardRef,
+  getDevAttributes,
+} from "@/lib/dev-attributes"
 
 const ToastProvider = ToastPrimitives.Provider
 
 const ToastViewport = React.forwardRef<
   React.ComponentRef<typeof ToastPrimitives.Viewport>,
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Viewport>
->(({ className, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Viewport> &
+    DebuggableComponentProps
+>(({ className, debugId, ...props }, ref) => (
   <ToastPrimitives.Viewport
     ref={ref}
     className={cn(
       "fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]",
       className
     )}
+    {...getDevAttributes("ToastViewport", debugId)}
     {...props}
   />
 ))
@@ -41,12 +48,14 @@ const toastVariants = cva(
 const Toast = React.forwardRef<
   React.ComponentRef<typeof ToastPrimitives.Root>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Root> &
-    VariantProps<typeof toastVariants>
->(({ className, variant, ...props }, ref) => {
+    VariantProps<typeof toastVariants> &
+    DebuggableComponentProps
+>(({ className, variant, debugId, ...props }, ref) => {
   return (
     <ToastPrimitives.Root
       ref={ref}
       className={cn(toastVariants({ variant }), className)}
+      {...getDevAttributes("Toast", debugId)}
       {...props}
     />
   )
@@ -55,14 +64,16 @@ Toast.displayName = ToastPrimitives.Root.displayName
 
 const ToastAction = React.forwardRef<
   React.ComponentRef<typeof ToastPrimitives.Action>,
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Action>
->(({ className, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Action> &
+    DebuggableComponentProps
+>(({ className, debugId, ...props }, ref) => (
   <ToastPrimitives.Action
     ref={ref}
     className={cn(
       "inline-flex h-8 shrink-0 items-center justify-center rounded-md border bg-transparent px-3 text-sm font-medium ring-offset-background transition-colors hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 group-[.destructive]:border-muted/40 group-[.destructive]:hover:border-destructive/30 group-[.destructive]:hover:bg-destructive group-[.destructive]:hover:text-destructive-foreground group-[.destructive]:focus:ring-destructive",
       className
     )}
+    {...getDevAttributes("ToastAction", debugId)}
     {...props}
   />
 ))
@@ -70,8 +81,9 @@ ToastAction.displayName = ToastPrimitives.Action.displayName
 
 const ToastClose = React.forwardRef<
   React.ComponentRef<typeof ToastPrimitives.Close>,
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Close>
->(({ className, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Close> &
+    DebuggableComponentProps
+>(({ className, debugId, ...props }, ref) => (
   <ToastPrimitives.Close
     ref={ref}
     className={cn(
@@ -79,6 +91,7 @@ const ToastClose = React.forwardRef<
       className
     )}
     toast-close=""
+    {...getDevAttributes("ToastClose", debugId)}
     {...props}
   >
     <X className="h-4 w-4" />
@@ -88,11 +101,13 @@ ToastClose.displayName = ToastPrimitives.Close.displayName
 
 const ToastTitle = React.forwardRef<
   React.ComponentRef<typeof ToastPrimitives.Title>,
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Title>
->(({ className, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Title> &
+    DebuggableComponentProps
+>(({ className, debugId, ...props }, ref) => (
   <ToastPrimitives.Title
     ref={ref}
     className={cn("text-sm font-semibold", className)}
+    {...getDevAttributes("ToastTitle", debugId)}
     {...props}
   />
 ))
@@ -100,11 +115,13 @@ ToastTitle.displayName = ToastPrimitives.Title.displayName
 
 const ToastDescription = React.forwardRef<
   React.ComponentRef<typeof ToastPrimitives.Description>,
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Description>
->(({ className, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Description> &
+    DebuggableComponentProps
+>(({ className, debugId, ...props }, ref) => (
   <ToastPrimitives.Description
     ref={ref}
     className={cn("text-sm opacity-90", className)}
+    {...getDevAttributes("ToastDescription", debugId)}
     {...props}
   />
 ))

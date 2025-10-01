@@ -17,6 +17,10 @@ import type { VerbAnalytics, VerbPracticeHistory } from "@db/schema";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress as ProgressBar } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import {
+  type DebuggableComponentProps,
+  getDevAttributes,
+} from "@/lib/dev-attributes";
 
 const LEVELS: Array<VerbAnalytics["level"]> = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
@@ -26,7 +30,10 @@ function normalizeDate(date: Date) {
   return normalized;
 }
 
-export function AnalyticsDashboard() {
+interface AnalyticsDashboardProps extends DebuggableComponentProps {}
+
+export function AnalyticsDashboard({ debugId }: AnalyticsDashboardProps) {
+  const resolvedDebugId = debugId && debugId.trim().length > 0 ? debugId : "analytics-dashboard";
   const { data: analytics, isLoading: analyticsLoading } = useQuery<VerbAnalytics[]>({
     queryKey: ["/api/analytics"],
   });
@@ -147,7 +154,10 @@ export function AnalyticsDashboard() {
 
   if (loading) {
     return (
-      <div className="flex h-64 items-center justify-center">
+      <div
+        {...getDevAttributes("analytics-dashboard-loading", resolvedDebugId)}
+        className="flex h-64 items-center justify-center"
+      >
         <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary/40 border-t-primary" />
       </div>
     );
@@ -155,16 +165,25 @@ export function AnalyticsDashboard() {
 
   if (!analytics || !history) {
     return (
-      <div className="rounded-3xl border border-dashed border-border bg-card/80 p-10 text-center text-sm text-muted-foreground">
+      <div
+        {...getDevAttributes("analytics-dashboard-empty", resolvedDebugId)}
+        className="rounded-3xl border border-dashed border-border bg-card/80 p-10 text-center text-sm text-muted-foreground"
+      >
         No analytics available yet. Practice a few verbs to unlock insights.
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div
+      {...getDevAttributes("analytics-dashboard-root", resolvedDebugId)}
+      className="space-y-6"
+    >
       <div className="grid gap-4 lg:grid-cols-3">
-        <Card className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5">
+        <Card
+          debugId={`${resolvedDebugId}-current-streak-card`}
+          className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5"
+        >
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.22em] text-muted-foreground">
               <Flame className="h-4 w-4 text-secondary" aria-hidden />
@@ -179,7 +198,10 @@ export function AnalyticsDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5">
+        <Card
+          debugId={`${resolvedDebugId}-cefr-progress-card`}
+          className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5"
+        >
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold uppercase tracking-[0.22em] text-muted-foreground">
               CEFR progress snapshot
@@ -210,7 +232,10 @@ export function AnalyticsDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5">
+        <Card
+          debugId={`${resolvedDebugId}-accuracy-trend-card`}
+          className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5"
+        >
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.22em] text-muted-foreground">
               <TrendingUp className="h-4 w-4 text-primary" aria-hidden />
@@ -230,7 +255,10 @@ export function AnalyticsDashboard() {
         </Card>
       </div>
 
-      <Card className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5">
+      <Card
+        debugId={`${resolvedDebugId}-success-rate-card`}
+        className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5"
+      >
         <CardHeader>
           <CardTitle className="text-foreground">Success rate over time</CardTitle>
           <CardDescription className="text-sm text-muted-foreground">
@@ -266,7 +294,10 @@ export function AnalyticsDashboard() {
         </CardContent>
       </Card>
 
-      <Card className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5">
+      <Card
+        debugId={`${resolvedDebugId}-challenging-verbs-card`}
+        className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5"
+      >
         <CardHeader>
           <CardTitle className="text-foreground">Most challenging verbs</CardTitle>
           <CardDescription className="text-sm text-muted-foreground">
@@ -299,7 +330,10 @@ export function AnalyticsDashboard() {
         </CardContent>
       </Card>
 
-      <Card className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5">
+      <Card
+        debugId={`${resolvedDebugId}-recent-history-card`}
+        className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5"
+      >
         <CardHeader>
           <CardTitle className="text-foreground">Recent practice history</CardTitle>
           <CardDescription className="text-sm text-muted-foreground">

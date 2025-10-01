@@ -3,16 +3,33 @@ import * as AccordionPrimitive from "@radix-ui/react-accordion"
 import { ChevronDown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import {
+  type DebuggableComponentProps,
+  getDevAttributes,
+} from "@/lib/dev-attributes"
 
-const Accordion = AccordionPrimitive.Root
+const Accordion = React.forwardRef<
+  React.ElementRef<typeof AccordionPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Root> &
+    DebuggableComponentProps
+>(({ debugId, ...props }, ref) => (
+  <AccordionPrimitive.Root
+    ref={ref}
+    {...getDevAttributes("Accordion", debugId)}
+    {...props}
+  />
+))
+Accordion.displayName = AccordionPrimitive.Root.displayName
 
 const AccordionItem = React.forwardRef<
   React.ComponentRef<typeof AccordionPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item>
->(({ className, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item> &
+    DebuggableComponentProps
+>(({ className, debugId, ...props }, ref) => (
   <AccordionPrimitive.Item
     ref={ref}
     className={cn("border-b", className)}
+    {...getDevAttributes("AccordionItem", debugId)}
     {...props}
   />
 ))
@@ -20,8 +37,9 @@ AccordionItem.displayName = "AccordionItem"
 
 const AccordionTrigger = React.forwardRef<
   React.ComponentRef<typeof AccordionPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger> &
+    DebuggableComponentProps
+>(({ className, children, debugId, ...props }, ref) => (
   <AccordionPrimitive.Header className="flex">
     <AccordionPrimitive.Trigger
       ref={ref}
@@ -29,6 +47,7 @@ const AccordionTrigger = React.forwardRef<
         "flex flex-1 items-center justify-between py-4 font-medium transition-all hover:underline [&[data-state=open]>svg]:rotate-180",
         className
       )}
+      {...getDevAttributes("AccordionTrigger", debugId)}
       {...props}
     >
       {children}
@@ -40,11 +59,13 @@ AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName
 
 const AccordionContent = React.forwardRef<
   React.ComponentRef<typeof AccordionPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>
->(({ className, children, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content> &
+    DebuggableComponentProps
+>(({ className, children, debugId, ...props }, ref) => (
   <AccordionPrimitive.Content
     ref={ref}
     className="overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
+    {...getDevAttributes("AccordionContent", debugId)}
     {...props}
   >
     <div className={cn("pb-4 pt-0", className)}>{children}</div>
