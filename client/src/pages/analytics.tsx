@@ -43,7 +43,7 @@ export default function Analytics() {
             Navigate
           </p>
           <div className="grid gap-2">
-            <SidebarNavButton href="/" icon={Sparkles} label="Practice" />
+            <SidebarNavButton href="/" icon={Sparkles} label="Practice" exact />
             <SidebarNavButton href="/analytics" icon={Compass} label="Analytics" exact />
             <SidebarNavButton href="/admin" icon={Settings2} label="Admin tools" />
           </div>

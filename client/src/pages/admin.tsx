@@ -453,7 +453,7 @@ const AdminWordsPage = () => {
         <div className="space-y-3">
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Navigate</p>
           <div className="grid gap-2">
-            <SidebarNavButton href="/" icon={Sparkles} label="Practice" />
+            <SidebarNavButton href="/" icon={Sparkles} label="Practice" exact />
             <SidebarNavButton href="/analytics" icon={Compass} label="Analytics" />
             <SidebarNavButton href="/admin" icon={Settings2} label="Admin tools" exact />
           </div>
