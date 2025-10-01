@@ -17,3 +17,9 @@ For GitHub authentication details and additional setup guidance, refer to
 - Otherwise, install Node 24.9.0 via your preferred version manager (such as `fnm`, `asdf`, or a
   direct tarball download) and ensure the `node` and `npm` binaries exposed in `$PATH` report
   version 24.9.0 before running repository commands.
+
+## Testing Expectations
+
+- Run `npm test` for unit and integration checks (Vitest).
+- Install the Playwright browsers once with `npx playwright install --with-deps chromium`.
+- Run `npm run test:e2e` for Chromium end-to-end coverage before submitting changes that touch UI components.

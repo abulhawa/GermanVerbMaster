@@ -9,6 +9,7 @@ const HomePage = lazy(() => import("@/pages/home"));
 const AnswerHistoryPage = lazy(() => import("@/pages/answer-history"));
 const AnalyticsPage = lazy(() => import("@/pages/analytics"));
 const AdminPage = lazy(() => import("@/pages/admin"));
+const UITestbedPage = lazy(() => import("@/pages/ui-testbed"));
 const NotFoundPage = lazy(() => import("@/pages/not-found"));
 
 function Router() {
@@ -19,6 +20,7 @@ function Router() {
         <Route path="/answers" component={AnswerHistoryPage} />
         <Route path="/analytics" component={AnalyticsPage} />
         <Route path="/admin" component={AdminPage} />
+        <Route path="/ui-testbed" component={UITestbedPage} />
         <Route component={NotFoundPage} />
       </Switch>
     </Suspense>

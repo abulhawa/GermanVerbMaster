@@ -181,3 +181,37 @@
     letter-spacing: 0.02em;
   }
 }
+
+@layer utilities {
+  .bg-card {
+    background-color: hsl(var(--card));
+  }
+
+  .bg-popover {
+    background-color: hsl(var(--popover));
+  }
+
+  .text-card-foreground {
+    color: hsl(var(--card-foreground));
+  }
+
+  .text-popover-foreground {
+    color: hsl(var(--popover-foreground));
+  }
+
+  .border-border {
+    border-color: hsl(var(--border));
+  }
+
+  .z-overlay {
+    z-index: 50;
+  }
+
+  .z-modal {
+    z-index: 60;
+  }
+
+  .z-popover {
+    z-index: 70;
+  }
+}

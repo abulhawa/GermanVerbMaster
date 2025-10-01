@@ -26,17 +26,43 @@ const toggleVariants = cva(
   }
 )
 
+type ToggleProps = React.ComponentPropsWithoutRef<typeof TogglePrimitive.Root> &
+  VariantProps<typeof toggleVariants>
+
 const Toggle = React.forwardRef<
   React.ComponentRef<typeof TogglePrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof TogglePrimitive.Root> &
-    VariantProps<typeof toggleVariants>
->(({ className, variant, size, ...props }, ref) => (
-  <TogglePrimitive.Root
-    ref={ref}
-    className={cn(toggleVariants({ variant, size, className }))}
-    {...props}
-  />
-))
+  ToggleProps
+>(({ className, variant, size, pressed, defaultPressed, role, onPressedChange, ...props }, ref) => {
+  const isControlled = pressed !== undefined
+  const [uncontrolledPressed, setUncontrolledPressed] = React.useState(
+    defaultPressed ?? false
+  )
+
+  const currentPressed = isControlled ? pressed : uncontrolledPressed
+
+  const handlePressedChange = React.useCallback(
+    (nextState: boolean) => {
+      if (!isControlled) {
+        setUncontrolledPressed(nextState)
+      }
+
+      onPressedChange?.(nextState)
+    },
+    [isControlled, onPressedChange]
+  )
+
+  return (
+    <TogglePrimitive.Root
+      ref={ref}
+      pressed={currentPressed}
+      onPressedChange={handlePressedChange}
+      role={role ?? "switch"}
+      aria-checked={currentPressed}
+      className={cn(toggleVariants({ variant, size, className }))}
+      {...props}
+    />
+  )
+})
 
 Toggle.displayName = TogglePrimitive.Root.displayName
 
