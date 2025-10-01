@@ -24,7 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { SidebarNavButton } from "@/components/layout/sidebar-nav-button";
 import { Settings, Progress, PracticeMode } from "@/lib/types";
-import { GermanVerb, getRandomVerb } from "@/lib/verbs";
+import { GermanVerb, getRandomVerb, getVerbByInfinitive } from "@/lib/verbs";
 import { getDevAttributes, type DebuggableComponentProps } from "@/lib/dev-attributes";
 import {
   AnsweredQuestion,
@@ -33,6 +33,7 @@ import {
   saveAnswerHistory,
   DEFAULT_MAX_STORED_ANSWERS,
 } from "@/lib/answer-history";
+import { peekReviewVerb, shiftReviewVerb } from "@/lib/review-queue";
 
 interface VerbHistoryItem {
   verb: GermanVerb;
@@ -129,7 +130,20 @@ export default function Home() {
     refetch: refetchVerb,
   } = useQuery({
     queryKey: ["verb", settings.level, historyIndex],
-    queryFn: () => getRandomVerb(settings.level),
+    queryFn: async () => {
+      let queuedVerb = peekReviewVerb();
+
+      while (queuedVerb) {
+        const targeted = await getVerbByInfinitive(queuedVerb);
+        if (targeted) {
+          return targeted;
+        }
+        shiftReviewVerb();
+        queuedVerb = peekReviewVerb();
+      }
+
+      return getRandomVerb(settings.level);
+    },
     enabled: true,
   });
 
@@ -233,6 +247,11 @@ export default function Home() {
 
   const nextQuestion = () => {
     if (!currentVerb) return;
+
+    const queued = peekReviewVerb();
+    if (queued && queued.toLowerCase() === currentVerb.infinitive.toLowerCase()) {
+      shiftReviewVerb();
+    }
 
     setVerbHistory((prev) => [
       ...prev.slice(0, historyIndex + 1),
