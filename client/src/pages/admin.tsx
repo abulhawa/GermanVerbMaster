@@ -250,6 +250,8 @@ const AdminWordsPage = () => {
   const [selectedWord, setSelectedWord] = useState<Word | null>(null);
   const [formState, setFormState] = useState<WordFormState | null>(null);
 
+  const pageDebugId = 'admin-words';
+
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -428,12 +430,18 @@ const AdminWordsPage = () => {
       </div>
       <div className="flex items-center gap-2">
         <Link href="/">
-          <Button variant="secondary" className="rounded-2xl px-6">
+          <Button
+            variant="secondary"
+            className="rounded-2xl px-6"
+            debugId={`${pageDebugId}-topbar-back-button`}
+          >
             Back to practice
           </Button>
         </Link>
         <Link href="/analytics">
-          <Button className="rounded-2xl px-6">Open analytics</Button>
+          <Button className="rounded-2xl px-6" debugId={`${pageDebugId}-topbar-analytics-button`}>
+            Open analytics
+          </Button>
         </Link>
       </div>
     </div>
@@ -527,6 +535,7 @@ const AdminWordsPage = () => {
                     variant={canonicalFilter === 'all' ? 'default' : 'secondary'}
                     className="flex-1 rounded-2xl"
                     onClick={() => setCanonicalFilter('all')}
+                    debugId={`${pageDebugId}-canonical-filter-all-button`}
                   >
                     All
                   </Button>
@@ -535,6 +544,7 @@ const AdminWordsPage = () => {
                     variant={canonicalFilter === 'only' ? 'default' : 'secondary'}
                     className="flex-1 rounded-2xl"
                     onClick={() => setCanonicalFilter('only')}
+                    debugId={`${pageDebugId}-canonical-filter-only-button`}
                   >
                     Canonical
                   </Button>
@@ -543,6 +553,7 @@ const AdminWordsPage = () => {
                     variant={canonicalFilter === 'non' ? 'default' : 'secondary'}
                     className="flex-1 rounded-2xl"
                     onClick={() => setCanonicalFilter('non')}
+                    debugId={`${pageDebugId}-canonical-filter-non-button`}
                   >
                     Non-canonical
                   </Button>
@@ -668,6 +679,7 @@ const AdminWordsPage = () => {
                       title={word.canonical ? 'Remove canonical flag' : 'Mark as canonical'}
                       aria-label={word.canonical ? 'Remove canonical flag' : 'Mark as canonical'}
                       onClick={() => toggleCanonical(word)}
+                      debugId={`${pageDebugId}-word-${word.id}-toggle-canonical-button`}
                     >
                       {word.canonical ? (
                         <Trash2 className="h-4 w-4" aria-hidden />
@@ -690,6 +702,7 @@ const AdminWordsPage = () => {
                           onClick={() => openEditor(word)}
                           title="Edit entry"
                           aria-label="Edit entry"
+                          debugId={`${pageDebugId}-word-${word.id}-edit-button`}
                         >
                           <PenSquare className="h-4 w-4" aria-hidden />
                         </Button>
@@ -757,10 +770,19 @@ const AdminWordsPage = () => {
                             </div>
                           ))}
                           <DrawerFooter>
-                            <Button type="submit" disabled={updateMutation.isPending}>
+                            <Button
+                              type="submit"
+                              disabled={updateMutation.isPending}
+                              debugId={`${pageDebugId}-word-${word.id}-save-button`}
+                            >
                               Save changes
                             </Button>
-                            <Button type="button" variant="outline" onClick={closeEditor}>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={closeEditor}
+                              debugId={`${pageDebugId}-word-${word.id}-cancel-button`}
+                            >
                               Cancel
                             </Button>
                           </DrawerFooter>
@@ -800,6 +822,7 @@ const AdminWordsPage = () => {
                 onClick={() => setPage((current) => Math.max(1, current - 1))}
                 disabled={currentPage <= 1 || wordsQuery.isLoading}
                 className="rounded-2xl"
+                debugId={`${pageDebugId}-pagination-previous-button`}
               >
                 Previous
               </Button>
@@ -813,6 +836,7 @@ const AdminWordsPage = () => {
                   (totalPages > 0 ? currentPage >= totalPages : !totalWords)
                 }
                 className="rounded-2xl"
+                debugId={`${pageDebugId}-pagination-next-button`}
               >
                 Next
               </Button>
