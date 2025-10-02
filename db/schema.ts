@@ -1,7 +1,15 @@
 import type { AdaptiveQueueItem, GermanVerb, PracticeResult } from "@shared";
 import { sql } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import { integer, real, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
+import {
+  index,
+  integer,
+  primaryKey,
+  real,
+  sqliteTable,
+  text,
+  uniqueIndex,
+} from "drizzle-orm/sqlite-core";
 
 export const integrationPartners = sqliteTable("integration_partners", {
   id: integer("id").primaryKey({ autoIncrement: true }),
@@ -81,6 +89,212 @@ export const words = sqliteTable(
   },
   (table) => ({
     lemmaPosIndex: uniqueIndex("words_lemma_pos_idx").on(table.lemma, table.pos),
+  }),
+);
+
+export const lexemes = sqliteTable(
+  "lexemes",
+  {
+    id: text("id").primaryKey(),
+    lemma: text("lemma").notNull(),
+    language: text("language").notNull().default("de"),
+    pos: text("pos").notNull(),
+    gender: text("gender"),
+    metadata: text("metadata", { mode: "json" })
+      .$type<Record<string, unknown>>()
+      .notNull()
+      .default(sql`'{}'`),
+    frequencyRank: integer("frequency_rank"),
+    sourceIds: text("source_ids", { mode: "json" })
+      .$type<string[]>()
+      .notNull()
+      .default(sql`'[]'`),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .default(sql`(unixepoch('now'))`)
+      .notNull(),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .default(sql`(unixepoch('now'))`)
+      .notNull(),
+  },
+  (table) => ({
+    lemmaPosIndex: uniqueIndex("lexemes_lemma_pos_idx").on(table.lemma, table.pos),
+  }),
+);
+
+export const inflections = sqliteTable(
+  "inflections",
+  {
+    id: text("id").primaryKey(),
+    lexemeId: text("lexeme_id")
+      .notNull()
+      .references(() => lexemes.id, { onDelete: "cascade" }),
+    form: text("form").notNull(),
+    features: text("features", { mode: "json" })
+      .$type<Record<string, unknown>>()
+      .notNull(),
+    audioAsset: text("audio_asset"),
+    sourceRevision: text("source_revision"),
+    checksum: text("checksum"),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .default(sql`(unixepoch('now'))`)
+      .notNull(),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .default(sql`(unixepoch('now'))`)
+      .notNull(),
+  },
+  (table) => ({
+    lexemeFormFeaturesIndex: uniqueIndex("inflections_lexeme_form_features_idx").on(
+      table.lexemeId,
+      table.form,
+      table.features,
+    ),
+  }),
+);
+
+export const taskSpecs = sqliteTable(
+  "task_specs",
+  {
+    id: text("id").primaryKey(),
+    lexemeId: text("lexeme_id")
+      .notNull()
+      .references(() => lexemes.id, { onDelete: "cascade" }),
+    pos: text("pos").notNull(),
+    taskType: text("task_type").notNull(),
+    renderer: text("renderer").notNull(),
+    prompt: text("prompt", { mode: "json" }).$type<Record<string, unknown>>().notNull(),
+    solution: text("solution", { mode: "json" }).$type<Record<string, unknown>>().notNull(),
+    hints: text("hints", { mode: "json" }).$type<unknown[]>(),
+    metadata: text("metadata", { mode: "json" }).$type<Record<string, unknown>>(),
+    revision: integer("revision").notNull().default(1),
+    sourcePack: text("source_pack"),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .default(sql`(unixepoch('now'))`)
+      .notNull(),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .default(sql`(unixepoch('now'))`)
+      .notNull(),
+  },
+  (table) => ({
+    lexemeTypeRevisionIndex: uniqueIndex("task_specs_lexeme_type_revision_idx").on(
+      table.lexemeId,
+      table.taskType,
+      table.revision,
+    ),
+    posIndex: index("task_specs_pos_idx").on(table.pos),
+  }),
+);
+
+export const schedulingState = sqliteTable(
+  "scheduling_state",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    userId: integer("user_id").references(() => users.id),
+    deviceId: text("device_id").notNull(),
+    taskId: text("task_id")
+      .notNull()
+      .references(() => taskSpecs.id, { onDelete: "cascade" }),
+    leitnerBox: integer("leitner_box").notNull().default(1),
+    totalAttempts: integer("total_attempts").notNull().default(0),
+    correctAttempts: integer("correct_attempts").notNull().default(0),
+    averageResponseMs: integer("average_response_ms").notNull().default(0),
+    accuracyWeight: real("accuracy_weight").notNull().default(0),
+    latencyWeight: real("latency_weight").notNull().default(0),
+    stabilityWeight: real("stability_weight").notNull().default(0),
+    priorityScore: real("priority_score").notNull().default(0),
+    dueAt: integer("due_at", { mode: "timestamp" }),
+    lastResult: text("last_result", { enum: practiceResult }).notNull().default("correct"),
+    lastPracticedAt: integer("last_practiced_at", { mode: "timestamp" }),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .default(sql`(unixepoch('now'))`)
+      .notNull(),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .default(sql`(unixepoch('now'))`)
+      .notNull(),
+  },
+  (table) => ({
+    deviceTaskIndex: uniqueIndex("scheduling_state_device_task_idx").on(
+      table.deviceId,
+      table.taskId,
+    ),
+    taskIndex: index("scheduling_state_task_idx").on(table.taskId),
+    userIndex: index("scheduling_state_user_idx").on(table.userId),
+  }),
+);
+
+export const contentPacks = sqliteTable(
+  "content_packs",
+  {
+    id: text("id").primaryKey(),
+    slug: text("slug").notNull(),
+    name: text("name").notNull(),
+    description: text("description"),
+    language: text("language").notNull().default("de"),
+    posScope: text("pos_scope").notNull(),
+    license: text("license").notNull(),
+    licenseNotes: text("license_notes"),
+    version: integer("version").notNull().default(1),
+    checksum: text("checksum"),
+    metadata: text("metadata", { mode: "json" }).$type<Record<string, unknown>>(),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .default(sql`(unixepoch('now'))`)
+      .notNull(),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .default(sql`(unixepoch('now'))`)
+      .notNull(),
+  },
+  (table) => ({
+    slugIndex: uniqueIndex("content_packs_slug_unique").on(table.slug),
+  }),
+);
+
+export const packLexemeMap = sqliteTable(
+  "pack_lexeme_map",
+  {
+    packId: text("pack_id")
+      .notNull()
+      .references(() => contentPacks.id, { onDelete: "cascade" }),
+    lexemeId: text("lexeme_id")
+      .notNull()
+      .references(() => lexemes.id, { onDelete: "cascade" }),
+    primaryTaskId: text("primary_task_id").references(() => taskSpecs.id),
+    position: integer("position"),
+    notes: text("notes"),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .default(sql`(unixepoch('now'))`)
+      .notNull(),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .default(sql`(unixepoch('now'))`)
+      .notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.packId, table.lexemeId], name: "pack_lexeme_map_pack_id_lexeme_id_pk" }),
+    lexemeIndex: index("pack_lexeme_map_lexeme_idx").on(table.lexemeId),
+  }),
+);
+
+export const telemetryPriorities = sqliteTable(
+  "telemetry_priorities",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    taskId: text("task_id")
+      .notNull()
+      .references(() => taskSpecs.id, { onDelete: "cascade" }),
+    sampledAt: integer("sampled_at", { mode: "timestamp" })
+      .default(sql`(unixepoch('now'))`)
+      .notNull(),
+    priorityScore: real("priority_score").notNull(),
+    accuracyWeight: real("accuracy_weight").notNull().default(0),
+    latencyWeight: real("latency_weight").notNull().default(0),
+    stabilityWeight: real("stability_weight").notNull().default(0),
+    frequencyRank: integer("frequency_rank"),
+    metadata: text("metadata", { mode: "json" }).$type<Record<string, unknown>>(),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .default(sql`(unixepoch('now'))`)
+      .notNull(),
+  },
+  (table) => ({
+    taskIndex: index("telemetry_priorities_task_idx").on(table.taskId),
+    sampledIndex: index("telemetry_priorities_sampled_idx").on(table.sampledAt),
   }),
 );
 
