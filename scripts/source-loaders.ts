@@ -1,9 +1,43 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { pathToFileURL } from 'node:url';
 import { parse } from 'csv-parse/sync';
 
-const WORTART_MAP = new Map([
+export type ExternalPartOfSpeech =
+  | 'N'
+  | 'V'
+  | 'Adj'
+  | 'Adv'
+  | 'Pron'
+  | 'Det'
+  | 'Präp'
+  | 'Konj'
+  | 'Num'
+  | 'Part';
+
+export interface ExternalWordRow {
+  lemma: string;
+  pos: ExternalPartOfSpeech;
+  level?: string;
+  english?: string;
+  example_de?: string;
+  example_en?: string;
+  gender?: string;
+  plural?: string;
+  separable?: boolean;
+  aux?: string;
+  praesens_ich?: string;
+  praesens_er?: string;
+  praeteritum?: string;
+  partizip_ii?: string;
+  perfekt?: string;
+  comparative?: string;
+  superlative?: string;
+  sources_csv?: string;
+  source_notes?: string;
+}
+
+const WORTART_MAP = new Map<string, ExternalPartOfSpeech>([
   ['Substantiv', 'N'],
   ['Verb', 'V'],
   ['Adjektiv', 'Adj'],
@@ -16,7 +50,7 @@ const WORTART_MAP = new Map([
   ['Partikel', 'Part'],
 ]);
 
-const GENDER_MAP = new Map([
+const GENDER_MAP = new Map<string, string>([
   ['mask.', 'der'],
   ['fem.', 'die'],
   ['neut.', 'das'],
@@ -25,19 +59,36 @@ const GENDER_MAP = new Map([
   ['fem./neut.', 'die/das'],
 ]);
 
-function normaliseString(value) {
+type Errno = NodeJS.ErrnoException;
+
+type DwdsRecord = {
+  Lemma?: unknown;
+  Wortart?: unknown;
+  Artikel?: unknown;
+  Genus?: unknown;
+  URL?: unknown;
+};
+
+type LearnDeutschModule = {
+  vocabulary?: {
+    nouns?: Array<Record<string, unknown>>;
+    verbs?: Array<Record<string, unknown>>;
+    modalVerbs?: Array<Record<string, unknown>>;
+  };
+};
+
+function normaliseString(value: unknown): string | undefined {
   if (value === undefined || value === null) return undefined;
   const trimmed = String(value).trim();
   return trimmed.length ? trimmed : undefined;
 }
 
-function normaliseLevel(level) {
+function normaliseLevel(level: unknown): string | undefined {
   const value = normaliseString(level);
-  if (!value) return undefined;
-  return value.toUpperCase();
+  return value ? value.toUpperCase() : undefined;
 }
 
-function deriveGender(record) {
+function deriveGender(record: DwdsRecord): string | undefined {
   const article = normaliseString(record.Artikel);
   if (article) return article;
   const genus = normaliseString(record.Genus);
@@ -50,57 +101,63 @@ function deriveGender(record) {
   return undefined;
 }
 
-function createWordRecord({
-  lemma,
-  pos,
-  level,
-  english,
-  exampleDe,
-  exampleEn,
-  gender,
-  plural,
-  separable,
-  aux,
-  praesensIch,
-  praesensEr,
-  praeteritum,
-  partizipIi,
-  perfekt,
-  comparative,
-  superlative,
-  source,
-  notes,
-}) {
+interface WordRecordArgs {
+  lemma?: string;
+  pos?: ExternalPartOfSpeech;
+  level?: string;
+  english?: string;
+  exampleDe?: string;
+  exampleEn?: string;
+  gender?: string;
+  plural?: string;
+  separable?: boolean;
+  aux?: string;
+  praesensIch?: string;
+  praesensEr?: string;
+  praeteritum?: string;
+  partizipIi?: string;
+  perfekt?: string;
+  comparative?: string;
+  superlative?: string;
+  source?: string;
+  notes?: string;
+}
+
+function createWordRecord(args: WordRecordArgs): ExternalWordRow | undefined {
+  const { lemma, pos } = args;
   if (!lemma || !pos) return undefined;
   return {
     lemma,
     pos,
-    level: level ?? undefined,
-    english: english ?? undefined,
-    example_de: exampleDe ?? undefined,
-    example_en: exampleEn ?? undefined,
-    gender: gender ?? undefined,
-    plural: plural ?? undefined,
-    separable: typeof separable === 'boolean' ? separable : undefined,
-    aux: aux ?? undefined,
-    praesens_ich: praesensIch ?? undefined,
-    praesens_er: praesensEr ?? undefined,
-    praeteritum: praeteritum ?? undefined,
-    partizip_ii: partizipIi ?? undefined,
-    perfekt: perfekt ?? undefined,
-    comparative: comparative ?? undefined,
-    superlative: superlative ?? undefined,
-    sources_csv: source ?? undefined,
-    source_notes: notes ?? undefined,
+    level: args.level ?? undefined,
+    english: args.english ?? undefined,
+    example_de: args.exampleDe ?? undefined,
+    example_en: args.exampleEn ?? undefined,
+    gender: args.gender ?? undefined,
+    plural: args.plural ?? undefined,
+    separable: typeof args.separable === 'boolean' ? args.separable : undefined,
+    aux: args.aux ?? undefined,
+    praesens_ich: args.praesensIch ?? undefined,
+    praesens_er: args.praesensEr ?? undefined,
+    praeteritum: args.praeteritum ?? undefined,
+    partizip_ii: args.partizipIi ?? undefined,
+    perfekt: args.perfekt ?? undefined,
+    comparative: args.comparative ?? undefined,
+    superlative: args.superlative ?? undefined,
+    sources_csv: args.source ?? undefined,
+    source_notes: args.notes ?? undefined,
   };
 }
 
-function loadDwdsFileContent(content, { level, source }) {
+function loadDwdsFileContent(
+  content: string,
+  { level, source }: { level?: string; source: string },
+): ExternalWordRow[] {
   const records = parse(content, {
     columns: true,
     skip_empty_lines: true,
     trim: true,
-  });
+  }) as DwdsRecord[];
 
   return records
     .map((record) => {
@@ -118,17 +175,17 @@ function loadDwdsFileContent(content, { level, source }) {
         notes: normaliseString(record.URL),
       });
     })
-    .filter(Boolean);
+    .filter((value): value is ExternalWordRow => Boolean(value));
 }
 
-async function loadDwdsGoetheSources(externalDir) {
+async function loadDwdsGoetheSources(externalDir: string): Promise<ExternalWordRow[]> {
   const dwdsFiles = [
     { name: 'dwds-goethe-A1.csv', level: 'A1' },
     { name: 'dwds-goethe-A2.csv', level: 'A2' },
     { name: 'dwds-goethe-B1.csv', level: 'B1' },
   ];
 
-  const results = [];
+  const results: ExternalWordRow[] = [];
   for (const file of dwdsFiles) {
     const filePath = path.join(externalDir, file.name);
     try {
@@ -139,20 +196,21 @@ async function loadDwdsGoetheSources(externalDir) {
       });
       results.push(...words);
     } catch (error) {
-      if (error.code === 'ENOENT') continue;
+      const err = error as Errno;
+      if (err?.code === 'ENOENT') continue;
       throw error;
     }
   }
   return results;
 }
 
-async function loadLearnDeutschVocabulary(externalDir) {
+async function loadLearnDeutschVocabulary(externalDir: string): Promise<ExternalWordRow[]> {
   const filePath = path.join(externalDir, 'learn-deutsch-data.js');
   try {
     const moduleUrl = pathToFileURL(filePath).href;
-    const dataModule = await import(moduleUrl);
+    const dataModule = (await import(moduleUrl)) as LearnDeutschModule;
     const vocabulary = dataModule.vocabulary ?? {};
-    const collected = [];
+    const collected: Array<ExternalWordRow | undefined> = [];
 
     const nouns = Array.isArray(vocabulary.nouns) ? vocabulary.nouns : [];
     for (const entry of nouns) {
@@ -179,8 +237,8 @@ async function loadLearnDeutschVocabulary(externalDir) {
           level: normaliseLevel(entry.level),
           english: normaliseString(entry.english),
           separable: entry.type === 'separable',
-          praesensIch: entry.conjugation?.ich ? normaliseString(entry.conjugation.ich) : undefined,
-          praesensEr: entry.conjugation?.['er/sie/es'] ? normaliseString(entry.conjugation['er/sie/es']) : undefined,
+          praesensIch: normaliseString(entry.conjugation?.ich),
+          praesensEr: normaliseString(entry.conjugation?.['er/sie/es']),
           source: 'learn-deutsch-data:verbs',
           notes: normaliseString(entry.details),
         }),
@@ -195,22 +253,23 @@ async function loadLearnDeutschVocabulary(externalDir) {
           pos: 'V',
           level: normaliseLevel(entry.level),
           english: normaliseString(entry.english),
-          praesensIch: entry.conjugation?.ich ? normaliseString(entry.conjugation.ich) : undefined,
-          praesensEr: entry.conjugation?.['er/sie/es'] ? normaliseString(entry.conjugation['er/sie/es']) : undefined,
+          praesensIch: normaliseString(entry.conjugation?.ich),
+          praesensEr: normaliseString(entry.conjugation?.['er/sie/es']),
           source: 'learn-deutsch-data:modal',
           notes: normaliseString(entry.pronunciation ?? entry.details),
         }),
       );
     }
 
-    return collected.filter(Boolean);
+    return collected.filter((value): value is ExternalWordRow => Boolean(value));
   } catch (error) {
-    if (error.code === 'ENOENT') return [];
+    const err = error as Errno;
+    if (err?.code === 'ENOENT') return [];
     throw error;
   }
 }
 
-export async function loadExternalWordRows(externalDir) {
+export async function loadExternalWordRows(externalDir: string): Promise<ExternalWordRow[]> {
   const [dwds, learnDeutsch] = await Promise.all([
     loadDwdsGoetheSources(externalDir),
     loadLearnDeutschVocabulary(externalDir),
@@ -219,8 +278,11 @@ export async function loadExternalWordRows(externalDir) {
   return [...dwds, ...learnDeutsch];
 }
 
-export async function snapshotExternalSources(destinationPath, rows) {
-  const columns = [
+export async function snapshotExternalSources(
+  destinationPath: string,
+  rows: ExternalWordRow[],
+): Promise<void> {
+  const columns: Array<keyof ExternalWordRow> = [
     'lemma',
     'pos',
     'level',
@@ -242,7 +304,7 @@ export async function snapshotExternalSources(destinationPath, rows) {
     'source_notes',
   ];
 
-  const encodeValue = (value) => {
+  const encodeValue = (value: unknown): string => {
     if (value === null || value === undefined) return '';
     const stringValue = String(value);
     if (stringValue.includes('"') || stringValue.includes(',') || stringValue.includes('\n')) {
@@ -261,16 +323,17 @@ export async function snapshotExternalSources(destinationPath, rows) {
   await fs.writeFile(destinationPath, `${lines.join('\n')}\n`, 'utf8');
 }
 
-export async function loadManualWordRows(filePath) {
+export async function loadManualWordRows(filePath: string): Promise<Record<string, string>[]> {
   try {
     const content = await fs.readFile(filePath, 'utf8');
     return parse(content, {
       columns: true,
       skip_empty_lines: true,
       trim: true,
-    });
+    }) as Record<string, string>[];
   } catch (error) {
-    if (error.code === 'ENOENT') return [];
+    const err = error as Errno;
+    if (err?.code === 'ENOENT') return [];
     throw error;
   }
 }

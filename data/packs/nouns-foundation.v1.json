@@ -1,0 +1,472 @@
+{
+  "pack": {
+    "id": "pack:nouns-foundation:1",
+    "slug": "nouns-foundation",
+    "name": "Nouns – Foundation",
+    "description": "High-frequency nouns focusing on plural formation and case marking.",
+    "language": "de",
+    "posScope": "noun",
+    "license": "CC-BY-SA-4.0",
+    "licenseNotes": null,
+    "version": 1,
+    "checksum": "36b1aa8d0594b485cbd14a41bd9b10faa9bf0f77",
+    "metadata": {
+      "taskTypes": [
+        "noun_case_declension"
+      ],
+      "size": 5,
+      "cefrLevels": [
+        "A1",
+        "A2"
+      ]
+    },
+    "createdAt": 1735689600,
+    "updatedAt": 1735689600
+  },
+  "lexemes": [
+    {
+      "id": "de:noun:apfel:9265acb7",
+      "lemma": "Apfel",
+      "language": "de",
+      "pos": "noun",
+      "gender": "der",
+      "metadata": {
+        "level": "A1",
+        "english": "apple",
+        "notes": "https://www.dwds.de/wb/Apfel; Masculine nouns often have plurals with an umlaut and no ending, or just an umlaut."
+      },
+      "frequencyRank": null,
+      "sourceIds": [
+        "dwds-goethe-A1.csv",
+        "learn-deutsch-data:nouns"
+      ],
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "id": "de:noun:flughafen:7bcec107",
+      "lemma": "Flughafen",
+      "language": "de",
+      "pos": "noun",
+      "gender": "der",
+      "metadata": {
+        "level": "A1",
+        "english": "airport",
+        "notes": "https://www.dwds.de/wb/Flughafen; Compound nouns take the gender of the last word (der Hafen). The plural often follows the last word's plural form."
+      },
+      "frequencyRank": null,
+      "sourceIds": [
+        "dwds-goethe-A1.csv",
+        "learn-deutsch-data:nouns"
+      ],
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "id": "de:noun:frau:48e5edb0",
+      "lemma": "Frau",
+      "language": "de",
+      "pos": "noun",
+      "gender": "die",
+      "metadata": {
+        "level": "A1",
+        "english": "woman/Mrs.",
+        "notes": "https://www.dwds.de/wb/Frau; Feminine nouns often form the plural by adding \"-en\" or \"-n\"."
+      },
+      "frequencyRank": null,
+      "sourceIds": [
+        "dwds-goethe-A1.csv",
+        "learn-deutsch-data:nouns"
+      ],
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "id": "de:noun:haus:5be69b76",
+      "lemma": "Haus",
+      "language": "de",
+      "pos": "noun",
+      "gender": "das",
+      "metadata": {
+        "level": "A1",
+        "english": "house",
+        "example": {
+          "de": "Das Haus ist groß.",
+          "en": "The house is big."
+        },
+        "notes": "regional usage; https://www.dwds.de/wb/Haus; Nouns ending in -us, -ma, -um, -ment, -lein, -chen are often neuter (das). Many one-syllable nouns take an umlaut and \"-er\" in the plural."
+      },
+      "frequencyRank": null,
+      "sourceIds": [
+        "Frequency List",
+        "Newspaper Corpus",
+        "dwds-goethe-A1.csv",
+        "learn-deutsch-data:nouns"
+      ],
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "id": "de:noun:regierung:3bf1d9a1",
+      "lemma": "Regierung",
+      "language": "de",
+      "pos": "noun",
+      "gender": "die",
+      "metadata": {
+        "level": "A2",
+        "english": "government",
+        "notes": "Nouns ending in -ung, -heit, -keit, -schaft, -ei are always feminine (die) and add \"-en\" in the plural."
+      },
+      "frequencyRank": null,
+      "sourceIds": [
+        "learn-deutsch-data:nouns"
+      ],
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    }
+  ],
+  "inflections": [
+    {
+      "id": "inf:de:noun:apfel:9265acb7:9165bc3dbb",
+      "lexemeId": "de:noun:apfel:9265acb7",
+      "form": "Apfel",
+      "features": {
+        "case": "nominative",
+        "number": "singular",
+        "gender": "der"
+      },
+      "audioAsset": null,
+      "sourceRevision": null,
+      "checksum": "4530f5d59e1130f9",
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "id": "inf:de:noun:apfel:9265acb7:548bbb2953",
+      "lexemeId": "de:noun:apfel:9265acb7",
+      "form": "Äpfel",
+      "features": {
+        "case": "nominative",
+        "number": "plural"
+      },
+      "audioAsset": null,
+      "sourceRevision": null,
+      "checksum": "840fd16d91b7d266",
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "id": "inf:de:noun:flughafen:7bcec107:2422275fa6",
+      "lexemeId": "de:noun:flughafen:7bcec107",
+      "form": "Flughafen",
+      "features": {
+        "case": "nominative",
+        "number": "singular",
+        "gender": "der"
+      },
+      "audioAsset": null,
+      "sourceRevision": null,
+      "checksum": "2b51b77b9697bd4e",
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "id": "inf:de:noun:flughafen:7bcec107:8c8bc97dbb",
+      "lexemeId": "de:noun:flughafen:7bcec107",
+      "form": "Flughäfen",
+      "features": {
+        "case": "nominative",
+        "number": "plural"
+      },
+      "audioAsset": null,
+      "sourceRevision": null,
+      "checksum": "7418c770ecf1c591",
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "id": "inf:de:noun:frau:48e5edb0:8fb907c158",
+      "lexemeId": "de:noun:frau:48e5edb0",
+      "form": "Frau",
+      "features": {
+        "case": "nominative",
+        "number": "singular",
+        "gender": "die"
+      },
+      "audioAsset": null,
+      "sourceRevision": null,
+      "checksum": "4012f9cf9243ec93",
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "id": "inf:de:noun:frau:48e5edb0:9b709d37f8",
+      "lexemeId": "de:noun:frau:48e5edb0",
+      "form": "Frauen",
+      "features": {
+        "case": "nominative",
+        "number": "plural"
+      },
+      "audioAsset": null,
+      "sourceRevision": null,
+      "checksum": "c209de75b4699812",
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "id": "inf:de:noun:haus:5be69b76:233bc098a5",
+      "lexemeId": "de:noun:haus:5be69b76",
+      "form": "Haus",
+      "features": {
+        "case": "nominative",
+        "number": "singular",
+        "gender": "das"
+      },
+      "audioAsset": null,
+      "sourceRevision": null,
+      "checksum": "bca4267d1e9311c5",
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "id": "inf:de:noun:haus:5be69b76:15e12bcdc0",
+      "lexemeId": "de:noun:haus:5be69b76",
+      "form": "Häuser",
+      "features": {
+        "case": "nominative",
+        "number": "plural"
+      },
+      "audioAsset": null,
+      "sourceRevision": null,
+      "checksum": "c2bc3b57960c541a",
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "id": "inf:de:noun:regierung:3bf1d9a1:27d1deaf6f",
+      "lexemeId": "de:noun:regierung:3bf1d9a1",
+      "form": "Regierung",
+      "features": {
+        "case": "nominative",
+        "number": "singular",
+        "gender": "die"
+      },
+      "audioAsset": null,
+      "sourceRevision": null,
+      "checksum": "651c4ed54f2b0dfa",
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "id": "inf:de:noun:regierung:3bf1d9a1:6fad3812a7",
+      "lexemeId": "de:noun:regierung:3bf1d9a1",
+      "form": "Regierungen",
+      "features": {
+        "case": "nominative",
+        "number": "plural"
+      },
+      "audioAsset": null,
+      "sourceRevision": null,
+      "checksum": "5d85e562b87515bf",
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    }
+  ],
+  "tasks": [
+    {
+      "id": "task:de:noun:apfel:9265acb7:noun_case_declension:1:0819e9bc",
+      "lexemeId": "de:noun:apfel:9265acb7",
+      "pos": "noun",
+      "taskType": "noun_case_declension",
+      "renderer": "noun_case_declension",
+      "prompt": {
+        "lemma": "Apfel",
+        "pos": "noun",
+        "gender": "der",
+        "requestedCase": "accusative",
+        "requestedNumber": "plural",
+        "cefrLevel": "A1",
+        "instructions": "Bilde die Akkusativ Plural-Form von \"Apfel\"."
+      },
+      "solution": {
+        "form": "Äpfel"
+      },
+      "hints": null,
+      "metadata": {
+        "article": "der"
+      },
+      "revision": 1,
+      "sourcePack": "nouns-foundation",
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "id": "task:de:noun:flughafen:7bcec107:noun_case_declension:1:873c6fb3",
+      "lexemeId": "de:noun:flughafen:7bcec107",
+      "pos": "noun",
+      "taskType": "noun_case_declension",
+      "renderer": "noun_case_declension",
+      "prompt": {
+        "lemma": "Flughafen",
+        "pos": "noun",
+        "gender": "der",
+        "requestedCase": "accusative",
+        "requestedNumber": "plural",
+        "cefrLevel": "A1",
+        "instructions": "Bilde die Akkusativ Plural-Form von \"Flughafen\"."
+      },
+      "solution": {
+        "form": "Flughäfen"
+      },
+      "hints": null,
+      "metadata": {
+        "article": "der"
+      },
+      "revision": 1,
+      "sourcePack": "nouns-foundation",
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "id": "task:de:noun:frau:48e5edb0:noun_case_declension:1:77a280ed",
+      "lexemeId": "de:noun:frau:48e5edb0",
+      "pos": "noun",
+      "taskType": "noun_case_declension",
+      "renderer": "noun_case_declension",
+      "prompt": {
+        "lemma": "Frau",
+        "pos": "noun",
+        "gender": "die",
+        "requestedCase": "accusative",
+        "requestedNumber": "plural",
+        "cefrLevel": "A1",
+        "instructions": "Bilde die Akkusativ Plural-Form von \"Frau\"."
+      },
+      "solution": {
+        "form": "Frauen"
+      },
+      "hints": null,
+      "metadata": {
+        "article": "die"
+      },
+      "revision": 1,
+      "sourcePack": "nouns-foundation",
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "id": "task:de:noun:haus:5be69b76:noun_case_declension:1:8ba23b1a",
+      "lexemeId": "de:noun:haus:5be69b76",
+      "pos": "noun",
+      "taskType": "noun_case_declension",
+      "renderer": "noun_case_declension",
+      "prompt": {
+        "lemma": "Haus",
+        "pos": "noun",
+        "gender": "das",
+        "requestedCase": "accusative",
+        "requestedNumber": "plural",
+        "cefrLevel": "A1",
+        "instructions": "Bilde die Akkusativ Plural-Form von \"Haus\".",
+        "example": {
+          "de": "Das Haus ist groß.",
+          "en": "The house is big."
+        }
+      },
+      "solution": {
+        "form": "Häuser"
+      },
+      "hints": [
+        {
+          "type": "example_de",
+          "value": "Das Haus ist groß."
+        },
+        {
+          "type": "example_en",
+          "value": "The house is big."
+        }
+      ],
+      "metadata": {
+        "article": "das"
+      },
+      "revision": 1,
+      "sourcePack": "nouns-foundation",
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "id": "task:de:noun:regierung:3bf1d9a1:noun_case_declension:1:b37b1deb",
+      "lexemeId": "de:noun:regierung:3bf1d9a1",
+      "pos": "noun",
+      "taskType": "noun_case_declension",
+      "renderer": "noun_case_declension",
+      "prompt": {
+        "lemma": "Regierung",
+        "pos": "noun",
+        "gender": "die",
+        "requestedCase": "accusative",
+        "requestedNumber": "plural",
+        "cefrLevel": "A2",
+        "instructions": "Bilde die Akkusativ Plural-Form von \"Regierung\"."
+      },
+      "solution": {
+        "form": "Regierungen"
+      },
+      "hints": null,
+      "metadata": {
+        "article": "die"
+      },
+      "revision": 1,
+      "sourcePack": "nouns-foundation",
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    }
+  ],
+  "packLexemeMap": [
+    {
+      "packId": "pack:nouns-foundation:1",
+      "lexemeId": "de:noun:apfel:9265acb7",
+      "primaryTaskId": "task:de:noun:apfel:9265acb7:noun_case_declension:1:0819e9bc",
+      "position": 1,
+      "notes": null,
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "packId": "pack:nouns-foundation:1",
+      "lexemeId": "de:noun:flughafen:7bcec107",
+      "primaryTaskId": "task:de:noun:flughafen:7bcec107:noun_case_declension:1:873c6fb3",
+      "position": 2,
+      "notes": null,
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "packId": "pack:nouns-foundation:1",
+      "lexemeId": "de:noun:frau:48e5edb0",
+      "primaryTaskId": "task:de:noun:frau:48e5edb0:noun_case_declension:1:77a280ed",
+      "position": 3,
+      "notes": null,
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "packId": "pack:nouns-foundation:1",
+      "lexemeId": "de:noun:haus:5be69b76",
+      "primaryTaskId": "task:de:noun:haus:5be69b76:noun_case_declension:1:8ba23b1a",
+      "position": 4,
+      "notes": null,
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "packId": "pack:nouns-foundation:1",
+      "lexemeId": "de:noun:regierung:3bf1d9a1",
+      "primaryTaskId": "task:de:noun:regierung:3bf1d9a1:noun_case_declension:1:b37b1deb",
+      "position": 5,
+      "notes": null,
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    }
+  ]
+}

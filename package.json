@@ -18,7 +18,7 @@
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
     "test:ui": "npm run test:unit && npm run test:e2e",
-    "seed": "tsx scripts/seed.mjs",
+    "seed": "tsx scripts/seed.ts",
     "seed:verbs": "npm run seed",
     "integration:create-key": "tsx scripts/create-partner-key.ts"
   },

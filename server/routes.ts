@@ -7,6 +7,11 @@ import {
   words,
   integrationPartners,
   integrationUsage,
+  taskSpecs,
+  lexemes,
+  contentPacks,
+  packLexemeMap,
+  schedulingState,
   type IntegrationPartner,
   type Word,
 } from "@db/schema";
@@ -15,11 +20,38 @@ import { and, count, desc, eq, sql } from "drizzle-orm";
 import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 import { createHash, randomUUID } from "node:crypto";
 import type { GermanVerb } from "@shared";
+import type { TaskType } from "@shared/task-registry";
 import { srsEngine } from "./srs";
+import { getTaskRegistryEntry, taskRegistry } from "./tasks/registry";
 
 const practiceModeSchema = z.enum(["präteritum", "partizipII", "auxiliary", "english"]);
 const levelSchema = z.enum(["A1", "A2", "B1", "B2", "C1", "C2"]);
 const LEVEL_ORDER = ["A1", "A2", "B1", "B2", "C1", "C2"] as const;
+
+const taskQuerySchema = z.object({
+  pos: z
+    .string()
+    .trim()
+    .optional(),
+  taskType: z
+    .string()
+    .trim()
+    .optional(),
+  pack: z
+    .string()
+    .trim()
+    .optional(),
+  limit: z.coerce.number().int().min(1).max(100).default(25),
+});
+
+const submissionSchema = z.object({
+  taskId: z.string().min(1),
+  deviceId: z.string().min(1),
+  result: z.enum(["correct", "incorrect"]),
+  responseMs: z.coerce.number().int().min(0).max(600000),
+  answer: z.string().trim().optional(),
+  submittedAt: z.string().datetime().optional(),
+});
 
 declare global {
   namespace Express {
@@ -168,6 +200,91 @@ function parsePageParam(value: unknown, fallback: number): number {
     return fallback;
   }
   return parsed;
+}
+
+function normaliseTaskPosFilter(value: string): string | null {
+  const normalized = value.trim().toLowerCase();
+  if (!normalized) return null;
+  if (["verb", "verbs", "v"].includes(normalized)) return "verb";
+  if (["noun", "nouns", "n"].includes(normalized)) return "noun";
+  if (["adjective", "adjectives", "adj"].includes(normalized)) return "adjective";
+  return null;
+}
+
+function parseTaskTypeFilter(value: string): TaskType | null {
+  const key = value.trim();
+  if (!key) return null;
+  return key in taskRegistry ? (key as TaskType) : null;
+}
+
+function setLegacyDeprecation(res: Response): void {
+  res.setHeader('Deprecation', 'Sun, 01 Oct 2025 00:00:00 GMT');
+  res.setHeader('Link', '</api/tasks>; rel="successor-version"; title="GET /api/tasks"');
+  res.setHeader('Warning', '299 - "Legacy verb-only endpoint. Use /api/tasks."');
+}
+
+interface SchedulingSnapshot {
+  id?: number;
+  leitnerBox: number;
+  totalAttempts: number;
+  correctAttempts: number;
+  averageResponseMs: number;
+  accuracyWeight: number;
+  latencyWeight: number;
+  stabilityWeight: number;
+}
+
+interface SubmissionMetrics {
+  totalAttempts: number;
+  correctAttempts: number;
+  averageResponseMs: number;
+  leitnerBox: number;
+  accuracyWeight: number;
+  latencyWeight: number;
+  stabilityWeight: number;
+  priorityScore: number;
+  dueAt: number;
+}
+
+function computeSubmissionMetrics(
+  existing: SchedulingSnapshot | null,
+  payload: { result: 'correct' | 'incorrect'; responseMs: number },
+  now: number,
+): SubmissionMetrics {
+  const previousAttempts = existing?.totalAttempts ?? 0;
+  const previousCorrect = existing?.correctAttempts ?? 0;
+  const previousAverage = existing?.averageResponseMs ?? 0;
+  const previousLeitner = existing?.leitnerBox ?? 1;
+
+  const totalAttempts = previousAttempts + 1;
+  const correctAttempts = previousCorrect + (payload.result === 'correct' ? 1 : 0);
+  const averageResponseMs = Math.round(
+    (previousAverage * previousAttempts + payload.responseMs) / totalAttempts,
+  );
+  const accuracyWeight = Number((correctAttempts / totalAttempts).toFixed(4));
+  const latencyRatio = Math.min(payload.responseMs / 30000, 1);
+  const latencyWeight = Number((1 - latencyRatio).toFixed(4));
+  const nextLeitner = payload.result === 'correct' ? Math.min(previousLeitner + 1, 5) : 1;
+  const stabilityWeight = Number(Math.min(nextLeitner / 5, 1).toFixed(4));
+  const priorityScore = Number(
+    (((1 - accuracyWeight) * 0.6 + (1 - latencyWeight) * 0.2 + (1 - stabilityWeight) * 0.2)).toFixed(4),
+  );
+  const dueAt =
+    payload.result === 'correct'
+      ? now + Math.max(900, Math.round(nextLeitner * 3600 * (1 + (1 - accuracyWeight))))
+      : now + 600;
+
+  return {
+    totalAttempts,
+    correctAttempts,
+    averageResponseMs,
+    leitnerBox: nextLeitner,
+    accuracyWeight,
+    latencyWeight,
+    stabilityWeight,
+    priorityScore,
+    dueAt,
+  };
 }
 
 function computeWordCompleteness(word: Pick<Word, "pos"> & Partial<Word>): boolean {
@@ -340,6 +457,217 @@ function requireAdminToken(req: Request, res: Response, next: NextFunction) {
 }
 
 export function registerRoutes(app: Express): Server {
+  app.get("/api/tasks", async (req, res) => {
+    const parsed = taskQuerySchema.safeParse(req.query ?? {});
+    if (!parsed.success) {
+      return res.status(400).json({
+        error: "Invalid task query",
+        code: "INVALID_TASK_QUERY",
+        details: parsed.error.flatten(),
+      });
+    }
+
+    const { pos, taskType, pack, limit } = parsed.data;
+    const filters: Array<ReturnType<typeof eq>> = [];
+
+    if (pos) {
+      const normalised = normaliseTaskPosFilter(pos);
+      if (!normalised) {
+        return res.status(400).json({
+          error: `Unsupported part-of-speech filter: ${pos}`,
+          code: "INVALID_POS_FILTER",
+        });
+      }
+      filters.push(eq(taskSpecs.pos, normalised));
+    }
+
+    let resolvedTaskType: TaskType | null = null;
+    if (taskType) {
+      resolvedTaskType = parseTaskTypeFilter(taskType);
+      if (!resolvedTaskType) {
+        return res.status(400).json({
+          error: `Unsupported task type filter: ${taskType}`,
+          code: "INVALID_TASK_TYPE",
+        });
+      }
+      filters.push(eq(taskSpecs.taskType, resolvedTaskType));
+    }
+
+    if (pack) {
+      filters.push(eq(contentPacks.slug, pack));
+    }
+
+    let query = db
+      .select({
+        id: taskSpecs.id,
+        taskType: taskSpecs.taskType,
+        renderer: taskSpecs.renderer,
+        pos: taskSpecs.pos,
+        prompt: taskSpecs.prompt,
+        solution: taskSpecs.solution,
+        lexemeId: taskSpecs.lexemeId,
+        lexemeLemma: lexemes.lemma,
+        lexemeMetadata: lexemes.metadata,
+        packId: contentPacks.id,
+        packSlug: contentPacks.slug,
+        packName: contentPacks.name,
+      })
+      .from(taskSpecs)
+      .innerJoin(lexemes, eq(taskSpecs.lexemeId, lexemes.id))
+      .leftJoin(packLexemeMap, eq(packLexemeMap.primaryTaskId, taskSpecs.id))
+      .leftJoin(contentPacks, eq(packLexemeMap.packId, contentPacks.id));
+
+    if (filters.length) {
+      query = query.where(and(...filters));
+    }
+
+    const rows = await query.orderBy(desc(taskSpecs.updatedAt)).limit(limit);
+
+    const payload = rows.map((row) => {
+      const registryEntry = getTaskRegistryEntry(row.taskType as TaskType);
+      return {
+        id: row.id,
+        taskType: row.taskType,
+        renderer: row.renderer,
+        pos: row.pos,
+        prompt: row.prompt,
+        solution: row.solution,
+        queueCap: registryEntry.queueCap,
+        lexeme: {
+          id: row.lexemeId,
+          lemma: row.lexemeLemma,
+          metadata: row.lexemeMetadata,
+        },
+        pack: row.packId
+          ? {
+              id: row.packId,
+              slug: row.packSlug,
+              name: row.packName,
+            }
+          : null,
+      };
+    });
+
+    res.setHeader("Cache-Control", "no-store");
+    res.json({ tasks: payload });
+  });
+
+  app.post("/api/submission", async (req, res) => {
+    const parsed = submissionSchema.safeParse(req.body ?? {});
+    if (!parsed.success) {
+      return res.status(400).json({
+        error: "Invalid submission payload",
+        code: "INVALID_SUBMISSION",
+        details: parsed.error.flatten(),
+      });
+    }
+
+    const payload = parsed.data;
+    const taskRow = await db
+      .select({
+        id: taskSpecs.id,
+        taskType: taskSpecs.taskType,
+      })
+      .from(taskSpecs)
+      .where(eq(taskSpecs.id, payload.taskId))
+      .limit(1);
+
+    if (taskRow.length === 0) {
+      return sendError(res, 404, "Task not found", "TASK_NOT_FOUND");
+    }
+
+    const registryEntry = getTaskRegistryEntry(taskRow[0].taskType as TaskType);
+
+    const existing = await db
+      .select({
+        id: schedulingState.id,
+        leitnerBox: schedulingState.leitnerBox,
+        totalAttempts: schedulingState.totalAttempts,
+        correctAttempts: schedulingState.correctAttempts,
+        averageResponseMs: schedulingState.averageResponseMs,
+        accuracyWeight: schedulingState.accuracyWeight,
+        latencyWeight: schedulingState.latencyWeight,
+        stabilityWeight: schedulingState.stabilityWeight,
+      })
+      .from(schedulingState)
+      .where(
+        and(
+          eq(schedulingState.deviceId, payload.deviceId),
+          eq(schedulingState.taskId, payload.taskId),
+        ),
+      )
+      .limit(1);
+
+    const snapshot: SchedulingSnapshot | null = existing.length
+      ? {
+          id: existing[0].id,
+          leitnerBox: existing[0].leitnerBox,
+          totalAttempts: existing[0].totalAttempts,
+          correctAttempts: existing[0].correctAttempts,
+          averageResponseMs: existing[0].averageResponseMs,
+          accuracyWeight: existing[0].accuracyWeight,
+          latencyWeight: existing[0].latencyWeight,
+          stabilityWeight: existing[0].stabilityWeight,
+        }
+      : null;
+
+    const now = Math.floor(Date.now() / 1000);
+    const metrics = computeSubmissionMetrics(snapshot, payload, now);
+
+    const dueAtDate = new Date(metrics.dueAt * 1000);
+
+    if (snapshot?.id) {
+      await db
+        .update(schedulingState)
+        .set({
+          leitnerBox: metrics.leitnerBox,
+          totalAttempts: metrics.totalAttempts,
+          correctAttempts: metrics.correctAttempts,
+          averageResponseMs: metrics.averageResponseMs,
+          accuracyWeight: metrics.accuracyWeight,
+          latencyWeight: metrics.latencyWeight,
+          stabilityWeight: metrics.stabilityWeight,
+          priorityScore: metrics.priorityScore,
+          dueAt: dueAtDate,
+          lastResult: payload.result,
+          lastPracticedAt: sql`unixepoch('now')`,
+          updatedAt: sql`unixepoch('now')`,
+        })
+        .where(eq(schedulingState.id, snapshot.id!));
+    } else {
+      await db.insert(schedulingState).values({
+        deviceId: payload.deviceId,
+        taskId: payload.taskId,
+        leitnerBox: metrics.leitnerBox,
+        totalAttempts: metrics.totalAttempts,
+        correctAttempts: metrics.correctAttempts,
+        averageResponseMs: metrics.averageResponseMs,
+        accuracyWeight: metrics.accuracyWeight,
+        latencyWeight: metrics.latencyWeight,
+        stabilityWeight: metrics.stabilityWeight,
+        priorityScore: metrics.priorityScore,
+        dueAt: dueAtDate,
+        lastResult: payload.result,
+        lastPracticedAt: sql`unixepoch('now')`,
+        createdAt: sql`unixepoch('now')`,
+        updatedAt: sql`unixepoch('now')`,
+      });
+    }
+
+    res.json({
+      status: "recorded",
+      taskId: payload.taskId,
+      deviceId: payload.deviceId,
+      leitnerBox: metrics.leitnerBox,
+      totalAttempts: metrics.totalAttempts,
+      correctAttempts: metrics.correctAttempts,
+      averageResponseMs: metrics.averageResponseMs,
+      dueAt: new Date(metrics.dueAt * 1000).toISOString(),
+      priorityScore: metrics.priorityScore,
+      queueCap: registryEntry.queueCap,
+    });
+  });
+
   app.get("/api/words", requireAdminToken, async (req, res) => {
     try {
       const pos = normalizeStringParam(req.query.pos)?.trim();
@@ -484,6 +812,7 @@ export function registerRoutes(app: Express): Server {
   });
 
   app.get("/api/quiz/verbs", async (req, res) => {
+    setLegacyDeprecation(res);
     try {
       const level = normalizeStringParam(req.query.level)?.trim();
       const random = parseRandomFlag(req.query.random);
@@ -514,6 +843,7 @@ export function registerRoutes(app: Express): Server {
   });
 
   app.post("/api/practice-history", practiceHistoryLimiter, async (req, res) => {
+    setLegacyDeprecation(res);
     try {
       const parsed = recordPracticeSchema.safeParse(req.body);
       if (!parsed.success) {
@@ -580,6 +910,7 @@ export function registerRoutes(app: Express): Server {
   });
 
   app.get("/api/practice-history", async (req, res) => {
+    setLegacyDeprecation(res);
     try {
       const history = await db.query.verbPracticeHistory.findMany({
         where: (req as any).user?.id
@@ -597,6 +928,7 @@ export function registerRoutes(app: Express): Server {
   });
 
   app.get("/api/analytics", async (req, res) => {
+    setLegacyDeprecation(res);
     try {
       const analytics = await db.query.verbAnalytics.findMany({
         orderBy: [desc(verbAnalytics.lastPracticedAt)],
@@ -610,6 +942,7 @@ export function registerRoutes(app: Express): Server {
   });
 
   app.get("/api/review-queue", async (req, res) => {
+    setLegacyDeprecation(res);
     try {
       if (!srsEngine.isEnabled()) {
         return sendError(res, 404, "Adaptive review queue is disabled", "FEATURE_DISABLED");
@@ -663,6 +996,7 @@ export function registerRoutes(app: Express): Server {
   });
 
   app.get("/api/partner/drills", authenticatePartner, async (req, res) => {
+    setLegacyDeprecation(res);
     try {
       const partner = req.partner!;
       const limitParam = normalizeStringParam(req.query.limit);
