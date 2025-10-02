@@ -28,3 +28,25 @@ This execution plan translates the high-level roadmap in [`parts-of-speech-expan
 - Tasks are ordered to minimise rework while maintaining a shippable product after each milestone. Where practical, long-running documentation work (Tasks 7 and 18) can progress concurrently once prerequisites are met.
 - Tests should be added alongside feature work (Tasks 8–13) to satisfy regression expectations. Task 15 consolidates any remaining coverage gaps before rollout.
 - Deliverables from earlier tasks (especially audits, RFCs, and policies) should be stored in the repository under `docs/` to maintain shared visibility.
+
+## Task 11 Detailed Breakdown – Client State Refactor
+
+| # | Subtask | Description & Deliverables | Dependencies |
+|---|---------|----------------------------|---------------|
+| 11a | **Client Task Model Inventory** | Catalogue the client modules that still depend on verb primitives (`client/src/lib/verbs.ts`, `client/src/lib/review-queue.ts`, `client/src/lib/answer-history.ts`, `client/src/pages/home.tsx`, verb-specific components). Define the target task descriptor shape that mirrors the server registry introduced in Tasks 8–10 (`shared/task-registry.ts`). Produce an ADR documenting renamed types (`PracticeTask`, `TaskPrompt`, `TaskSolution`) and storage keys. | Tasks 1–10 (audit context, server task registry) |
+| 11b | **Task Feed & Registry Wiring** | Implement a POS-agnostic fetch layer that calls `GET /api/tasks` with filters, validates payloads against `shared/task-registry.ts`, and exposes task registry metadata to the client. Preserve `/api/quiz/verbs` as a fallback path while parity is validated. Deliverables: `client/src/lib/tasks.ts`, shared registry import glue, telemetry for deprecation headers. | Subtask 11a, Tasks 8–10 |
+| 11c | **State Store Migration** | Replace verb-centric state stores with task-centric equivalents: session controller, progress tracker, answer history, and review queue persistence. Migrate local storage keys to namespaced task IDs (`taskId`, `lexemeId`) with upgrade scripts that ingest existing verb data. Document migration strategy and failure handling. | Subtasks 11a–11b |
+| 11d | **UI Integration & Presets** | Update practice flows (`home`, practice card, progress display) to consume the new task store, switch renderers by `taskType`, and expose a “Verbs only” preset that maps to the task registry verb queue. Ensure accessibility, loading states, and offline cache hooks remain functional. Deliverables: updated components plus Storybook/visual acceptance notes. | Subtasks 11a–11c |
+| 11e | **Parity & Regression Tests** | Add Vitest coverage that cross-checks the client registry against the shared registry, verifies local storage migrations, and ensures the verb-only preset still queues tasks identical to the legacy path. Include Playwright smoke targeting mixed POS sessions once UI renderers land. | Subtasks 11a–11d |
+
+> **Task 11a Deliverable:** See [`docs/adr/011-client-task-model-inventory.md`](./adr/011-client-task-model-inventory.md) for the approved client task model inventory and descriptor plan.
+
+### Acceptance Considerations
+- **Data Contracts**: The client must reuse the schemas defined in `shared/task-registry.ts` to validate prompts/solutions returned from the API, preventing drift between server Task 8 wiring and client usage.
+- **Backwards Compatibility**: Existing verb-only saves, review queues, and analytics pings must continue functioning via migration scripts until Task 16 shadow mode validates full parity.
+- **Observability**: Capture metrics or console warnings when the fallback `/api/quiz/verbs` path is exercised so remaining dependencies can be identified before enabling additional POS cohorts.
+
+### Open Questions for Implementation
+1. How should task renderer lookup behave when a renderer is missing locally (e.g., feature flag disabled)? Consider a graceful fallback that surfaces a maintenance card instead of throwing.
+2. Do we promote task presets (All/Verbs/Nouns/Adjectives) in Task 11 or defer to Task 12’s UI mode switcher? Proposed approach: keep presets internal in Task 11, expose toggles visually in Task 12.
+3. What migration window is acceptable for local storage upgrades? Decide whether to keep dual-write logic for one release or rely on an immediate migration script.
