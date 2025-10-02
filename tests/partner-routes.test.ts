@@ -52,7 +52,20 @@ const hoisted = vi.hoisted(() => {
   };
 });
 
+const srsEngineMock = vi.hoisted(() => ({
+  startQueueRegenerator: vi.fn(() => ({ stop: vi.fn() })),
+  recordPracticeAttempt: vi.fn(),
+  fetchQueueForDevice: vi.fn(),
+  generateQueueForDevice: vi.fn(),
+  isEnabled: vi.fn(() => false),
+  isQueueStale: vi.fn(() => false),
+}));
+
 vi.mock('@db', () => ({ db: hoisted.mockDb }));
+
+vi.mock('../server/srs', () => ({
+  srsEngine: srsEngineMock,
+}));
 
 const { mockDb, selectChain, insertValuesMock, setSelectResultData } = hoisted;
 
@@ -72,12 +85,12 @@ const plainKey = 'partner-test-key';
 const hashedKey = createHash('sha256').update(plainKey).digest('hex');
 
 describe('Partner integration routes', () => {
-beforeEach(() => {
-  setSelectResultData([]);
-  selectChain.from.mockClear();
-  selectChain.where.mockClear();
-  selectChain.orderBy.mockClear();
-  selectChain.limit.mockClear();
+  beforeEach(() => {
+    setSelectResultData([]);
+    selectChain.from.mockClear();
+    selectChain.where.mockClear();
+    selectChain.orderBy.mockClear();
+    selectChain.limit.mockClear();
     mockDb.select.mockClear();
     mockDb.insert.mockClear();
     insertValuesMock.mockClear();
@@ -87,6 +100,19 @@ beforeEach(() => {
       ...mockPartnerRecord,
       apiKeyHash: hashedKey,
     });
+
+    srsEngineMock.startQueueRegenerator.mockReset();
+    srsEngineMock.startQueueRegenerator.mockReturnValue({ stop: vi.fn() });
+    srsEngineMock.recordPracticeAttempt.mockReset();
+    srsEngineMock.recordPracticeAttempt.mockResolvedValue(undefined);
+    srsEngineMock.fetchQueueForDevice.mockReset();
+    srsEngineMock.fetchQueueForDevice.mockResolvedValue(null);
+    srsEngineMock.generateQueueForDevice.mockReset();
+    srsEngineMock.generateQueueForDevice.mockResolvedValue(null);
+    srsEngineMock.isEnabled.mockReset();
+    srsEngineMock.isQueueStale.mockReset();
+    srsEngineMock.isEnabled.mockReturnValue(false);
+    srsEngineMock.isQueueStale.mockReturnValue(true);
   });
 
   it('rejects requests without an API key', async () => {

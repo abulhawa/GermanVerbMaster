@@ -1,7 +1,7 @@
-import type { GermanVerb, PracticeResult } from "@shared";
+import type { AdaptiveQueueItem, GermanVerb, PracticeResult } from "@shared";
 import { sql } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
+import { integer, real, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 export const integrationPartners = sqliteTable("integration_partners", {
   id: integer("id").primaryKey({ autoIncrement: true }),
@@ -135,6 +135,65 @@ export const verbAnalytics = sqliteTable("verb_analytics", {
   level: text("level").notNull(),
 });
 
+export const verbSchedulingState = sqliteTable(
+  "verb_scheduling_state",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    userId: integer("user_id").references(() => users.id),
+    deviceId: text("device_id").notNull(),
+    verb: text("verb").notNull(),
+    level: text("level").notNull(),
+    leitnerBox: integer("leitner_box").notNull().default(1),
+    totalAttempts: integer("total_attempts").notNull().default(0),
+    correctAttempts: integer("correct_attempts").notNull().default(0),
+    averageResponseMs: integer("average_response_ms").notNull().default(0),
+    accuracyWeight: real("accuracy_weight").notNull().default(0),
+    latencyWeight: real("latency_weight").notNull().default(0),
+    stabilityWeight: real("stability_weight").notNull().default(0),
+    priorityScore: real("priority_score").notNull().default(0),
+    dueAt: integer("due_at", { mode: "timestamp" }),
+    lastResult: text("last_result", { enum: practiceResult }).notNull().default("correct"),
+    lastPracticedAt: integer("last_practiced_at", { mode: "timestamp" }),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .default(sql`(unixepoch('now'))`)
+      .notNull(),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .default(sql`(unixepoch('now'))`)
+      .notNull(),
+  },
+  (table) => ({
+    deviceVerbIndex: uniqueIndex("verb_srs_device_verb_idx").on(table.deviceId, table.verb),
+  }),
+);
+
+export const verbReviewQueues = sqliteTable(
+  "verb_review_queues",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    userId: integer("user_id").references(() => users.id),
+    deviceId: text("device_id").notNull(),
+    version: text("version").notNull(),
+    generatedAt: integer("generated_at", { mode: "timestamp" })
+      .default(sql`(unixepoch('now'))`)
+      .notNull(),
+    validUntil: integer("valid_until", { mode: "timestamp" })
+      .default(sql`(unixepoch('now'))`)
+      .notNull(),
+    generationDurationMs: integer("generation_duration_ms").notNull().default(0),
+    itemCount: integer("item_count").notNull().default(0),
+    items: text("items", { mode: "json" }).$type<AdaptiveQueueItem[]>().notNull(),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .default(sql`(unixepoch('now'))`)
+      .notNull(),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .default(sql`(unixepoch('now'))`)
+      .notNull(),
+  },
+  (table) => ({
+    deviceIndex: uniqueIndex("verb_queue_device_idx").on(table.deviceId),
+  }),
+);
+
 export const insertUserSchema = createInsertSchema(users);
 export const selectUserSchema = createSelectSchema(users);
 export type InsertUser = typeof users.$inferInsert;
@@ -153,6 +212,12 @@ export type InsertVerbPracticeHistory = typeof verbPracticeHistory.$inferInsert;
 
 export type VerbAnalytics = typeof verbAnalytics.$inferSelect;
 export type InsertVerbAnalytics = typeof verbAnalytics.$inferInsert;
+
+export type VerbSchedulingState = typeof verbSchedulingState.$inferSelect;
+export type InsertVerbSchedulingState = typeof verbSchedulingState.$inferInsert;
+
+export type VerbReviewQueue = typeof verbReviewQueues.$inferSelect;
+export type InsertVerbReviewQueue = typeof verbReviewQueues.$inferInsert;
 
 export type IntegrationPartner = typeof integrationPartners.$inferSelect;
 export type InsertIntegrationPartner = typeof integrationPartners.$inferInsert;

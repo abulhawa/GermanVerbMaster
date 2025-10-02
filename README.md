@@ -68,3 +68,7 @@ The app runs entirely on your machine—no container or managed database is requ
 - Generate sandbox API keys with `npm run integration:create-key` and follow the workflow documented in [`docs/integration-api.md`](docs/integration-api.md).
 - Authenticated partners can fetch embeddable drill bundles and review their request analytics via the new `/api/partner/*` routes.
 
+## Adaptive review scheduler
+- The adaptive spaced-repetition engine persists Leitner box stats per device, regenerates priority-ranked queues, and exposes them through the feature-flagged `/api/review-queue` endpoint.
+- Review [`docs/adaptive-review-scheduler.md`](docs/adaptive-review-scheduler.md) for the full architecture, configuration flags, and integration checklist before extending the system.
+

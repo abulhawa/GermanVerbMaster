@@ -15,6 +15,7 @@ import { and, count, desc, eq, sql } from "drizzle-orm";
 import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 import { createHash, randomUUID } from "node:crypto";
 import type { GermanVerb } from "@shared";
+import { srsEngine } from "./srs";
 
 const practiceModeSchema = z.enum(["präteritum", "partizipII", "auxiliary", "english"]);
 const levelSchema = z.enum(["A1", "A2", "B1", "B2", "C1", "C2"]);
@@ -518,7 +519,8 @@ export function registerRoutes(app: Express): Server {
       if (!parsed.success) {
         return sendError(res, 400, "Invalid practice data", "INVALID_INPUT");
       }
-      const { queuedAt: _queuedAt, ...data } = parsed.data;
+      const { queuedAt, ...data } = parsed.data;
+      const practicedAt = queuedAt ? new Date(queuedAt) : new Date();
 
       await db.insert(verbPracticeHistory).values({
         ...data,
@@ -551,6 +553,20 @@ export function registerRoutes(app: Express): Server {
           lastPracticedAt: new Date(),
           level: data.level,
         });
+      }
+
+      try {
+        await srsEngine.recordPracticeAttempt({
+          deviceId: data.deviceId,
+          verb: data.verb,
+          level: data.level,
+          result: data.result,
+          timeSpent: data.timeSpent,
+          userId: (req as any).user?.id ?? null,
+          practicedAt,
+        });
+      } catch (error) {
+        console.error("Failed to update adaptive scheduling state:", error);
       }
 
       res.json({ success: true });
@@ -590,6 +606,59 @@ export function registerRoutes(app: Express): Server {
     } catch (error) {
       console.error("Error fetching analytics:", error);
       sendError(res, 500, "Failed to fetch analytics", "ANALYTICS_FETCH_FAILED");
+    }
+  });
+
+  app.get("/api/review-queue", async (req, res) => {
+    try {
+      if (!srsEngine.isEnabled()) {
+        return sendError(res, 404, "Adaptive review queue is disabled", "FEATURE_DISABLED");
+      }
+
+      const deviceId = normalizeStringParam(req.query.deviceId)?.trim();
+      if (!deviceId) {
+        return sendError(res, 400, "deviceId is required", "INVALID_DEVICE");
+      }
+
+      const levelHint = normalizeStringParam(req.query.level)?.trim() ?? null;
+
+      let queue = await srsEngine.fetchQueueForDevice(deviceId);
+      if (!queue || srsEngine.isQueueStale(queue)) {
+        queue = await srsEngine.generateQueueForDevice(deviceId, levelHint);
+      }
+
+      if (!queue) {
+        const fallbackGeneratedAt = new Date();
+        return res.json({
+          deviceId,
+          version: "unavailable",
+          generatedAt: fallbackGeneratedAt.toISOString(),
+          validUntil: new Date(fallbackGeneratedAt.getTime() + 60_000).toISOString(),
+          featureEnabled: true,
+          items: [],
+          metrics: {
+            queueLength: 0,
+            generationDurationMs: 0,
+          },
+        });
+      }
+
+      res.setHeader("Cache-Control", "no-store");
+      res.json({
+        deviceId: queue.deviceId,
+        version: queue.version,
+        generatedAt: queue.generatedAt?.toISOString() ?? new Date().toISOString(),
+        validUntil: queue.validUntil?.toISOString() ?? new Date(Date.now() + 60_000).toISOString(),
+        featureEnabled: true,
+        items: queue.items,
+        metrics: {
+          queueLength: queue.itemCount,
+          generationDurationMs: queue.generationDurationMs,
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching adaptive review queue:", error);
+      sendError(res, 500, "Failed to build adaptive review queue", "REVIEW_QUEUE_FAILED");
     }
   });
 
@@ -751,5 +820,9 @@ export function registerRoutes(app: Express): Server {
   });
 
   const httpServer = createServer(app);
+  const regenerator = srsEngine.startQueueRegenerator();
+  httpServer.on("close", () => {
+    regenerator.stop();
+  });
   return httpServer;
 }

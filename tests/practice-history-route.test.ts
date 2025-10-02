@@ -3,6 +3,15 @@ import request from 'supertest';
 import { describe, expect, it, vi } from 'vitest';
 import { registerRoutes } from '../server/routes';
 
+const srsEngineMock = vi.hoisted(() => ({
+  startQueueRegenerator: vi.fn(() => ({ stop: vi.fn() })),
+  recordPracticeAttempt: vi.fn(),
+  fetchQueueForDevice: vi.fn(),
+  generateQueueForDevice: vi.fn(),
+  isEnabled: vi.fn(() => false),
+  isQueueStale: vi.fn(() => false),
+}));
+
 vi.mock('@db', () => ({
   db: {
     insert: vi.fn(() => ({
@@ -34,7 +43,26 @@ vi.mock('@db/schema', async () => {
   return actual;
 });
 
+vi.mock('../server/srs', () => ({
+  srsEngine: srsEngineMock,
+}));
+
 describe('POST /api/practice-history validation', () => {
+  beforeEach(() => {
+    srsEngineMock.startQueueRegenerator.mockReset();
+    srsEngineMock.startQueueRegenerator.mockReturnValue({ stop: vi.fn() });
+    srsEngineMock.recordPracticeAttempt.mockReset();
+    srsEngineMock.recordPracticeAttempt.mockResolvedValue(undefined);
+    srsEngineMock.fetchQueueForDevice.mockReset();
+    srsEngineMock.generateQueueForDevice.mockReset();
+    srsEngineMock.isEnabled.mockReset();
+    srsEngineMock.isQueueStale.mockReset();
+    srsEngineMock.fetchQueueForDevice.mockResolvedValue(null);
+    srsEngineMock.generateQueueForDevice.mockResolvedValue(null);
+    srsEngineMock.isEnabled.mockReturnValue(false);
+    srsEngineMock.isQueueStale.mockReturnValue(true);
+  });
+
   it('rejects invalid payloads with a 400 error', async () => {
     const app = express();
     app.use(express.json());
@@ -50,6 +78,8 @@ describe('POST /api/practice-history validation', () => {
       error: expect.any(String),
       code: 'INVALID_INPUT',
     });
+
+    expect(srsEngineMock.recordPracticeAttempt).not.toHaveBeenCalled();
 
     server.close();
   });
