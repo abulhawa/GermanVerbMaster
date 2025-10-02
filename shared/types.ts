@@ -1,3 +1,5 @@
+import type { LexemePos, TaskType } from './task-registry';
+
 export type CEFRLevel = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
 
 export type PracticeMode = 'präteritum' | 'partizipII' | 'auxiliary' | 'english';
@@ -76,6 +78,115 @@ export interface PracticeAttemptPayload {
   level: CEFRLevel;
   deviceId: string;
   queuedAt?: string;
+}
+
+export interface TaskAnswerHistoryItem {
+  id: string;
+  taskId: string;
+  lexemeId: string;
+  taskType: TaskType;
+  pos: LexemePos;
+  renderer: string;
+  result: PracticeResult;
+  submittedResponse: unknown;
+  expectedResponse?: unknown;
+  promptSummary: string;
+  answeredAt: string;
+  timeSpentMs: number;
+  timeSpent: number;
+  cefrLevel?: CEFRLevel;
+  packId?: string | null;
+  mode?: PracticeMode;
+  attemptedAnswer?: string;
+  correctAnswer?: string;
+  prompt?: string;
+  level?: CEFRLevel;
+  verb?: GermanVerb;
+  legacyVerb?: {
+    verb: GermanVerb;
+    mode: PracticeMode;
+  };
+}
+
+export interface PracticeTaskQueueItemMetadata {
+  lemma?: string;
+  cefrLevel?: CEFRLevel;
+  legacyVerbInfinitive?: string;
+  legacyPracticeMode?: PracticeMode;
+}
+
+export interface PracticeTaskQueueItem {
+  taskId: string;
+  lexemeId: string;
+  taskType: TaskType;
+  pos: LexemePos;
+  renderer: string;
+  source: 'review' | 'seed' | 'scheduler';
+  enqueuedAt: string;
+  metadata?: PracticeTaskQueueItemMetadata;
+}
+
+export interface TaskAttemptPayload {
+  taskId: string;
+  lexemeId: string;
+  taskType: TaskType;
+  pos: LexemePos;
+  renderer: string;
+  result: PracticeResult;
+  submittedResponse: unknown;
+  expectedResponse?: unknown;
+  timeSpentMs: number;
+  answeredAt: string;
+  deviceId: string;
+  queuedAt?: string;
+  cefrLevel?: CEFRLevel;
+  packId?: string | null;
+  legacyVerb?: {
+    infinitive: string;
+    mode: PracticeMode;
+    level?: CEFRLevel;
+    attemptedAnswer?: string;
+  };
+}
+
+export interface TaskProgressLexemeRecord {
+  lexemeId: string;
+  taskId: string;
+  lastPracticedAt: string;
+  correctAttempts: number;
+  incorrectAttempts: number;
+  cefrLevel?: CEFRLevel;
+}
+
+export interface TaskProgressSummary {
+  correctAttempts: number;
+  incorrectAttempts: number;
+  streak: number;
+  lastPracticedAt: string | null;
+  lexemes: Record<string, TaskProgressLexemeRecord>;
+}
+
+export interface PracticeProgressState {
+  version: number;
+  totals: Record<TaskType, TaskProgressSummary>;
+  lastPracticedTaskId: string | null;
+  migratedFromLegacy?: boolean;
+}
+
+export interface PracticeSettingsRendererPreferences {
+  showHints: boolean;
+  showExamples: boolean;
+}
+
+export interface PracticeSettingsState {
+  version: number;
+  defaultTaskType: TaskType;
+  preferredTaskTypes: TaskType[];
+  cefrLevelByPos: Partial<Record<LexemePos, CEFRLevel>>;
+  rendererPreferences: Record<TaskType, PracticeSettingsRendererPreferences>;
+  legacyVerbLevel?: CEFRLevel;
+  migratedFromLegacy?: boolean;
+  updatedAt: string;
 }
 
 export interface AdaptiveQueueItem {

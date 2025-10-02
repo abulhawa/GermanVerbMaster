@@ -31,6 +31,7 @@ import {
   loadAnswerHistory,
   saveAnswerHistory,
   DEFAULT_MAX_STORED_ANSWERS,
+  createLegacyAnswerHistoryEntry,
 } from "@/lib/answer-history";
 import { peekReviewVerb, shiftReviewVerb } from "@/lib/review-queue";
 
@@ -245,7 +246,7 @@ export default function Home() {
     if (!currentVerb) return;
 
     setAnswerHistory((prev) => {
-      const entry: AnsweredQuestion = {
+      const entry = createLegacyAnswerHistoryEntry({
         id: `${details.verb.infinitive}-${Date.now()}`,
         verb: details.verb,
         mode: details.mode,
@@ -253,10 +254,10 @@ export default function Home() {
         attemptedAnswer: details.attemptedAnswer,
         correctAnswer: details.correctAnswer,
         prompt: details.prompt,
-        timeSpent: details.timeSpent,
+        timeSpentMs: details.timeSpent,
         answeredAt: new Date().toISOString(),
         level: settings.level,
-      };
+      });
 
       return appendAnswer(entry, prev, MAX_STORED_ANSWER_HISTORY);
     });

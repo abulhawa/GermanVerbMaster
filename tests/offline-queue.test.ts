@@ -1,19 +1,32 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { submitPracticeAttempt, flushPendingAttempts, getPendingAttempts } from '@/lib/api';
-import { practiceDb } from '@/lib/db';
-import type { PracticeAttemptPayload } from '@shared';
+import { practiceDb, practiceDbReady } from '@/lib/db';
+import type { TaskAttemptPayload } from '@shared';
 
-const basePayload: Omit<PracticeAttemptPayload, 'deviceId'> = {
-  verb: 'sein',
-  mode: 'präteritum',
+const basePayload: Omit<TaskAttemptPayload, 'deviceId'> = {
+  taskId: 'legacy:verb:sein',
+  lexemeId: 'legacy:verb:sein',
+  taskType: 'conjugate_form',
+  pos: 'verb',
+  renderer: 'conjugate_form',
   result: 'correct',
-  attemptedAnswer: 'war',
-  timeSpent: 1500,
-  level: 'A1',
+  submittedResponse: 'war',
+  expectedResponse: 'war',
+  timeSpentMs: 1500,
+  answeredAt: new Date().toISOString(),
   queuedAt: new Date().toISOString(),
+  cefrLevel: 'A1',
+  packId: null,
+  legacyVerb: {
+    infinitive: 'sein',
+    mode: 'präteritum',
+    level: 'A1',
+    attemptedAnswer: 'war',
+  },
 };
 
 async function resetDb() {
+  await practiceDbReady;
   await practiceDb.pendingAttempts.clear();
 }
 
@@ -33,7 +46,7 @@ describe('offline queue', () => {
 
     const attempts = await getPendingAttempts();
     expect(attempts).toHaveLength(1);
-    expect(attempts[0]?.payload.verb).toBe('sein');
+    expect(attempts[0]?.payload.taskId).toBe('legacy:verb:sein');
   });
 
   it('flushes queued attempts when back online', async () => {
