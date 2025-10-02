@@ -1,7 +1,7 @@
 # ADR 011: Client Task Model Inventory & Task Descriptor Plan
 
 - **Status:** Accepted
-- **Date:** 2024-11-07
+- **Date:** 2025-10-03
 - **Related Tasks:** Parts of Speech Expansion Task 11a (Client Task Model Inventory)
 
 ## Context
