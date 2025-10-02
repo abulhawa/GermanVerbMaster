@@ -1,86 +1,74 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "wouter";
-import { motion } from "framer-motion";
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Link } from 'wouter';
+import { motion } from 'framer-motion';
 import {
-  ArrowLeft,
   BarChart2,
   BookOpen,
-  History,
   Compass,
   Flame,
+  History,
   Loader2,
   Settings2,
   Sparkles,
   Target,
-} from "lucide-react";
+} from 'lucide-react';
 
-import { AppShell } from "@/components/layout/app-shell";
-import { PracticeCard, PracticeAnswerDetails } from "@/components/practice-card";
-import { ProgressDisplay } from "@/components/progress-display";
-import { SettingsDialog } from "@/components/settings-dialog";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { SidebarNavButton } from "@/components/layout/sidebar-nav-button";
-import { Settings, Progress, PracticeMode } from "@/lib/types";
-import { GermanVerb, getRandomVerb, getVerbByInfinitive } from "@/lib/verbs";
-import { getDevAttributes, type DebuggableComponentProps } from "@/lib/dev-attributes";
+import { AppShell } from '@/components/layout/app-shell';
+import { PracticeCard, type PracticeCardResult } from '@/components/practice-card';
+import { ProgressDisplay } from '@/components/progress-display';
+import { SettingsDialog } from '@/components/settings-dialog';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { SidebarNavButton } from '@/components/layout/sidebar-nav-button';
 import {
-  AnsweredQuestion,
-  appendAnswer,
+  loadPracticeSettings,
+  savePracticeSettings,
+} from '@/lib/practice-settings';
+import {
+  loadPracticeProgress,
+  savePracticeProgress,
+  recordTaskResult,
+} from '@/lib/practice-progress';
+import {
+  loadPracticeSession,
+  savePracticeSession,
+  enqueueTasks,
+  completeTask,
+  resetSession,
+  type PracticeSessionState,
+} from '@/lib/practice-session';
+import {
   loadAnswerHistory,
   saveAnswerHistory,
-  DEFAULT_MAX_STORED_ANSWERS,
-  createLegacyAnswerHistoryEntry,
-} from "@/lib/answer-history";
-import { peekReviewVerb, shiftReviewVerb } from "@/lib/review-queue";
+  appendAnswer,
+  createAnswerHistoryEntry,
+} from '@/lib/answer-history';
+import {
+  fetchPracticeTasks,
+  type PracticeTask,
+  clientTaskRegistry,
+} from '@/lib/tasks';
+import { getDevAttributes } from '@/lib/dev-attributes';
+import type { CEFRLevel, PracticeSettingsState, PracticeProgressState, TaskType } from '@shared';
 
-interface VerbHistoryItem {
-  verb: GermanVerb;
-  mode: PracticeMode;
+interface SessionProgressBarProps {
+  value: number;
+  completed: number;
+  target: number;
+  debugId?: string;
 }
 
-const MAX_STORED_ANSWER_HISTORY = DEFAULT_MAX_STORED_ANSWERS;
-
-const DEFAULT_SETTINGS: Settings = {
-  level: "A1",
-  showHints: true,
-  showExamples: true,
-};
-
-const DEFAULT_PROGRESS: Progress = {
-  correct: 0,
-  total: 0,
-  lastPracticed: new Date().toISOString(),
-  streak: 0,
-  practicedVerbs: {
-    A1: [],
-    A2: [],
-    B1: [],
-    B2: [],
-    C1: [],
-    C2: [],
-  },
-};
-
-const PRACTICE_MODES: PracticeMode[] = ["präteritum", "partizipII", "auxiliary"];
-const LEVELS: Array<Settings["level"]> = ["A1", "A2", "B1", "B2", "C1", "C2"];
-
-function SessionProgressBar({
-  value,
-  practiced,
-  target,
-  debugId,
-}: { value: number; practiced: number; target: number } & DebuggableComponentProps) {
-  const resolvedDebugId = debugId && debugId.trim().length > 0 ? debugId : "session-progress";
+function SessionProgressBar({ value, completed, target, debugId }: SessionProgressBarProps) {
+  const resolvedDebugId = debugId && debugId.trim().length > 0 ? debugId : 'session-progress';
 
   return (
     <div
       className="w-full rounded-3xl border border-border/70 bg-card/80 p-6 shadow-lg shadow-primary/5"
-      {...getDevAttributes("session-progress-bar", resolvedDebugId)}
+      {...getDevAttributes('session-progress-bar', resolvedDebugId)}
     >
       <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-        <span>Milestone progress</span>
+        <span>Session progress</span>
         <span>{Math.round(value)}%</span>
       </div>
       <div className="mt-4 h-3 w-full overflow-hidden rounded-full border border-border/60 bg-muted">
@@ -88,244 +76,245 @@ function SessionProgressBar({
           className="block h-full rounded-full bg-gradient-to-r from-brand-gradient-start via-primary to-brand-gradient-end"
           initial={{ width: 0 }}
           animate={{ width: `${Math.min(100, Math.max(0, value))}%` }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
         />
       </div>
       <p className="mt-3 text-xs text-muted-foreground">
-        {practiced} of {target} verbs locked in for this streak cycle.
+        {completed} of {target} tasks completed in this session.
       </p>
     </div>
   );
 }
 
+const MIN_QUEUE_THRESHOLD = 5;
+const FETCH_LIMIT = 15;
+const VERB_PRESET_LABEL = 'Verbs only';
+
+function getActiveTaskType(settings: PracticeSettingsState): TaskType {
+  return settings.defaultTaskType ?? 'conjugate_form';
+}
+
+function getVerbLevel(settings: PracticeSettingsState): CEFRLevel {
+  return settings.cefrLevelByPos.verb ?? settings.legacyVerbLevel ?? 'A1';
+}
+
 export default function Home() {
-  const [settings, setSettings] = useState<Settings>(() => {
-    const saved = localStorage.getItem("settings");
-    return saved ? JSON.parse(saved) : DEFAULT_SETTINGS;
-  });
+  const [settings, setSettings] = useState<PracticeSettingsState>(() => loadPracticeSettings());
+  const [progress, setProgress] = useState<PracticeProgressState>(() => loadPracticeProgress());
+  const [session, setSession] = useState<PracticeSessionState>(() => loadPracticeSession());
+  const [answerHistory, setAnswerHistory] = useState(() => loadAnswerHistory());
+  const [tasksById, setTasksById] = useState<Record<string, PracticeTask>>({});
+  const [isFetchingTasks, setIsFetchingTasks] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [shouldReloadTasks, setShouldReloadTasks] = useState(false);
+  const pendingFetchRef = useRef(false);
 
-  const [progress, setProgress] = useState<Progress>(() => {
-    const saved = localStorage.getItem("progress");
-    if (!saved) return DEFAULT_PROGRESS;
-
-    const parsedProgress = JSON.parse(saved);
-    return {
-      ...DEFAULT_PROGRESS,
-      ...parsedProgress,
-      practicedVerbs: {
-        ...DEFAULT_PROGRESS.practicedVerbs,
-        ...(parsedProgress.practicedVerbs || {}),
-      },
-    };
-  });
-
-  const [currentMode, setCurrentMode] = useState<PracticeMode>("präteritum");
-  const [verbHistory, setVerbHistory] = useState<VerbHistoryItem[]>([]);
-  const [historyIndex, setHistoryIndex] = useState(-1);
-  const [answerHistory, setAnswerHistory] = useState<AnsweredQuestion[]>(() => loadAnswerHistory());
-  const [currentVerb, setCurrentVerb] = useState<GermanVerb | null>(null);
-  const [verbLoading, setVerbLoading] = useState(true);
-  const requestIdRef = useRef(0);
-
-  const loadVerb = useCallback(async () => {
-    const requestId = requestIdRef.current + 1;
-    requestIdRef.current = requestId;
-    setVerbLoading(true);
-
-    try {
-      let queuedVerb = peekReviewVerb();
-      let nextVerb: GermanVerb | null = null;
-
-      while (queuedVerb) {
-        const targeted = await getVerbByInfinitive(queuedVerb);
-        if (targeted) {
-          nextVerb = targeted;
-          break;
-        }
-        shiftReviewVerb();
-        queuedVerb = peekReviewVerb();
-      }
-
-      if (!nextVerb) {
-        nextVerb = await getRandomVerb(settings.level);
-      }
-
-      if (requestId === requestIdRef.current) {
-        setCurrentVerb(nextVerb);
-      }
-    } catch (error) {
-      console.error("Failed to load verb:", error);
-      if (requestId === requestIdRef.current) {
-        setCurrentVerb(null);
-      }
-    } finally {
-      if (requestId === requestIdRef.current) {
-        setVerbLoading(false);
-      }
-    }
-  }, [settings.level]);
-
-  const practicedVerbsCount = useMemo(
-    () => (progress.practicedVerbs?.[settings.level] || []).length,
-    [progress.practicedVerbs, settings.level],
-  );
-
-  const accuracy = progress.total > 0
-    ? Math.round((progress.correct / progress.total) * 100)
-    : 0;
-
-  const nextMilestone = useMemo(() => {
-    if (practicedVerbsCount === 0) return 10;
-    const base = Math.ceil(practicedVerbsCount / 10) * 10;
-    return Math.max(base, practicedVerbsCount + 5);
-  }, [practicedVerbsCount]);
-
-  const milestoneProgress = Math.min(
-    100,
-    Math.round((practicedVerbsCount / nextMilestone) * 100),
-  );
-
-  const PRACTICE_MODE_LABELS: Record<PracticeMode, string> = {
-    präteritum: "Präteritum",
-    partizipII: "Partizip II",
-    auxiliary: "Auxiliary",
-    english: "English",
-  };
+  const activeTaskType = getActiveTaskType(settings);
+  const registryEntry = clientTaskRegistry[activeTaskType];
+  const verbLevel = getVerbLevel(settings);
 
   useEffect(() => {
-    localStorage.setItem("settings", JSON.stringify(settings));
+    savePracticeSettings(settings);
   }, [settings]);
 
   useEffect(() => {
-    localStorage.setItem("progress", JSON.stringify(progress));
+    savePracticeProgress(progress);
   }, [progress]);
 
   useEffect(() => {
-    setVerbHistory([]);
-    setHistoryIndex(-1);
-    loadVerb();
-  }, [loadVerb]);
+    savePracticeSession(session);
+  }, [session]);
 
   useEffect(() => {
     saveAnswerHistory(answerHistory);
   }, [answerHistory]);
 
-  const handleCorrect = () => {
-    if (!currentVerb) return;
+  const activeTask = session.activeTaskId ? tasksById[session.activeTaskId] : undefined;
 
-    setProgress((prev) => {
-      const updatedPracticedVerbs = {
-        ...prev.practicedVerbs,
-        [settings.level]: Array.from(new Set([
-          ...prev.practicedVerbs[settings.level],
-          currentVerb.infinitive,
-        ])),
-      };
+  const fetchAndEnqueueTasks = useCallback(
+    async ({ replace = false }: { replace?: boolean } = {}) => {
+      if (pendingFetchRef.current) {
+        return;
+      }
 
-      return {
-        ...prev,
-        correct: prev.correct + 1,
-        total: prev.total + 1,
-        lastPracticed: new Date().toISOString(),
-        practicedVerbs: updatedPracticedVerbs,
-      };
-    });
-    setTimeout(nextQuestion, 1500);
-  };
+      pendingFetchRef.current = true;
+      setIsFetchingTasks(true);
+      setFetchError(null);
 
-  const handleIncorrect = () => {
-    setProgress((prev) => ({
-      ...prev,
-      total: prev.total + 1,
-      lastPracticed: new Date().toISOString(),
-    }));
-    setTimeout(nextQuestion, 2500);
-  };
+      try {
+        const tasks = await fetchPracticeTasks({
+          taskType: activeTaskType,
+          pos: registryEntry.supportedPos[0],
+          limit: FETCH_LIMIT,
+        });
 
-  const handleAnswer = (details: PracticeAnswerDetails) => {
-    if (!currentVerb) return;
+        setTasksById((prev) => {
+          const next = replace ? {} : { ...prev };
+          for (const task of tasks) {
+            next[task.taskId] = task;
+          }
+          return next;
+        });
 
-    setAnswerHistory((prev) => {
-      const entry = createLegacyAnswerHistoryEntry({
-        id: `${details.verb.infinitive}-${Date.now()}`,
-        verb: details.verb,
-        mode: details.mode,
-        result: details.isCorrect ? "correct" : "incorrect",
-        attemptedAnswer: details.attemptedAnswer,
-        correctAnswer: details.correctAnswer,
-        prompt: details.prompt,
-        timeSpentMs: details.timeSpent,
-        answeredAt: new Date().toISOString(),
-        level: settings.level,
-      });
+        setSession((prev) => enqueueTasks(replace ? resetSession() : prev, tasks, { replace }));
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Failed to load practice tasks';
+        console.error('[home] Unable to fetch practice tasks', error);
+        setFetchError(message);
+      } finally {
+        pendingFetchRef.current = false;
+        setIsFetchingTasks(false);
+      }
+    },
+    [activeTaskType, registryEntry],
+  );
 
-      return appendAnswer(entry, prev, MAX_STORED_ANSWER_HISTORY);
-    });
-  };
-
-  const nextQuestion = () => {
-    if (!currentVerb) return;
-
-    const queued = peekReviewVerb();
-    if (queued && queued.toLowerCase() === currentVerb.infinitive.toLowerCase()) {
-      shiftReviewVerb();
+  useEffect(() => {
+    if (fetchError) {
+      return;
     }
 
-    setVerbHistory((prev) => {
-      const updatedHistory = [
-        ...prev.slice(0, historyIndex + 1),
-        { verb: currentVerb, mode: currentMode },
-      ];
+    if (!session.queue.length || !session.activeTaskId) {
+      void fetchAndEnqueueTasks({ replace: true });
+      return;
+    }
 
-      setHistoryIndex(updatedHistory.length);
+    if (!tasksById[session.activeTaskId] && !isFetchingTasks) {
+      void fetchAndEnqueueTasks({ replace: true });
+      return;
+    }
 
-      return updatedHistory;
+    if (session.queue.length < MIN_QUEUE_THRESHOLD && !isFetchingTasks) {
+      void fetchAndEnqueueTasks();
+    }
+  }, [session.queue.length, session.activeTaskId, tasksById, isFetchingTasks, fetchAndEnqueueTasks, fetchError]);
+
+  useEffect(() => {
+    if (shouldReloadTasks) {
+      setShouldReloadTasks(false);
+      setTasksById({});
+      setSession(resetSession());
+      void fetchAndEnqueueTasks({ replace: true });
+    }
+  }, [shouldReloadTasks, fetchAndEnqueueTasks]);
+
+  const handleTaskResult = useCallback(
+    (details: PracticeCardResult) => {
+      setProgress((prev) =>
+        recordTaskResult(prev, {
+          taskId: details.task.taskId,
+          lexemeId: details.task.lexemeId,
+          taskType: details.task.taskType,
+          result: details.result,
+          practicedAt: details.answeredAt,
+          cefrLevel: details.task.lexeme.metadata?.level as CEFRLevel | undefined,
+        }),
+      );
+
+      setAnswerHistory((prev) => {
+        const entry = createAnswerHistoryEntry({
+          task: details.task,
+          result: details.result,
+          submittedResponse: details.submittedResponse,
+          expectedResponse: details.expectedResponse,
+          promptSummary: details.promptSummary,
+          timeSpentMs: details.timeSpentMs,
+          answeredAt: details.answeredAt,
+        });
+        return appendAnswer(entry, prev);
+      });
+
+      setSession((prev) => completeTask(prev, details.task.taskId));
+
+      setTasksById((prev) => {
+        const next = { ...prev };
+        delete next[details.task.taskId];
+        return next;
+      });
+    },
+    [],
+  );
+
+  const handleSkipTask = useCallback(() => {
+    if (!activeTask) {
+      return;
+    }
+    setSession((prev) => {
+      const remaining = prev.queue.filter((id) => id !== activeTask.taskId);
+      return {
+        ...prev,
+        queue: remaining,
+        activeTaskId: remaining[0] ?? null,
+      };
     });
-
-    loadVerb();
-    setCurrentMode(PRACTICE_MODES[Math.floor(Math.random() * PRACTICE_MODES.length)]);
-  };
-
-  const goBack = () => {
-    setHistoryIndex((prev) => {
-      const targetIndex = prev - 1;
-      if (targetIndex < 0) {
-        return prev;
-      }
-
-      const previousItem = verbHistory[targetIndex];
-
-      if (!previousItem) {
-        return prev;
-      }
-
-      requestIdRef.current += 1;
-      setVerbLoading(false);
-      setCurrentVerb(previousItem.verb);
-      setCurrentMode(previousItem.mode);
-
-      return targetIndex;
+    setTasksById((prev) => {
+      const next = { ...prev };
+      delete next[activeTask.taskId];
+      return next;
     });
-  };
+  }, [activeTask]);
 
-  const changeLevel = (level: Settings["level"]) => {
-    if (level === settings.level) return;
-    setSettings((prev) => ({ ...prev, level }));
-    setProgress(DEFAULT_PROGRESS);
-  };
+  const handleSettingsChange = useCallback(
+    (nextSettings: PracticeSettingsState) => {
+      const previousLevel = getVerbLevel(settings);
+      const nextLevel = getVerbLevel(nextSettings);
+      setSettings(nextSettings);
+      if (previousLevel !== nextLevel) {
+        setShouldReloadTasks(true);
+      }
+    },
+    [settings],
+  );
+
+  const summary = useMemo(() => {
+    const totals = progress.totals[activeTaskType];
+    if (!totals) {
+      return {
+        total: 0,
+        correct: 0,
+        streak: 0,
+        accuracy: 0,
+      };
+    }
+    const total = totals.correctAttempts + totals.incorrectAttempts;
+    const accuracy = total > 0 ? Math.round((totals.correctAttempts / total) * 100) : 0;
+    return {
+      total,
+      correct: totals.correctAttempts,
+      streak: totals.streak,
+      accuracy,
+    };
+  }, [progress, activeTaskType]);
+
+  const sessionCompleted = session.completed.length;
+  const milestoneTarget = useMemo(() => {
+    if (sessionCompleted === 0) {
+      return 10;
+    }
+    const base = Math.ceil(sessionCompleted / 10) * 10;
+    return Math.max(base, sessionCompleted + 5);
+  }, [sessionCompleted]);
+  const milestoneProgress = milestoneTarget
+    ? Math.min(100, Math.round((sessionCompleted / milestoneTarget) * 100))
+    : 0;
+
+  const historyCount = answerHistory.length;
+
+  const isInitialLoading = !activeTask && isFetchingTasks;
 
   const topBar = (
     <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
       <div className="space-y-2">
         <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
           <Sparkles className="h-4 w-4" aria-hidden />
-          German Verb Mastery
+          Adaptive practice
         </p>
         <h1 className="text-3xl font-semibold text-foreground lg:text-4xl">
-          Practice that feels purposeful
+          Practice that adapts to every task type
         </h1>
         <p className="max-w-xl text-sm text-muted-foreground">
-          Learn faster with adaptive drills, beautiful visuals, and a motivating progress tracker that celebrates every streak.
+          Sessions now draw from the shared task registry. Start with the {VERB_PRESET_LABEL.toLowerCase()} preset and stay ready
+          for nouns and adjectives.
         </p>
       </div>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -334,10 +323,8 @@ export default function Home() {
             <Flame className="h-6 w-6" aria-hidden />
           </div>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-              Streak
-            </p>
-            <p className="text-lg font-semibold text-foreground">{progress.streak} day{progress.streak === 1 ? "" : "s"}</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Streak</p>
+            <p className="text-lg font-semibold text-foreground">{summary.streak} day{summary.streak === 1 ? '' : 's'}</p>
           </div>
         </div>
         <div className="flex items-center gap-4 rounded-3xl border border-border/60 bg-muted/40 p-4 shadow-sm">
@@ -345,10 +332,8 @@ export default function Home() {
             <Target className="h-6 w-6" aria-hidden />
           </div>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-              Accuracy
-            </p>
-            <p className="text-lg font-semibold text-foreground">{accuracy}%</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Accuracy</p>
+            <p className="text-lg font-semibold text-foreground">{summary.accuracy}%</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -361,18 +346,12 @@ export default function Home() {
           <SettingsDialog
             debugId="topbar-settings-dialog"
             settings={settings}
-            onSettingsChange={(newSettings) => {
-              setSettings(newSettings);
-              if (newSettings.level !== settings.level) {
-                setProgress(DEFAULT_PROGRESS);
-              }
-            }}
+            onSettingsChange={handleSettingsChange}
+            taskType={activeTaskType}
           />
           <div className="hidden sm:block">
             <Avatar className="h-11 w-11 border border-border/60 shadow-sm">
-              <AvatarFallback className="bg-primary/10 text-sm font-semibold text-primary">
-                LV
-              </AvatarFallback>
+              <AvatarFallback className="bg-primary/10 text-sm font-semibold text-primary">LV</AvatarFallback>
             </Avatar>
           </div>
         </div>
@@ -384,9 +363,7 @@ export default function Home() {
     <div className="flex h-full flex-col justify-between gap-8">
       <div className="space-y-8">
         <div className="space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-            Navigate
-          </p>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Navigate</p>
           <div className="grid gap-2">
             <SidebarNavButton href="/" icon={Sparkles} label="Practice" exact />
             <SidebarNavButton href="/answers" icon={History} label="Answer history" />
@@ -396,40 +373,26 @@ export default function Home() {
         </div>
         <div>
           <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-              CEFR Levels
-            </p>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Active preset</p>
             <Badge variant="outline" className="rounded-full border-primary/30 bg-primary/10 text-[10px] uppercase tracking-[0.22em] text-primary">
-              Adaptive
+              {VERB_PRESET_LABEL}
             </Badge>
           </div>
-          <div className="mt-4 grid grid-cols-2 gap-2">
-            {LEVELS.map((level) => (
-              <Button
-                key={level}
-                debugId={`level-select-${level.toLowerCase()}-button`}
-                variant={level === settings.level ? "default" : "secondary"}
-                onClick={() => changeLevel(level)}
-                className="rounded-2xl px-0 py-3 text-sm font-semibold"
-              >
-                {level}
-              </Button>
-            ))}
-          </div>
+          <p className="mt-3 text-sm text-muted-foreground">
+            Level {verbLevel} · {registryEntry.taskType}
+          </p>
         </div>
       </div>
       <div className="space-y-3 rounded-3xl border border-border/60 bg-muted/40 p-5 text-sm shadow-sm">
         <p className="font-semibold text-foreground">Session recap</p>
         <p className="text-xs text-muted-foreground">
-          {progress.total > 0
-            ? `${progress.total} attempt${progress.total === 1 ? "" : "s"} today · ${accuracy}% accuracy`
-            : "Take your first attempt to unlock personalized insights."}
+          {summary.total > 0
+            ? `${summary.total} attempt${summary.total === 1 ? '' : 's'} recorded · ${summary.accuracy}% accuracy`
+            : 'Take your first attempt to unlock personalised insights.'}
         </p>
       </div>
     </div>
   );
-
-  const isInitialLoading = verbLoading && !currentVerb;
 
   return (
     <AppShell sidebar={sidebar} topBar={topBar} debugId="home-app-shell">
@@ -438,11 +401,11 @@ export default function Home() {
           <div className="flex w-full max-w-xl flex-col items-center gap-4 text-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
               <Sparkles className="h-3 w-3" aria-hidden />
-              {PRACTICE_MODE_LABELS[currentMode]}
+              {VERB_PRESET_LABEL}
             </div>
             <h2 className="text-3xl font-semibold text-foreground">Focus mode</h2>
             <p className="text-sm text-muted-foreground">
-              Answer the prompt below to keep your streak alive and unlock deeper analytics.
+              Answer the prompt below to keep your streak alive and build mixed-part-of-speech mastery.
             </p>
           </div>
 
@@ -451,76 +414,100 @@ export default function Home() {
               <div className="flex h-[340px] items-center justify-center rounded-3xl border border-dashed border-border/70 bg-card/70">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
               </div>
+            ) : activeTask ? (
+              <PracticeCard
+                key={activeTask.taskId}
+                task={activeTask}
+                settings={settings}
+                onResult={handleTaskResult}
+                isLoadingNext={isFetchingTasks && session.queue.length <= 1}
+                className="mx-auto"
+                debugId="home-practice-card"
+              />
             ) : (
-              currentVerb && (
-                <PracticeCard
-                  key={`${currentVerb.infinitive}-${currentMode}`}
-                  verb={currentVerb}
-                  mode={currentMode}
-                  settings={settings}
-                  onCorrect={handleCorrect}
-                  onIncorrect={handleIncorrect}
-                  onAnswer={handleAnswer}
-                  className="mx-auto"
-                  debugId="home-practice-card"
-                />
-              )
+              <div className="flex h-[340px] items-center justify-center rounded-3xl border border-border/70 bg-card/70">
+                <p className="text-sm text-muted-foreground">No tasks available right now. Try refreshing in a moment.</p>
+              </div>
+            )}
+            {fetchError && (
+              <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-destructive" role="alert">
+                <span>{fetchError}</span>
+                <Button
+                  variant="link"
+                  className="h-auto px-0 text-destructive"
+                  onClick={() => {
+                    setFetchError(null);
+                    void fetchAndEnqueueTasks({ replace: true });
+                  }}
+                >
+                  Try again
+                </Button>
+              </div>
             )}
           </div>
 
           <SessionProgressBar
             value={milestoneProgress}
-            practiced={practicedVerbsCount}
-            target={nextMilestone}
+            completed={sessionCompleted}
+            target={milestoneTarget}
             debugId="home-session-progress"
           />
 
           <div className="flex w-full flex-col gap-3 sm:flex-row">
-            {historyIndex > 0 && (
-              <Button
-                variant="secondary"
-                className="flex-1 rounded-2xl"
-                onClick={goBack}
-                debugId="practice-previous-button"
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" aria-hidden />
-                Previous verb
-              </Button>
-            )}
             <Button
               variant="secondary"
               className="flex-1 rounded-2xl"
-              onClick={nextQuestion}
+              onClick={handleSkipTask}
+              disabled={!activeTask}
               debugId="practice-skip-button"
             >
               Skip to next
             </Button>
+            <Link href="/answers" className="flex-1">
+              <Button variant="secondary" className="w-full rounded-2xl" debugId="practice-review-history-button">
+                <History className="mr-2 h-4 w-4" aria-hidden />
+                Review answer history
+              </Button>
+            </Link>
           </div>
         </section>
 
         <aside className="space-y-6">
           <ProgressDisplay
             progress={progress}
-            currentLevel={settings.level}
+            taskType={activeTaskType}
+            cefrLevel={verbLevel}
             debugId="sidebar-progress-display"
           />
-          <div className="rounded-3xl border border-border/60 bg-card/80 p-6 text-center shadow-lg shadow-primary/5">
-            <h2 className="text-lg font-semibold text-foreground">Need a recap?</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Visit your answer history to revisit detailed breakdowns, correct forms, and usage examples.
-            </p>
-            <Link href="/answers">
-              <Button debugId="sidebar-review-history-button" className="mt-4 w-full rounded-2xl">
-                <History className="mr-2 h-4 w-4" aria-hidden />
-                Review answer history
-              </Button>
-            </Link>
+          <div className="rounded-3xl border border-border/60 bg-card/80 p-6 shadow-lg shadow-primary/5">
+            <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+              Session details
+              <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
+                {historyCount} entries
+              </span>
+            </div>
+            <div className="mt-4 flex items-center gap-3 rounded-2xl border border-border/60 bg-muted/30 p-4 text-sm">
+              <motion.div
+                className="h-10 w-10 rounded-full bg-primary/10 p-2"
+                initial={{ scale: 0.9, opacity: 0.8 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}
+              >
+                <BookOpen className="h-full w-full text-primary" aria-hidden />
+              </motion.div>
+              <div>
+                <p className="font-medium text-foreground">{summary.correct} correct attempts logged</p>
+                <p className="text-xs text-muted-foreground">
+                  Review your detailed answer history to reinforce the tricky lexemes.
+                </p>
+              </div>
+            </div>
           </div>
           <div className="rounded-3xl border border-border/60 bg-card/80 p-6 shadow-lg shadow-primary/5">
             <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
               Next milestone
               <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
-                {nextMilestone} verbs
+                {milestoneTarget} tasks
               </span>
             </div>
             <div className="mt-4 h-3 w-full overflow-hidden rounded-full border border-border/60 bg-muted">
@@ -528,19 +515,16 @@ export default function Home() {
                 className="block h-full rounded-full bg-gradient-to-r from-brand-gradient-start via-primary to-brand-gradient-end"
                 initial={{ width: 0 }}
                 animate={{ width: `${milestoneProgress}%` }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
+                transition={{ duration: 0.6, ease: 'easeOut' }}
               />
             </div>
             <p className="mt-3 text-sm text-muted-foreground">
-              {practicedVerbsCount} of {nextMilestone} verbs mastered at level {settings.level}. Keep practicing to unlock new difficulty bands.
+              {sessionCompleted} of {milestoneTarget} tasks completed in this streak cycle.
             </p>
-            <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-secondary/30 bg-secondary/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-secondary">
-              <BookOpen className="h-4 w-4" aria-hidden />
-              Level mastery snapshot
-            </div>
           </div>
         </aside>
       </div>
     </AppShell>
   );
 }
+

@@ -1,4 +1,4 @@
-import { Settings } from "@/lib/types"
+import type { PracticeSettingsState, TaskType, CEFRLevel } from '@shared';
 import {
   Dialog,
   DialogContent,
@@ -6,24 +6,52 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogClose,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { Settings as SettingsIcon } from "lucide-react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Settings as SettingsIcon } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   type DebuggableComponentProps,
   getDevAttributes,
-} from "@/lib/dev-attributes"
+} from '@/lib/dev-attributes';
+import {
+  updateCefrLevel,
+  updateRendererPreferences,
+} from '@/lib/practice-settings';
 
 interface SettingsDialogProps extends DebuggableComponentProps {
-  settings: Settings
-  onSettingsChange: (settings: Settings) => void
+  settings: PracticeSettingsState;
+  onSettingsChange: (settings: PracticeSettingsState) => void;
+  taskType?: TaskType;
 }
 
-export function SettingsDialog({ settings, onSettingsChange, debugId }: SettingsDialogProps) {
-  const resolvedDebugId = debugId && debugId.trim().length > 0 ? debugId : "settings-dialog";
+const LEVELS: CEFRLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+
+const TASK_LABELS: Record<TaskType, string> = {
+  conjugate_form: 'Verb conjugation',
+  noun_case_declension: 'Noun declension',
+  adj_ending: 'Adjective endings',
+};
+
+export function SettingsDialog({ settings, onSettingsChange, debugId, taskType = 'conjugate_form' }: SettingsDialogProps) {
+  const resolvedDebugId = debugId && debugId.trim().length > 0 ? debugId : 'settings-dialog';
+  const prefs = settings.rendererPreferences[taskType] ?? { showHints: true, showExamples: true };
+  const cefrLevel = settings.cefrLevelByPos.verb ?? settings.legacyVerbLevel ?? 'A1';
+
+  const handleLevelChange = (level: CEFRLevel) => {
+    const next = updateCefrLevel(settings, { pos: 'verb', level });
+    onSettingsChange(next);
+  };
+
+  const handlePreferenceChange = (field: 'showHints' | 'showExamples', value: boolean) => {
+    const next = updateRendererPreferences(settings, {
+      taskType,
+      preferences: { [field]: value },
+    });
+    onSettingsChange(next);
+  };
 
   return (
     <Dialog debugId={resolvedDebugId}>
@@ -43,74 +71,59 @@ export function SettingsDialog({ settings, onSettingsChange, debugId }: Settings
       >
         <DialogHeader debugId={`${resolvedDebugId}-header`}>
           <DialogTitle debugId={`${resolvedDebugId}-title`} className="text-foreground">
-            Settings
+            Practice settings
           </DialogTitle>
         </DialogHeader>
         <div
-          {...getDevAttributes("settings-dialog-content", resolvedDebugId)}
+          {...getDevAttributes('settings-dialog-content', resolvedDebugId)}
           className="space-y-4 py-4"
         >
+          <div className="space-y-1">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+              Active preset
+            </p>
+            <p className="text-sm text-foreground">Verbs only · {TASK_LABELS[taskType]}</p>
+          </div>
+
           <div className="flex items-center justify-between gap-4">
             <Label debugId={`${resolvedDebugId}-level-label`} htmlFor="level">
-              Language Level
+              Verb level (CEFR)
             </Label>
-            <Select
-              value={settings.level}
-              onValueChange={(value: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2') =>
-                onSettingsChange({ ...settings, level: value })
-              }
-            >
+            <Select value={cefrLevel} onValueChange={(value: CEFRLevel) => handleLevelChange(value)}>
               <SelectTrigger debugId={`${resolvedDebugId}-level-trigger`} className="w-32">
                 <SelectValue debugId={`${resolvedDebugId}-level-value`} placeholder="Select level" />
               </SelectTrigger>
               <SelectContent debugId={`${resolvedDebugId}-level-menu`}>
-                <SelectItem debugId={`${resolvedDebugId}-level-a1`} value="A1">
-                  A1
-                </SelectItem>
-                <SelectItem debugId={`${resolvedDebugId}-level-a2`} value="A2">
-                  A2
-                </SelectItem>
-                <SelectItem debugId={`${resolvedDebugId}-level-b1`} value="B1">
-                  B1
-                </SelectItem>
-                <SelectItem debugId={`${resolvedDebugId}-level-b2`} value="B2">
-                  B2
-                </SelectItem>
-                <SelectItem debugId={`${resolvedDebugId}-level-c1`} value="C1">
-                  C1
-                </SelectItem>
-                <SelectItem debugId={`${resolvedDebugId}-level-c2`} value="C2">
-                  C2
-                </SelectItem>
+                {LEVELS.map((level) => (
+                  <SelectItem key={level} debugId={`${resolvedDebugId}-level-${level.toLowerCase()}`} value={level}>
+                    {level}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
 
           <div className="flex items-center justify-between gap-4">
             <Label debugId={`${resolvedDebugId}-hints-label`} htmlFor="hints">
-              Show Hints
+              Show hints
             </Label>
             <Switch
               id="hints"
               debugId={`${resolvedDebugId}-hints-switch`}
-              checked={settings.showHints}
-              onCheckedChange={(checked) =>
-                onSettingsChange({ ...settings, showHints: checked })
-              }
+              checked={prefs.showHints}
+              onCheckedChange={(checked) => handlePreferenceChange('showHints', checked)}
             />
           </div>
 
           <div className="flex items-center justify-between gap-4">
             <Label debugId={`${resolvedDebugId}-examples-label`} htmlFor="examples">
-              Show Example Sentences
+              Show examples
             </Label>
             <Switch
               id="examples"
               debugId={`${resolvedDebugId}-examples-switch`}
-              checked={settings.showExamples}
-              onCheckedChange={(checked) =>
-                onSettingsChange({ ...settings, showExamples: checked })
-              }
+              checked={prefs.showExamples}
+              onCheckedChange={(checked) => handlePreferenceChange('showExamples', checked)}
             />
           </div>
 
@@ -124,5 +137,6 @@ export function SettingsDialog({ settings, onSettingsChange, debugId }: Settings
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
+

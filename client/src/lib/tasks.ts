@@ -212,7 +212,7 @@ function shouldUseLegacyFallback(options: TaskFetchOptions): boolean {
   return true;
 }
 
-function createLegacyVerbTask(verb: GermanVerb): PracticeTask<'conjugate_form'> {
+export function createLegacyConjugationTask(verb: GermanVerb): PracticeTask<'conjugate_form'> {
   const registryEntry = sharedTaskRegistry.conjugate_form;
   const primaryForm = verb.partizipII.trim() || verb.präteritum.trim() || verb.infinitive.trim();
   const alternateForms = [verb.präteritum.trim(), verb.perfekt?.trim() ?? '']
@@ -279,7 +279,7 @@ function createLegacyVerbTask(verb: GermanVerb): PracticeTask<'conjugate_form'> 
 async function fetchLegacyVerbTasks(limit: number, reason: string, signal?: AbortSignal): Promise<PracticeTask<'conjugate_form'>[]> {
   const params = new URLSearchParams();
   params.set('limit', String(limit));
-  const response = await fetch(`/api/quiz/verbs?${params.toString()}`, { signal });
+  const response = await fetch(createApiUrl('/api/quiz/verbs', params), { signal });
   if (!response.ok) {
     throw new Error(`Legacy verb feed failed with status ${response.status}`);
   }
@@ -289,7 +289,7 @@ async function fetchLegacyVerbTasks(limit: number, reason: string, signal?: Abor
 
   recordLegacyEndpointUsage(response.headers, reason);
 
-  return verbs.map(createLegacyVerbTask);
+  return verbs.map(createLegacyConjugationTask);
 }
 
 function buildTasksQuery(options: TaskFetchOptions): string {
@@ -317,7 +317,7 @@ class TaskFeedError extends Error {
 
 async function fetchFromTaskFeed(options: TaskFetchOptions): Promise<PracticeTask[]> {
   const query = buildTasksQuery(options);
-  const response = await fetch(`/api/tasks${query ? `?${query}` : ''}`, {
+  const response = await fetch(createApiUrl('/api/tasks', query ? new URLSearchParams(query) : undefined), {
     signal: options.signal,
   });
 
@@ -373,5 +373,20 @@ export function getClientTaskRegistryEntry(taskType: TaskType): TaskRegistryEntr
 
 export function listClientTaskTypes(): TaskType[] {
   return Object.keys(clientTaskRegistry) as TaskType[];
+}
+
+function createApiUrl(path: string, params?: URLSearchParams): string {
+  const base = typeof window !== 'undefined' && window.location
+    ? window.location.origin
+    : typeof globalThis !== 'undefined' && 'location' in globalThis && (globalThis.location as Location | undefined)
+      ? (globalThis.location as Location).origin
+      : 'http://localhost';
+  const url = new URL(path, base);
+  if (params) {
+    for (const [key, value] of params.entries()) {
+      url.searchParams.set(key, value);
+    }
+  }
+  return url.toString();
 }
 
