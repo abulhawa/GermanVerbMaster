@@ -23,6 +23,7 @@ describe('tasks API', () => {
   let server: import('http').Server;
   let agent: request.SuperTest<request.Test>;
   let schedulingStateTable: typeof import('../db/schema').schedulingState;
+  let telemetryTable: typeof import('../db/schema').telemetryPriorities;
   let drizzleDb: typeof import('../db/index').db;
 
   beforeEach(async () => {
@@ -31,6 +32,7 @@ describe('tasks API', () => {
 
     const schemaModule = await import('../db/schema');
     schedulingStateTable = schemaModule.schedulingState;
+    telemetryTable = schemaModule.telemetryPriorities;
     const dbModule = await import('../db/index');
     drizzleDb = dbModule.db;
 
@@ -151,6 +153,7 @@ describe('tasks API', () => {
     expect(submission.body.status).toBe('recorded');
     expect(submission.body.leitnerBox).toBeGreaterThanOrEqual(1);
     expect(submission.body.queueCap).toBeGreaterThan(0);
+    expect(submission.body.coverageScore).toBeGreaterThanOrEqual(0);
 
     const rows = await drizzleDb
       .select({
@@ -162,5 +165,20 @@ describe('tasks API', () => {
 
     expect(rows[0]?.totalAttempts).toBeGreaterThan(0);
     expect(rows[0]?.correctAttempts).toBeGreaterThan(0);
+
+    const telemetryRows = await drizzleDb
+      .select({
+        priorityScore: telemetryTable.priorityScore,
+        metadata: telemetryTable.metadata,
+      })
+      .from(telemetryTable)
+      .where(eq(telemetryTable.taskId, task.id));
+
+    expect(telemetryRows.length).toBe(1);
+    expect(telemetryRows[0]?.priorityScore).toBeCloseTo(submission.body.priorityScore, 5);
+    expect(telemetryRows[0]?.metadata).toMatchObject({
+      posAssignments: 1,
+      queueCap: submission.body.queueCap,
+    });
   });
 });

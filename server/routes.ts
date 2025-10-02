@@ -23,6 +23,7 @@ import type { GermanVerb } from "@shared";
 import type { TaskType } from "@shared/task-registry";
 import { srsEngine } from "./srs";
 import { getTaskRegistryEntry, taskRegistry } from "./tasks/registry";
+import { processTaskSubmission } from "./tasks/scheduler";
 
 const practiceModeSchema = z.enum(["präteritum", "partizipII", "auxiliary", "english"]);
 const levelSchema = z.enum(["A1", "A2", "B1", "B2", "C1", "C2"]);
@@ -221,70 +222,6 @@ function setLegacyDeprecation(res: Response): void {
   res.setHeader('Deprecation', 'Sun, 01 Oct 2025 00:00:00 GMT');
   res.setHeader('Link', '</api/tasks>; rel="successor-version"; title="GET /api/tasks"');
   res.setHeader('Warning', '299 - "Legacy verb-only endpoint. Use /api/tasks."');
-}
-
-interface SchedulingSnapshot {
-  id?: number;
-  leitnerBox: number;
-  totalAttempts: number;
-  correctAttempts: number;
-  averageResponseMs: number;
-  accuracyWeight: number;
-  latencyWeight: number;
-  stabilityWeight: number;
-}
-
-interface SubmissionMetrics {
-  totalAttempts: number;
-  correctAttempts: number;
-  averageResponseMs: number;
-  leitnerBox: number;
-  accuracyWeight: number;
-  latencyWeight: number;
-  stabilityWeight: number;
-  priorityScore: number;
-  dueAt: number;
-}
-
-function computeSubmissionMetrics(
-  existing: SchedulingSnapshot | null,
-  payload: { result: 'correct' | 'incorrect'; responseMs: number },
-  now: number,
-): SubmissionMetrics {
-  const previousAttempts = existing?.totalAttempts ?? 0;
-  const previousCorrect = existing?.correctAttempts ?? 0;
-  const previousAverage = existing?.averageResponseMs ?? 0;
-  const previousLeitner = existing?.leitnerBox ?? 1;
-
-  const totalAttempts = previousAttempts + 1;
-  const correctAttempts = previousCorrect + (payload.result === 'correct' ? 1 : 0);
-  const averageResponseMs = Math.round(
-    (previousAverage * previousAttempts + payload.responseMs) / totalAttempts,
-  );
-  const accuracyWeight = Number((correctAttempts / totalAttempts).toFixed(4));
-  const latencyRatio = Math.min(payload.responseMs / 30000, 1);
-  const latencyWeight = Number((1 - latencyRatio).toFixed(4));
-  const nextLeitner = payload.result === 'correct' ? Math.min(previousLeitner + 1, 5) : 1;
-  const stabilityWeight = Number(Math.min(nextLeitner / 5, 1).toFixed(4));
-  const priorityScore = Number(
-    (((1 - accuracyWeight) * 0.6 + (1 - latencyWeight) * 0.2 + (1 - stabilityWeight) * 0.2)).toFixed(4),
-  );
-  const dueAt =
-    payload.result === 'correct'
-      ? now + Math.max(900, Math.round(nextLeitner * 3600 * (1 + (1 - accuracyWeight))))
-      : now + 600;
-
-  return {
-    totalAttempts,
-    correctAttempts,
-    averageResponseMs,
-    leitnerBox: nextLeitner,
-    accuracyWeight,
-    latencyWeight,
-    stabilityWeight,
-    priorityScore,
-    dueAt,
-  };
 }
 
 function computeWordCompleteness(word: Pick<Word, "pos"> & Partial<Word>): boolean {
@@ -567,8 +504,12 @@ export function registerRoutes(app: Express): Server {
       .select({
         id: taskSpecs.id,
         taskType: taskSpecs.taskType,
+        pos: taskSpecs.pos,
+        lexemeId: taskSpecs.lexemeId,
+        frequencyRank: lexemes.frequencyRank,
       })
       .from(taskSpecs)
+      .innerJoin(lexemes, eq(taskSpecs.lexemeId, lexemes.id))
       .where(eq(taskSpecs.id, payload.taskId))
       .limit(1);
 
@@ -578,94 +519,38 @@ export function registerRoutes(app: Express): Server {
 
     const registryEntry = getTaskRegistryEntry(taskRow[0].taskType as TaskType);
 
-    const existing = await db
-      .select({
-        id: schedulingState.id,
-        leitnerBox: schedulingState.leitnerBox,
-        totalAttempts: schedulingState.totalAttempts,
-        correctAttempts: schedulingState.correctAttempts,
-        averageResponseMs: schedulingState.averageResponseMs,
-        accuracyWeight: schedulingState.accuracyWeight,
-        latencyWeight: schedulingState.latencyWeight,
-        stabilityWeight: schedulingState.stabilityWeight,
-      })
-      .from(schedulingState)
-      .where(
-        and(
-          eq(schedulingState.deviceId, payload.deviceId),
-          eq(schedulingState.taskId, payload.taskId),
-        ),
-      )
-      .limit(1);
+    const submittedAt = payload.submittedAt ? new Date(payload.submittedAt) : undefined;
 
-    const snapshot: SchedulingSnapshot | null = existing.length
-      ? {
-          id: existing[0].id,
-          leitnerBox: existing[0].leitnerBox,
-          totalAttempts: existing[0].totalAttempts,
-          correctAttempts: existing[0].correctAttempts,
-          averageResponseMs: existing[0].averageResponseMs,
-          accuracyWeight: existing[0].accuracyWeight,
-          latencyWeight: existing[0].latencyWeight,
-          stabilityWeight: existing[0].stabilityWeight,
-        }
-      : null;
-
-    const now = Math.floor(Date.now() / 1000);
-    const metrics = computeSubmissionMetrics(snapshot, payload, now);
-
-    const dueAtDate = new Date(metrics.dueAt * 1000);
-
-    if (snapshot?.id) {
-      await db
-        .update(schedulingState)
-        .set({
-          leitnerBox: metrics.leitnerBox,
-          totalAttempts: metrics.totalAttempts,
-          correctAttempts: metrics.correctAttempts,
-          averageResponseMs: metrics.averageResponseMs,
-          accuracyWeight: metrics.accuracyWeight,
-          latencyWeight: metrics.latencyWeight,
-          stabilityWeight: metrics.stabilityWeight,
-          priorityScore: metrics.priorityScore,
-          dueAt: dueAtDate,
-          lastResult: payload.result,
-          lastPracticedAt: sql`unixepoch('now')`,
-          updatedAt: sql`unixepoch('now')`,
-        })
-        .where(eq(schedulingState.id, snapshot.id!));
-    } else {
-      await db.insert(schedulingState).values({
+    try {
+      const submissionResult = await processTaskSubmission({
         deviceId: payload.deviceId,
         taskId: payload.taskId,
-        leitnerBox: metrics.leitnerBox,
-        totalAttempts: metrics.totalAttempts,
-        correctAttempts: metrics.correctAttempts,
-        averageResponseMs: metrics.averageResponseMs,
-        accuracyWeight: metrics.accuracyWeight,
-        latencyWeight: metrics.latencyWeight,
-        stabilityWeight: metrics.stabilityWeight,
-        priorityScore: metrics.priorityScore,
-        dueAt: dueAtDate,
-        lastResult: payload.result,
-        lastPracticedAt: sql`unixepoch('now')`,
-        createdAt: sql`unixepoch('now')`,
-        updatedAt: sql`unixepoch('now')`,
+        taskType: taskRow[0].taskType as TaskType,
+        pos: taskRow[0].pos,
+        queueCap: registryEntry.queueCap,
+        result: payload.result,
+        responseMs: payload.responseMs,
+        submittedAt,
+        frequencyRank: taskRow[0].frequencyRank ?? null,
       });
-    }
 
-    res.json({
-      status: "recorded",
-      taskId: payload.taskId,
-      deviceId: payload.deviceId,
-      leitnerBox: metrics.leitnerBox,
-      totalAttempts: metrics.totalAttempts,
-      correctAttempts: metrics.correctAttempts,
-      averageResponseMs: metrics.averageResponseMs,
-      dueAt: new Date(metrics.dueAt * 1000).toISOString(),
-      priorityScore: metrics.priorityScore,
-      queueCap: registryEntry.queueCap,
-    });
+      res.json({
+        status: "recorded",
+        taskId: payload.taskId,
+        deviceId: payload.deviceId,
+        leitnerBox: submissionResult.leitnerBox,
+        totalAttempts: submissionResult.totalAttempts,
+        correctAttempts: submissionResult.correctAttempts,
+        averageResponseMs: submissionResult.averageResponseMs,
+        dueAt: submissionResult.dueAt.toISOString(),
+        priorityScore: submissionResult.priorityScore,
+        coverageScore: submissionResult.coverageScore,
+        queueCap: submissionResult.queueCap,
+      });
+    } catch (error) {
+      console.error("Failed to process task submission", error);
+      sendError(res, 500, "Failed to record submission", "SUBMISSION_FAILED");
+    }
   });
 
   app.get("/api/words", requireAdminToken, async (req, res) => {
