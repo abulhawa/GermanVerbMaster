@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import {
@@ -123,29 +122,47 @@ export default function Home() {
   const [verbHistory, setVerbHistory] = useState<VerbHistoryItem[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [answerHistory, setAnswerHistory] = useState<AnsweredQuestion[]>(() => loadAnswerHistory());
+  const [currentVerb, setCurrentVerb] = useState<GermanVerb | null>(null);
+  const [verbLoading, setVerbLoading] = useState(true);
+  const requestIdRef = useRef(0);
 
-  const {
-    data: currentVerb,
-    isLoading: verbLoading,
-    refetch: refetchVerb,
-  } = useQuery({
-    queryKey: ["verb", settings.level, historyIndex],
-    queryFn: async () => {
+  const loadVerb = useCallback(async () => {
+    const requestId = requestIdRef.current + 1;
+    requestIdRef.current = requestId;
+    setVerbLoading(true);
+
+    try {
       let queuedVerb = peekReviewVerb();
+      let nextVerb: GermanVerb | null = null;
 
       while (queuedVerb) {
         const targeted = await getVerbByInfinitive(queuedVerb);
         if (targeted) {
-          return targeted;
+          nextVerb = targeted;
+          break;
         }
         shiftReviewVerb();
         queuedVerb = peekReviewVerb();
       }
 
-      return getRandomVerb(settings.level);
-    },
-    enabled: true,
-  });
+      if (!nextVerb) {
+        nextVerb = await getRandomVerb(settings.level);
+      }
+
+      if (requestId === requestIdRef.current) {
+        setCurrentVerb(nextVerb);
+      }
+    } catch (error) {
+      console.error("Failed to load verb:", error);
+      if (requestId === requestIdRef.current) {
+        setCurrentVerb(null);
+      }
+    } finally {
+      if (requestId === requestIdRef.current) {
+        setVerbLoading(false);
+      }
+    }
+  }, [settings.level]);
 
   const practicedVerbsCount = useMemo(
     () => (progress.practicedVerbs?.[settings.level] || []).length,
@@ -183,10 +200,10 @@ export default function Home() {
   }, [progress]);
 
   useEffect(() => {
-    refetchVerb();
     setVerbHistory([]);
     setHistoryIndex(-1);
-  }, [settings.level, refetchVerb]);
+    loadVerb();
+  }, [loadVerb]);
 
   useEffect(() => {
     saveAnswerHistory(answerHistory);
@@ -253,22 +270,41 @@ export default function Home() {
       shiftReviewVerb();
     }
 
-    setVerbHistory((prev) => [
-      ...prev.slice(0, historyIndex + 1),
-      { verb: currentVerb, mode: currentMode },
-    ]);
-    setHistoryIndex((prev) => prev + 1);
+    setVerbHistory((prev) => {
+      const updatedHistory = [
+        ...prev.slice(0, historyIndex + 1),
+        { verb: currentVerb, mode: currentMode },
+      ];
 
-    refetchVerb();
+      setHistoryIndex(updatedHistory.length);
+
+      return updatedHistory;
+    });
+
+    loadVerb();
     setCurrentMode(PRACTICE_MODES[Math.floor(Math.random() * PRACTICE_MODES.length)]);
   };
 
   const goBack = () => {
-    if (historyIndex > 0) {
-      const previousItem = verbHistory[historyIndex - 1];
-      setHistoryIndex((prev) => prev - 1);
+    setHistoryIndex((prev) => {
+      const targetIndex = prev - 1;
+      if (targetIndex < 0) {
+        return prev;
+      }
+
+      const previousItem = verbHistory[targetIndex];
+
+      if (!previousItem) {
+        return prev;
+      }
+
+      requestIdRef.current += 1;
+      setVerbLoading(false);
+      setCurrentVerb(previousItem.verb);
       setCurrentMode(previousItem.mode);
-    }
+
+      return targetIndex;
+    });
   };
 
   const changeLevel = (level: Settings["level"]) => {
