@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
-import { Sparkles, Compass, Settings2, PenSquare, Trash2 } from 'lucide-react';
+import { Sparkles, Settings2, PenSquare, Trash2 } from 'lucide-react';
 import { Link } from 'wouter';
 
 import { AppShell } from '@/components/layout/app-shell';
 import { SidebarNavButton } from '@/components/layout/sidebar-nav-button';
+import { MobileNavBar } from '@/components/layout/mobile-nav-bar';
+import { primaryNavigationItems } from '@/components/layout/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -417,29 +419,29 @@ const AdminWordsPage = () => {
   }, [activePos]);
 
   const topBar = (
-    <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Admin Console</p>
-        <h1 className="mt-2 flex items-center gap-3 text-3xl font-semibold text-foreground lg:text-4xl">
-          <Settings2 className="h-7 w-7 text-primary" aria-hidden />
+    <div className="flex flex-col gap-3 transition-all group-data-[condensed=true]/header:flex-row group-data-[condensed=true]/header:items-center group-data-[condensed=true]/header:justify-between">
+      <div className="space-y-1 transition-all group-data-[condensed=true]/header:space-y-0.5">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Admin console</p>
+        <h1 className="flex items-center gap-2 text-2xl font-semibold text-foreground transition-all group-data-[condensed=true]/header:text-xl">
+          <Settings2 className="h-6 w-6 text-primary" aria-hidden />
           Lexicon management
         </h1>
-        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+        <p className="max-w-2xl text-sm text-muted-foreground group-data-[condensed=true]/header:hidden">
           Curate the verb bank, manage metadata, and keep entries aligned across CEFR levels.
         </p>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center justify-end gap-2">
         <Link href="/">
           <Button
             variant="secondary"
-            className="rounded-2xl px-6"
+            className="rounded-2xl px-5"
             debugId={`${pageDebugId}-topbar-back-button`}
           >
             Back to practice
           </Button>
         </Link>
         <Link href="/analytics">
-          <Button className="rounded-2xl px-6" debugId={`${pageDebugId}-topbar-analytics-button`}>
+          <Button className="rounded-2xl px-5" debugId={`${pageDebugId}-topbar-analytics-button`}>
             Open analytics
           </Button>
         </Link>
@@ -453,9 +455,15 @@ const AdminWordsPage = () => {
         <div className="space-y-3">
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Navigate</p>
           <div className="grid gap-2">
-            <SidebarNavButton href="/" icon={Sparkles} label="Practice" exact />
-            <SidebarNavButton href="/analytics" icon={Compass} label="Analytics" />
-            <SidebarNavButton href="/admin" icon={Settings2} label="Admin tools" exact />
+            {primaryNavigationItems.map((item) => (
+              <SidebarNavButton
+                key={item.href}
+                href={item.href}
+                icon={item.icon}
+                label={item.label}
+                exact={item.exact}
+              />
+            ))}
           </div>
         </div>
       </div>
@@ -466,7 +474,11 @@ const AdminWordsPage = () => {
   );
 
   return (
-    <AppShell sidebar={sidebar} topBar={topBar}>
+    <AppShell
+      sidebar={sidebar}
+      topBar={topBar}
+      mobileNav={<MobileNavBar items={primaryNavigationItems} />}
+    >
       <div className="space-y-6">
         <Card className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5">
           <CardHeader className="space-y-2">

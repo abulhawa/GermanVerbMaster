@@ -1,28 +1,30 @@
 import { Link } from "wouter";
-import { BarChart3, Compass, Settings2, Sparkles } from "lucide-react";
+import { BarChart3 } from "lucide-react";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { SidebarNavButton } from "@/components/layout/sidebar-nav-button";
+import { MobileNavBar } from "@/components/layout/mobile-nav-bar";
+import { primaryNavigationItems } from "@/components/layout/navigation";
 import { AnalyticsDashboard } from "@/components/analytics-dashboard";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export default function Analytics() {
   const topBar = (
-    <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Analytics</p>
-        <h1 className="mt-2 flex items-center gap-3 text-3xl font-semibold text-foreground lg:text-4xl">
-          <BarChart3 className="h-7 w-7 text-primary" aria-hidden />
-          Performance insights
+    <div className="flex flex-col gap-3 transition-all group-data-[condensed=true]/header:flex-row group-data-[condensed=true]/header:items-center group-data-[condensed=true]/header:justify-between">
+      <div className="space-y-1 transition-all group-data-[condensed=true]/header:space-y-0.5">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Performance insights</p>
+        <h1 className="flex items-center gap-2 text-2xl font-semibold text-foreground transition-all group-data-[condensed=true]/header:text-xl">
+          <BarChart3 className="h-6 w-6 text-primary" aria-hidden />
+          Analytics dashboard
         </h1>
-        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+        <p className="max-w-2xl text-sm text-muted-foreground group-data-[condensed=true]/header:hidden">
           Dive into your progress trends, identify tricky verbs, and celebrate your growth with responsive dashboards.
         </p>
       </div>
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center justify-end gap-2">
         <Link href="/">
-          <Button variant="secondary" className="rounded-2xl px-6">
+          <Button variant="secondary" className="rounded-2xl px-5">
             Back to practice
           </Button>
         </Link>
@@ -43,9 +45,15 @@ export default function Analytics() {
             Navigate
           </p>
           <div className="grid gap-2">
-            <SidebarNavButton href="/" icon={Sparkles} label="Practice" exact />
-            <SidebarNavButton href="/analytics" icon={Compass} label="Analytics" exact />
-            <SidebarNavButton href="/admin" icon={Settings2} label="Admin tools" />
+            {primaryNavigationItems.map((item) => (
+              <SidebarNavButton
+                key={item.href}
+                href={item.href}
+                icon={item.icon}
+                label={item.label}
+                exact={item.exact}
+              />
+            ))}
           </div>
         </div>
         <div className="rounded-3xl border border-border/60 bg-muted/40 p-5 text-sm shadow-sm">
@@ -65,7 +73,11 @@ export default function Analytics() {
   );
 
   return (
-    <AppShell sidebar={sidebar} topBar={topBar}>
+    <AppShell
+      sidebar={sidebar}
+      topBar={topBar}
+      mobileNav={<MobileNavBar items={primaryNavigationItems} />}
+    >
       <AnalyticsDashboard />
     </AppShell>
   );
