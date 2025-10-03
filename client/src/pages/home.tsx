@@ -4,9 +4,11 @@ import { motion } from 'framer-motion';
 import {
   BarChart2,
   BookOpen,
+  ChevronDown,
   Compass,
   Flame,
   History,
+  Info,
   Loader2,
   Settings2,
   Sparkles,
@@ -22,6 +24,9 @@ import { LanguageToggle } from '@/components/language-toggle';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { SidebarNavButton } from '@/components/layout/sidebar-nav-button';
 import {
   loadPracticeSettings,
@@ -276,6 +281,9 @@ export default function Home() {
   const [isFetchingTasks, setIsFetchingTasks] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [shouldReloadTasks, setShouldReloadTasks] = useState(false);
+  const [isPresetOpen, setIsPresetOpen] = useState(false);
+  const [isRecapOpen, setIsRecapOpen] = useState(false);
+  const [analyticsTab, setAnalyticsTab] = useState<'overview' | 'attempts' | 'milestones'>('overview');
   const pendingFetchRef = useRef(false);
 
   const scope = computeScope(settings);
@@ -514,20 +522,66 @@ export default function Home() {
   const isInitialLoading = !activeTask && isFetchingTasks;
 
   const topBar = (
-    <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-      <div className="space-y-4 lg:max-w-xl">
-        <div className="space-y-2">
-          <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
-            <Sparkles className="h-4 w-4" aria-hidden />
-            Adaptive practice
-          </p>
-          <h1 className="text-3xl font-semibold text-foreground lg:text-4xl">
+    <TooltipProvider delayDuration={0}>
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+            <Sparkles className="h-4 w-4 text-primary" aria-hidden />
+            <span>Adaptive practice</span>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-border/60 bg-muted/50 text-muted-foreground transition hover:text-foreground"
+                  aria-label="Learn more about adaptive practice"
+                >
+                  <Info className="h-3.5 w-3.5" aria-hidden />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" align="start" className="max-w-xs text-xs leading-relaxed">
+                Sessions pull from the shared task registry. Choose a scope to rotate between verbs, nouns, adjectives, or your
+                custom mix without cluttering the header.
+              </TooltipContent>
+            </Tooltip>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-muted/40 px-3 py-1 font-medium text-foreground">
+              <Flame className="h-3.5 w-3.5 text-primary" aria-hidden />
+              <span>{summary.streak} day{summary.streak === 1 ? '' : 's'}</span>
+            </div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-muted/40 px-3 py-1 font-medium text-foreground">
+              <Target className="h-3.5 w-3.5 text-secondary" aria-hidden />
+              <span>{summary.accuracy}% accuracy</span>
+            </div>
+            <LanguageToggle
+              className="h-9 w-[120px] rounded-full border-border/50 text-xs"
+              debugId="topbar-language-toggle"
+            />
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <h1 className="text-2xl font-semibold text-foreground lg:text-3xl">
             Practice that adapts to every task type
           </h1>
-          <p className="max-w-xl text-sm text-muted-foreground">
-            Sessions now draw from the shared task registry. Choose a scope to rotate between verbs, nouns, adjectives, or your
-            custom mix.
-          </p>
+          <div className="flex items-center gap-3">
+            <Link href="/analytics">
+              <Button debugId="topbar-insights-button" className="rounded-2xl px-5 py-2 text-sm">
+                <BarChart2 className="mr-2 h-4 w-4" aria-hidden />
+                Insights
+              </Button>
+            </Link>
+            <SettingsDialog
+              debugId="topbar-settings-dialog"
+              settings={settings}
+              onSettingsChange={handleSettingsChange}
+              taskType={activeTaskType}
+              presetLabel={scopeBadgeLabel}
+              taskTypeLabel={taskTypeCopy.label}
+            />
+            <Avatar className="hidden h-10 w-10 border border-border/60 shadow-sm sm:block">
+              <AvatarFallback className="bg-primary/10 text-xs font-semibold uppercase tracking-wide text-primary">LV</AvatarFallback>
+            </Avatar>
+          </div>
         </div>
         <PracticeModeSwitcher
           debugId="topbar-mode-switcher"
@@ -538,149 +592,131 @@ export default function Home() {
           availableTaskTypes={AVAILABLE_TASK_TYPES}
         />
       </div>
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <div className="flex items-center gap-4 rounded-3xl border border-border/60 bg-muted/40 p-4 shadow-sm">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/15 text-primary">
-            <Flame className="h-6 w-6" aria-hidden />
-          </div>
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Streak</p>
-            <p className="text-lg font-semibold text-foreground">{summary.streak} day{summary.streak === 1 ? '' : 's'}</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-4 rounded-3xl border border-border/60 bg-muted/40 p-4 shadow-sm">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary/15 text-secondary">
-            <Target className="h-6 w-6" aria-hidden />
-          </div>
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Accuracy</p>
-            <p className="text-lg font-semibold text-foreground">{summary.accuracy}%</p>
-          </div>
-        </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <Link href="/analytics">
-            <Button debugId="topbar-insights-button" className="rounded-2xl px-6">
-              <BarChart2 className="mr-2 h-4 w-4" aria-hidden />
-              Insights
-            </Button>
-          </Link>
-          <SettingsDialog
-            debugId="topbar-settings-dialog"
-            settings={settings}
-            onSettingsChange={handleSettingsChange}
-            taskType={activeTaskType}
-            presetLabel={scopeBadgeLabel}
-            taskTypeLabel={taskTypeCopy.label}
-          />
-          <LanguageToggle className="hidden sm:block" debugId="topbar-language-toggle" />
-          <div className="hidden sm:block">
-            <Avatar className="h-11 w-11 border border-border/60 shadow-sm">
-              <AvatarFallback className="bg-primary/10 text-sm font-semibold text-primary">LV</AvatarFallback>
-            </Avatar>
-          </div>
-        </div>
-      </div>
-      <div className="sm:hidden">
-        <LanguageToggle className="w-full" debugId="topbar-language-toggle-mobile" />
-      </div>
-    </div>
+    </TooltipProvider>
   );
 
   const sidebar = (
-    <div className="flex h-full flex-col justify-between gap-8">
-      <div className="space-y-8">
+    <div className="flex h-full flex-col justify-between gap-6">
+      <div className="space-y-6">
         <div className="space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Navigate</p>
-          <div className="grid gap-2">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground group-data-[collapsed=true]/sidebar:hidden">
+            Navigate
+          </p>
+          <div className="grid justify-center gap-2">
             <SidebarNavButton href="/" icon={Sparkles} label="Practice" exact />
             <SidebarNavButton href="/answers" icon={History} label="Answer history" />
             <SidebarNavButton href="/analytics" icon={Compass} label="Analytics" />
             <SidebarNavButton href="/admin" icon={Settings2} label="Admin tools" />
           </div>
         </div>
-        <div>
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Active preset</p>
-            <Badge variant="outline" className="rounded-full border-primary/30 bg-primary/10 text-[10px] uppercase tracking-[0.22em] text-primary">
-              {scopeBadgeLabel}
-            </Badge>
-          </div>
-          <p className="mt-3 text-sm text-muted-foreground">
-            {levelSummary} · {queueLabel}
-          </p>
-        </div>
+        <Collapsible open={isPresetOpen} onOpenChange={setIsPresetOpen}>
+          <CollapsibleTrigger
+            className="group inline-flex w-full items-center justify-between rounded-2xl border border-border/60 bg-muted/30 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground transition hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 group-data-[collapsed=true]/sidebar:hidden"
+          >
+            <span>Active preset</span>
+            <span className="flex items-center gap-2 text-primary">
+              <Badge variant="outline" className="rounded-full border-primary/30 bg-primary/10 text-[10px] uppercase tracking-[0.2em] text-primary">
+                {scopeBadgeLabel}
+              </Badge>
+              <ChevronDown className="h-3 w-3 transition duration-200 ease-out group-data-[state=open]:rotate-180" aria-hidden />
+            </span>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="mt-3 space-y-2 text-sm text-muted-foreground group-data-[collapsed=true]/sidebar:hidden">
+            <p className="font-medium text-foreground">{levelSummary}</p>
+            <p>{queueLabel}</p>
+          </CollapsibleContent>
+        </Collapsible>
+        <Collapsible open={isRecapOpen} onOpenChange={setIsRecapOpen}>
+          <CollapsibleTrigger
+            className="group inline-flex w-full items-center justify-between rounded-2xl border border-border/60 bg-muted/30 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground transition hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 group-data-[collapsed=true]/sidebar:hidden"
+          >
+            <span>Session recap</span>
+            <ChevronDown className="h-3 w-3 transition duration-200 ease-out group-data-[state=open]:rotate-180" aria-hidden />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="mt-3 rounded-2xl bg-muted/30 p-4 text-xs text-muted-foreground group-data-[collapsed=true]/sidebar:hidden">
+            {summary.total > 0 ? (
+              <p>
+                {summary.total} attempt{summary.total === 1 ? '' : 's'} recorded · {summary.accuracy}% accuracy
+              </p>
+            ) : (
+              <p>Take your first attempt to unlock personalised insights.</p>
+            )}
+            <p className="mt-2 text-[11px] uppercase tracking-[0.22em] text-muted-foreground/80">
+              Detailed recap now lives in the analytics panel.
+            </p>
+          </CollapsibleContent>
+        </Collapsible>
       </div>
-      <div className="space-y-3 rounded-3xl border border-border/60 bg-muted/40 p-5 text-sm shadow-sm">
-        <p className="font-semibold text-foreground">Session recap</p>
-        <p className="text-xs text-muted-foreground">
-          {summary.total > 0
-            ? `${summary.total} attempt${summary.total === 1 ? '' : 's'} recorded · ${summary.accuracy}% accuracy`
-            : 'Take your first attempt to unlock personalised insights.'}
-        </p>
+      <div className="hidden text-center text-[11px] uppercase tracking-[0.22em] text-muted-foreground group-data-[collapsed=true]/sidebar:block">
+        Hold to expand
       </div>
     </div>
   );
 
   return (
     <AppShell sidebar={sidebar} topBar={topBar} debugId="home-app-shell">
-      <div className="grid gap-8 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-        <section className="flex flex-col items-center gap-6">
-          <div className="flex w-full max-w-xl flex-col items-center gap-4 text-center">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
-              <Sparkles className="h-3 w-3" aria-hidden />
-              {scopeBadgeLabel}
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,3.2fr)_minmax(0,1.8fr)]">
+        <section className="flex min-h-[540px] flex-col rounded-3xl border border-border/50 bg-card/80 p-6 shadow-xl shadow-primary/10">
+          <div className="flex flex-1 flex-col items-center justify-center gap-8 text-center">
+            <div className="flex flex-col items-center gap-3">
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
+                <Sparkles className="h-3 w-3" aria-hidden />
+                {scopeBadgeLabel}
+              </div>
+              <h2 className="text-3xl font-semibold text-foreground">Focus mode</h2>
+              <p className="max-w-xl text-sm text-muted-foreground">
+                Answer the prompt below to keep your streak alive and build mixed-part-of-speech mastery.
+              </p>
             </div>
-            <h2 className="text-3xl font-semibold text-foreground">Focus mode</h2>
-            <p className="text-sm text-muted-foreground">
-              Answer the prompt below to keep your streak alive and build mixed-part-of-speech mastery.
-            </p>
-          </div>
 
-          <div className="w-full max-w-2xl">
-            {isInitialLoading ? (
-              <div className="flex h-[340px] items-center justify-center rounded-3xl border border-dashed border-border/70 bg-card/70">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              </div>
-            ) : activeTask ? (
-              <PracticeCard
-                key={activeTask.taskId}
-                task={activeTask}
-                settings={settings}
-                onResult={handleTaskResult}
-                isLoadingNext={isFetchingTasks && session.queue.length <= 1}
-                className="mx-auto"
-                debugId="home-practice-card"
+            <div className="w-full max-w-2xl">
+              {isInitialLoading ? (
+                <div className="flex h-[340px] items-center justify-center rounded-[28px] border border-dashed border-border/60 bg-background/70 shadow-2xl shadow-primary/15">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              ) : activeTask ? (
+                <PracticeCard
+                  key={activeTask.taskId}
+                  task={activeTask}
+                  settings={settings}
+                  onResult={handleTaskResult}
+                  isLoadingNext={isFetchingTasks && session.queue.length <= 1}
+                  className="mx-auto border-none bg-transparent shadow-2xl shadow-primary/20"
+                  debugId="home-practice-card"
+                />
+              ) : (
+                <div className="flex h-[340px] items-center justify-center rounded-[28px] border border-border/60 bg-background/70 shadow-2xl shadow-primary/10">
+                  <p className="text-sm text-muted-foreground">No tasks available right now. Try refreshing in a moment.</p>
+                </div>
+              )}
+              {fetchError && (
+                <div className="mt-3 flex flex-wrap items-center justify-center gap-3 text-sm text-destructive" role="alert">
+                  <span>{fetchError}</span>
+                  <Button
+                    variant="link"
+                    className="h-auto px-0 text-destructive"
+                    onClick={() => {
+                      setFetchError(null);
+                      void fetchAndEnqueueTasks({ replace: true });
+                    }}
+                  >
+                    Try again
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            <div className="w-full max-w-xl">
+              <SessionProgressBar
+                value={milestoneProgress}
+                completed={sessionCompleted}
+                target={milestoneTarget}
+                debugId="home-session-progress"
               />
-            ) : (
-              <div className="flex h-[340px] items-center justify-center rounded-3xl border border-border/70 bg-card/70">
-                <p className="text-sm text-muted-foreground">No tasks available right now. Try refreshing in a moment.</p>
-              </div>
-            )}
-            {fetchError && (
-              <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-destructive" role="alert">
-                <span>{fetchError}</span>
-                <Button
-                  variant="link"
-                  className="h-auto px-0 text-destructive"
-                  onClick={() => {
-                    setFetchError(null);
-                    void fetchAndEnqueueTasks({ replace: true });
-                  }}
-                >
-                  Try again
-                </Button>
-              </div>
-            )}
+            </div>
           </div>
 
-          <SessionProgressBar
-            value={milestoneProgress}
-            completed={sessionCompleted}
-            target={milestoneTarget}
-            debugId="home-session-progress"
-          />
-
-          <div className="flex w-full flex-col gap-3 sm:flex-row">
+          <div className="mt-6 flex w-full flex-col gap-3 sm:flex-row">
             <Button
               variant="secondary"
               className="flex-1 rounded-2xl"
@@ -700,59 +736,107 @@ export default function Home() {
         </section>
 
         <aside className="space-y-6">
-          <ProgressDisplay
-            progress={progress}
-            taskType={activeTaskType}
-            taskTypes={activeTaskTypes}
-            taskLabel={scopeBadgeLabel}
-            cefrLevel={cefrLevelForDisplay}
-            cefrLabel={cefrLabel}
-            headline={`${scopeBadgeLabel} progress`}
-            debugId="sidebar-progress-display"
-          />
-          <div className="rounded-3xl border border-border/60 bg-card/80 p-6 shadow-lg shadow-primary/5">
-            <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-              Session details
-              <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
-                {historyCount} entries
-              </span>
-            </div>
-            <div className="mt-4 flex items-center gap-3 rounded-2xl border border-border/60 bg-muted/30 p-4 text-sm">
-              <motion.div
-                className="h-10 w-10 rounded-full bg-primary/10 p-2"
-                initial={{ scale: 0.9, opacity: 0.8 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.4, ease: 'easeOut' }}
-              >
-                <BookOpen className="h-full w-full text-primary" aria-hidden />
-              </motion.div>
+          <Tabs
+            value={analyticsTab}
+            onValueChange={(value) => setAnalyticsTab(value as 'overview' | 'attempts' | 'milestones')}
+            className="w-full rounded-3xl border border-border/60 bg-card/80 shadow-xl shadow-primary/5"
+          >
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 px-6 py-4">
               <div>
-                <p className="font-medium text-foreground">{summary.correct} correct attempts logged</p>
-                <p className="text-xs text-muted-foreground">
-                  Review your detailed answer history to reinforce the tricky lexemes.
+                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Performance center</p>
+                <p className="text-lg font-semibold text-foreground">{summary.accuracy}% accuracy</p>
+                <p className="text-xs text-muted-foreground">Tracking {historyCount} logged attempt{historyCount === 1 ? '' : 's'}</p>
+              </div>
+              <TabsList className="flex rounded-full bg-muted/40 p-1">
+                <TabsTrigger
+                  value="overview"
+                  className="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground transition data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  Overview
+                </TabsTrigger>
+                <TabsTrigger
+                  value="attempts"
+                  className="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground transition data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  Attempts
+                </TabsTrigger>
+                <TabsTrigger
+                  value="milestones"
+                  className="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground transition data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  Milestones
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+            <TabsContent value="overview" className="space-y-4 px-6 py-6">
+              <ProgressDisplay
+                progress={progress}
+                taskType={activeTaskType}
+                taskTypes={activeTaskTypes}
+                taskLabel={scopeBadgeLabel}
+                cefrLevel={cefrLevelForDisplay}
+                cefrLabel={cefrLabel}
+                headline={`${scopeBadgeLabel} progress`}
+                debugId="sidebar-progress-display"
+              />
+            </TabsContent>
+
+            <TabsContent value="attempts" className="space-y-4 px-6 py-6">
+              <div className="rounded-2xl border border-border/60 bg-muted/30 p-5 shadow-inner shadow-primary/5">
+                <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                  Session recap
+                  <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
+                    {historyCount} entries
+                  </span>
+                </div>
+                <div className="mt-4 flex items-start gap-3 text-sm">
+                  <motion.div
+                    className="h-10 w-10 shrink-0 rounded-full bg-primary/10 p-2"
+                    initial={{ scale: 0.9, opacity: 0.8 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.4, ease: 'easeOut' }}
+                  >
+                    <BookOpen className="h-full w-full text-primary" aria-hidden />
+                  </motion.div>
+                  <div className="space-y-2">
+                    <p className="font-medium text-foreground">{summary.correct} correct attempts logged</p>
+                    <p className="text-xs text-muted-foreground">
+                      {summary.total > 0
+                        ? `${summary.total} attempt${summary.total === 1 ? '' : 's'} recorded · ${summary.accuracy}% accuracy`
+                        : 'Take your first attempt to unlock personalised insights.'}
+                    </p>
+                    <Link href="/answers" className="inline-flex items-center text-xs font-semibold uppercase tracking-[0.22em] text-primary">
+                      Review history
+                      <span aria-hidden className="ml-2">→</span>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="milestones" className="space-y-4 px-6 py-6">
+              <div className="rounded-2xl border border-border/60 bg-muted/20 p-5 shadow-inner shadow-primary/5">
+                <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                  Next milestone
+                  <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
+                    {milestoneTarget} tasks
+                  </span>
+                </div>
+                <div className="mt-4 h-2.5 w-full overflow-hidden rounded-full border border-border/50 bg-muted">
+                  <motion.span
+                    className="block h-full rounded-full bg-gradient-to-r from-brand-gradient-start via-primary to-brand-gradient-end"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${milestoneProgress}%` }}
+                    transition={{ duration: 0.6, ease: 'easeOut' }}
+                  />
+                </div>
+                <p className="mt-3 text-xs text-muted-foreground">
+                  {sessionCompleted} of {milestoneTarget} tasks completed in this streak cycle. Keep practising to unlock the next badge.
                 </p>
               </div>
-            </div>
-          </div>
-          <div className="rounded-3xl border border-border/60 bg-card/80 p-6 shadow-lg shadow-primary/5">
-            <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-              Next milestone
-              <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
-                {milestoneTarget} tasks
-              </span>
-            </div>
-            <div className="mt-4 h-3 w-full overflow-hidden rounded-full border border-border/60 bg-muted">
-              <motion.span
-                className="block h-full rounded-full bg-gradient-to-r from-brand-gradient-start via-primary to-brand-gradient-end"
-                initial={{ width: 0 }}
-                animate={{ width: `${milestoneProgress}%` }}
-                transition={{ duration: 0.6, ease: 'easeOut' }}
-              />
-            </div>
-            <p className="mt-3 text-sm text-muted-foreground">
-              {sessionCompleted} of {milestoneTarget} tasks completed in this streak cycle.
-            </p>
-          </div>
+            </TabsContent>
+          </Tabs>
         </aside>
       </div>
     </AppShell>

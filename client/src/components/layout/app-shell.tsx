@@ -1,10 +1,12 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme-toggle";
 import {
   type DebuggableComponentProps,
   getDevAttributes,
 } from "@/lib/dev-attributes";
+import { SidebarCollapsibleProvider } from "./sidebar-collapsible-context";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 interface AppShellProps extends DebuggableComponentProps {
   sidebar: ReactNode;
@@ -21,31 +23,53 @@ export function AppShell({
   debugId,
 }: AppShellProps) {
   const resolvedDebugId = debugId && debugId.trim().length > 0 ? debugId : "layout-app-shell";
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
+
+  const handleSidebarEnter = () => {
+    setIsSidebarExpanded(true);
+  };
+
+  const handleSidebarLeave = () => {
+    setIsSidebarExpanded(false);
+  };
 
   return (
-    <div
-      {...getDevAttributes("layout-app-shell-root", resolvedDebugId)}
-      className="min-h-screen bg-background text-muted-foreground"
-    >
-      <div className="mx-auto grid min-h-screen w-full max-w-[1600px] grid-cols-1 gap-6 px-4 py-6 lg:grid-cols-[300px_1fr] xl:grid-cols-[320px_1fr]">
-        <aside className="order-last h-full rounded-app border border-border/60 bg-card/90 p-6 shadow-soft backdrop-blur lg:order-first lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)]">
-          {sidebar}
-        </aside>
-        <div className="flex min-h-screen flex-col gap-6 pb-10 lg:pb-6">
-          <header className="relative sticky top-0 z-30 rounded-app border border-border bg-card/85 p-4 pr-16 shadow-soft backdrop-blur">
-            <ThemeToggle className="absolute right-4 top-4" debugId={`${resolvedDebugId}-theme-toggle`} />
-            {topBar}
-          </header>
-          <main
+    <TooltipProvider delayDuration={0}>
+      <div
+        {...getDevAttributes("layout-app-shell-root", resolvedDebugId)}
+        className="min-h-screen bg-background text-muted-foreground"
+      >
+        <div className="mx-auto grid min-h-screen w-full max-w-[1600px] grid-cols-1 gap-6 px-4 py-6 lg:grid-cols-[auto_1fr]">
+          <SidebarCollapsibleProvider collapsed={!isSidebarExpanded}>
+            <aside
+              data-collapsed={!isSidebarExpanded}
+              onMouseEnter={handleSidebarEnter}
+              onMouseLeave={handleSidebarLeave}
             className={cn(
-              "flex-1 rounded-app bg-card/60 px-4 pb-16 pt-2 ring-1 ring-inset ring-border/50 sm:px-6 lg:px-8 xl:px-10",
-              className,
+              "group/sidebar order-last h-full rounded-app border border-border/60 bg-card/90 p-4 shadow-soft backdrop-blur transition-[width] duration-200 ease-out lg:order-first lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)]",
+              "w-full",
+              isSidebarExpanded ? "lg:w-[280px]" : "lg:w-[88px]",
             )}
           >
-            {children}
-          </main>
+            {sidebar}
+          </aside>
+        </SidebarCollapsibleProvider>
+          <div className="flex min-h-screen flex-col gap-4 pb-10 lg:pb-6">
+            <header className="relative rounded-app border border-border bg-card/85 px-4 py-3 pr-14 shadow-soft backdrop-blur">
+              <ThemeToggle className="absolute right-4 top-1/2 -translate-y-1/2" debugId={`${resolvedDebugId}-theme-toggle`} />
+              {topBar}
+            </header>
+            <main
+              className={cn(
+                "flex-1 rounded-app bg-card/60 px-4 pb-16 pt-4 ring-1 ring-inset ring-border/40 sm:px-6 lg:px-8 xl:px-10",
+                className,
+              )}
+            >
+              {children}
+            </main>
+          </div>
         </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }

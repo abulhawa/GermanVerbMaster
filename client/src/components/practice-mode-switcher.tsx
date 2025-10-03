@@ -1,11 +1,18 @@
-import { useMemo, useState } from 'react';
-import { BookOpen, Flame, PenLine, SlidersHorizontal, Sparkles } from 'lucide-react';
+import { useMemo } from 'react';
+import { BookOpen, Flame, Info, PenLine, SlidersHorizontal, Sparkles, ChevronDown } from 'lucide-react';
 
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { getTaskTypeCopy } from '@/lib/task-metadata';
 import type { TaskType } from '@shared';
@@ -72,7 +79,6 @@ export function PracticeModeSwitcher({
   availableTaskTypes,
   debugId,
 }: PracticeModeSwitcherProps) {
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const resolvedDebugId = debugId && debugId.trim().length > 0 ? debugId : 'practice-mode-switcher';
   const selectedSet = useMemo(() => new Set(selectedTaskTypes), [selectedTaskTypes]);
   const sortedTaskTypes = useMemo(() => {
@@ -120,92 +126,94 @@ export function PracticeModeSwitcher({
   const activeMode = MODE_CONFIG.find((mode) => mode.value === scope) ?? MODE_CONFIG[0];
 
   return (
-    <div
-      className="space-y-3"
-      {...getDevAttributes('practice-mode-switcher', resolvedDebugId)}
-    >
+    <TooltipProvider delayDuration={0}>
+      <Tabs
+        value={scope}
+        onValueChange={(value) => handleScopeChange(value as PracticeScope | '')}
+        className="w-full space-y-3"
+        {...getDevAttributes('practice-mode-switcher', resolvedDebugId)}
+      >
       <div className="flex items-center justify-between gap-3">
-        <div className="space-y-1">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-            Practice scope
-          </p>
-          <p className="text-sm text-muted-foreground">{activeMode.description}</p>
+        <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+          <span>Practice scope</span>
+          <Tooltip delayDuration={0}>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-border/60 bg-muted/50 text-muted-foreground transition hover:text-foreground"
+                aria-label={activeMode.description}
+              >
+                <Info className="h-3 w-3" aria-hidden />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="top" align="start" className="max-w-xs text-xs leading-relaxed">
+              {activeMode.description}
+            </TooltipContent>
+          </Tooltip>
         </div>
         <Badge
           variant="outline"
-          className="rounded-full border-primary/30 bg-primary/10 text-[11px] uppercase tracking-[0.22em] text-primary"
+          className="rounded-full border-primary/30 bg-primary/10 text-[10px] uppercase tracking-[0.2em] text-primary"
         >
           {selectedTaskTypes.length} selected
         </Badge>
       </div>
 
-      <ToggleGroup
-        type="single"
-        value={scope}
-        onValueChange={(value) => handleScopeChange(value as PracticeScope | '')}
-        className="flex flex-wrap gap-2"
-      >
-        {MODE_CONFIG.map((mode) => (
-          <ToggleGroupItem
-            key={mode.value}
-            value={mode.value}
-            aria-label={mode.label}
-            className={cn(
-              'flex items-center gap-2 rounded-2xl border border-border/60 bg-background/80 px-4 py-2 text-sm font-medium text-muted-foreground transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 data-[state=on]:border-primary data-[state=on]:bg-primary/10 data-[state=on]:text-primary',
-            )}
-          >
-            <mode.icon className="h-4 w-4" aria-hidden />
-            <span>{mode.label}</span>
-          </ToggleGroupItem>
-        ))}
-      </ToggleGroup>
-
-      <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            className="flex w-full items-center justify-between rounded-2xl border-border/60 bg-background/90 px-4 py-2 text-sm"
-            aria-label="Configure custom task mix"
-          >
-            <span>Configure custom mix</span>
-            <SlidersHorizontal className="h-4 w-4 text-muted-foreground" aria-hidden />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent
-          className="w-72 space-y-4 rounded-2xl border border-border bg-card p-4 text-sm shadow-lg"
-          align="end"
-        >
-          <div>
-            <p className="text-sm font-semibold text-foreground">Select task types</p>
-            <p className="text-xs text-muted-foreground">
-              At least one task type must remain selected.
-            </p>
-          </div>
-          <div className="space-y-3">
+      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-border/60 bg-background/85 px-2 py-2 shadow-sm">
+        <TabsList className="flex flex-1 flex-wrap gap-2 bg-transparent p-0">
+          {MODE_CONFIG.map((mode) => (
+            <TabsTrigger
+              key={mode.value}
+              value={mode.value}
+              className={cn(
+                'flex min-w-[110px] items-center gap-2 rounded-2xl px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60',
+                'data-[state=active]:bg-primary data-[state=active]:text-primary-foreground',
+              )}
+            >
+              <mode.icon className="h-4 w-4" aria-hidden />
+              <span className="hidden sm:inline">{mode.label}</span>
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/95 px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground"
+              aria-label="Configure custom task mix"
+            >
+              <SlidersHorizontal className="h-3.5 w-3.5" aria-hidden />
+              Custom mix
+              <ChevronDown className="h-3 w-3" aria-hidden />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-72 space-y-1 rounded-2xl border border-border/70 bg-card/95 p-3 shadow-xl" align="end">
+            <DropdownMenuLabel className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
+              Task types
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
             {sortedTaskTypes.map((taskType) => {
               const copy = getTaskTypeCopy(taskType);
               const checked = selectedSet.has(taskType);
               return (
-                <label
+                <DropdownMenuCheckboxItem
                   key={taskType}
-                  htmlFor={`${resolvedDebugId}-${taskType}`}
-                  className="flex items-start gap-3 rounded-xl border border-transparent p-2 transition hover:border-border/60"
+                  checked={checked}
+                  onCheckedChange={(value) => handleTaskTypeToggle(taskType, Boolean(value))}
+                  aria-label={copy.label}
+                  className="flex items-start gap-3 rounded-xl px-2 py-1.5 text-sm text-foreground focus:bg-muted"
                 >
-                  <Checkbox
-                    id={`${resolvedDebugId}-${taskType}`}
-                    checked={checked}
-                    onCheckedChange={(value) => handleTaskTypeToggle(taskType, Boolean(value))}
-                  />
-                  <div>
-                    <p className="font-medium text-foreground">{copy.label}</p>
+                  <div className="space-y-1">
+                    <p className="font-medium leading-none">{copy.label}</p>
                     <p className="text-xs text-muted-foreground">{copy.description}</p>
                   </div>
-                </label>
+                </DropdownMenuCheckboxItem>
               );
             })}
-          </div>
-        </PopoverContent>
-      </Popover>
-    </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </Tabs>
+    </TooltipProvider>
   );
 }

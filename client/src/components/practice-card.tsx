@@ -500,7 +500,7 @@ function ConjugateFormRenderer({
             placeholder={copy.conjugate.placeholder}
             aria-label={copy.conjugate.ariaLabel}
             autoFocus
-            className="flex-1 rounded-2xl border-border/60 bg-background/90 text-lg"
+            className="flex-1 rounded-2xl border-border/60 bg-background/90 px-5 py-4 text-lg sm:text-xl"
           />
           <Button
             type="button"
@@ -765,7 +765,7 @@ function NounCaseDeclensionRenderer({
             placeholder={copy.noun.placeholder}
             aria-label={copy.noun.ariaLabel}
             autoFocus
-            className="flex-1 rounded-2xl border-border/60 bg-background/90 text-lg"
+            className="flex-1 rounded-2xl border-border/60 bg-background/90 px-5 py-4 text-lg sm:text-xl"
           />
           <Button
             type="button"
@@ -1010,7 +1010,7 @@ function AdjectiveEndingRenderer({
             placeholder={copy.adjective.placeholder}
             aria-label={copy.adjective.ariaLabel}
             autoFocus
-            className="flex-1 rounded-2xl border-border/60 bg-background/90 text-lg"
+            className="flex-1 rounded-2xl border-border/60 bg-background/90 px-5 py-4 text-lg sm:text-xl"
           />
           <Button
             type="button"
