@@ -24,6 +24,7 @@ describe('tasks API', () => {
   let agent: request.SuperTest<request.Test>;
   let schedulingStateTable: typeof import('../db/schema').schedulingState;
   let telemetryTable: typeof import('../db/schema').telemetryPriorities;
+  let practiceHistoryTable: typeof import('../db/schema').practiceHistory;
   let drizzleDb: typeof import('../db/index').db;
 
   beforeEach(async () => {
@@ -33,6 +34,7 @@ describe('tasks API', () => {
     const schemaModule = await import('../db/schema');
     schedulingStateTable = schemaModule.schedulingState;
     telemetryTable = schemaModule.telemetryPriorities;
+    practiceHistoryTable = schemaModule.practiceHistory;
     const dbModule = await import('../db/index');
     drizzleDb = dbModule.db;
 
@@ -144,9 +146,14 @@ describe('tasks API', () => {
       .post('/api/submission')
       .send({
         taskId: task.id,
+        lexemeId: task.lexeme.id,
+        taskType: task.taskType,
+        pos: task.pos,
+        renderer: task.renderer,
         deviceId: 'device-123',
         result: 'correct',
-        responseMs: 1500,
+        timeSpentMs: 1500,
+        answeredAt: new Date('2025-01-01T12:00:00.000Z').toISOString(),
       })
       .expect(200);
 
@@ -179,6 +186,32 @@ describe('tasks API', () => {
     expect(telemetryRows[0]?.metadata).toMatchObject({
       posAssignments: 1,
       queueCap: submission.body.queueCap,
+    });
+
+    const historyRows = await drizzleDb
+      .select({
+        taskId: practiceHistoryTable.taskId,
+        deviceId: practiceHistoryTable.deviceId,
+        result: practiceHistoryTable.result,
+        pos: practiceHistoryTable.pos,
+        taskType: practiceHistoryTable.taskType,
+        hintsUsed: practiceHistoryTable.hintsUsed,
+        featureFlags: practiceHistoryTable.featureFlags,
+        metadata: practiceHistoryTable.metadata,
+      })
+      .from(practiceHistoryTable)
+      .where(eq(practiceHistoryTable.taskId, task.id));
+
+    expect(historyRows[0]).toBeDefined();
+    expect(historyRows[0]!.deviceId).toBe('device-123');
+    expect(historyRows[0]!.result).toBe('correct');
+    expect(historyRows[0]!.pos).toBe(task.pos);
+    expect(historyRows[0]!.taskType).toBe(task.taskType);
+    expect(historyRows[0]!.hintsUsed).toBe(false);
+    expect(historyRows[0]!.featureFlags).toBeDefined();
+    expect(historyRows[0]!.metadata).toMatchObject({
+      queueCap: submission.body.queueCap,
+      leitnerBox: submission.body.leitnerBox,
     });
   });
 });

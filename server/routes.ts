@@ -12,6 +12,7 @@ import {
   contentPacks,
   packLexemeMap,
   schedulingState,
+  practiceHistory,
   type IntegrationPartner,
   type Word,
 } from "@db/schema";
@@ -34,6 +35,7 @@ import {
   isPosFeatureEnabled,
   notifyPosFeatureBlocked,
   PosFeatureDisabledError,
+  summarizeFeatureFlagSnapshot,
 } from "./feature-flags";
 
 const practiceModeSchema = z.enum(["präteritum", "partizipII", "auxiliary", "english"]);
@@ -56,14 +58,48 @@ const taskQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(25),
 });
 
-const submissionSchema = z.object({
-  taskId: z.string().min(1),
-  deviceId: z.string().min(1),
-  result: z.enum(["correct", "incorrect"]),
-  responseMs: z.coerce.number().int().min(0).max(600000),
-  answer: z.string().trim().optional(),
-  submittedAt: z.string().datetime().optional(),
-});
+type SubmissionFeatureFlagSummary = Record<string, { enabled: boolean; stage?: string; defaultValue?: boolean }>;
+
+const submissionSchema = z
+  .object({
+    taskId: z.string().min(1),
+    lexemeId: z.string().min(1),
+    taskType: z.string().min(1),
+    pos: z.string().min(1),
+    renderer: z.string().min(1),
+    deviceId: z.string().min(1),
+    result: z.enum(["correct", "incorrect"]),
+    responseMs: z.coerce.number().int().min(0).max(600000).optional(),
+    timeSpentMs: z.coerce.number().int().min(0).max(600000).optional(),
+    submittedResponse: z.unknown().optional(),
+    expectedResponse: z.unknown().optional(),
+    answer: z.string().trim().optional(),
+    answeredAt: z.string().datetime().optional(),
+    submittedAt: z.string().datetime().optional(),
+    queuedAt: z.string().datetime().optional(),
+    cefrLevel: z.string().trim().min(1).optional(),
+    packId: z.string().trim().nullable().optional(),
+    hintsUsed: z.boolean().optional(),
+    featureFlags: z
+      .record(
+        z.string(),
+        z.object({
+          enabled: z.boolean(),
+          stage: z.string().optional(),
+          defaultValue: z.boolean().optional(),
+        }),
+      )
+      .optional(),
+  })
+  .superRefine((value, ctx) => {
+    if (value.responseMs === undefined && value.timeSpentMs === undefined) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "responseMs or timeSpentMs is required",
+        path: ["responseMs"],
+      });
+    }
+  });
 
 declare global {
   namespace Express {
@@ -586,6 +622,7 @@ export function registerRoutes(app: Express): Server {
         id: taskSpecs.id,
         taskType: taskSpecs.taskType,
         pos: taskSpecs.pos,
+        renderer: taskSpecs.renderer,
         lexemeId: taskSpecs.lexemeId,
         frequencyRank: lexemes.frequencyRank,
       })
@@ -626,6 +663,40 @@ export function registerRoutes(app: Express): Server {
     const registryEntry = getTaskRegistryEntry(taskRow[0].taskType as TaskType);
 
     const submittedAt = payload.submittedAt ? new Date(payload.submittedAt) : undefined;
+    const answeredAt = payload.answeredAt ? new Date(payload.answeredAt) : undefined;
+    const queuedAt = payload.queuedAt ? new Date(payload.queuedAt) : undefined;
+    const responseMs = payload.responseMs ?? payload.timeSpentMs ?? 0;
+
+    const payloadFeatureFlags = payload.featureFlags as SubmissionFeatureFlagSummary | undefined;
+
+    const featureFlagSummary = (() => {
+      const serverSummary = summarizeFeatureFlagSnapshot(snapshot);
+      if (!payloadFeatureFlags) {
+        return serverSummary;
+      }
+      const merged = { ...serverSummary } as Record<string, { enabled: boolean; stage: string; flag?: string; defaultValue: boolean }>;
+      const entries = Object.entries(payloadFeatureFlags) as Array<[
+        string,
+        SubmissionFeatureFlagSummary[string],
+      ]>;
+      for (const [key, value] of entries) {
+        if (!merged[key]) {
+          merged[key] = {
+            enabled: value.enabled,
+            stage: value.stage ?? "beta",
+            defaultValue: value.defaultValue ?? false,
+          };
+          continue;
+        }
+        merged[key] = {
+          enabled: value.enabled,
+          stage: value.stage ?? merged[key]!.stage,
+          flag: merged[key]!.flag,
+          defaultValue: value.defaultValue ?? merged[key]!.defaultValue,
+        };
+      }
+      return merged;
+    })();
 
     try {
       const submissionResult = await processTaskSubmission({
@@ -635,9 +706,39 @@ export function registerRoutes(app: Express): Server {
         pos: taskPos,
         queueCap: registryEntry.queueCap,
         result: payload.result,
-        responseMs: payload.responseMs,
+        responseMs,
         submittedAt,
         frequencyRank: taskRow[0].frequencyRank ?? null,
+      });
+
+      await db.insert(practiceHistory).values({
+        taskId: payload.taskId,
+        lexemeId: taskRow[0].lexemeId,
+        pos: taskRow[0].pos,
+        taskType: taskRow[0].taskType,
+        renderer: taskRow[0].renderer,
+        deviceId: payload.deviceId,
+        userId: (req as any).user?.id ?? null,
+        result: payload.result,
+        responseMs,
+        submittedAt: submittedAt ?? new Date(),
+        answeredAt: answeredAt ?? submittedAt ?? null,
+        queuedAt: queuedAt ?? null,
+        cefrLevel: payload.cefrLevel ?? null,
+        packId: payload.packId ?? null,
+        hintsUsed: payload.hintsUsed ?? false,
+        featureFlags: featureFlagSummary,
+        metadata: {
+          submittedResponse: payload.submittedResponse ?? payload.answer ?? null,
+          expectedResponse: payload.expectedResponse ?? null,
+          queueCap: submissionResult.queueCap,
+          priorityScore: submissionResult.priorityScore,
+          coverageScore: submissionResult.coverageScore,
+          leitnerBox: submissionResult.leitnerBox,
+          totalAttempts: submissionResult.totalAttempts,
+          correctAttempts: submissionResult.correctAttempts,
+          frequencyRank: taskRow[0].frequencyRank ?? null,
+        },
       });
 
       res.json({

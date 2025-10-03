@@ -298,6 +298,48 @@ export const telemetryPriorities = sqliteTable(
   }),
 );
 
+export const practiceHistory = sqliteTable(
+  "practice_history",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    taskId: text("task_id")
+      .notNull()
+      .references(() => taskSpecs.id, { onDelete: "cascade" }),
+    lexemeId: text("lexeme_id")
+      .notNull()
+      .references(() => lexemes.id, { onDelete: "cascade" }),
+    pos: text("pos").notNull(),
+    taskType: text("task_type").notNull(),
+    renderer: text("renderer").notNull(),
+    deviceId: text("device_id").notNull(),
+    userId: integer("user_id").references(() => users.id),
+    result: text("result", { enum: practiceResult }).notNull(),
+    responseMs: integer("response_ms").notNull(),
+    submittedAt: integer("submitted_at", { mode: "timestamp" })
+      .default(sql`(unixepoch('now'))`)
+      .notNull(),
+    answeredAt: integer("answered_at", { mode: "timestamp" }),
+    queuedAt: integer("queued_at", { mode: "timestamp" }),
+    cefrLevel: text("cefr_level"),
+    packId: text("pack_id"),
+    hintsUsed: integer("hints_used", { mode: "boolean" }).notNull().default(false),
+    featureFlags: text("feature_flags", { mode: "json" }).$type<
+      Record<string, { enabled: boolean; stage?: string; defaultValue?: boolean }>
+    >(),
+    metadata: text("metadata", { mode: "json" }).$type<Record<string, unknown>>(),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .default(sql`(unixepoch('now'))`)
+      .notNull(),
+  },
+  (table) => ({
+    taskIndex: index("practice_history_task_idx").on(table.taskId),
+    posIndex: index("practice_history_pos_idx").on(table.pos),
+    submittedIndex: index("practice_history_submitted_idx").on(table.submittedAt),
+    deviceIndex: index("practice_history_device_idx").on(table.deviceId),
+    packIndex: index("practice_history_pack_idx").on(table.packId),
+  }),
+);
+
 export const verbs = sqliteTable(
   "verbs",
   {
@@ -426,6 +468,8 @@ export type InsertVerbPracticeHistory = typeof verbPracticeHistory.$inferInsert;
 
 export type VerbAnalytics = typeof verbAnalytics.$inferSelect;
 export type InsertVerbAnalytics = typeof verbAnalytics.$inferInsert;
+export type PracticeHistory = typeof practiceHistory.$inferSelect;
+export type InsertPracticeHistory = typeof practiceHistory.$inferInsert;
 
 export type VerbSchedulingState = typeof verbSchedulingState.$inferSelect;
 export type InsertVerbSchedulingState = typeof verbSchedulingState.$inferInsert;

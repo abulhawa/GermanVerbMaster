@@ -20,6 +20,7 @@
     "test:e2e": "playwright test",
     "test:ui": "npm run test:unit && npm run test:e2e",
     "seed": "tsx scripts/seed.ts",
+    "analytics:export": "tsx scripts/export-pos-analytics.ts",
     "seed:verbs": "npm run seed",
     "integration:create-key": "tsx scripts/create-partner-key.ts"
   },

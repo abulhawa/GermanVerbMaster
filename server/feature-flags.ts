@@ -179,14 +179,16 @@ export function formatFeatureFlagHeader(snapshot: FeatureFlagSnapshot): string {
   );
 }
 
-function createSnapshotSummary(snapshot: FeatureFlagSnapshot): Record<string, unknown> {
+export function summarizeFeatureFlagSnapshot(
+  snapshot: FeatureFlagSnapshot,
+): Record<string, { enabled: boolean; stage: FeatureFlagStage; flag?: string; defaultValue: boolean }> {
   return Object.fromEntries(
     Object.entries(snapshot.pos).map(([key, state]) => [
       key,
       {
         enabled: state.enabled,
         stage: state.stage,
-        flag: state.flag ?? null,
+        flag: state.flag,
         defaultValue: state.defaultValue,
       },
     ]),
@@ -200,7 +202,7 @@ onFeatureFlagEvent((event) => {
   const message = `[feature-flags] Blocked ${event.context} for disabled ${event.pos} tasks`;
   const payload = {
     details: event.details ?? null,
-    snapshot: createSnapshotSummary(event.snapshot),
+    snapshot: summarizeFeatureFlagSnapshot(event.snapshot),
     timestamp: event.timestamp.toISOString(),
   };
 

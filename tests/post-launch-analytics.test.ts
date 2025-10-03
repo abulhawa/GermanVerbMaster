@@ -1,0 +1,297 @@
+import { describe, expect, it, vi, afterEach } from 'vitest';
+
+import { computePostLaunchAnalytics } from '../analytics/post-launch';
+import type {
+  PackMembershipAnalytics,
+  PracticeAttemptAnalytics,
+  SchedulingSnapshotAnalytics,
+  TelemetrySnapshotAnalytics,
+} from '../analytics/post-launch';
+
+describe('computePostLaunchAnalytics', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('summarises adoption, scheduler health, and content quality metrics', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2025-01-05T00:00:00.000Z'));
+
+    const practiceAttempts: PracticeAttemptAnalytics[] = [
+      {
+        taskId: 'task:verb-1',
+        lexemeId: 'lex:verb-1',
+        pos: 'verb',
+        taskType: 'conjugate_form',
+        renderer: 'verb_renderer',
+        deviceId: 'device-a',
+        userId: 1,
+        result: 'correct',
+        responseMs: 1500,
+        submittedAt: new Date('2025-01-01T10:00:00.000Z'),
+        hintsUsed: false,
+        packId: 'pack:verbs',
+        featureFlags: {
+          verb: { enabled: true },
+          noun: { enabled: true },
+          adjective: { enabled: false },
+        },
+      },
+      {
+        taskId: 'task:noun-1',
+        lexemeId: 'lex:noun-1',
+        pos: 'noun',
+        taskType: 'noun_case_declension',
+        renderer: 'noun_renderer',
+        deviceId: 'device-a',
+        userId: 1,
+        result: 'incorrect',
+        responseMs: 3200,
+        submittedAt: new Date('2025-01-01T10:05:00.000Z'),
+        hintsUsed: true,
+        packId: 'pack:noun-foundation',
+        featureFlags: {
+          verb: { enabled: true },
+          noun: { enabled: true },
+          adjective: { enabled: false },
+        },
+      },
+      {
+        taskId: 'task:verb-2',
+        lexemeId: 'lex:verb-2',
+        pos: 'verb',
+        taskType: 'conjugate_form',
+        renderer: 'verb_renderer',
+        deviceId: 'device-b',
+        userId: null,
+        result: 'incorrect',
+        responseMs: 2100,
+        submittedAt: new Date('2025-01-01T11:00:00.000Z'),
+        hintsUsed: false,
+        featureFlags: {
+          verb: { enabled: true },
+          noun: { enabled: true },
+          adjective: { enabled: false },
+        },
+      },
+      {
+        taskId: 'task:noun-1',
+        lexemeId: 'lex:noun-1',
+        pos: 'noun',
+        taskType: 'noun_case_declension',
+        renderer: 'noun_renderer',
+        deviceId: 'device-b',
+        userId: null,
+        result: 'correct',
+        responseMs: 2800,
+        submittedAt: new Date('2025-01-02T09:00:00.000Z'),
+        hintsUsed: false,
+        featureFlags: {
+          verb: { enabled: true },
+          noun: { enabled: true },
+          adjective: { enabled: false },
+        },
+      },
+      {
+        taskId: 'task:adj-1',
+        lexemeId: 'lex:adj-1',
+        pos: 'adjective',
+        taskType: 'adj_ending',
+        renderer: 'adj_renderer',
+        deviceId: 'device-b',
+        userId: null,
+        result: 'incorrect',
+        responseMs: 4500,
+        submittedAt: new Date('2025-01-02T09:30:00.000Z'),
+        hintsUsed: false,
+        featureFlags: {
+          verb: { enabled: true },
+          noun: { enabled: true },
+          adjective: { enabled: true },
+        },
+      },
+      {
+        taskId: 'task:noun-1',
+        lexemeId: 'lex:noun-1',
+        pos: 'noun',
+        taskType: 'noun_case_declension',
+        renderer: 'noun_renderer',
+        deviceId: 'device-c',
+        userId: null,
+        result: 'incorrect',
+        responseMs: 3600,
+        submittedAt: new Date('2025-01-03T10:00:00.000Z'),
+        hintsUsed: false,
+        featureFlags: {
+          verb: { enabled: true },
+          noun: { enabled: true },
+        },
+      },
+    ];
+
+    const schedulingSnapshots: SchedulingSnapshotAnalytics[] = [
+      {
+        taskId: 'task:verb-1',
+        deviceId: 'device-a',
+        pos: 'verb',
+        taskType: 'conjugate_form',
+        leitnerBox: 2,
+        priorityScore: 0.9,
+        dueAt: new Date('2025-01-02T08:00:00.000Z'),
+        updatedAt: new Date('2025-01-01T10:05:00.000Z'),
+        totalAttempts: 3,
+        correctAttempts: 2,
+        averageResponseMs: 1800,
+        accuracyWeight: 0.6,
+        latencyWeight: 0.4,
+        stabilityWeight: 0.5,
+      },
+      {
+        taskId: 'task:noun-1',
+        deviceId: 'device-b',
+        pos: 'noun',
+        taskType: 'noun_case_declension',
+        leitnerBox: 1,
+        priorityScore: 0.7,
+        dueAt: new Date('2024-12-31T23:00:00.000Z'),
+        updatedAt: new Date('2025-01-01T11:00:00.000Z'),
+        totalAttempts: 4,
+        correctAttempts: 2,
+        averageResponseMs: 2500,
+        accuracyWeight: 0.5,
+        latencyWeight: 0.6,
+        stabilityWeight: 0.3,
+      },
+    ];
+
+    const telemetrySnapshots: TelemetrySnapshotAnalytics[] = [
+      {
+        taskId: 'task:verb-1',
+        pos: 'verb',
+        sampledAt: new Date('2025-01-01T11:30:00.000Z'),
+        priorityScore: 0.8,
+        accuracyWeight: 0.55,
+        latencyWeight: 0.4,
+        stabilityWeight: 0.5,
+        metadata: { responseMs: 1800 },
+      },
+      {
+        taskId: 'task:noun-1',
+        pos: 'noun',
+        sampledAt: new Date('2025-01-01T12:00:00.000Z'),
+        priorityScore: 0.6,
+        accuracyWeight: 0.4,
+        latencyWeight: 0.7,
+        stabilityWeight: 0.3,
+        metadata: { responseMs: 8200 },
+      },
+      {
+        taskId: 'task:noun-1',
+        pos: 'noun',
+        sampledAt: new Date('2025-01-02T12:00:00.000Z'),
+        priorityScore: 0.65,
+        accuracyWeight: 0.45,
+        latencyWeight: 0.6,
+        stabilityWeight: 0.35,
+        metadata: { responseMs: 1800 },
+      },
+      {
+        taskId: 'task:noun-1',
+        pos: 'noun',
+        sampledAt: new Date('2025-01-02T13:00:00.000Z'),
+        priorityScore: 0.62,
+        accuracyWeight: 0.43,
+        latencyWeight: 0.6,
+        stabilityWeight: 0.32,
+        metadata: { responseMs: 1800 },
+      },
+      {
+        taskId: 'task:noun-1',
+        pos: 'noun',
+        sampledAt: new Date('2025-01-03T13:00:00.000Z'),
+        priorityScore: 0.64,
+        accuracyWeight: 0.44,
+        latencyWeight: 0.58,
+        stabilityWeight: 0.33,
+        metadata: { responseMs: 1800 },
+      },
+    ];
+
+    const packMemberships: PackMembershipAnalytics[] = [
+      {
+        packId: 'pack:noun-foundation',
+        packName: 'Noun Foundation',
+        posScope: 'noun',
+        lexemeId: 'lex:noun-1',
+      },
+      {
+        packId: 'pack:verbs',
+        packName: 'Verb Essentials',
+        posScope: 'verb',
+        lexemeId: 'lex:verb-1',
+      },
+    ];
+
+    const report = computePostLaunchAnalytics({
+      practiceAttempts,
+      schedulingSnapshots,
+      telemetrySnapshots,
+      packMemberships,
+    });
+
+    expect(report.generatedAt).toMatch(/2025-01-05/);
+
+    const januaryFirstVerb = report.posAdoption.dailyActiveDevices.find(
+      (item) => item.date === '2025-01-01' && item.pos === 'verb',
+    );
+    expect(januaryFirstVerb?.devices).toBe(2);
+
+    const nounPerformance = report.posAdoption.taskPerformance.find(
+      (item) => item.pos === 'noun' && item.taskType === 'noun_case_declension',
+    );
+    expect(nounPerformance).toBeDefined();
+    expect(nounPerformance!.attempts).toBe(3);
+    expect(nounPerformance!.accuracy).toBeCloseTo(33.33, 2);
+
+    const nounFunnel = report.posAdoption.featureFlagFunnel.find((item) => item.pos === 'noun');
+    expect(nounFunnel).toBeDefined();
+    expect(nounFunnel!.enabledSessions).toBe(4);
+    expect(nounFunnel!.adoptionRate).toBeCloseTo(75, 2);
+
+    const nounHeat = report.schedulerHealth.priorityHeatmap.find(
+      (item) => item.pos === 'noun' && item.leitnerBox === 1,
+    );
+    expect(nounHeat).toBeDefined();
+    expect(nounHeat!.tasks).toBe(1);
+
+    const dueJanuarySecond = report.schedulerHealth.dueVsCompleted.find((item) => item.date === '2025-01-02');
+    expect(dueJanuarySecond).toBeDefined();
+    expect(dueJanuarySecond!.dueTasks).toBe(1);
+    expect(dueJanuarySecond!.completedTasks).toBe(2);
+
+    const nounDistribution = report.schedulerHealth.weightDistribution.find((item) => item.pos === 'noun');
+    expect(nounDistribution).toBeDefined();
+    expect(nounDistribution!.latency.average).toBeGreaterThan(0.6);
+
+    const nounOverdue = report.schedulerHealth.overdueSummary.find((item) => item.pos === 'noun');
+    expect(nounOverdue).toBeDefined();
+    expect(nounOverdue!.overduePercentage).toBe(100);
+
+    const nounPack = report.contentQuality.packAccuracy.find((item) => item.packId === 'pack:noun-foundation');
+    expect(nounPack).toBeDefined();
+    expect(nounPack!.attempts).toBe(3);
+    expect(nounPack!.accuracy).toBeCloseTo(33.33, 2);
+    expect(nounPack!.hintUsageRate).toBeCloseTo(33.33, 2);
+
+    expect(report.contentQuality.topChallenges[0]).toMatchObject({
+      taskId: 'task:noun-1',
+      incorrectAttempts: 2,
+      totalAttempts: 3,
+    });
+
+    expect(report.contentQuality.telemetryAnomalies[0]).toMatchObject({
+      taskId: 'task:noun-1',
+    });
+    expect(Math.abs(report.contentQuality.telemetryAnomalies[0]!.zScore)).toBeGreaterThanOrEqual(2);
+  });
+});

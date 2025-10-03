@@ -159,7 +159,12 @@ describe('feature flags', () => {
 
   it('blocks adjective submissions when the flag is disabled', async () => {
     const adjectiveTask = await drizzleDb
-      .select({ id: taskSpecsTable.id })
+      .select({
+        id: taskSpecsTable.id,
+        lexemeId: taskSpecsTable.lexemeId,
+        taskType: taskSpecsTable.taskType,
+        renderer: taskSpecsTable.renderer,
+      })
       .from(taskSpecsTable)
       .where(eq(taskSpecsTable.pos, 'adjective'))
       .limit(1);
@@ -170,9 +175,13 @@ describe('feature flags', () => {
       .post('/api/submission')
       .send({
         taskId: adjectiveTask[0]!.id,
+        lexemeId: adjectiveTask[0]!.lexemeId,
+        taskType: adjectiveTask[0]!.taskType,
+        pos: 'adjective',
+        renderer: adjectiveTask[0]!.renderer,
         deviceId: 'device-456',
         result: 'correct',
-        responseMs: 1500,
+        timeSpentMs: 1500,
       })
       .expect(403);
   });
