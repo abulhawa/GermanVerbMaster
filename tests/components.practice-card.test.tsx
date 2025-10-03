@@ -8,6 +8,7 @@ import { clientTaskRegistry } from '@/lib/tasks';
 import { createDefaultSettings } from '@/lib/practice-settings';
 import type { PracticeSettingsState } from '@shared';
 import type { PracticeCardResult } from '@/components/practice-card';
+import { LocaleProvider, type Locale } from '@/locales';
 
 vi.mock('@/lib/api', () => ({
   submitPracticeAttempt: vi.fn().mockResolvedValue({ queued: false }),
@@ -150,11 +151,13 @@ describe('PracticeCard', () => {
     const task = createTask();
     const settings = getDefaultSettings();
 
-    render(<PracticeCard task={task} settings={settings} onResult={onResult} />);
+    renderWithLocale(<PracticeCard task={task} settings={settings} onResult={onResult} />);
 
-    const input = screen.getByLabelText(/antwort eingeben/i);
+    expect(screen.getByText('Conjugate "gehen" in the Past participle tense.')).toBeInTheDocument();
+
+    const input = screen.getByLabelText(/enter answer/i);
     await userEvent.type(input, 'gegangen');
-    await userEvent.click(screen.getByRole('button', { name: /prüfen/i }));
+    await userEvent.click(screen.getByRole('button', { name: /check/i }));
 
     await waitFor(() => {
       expect(submitPracticeAttempt).toHaveBeenCalledTimes(1);
@@ -175,6 +178,15 @@ describe('PracticeCard', () => {
     expect(result.expectedResponse).toEqual(task.expectedSolution);
   });
 
+  it('localises conjugation instructions when switching locale', () => {
+    const task = createTask();
+    const settings = getDefaultSettings();
+
+    renderWithLocale(<PracticeCard task={task} settings={settings} onResult={vi.fn()} />, 'de');
+
+    expect(screen.getByText('Konjugiere „gehen“ in der Partizip II-Form.')).toBeInTheDocument();
+  });
+
   it('displays expected answer on incorrect attempt', async () => {
     vi.mocked(submitPracticeAttempt).mockResolvedValueOnce({ queued: false });
 
@@ -182,18 +194,18 @@ describe('PracticeCard', () => {
     const task = createTask();
     const settings = getDefaultSettings();
 
-    render(<PracticeCard task={task} settings={settings} onResult={onResult} />);
+    renderWithLocale(<PracticeCard task={task} settings={settings} onResult={onResult} />);
 
-    const input = screen.getByLabelText(/antwort eingeben/i);
+    const input = screen.getByLabelText(/enter answer/i);
     await userEvent.type(input, 'geher');
-    await userEvent.click(screen.getByRole('button', { name: /prüfen/i }));
+    await userEvent.click(screen.getByRole('button', { name: /check/i }));
 
     await waitFor(() => {
       expect(submitPracticeAttempt).toHaveBeenCalledTimes(1);
     });
 
     await waitFor(() => {
-      expect(screen.getByText(/Erwartete Antwort/i)).toBeInTheDocument();
+      expect(screen.getByText(/Expected answer/i)).toBeInTheDocument();
     });
 
     const result = onResult.mock.calls[0][0] as PracticeCardResult;
@@ -206,13 +218,14 @@ describe('PracticeCard', () => {
     const task = createNounTask();
     const settings = getDefaultSettings();
 
-    render(<PracticeCard task={task} settings={settings} onResult={onResult} />);
+    renderWithLocale(<PracticeCard task={task} settings={settings} onResult={onResult} />);
 
-    expect(screen.getByText(/Akkusativ/i)).toBeInTheDocument();
+    expect(screen.getByText('Give the Accusative Plural form of "Haus".')).toBeInTheDocument();
+    expect(screen.getByText(/Accusative/i)).toBeInTheDocument();
 
-    const input = screen.getByLabelText(/pluralform eingeben/i);
+    const input = screen.getByLabelText(/enter plural form/i);
     await userEvent.type(input, 'Häuser');
-    await userEvent.click(screen.getByRole('button', { name: /prüfen/i }));
+    await userEvent.click(screen.getByRole('button', { name: /check/i }));
 
     await waitFor(() => {
       expect(submitPracticeAttempt).toHaveBeenCalledTimes(1);
@@ -231,11 +244,13 @@ describe('PracticeCard', () => {
     const task = createDativeNounTask();
     const settings = getDefaultSettings();
 
-    render(<PracticeCard task={task} settings={settings} onResult={onResult} />);
+    renderWithLocale(<PracticeCard task={task} settings={settings} onResult={onResult} />);
 
-    const input = screen.getByLabelText(/pluralform eingeben/i);
+    expect(screen.getByText('Give the Dative Plural form of "Kind".')).toBeInTheDocument();
+
+    const input = screen.getByLabelText(/enter plural form/i);
     await userEvent.type(input, 'den Kindern');
-    await userEvent.click(screen.getByRole('button', { name: /prüfen/i }));
+    await userEvent.click(screen.getByRole('button', { name: /check/i }));
 
     await waitFor(() => {
       expect(submitPracticeAttempt).toHaveBeenCalledTimes(1);
@@ -257,11 +272,13 @@ describe('PracticeCard', () => {
     const task = createAdjectiveTask();
     const settings = getDefaultSettings();
 
-    render(<PracticeCard task={task} settings={settings} onResult={onResult} />);
+    renderWithLocale(<PracticeCard task={task} settings={settings} onResult={onResult} />);
 
-    const input = screen.getByLabelText(/adjektivform eingeben/i);
+    expect(screen.getByText('Give the Comparative form of "schnell".')).toBeInTheDocument();
+
+    const input = screen.getByLabelText(/enter adjective form/i);
     await userEvent.type(input, 'schneller');
-    await userEvent.click(screen.getByRole('button', { name: /prüfen/i }));
+    await userEvent.click(screen.getByRole('button', { name: /check/i }));
 
     await waitFor(() => {
       expect(submitPracticeAttempt).toHaveBeenCalledTimes(1);
@@ -288,7 +305,7 @@ describe('PracticeCard', () => {
       },
     };
 
-    render(<PracticeCard task={enrichedTask} settings={settings} onResult={onResult} />);
+    renderWithLocale(<PracticeCard task={enrichedTask} settings={settings} onResult={onResult} />);
 
     expect(screen.getByText(/CEFR B2/i)).toBeInTheDocument();
   });
@@ -306,8 +323,23 @@ describe('PracticeCard', () => {
       },
     };
 
-    render(<PracticeCard task={malformedTask} settings={settings} onResult={onResult} />);
+    renderWithLocale(<PracticeCard task={malformedTask} settings={settings} onResult={onResult} />);
 
     expect(screen.getByText(/CEFR A1/i)).toBeInTheDocument();
   });
+
+  it('renders German copy when the locale is set to de', () => {
+    const onResult = vi.fn();
+    const task = createTask();
+    const settings = getDefaultSettings();
+
+    renderWithLocale(<PracticeCard task={task} settings={settings} onResult={onResult} />, 'de');
+
+    expect(screen.getByText('Konjugiere „gehen“ in der Partizip II-Form.')).toBeInTheDocument();
+    expect(screen.getByLabelText(/antwort eingeben/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /prüfen/i })).toBeInTheDocument();
+  });
 });
+function renderWithLocale(ui: React.ReactElement, locale: Locale = 'en') {
+  return render(<LocaleProvider initialLocale={locale}>{ui}</LocaleProvider>);
+}

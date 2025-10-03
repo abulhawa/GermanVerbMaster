@@ -18,6 +18,7 @@ import { PracticeCard, type PracticeCardResult } from '@/components/practice-car
 import { ProgressDisplay } from '@/components/progress-display';
 import { SettingsDialog } from '@/components/settings-dialog';
 import { PracticeModeSwitcher, type PracticeScope } from '@/components/practice-mode-switcher';
+import { LanguageToggle } from '@/components/language-toggle';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -571,12 +572,16 @@ export default function Home() {
             presetLabel={scopeBadgeLabel}
             taskTypeLabel={taskTypeCopy.label}
           />
+          <LanguageToggle className="hidden sm:block" debugId="topbar-language-toggle" />
           <div className="hidden sm:block">
             <Avatar className="h-11 w-11 border border-border/60 shadow-sm">
               <AvatarFallback className="bg-primary/10 text-sm font-semibold text-primary">LV</AvatarFallback>
             </Avatar>
           </div>
         </div>
+      </div>
+      <div className="sm:hidden">
+        <LanguageToggle className="w-full" debugId="topbar-language-toggle-mobile" />
       </div>
     </div>
   );

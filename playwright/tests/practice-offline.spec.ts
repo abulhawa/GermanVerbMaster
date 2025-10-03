@@ -86,13 +86,53 @@ await page.addInitScript((task) => {
     await expect(card).toBeVisible();
     await expect(card.getByText(/^NOUN$/)).toBeVisible();
 
-    await page.getByLabel('Pluralform eingeben', { exact: false }).fill('den Kindern');
-    const input = page.getByLabel('Pluralform eingeben', { exact: false });
-    await page.getByRole('button', { name: /prüfen/i }).click();
+    await page.getByLabel('Enter plural form', { exact: false }).fill('den Kindern');
+    const input = page.getByLabel('Enter plural form', { exact: false });
+    await page.getByRole('button', { name: /check/i }).click();
 
     await expect(input).toBeDisabled();
     await expect(page.getByText(/Saved offline/i)).toBeVisible();
     const attempts = await page.evaluate(() => (window as typeof window & { __submissionAttempts?: number }).__submissionAttempts ?? 0);
     expect(attempts).toBeGreaterThan(0);
+  });
+
+  test('switching locale updates practice card labels', async ({ page }) => {
+    await page.addInitScript((settings) => {
+      localStorage.setItem('practice.settings', JSON.stringify(settings));
+      localStorage.setItem('practice.settings.migrated', '1');
+      localStorage.removeItem('practice.session');
+      localStorage.removeItem('practice.progress');
+      localStorage.removeItem('practice.answers');
+    }, practiceSettings);
+
+    await page.addInitScript((task) => {
+      const tasks = [task];
+      const originalFetch = window.fetch.bind(window);
+
+      window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+        if (url.includes('/api/tasks')) {
+          return new Response(JSON.stringify({ tasks }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+        return originalFetch(input, init);
+      };
+    }, nounTaskPayload);
+
+    await page.goto('/');
+
+    await expect(page.getByTestId('practice-card')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Check' })).toBeVisible();
+    await expect(page.getByLabel('Enter plural form', { exact: false })).toBeVisible();
+    await expect(page.getByText('Give the Dative Plural form of "Kind".')).toBeVisible();
+
+    await page.getByTestId('language-toggle').click();
+    await page.getByRole('option', { name: 'Deutsch' }).click();
+
+    await expect(page.getByRole('button', { name: 'Prüfen' })).toBeVisible();
+    await expect(page.getByLabel('Pluralform eingeben', { exact: false })).toBeVisible();
+    await expect(page.getByText('Bilde die Dativ Plural-Form von „Kind“.')).toBeVisible();
   });
 });

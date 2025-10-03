@@ -16,6 +16,7 @@ import {
 } from '@/lib/dev-attributes';
 import type { CEFRLevel, PracticeResult, PracticeSettingsState } from '@shared';
 import type { PracticeSettingsRendererPreferences, TaskType } from '@shared';
+import { useTranslations, formatUnsupportedRendererMessage, type PracticeCardMessages } from '@/locales';
 
 export interface PracticeCardResult {
   task: PracticeTask;
@@ -40,24 +41,6 @@ const DEFAULT_RENDERER_PREFS: PracticeSettingsRendererPreferences = {
   showExamples: true,
 };
 
-const CASE_LABELS: Record<string, string> = {
-  nominative: 'Nominativ',
-  accusative: 'Akkusativ',
-  dative: 'Dativ',
-  genitive: 'Genitiv',
-};
-
-const NUMBER_LABELS: Record<string, string> = {
-  singular: 'Singular',
-  plural: 'Plural',
-};
-
-const DEGREE_LABELS: Record<string, string> = {
-  positive: 'Positiv',
-  comparative: 'Komparativ',
-  superlative: 'Superlativ',
-};
-
 function isTaskOfType<T extends TaskType>(task: PracticeTask, taskType: T): task is PracticeTask<T> {
   return task.taskType === taskType;
 }
@@ -73,27 +56,112 @@ function normaliseAnswer(value: string): string {
   return value.trim().toLowerCase();
 }
 
-function buildPromptSummary(task: PracticeTask<'conjugate_form'>): string {
+function getConjugateTenseLabel(copy: PracticeCardMessages, task: PracticeTask<'conjugate_form'>): string {
   const tense = task.prompt.requestedForm.tense;
-  const tenseLabel =
-    tense === 'participle'
-      ? 'Partizip II'
-      : tense === 'past'
-        ? 'Präteritum'
-        : tense === 'present'
-          ? 'Präsens'
-          : 'Form';
-  return `${task.lexeme.lemma} – ${task.prompt.instructions || `Gib die ${tenseLabel}-Form an.`}`;
+  const { tenseLabels } = copy.conjugate;
+  return tense === 'participle'
+    ? tenseLabels.participle
+    : tense === 'past'
+      ? tenseLabels.past
+      : tense === 'present'
+        ? tenseLabels.present
+        : tenseLabels.fallback;
 }
 
-function buildNounPromptSummary(task: PracticeTask<'noun_case_declension'>): string {
-  const caseLabel = CASE_LABELS[task.prompt.requestedCase] ?? task.prompt.requestedCase;
-  const numberLabel = NUMBER_LABELS[task.prompt.requestedNumber] ?? task.prompt.requestedNumber;
+function formatInstructionTemplate(template: string, replacements: Record<string, string>): string {
+  return Object.entries(replacements).reduce((result, [token, value]) => {
+    return result.replaceAll(`{${token}}`, value);
+  }, template);
+}
+
+function ensureSentence(value: string): string {
+  return /[.!?]$/.test(value) ? value : `${value}.`;
+}
+
+function getConjugateSubjectLabel(copy: PracticeCardMessages, task: PracticeTask<'conjugate_form'>): string | null {
+  const { person, number } = task.prompt.requestedForm;
+  if (!number || typeof person !== 'number') {
+    return null;
+  }
+
+  const personIndex = person as 1 | 2 | 3;
+  if (personIndex < 1 || personIndex > 3) {
+    return copy.conjugate.subjectLabels.fallback ?? null;
+  }
+
+  const subjectLabels = copy.conjugate.subjectLabels[number];
+  if (!subjectLabels) {
+    return copy.conjugate.subjectLabels.fallback ?? null;
+  }
+
+  return subjectLabels[personIndex] ?? copy.conjugate.subjectLabels.fallback ?? null;
+}
+
+function buildConjugateInstruction(copy: PracticeCardMessages, task: PracticeTask<'conjugate_form'>): string {
+  const tenseLabel = getConjugateTenseLabel(copy, task);
+  const base = formatInstructionTemplate(copy.conjugate.instruction, {
+    lemma: task.lexeme.lemma,
+    tenseLabel,
+  });
+  const subjectLabel = getConjugateSubjectLabel(copy, task);
+  if (!subjectLabel) {
+    return ensureSentence(base);
+  }
+
+  const suffix = copy.conjugate.subjectSuffix
+    ? formatInstructionTemplate(copy.conjugate.subjectSuffix, { subjectLabel })
+    : ` ${subjectLabel}`;
+  return ensureSentence(`${base}${suffix}`);
+}
+
+function buildNounInstruction(copy: PracticeCardMessages, task: PracticeTask<'noun_case_declension'>): string {
+  const caseLabel = copy.caseLabels[task.prompt.requestedCase] ?? task.prompt.requestedCase;
+  const numberLabel = copy.numberLabels[task.prompt.requestedNumber] ?? task.prompt.requestedNumber;
+  const base = formatInstructionTemplate(copy.noun.instruction, {
+    lemma: task.lexeme.lemma,
+    caseLabel,
+    numberLabel,
+  });
+  return ensureSentence(base);
+}
+
+function buildAdjectiveInstruction(copy: PracticeCardMessages, task: PracticeTask<'adj_ending'>): string {
+  const degreeLabel = copy.degreeLabels[task.prompt.degree] ?? task.prompt.degree;
+  const base = formatInstructionTemplate(copy.adjective.instruction, {
+    lemma: task.lexeme.lemma,
+    degreeLabel,
+  });
+  return ensureSentence(base);
+}
+
+function getTaskInstructions(copy: PracticeCardMessages, task: PracticeTask): string {
+  switch (task.taskType) {
+    case 'conjugate_form':
+      return buildConjugateInstruction(copy, task as PracticeTask<'conjugate_form'>);
+    case 'noun_case_declension':
+      return buildNounInstruction(copy, task as PracticeTask<'noun_case_declension'>);
+    case 'adj_ending':
+      return buildAdjectiveInstruction(copy, task as PracticeTask<'adj_ending'>);
+    default: {
+      const instructions = (task.prompt as { instructions?: unknown }).instructions;
+      return typeof instructions === 'string' && instructions.trim().length > 0 ? instructions : '';
+    }
+  }
+}
+
+function buildPromptSummary(copy: PracticeCardMessages, task: PracticeTask<'conjugate_form'>): string {
+  const instructions = getTaskInstructions(copy, task);
+  return `${task.lexeme.lemma} – ${instructions}`;
+}
+
+function buildNounPromptSummary(copy: PracticeCardMessages, task: PracticeTask<'noun_case_declension'>): string {
+  const caseLabel = copy.caseLabels[task.prompt.requestedCase] ?? task.prompt.requestedCase;
+  const numberLabel = copy.numberLabels[task.prompt.requestedNumber] ?? task.prompt.requestedNumber;
   return `${task.lexeme.lemma} – ${caseLabel} ${numberLabel}`;
 }
 
-function buildAdjectivePromptSummary(task: PracticeTask<'adj_ending'>): string {
-  const degreeLabel = DEGREE_LABELS[task.prompt.degree] ?? task.prompt.degree;
+function buildAdjectivePromptSummary(copy: PracticeCardMessages, task: PracticeTask<'adj_ending'>): string {
+  const degreeLabel = copy.degreeLabels[task.prompt.degree] ?? task.prompt.degree;
   return `${task.lexeme.lemma} – ${degreeLabel}`;
 }
 
@@ -144,30 +212,35 @@ function computeAnsweredAtAndTime(context: SubmissionContext, startedAt: number)
   };
 }
 
-function createOfflineToast(toast: ReturnType<typeof useToast>['toast']) {
+function createOfflineToast(copy: PracticeCardMessages, toast: ReturnType<typeof useToast>['toast']) {
   return () => {
     toast({
-      title: 'Saved offline',
-      description: "We'll sync this attempt once you're back online.",
+      title: copy.offline.title,
+      description: copy.offline.description,
     });
   };
 }
 
-function createErrorToast(toast: ReturnType<typeof useToast>['toast'], message: string) {
+function createErrorToast(
+  copy: PracticeCardMessages,
+  toast: ReturnType<typeof useToast>['toast'],
+  message?: string,
+) {
   toast({
-    title: 'Error',
-    description: message,
+    title: copy.error.title,
+    description: message ?? copy.error.generic,
     variant: 'destructive',
   });
 }
 
 function renderStatusBadge(
+  copy: PracticeCardMessages,
   status: 'idle' | 'correct' | 'incorrect',
   expectedForms: string[],
   displayAnswer?: string,
 ) {
   const StatusIcon = status === 'correct' ? CheckCircle2 : status === 'incorrect' ? XCircle : null;
-  const statusLabel = status === 'correct' ? 'Correct' : status === 'incorrect' ? 'Try again' : null;
+  const statusLabel = status === 'correct' ? copy.status.correct : status === 'incorrect' ? copy.status.incorrect : null;
 
   if (!StatusIcon || !statusLabel) {
     return null;
@@ -193,7 +266,7 @@ function renderStatusBadge(
         <p className="font-semibold uppercase tracking-[0.22em]">{statusLabel}</p>
         {status === 'incorrect' && (displayAnswer || expectedForms.length > 0) && (
           <p className="text-xs normal-case text-muted-foreground">
-            Erwartete Antwort:{' '}
+            {copy.status.expectedAnswer}{' '}
             <span className="font-medium text-foreground">{displayAnswer ?? expectedForms[0]}</span>
           </p>
         )}
@@ -210,6 +283,7 @@ function renderExamples(example?: { de?: string; en?: string } | null): string |
 }
 
 function renderHintText(
+  copy: PracticeCardMessages,
   preferences: PracticeSettingsRendererPreferences,
   exampleText: string | null,
   metadata: Record<string, unknown> | null,
@@ -221,7 +295,7 @@ function renderHintText(
 
   const english = metadata && typeof metadata.english === 'string' ? metadata.english : null;
   if (english) {
-    return `English: ${english}`;
+    return `${copy.hints.englishPrefix} ${english}`;
   }
 
   if (preferences.showExamples && exampleText) {
@@ -248,13 +322,15 @@ function resolveCefrLevel(metadata: Record<string, unknown> | null | undefined):
   return null;
 }
 
-function renderMetadataRow(task: PracticeTask) {
+function renderMetadataRow(copy: PracticeCardMessages, task: PracticeTask) {
   const cefrLevel = resolveCefrLevel(task.lexeme.metadata) ?? 'A1';
   return (
     <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.22em] text-muted-foreground">
       <span>CEFR {cefrLevel}</span>
       <span aria-hidden>•</span>
-      <span>Quelle: {task.source}</span>
+      <span>
+        {copy.metadata.sourceLabel} {task.source}
+      </span>
     </div>
   );
 }
@@ -268,12 +344,14 @@ function ConjugateFormRenderer({
   isLoadingNext,
 }: RendererProps<'conjugate_form'>) {
   const { toast } = useToast();
+  const { practiceCard: copy } = useTranslations();
   const [answer, setAnswer] = useState('');
   const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
   const [showHint, setShowHint] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const startTimeRef = useRef(Date.now());
   const preferences = getRendererPreferences(settings, task.taskType);
+  const instructionText = useMemo(() => getTaskInstructions(copy, task), [copy, task]);
 
   useEffect(() => {
     setAnswer('');
@@ -303,9 +381,12 @@ function ConjugateFormRenderer({
 
   const exampleText = preferences.showExamples ? renderExamples(task.prompt.example ?? null) : null;
   const hintText = useMemo(() => {
-    const fallback = expectedForms.length ? `Expected answer: ${task.expectedSolution?.form ?? ''}` : null;
-    return renderHintText(preferences, exampleText, task.lexeme.metadata, fallback);
-  }, [preferences, exampleText, task.lexeme.metadata, expectedForms, task.expectedSolution]);
+    const fallback =
+      expectedForms.length && task.expectedSolution?.form
+        ? `${copy.hints.expectedAnswerPrefix} ${task.expectedSolution.form}`
+        : null;
+    return renderHintText(copy, preferences, exampleText, task.lexeme.metadata, fallback);
+  }, [copy, preferences, exampleText, task.lexeme.metadata, expectedForms, task.expectedSolution]);
 
   const resolvedDebugId = debugId && debugId.trim().length > 0 ? debugId : 'practice-card';
   const isLegacyTask = task.taskId.startsWith('legacy:verb:');
@@ -353,7 +434,7 @@ function ConjugateFormRenderer({
       setStatus(submissionContext.result);
 
       if (queued) {
-        createOfflineToast(toast)();
+        createOfflineToast(copy, toast)();
       }
 
       onResult({
@@ -361,13 +442,14 @@ function ConjugateFormRenderer({
         result: submissionContext.result,
         submittedResponse: submitted,
         expectedResponse: task.expectedSolution,
-        promptSummary: buildPromptSummary(task),
+        promptSummary: buildPromptSummary(copy, task),
         timeSpentMs: submissionContext.timeSpentMs,
         answeredAt: submissionContext.answeredAt,
       });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to record practice attempt';
-      createErrorToast(toast, message);
+      const fallbackMessage = copy.error.generic;
+      const message = error instanceof Error && error.message ? error.message : fallbackMessage;
+      createErrorToast(copy, toast, message);
       setStatus('idle');
     } finally {
       setIsSubmitting(false);
@@ -406,7 +488,7 @@ function ConjugateFormRenderer({
             </Badge>
           )}
         </div>
-        <p className="text-sm text-muted-foreground">{task.prompt.instructions}</p>
+        <p className="text-sm text-muted-foreground">{instructionText}</p>
       </CardHeader>
       <CardContent className="space-y-5">
         <div className="flex items-center gap-3">
@@ -415,8 +497,8 @@ function ConjugateFormRenderer({
             onChange={(event) => setAnswer(event.target.value)}
             onKeyDown={handleKeyDown}
             disabled={status !== 'idle' || isSubmitting}
-            placeholder="Gib deine Antwort ein"
-            aria-label="Antwort eingeben"
+            placeholder={copy.conjugate.placeholder}
+            aria-label={copy.conjugate.ariaLabel}
             autoFocus
             className="flex-1 rounded-2xl border-border/60 bg-background/90 text-lg"
           />
@@ -426,7 +508,7 @@ function ConjugateFormRenderer({
             disabled={status !== 'idle' || isSubmitting || !answer.trim()}
             className="rounded-2xl px-5"
           >
-            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : 'Prüfen'}
+            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : copy.actions.submit}
           </Button>
           <Button
             type="button"
@@ -436,19 +518,19 @@ function ConjugateFormRenderer({
             className="rounded-full"
           >
             <Volume2 className="h-4 w-4" aria-hidden />
-            <span className="sr-only">Aussprache abspielen</span>
+            <span className="sr-only">{copy.actions.pronounceSrLabel}</span>
           </Button>
         </div>
 
-        {renderMetadataRow(task)}
+        {renderMetadataRow(copy, task)}
 
         <AnimatePresence>
-          {renderStatusBadge(status, expectedForms, task.expectedSolution?.form ?? undefined)}
+          {renderStatusBadge(copy, status, expectedForms, task.expectedSolution?.form ?? undefined)}
         </AnimatePresence>
 
         {preferences.showExamples && exampleText && (
           <div className="rounded-2xl border border-border/60 bg-muted/40 p-4 text-sm">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Beispiel</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">{copy.exampleLabel}</p>
             <p className="mt-2 text-muted-foreground">{exampleText}</p>
           </div>
         )}
@@ -462,7 +544,7 @@ function ConjugateFormRenderer({
           >
             <HelpCircle className="h-4 w-4" aria-hidden />
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.22em]">Hinweis</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em]">{copy.hints.label}</p>
               <AnimatePresence initial={false}>
                 {showHint ? (
                   <motion.p
@@ -482,7 +564,7 @@ function ConjugateFormRenderer({
                     exit={{ opacity: 0 }}
                     className="text-xs text-muted-foreground"
                   >
-                    Tippe, um den Hinweis anzuzeigen
+                    {copy.hints.toggle}
                   </motion.span>
                 )}
               </AnimatePresence>
@@ -494,7 +576,7 @@ function ConjugateFormRenderer({
       {isLoadingNext && (
         <div className="absolute inset-0 flex items-center justify-center rounded-3xl bg-background/70 backdrop-blur">
           <Loader2 className="h-6 w-6 animate-spin text-primary" aria-hidden />
-          <span className="sr-only">Lädt nächste Aufgabe…</span>
+          <span className="sr-only">{copy.loadingNext}</span>
         </div>
       )}
     </Card>
@@ -510,12 +592,14 @@ function NounCaseDeclensionRenderer({
   isLoadingNext,
 }: RendererProps<'noun_case_declension'>) {
   const { toast } = useToast();
+  const { practiceCard: copy } = useTranslations();
   const [answer, setAnswer] = useState('');
   const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
   const [showHint, setShowHint] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const startTimeRef = useRef(Date.now());
   const preferences = getRendererPreferences(settings, task.taskType);
+  const instructionText = useMemo(() => getTaskInstructions(copy, task), [copy, task]);
 
   useEffect(() => {
     setAnswer('');
@@ -539,13 +623,14 @@ function NounCaseDeclensionRenderer({
   }, [task.expectedSolution]);
 
   const exampleText = preferences.showExamples ? renderExamples(task.prompt.example ?? null) : null;
-  const genderHint = task.prompt.gender ? `Artikel: ${task.prompt.gender}` : null;
-  const fallbackHint = expectedForms.length && task.expectedSolution?.form
-    ? `Erwartete Form: ${task.expectedSolution.form}`
-    : genderHint;
+  const genderHint = task.prompt.gender ? `${copy.hints.articleLabel} ${task.prompt.gender}` : null;
+  const fallbackHint =
+    expectedForms.length && task.expectedSolution?.form
+      ? `${copy.hints.expectedFormPrefix} ${task.expectedSolution.form}`
+      : genderHint;
   const hintText = useMemo(() => {
-    return renderHintText(preferences, exampleText, task.lexeme.metadata, fallbackHint);
-  }, [preferences, exampleText, task.lexeme.metadata, fallbackHint]);
+    return renderHintText(copy, preferences, exampleText, task.lexeme.metadata, fallbackHint);
+  }, [copy, preferences, exampleText, task.lexeme.metadata, fallbackHint]);
   const displayAnswer = useMemo(() => {
     if (!task.expectedSolution?.form) {
       return null;
@@ -598,7 +683,7 @@ function NounCaseDeclensionRenderer({
       setStatus(submissionContext.result);
 
       if (queued) {
-        createOfflineToast(toast)();
+        createOfflineToast(copy, toast)();
       }
 
       onResult({
@@ -606,13 +691,14 @@ function NounCaseDeclensionRenderer({
         result: submissionContext.result,
         submittedResponse: submitted,
         expectedResponse: task.expectedSolution,
-        promptSummary: buildNounPromptSummary(task),
+        promptSummary: buildNounPromptSummary(copy, task),
         timeSpentMs: submissionContext.timeSpentMs,
         answeredAt: submissionContext.answeredAt,
       });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to record practice attempt';
-      createErrorToast(toast, message);
+      const fallbackMessage = copy.error.generic;
+      const message = error instanceof Error && error.message ? error.message : fallbackMessage;
+      createErrorToast(copy, toast, message);
       setStatus('idle');
     } finally {
       setIsSubmitting(false);
@@ -625,8 +711,8 @@ function NounCaseDeclensionRenderer({
     }
   };
 
-  const caseLabel = CASE_LABELS[task.prompt.requestedCase] ?? task.prompt.requestedCase;
-  const numberLabel = NUMBER_LABELS[task.prompt.requestedNumber] ?? task.prompt.requestedNumber;
+  const caseLabel = copy.caseLabels[task.prompt.requestedCase] ?? task.prompt.requestedCase;
+  const numberLabel = copy.numberLabels[task.prompt.requestedNumber] ?? task.prompt.requestedNumber;
 
   return (
     <Card
@@ -654,7 +740,7 @@ function NounCaseDeclensionRenderer({
             </Badge>
           )}
         </div>
-        <p className="text-sm text-muted-foreground">{task.prompt.instructions}</p>
+        <p className="text-sm text-muted-foreground">{instructionText}</p>
         <div className="flex flex-wrap gap-2">
           <Badge variant="secondary" className="rounded-full bg-secondary/15 text-xs uppercase tracking-[0.22em]">
             {caseLabel}
@@ -676,8 +762,8 @@ function NounCaseDeclensionRenderer({
             onChange={(event) => setAnswer(event.target.value)}
             onKeyDown={handleKeyDown}
             disabled={status !== 'idle' || isSubmitting}
-            placeholder="z. B. die Kinder"
-            aria-label="Pluralform eingeben"
+            placeholder={copy.noun.placeholder}
+            aria-label={copy.noun.ariaLabel}
             autoFocus
             className="flex-1 rounded-2xl border-border/60 bg-background/90 text-lg"
           />
@@ -687,7 +773,7 @@ function NounCaseDeclensionRenderer({
             disabled={status !== 'idle' || isSubmitting || !answer.trim()}
             className="rounded-2xl px-5"
           >
-            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : 'Prüfen'}
+            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : copy.actions.submit}
           </Button>
           <Button
             type="button"
@@ -697,17 +783,17 @@ function NounCaseDeclensionRenderer({
             className="rounded-full"
           >
             <Volume2 className="h-4 w-4" aria-hidden />
-            <span className="sr-only">Aussprache abspielen</span>
+            <span className="sr-only">{copy.actions.pronounceSrLabel}</span>
           </Button>
         </div>
 
-        {renderMetadataRow(task)}
+        {renderMetadataRow(copy, task)}
 
-        <AnimatePresence>{renderStatusBadge(status, expectedForms, displayAnswer ?? undefined)}</AnimatePresence>
+        <AnimatePresence>{renderStatusBadge(copy, status, expectedForms, displayAnswer ?? undefined)}</AnimatePresence>
 
         {preferences.showExamples && exampleText && (
           <div className="rounded-2xl border border-border/60 bg-muted/40 p-4 text-sm">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Beispiel</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">{copy.exampleLabel}</p>
             <p className="mt-2 text-muted-foreground">{exampleText}</p>
           </div>
         )}
@@ -721,7 +807,7 @@ function NounCaseDeclensionRenderer({
           >
             <HelpCircle className="h-4 w-4" aria-hidden />
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.22em]">Hinweis</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em]">{copy.hints.label}</p>
               <AnimatePresence initial={false}>
                 {showHint ? (
                   <motion.p
@@ -741,7 +827,7 @@ function NounCaseDeclensionRenderer({
                     exit={{ opacity: 0 }}
                     className="text-xs text-muted-foreground"
                   >
-                    Tippe, um den Hinweis anzuzeigen
+                    {copy.hints.toggle}
                   </motion.span>
                 )}
               </AnimatePresence>
@@ -753,7 +839,7 @@ function NounCaseDeclensionRenderer({
       {isLoadingNext && (
         <div className="absolute inset-0 flex items-center justify-center rounded-3xl bg-background/70 backdrop-blur">
           <Loader2 className="h-6 w-6 animate-spin text-primary" aria-hidden />
-          <span className="sr-only">Lädt nächste Aufgabe…</span>
+          <span className="sr-only">{copy.loadingNext}</span>
         </div>
       )}
     </Card>
@@ -769,12 +855,14 @@ function AdjectiveEndingRenderer({
   isLoadingNext,
 }: RendererProps<'adj_ending'>) {
   const { toast } = useToast();
+  const { practiceCard: copy } = useTranslations();
   const [answer, setAnswer] = useState('');
   const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
   const [showHint, setShowHint] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const startTimeRef = useRef(Date.now());
   const preferences = getRendererPreferences(settings, task.taskType);
+  const instructionText = useMemo(() => getTaskInstructions(copy, task), [copy, task]);
 
   useEffect(() => {
     setAnswer('');
@@ -794,12 +882,13 @@ function AdjectiveEndingRenderer({
   }, [task.expectedSolution]);
 
   const exampleText = preferences.showExamples ? renderExamples(task.prompt.example ?? null) : null;
-  const fallbackHint = expectedForms.length && task.expectedSolution?.form
-    ? `Erwartete Form: ${task.expectedSolution.form}`
-    : task.prompt.syntacticFrame ?? null;
+  const fallbackHint =
+    expectedForms.length && task.expectedSolution?.form
+      ? `${copy.hints.expectedFormPrefix} ${task.expectedSolution.form}`
+      : task.prompt.syntacticFrame ?? null;
   const hintText = useMemo(() => {
-    return renderHintText(preferences, exampleText, task.lexeme.metadata, fallbackHint);
-  }, [preferences, exampleText, task.lexeme.metadata, fallbackHint]);
+    return renderHintText(copy, preferences, exampleText, task.lexeme.metadata, fallbackHint);
+  }, [copy, preferences, exampleText, task.lexeme.metadata, fallbackHint]);
   const displayAnswer = task.expectedSolution?.form ?? null;
 
   const resolvedDebugId = debugId && debugId.trim().length > 0 ? debugId : 'practice-card-adjective';
@@ -843,7 +932,7 @@ function AdjectiveEndingRenderer({
       setStatus(submissionContext.result);
 
       if (queued) {
-        createOfflineToast(toast)();
+        createOfflineToast(copy, toast)();
       }
 
       onResult({
@@ -851,13 +940,14 @@ function AdjectiveEndingRenderer({
         result: submissionContext.result,
         submittedResponse: submitted,
         expectedResponse: task.expectedSolution,
-        promptSummary: buildAdjectivePromptSummary(task),
+        promptSummary: buildAdjectivePromptSummary(copy, task),
         timeSpentMs: submissionContext.timeSpentMs,
         answeredAt: submissionContext.answeredAt,
       });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to record practice attempt';
-      createErrorToast(toast, message);
+      const fallbackMessage = copy.error.generic;
+      const message = error instanceof Error && error.message ? error.message : fallbackMessage;
+      createErrorToast(copy, toast, message);
       setStatus('idle');
     } finally {
       setIsSubmitting(false);
@@ -870,7 +960,7 @@ function AdjectiveEndingRenderer({
     }
   };
 
-  const degreeLabel = DEGREE_LABELS[task.prompt.degree] ?? task.prompt.degree;
+  const degreeLabel = copy.degreeLabels[task.prompt.degree] ?? task.prompt.degree;
 
   return (
     <Card
@@ -898,14 +988,14 @@ function AdjectiveEndingRenderer({
             </Badge>
           )}
         </div>
-        <p className="text-sm text-muted-foreground">{task.prompt.instructions}</p>
+        <p className="text-sm text-muted-foreground">{instructionText}</p>
         <div className="flex flex-wrap gap-2">
           <Badge variant="secondary" className="rounded-full bg-secondary/15 text-xs uppercase tracking-[0.22em]">
             {degreeLabel}
           </Badge>
           {task.prompt.syntacticFrame && (
             <Badge variant="secondary" className="rounded-full bg-secondary/15 text-xs uppercase tracking-[0.22em]">
-              Rahmen: {task.prompt.syntacticFrame}
+              {copy.adjective.syntacticFrameLabel} {task.prompt.syntacticFrame}
             </Badge>
           )}
         </div>
@@ -917,8 +1007,8 @@ function AdjectiveEndingRenderer({
             onChange={(event) => setAnswer(event.target.value)}
             onKeyDown={handleKeyDown}
             disabled={status !== 'idle' || isSubmitting}
-            placeholder="z. B. schneller"
-            aria-label="Adjektivform eingeben"
+            placeholder={copy.adjective.placeholder}
+            aria-label={copy.adjective.ariaLabel}
             autoFocus
             className="flex-1 rounded-2xl border-border/60 bg-background/90 text-lg"
           />
@@ -928,7 +1018,7 @@ function AdjectiveEndingRenderer({
             disabled={status !== 'idle' || isSubmitting || !answer.trim()}
             className="rounded-2xl px-5"
           >
-            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : 'Prüfen'}
+            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : copy.actions.submit}
           </Button>
           <Button
             type="button"
@@ -938,17 +1028,17 @@ function AdjectiveEndingRenderer({
             className="rounded-full"
           >
             <Volume2 className="h-4 w-4" aria-hidden />
-            <span className="sr-only">Aussprache abspielen</span>
+            <span className="sr-only">{copy.actions.pronounceSrLabel}</span>
           </Button>
         </div>
 
-        {renderMetadataRow(task)}
+        {renderMetadataRow(copy, task)}
 
-        <AnimatePresence>{renderStatusBadge(status, expectedForms, displayAnswer ?? undefined)}</AnimatePresence>
+        <AnimatePresence>{renderStatusBadge(copy, status, expectedForms, displayAnswer ?? undefined)}</AnimatePresence>
 
         {preferences.showExamples && exampleText && (
           <div className="rounded-2xl border border-border/60 bg-muted/40 p-4 text-sm">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Beispiel</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">{copy.exampleLabel}</p>
             <p className="mt-2 text-muted-foreground">{exampleText}</p>
           </div>
         )}
@@ -962,7 +1052,7 @@ function AdjectiveEndingRenderer({
           >
             <HelpCircle className="h-4 w-4" aria-hidden />
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.22em]">Hinweis</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em]">{copy.hints.label}</p>
               <AnimatePresence initial={false}>
                 {showHint ? (
                   <motion.p
@@ -982,7 +1072,7 @@ function AdjectiveEndingRenderer({
                     exit={{ opacity: 0 }}
                     className="text-xs text-muted-foreground"
                   >
-                    Tippe, um den Hinweis anzuzeigen
+                    {copy.hints.toggle}
                   </motion.span>
                 )}
               </AnimatePresence>
@@ -994,7 +1084,7 @@ function AdjectiveEndingRenderer({
       {isLoadingNext && (
         <div className="absolute inset-0 flex items-center justify-center rounded-3xl bg-background/70 backdrop-blur">
           <Loader2 className="h-6 w-6 animate-spin text-primary" aria-hidden />
-          <span className="sr-only">Lädt nächste Aufgabe…</span>
+          <span className="sr-only">{copy.loadingNext}</span>
         </div>
       )}
     </Card>
@@ -1002,19 +1092,19 @@ function AdjectiveEndingRenderer({
 }
 
 function UnsupportedRenderer({ task, debugId }: RendererProps) {
+  const { practiceCard: copy } = useTranslations();
+  const description = formatUnsupportedRendererMessage(copy.unsupported.description, task.taskType);
   return (
     <Card
       {...getDevAttributes('practice-card-unsupported', debugId ?? 'practice-card-unsupported')}
       className="rounded-3xl border border-border/70 bg-card/90 p-6 text-center shadow-lg shadow-primary/5"
     >
       <CardHeader>
-        <CardTitle className="text-lg font-semibold text-foreground">Renderer fehlt</CardTitle>
+        <CardTitle className="text-lg font-semibold text-foreground">{copy.unsupported.title}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4 text-sm text-muted-foreground">
-        <p>
-          Für den Aufgabentyp <strong>{task.taskType}</strong> ist noch kein Renderer hinterlegt.
-        </p>
-        <p>Bitte versuche es später erneut.</p>
+        <p>{description}</p>
+        <p>{copy.unsupported.retry}</p>
       </CardContent>
     </Card>
   );

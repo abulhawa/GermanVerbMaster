@@ -11,6 +11,7 @@ import type { PracticeTask, TaskFetchOptions } from '@/lib/tasks';
 import { clientTaskRegistry } from '@/lib/tasks';
 import { createDefaultSettings } from '@/lib/practice-settings';
 import type { PracticeSettingsState, TaskType } from '@shared';
+import { LocaleProvider } from '@/locales';
 
 vi.mock('@/components/settings-dialog', () => ({
   SettingsDialog: () => null,
@@ -212,9 +213,11 @@ function renderHome() {
   });
 
   return render(
-    <QueryClientProvider client={client}>
-      <Home />
-    </QueryClientProvider>,
+    <LocaleProvider>
+      <QueryClientProvider client={client}>
+        <Home />
+      </QueryClientProvider>
+    </LocaleProvider>,
   );
 }
 
