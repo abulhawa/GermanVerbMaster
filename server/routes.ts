@@ -20,12 +20,21 @@ import { and, count, desc, eq, sql } from "drizzle-orm";
 import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 import { createHash, randomUUID } from "node:crypto";
 import type { GermanVerb } from "@shared";
-import type { TaskType } from "@shared/task-registry";
+import type { LexemePos, TaskType } from "@shared/task-registry";
 import { srsEngine } from "./srs";
 import { getTaskRegistryEntry, taskRegistry } from "./tasks/registry";
 import { processTaskSubmission } from "./tasks/scheduler";
 import { runVerbQueueShadowComparison } from "./tasks/shadow-mode";
 import { isLexemeSchemaEnabled } from "./config";
+import {
+  asLexemePos,
+  ensurePosFeatureEnabled,
+  formatFeatureFlagHeader,
+  getFeatureFlagSnapshot,
+  isPosFeatureEnabled,
+  notifyPosFeatureBlocked,
+  PosFeatureDisabledError,
+} from "./feature-flags";
 
 const practiceModeSchema = z.enum(["präteritum", "partizipII", "auxiliary", "english"]);
 const levelSchema = z.enum(["A1", "A2", "B1", "B2", "C1", "C2"]);
@@ -205,7 +214,7 @@ function parsePageParam(value: unknown, fallback: number): number {
   return parsed;
 }
 
-function normaliseTaskPosFilter(value: string): string | null {
+function normaliseTaskPosFilter(value: string): LexemePos | null {
   const normalized = value.trim().toLowerCase();
   if (!normalized) return null;
   if (["verb", "verbs", "v"].includes(normalized)) return "verb";
@@ -409,6 +418,10 @@ export function registerRoutes(app: Express): Server {
     const { pos, taskType, pack, limit } = parsed.data;
     const filters: Array<ReturnType<typeof eq>> = [];
 
+    const snapshot = getFeatureFlagSnapshot();
+    res.setHeader("Cache-Control", "no-store");
+    res.setHeader("X-Feature-Flags", formatFeatureFlagHeader(snapshot));
+
     if (pos) {
       const normalised = normaliseTaskPosFilter(pos);
       if (!normalised) {
@@ -416,6 +429,20 @@ export function registerRoutes(app: Express): Server {
           error: `Unsupported part-of-speech filter: ${pos}`,
           code: "INVALID_POS_FILTER",
         });
+      }
+      try {
+        ensurePosFeatureEnabled(normalised, "tasks:list:filter", snapshot, {
+          filter: pos,
+        });
+      } catch (error) {
+        if (error instanceof PosFeatureDisabledError) {
+          return res.status(403).json({
+            error: error.message,
+            code: "POS_FEATURE_DISABLED",
+            pos: normalised,
+          });
+        }
+        throw error;
       }
       filters.push(eq(taskSpecs.pos, normalised));
     }
@@ -460,7 +487,34 @@ export function registerRoutes(app: Express): Server {
 
     const rows = await filteredQuery.orderBy(desc(taskSpecs.updatedAt)).limit(limit);
 
-    const payload = rows.map((row) => {
+    const allowedRows: typeof rows = [];
+    const blockedCounts = new Map<LexemePos, number>();
+
+    for (const row of rows) {
+      const rowPos = asLexemePos(row.pos);
+      if (!rowPos) {
+        allowedRows.push(row);
+        continue;
+      }
+      if (!isPosFeatureEnabled(rowPos, snapshot)) {
+        blockedCounts.set(rowPos, (blockedCounts.get(rowPos) ?? 0) + 1);
+        continue;
+      }
+      allowedRows.push(row);
+    }
+
+    if (blockedCounts.size) {
+      for (const [blockedPos, count] of blockedCounts) {
+        notifyPosFeatureBlocked(blockedPos, "tasks:list:response-filter", snapshot, {
+          filteredTasks: count,
+          totalFetched: rows.length,
+          hasExplicitPosFilter: Boolean(pos),
+          taskType: resolvedTaskType,
+        });
+      }
+    }
+
+    const payload = allowedRows.map((row) => {
       const registryEntry = getTaskRegistryEntry(row.taskType as TaskType);
       return {
         id: row.id,
@@ -485,8 +539,31 @@ export function registerRoutes(app: Express): Server {
       };
     });
 
-    res.setHeader("Cache-Control", "no-store");
     res.json({ tasks: payload });
+  });
+
+  app.get("/api/feature-flags", (_req, res) => {
+    const snapshot = getFeatureFlagSnapshot();
+    res.setHeader("Cache-Control", "no-store");
+    res.setHeader("X-Feature-Flags", formatFeatureFlagHeader(snapshot));
+
+    const responsePayload = Object.fromEntries(
+      Object.entries(snapshot.pos).map(([key, state]) => [
+        key,
+        {
+          enabled: state.enabled,
+          stage: state.stage,
+          flag: state.flag ?? null,
+          defaultValue: state.defaultValue,
+          description: state.description,
+        },
+      ]),
+    );
+
+    res.json({
+      fetchedAt: snapshot.fetchedAt.toISOString(),
+      pos: responsePayload,
+    });
   });
 
   app.post("/api/submission", async (req, res) => {
@@ -500,6 +577,10 @@ export function registerRoutes(app: Express): Server {
     }
 
     const payload = parsed.data;
+    const snapshot = getFeatureFlagSnapshot();
+    res.setHeader("Cache-Control", "no-store");
+    res.setHeader("X-Feature-Flags", formatFeatureFlagHeader(snapshot));
+
     const taskRow = await db
       .select({
         id: taskSpecs.id,
@@ -517,6 +598,31 @@ export function registerRoutes(app: Express): Server {
       return sendError(res, 404, "Task not found", "TASK_NOT_FOUND");
     }
 
+    const taskPos = asLexemePos(taskRow[0].pos);
+    if (!taskPos) {
+      console.error("Task has unsupported part of speech", {
+        taskId: payload.taskId,
+        pos: taskRow[0].pos,
+      });
+      return sendError(res, 500, "Task configuration invalid", "TASK_INVALID_POS");
+    }
+
+    try {
+      ensurePosFeatureEnabled(taskPos, "tasks:submission", snapshot, {
+        taskId: payload.taskId,
+        deviceId: payload.deviceId,
+      });
+    } catch (error) {
+      if (error instanceof PosFeatureDisabledError) {
+        return res.status(403).json({
+          error: error.message,
+          code: "POS_FEATURE_DISABLED",
+          pos: taskPos,
+        });
+      }
+      throw error;
+    }
+
     const registryEntry = getTaskRegistryEntry(taskRow[0].taskType as TaskType);
 
     const submittedAt = payload.submittedAt ? new Date(payload.submittedAt) : undefined;
@@ -526,7 +632,7 @@ export function registerRoutes(app: Express): Server {
         deviceId: payload.deviceId,
         taskId: payload.taskId,
         taskType: taskRow[0].taskType as TaskType,
-        pos: taskRow[0].pos,
+        pos: taskPos,
         queueCap: registryEntry.queueCap,
         result: payload.result,
         responseMs: payload.responseMs,
