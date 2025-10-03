@@ -9,10 +9,8 @@ For GitHub authentication details and additional setup guidance, refer to
 ## UI/UX Change Review
 
 - Any modification that touches UI or UX concerns **must** be validated against the
-  repository guidelines in [`docs/ui-ux-guidelines.md`](docs/ui-ux-guidelines.md).
-- Ensure the implementation continues to follow the existing design system guidance in
-  [`ui-guidelines.md`](ui-guidelines.md) alongside the new UI/UX rules.
-- Document in PR descriptions how the change satisfies the checklist in both guideline files.
+  unified product and design-system guidance in [`docs/ui-ux-guidelines.md`](docs/ui-ux-guidelines.md).
+- Document in PR descriptions how the change satisfies the checklist in that guideline file.
 
 ## Testing Expectations
 
