@@ -21,10 +21,31 @@ export default defineConfig({
         "icons/icon-192.png",
         "icons/icon-512.png",
         "manifest.webmanifest",
+        "packs/*.json",
       ],
       workbox: {
         globPatterns: ["**/*.{js,css,html,svg,png,webmanifest,json}"],
         runtimeCaching: [
+          {
+            urlPattern: ({ url }) => url.pathname.startsWith("/api/tasks"),
+            handler: "NetworkFirst",
+            method: "GET",
+            options: {
+              cacheName: "tasks-feed",
+              networkTimeoutSeconds: 3,
+              cacheableResponse: { statuses: [200] },
+            },
+          },
+          {
+            urlPattern: ({ url }) => url.pathname.startsWith("/packs/"),
+            handler: "CacheFirst",
+            method: "GET",
+            options: {
+              cacheName: "content-packs",
+              matchOptions: { ignoreSearch: true },
+              cacheableResponse: { statuses: [200] },
+            },
+          },
           {
             urlPattern: ({ url }) => url.pathname === "/api/quiz/verbs",
             handler: "StaleWhileRevalidate",

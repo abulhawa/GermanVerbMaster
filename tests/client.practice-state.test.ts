@@ -59,6 +59,7 @@ const queueItem: PracticeTaskQueueItem = {
   source: 'review',
   enqueuedAt: new Date().toISOString(),
   metadata: { lemma: 'gehen', legacyVerbInfinitive: 'gehen' },
+  pack: null,
 };
 
 describe('practice state migrations', () => {

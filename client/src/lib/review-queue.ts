@@ -72,7 +72,11 @@ function createLegacyQueueEntry(item: LegacyQueueItem): PracticeTaskQueueItem {
     metadata: {
       lemma: item.value,
       legacyVerbInfinitive: item.value,
+      packId: null,
+      packSlug: null,
+      packName: null,
     },
+    pack: null,
   };
 }
 
@@ -206,7 +210,17 @@ export function enqueuePracticeTasks(
     metadata: {
       lemma: task.lexeme.lemma,
       cefrLevel: task.lexeme.metadata?.level as CEFRLevel | undefined,
+      packId: task.pack?.id ?? null,
+      packSlug: task.pack?.slug ?? null,
+      packName: task.pack?.name ?? null,
     },
+    pack: task.pack
+      ? {
+          id: task.pack.id,
+          slug: task.pack.slug,
+          name: task.pack.name,
+        }
+      : null,
   }));
 
   return enqueueReviewTasks(queueItems, options);
