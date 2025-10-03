@@ -13,9 +13,20 @@ const srsEngineMock = vi.hoisted(() => ({
   isQueueStale: vi.fn(() => false),
 }));
 
+const shadowModeMock = vi.hoisted(() => ({
+  runVerbQueueShadowComparison: vi.fn(() => Promise.resolve()),
+}));
+
+const configMock = vi.hoisted(() => ({
+  isLexemeSchemaEnabled: vi.fn(() => true),
+}));
+
 vi.mock('../server/srs', () => ({
   srsEngine: srsEngineMock,
 }));
+
+vi.mock('../server/tasks/shadow-mode', () => shadowModeMock);
+vi.mock('../server/config', () => configMock);
 
 describe('GET /api/review-queue', () => {
   beforeEach(() => {
@@ -29,6 +40,9 @@ describe('GET /api/review-queue', () => {
     srsEngineMock.generateQueueForDevice.mockResolvedValue(null);
     srsEngineMock.isEnabled.mockReturnValue(false);
     srsEngineMock.isQueueStale.mockReturnValue(true);
+    shadowModeMock.runVerbQueueShadowComparison.mockReset();
+    configMock.isLexemeSchemaEnabled.mockReset();
+    configMock.isLexemeSchemaEnabled.mockReturnValue(true);
   });
 
   it('returns 400 when deviceId is missing', async () => {
@@ -41,6 +55,7 @@ describe('GET /api/review-queue', () => {
 
     expect(response.status).toBe(400);
     expect(response.body).toMatchObject({ code: 'INVALID_DEVICE' });
+    expect(shadowModeMock.runVerbQueueShadowComparison).not.toHaveBeenCalled();
 
     server.close();
   });
@@ -112,6 +127,52 @@ describe('GET /api/review-queue', () => {
         }),
       ],
     });
+    expect(shadowModeMock.runVerbQueueShadowComparison).toHaveBeenCalledTimes(1);
+    expect(shadowModeMock.runVerbQueueShadowComparison).toHaveBeenCalledWith(
+      expect.objectContaining({ deviceId: 'device-123' }),
+    );
+
+    server.close();
+  });
+
+  it('skips shadow comparison when lexeme schema flag is disabled', async () => {
+    const items: AdaptiveQueueItem[] = [
+      {
+        verb: 'lernen',
+        priority: 1,
+        dueAt: new Date('2024-01-01T00:00:00Z').toISOString(),
+        leitnerBox: 2,
+        accuracyWeight: 0.5,
+        latencyWeight: 0.6,
+        stabilityWeight: 0.4,
+        predictedIntervalMinutes: 120,
+      },
+    ];
+
+    const queueRecord = {
+      deviceId: 'device-456',
+      version: 'queue-version',
+      generatedAt: new Date('2024-01-01T00:00:00Z'),
+      validUntil: new Date('2024-01-01T00:10:00Z'),
+      generationDurationMs: 42,
+      itemCount: items.length,
+      items,
+    };
+
+    srsEngineMock.isEnabled.mockReturnValue(true);
+    srsEngineMock.fetchQueueForDevice.mockResolvedValueOnce(null);
+    srsEngineMock.generateQueueForDevice.mockResolvedValueOnce(queueRecord as any);
+    configMock.isLexemeSchemaEnabled.mockReturnValue(false);
+
+    const app = express();
+    const server = registerRoutes(app);
+
+    await request(app)
+      .get('/api/review-queue')
+      .query({ deviceId: 'device-456' })
+      .expect(200);
+
+    expect(shadowModeMock.runVerbQueueShadowComparison).not.toHaveBeenCalled();
 
     server.close();
   });

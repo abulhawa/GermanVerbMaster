@@ -12,6 +12,8 @@ Requires Node.js 24.5.2 or newer and npm 10+ (see `package.json` engines field).
 2. (Optional) Copy `.env.example` to `.env` and override the defaults. You can change:
    - `DATABASE_FILE` – where the SQLite database file lives (defaults to `db/data.sqlite`).
    - `APP_ORIGIN` – a comma-separated allow list used for CORS in production builds.
+   - `ENABLE_LEXEME_SCHEMA` – set to `false` to disable the lexeme-based task API and shadow-mode instrumentation if you need a
+     quick rollback to the legacy verb-only stack.
 3. Create or update the SQLite database and migrations:
    ```bash
    npm run db:push

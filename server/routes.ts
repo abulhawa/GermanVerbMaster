@@ -24,6 +24,8 @@ import type { TaskType } from "@shared/task-registry";
 import { srsEngine } from "./srs";
 import { getTaskRegistryEntry, taskRegistry } from "./tasks/registry";
 import { processTaskSubmission } from "./tasks/scheduler";
+import { runVerbQueueShadowComparison } from "./tasks/shadow-mode";
+import { isLexemeSchemaEnabled } from "./config";
 
 const practiceModeSchema = z.enum(["präteritum", "partizipII", "auxiliary", "english"]);
 const levelSchema = z.enum(["A1", "A2", "B1", "B2", "C1", "C2"]);
@@ -856,6 +858,22 @@ export function registerRoutes(app: Express): Server {
             queueLength: 0,
             generationDurationMs: 0,
           },
+        });
+      }
+
+      if (isLexemeSchemaEnabled()) {
+        void runVerbQueueShadowComparison({
+          deviceId,
+          legacyQueue: {
+            deviceId,
+            items: queue.items,
+          },
+          limit: queue.items.length,
+        }).catch((error) => {
+          console.error("[shadow-mode] Failed to compare verb queues", {
+            deviceId,
+            error,
+          });
         });
       }
 
