@@ -22,7 +22,7 @@ This execution plan translates the high-level roadmap in [`parts-of-speech-expan
 |16 | **Migration Shadow Mode** | Implement dual-read path comparing legacy verb queues with new task system, logging divergences. Include rollback toggle `ENABLE_LEXEME_SCHEMA`. | Shadow mode instrumentation | Tasks 8–10 |
 |17 | **Feature Flag Rollout** | Introduce feature flags to gate each POS (nouns beta, adjectives beta) and implement monitoring/killswitch hooks. | Feature flag config, monitoring dashboards | Tasks 9–13, 16 |
 |18 | **Documentation & Training Update** | Refresh README, admin docs, onboarding guides, and author `packs:lint` usage notes. Prepare training deck for content editors. | Updated docs, training materials | Tasks 6–17 |
-|19 | **Post-Launch Analytics & Iteration Loop** | Ship dashboards aggregating usage per POS/task type, schedule follow-up tuning of scheduler weights, and create backlog for future enhancements (audio, sentences, etc.). | Analytics dashboards, iteration backlog | Tasks 10, 17 |
+|19 | **Post-Launch Analytics & Iteration Loop** | Ship dashboards aggregating usage per POS/task type, schedule follow-up tuning of scheduler weights, and create backlog for future enhancements (audio, sentences, etc.). | Analytics dashboards, iteration backlog ([Task 19 plan](./parts-of-speech-task-19-post-launch-analytics.md)) | Tasks 10, 17 |
 
 ## Usage Notes
 - Tasks are ordered to minimise rework while maintaining a shippable product after each milestone. Where practical, long-running documentation work (Tasks 7 and 18) can progress concurrently once prerequisites are met.
