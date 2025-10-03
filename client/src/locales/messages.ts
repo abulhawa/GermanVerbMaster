@@ -64,9 +64,55 @@ export interface PracticeCardMessages {
   };
 }
 
+interface PluralizedMessage {
+  singular: string;
+  plural: string;
+}
+
+export interface ProgressDisplayMessages {
+  headline: string;
+  description: {
+    withCefr: string;
+    withoutCefr: string;
+  };
+  taskDescriptor: {
+    mix: PluralizedMessage;
+    single: string;
+  };
+  taskTypeLabels: Partial<Record<TaskType, string>>;
+  cefrLevel: string;
+  streak: {
+    label: PluralizedMessage;
+  };
+  cards: {
+    accuracy: {
+      title: string;
+      basedOn: PluralizedMessage;
+    };
+    lexemes: {
+      title: string;
+      subtitle: string;
+    };
+    lastAttempt: {
+      title: string;
+      subtitle: string;
+      never: string;
+    };
+  };
+  performance: {
+    heading: string;
+  };
+  attemptsSummary: {
+    logged: PluralizedMessage;
+    none: string;
+  };
+  insight: string;
+}
+
 export interface AppMessages {
   languageToggle: LanguageToggleMessages;
   practiceCard: PracticeCardMessages;
+  progressDisplay: ProgressDisplayMessages;
 }
 
 const PRACTICE_CARD_PLACEHOLDER = '{taskType}' satisfies `{${string}}`;
@@ -166,6 +212,61 @@ const MESSAGES: Record<Locale, AppMessages> = {
         retry: 'Please try again later.',
       },
     },
+    progressDisplay: {
+      headline: 'Progress overview',
+      description: {
+        withCefr: 'Progress for {descriptor} · {cefr}.',
+        withoutCefr: 'Progress for {descriptor}.',
+      },
+      taskDescriptor: {
+        mix: {
+          singular: 'Task mix ({count} type)',
+          plural: 'Task mix ({count} types)',
+        },
+        single: 'Task type {taskType}',
+      },
+      taskTypeLabels: {
+        conjugate_form: 'Conjugation',
+        noun_case_declension: 'Noun declension',
+        adj_ending: 'Adjective endings',
+      },
+      cefrLevel: 'Level {level}',
+      streak: {
+        label: {
+          singular: '{count}-day streak',
+          plural: '{count}-day streak',
+        },
+      },
+      cards: {
+        accuracy: {
+          title: 'Accuracy',
+          basedOn: {
+            singular: 'Based on {count} attempt',
+            plural: 'Based on {count} attempts',
+          },
+        },
+        lexemes: {
+          title: 'Lexemes practiced',
+          subtitle: 'Unique lexemes with recorded attempts',
+        },
+        lastAttempt: {
+          title: 'Last attempt',
+          subtitle: 'Updated after each submitted answer',
+          never: 'No attempts recorded yet',
+        },
+      },
+      performance: {
+        heading: 'Overall performance',
+      },
+      attemptsSummary: {
+        logged: {
+          singular: '{count} attempt logged',
+          plural: '{count} attempts logged',
+        },
+        none: 'No attempts saved yet',
+      },
+      insight: 'Each answer improves your mixed practice sessions with better recommendations.',
+    },
   },
   de: {
     languageToggle: {
@@ -260,6 +361,61 @@ const MESSAGES: Record<Locale, AppMessages> = {
         description: `Für den Aufgabentyp ${PRACTICE_CARD_PLACEHOLDER} ist noch kein Renderer hinterlegt.`,
         retry: 'Bitte versuche es später erneut.',
       },
+    },
+    progressDisplay: {
+      headline: 'Fortschrittsübersicht',
+      description: {
+        withCefr: 'Fortschritt für {descriptor} · {cefr}.',
+        withoutCefr: 'Fortschritt für {descriptor}.',
+      },
+      taskDescriptor: {
+        mix: {
+          singular: 'Aufgabenmix ({count} Typ)',
+          plural: 'Aufgabenmix ({count} Typen)',
+        },
+        single: 'Aufgabentyp {taskType}',
+      },
+      taskTypeLabels: {
+        conjugate_form: 'Konjugation',
+        noun_case_declension: 'Nominaldeklination',
+        adj_ending: 'Adjektivendungen',
+      },
+      cefrLevel: 'Niveau {level}',
+      streak: {
+        label: {
+          singular: 'Serie von {count} Tag',
+          plural: 'Serie von {count} Tagen',
+        },
+      },
+      cards: {
+        accuracy: {
+          title: 'Genauigkeit',
+          basedOn: {
+            singular: 'Basierend auf {count} Versuch',
+            plural: 'Basierend auf {count} Versuchen',
+          },
+        },
+        lexemes: {
+          title: 'Geübte Lexeme',
+          subtitle: 'Eindeutige Lexeme mit aufgezeichneten Versuchen',
+        },
+        lastAttempt: {
+          title: 'Letzter Versuch',
+          subtitle: 'Aktualisiert nach jeder Antwort',
+          never: 'Noch keine Versuche aufgezeichnet',
+        },
+      },
+      performance: {
+        heading: 'Gesamtleistung',
+      },
+      attemptsSummary: {
+        logged: {
+          singular: '{count} Versuch gespeichert',
+          plural: '{count} Versuche gespeichert',
+        },
+        none: 'Noch keine Versuche gespeichert',
+      },
+      insight: 'Jede Antwort verbessert deine gemischten Übungen mit besseren Empfehlungen.',
     },
   },
 };
