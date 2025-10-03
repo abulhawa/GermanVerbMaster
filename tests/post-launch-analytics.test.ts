@@ -8,9 +8,53 @@ import type {
   TelemetrySnapshotAnalytics,
 } from '../analytics/post-launch';
 
+const ORIGINAL_TZ = process.env.TZ;
+
 describe('computePostLaunchAnalytics', () => {
   afterEach(() => {
+    if (typeof ORIGINAL_TZ === 'string') {
+      process.env.TZ = ORIGINAL_TZ;
+    } else {
+      delete process.env.TZ;
+    }
     vi.useRealTimers();
+  });
+
+  it('keeps practice attempts in the same UTC bucket regardless of local timezone', () => {
+    process.env.TZ = 'Asia/Tokyo';
+
+    const practiceAttempts: PracticeAttemptAnalytics[] = [
+      {
+        taskId: 'task:verb-timezone',
+        lexemeId: 'lex:verb-timezone',
+        pos: 'verb',
+        taskType: 'conjugate_form',
+        renderer: 'verb_renderer',
+        deviceId: 'device-timezone',
+        userId: 42,
+        result: 'correct',
+        responseMs: 2000,
+        submittedAt: new Date('2025-01-01T10:00:00.000Z'),
+        answeredAt: new Date('2025-01-01T09:59:59.000Z'),
+        hintsUsed: false,
+        featureFlags: null,
+        metadata: null,
+      },
+    ];
+
+    const report = computePostLaunchAnalytics({
+      practiceAttempts,
+      schedulingSnapshots: [],
+      telemetrySnapshots: [],
+      packMemberships: [],
+    });
+
+    const januaryFirst = report.posAdoption.dailyActiveDevices.find(
+      (metric) => metric.date === '2025-01-01' && metric.pos === 'verb',
+    );
+
+    expect(januaryFirst).toBeDefined();
+    expect(januaryFirst!.devices).toBe(1);
   });
 
   it('summarises adoption, scheduler health, and content quality metrics', () => {

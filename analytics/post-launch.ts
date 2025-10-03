@@ -169,7 +169,7 @@ export interface PostLaunchAnalyticsReport {
 
 function toDateKey(value: Date): string {
   const copy = new Date(value);
-  copy.setHours(0, 0, 0, 0);
+  copy.setUTCHours(0, 0, 0, 0);
   return copy.toISOString().slice(0, 10);
 }
 
