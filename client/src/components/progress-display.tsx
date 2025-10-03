@@ -13,46 +13,60 @@ import type { PracticeProgressState, TaskType, CEFRLevel } from '@shared';
 interface ProgressDisplayProps extends DebuggableComponentProps {
   progress: PracticeProgressState;
   taskType: TaskType;
+  taskTypes?: TaskType[];
+  taskLabel?: string;
   cefrLevel?: CEFRLevel;
+  cefrLabel?: string;
   headline?: string;
   isLoading?: boolean;
 }
 
-function getSummary(progress: PracticeProgressState, taskType: TaskType) {
-  const summary = progress.totals[taskType];
-  if (!summary) {
-    return {
-      correct: 0,
-      incorrect: 0,
-      total: 0,
-      accuracy: 0,
-      streak: 0,
-      lastPracticedAt: null as string | null,
-      uniqueLexemes: 0,
-    };
+function getSummary(progress: PracticeProgressState, taskTypes: TaskType[]) {
+  const lexemeIds = new Set<string>();
+  let correct = 0;
+  let incorrect = 0;
+  let streak = 0;
+  let lastPracticedAt: string | null = null;
+
+  for (const taskType of taskTypes) {
+    const summary = progress.totals[taskType];
+    if (!summary) {
+      continue;
+    }
+    correct += summary.correctAttempts;
+    incorrect += summary.incorrectAttempts;
+    streak = Math.max(streak, summary.streak);
+    if (summary.lastPracticedAt) {
+      if (!lastPracticedAt || new Date(summary.lastPracticedAt) > new Date(lastPracticedAt)) {
+        lastPracticedAt = summary.lastPracticedAt;
+      }
+    }
+    for (const lexemeId of Object.keys(summary.lexemes)) {
+      lexemeIds.add(lexemeId);
+    }
   }
 
-  const correct = summary.correctAttempts;
-  const incorrect = summary.incorrectAttempts;
   const total = correct + incorrect;
   const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
-  const uniqueLexemes = Object.keys(summary.lexemes).length;
 
   return {
     correct,
     incorrect,
     total,
     accuracy,
-    streak: summary.streak,
-    lastPracticedAt: summary.lastPracticedAt,
-    uniqueLexemes,
+    streak,
+    lastPracticedAt,
+    uniqueLexemes: lexemeIds.size,
   };
 }
 
 export function ProgressDisplay({
   progress,
   taskType,
+  taskTypes,
+  taskLabel,
   cefrLevel,
+  cefrLabel,
   headline = 'Progress overview',
   isLoading = false,
   debugId,
@@ -72,10 +86,17 @@ export function ProgressDisplay({
     );
   }
 
-  const summary = getSummary(progress, taskType);
+  const resolvedTaskTypes = taskTypes && taskTypes.length ? taskTypes : [taskType];
+  const summary = getSummary(progress, resolvedTaskTypes);
+  const descriptor =
+    taskLabel ??
+    (resolvedTaskTypes.length > 1
+      ? `Task mix (${resolvedTaskTypes.length} types)`
+      : `Task type ${resolvedTaskTypes[0]}`);
   const lastPracticed = summary.lastPracticedAt
     ? new Date(summary.lastPracticedAt).toLocaleDateString()
     : 'Noch kein Eintrag';
+  const cefrDisplay = cefrLabel ?? (cefrLevel ? `Level ${cefrLevel}` : undefined);
 
   return (
     <Card
@@ -88,8 +109,9 @@ export function ProgressDisplay({
           <div className="space-y-1">
             <CardTitle className="text-foreground">{headline}</CardTitle>
             <CardDescription className="text-sm text-muted-foreground">
-              Fortschritt für den Aufgabentyp <span className="font-semibold text-foreground">{taskType}</span>
-              {cefrLevel ? ` · Level ${cefrLevel}` : ''}.
+              Fortschritt für{' '}
+              <span className="font-semibold text-foreground">{descriptor}</span>
+              {cefrDisplay ? ` · ${cefrDisplay}` : ''}.
             </CardDescription>
           </div>
           <Badge

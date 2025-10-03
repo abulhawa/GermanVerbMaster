@@ -42,6 +42,63 @@ function createTask(): PracticeTask<'conjugate_form'> {
   } satisfies PracticeTask<'conjugate_form'>;
 }
 
+function createNounTask(): PracticeTask<'noun_case_declension'> {
+  const registry = clientTaskRegistry.noun_case_declension;
+  return {
+    taskId: 'noun-task-1',
+    lexemeId: 'lex-noun-1',
+    taskType: 'noun_case_declension',
+    pos: 'noun',
+    renderer: registry.renderer,
+    prompt: {
+      lemma: 'Haus',
+      pos: 'noun',
+      gender: 'das',
+      requestedCase: 'accusative',
+      requestedNumber: 'plural',
+      instructions: 'Bilde die Akkusativ Plural-Form von „Haus“.',
+    },
+    expectedSolution: { form: 'Häuser', article: 'die' },
+    queueCap: registry.defaultQueueCap,
+    lexeme: {
+      id: 'lex-noun-1',
+      lemma: 'Haus',
+      metadata: { level: 'A1', english: 'house' },
+    },
+    pack: null,
+    assignedAt: new Date('2024-01-01T00:00:00.000Z').toISOString(),
+    source: 'scheduler',
+  } satisfies PracticeTask<'noun_case_declension'>;
+}
+
+function createAdjectiveTask(): PracticeTask<'adj_ending'> {
+  const registry = clientTaskRegistry.adj_ending;
+  return {
+    taskId: 'adj-task-1',
+    lexemeId: 'lex-adj-1',
+    taskType: 'adj_ending',
+    pos: 'adjective',
+    renderer: registry.renderer,
+    prompt: {
+      lemma: 'schnell',
+      pos: 'adjective',
+      degree: 'comparative',
+      instructions: 'Bilde die Komparativform von „schnell“.',
+      syntacticFrame: 'Der Zug ist ____ als das Auto.',
+    },
+    expectedSolution: { form: 'schneller' },
+    queueCap: registry.defaultQueueCap,
+    lexeme: {
+      id: 'lex-adj-1',
+      lemma: 'schnell',
+      metadata: { level: 'A2', english: 'fast' },
+    },
+    pack: null,
+    assignedAt: new Date('2024-01-01T00:00:00.000Z').toISOString(),
+    source: 'scheduler',
+  } satisfies PracticeTask<'adj_ending'>;
+}
+
 function getDefaultSettings(): PracticeSettingsState {
   return createDefaultSettings();
 }
@@ -113,5 +170,53 @@ describe('PracticeCard', () => {
     const result = onResult.mock.calls[0][0] as PracticeCardResult;
     expect(result.result).toBe('incorrect');
     expect(result.submittedResponse).toBe('geher');
+  });
+
+  it('renders noun declension renderer and accepts plural form', async () => {
+    const onResult = vi.fn<(result: PracticeCardResult) => void>();
+    const task = createNounTask();
+    const settings = getDefaultSettings();
+
+    render(<PracticeCard task={task} settings={settings} onResult={onResult} />);
+
+    expect(screen.getByText(/Akkusativ/i)).toBeInTheDocument();
+
+    const input = screen.getByLabelText(/pluralform eingeben/i);
+    await userEvent.type(input, 'Häuser');
+    await userEvent.click(screen.getByRole('button', { name: /prüfen/i }));
+
+    await waitFor(() => {
+      expect(submitPracticeAttempt).toHaveBeenCalledTimes(1);
+    });
+
+    const payload = vi.mocked(submitPracticeAttempt).mock.calls[0][0];
+    expect(payload.taskType).toBe('noun_case_declension');
+
+    await waitFor(() => {
+      expect(onResult).toHaveBeenCalledWith(expect.objectContaining({ result: 'correct' }));
+    });
+  });
+
+  it('renders adjective ending renderer and records submissions', async () => {
+    const onResult = vi.fn<(result: PracticeCardResult) => void>();
+    const task = createAdjectiveTask();
+    const settings = getDefaultSettings();
+
+    render(<PracticeCard task={task} settings={settings} onResult={onResult} />);
+
+    const input = screen.getByLabelText(/adjektivform eingeben/i);
+    await userEvent.type(input, 'schneller');
+    await userEvent.click(screen.getByRole('button', { name: /prüfen/i }));
+
+    await waitFor(() => {
+      expect(submitPracticeAttempt).toHaveBeenCalledTimes(1);
+    });
+
+    const payload = vi.mocked(submitPracticeAttempt).mock.calls[0][0];
+    expect(payload.taskType).toBe('adj_ending');
+
+    await waitFor(() => {
+      expect(onResult).toHaveBeenCalledWith(expect.objectContaining({ result: 'correct' }));
+    });
   });
 });

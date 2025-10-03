@@ -3,7 +3,7 @@ dist
 !patches/**/dist
 .DS_Store
 *.tar.gz
-# db/*.sqlite*
+db/*.sqlite*
 test-results/
 .vscode/settings.json
 tests/ui/overlay.spec.ts-snapshots/

@@ -20,25 +20,31 @@ import {
   updateCefrLevel,
   updateRendererPreferences,
 } from '@/lib/practice-settings';
+import { getTaskTypeCopy } from '@/lib/task-metadata';
 
 interface SettingsDialogProps extends DebuggableComponentProps {
   settings: PracticeSettingsState;
   onSettingsChange: (settings: PracticeSettingsState) => void;
   taskType?: TaskType;
+  presetLabel?: string;
+  taskTypeLabel?: string;
 }
 
 const LEVELS: CEFRLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
-
-const TASK_LABELS: Record<TaskType, string> = {
-  conjugate_form: 'Verb conjugation',
-  noun_case_declension: 'Noun declension',
-  adj_ending: 'Adjective endings',
-};
-
-export function SettingsDialog({ settings, onSettingsChange, debugId, taskType = 'conjugate_form' }: SettingsDialogProps) {
+export function SettingsDialog({
+  settings,
+  onSettingsChange,
+  debugId,
+  taskType = 'conjugate_form',
+  presetLabel,
+  taskTypeLabel,
+}: SettingsDialogProps) {
   const resolvedDebugId = debugId && debugId.trim().length > 0 ? debugId : 'settings-dialog';
   const prefs = settings.rendererPreferences[taskType] ?? { showHints: true, showExamples: true };
   const cefrLevel = settings.cefrLevelByPos.verb ?? settings.legacyVerbLevel ?? 'A1';
+  const taskCopy = getTaskTypeCopy(taskType);
+  const activePresetLabel = presetLabel ?? 'Verbs only';
+  const activeTaskLabel = taskTypeLabel ?? taskCopy.label;
 
   const handleLevelChange = (level: CEFRLevel) => {
     const next = updateCefrLevel(settings, { pos: 'verb', level });
@@ -82,7 +88,9 @@ export function SettingsDialog({ settings, onSettingsChange, debugId, taskType =
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
               Active preset
             </p>
-            <p className="text-sm text-foreground">Verbs only · {TASK_LABELS[taskType]}</p>
+            <p className="text-sm text-foreground">
+              {activePresetLabel} · {activeTaskLabel}
+            </p>
           </div>
 
           <div className="flex items-center justify-between gap-4">

@@ -17,6 +17,7 @@ import { AppShell } from '@/components/layout/app-shell';
 import { PracticeCard, type PracticeCardResult } from '@/components/practice-card';
 import { ProgressDisplay } from '@/components/progress-display';
 import { SettingsDialog } from '@/components/settings-dialog';
+import { PracticeModeSwitcher, type PracticeScope } from '@/components/practice-mode-switcher';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -24,6 +25,7 @@ import { SidebarNavButton } from '@/components/layout/sidebar-nav-button';
 import {
   loadPracticeSettings,
   savePracticeSettings,
+  updatePreferredTaskTypes,
 } from '@/lib/practice-settings';
 import {
   loadPracticeProgress,
@@ -48,9 +50,17 @@ import {
   fetchPracticeTasks,
   type PracticeTask,
   clientTaskRegistry,
+  listClientTaskTypes,
 } from '@/lib/tasks';
 import { getDevAttributes } from '@/lib/dev-attributes';
-import type { CEFRLevel, PracticeSettingsState, PracticeProgressState, TaskType } from '@shared';
+import { getTaskTypeCopy } from '@/lib/task-metadata';
+import type {
+  CEFRLevel,
+  PracticeSettingsState,
+  PracticeProgressState,
+  TaskType,
+  LexemePos,
+} from '@shared';
 
 interface SessionProgressBarProps {
   value: number;
@@ -88,10 +98,168 @@ function SessionProgressBar({ value, completed, target, debugId }: SessionProgre
 
 const MIN_QUEUE_THRESHOLD = 5;
 const FETCH_LIMIT = 15;
-const VERB_PRESET_LABEL = 'Verbs only';
+const AVAILABLE_TASK_TYPES = listClientTaskTypes();
 
-function getActiveTaskType(settings: PracticeSettingsState): TaskType {
-  return settings.defaultTaskType ?? 'conjugate_form';
+const TASK_TYPE_TO_SCOPE: Record<TaskType, PracticeScope> = {
+  conjugate_form: 'verbs',
+  noun_case_declension: 'nouns',
+  adj_ending: 'adjectives',
+};
+
+const SCOPE_LABELS: Record<PracticeScope, string> = {
+  all: 'All tasks',
+  verbs: 'Verbs only',
+  nouns: 'Nouns only',
+  adjectives: 'Adjectives only',
+  custom: 'Custom mix',
+};
+
+function normalisePreferredTaskTypes(taskTypes: TaskType[]): TaskType[] {
+  const allowed = new Set(AVAILABLE_TASK_TYPES);
+  const unique = Array.from(new Set(taskTypes.filter((type) => allowed.has(type))));
+  if (unique.length > 0) {
+    return unique;
+  }
+  return AVAILABLE_TASK_TYPES.length ? [AVAILABLE_TASK_TYPES[0]!] : ['conjugate_form'];
+}
+
+function determineScope(taskTypes: TaskType[]): PracticeScope {
+  const normalised = normalisePreferredTaskTypes(taskTypes);
+  const allMatch =
+    normalised.length === AVAILABLE_TASK_TYPES.length &&
+    normalised.every((type) => AVAILABLE_TASK_TYPES.includes(type));
+  if (allMatch) {
+    return 'all';
+  }
+  if (normalised.length === 1) {
+    return TASK_TYPE_TO_SCOPE[normalised[0]!] ?? 'custom';
+  }
+  return 'custom';
+}
+
+function computeScope(settings: PracticeSettingsState): PracticeScope {
+  const preferred = settings.preferredTaskTypes.length
+    ? settings.preferredTaskTypes
+    : [settings.defaultTaskType];
+  return determineScope(preferred);
+}
+
+function mergeTaskLists(lists: PracticeTask[][], limit: number): PracticeTask[] {
+  const queues = lists.map((list) => [...list]);
+  const result: PracticeTask[] = [];
+  const seen = new Set<string>();
+
+  while (result.length < limit && queues.some((queue) => queue.length > 0)) {
+    for (const queue of queues) {
+      if (!queue.length) {
+        continue;
+      }
+      const item = queue.shift()!;
+      if (seen.has(item.taskId)) {
+        continue;
+      }
+      seen.add(item.taskId);
+      result.push(item);
+      if (result.length >= limit) {
+        break;
+      }
+    }
+  }
+
+  return result;
+}
+
+interface SummaryResult {
+  total: number;
+  correct: number;
+  streak: number;
+  accuracy: number;
+  uniqueLexemes: number;
+  lastPracticedAt: string | null;
+}
+
+function computeSummary(progress: PracticeProgressState, taskTypes: TaskType[]): SummaryResult {
+  const lexemeIds = new Set<string>();
+  let correct = 0;
+  let incorrect = 0;
+  let streak = 0;
+  let lastPracticedAt: string | null = null;
+
+  for (const taskType of taskTypes) {
+    const summary = progress.totals[taskType];
+    if (!summary) {
+      continue;
+    }
+    correct += summary.correctAttempts;
+    incorrect += summary.incorrectAttempts;
+    streak = Math.max(streak, summary.streak);
+    if (summary.lastPracticedAt) {
+      if (!lastPracticedAt || new Date(summary.lastPracticedAt) > new Date(lastPracticedAt)) {
+        lastPracticedAt = summary.lastPracticedAt;
+      }
+    }
+    for (const lexemeId of Object.keys(summary.lexemes)) {
+      lexemeIds.add(lexemeId);
+    }
+  }
+
+  const total = correct + incorrect;
+  const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+  return {
+    total,
+    correct,
+    streak,
+    accuracy,
+    uniqueLexemes: lexemeIds.size,
+    lastPracticedAt,
+  } satisfies SummaryResult;
+}
+
+function buildCefrLabel(taskTypes: TaskType[], settings: PracticeSettingsState): string | undefined {
+  const entries = new Map<LexemePos, CEFRLevel>();
+  for (const taskType of taskTypes) {
+    const registryEntry = clientTaskRegistry[taskType];
+    if (!registryEntry) {
+      continue;
+    }
+    const pos = registryEntry.supportedPos[0];
+    const level = settings.cefrLevelByPos[pos] ?? (pos === 'verb' ? settings.legacyVerbLevel ?? 'A1' : 'A1');
+    if (!entries.has(pos)) {
+      entries.set(pos, level ?? 'A1');
+    }
+  }
+  if (!entries.size) {
+    return undefined;
+  }
+  if (entries.size === 1) {
+    const [entry] = Array.from(entries.entries());
+    const [pos, level] = entry;
+    const posLabel = pos === 'verb' ? 'Verb' : pos === 'noun' ? 'Noun' : 'Adjective';
+    return `${posLabel} level ${level}`;
+  }
+  return Array.from(entries.entries())
+    .map(([pos, level]) => {
+      const posLabel = pos === 'verb' ? 'Verb' : pos === 'noun' ? 'Noun' : 'Adjective';
+      return `${posLabel} ${level}`;
+    })
+    .join(' · ');
+}
+
+function scopeToTaskTypes(scope: PracticeScope): TaskType[] {
+  switch (scope) {
+    case 'all':
+      return [...AVAILABLE_TASK_TYPES];
+    case 'verbs':
+      return ['conjugate_form'];
+    case 'nouns':
+      return ['noun_case_declension'];
+    case 'adjectives':
+      return ['adj_ending'];
+    case 'custom':
+    default:
+      return [];
+  }
 }
 
 function getVerbLevel(settings: PracticeSettingsState): CEFRLevel {
@@ -109,8 +277,14 @@ export default function Home() {
   const [shouldReloadTasks, setShouldReloadTasks] = useState(false);
   const pendingFetchRef = useRef(false);
 
-  const activeTaskType = getActiveTaskType(settings);
-  const registryEntry = clientTaskRegistry[activeTaskType];
+  const scope = computeScope(settings);
+  const activeTaskTypes = useMemo(() => {
+    const preferred = settings.preferredTaskTypes.length
+      ? settings.preferredTaskTypes
+      : [settings.defaultTaskType];
+    return normalisePreferredTaskTypes(preferred);
+  }, [settings.preferredTaskTypes, settings.defaultTaskType]);
+  const activeTaskType = activeTaskTypes[0] ?? 'conjugate_form';
   const verbLevel = getVerbLevel(settings);
 
   useEffect(() => {
@@ -142,11 +316,24 @@ export default function Home() {
       setFetchError(null);
 
       try {
-        const tasks = await fetchPracticeTasks({
-          taskType: activeTaskType,
-          pos: registryEntry.supportedPos[0],
-          limit: FETCH_LIMIT,
-        });
+        const perTypeLimit = Math.max(1, Math.ceil(FETCH_LIMIT / activeTaskTypes.length));
+        const fetchedTasks: PracticeTask[][] = [];
+
+        for (const taskType of activeTaskTypes) {
+          const entry = clientTaskRegistry[taskType];
+          if (!entry) {
+            continue;
+          }
+          const pos = entry.supportedPos[0];
+          const tasksForType = await fetchPracticeTasks({
+            taskType,
+            pos,
+            limit: perTypeLimit,
+          });
+          fetchedTasks.push(tasksForType);
+        }
+
+        const tasks = mergeTaskLists(fetchedTasks, FETCH_LIMIT);
 
         setTasksById((prev) => {
           const next = replace ? {} : { ...prev };
@@ -166,7 +353,7 @@ export default function Home() {
         setIsFetchingTasks(false);
       }
     },
-    [activeTaskType, registryEntry],
+    [activeTaskTypes],
   );
 
   useEffect(() => {
@@ -266,25 +453,48 @@ export default function Home() {
     [settings],
   );
 
-  const summary = useMemo(() => {
-    const totals = progress.totals[activeTaskType];
-    if (!totals) {
-      return {
-        total: 0,
-        correct: 0,
-        streak: 0,
-        accuracy: 0,
-      };
+  const handleScopeChange = useCallback(
+    (nextScope: PracticeScope) => {
+      const nextTypes = scopeToTaskTypes(nextScope);
+      if (nextScope !== 'custom' && nextTypes.length > 0) {
+        setSettings((prev) => {
+          const current = normalisePreferredTaskTypes(
+            prev.preferredTaskTypes.length ? prev.preferredTaskTypes : [prev.defaultTaskType],
+          );
+          const normalisedNext = normalisePreferredTaskTypes(nextTypes);
+          const unchanged =
+            current.length === normalisedNext.length && current.every((value, index) => value === normalisedNext[index]);
+          if (unchanged) {
+            return prev;
+          }
+          return updatePreferredTaskTypes(prev, normalisedNext);
+        });
+      }
+      if (nextScope !== scope) {
+        setShouldReloadTasks(true);
+      }
+    },
+    [scope],
+  );
+
+  const handleCustomTaskTypesChange = useCallback((taskTypes: TaskType[]) => {
+    if (!taskTypes.length) {
+      return;
     }
-    const total = totals.correctAttempts + totals.incorrectAttempts;
-    const accuracy = total > 0 ? Math.round((totals.correctAttempts / total) * 100) : 0;
-    return {
-      total,
-      correct: totals.correctAttempts,
-      streak: totals.streak,
-      accuracy,
-    };
-  }, [progress, activeTaskType]);
+    setSettings((prev) => updatePreferredTaskTypes(prev, normalisePreferredTaskTypes(taskTypes)));
+    setShouldReloadTasks(true);
+  }, []);
+
+  const summary = useMemo(() => computeSummary(progress, activeTaskTypes), [progress, activeTaskTypes]);
+
+  const scopeBadgeLabel = scope === 'custom'
+    ? `${SCOPE_LABELS[scope]} (${activeTaskTypes.length})`
+    : SCOPE_LABELS[scope];
+  const cefrLabel = buildCefrLabel(activeTaskTypes, settings);
+  const taskTypeCopy = getTaskTypeCopy(activeTaskType);
+  const cefrLevelForDisplay = scope === 'verbs' ? verbLevel : undefined;
+  const levelSummary = cefrLabel ?? (cefrLevelForDisplay ? `Level ${cefrLevelForDisplay}` : 'Mixed levels');
+  const queueLabel = scope === 'verbs' || scope === 'nouns' || scope === 'adjectives' ? taskTypeCopy.label : 'Task mix';
 
   const sessionCompleted = session.completed.length;
   const milestoneTarget = useMemo(() => {
@@ -303,19 +513,29 @@ export default function Home() {
   const isInitialLoading = !activeTask && isFetchingTasks;
 
   const topBar = (
-    <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-      <div className="space-y-2">
-        <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
-          <Sparkles className="h-4 w-4" aria-hidden />
-          Adaptive practice
-        </p>
-        <h1 className="text-3xl font-semibold text-foreground lg:text-4xl">
-          Practice that adapts to every task type
-        </h1>
-        <p className="max-w-xl text-sm text-muted-foreground">
-          Sessions now draw from the shared task registry. Start with the {VERB_PRESET_LABEL.toLowerCase()} preset and stay ready
-          for nouns and adjectives.
-        </p>
+    <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+      <div className="space-y-4 lg:max-w-xl">
+        <div className="space-y-2">
+          <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
+            <Sparkles className="h-4 w-4" aria-hidden />
+            Adaptive practice
+          </p>
+          <h1 className="text-3xl font-semibold text-foreground lg:text-4xl">
+            Practice that adapts to every task type
+          </h1>
+          <p className="max-w-xl text-sm text-muted-foreground">
+            Sessions now draw from the shared task registry. Choose a scope to rotate between verbs, nouns, adjectives, or your
+            custom mix.
+          </p>
+        </div>
+        <PracticeModeSwitcher
+          debugId="topbar-mode-switcher"
+          scope={scope}
+          onScopeChange={handleScopeChange}
+          selectedTaskTypes={activeTaskTypes}
+          onTaskTypesChange={handleCustomTaskTypesChange}
+          availableTaskTypes={AVAILABLE_TASK_TYPES}
+        />
       </div>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
         <div className="flex items-center gap-4 rounded-3xl border border-border/60 bg-muted/40 p-4 shadow-sm">
@@ -336,7 +556,7 @@ export default function Home() {
             <p className="text-lg font-semibold text-foreground">{summary.accuracy}%</p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <Link href="/analytics">
             <Button debugId="topbar-insights-button" className="rounded-2xl px-6">
               <BarChart2 className="mr-2 h-4 w-4" aria-hidden />
@@ -348,6 +568,8 @@ export default function Home() {
             settings={settings}
             onSettingsChange={handleSettingsChange}
             taskType={activeTaskType}
+            presetLabel={scopeBadgeLabel}
+            taskTypeLabel={taskTypeCopy.label}
           />
           <div className="hidden sm:block">
             <Avatar className="h-11 w-11 border border-border/60 shadow-sm">
@@ -375,11 +597,11 @@ export default function Home() {
           <div className="flex items-center justify-between">
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Active preset</p>
             <Badge variant="outline" className="rounded-full border-primary/30 bg-primary/10 text-[10px] uppercase tracking-[0.22em] text-primary">
-              {VERB_PRESET_LABEL}
+              {scopeBadgeLabel}
             </Badge>
           </div>
           <p className="mt-3 text-sm text-muted-foreground">
-            Level {verbLevel} · {registryEntry.taskType}
+            {levelSummary} · {queueLabel}
           </p>
         </div>
       </div>
@@ -401,7 +623,7 @@ export default function Home() {
           <div className="flex w-full max-w-xl flex-col items-center gap-4 text-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
               <Sparkles className="h-3 w-3" aria-hidden />
-              {VERB_PRESET_LABEL}
+              {scopeBadgeLabel}
             </div>
             <h2 className="text-3xl font-semibold text-foreground">Focus mode</h2>
             <p className="text-sm text-muted-foreground">
@@ -476,7 +698,11 @@ export default function Home() {
           <ProgressDisplay
             progress={progress}
             taskType={activeTaskType}
-            cefrLevel={verbLevel}
+            taskTypes={activeTaskTypes}
+            taskLabel={scopeBadgeLabel}
+            cefrLevel={cefrLevelForDisplay}
+            cefrLabel={cefrLabel}
+            headline={`${scopeBadgeLabel} progress`}
             debugId="sidebar-progress-display"
           />
           <div className="rounded-3xl border border-border/60 bg-card/80 p-6 shadow-lg shadow-primary/5">
