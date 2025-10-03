@@ -85,6 +85,9 @@ describe('practice state migrations', () => {
     expect(history).toHaveLength(1);
     expect(history[0]?.taskId).toBe('legacy:verb:gehen');
     expect(history[0]?.legacyVerb?.verb.infinitive).toBe('gehen');
+    expect(localStorage.getItem('practice.answerHistory.migrated')).toBe('1');
+    expect(localStorage.getItem('answerHistory')).toBeNull();
+    expect(localStorage.getItem('practice.answerHistory')).not.toBeNull();
   });
 
   it('stores and reloads answer history entries', () => {
@@ -108,8 +111,24 @@ describe('practice state migrations', () => {
 
     const queue = getReviewQueue();
     expect(queue).toHaveLength(2);
+    const storedQueueBeforeShift = localStorage.getItem('practice.tasks.queue');
+    expect(storedQueueBeforeShift).not.toBeNull();
+    if (storedQueueBeforeShift) {
+      const parsedBeforeShift = JSON.parse(storedQueueBeforeShift);
+      expect(Array.isArray(parsedBeforeShift)).toBe(true);
+      expect(parsedBeforeShift[0]?.taskId).toBe('legacy:verb:gehen');
+    }
     expect(peekReviewVerb()).toBe('gehen');
     expect(shiftReviewVerb()).toBe('gehen');
+    expect(localStorage.getItem('practice.tasks.queue.migrated')).toBe('1');
+    expect(localStorage.getItem('focus-review-queue')).toBeNull();
+    const storedQueue = localStorage.getItem('practice.tasks.queue');
+    expect(storedQueue).not.toBeNull();
+    if (storedQueue) {
+      const parsed = JSON.parse(storedQueue);
+      expect(Array.isArray(parsed)).toBe(true);
+      expect(parsed[0]?.taskId).toBe('legacy:verb:sein');
+    }
   });
 
   it('enqueues task-based review items', () => {
@@ -134,6 +153,9 @@ describe('practice state migrations', () => {
     const progress = loadPracticeProgress();
     expect(progress.totals.conjugate_form?.correctAttempts).toBe(5);
     expect(progress.totals.conjugate_form?.lexemes['legacy:verb:gehen']).toBeTruthy();
+    expect(localStorage.getItem('practice.progress.migrated')).toBe('1');
+    expect(localStorage.getItem('progress')).toBeNull();
+    expect(localStorage.getItem('practice.progress')).not.toBeNull();
   });
 
   it('records task results into progress state', () => {
@@ -157,6 +179,9 @@ describe('practice state migrations', () => {
     const settings = loadPracticeSettings();
     expect(settings.cefrLevelByPos.verb).toBe('B1');
     expect(settings.rendererPreferences.conjugate_form.showHints).toBe(false);
+    expect(localStorage.getItem('practice.settings.migrated')).toBe('1');
+    expect(localStorage.getItem('settings')).toBeNull();
+    expect(localStorage.getItem('practice.settings')).not.toBeNull();
   });
 
   it('updates settings helpers', () => {

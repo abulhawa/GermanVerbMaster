@@ -1,9 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   __resetLegacyEndpointTelemetryForTests,
+  clientTaskRegistry,
+  createLegacyConjugationTask,
   fetchPracticeTasks,
+  getClientTaskRegistryEntry,
   getLastLegacyEndpointNotice,
+  listClientTaskTypes,
 } from '@/lib/tasks';
+import { taskTypeRegistry } from '@shared/task-registry';
+import type { GermanVerb } from '@shared';
 
 const conjugatePrompt = {
   lemma: 'sein',
@@ -20,6 +26,16 @@ const conjugateSolution = {
   form: 'bin',
   alternateForms: ['bin ich'],
 } as const;
+
+function requestToUrl(input: RequestInfo | URL): string {
+  if (typeof input === 'string') {
+    return input;
+  }
+  if (input instanceof URL) {
+    return input.toString();
+  }
+  return (input as Request).url;
+}
 
 describe('fetchPracticeTasks', () => {
   beforeEach(() => {
@@ -56,7 +72,8 @@ describe('fetchPracticeTasks', () => {
     } satisfies Record<string, unknown>;
 
     const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
-      if (typeof input === 'string' && input.startsWith('/api/tasks')) {
+      const url = requestToUrl(input);
+      if (url.includes('/api/tasks')) {
         return new Response(JSON.stringify(payload), {
           status: 200,
           headers: { 'Content-Type': 'application/json' },
@@ -85,10 +102,11 @@ describe('fetchPracticeTasks', () => {
     const debugSpy = vi.spyOn(console, 'debug').mockImplementation(() => {});
 
     const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
-      if (typeof input === 'string' && input.startsWith('/api/tasks')) {
+      const url = requestToUrl(input);
+      if (url.includes('/api/tasks')) {
         return new Response('Server error', { status: 500 });
       }
-      if (typeof input === 'string' && input.startsWith('/api/quiz/verbs')) {
+      if (url.includes('/api/quiz/verbs')) {
         const verbs = [
           {
             infinitive: 'gehen',
@@ -139,5 +157,101 @@ describe('fetchPracticeTasks', () => {
 
     expect(warnSpy).toHaveBeenCalledTimes(1);
     expect(debugSpy).not.toHaveBeenCalled();
+  });
+
+  it('produces verb preset tasks identical to the legacy conjugation helper when falling back', async () => {
+    vi.useFakeTimers();
+    const fixedNow = new Date('2024-03-01T12:34:56.000Z');
+    vi.setSystemTime(fixedNow);
+
+    try {
+      const legacyVerbPayload = {
+        infinitive: 'laufen',
+        english: 'to run',
+        präteritum: 'lief',
+        partizipII: 'gelaufen',
+        auxiliary: 'sein',
+        level: 'A2',
+        präteritumExample: 'ich lief',
+        partizipIIExample: 'ich bin gelaufen',
+        source: {
+          name: 'Duden',
+          levelReference: 'A2',
+        },
+        pattern: null,
+        praesensIch: 'laufe',
+        praesensEr: 'läuft',
+        perfekt: 'ist gelaufen',
+        separable: false,
+      } satisfies Record<string, unknown>;
+
+      const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+        const url = requestToUrl(input);
+        if (url.includes('/api/tasks')) {
+          return new Response('Server error', { status: 502 });
+        }
+        if (url.includes('/api/quiz/verbs')) {
+          return new Response(JSON.stringify([legacyVerbPayload]), {
+            status: 200,
+            headers: {
+              'Content-Type': 'application/json',
+              Warning: '299 - "Legacy verb endpoint"',
+            },
+          });
+        }
+        throw new Error(`Unexpected request: ${input}`);
+      });
+
+      vi.stubGlobal('fetch', fetchMock);
+
+      const tasks = await fetchPracticeTasks({ pos: 'verb', taskType: 'conjugate_form', limit: 1 });
+
+      expect(tasks).toHaveLength(1);
+
+      const expectedVerb: GermanVerb = {
+        infinitive: 'laufen',
+        english: 'to run',
+        präteritum: 'lief',
+        partizipII: 'gelaufen',
+        auxiliary: 'sein',
+        level: 'A2',
+        präteritumExample: 'ich lief',
+        partizipIIExample: 'ich bin gelaufen',
+        source: {
+          name: 'Duden',
+          levelReference: 'A2',
+        },
+        pattern: null,
+        praesensIch: 'laufe',
+        praesensEr: 'läuft',
+        perfekt: 'ist gelaufen',
+        separable: false,
+      };
+
+      const expectedTask = createLegacyConjugationTask(expectedVerb);
+      expect(tasks[0]).toEqual(expectedTask);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});
+
+describe('client task registry parity', () => {
+  it('matches the shared task registry entries', () => {
+    expect(clientTaskRegistry).toEqual(taskTypeRegistry);
+  });
+
+  it('lists the same task types as the shared registry', () => {
+    const clientTypes = listClientTaskTypes().sort();
+    const sharedTypes = Object.keys(taskTypeRegistry).sort();
+    expect(clientTypes).toEqual(sharedTypes);
+  });
+
+  it('returns shared registry references for known task types', () => {
+    expect(getClientTaskRegistryEntry('conjugate_form')).toBe(taskTypeRegistry.conjugate_form);
+  });
+
+  it('throws when requesting an unknown task type', () => {
+    expect(() => getClientTaskRegistryEntry('unknown' as never)).toThrowError(/Unknown task type/);
   });
 });
