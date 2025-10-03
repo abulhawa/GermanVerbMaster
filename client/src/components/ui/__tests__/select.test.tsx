@@ -55,6 +55,7 @@ describe("Select", () => {
       hasPointerCapture?: (pointerId: number) => boolean;
       setPointerCapture?: (pointerId: number) => void;
       releasePointerCapture?: (pointerId: number) => void;
+      scrollIntoView?: (arg?: boolean | ScrollIntoViewOptions) => void;
     };
 
     if (!elementProto.hasPointerCapture) {

@@ -3,6 +3,7 @@ import {
   taskTypeRegistry as sharedTaskRegistry,
   validateTaskAgainstRegistry,
   type LexemePos,
+  type TaskRegistry,
   type TaskRegistryEntry,
   type TaskType,
 } from '@shared/task-registry';
@@ -357,7 +358,7 @@ export async function fetchPracticeTasks(options: TaskFetchOptions = {}): Promis
   }
 }
 
-export type ClientTaskRegistry = Readonly<Record<TaskType, TaskRegistryEntry>>;
+export type ClientTaskRegistry = Readonly<TaskRegistry>;
 
 export const clientTaskRegistry = Object.freeze({
   ...sharedTaskRegistry,

@@ -10,11 +10,11 @@ import {
 } from "@/lib/dev-attributes"
 
 const AlertDialog = debugForwardRef<
-  React.ElementRef<typeof AlertDialogPrimitive.Root>,
+  unknown,
   React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Root> &
     DebuggableComponentProps
->("AlertDialog", (props, ref, devAttributes) => (
-  <AlertDialogPrimitive.Root ref={ref} {...devAttributes} {...props} />
+>("AlertDialog", (props, _ref, devAttributes) => (
+  <AlertDialogPrimitive.Root {...devAttributes} {...props} />
 ))
 
 const AlertDialogTrigger = debugForwardRef<

@@ -21,10 +21,18 @@ const EMPTY_SUMMARY: TaskProgressSummary = {
   lexemes: {},
 };
 
+function createEmptyTotals(): Record<TaskType, TaskProgressSummary> {
+  return {
+    conjugate_form: { ...EMPTY_SUMMARY, lexemes: {} },
+    noun_case_declension: { ...EMPTY_SUMMARY, lexemes: {} },
+    adj_ending: { ...EMPTY_SUMMARY, lexemes: {} },
+  };
+}
+
 export function createEmptyProgressState(): PracticeProgressState {
   return {
     version: 1,
-    totals: {},
+    totals: createEmptyTotals(),
     lastPracticedTaskId: null,
   } satisfies PracticeProgressState;
 }

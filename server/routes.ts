@@ -434,7 +434,7 @@ export function registerRoutes(app: Express): Server {
       filters.push(eq(contentPacks.slug, pack));
     }
 
-    let query = db
+    const baseQuery = db
       .select({
         id: taskSpecs.id,
         taskType: taskSpecs.taskType,
@@ -454,11 +454,9 @@ export function registerRoutes(app: Express): Server {
       .leftJoin(packLexemeMap, eq(packLexemeMap.primaryTaskId, taskSpecs.id))
       .leftJoin(contentPacks, eq(packLexemeMap.packId, contentPacks.id));
 
-    if (filters.length) {
-      query = query.where(and(...filters));
-    }
+    const filteredQuery = filters.length ? baseQuery.where(and(...filters)) : baseQuery;
 
-    const rows = await query.orderBy(desc(taskSpecs.updatedAt)).limit(limit);
+    const rows = await filteredQuery.orderBy(desc(taskSpecs.updatedAt)).limit(limit);
 
     const payload = rows.map((row) => {
       const registryEntry = getTaskRegistryEntry(row.taskType as TaskType);

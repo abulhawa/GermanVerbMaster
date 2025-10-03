@@ -4,13 +4,13 @@ import {
   type TaskRegistryEntry,
 } from '@shared/task-registry';
 
-export interface ServerTaskRegistryEntry extends TaskRegistryEntry {
+export type ServerTaskRegistryEntry = TaskRegistryEntry & {
   queueCap: number;
   evaluation: {
     strategy: 'string-equality';
     normalise: boolean;
   };
-}
+};
 
 export const taskRegistry: Record<TaskType, ServerTaskRegistryEntry> = {
   conjugate_form: {

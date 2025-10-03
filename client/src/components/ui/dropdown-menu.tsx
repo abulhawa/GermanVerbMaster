@@ -10,11 +10,11 @@ import {
 } from "@/lib/dev-attributes"
 
 const DropdownMenu = debugForwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.Root>,
+  unknown,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Root> &
     DebuggableComponentProps
->("DropdownMenu", (props, ref, devAttributes) => (
-  <DropdownMenuPrimitive.Root ref={ref} {...devAttributes} {...props} />
+>("DropdownMenu", (props, _ref, devAttributes) => (
+  <DropdownMenuPrimitive.Root {...devAttributes} {...props} />
 ))
 
 const DropdownMenuTrigger = debugForwardRef<
@@ -36,11 +36,11 @@ const DropdownMenuGroup = debugForwardRef<
 const DropdownMenuPortal = DropdownMenuPrimitive.Portal
 
 const DropdownMenuSub = debugForwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.Sub>,
+  unknown,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Sub> &
     DebuggableComponentProps
->("DropdownMenuSub", (props, ref, devAttributes) => (
-  <DropdownMenuPrimitive.Sub ref={ref} {...devAttributes} {...props} />
+>("DropdownMenuSub", (props, _ref, devAttributes) => (
+  <DropdownMenuPrimitive.Sub {...devAttributes} {...props} />
 ))
 
 const DropdownMenuRadioGroup = debugForwardRef<

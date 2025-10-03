@@ -65,16 +65,16 @@ export const adjectiveEndingSolutionSchema = z.object({
   form: z.string().min(1),
 });
 
-export interface TaskRegistryEntry {
-  taskType: TaskType;
-  supportedPos: ReadonlyArray<LexemePos>;
-  renderer: string;
-  promptSchema: z.ZodTypeAny;
-  solutionSchema: z.ZodTypeAny;
-  defaultQueueCap: number;
-}
-
 export type LexemePos = 'verb' | 'noun' | 'adjective';
+
+interface TaskRegistryEntryBase {
+  readonly taskType: string;
+  readonly supportedPos: ReadonlyArray<LexemePos>;
+  readonly renderer: string;
+  readonly promptSchema: z.ZodTypeAny;
+  readonly solutionSchema: z.ZodTypeAny;
+  readonly defaultQueueCap: number;
+}
 
 export const taskTypeRegistry = {
   conjugate_form: {
@@ -101,14 +101,18 @@ export const taskTypeRegistry = {
     solutionSchema: adjectiveEndingSolutionSchema,
     defaultQueueCap: 20,
   },
-} satisfies Record<string, TaskRegistryEntry>;
+} as const satisfies Record<string, TaskRegistryEntryBase>;
 
-export type TaskType = keyof typeof taskTypeRegistry;
+export type TaskRegistry = typeof taskTypeRegistry;
+
+export type TaskType = keyof TaskRegistry;
+
+export type TaskRegistryEntry = TaskRegistry[TaskType];
 
 export interface RegistryValidationResult {
   taskType: TaskType;
   pos: LexemePos;
-  renderer: string;
+  renderer: TaskRegistryEntry['renderer'];
 }
 
 export function validateTaskAgainstRegistry(
@@ -123,7 +127,8 @@ export function validateTaskAgainstRegistry(
     throw new Error(`Unsupported task type: ${taskType}`);
   }
 
-  if (!entry.supportedPos.includes(pos as LexemePos)) {
+  const supportedPos = entry.supportedPos as ReadonlyArray<LexemePos>;
+  if (!supportedPos.includes(pos as LexemePos)) {
     throw new Error(
       `Task type ${taskType} does not support part of speech ${pos}. Supported: ${entry.supportedPos.join(', ')}`,
     );

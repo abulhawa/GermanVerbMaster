@@ -10,11 +10,11 @@ import {
 } from "@/lib/dev-attributes"
 
 const Select = debugForwardRef<
-  React.ElementRef<typeof SelectPrimitive.Root>,
+  unknown,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Root> &
     DebuggableComponentProps
->("Select", (props, ref, devAttributes) => (
-  <SelectPrimitive.Root ref={ref} {...devAttributes} {...props} />
+>("Select", (props, _ref, devAttributes) => (
+  <SelectPrimitive.Root {...devAttributes} {...props} />
 ))
 
 const SelectGroup = debugForwardRef<

@@ -10,11 +10,11 @@ import {
 } from "@/lib/dev-attributes"
 
 const Dialog = debugForwardRef<
-  React.ElementRef<typeof DialogPrimitive.Root>,
+  unknown,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Root> &
     DebuggableComponentProps
->("Dialog", (props, ref, devAttributes) => (
-  <DialogPrimitive.Root ref={ref} {...devAttributes} {...props} />
+>("Dialog", (props, _ref, devAttributes) => (
+  <DialogPrimitive.Root {...devAttributes} {...props} />
 ))
 
 const DialogTrigger = debugForwardRef<

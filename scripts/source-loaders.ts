@@ -13,7 +13,22 @@ export type ExternalPartOfSpeech =
   | 'Präp'
   | 'Konj'
   | 'Num'
-  | 'Part';
+  | 'Part'
+  | 'Interj';
+
+const SUPPORTED_EXTERNAL_POS: readonly ExternalPartOfSpeech[] = [
+  'N',
+  'V',
+  'Adj',
+  'Adv',
+  'Pron',
+  'Det',
+  'Präp',
+  'Konj',
+  'Num',
+  'Part',
+  'Interj',
+] as const;
 
 export interface ExternalWordRow {
   lemma: string;
@@ -125,7 +140,7 @@ interface WordRecordArgs {
 
 function createWordRecord(args: WordRecordArgs): ExternalWordRow | undefined {
   const { lemma, pos } = args;
-  if (!lemma || !pos) return undefined;
+  if (!lemma || !pos || !SUPPORTED_EXTERNAL_POS.includes(pos)) return undefined;
   return {
     lemma,
     pos,
@@ -147,6 +162,17 @@ function createWordRecord(args: WordRecordArgs): ExternalWordRow | undefined {
     sources_csv: args.source ?? undefined,
     source_notes: args.notes ?? undefined,
   };
+}
+
+function readNestedRecord(
+  record: Record<string, unknown>,
+  key: string,
+): Record<string, unknown> | undefined {
+  const value = record[key];
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    return value as Record<string, unknown>;
+  }
+  return undefined;
 }
 
 function loadDwdsFileContent(
@@ -230,6 +256,7 @@ async function loadLearnDeutschVocabulary(externalDir: string): Promise<External
 
     const verbs = Array.isArray(vocabulary.verbs) ? vocabulary.verbs : [];
     for (const entry of verbs) {
+      const conjugation = readNestedRecord(entry, 'conjugation');
       collected.push(
         createWordRecord({
           lemma: normaliseString(entry.infinitive),
@@ -237,8 +264,8 @@ async function loadLearnDeutschVocabulary(externalDir: string): Promise<External
           level: normaliseLevel(entry.level),
           english: normaliseString(entry.english),
           separable: entry.type === 'separable',
-          praesensIch: normaliseString(entry.conjugation?.ich),
-          praesensEr: normaliseString(entry.conjugation?.['er/sie/es']),
+          praesensIch: normaliseString(conjugation?.['ich']),
+          praesensEr: normaliseString(conjugation?.['er/sie/es']),
           source: 'learn-deutsch-data:verbs',
           notes: normaliseString(entry.details),
         }),
@@ -247,14 +274,15 @@ async function loadLearnDeutschVocabulary(externalDir: string): Promise<External
 
     const modalVerbs = Array.isArray(vocabulary.modalVerbs) ? vocabulary.modalVerbs : [];
     for (const entry of modalVerbs) {
+      const conjugation = readNestedRecord(entry, 'conjugation');
       collected.push(
         createWordRecord({
           lemma: normaliseString(entry.infinitive),
           pos: 'V',
           level: normaliseLevel(entry.level),
           english: normaliseString(entry.english),
-          praesensIch: normaliseString(entry.conjugation?.ich),
-          praesensEr: normaliseString(entry.conjugation?.['er/sie/es']),
+          praesensIch: normaliseString(conjugation?.['ich']),
+          praesensEr: normaliseString(conjugation?.['er/sie/es']),
           source: 'learn-deutsch-data:modal',
           notes: normaliseString(entry.pronunciation ?? entry.details),
         }),

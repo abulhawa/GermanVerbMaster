@@ -5,13 +5,19 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import drizzleConfig from "../drizzle.config";
 
+type SqliteDrizzleConfig = typeof drizzleConfig & {
+  dbCredentials?: {
+    url?: string;
+  };
+};
+
 const LEGACY_INDEX_NAMES = new Set([
   "verbs_infinitive_idx",
   "verb_queue_device_idx",
 ]);
 
 function resolveDatabaseFile(): string {
-  const credentials = drizzleConfig.dbCredentials;
+  const credentials = (drizzleConfig as SqliteDrizzleConfig).dbCredentials;
   if (
     credentials &&
     typeof credentials === "object" &&

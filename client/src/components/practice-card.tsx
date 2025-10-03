@@ -58,6 +58,10 @@ const DEGREE_LABELS: Record<string, string> = {
   superlative: 'Superlativ',
 };
 
+function isTaskOfType<T extends TaskType>(task: PracticeTask, taskType: T): task is PracticeTask<T> {
+  return task.taskType === taskType;
+}
+
 function getRendererPreferences(
   settings: PracticeSettingsState,
   taskType: PracticeTask['taskType'],
@@ -231,10 +235,24 @@ function renderHintText(
   return null;
 }
 
+function resolveCefrLevel(metadata: Record<string, unknown> | null | undefined): string | null {
+  if (!metadata) {
+    return null;
+  }
+
+  const { level } = metadata as { level?: unknown };
+  if (typeof level === 'string' && level.trim().length > 0) {
+    return level;
+  }
+
+  return null;
+}
+
 function renderMetadataRow(task: PracticeTask) {
+  const cefrLevel = resolveCefrLevel(task.lexeme.metadata) ?? 'A1';
   return (
     <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.22em] text-muted-foreground">
-      <span>CEFR {task.lexeme.metadata?.level ?? 'A1'}</span>
+      <span>CEFR {cefrLevel}</span>
       <span aria-hidden>•</span>
       <span>Quelle: {task.source}</span>
     </div>
@@ -1003,14 +1021,26 @@ function UnsupportedRenderer({ task, debugId }: RendererProps) {
 }
 
 export function PracticeCard(props: PracticeCardProps) {
-  if (props.task.taskType === 'conjugate_form') {
-    return <ConjugateFormRenderer {...props} />;
+  if (isTaskOfType(props.task, 'conjugate_form')) {
+    const rendererProps: RendererProps<'conjugate_form'> = {
+      ...props,
+      task: props.task,
+    };
+    return <ConjugateFormRenderer {...rendererProps} />;
   }
-  if (props.task.taskType === 'noun_case_declension') {
-    return <NounCaseDeclensionRenderer {...props} />;
+  if (isTaskOfType(props.task, 'noun_case_declension')) {
+    const rendererProps: RendererProps<'noun_case_declension'> = {
+      ...props,
+      task: props.task,
+    };
+    return <NounCaseDeclensionRenderer {...rendererProps} />;
   }
-  if (props.task.taskType === 'adj_ending') {
-    return <AdjectiveEndingRenderer {...props} />;
+  if (isTaskOfType(props.task, 'adj_ending')) {
+    const rendererProps: RendererProps<'adj_ending'> = {
+      ...props,
+      task: props.task,
+    };
+    return <AdjectiveEndingRenderer {...rendererProps} />;
   }
   return <UnsupportedRenderer {...props} />;
 }

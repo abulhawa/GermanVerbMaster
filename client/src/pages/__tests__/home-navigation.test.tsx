@@ -4,9 +4,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { Mock } from 'vitest';
 
 import Home from '@/pages/home';
-import type { PracticeTask } from '@/lib/tasks';
+import type { PracticeTask, TaskFetchOptions } from '@/lib/tasks';
 import { clientTaskRegistry } from '@/lib/tasks';
 import { createDefaultSettings } from '@/lib/practice-settings';
 import type { PracticeSettingsState, TaskType } from '@shared';
@@ -60,7 +61,9 @@ vi.mock('@/lib/api', () => ({
 }));
 
 const { fetchPracticeTasks } = await import('@/lib/tasks');
-const mockFetchPracticeTasks = fetchPracticeTasks as unknown as vi.Mock;
+type FetchPracticeTasksMock = Mock<(options?: TaskFetchOptions) => Promise<PracticeTask[]>>;
+
+const mockFetchPracticeTasks = fetchPracticeTasks as unknown as FetchPracticeTasksMock;
 
 const SETTINGS_STORAGE_KEY = 'practice.settings';
 const MIGRATION_MARKER_KEY = 'practice.settings.migrated';
@@ -280,7 +283,7 @@ describe('Home navigation controls', () => {
       defaultTaskType: 'conjugate_form',
     });
 
-    mockFetchPracticeTasks.mockImplementation(async ({ taskType, limit = 15 }) => {
+    mockFetchPracticeTasks.mockImplementation(async ({ taskType, limit = 15 }: TaskFetchOptions = {}) => {
       return Array.from({ length: limit }, (_, index) => buildTask(taskType as TaskType, index));
     });
 
@@ -302,7 +305,7 @@ describe('Home navigation controls', () => {
   it('updates preferred task types when selecting a custom mix', async () => {
     seedPracticeSettings();
 
-    mockFetchPracticeTasks.mockImplementation(async ({ taskType, limit = 15 }) => {
+    mockFetchPracticeTasks.mockImplementation(async ({ taskType, limit = 15 }: TaskFetchOptions = {}) => {
       return Array.from({ length: limit }, (_, index) => buildTask(taskType as TaskType, index));
     });
 

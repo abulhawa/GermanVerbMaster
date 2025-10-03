@@ -219,4 +219,40 @@ describe('PracticeCard', () => {
       expect(onResult).toHaveBeenCalledWith(expect.objectContaining({ result: 'correct' }));
     });
   });
+
+  it('displays the CEFR level from lexeme metadata when provided as a string', () => {
+    const onResult = vi.fn();
+    const task = createTask();
+    const settings = getDefaultSettings();
+
+    const enrichedTask: PracticeTask<'conjugate_form'> = {
+      ...task,
+      lexeme: {
+        ...task.lexeme,
+        metadata: { ...task.lexeme.metadata, level: 'B2' },
+      },
+    };
+
+    render(<PracticeCard task={enrichedTask} settings={settings} onResult={onResult} />);
+
+    expect(screen.getByText(/CEFR B2/i)).toBeInTheDocument();
+  });
+
+  it('falls back to the default CEFR level when metadata level is not a string', () => {
+    const onResult = vi.fn();
+    const task = createTask();
+    const settings = getDefaultSettings();
+
+    const malformedTask: PracticeTask<'conjugate_form'> = {
+      ...task,
+      lexeme: {
+        ...task.lexeme,
+        metadata: { ...task.lexeme.metadata, level: { code: 'C1' } },
+      },
+    };
+
+    render(<PracticeCard task={malformedTask} settings={settings} onResult={onResult} />);
+
+    expect(screen.getByText(/CEFR A1/i)).toBeInTheDocument();
+  });
 });

@@ -10,6 +10,7 @@ import {
   type LexemePos,
   taskTypeRegistry,
   validateTaskAgainstRegistry,
+  type TaskType,
 } from '@shared/task-registry';
 
 import {
@@ -91,7 +92,7 @@ export interface TaskSpecSeed {
   id: string;
   lexemeId: string;
   pos: LexemePos;
-  taskType: keyof typeof taskTypeRegistry;
+  taskType: TaskType;
   renderer: string;
   prompt: Record<string, unknown>;
   solution: Record<string, unknown>;
@@ -300,7 +301,7 @@ interface PackBundleConfig {
   posScope: LexemePos;
   license: string;
   words: AggregatedWord[];
-  taskType: keyof typeof taskTypeRegistry;
+  taskType: TaskType;
 }
 
 function createPackBundle(config: PackBundleConfig): PackBundle {

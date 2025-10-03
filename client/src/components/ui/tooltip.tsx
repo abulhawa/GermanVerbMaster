@@ -11,11 +11,11 @@ import {
 const TooltipProvider = TooltipPrimitive.Provider
 
 const Tooltip = debugForwardRef<
-  React.ElementRef<typeof TooltipPrimitive.Root>,
+  unknown,
   React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Root> &
     DebuggableComponentProps
->("Tooltip", (props, ref, devAttributes) => (
-  <TooltipPrimitive.Root ref={ref} {...devAttributes} {...props} />
+>("Tooltip", (props, _ref, devAttributes) => (
+  <TooltipPrimitive.Root {...devAttributes} {...props} />
 ))
 
 const TooltipTrigger = debugForwardRef<

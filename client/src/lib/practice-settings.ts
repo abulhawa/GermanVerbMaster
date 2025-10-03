@@ -25,6 +25,8 @@ export function createDefaultSettings(): PracticeSettingsState {
     cefrLevelByPos: { verb: 'A1' },
     rendererPreferences: {
       conjugate_form: { ...DEFAULT_RENDERER_PREFS },
+      noun_case_declension: { ...DEFAULT_RENDERER_PREFS },
+      adj_ending: { ...DEFAULT_RENDERER_PREFS },
     },
     legacyVerbLevel: 'A1',
     migratedFromLegacy: false,

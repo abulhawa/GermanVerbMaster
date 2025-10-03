@@ -9,11 +9,11 @@ import {
 } from "@/lib/dev-attributes"
 
 const Popover = debugForwardRef<
-  React.ElementRef<typeof PopoverPrimitive.Root>,
+  unknown,
   React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Root> &
     DebuggableComponentProps
->("Popover", (props, ref, devAttributes) => (
-  <PopoverPrimitive.Root ref={ref} {...devAttributes} {...props} />
+>("Popover", (props, _ref, devAttributes) => (
+  <PopoverPrimitive.Root {...devAttributes} {...props} />
 ))
 
 const PopoverTrigger = debugForwardRef<

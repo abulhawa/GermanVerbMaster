@@ -8,9 +8,10 @@ import {
   getDevAttributes,
 } from "@/lib/dev-attributes"
 
-interface DrawerProps
-  extends React.ComponentProps<typeof DrawerPrimitive.Root>,
-    DebuggableComponentProps {}
+type DrawerProps = React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Root> &
+  DebuggableComponentProps & {
+    shouldScaleBackground?: boolean;
+  }
 
 const Drawer = ({
   shouldScaleBackground = true,

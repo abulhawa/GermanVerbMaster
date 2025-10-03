@@ -11,11 +11,11 @@ import {
 } from "@/lib/dev-attributes"
 
 const Sheet = debugForwardRef<
-  React.ElementRef<typeof SheetPrimitive.Root>,
+  unknown,
   React.ComponentPropsWithoutRef<typeof SheetPrimitive.Root> &
     DebuggableComponentProps
->("Sheet", (props, ref, devAttributes) => (
-  <SheetPrimitive.Root ref={ref} {...devAttributes} {...props} />
+>("Sheet", (props, _ref, devAttributes) => (
+  <SheetPrimitive.Root {...devAttributes} {...props} />
 ))
 
 const SheetTrigger = debugForwardRef<
@@ -74,7 +74,8 @@ const sheetVariants = cva(
 
 interface SheetContentProps
   extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
-    VariantProps<typeof sheetVariants> {}
+    VariantProps<typeof sheetVariants>,
+    DebuggableComponentProps {}
 
 const SheetContent = React.forwardRef<
   React.ComponentRef<typeof SheetPrimitive.Content>,

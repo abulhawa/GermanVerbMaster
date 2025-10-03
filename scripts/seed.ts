@@ -12,6 +12,8 @@ import {
   loadExternalWordRows,
   loadManualWordRows,
   snapshotExternalSources,
+  type ExternalPartOfSpeech,
+  type ExternalWordRow,
 } from './source-loaders';
 import {
   type AggregatedWord,
@@ -21,7 +23,7 @@ import {
 } from './etl/golden';
 
 const LEVEL_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
-const POS_MAP = new Map<string, string>([
+const POS_MAP = new Map<string, ExternalPartOfSpeech>([
   ['verb', 'V'],
   ['v', 'V'],
   ['v.', 'V'],
@@ -50,9 +52,23 @@ const POS_MAP = new Map<string, string>([
   ['interjektion', 'Interj'],
 ]);
 
+const EXTERNAL_POS_VALUES: readonly ExternalPartOfSpeech[] = [
+  'V',
+  'N',
+  'Adj',
+  'Adv',
+  'Pron',
+  'Det',
+  'Präp',
+  'Konj',
+  'Num',
+  'Part',
+  'Interj',
+] as const;
+
 interface RawWordRow {
   lemma: string;
-  pos: string;
+  pos: ExternalPartOfSpeech;
   level?: string | null;
   english?: string | null;
   exampleDe?: string | null;
@@ -86,22 +102,36 @@ function normaliseString(value: unknown): string | null {
   return trimmed.length ? trimmed : null;
 }
 
-function normalisePos(raw: unknown): string | null {
+function normalisePos(raw: unknown): ExternalPartOfSpeech | null {
   if (raw === undefined || raw === null) return null;
   const value = String(raw).trim();
   if (!value) return null;
+  if ((EXTERNAL_POS_VALUES as readonly string[]).includes(value)) {
+    return value as ExternalPartOfSpeech;
+  }
   const upper = value.toUpperCase();
-  if (['V', 'N', 'ADJ', 'ADV', 'PRON', 'DET', 'PRÄP', 'KONJ', 'NUM', 'PART', 'INTERJ'].includes(upper)) {
-    if (upper === 'ADJ') return 'Adj';
-    if (upper === 'ADV') return 'Adv';
-    if (upper === 'PRON') return 'Pron';
-    if (upper === 'DET') return 'Det';
-    if (upper === 'PRÄP') return 'Präp';
-    if (upper === 'KONJ') return 'Konj';
-    if (upper === 'NUM') return 'Num';
-    if (upper === 'PART') return 'Part';
-    if (upper === 'INTERJ') return 'Interj';
-    return upper;
+  switch (upper) {
+    case 'ADJ':
+      return 'Adj';
+    case 'ADV':
+      return 'Adv';
+    case 'PRON':
+      return 'Pron';
+    case 'DET':
+      return 'Det';
+    case 'PRÄP':
+    case 'PRAEP':
+      return 'Präp';
+    case 'KONJ':
+      return 'Konj';
+    case 'NUM':
+      return 'Num';
+    case 'PART':
+      return 'Part';
+    case 'INTERJ':
+      return 'Interj';
+    default:
+      break;
   }
   const mapped = POS_MAP.get(value.toLowerCase());
   return mapped ?? null;
@@ -123,7 +153,7 @@ function normaliseLevel(level: unknown): string | null {
   return LEVEL_ORDER.includes(upper as (typeof LEVEL_ORDER)[number]) ? upper : value;
 }
 
-function computeCompleteness(word: RawWordRow & { pos: string }): boolean {
+function computeCompleteness(word: RawWordRow & { pos: ExternalPartOfSpeech }): boolean {
   switch (word.pos) {
     case 'V':
       return Boolean(word.praeteritum && word.partizipIi && word.perfekt);
@@ -256,30 +286,29 @@ async function aggregateWords(rootDir: string): Promise<AggregatedWordWithKey[]>
     if (mapped) combinedRows.push(mapped);
   }
 
-  await snapshotExternalSources(
-    snapshotPath,
-    combinedRows.map((row) => ({
-      lemma: row.lemma,
-      pos: row.pos,
-      level: row.level ?? undefined,
-      english: row.english ?? undefined,
-      example_de: row.exampleDe ?? undefined,
-      example_en: row.exampleEn ?? undefined,
-      gender: row.gender ?? undefined,
-      plural: row.plural ?? undefined,
-      separable: row.separable ?? undefined,
-      aux: row.aux ?? undefined,
-      praesens_ich: row.praesensIch ?? undefined,
-      praesens_er: row.praesensEr ?? undefined,
-      praeteritum: row.praeteritum ?? undefined,
-      partizip_ii: row.partizipIi ?? undefined,
-      perfekt: row.perfekt ?? undefined,
-      comparative: row.comparative ?? undefined,
-      superlative: row.superlative ?? undefined,
-      sources_csv: row.sourcesCsv ?? undefined,
-      source_notes: row.sourceNotes ?? undefined,
-    })),
-  );
+  const snapshotRows: ExternalWordRow[] = combinedRows.map((row) => ({
+    lemma: row.lemma,
+    pos: row.pos,
+    level: row.level ?? undefined,
+    english: row.english ?? undefined,
+    example_de: row.exampleDe ?? undefined,
+    example_en: row.exampleEn ?? undefined,
+    gender: row.gender ?? undefined,
+    plural: row.plural ?? undefined,
+    separable: row.separable ?? undefined,
+    aux: row.aux ?? undefined,
+    praesens_ich: row.praesensIch ?? undefined,
+    praesens_er: row.praesensEr ?? undefined,
+    praeteritum: row.praeteritum ?? undefined,
+    partizip_ii: row.partizipIi ?? undefined,
+    perfekt: row.perfekt ?? undefined,
+    comparative: row.comparative ?? undefined,
+    superlative: row.superlative ?? undefined,
+    sources_csv: row.sourcesCsv ?? undefined,
+    source_notes: row.sourceNotes ?? undefined,
+  }));
+
+  await snapshotExternalSources(snapshotPath, snapshotRows);
 
   for (const row of combinedRows) {
     const key = keyFor(row.lemma, row.pos);
