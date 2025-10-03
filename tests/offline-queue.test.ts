@@ -25,6 +25,21 @@ const basePayload: Omit<TaskAttemptPayload, 'deviceId'> = {
   },
 };
 
+const nounPayload: Omit<TaskAttemptPayload, 'deviceId'> = {
+  taskId: 'task:de:noun:kind:dative',
+  lexemeId: 'lex:de:noun:kind',
+  taskType: 'noun_case_declension',
+  pos: 'noun',
+  renderer: 'noun_case_declension',
+  result: 'correct',
+  submittedResponse: 'den Kindern',
+  expectedResponse: { form: 'Kindern', article: 'den' },
+  timeSpentMs: 2100,
+  answeredAt: new Date().toISOString(),
+  cefrLevel: 'A2',
+  packId: 'pack:nouns-foundation:1',
+};
+
 async function resetDb() {
   await practiceDbReady;
   await practiceDb.pendingAttempts.clear();
@@ -47,6 +62,21 @@ describe('offline queue', () => {
     const attempts = await getPendingAttempts();
     expect(attempts).toHaveLength(1);
     expect(attempts[0]?.payload.taskId).toBe('legacy:verb:sein');
+  });
+
+  it('stores noun declension attempts with article metadata when offline', async () => {
+    Object.defineProperty(navigator, 'onLine', { value: false, configurable: true });
+
+    const result = await submitPracticeAttempt(nounPayload);
+    expect(result.queued).toBe(true);
+
+    const attempts = await getPendingAttempts();
+    expect(attempts).toHaveLength(1);
+    const payload = attempts[0]?.payload;
+    expect(payload?.taskType).toBe('noun_case_declension');
+    expect(payload?.pos).toBe('noun');
+    expect(payload?.submittedResponse).toBe('den Kindern');
+    expect(payload?.expectedResponse).toEqual({ form: 'Kindern', article: 'den' });
   });
 
   it('flushes queued attempts when back online', async () => {

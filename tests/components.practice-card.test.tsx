@@ -71,6 +71,35 @@ function createNounTask(): PracticeTask<'noun_case_declension'> {
   } satisfies PracticeTask<'noun_case_declension'>;
 }
 
+function createDativeNounTask(): PracticeTask<'noun_case_declension'> {
+  const registry = clientTaskRegistry.noun_case_declension;
+  return {
+    taskId: 'noun-task-dative',
+    lexemeId: 'lex-noun-kind',
+    taskType: 'noun_case_declension',
+    pos: 'noun',
+    renderer: registry.renderer,
+    prompt: {
+      lemma: 'Kind',
+      pos: 'noun',
+      gender: 'das',
+      requestedCase: 'dative',
+      requestedNumber: 'plural',
+      instructions: 'Setze „Kind“ in den Dativ Plural mit Artikel.',
+    },
+    expectedSolution: { form: 'Kindern', article: 'den' },
+    queueCap: registry.defaultQueueCap,
+    lexeme: {
+      id: 'lex-noun-kind',
+      lemma: 'Kind',
+      metadata: { level: 'A2', english: 'child' },
+    },
+    pack: null,
+    assignedAt: new Date('2024-03-01T00:00:00.000Z').toISOString(),
+    source: 'scheduler',
+  } satisfies PracticeTask<'noun_case_declension'>;
+}
+
 function createAdjectiveTask(): PracticeTask<'adj_ending'> {
   const registry = clientTaskRegistry.adj_ending;
   return {
@@ -194,6 +223,32 @@ describe('PracticeCard', () => {
 
     await waitFor(() => {
       expect(onResult).toHaveBeenCalledWith(expect.objectContaining({ result: 'correct' }));
+    });
+  });
+
+  it('accepts noun answers with definite article combinations', async () => {
+    const onResult = vi.fn<(result: PracticeCardResult) => void>();
+    const task = createDativeNounTask();
+    const settings = getDefaultSettings();
+
+    render(<PracticeCard task={task} settings={settings} onResult={onResult} />);
+
+    const input = screen.getByLabelText(/pluralform eingeben/i);
+    await userEvent.type(input, 'den Kindern');
+    await userEvent.click(screen.getByRole('button', { name: /prüfen/i }));
+
+    await waitFor(() => {
+      expect(submitPracticeAttempt).toHaveBeenCalledTimes(1);
+    });
+
+    const payload = vi.mocked(submitPracticeAttempt).mock.calls[0][0];
+    expect(payload.submittedResponse).toBe('den Kindern');
+    expect(payload.expectedResponse).toEqual(task.expectedSolution);
+
+    await waitFor(() => {
+      expect(onResult).toHaveBeenCalledWith(
+        expect.objectContaining({ result: 'correct', submittedResponse: 'den Kindern' }),
+      );
     });
   });
 
