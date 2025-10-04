@@ -7,13 +7,8 @@ Requires Node.js 24.9.0 or newer and npm 10+ (see `package.json` engines field).
 
 1. Install dependencies:
    ```bash
-   export npm_config_proxy="$npm_config_http_proxy" # migrate legacy proxy config (if defined)
-   unset npm_config_http_proxy
    npm install
    ```
-   The install script refuses to continue while `npm_config_http_proxy` is present so that future
-   npm releases do not break the project. The `export`/`unset` pair above migrates the proxy
-   configuration to the supported `npm_config_proxy` key.
 2. (Optional) Copy `.env.example` to `.env` and override the defaults. You can change:
    - `DATABASE_FILE` – where the SQLite database file lives (defaults to `db/data.sqlite`).
    - `APP_ORIGIN` – a comma-separated allow list used for CORS in production builds.

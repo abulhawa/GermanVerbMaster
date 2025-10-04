@@ -1,12 +1,8 @@
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("node:child_process", () => {
-  const spawnSync = vi.fn();
-  return {
-    spawnSync,
-    default: { spawnSync },
-  };
-});
+vi.mock("node:child_process", () => ({
+  spawnSync: vi.fn(),
+}));
 
 import Database from "better-sqlite3";
 import * as childProcess from "node:child_process";

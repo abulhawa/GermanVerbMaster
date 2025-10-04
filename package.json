@@ -22,9 +22,7 @@
     "seed": "tsx scripts/seed.ts",
     "analytics:export": "tsx scripts/export-pos-analytics.ts",
     "seed:verbs": "npm run seed",
-    "integration:create-key": "tsx scripts/create-partner-key.ts",
-    "preinstall": "node scripts/check-npm-env.mjs",
-    "postinstall": "node scripts/postinstall.mjs"
+    "integration:create-key": "tsx scripts/create-partner-key.ts"
   },
   "overrides": {
     "@esbuild-kit/core-utils": "file:patches/esbuild-kit-core-utils"
