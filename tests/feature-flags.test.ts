@@ -1,12 +1,11 @@
 import express from 'express';
 import request from 'supertest';
 import { eq } from 'drizzle-orm';
-import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type * as schema from '../db/schema';
 import type { AggregatedWord } from '../scripts/etl/golden';
 import { buildGoldenBundles, upsertGoldenBundles } from '../scripts/etl/golden';
+import { setupTestDatabase, type TestDatabaseContext } from './helpers/pg';
 
 vi.mock('../server/srs', () => ({
   srsEngine: {
@@ -20,18 +19,16 @@ vi.mock('../server/srs', () => ({
 }));
 
 describe('feature flags', () => {
-  let server: import('http').Server;
+  let server: import('http').Server | undefined;
   let agent: request.SuperTest<request.Test>;
-  let drizzleDb: typeof import('../db/index').db;
+  let drizzleDb: typeof import('@db').db;
   let taskSpecsTable: typeof import('../db/schema').taskSpecs;
+  let dbContext: TestDatabaseContext | undefined;
 
   async function bootstrapServer() {
-    process.env.DATABASE_FILE = ':memory:';
-    vi.resetModules();
-
     const schemaModule = await import('../db/schema');
     taskSpecsTable = schemaModule.taskSpecs;
-    const dbModule = await import('../db/index');
+    const dbModule = await import('@db');
     drizzleDb = dbModule.db;
 
     const sampleWords: AggregatedWord[] = [
@@ -107,10 +104,7 @@ describe('feature flags', () => {
     ];
 
     const bundles = buildGoldenBundles(sampleWords);
-    await upsertGoldenBundles(
-      drizzleDb as unknown as BetterSQLite3Database<typeof schema>,
-      bundles,
-    );
+    await upsertGoldenBundles(drizzleDb, bundles);
 
     const { registerRoutes } = await import('../server/routes');
     const app = express();
@@ -122,14 +116,21 @@ describe('feature flags', () => {
   beforeEach(async () => {
     delete process.env.ENABLE_NOUNS_BETA;
     delete process.env.ENABLE_ADJECTIVES_BETA;
+    const context = await setupTestDatabase();
+    dbContext = context;
+    context.mock();
     await bootstrapServer();
   });
 
-  afterEach(() => {
-    server.close();
-    delete process.env.DATABASE_FILE;
+  afterEach(async () => {
+    server?.close();
+    server = undefined;
     delete process.env.ENABLE_NOUNS_BETA;
     delete process.env.ENABLE_ADJECTIVES_BETA;
+    if (dbContext) {
+      await dbContext.cleanup();
+      dbContext = undefined;
+    }
   });
 
   it('filters disabled POS from the task feed', async () => {
@@ -147,7 +148,8 @@ describe('feature flags', () => {
   });
 
   it('enables nouns when the beta flag is set', async () => {
-    server.close();
+    server?.close();
+    server = undefined;
     process.env.ENABLE_NOUNS_BETA = 'true';
     await bootstrapServer();
 

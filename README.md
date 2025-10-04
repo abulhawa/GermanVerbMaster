@@ -10,15 +10,16 @@ Requires Node.js 22.0.0 or newer and npm 10+ (see `package.json` engines field).
    npm install
    ```
 2. (Optional) Copy `.env.example` to `.env` and override the defaults. You can change:
-   - `DATABASE_FILE` – where the SQLite database file lives (defaults to `db/data.sqlite`).
+   - `DATABASE_URL` – Postgres connection string (e.g. Supabase or local `postgres://` URL).
+   - `DATABASE_SSL` / `PGSSLMODE` – set to `disable` when connecting to a local instance without TLS.
    - `APP_ORIGIN` – a comma-separated allow list used for CORS in production builds.
    - `ENABLE_LEXEME_SCHEMA` – disable to fall back to the legacy verb-only stack (defaults to `true`).
    - `ENABLE_NOUNS_BETA` / `ENABLE_ADJECTIVES_BETA` – flip feature flags for the new noun and adjective task cohorts. Both default to `false` so you can stage rollouts incrementally.
-3. Create or update the SQLite database and migrations:
+3. Apply the latest migrations to your Postgres database:
    ```bash
    npm run db:push
    ```
-4. Seed the `words` table and regenerate deterministic task packs used by the offline cache:
+4. Seed the content tables and regenerate deterministic task packs used by the offline cache:
    ```bash
    npm run seed
    ```
@@ -36,7 +37,7 @@ Requires Node.js 22.0.0 or newer and npm 10+ (see `package.json` engines field).
    npm run packs:lint # validate generated content packs against the task registry
    ```
 
-The app runs entirely on your machine—no container or managed database is required. All data is stored in the SQLite file defined by `DATABASE_FILE`, which keeps small vocab collections under version control or inside your backup strategy.
+Point the backend at any Postgres instance (local Docker, Supabase, etc.) via `DATABASE_URL`. The driver enables SSL by default so managed providers just work; override `DATABASE_SSL=disable` or `PGSSLMODE=disable` for plain-text local development.
 
 ## Theme system
 - Global color tokens live in `client/src/index.css`. Light and dark palettes share the same variable names (`--bg`, `--fg`, `--accent`, etc.), so components only reference semantic utilities such as `bg-card`, `text-fg`, and `ring-accent`.
@@ -64,8 +65,8 @@ The app runs entirely on your machine—no container or managed database is requ
 - `data/words_all_sources.csv` is regenerated on each `npm run seed` by combining `docs/external/**` with the manual rows, and `data/words_canonical.csv` marks the curated canonical subset. Running `npm run seed` normalises, merges, and upserts that data into SQLite while regenerating `data/packs/*.json` bundles.
 
 ## Database utilities
-- The schema is managed with Drizzle + SQLite. After editing `db/schema.ts`, run `npm run db:push` to apply the migration to your local database file.
-- `npm run seed` recomputes completeness, writes deterministic content packs to `data/packs/`, and idempotently upserts source material into SQLite. Copy updated pack JSON into `client/public/packs/` before building so offline clients can fetch the refreshed bundles. Run the seed after editing `data/words_manual.csv`, adding sources under `docs/external`, or changing `data/words_canonical.csv`.
+- The schema is managed with Drizzle + Postgres. After editing `db/schema.ts`, run `npm run db:push` to apply migrations using the configured `DATABASE_URL`.
+- `npm run seed` recomputes completeness, writes deterministic content packs to `data/packs/`, and idempotently upserts source material into Postgres. Copy updated pack JSON into `client/public/packs/` before building so offline clients can fetch the refreshed bundles. Run the seed after editing `data/words_manual.csv`, adding sources under `docs/external`, or changing `data/words_canonical.csv`.
 
 ## Vocabulary enrichment helpers
 - Run `tsx scripts/enrich-non-canonical-words.ts` to gather translations, Wiktionary summaries, and OpenThesaurus synonym sets for the current non-canonical entries in the `words` table. The script stores its output under `data/generated/non-canonical-enrichment.json`; set `LIMIT=<n>` to override the default batch size of 25.

@@ -1,2 +1,13 @@
-{"version":1,"dialect":"sqlite","entries":[]}
-
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1759606711532,
+      "tag": "0000_majestic_ben_parker",
+      "breakpoints": true
+    }
+  ]
+}

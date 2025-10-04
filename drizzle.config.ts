@@ -1,14 +1,22 @@
 import { defineConfig } from "drizzle-kit";
-import { join } from "node:path";
 
-const defaultDatabasePath = join(process.cwd(), "db", "data.sqlite");
-const databaseFile = process.env.DATABASE_FILE ?? defaultDatabasePath;
+const databaseUrl = process.env.DATABASE_URL;
+
+if (!databaseUrl) {
+  throw new Error("DATABASE_URL must be provided to generate migrations.");
+}
+
+const sslMode = (process.env.DATABASE_SSL ?? process.env.PGSSLMODE ?? "").toLowerCase();
+const sslConfiguration = ["disable", "allow", "prefer"].includes(sslMode)
+  ? false
+  : { rejectUnauthorized: false };
 
 export default defineConfig({
   out: "./migrations",
   schema: "./db/schema.ts",
-  dialect: "sqlite",
+  dialect: "postgresql",
   dbCredentials: {
-    url: databaseFile,
+    url: databaseUrl,
+    ssl: sslConfiguration,
   },
 });

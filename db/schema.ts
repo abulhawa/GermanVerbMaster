@@ -2,33 +2,37 @@ import type { AdaptiveQueueItem, GermanVerb, PracticeResult } from "@shared";
 import { sql } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import {
+  boolean,
+  doublePrecision,
   index,
   integer,
+  jsonb,
+  pgEnum,
+  pgTable,
   primaryKey,
-  real,
-  sqliteTable,
+  serial,
   text,
+  timestamp,
   uniqueIndex,
-} from "drizzle-orm/sqlite-core";
+} from "drizzle-orm/pg-core";
 
-export const integrationPartners = sqliteTable("integration_partners", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+const practiceResult = ["correct", "incorrect"] as const satisfies ReadonlyArray<PracticeResult>;
+const practiceResultEnum = pgEnum("practice_result", practiceResult);
+
+export const integrationPartners = pgTable("integration_partners", {
+  id: serial("id").primaryKey(),
   name: text("name").notNull(),
   apiKeyHash: text("api_key_hash").notNull().unique(),
   contactEmail: text("contact_email"),
-  allowedOrigins: text("allowed_origins", { mode: "json" }).$type<string[] | null>(),
-  scopes: text("scopes", { mode: "json" }).$type<string[]>().notNull().default(sql`'[]'`),
+  allowedOrigins: jsonb("allowed_origins").$type<string[] | null>(),
+  scopes: jsonb("scopes").$type<string[]>().notNull().default(sql`'[]'::jsonb`),
   notes: text("notes"),
-  createdAt: integer("created_at", { mode: "timestamp" })
-    .default(sql`(unixepoch('now'))`)
-    .notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp" })
-    .default(sql`(unixepoch('now'))`)
-    .notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-export const integrationUsage = sqliteTable("integration_usage", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const integrationUsage = pgTable("integration_usage", {
+  id: serial("id").primaryKey(),
   partnerId: integer("partner_id")
     .notNull()
     .references(() => integrationPartners.id, { onDelete: "cascade" }),
@@ -38,23 +42,19 @@ export const integrationUsage = sqliteTable("integration_usage", {
   requestId: text("request_id").notNull(),
   responseTimeMs: integer("response_time_ms").notNull().default(0),
   userAgent: text("user_agent"),
-  requestedAt: integer("requested_at", { mode: "timestamp" })
-    .default(sql`(unixepoch('now'))`)
-    .notNull(),
+  requestedAt: timestamp("requested_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-export const users = sqliteTable("users", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
 });
 
-const practiceResult = ["correct", "incorrect"] as const satisfies ReadonlyArray<PracticeResult>;
-
-export const words = sqliteTable(
+export const words = pgTable(
   "words",
   {
-    id: integer("id").primaryKey({ autoIncrement: true }),
+    id: serial("id").primaryKey(),
     lemma: text("lemma").notNull(),
     pos: text("pos").notNull(),
     level: text("level"),
@@ -63,7 +63,7 @@ export const words = sqliteTable(
     exampleEn: text("example_en"),
     gender: text("gender"),
     plural: text("plural"),
-    separable: integer("separable", { mode: "boolean" }),
+    separable: boolean("separable"),
     aux: text("aux"),
     praesensIch: text("praesens_ich"),
     praesensEr: text("praesens_er"),
@@ -72,27 +72,19 @@ export const words = sqliteTable(
     perfekt: text("perfekt"),
     comparative: text("comparative"),
     superlative: text("superlative"),
-    canonical: integer("canonical", { mode: "boolean" })
-      .default(false)
-      .notNull(),
-    complete: integer("complete", { mode: "boolean" })
-      .default(false)
-      .notNull(),
+    canonical: boolean("canonical").default(false).notNull(),
+    complete: boolean("complete").default(false).notNull(),
     sourcesCsv: text("sources_csv"),
     sourceNotes: text("source_notes"),
-    createdAt: integer("created_at", { mode: "timestamp" })
-      .default(sql`(unixepoch('now'))`)
-      .notNull(),
-    updatedAt: integer("updated_at", { mode: "timestamp" })
-      .default(sql`(unixepoch('now'))`)
-      .notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => ({
     lemmaPosIndex: uniqueIndex("words_lemma_pos_idx").on(table.lemma, table.pos),
   }),
 );
 
-export const lexemes = sqliteTable(
+export const lexemes = pgTable(
   "lexemes",
   {
     id: text("id").primaryKey(),
@@ -100,28 +92,24 @@ export const lexemes = sqliteTable(
     language: text("language").notNull().default("de"),
     pos: text("pos").notNull(),
     gender: text("gender"),
-    metadata: text("metadata", { mode: "json" })
+    metadata: jsonb("metadata")
       .$type<Record<string, unknown>>()
       .notNull()
-      .default(sql`'{}'`),
+      .default(sql`'{}'::jsonb`),
     frequencyRank: integer("frequency_rank"),
-    sourceIds: text("source_ids", { mode: "json" })
+    sourceIds: jsonb("source_ids")
       .$type<string[]>()
       .notNull()
-      .default(sql`'[]'`),
-    createdAt: integer("created_at", { mode: "timestamp" })
-      .default(sql`(unixepoch('now'))`)
-      .notNull(),
-    updatedAt: integer("updated_at", { mode: "timestamp" })
-      .default(sql`(unixepoch('now'))`)
-      .notNull(),
+      .default(sql`'[]'::jsonb`),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => ({
     lemmaPosIndex: uniqueIndex("lexemes_lemma_pos_idx").on(table.lemma, table.pos),
   }),
 );
 
-export const inflections = sqliteTable(
+export const inflections = pgTable(
   "inflections",
   {
     id: text("id").primaryKey(),
@@ -129,18 +117,14 @@ export const inflections = sqliteTable(
       .notNull()
       .references(() => lexemes.id, { onDelete: "cascade" }),
     form: text("form").notNull(),
-    features: text("features", { mode: "json" })
+    features: jsonb("features")
       .$type<Record<string, unknown>>()
       .notNull(),
     audioAsset: text("audio_asset"),
     sourceRevision: text("source_revision"),
     checksum: text("checksum"),
-    createdAt: integer("created_at", { mode: "timestamp" })
-      .default(sql`(unixepoch('now'))`)
-      .notNull(),
-    updatedAt: integer("updated_at", { mode: "timestamp" })
-      .default(sql`(unixepoch('now'))`)
-      .notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => ({
     lexemeFormFeaturesIndex: uniqueIndex("inflections_lexeme_form_features_idx").on(
@@ -151,7 +135,7 @@ export const inflections = sqliteTable(
   }),
 );
 
-export const taskSpecs = sqliteTable(
+export const taskSpecs = pgTable(
   "task_specs",
   {
     id: text("id").primaryKey(),
@@ -161,18 +145,14 @@ export const taskSpecs = sqliteTable(
     pos: text("pos").notNull(),
     taskType: text("task_type").notNull(),
     renderer: text("renderer").notNull(),
-    prompt: text("prompt", { mode: "json" }).$type<Record<string, unknown>>().notNull(),
-    solution: text("solution", { mode: "json" }).$type<Record<string, unknown>>().notNull(),
-    hints: text("hints", { mode: "json" }).$type<unknown[]>(),
-    metadata: text("metadata", { mode: "json" }).$type<Record<string, unknown>>(),
+    prompt: jsonb("prompt").$type<Record<string, unknown>>().notNull(),
+    solution: jsonb("solution").$type<Record<string, unknown>>().notNull(),
+    hints: jsonb("hints").$type<unknown[]>(),
+    metadata: jsonb("metadata").$type<Record<string, unknown>>(),
     revision: integer("revision").notNull().default(1),
     sourcePack: text("source_pack"),
-    createdAt: integer("created_at", { mode: "timestamp" })
-      .default(sql`(unixepoch('now'))`)
-      .notNull(),
-    updatedAt: integer("updated_at", { mode: "timestamp" })
-      .default(sql`(unixepoch('now'))`)
-      .notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => ({
     lexemeTypeRevisionIndex: uniqueIndex("task_specs_lexeme_type_revision_idx").on(
@@ -184,10 +164,10 @@ export const taskSpecs = sqliteTable(
   }),
 );
 
-export const schedulingState = sqliteTable(
+export const schedulingState = pgTable(
   "scheduling_state",
   {
-    id: integer("id").primaryKey({ autoIncrement: true }),
+    id: serial("id").primaryKey(),
     userId: integer("user_id").references(() => users.id),
     deviceId: text("device_id").notNull(),
     taskId: text("task_id")
@@ -197,19 +177,15 @@ export const schedulingState = sqliteTable(
     totalAttempts: integer("total_attempts").notNull().default(0),
     correctAttempts: integer("correct_attempts").notNull().default(0),
     averageResponseMs: integer("average_response_ms").notNull().default(0),
-    accuracyWeight: real("accuracy_weight").notNull().default(0),
-    latencyWeight: real("latency_weight").notNull().default(0),
-    stabilityWeight: real("stability_weight").notNull().default(0),
-    priorityScore: real("priority_score").notNull().default(0),
-    dueAt: integer("due_at", { mode: "timestamp" }),
-    lastResult: text("last_result", { enum: practiceResult }).notNull().default("correct"),
-    lastPracticedAt: integer("last_practiced_at", { mode: "timestamp" }),
-    createdAt: integer("created_at", { mode: "timestamp" })
-      .default(sql`(unixepoch('now'))`)
-      .notNull(),
-    updatedAt: integer("updated_at", { mode: "timestamp" })
-      .default(sql`(unixepoch('now'))`)
-      .notNull(),
+    accuracyWeight: doublePrecision("accuracy_weight").notNull().default(0),
+    latencyWeight: doublePrecision("latency_weight").notNull().default(0),
+    stabilityWeight: doublePrecision("stability_weight").notNull().default(0),
+    priorityScore: doublePrecision("priority_score").notNull().default(0),
+    dueAt: timestamp("due_at", { withTimezone: true }),
+    lastResult: practiceResultEnum("last_result").notNull().default("correct"),
+    lastPracticedAt: timestamp("last_practiced_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => ({
     deviceTaskIndex: uniqueIndex("scheduling_state_device_task_idx").on(
@@ -221,7 +197,7 @@ export const schedulingState = sqliteTable(
   }),
 );
 
-export const contentPacks = sqliteTable(
+export const contentPacks = pgTable(
   "content_packs",
   {
     id: text("id").primaryKey(),
@@ -234,20 +210,16 @@ export const contentPacks = sqliteTable(
     licenseNotes: text("license_notes"),
     version: integer("version").notNull().default(1),
     checksum: text("checksum"),
-    metadata: text("metadata", { mode: "json" }).$type<Record<string, unknown>>(),
-    createdAt: integer("created_at", { mode: "timestamp" })
-      .default(sql`(unixepoch('now'))`)
-      .notNull(),
-    updatedAt: integer("updated_at", { mode: "timestamp" })
-      .default(sql`(unixepoch('now'))`)
-      .notNull(),
+    metadata: jsonb("metadata").$type<Record<string, unknown>>(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => ({
     slugIndex: uniqueIndex("content_packs_slug_unique").on(table.slug),
   }),
 );
 
-export const packLexemeMap = sqliteTable(
+export const packLexemeMap = pgTable(
   "pack_lexeme_map",
   {
     packId: text("pack_id")
@@ -259,12 +231,8 @@ export const packLexemeMap = sqliteTable(
     primaryTaskId: text("primary_task_id").references(() => taskSpecs.id),
     position: integer("position"),
     notes: text("notes"),
-    createdAt: integer("created_at", { mode: "timestamp" })
-      .default(sql`(unixepoch('now'))`)
-      .notNull(),
-    updatedAt: integer("updated_at", { mode: "timestamp" })
-      .default(sql`(unixepoch('now'))`)
-      .notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => ({
     pk: primaryKey({ columns: [table.packId, table.lexemeId], name: "pack_lexeme_map_pack_id_lexeme_id_pk" }),
@@ -272,25 +240,21 @@ export const packLexemeMap = sqliteTable(
   }),
 );
 
-export const telemetryPriorities = sqliteTable(
+export const telemetryPriorities = pgTable(
   "telemetry_priorities",
   {
-    id: integer("id").primaryKey({ autoIncrement: true }),
+    id: serial("id").primaryKey(),
     taskId: text("task_id")
       .notNull()
       .references(() => taskSpecs.id, { onDelete: "cascade" }),
-    sampledAt: integer("sampled_at", { mode: "timestamp" })
-      .default(sql`(unixepoch('now'))`)
-      .notNull(),
-    priorityScore: real("priority_score").notNull(),
-    accuracyWeight: real("accuracy_weight").notNull().default(0),
-    latencyWeight: real("latency_weight").notNull().default(0),
-    stabilityWeight: real("stability_weight").notNull().default(0),
+    sampledAt: timestamp("sampled_at", { withTimezone: true }).defaultNow().notNull(),
+    priorityScore: doublePrecision("priority_score").notNull(),
+    accuracyWeight: doublePrecision("accuracy_weight").notNull().default(0),
+    latencyWeight: doublePrecision("latency_weight").notNull().default(0),
+    stabilityWeight: doublePrecision("stability_weight").notNull().default(0),
     frequencyRank: integer("frequency_rank"),
-    metadata: text("metadata", { mode: "json" }).$type<Record<string, unknown>>(),
-    createdAt: integer("created_at", { mode: "timestamp" })
-      .default(sql`(unixepoch('now'))`)
-      .notNull(),
+    metadata: jsonb("metadata").$type<Record<string, unknown>>(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => ({
     taskIndex: index("telemetry_priorities_task_idx").on(table.taskId),
@@ -298,10 +262,10 @@ export const telemetryPriorities = sqliteTable(
   }),
 );
 
-export const practiceHistory = sqliteTable(
+export const practiceHistory = pgTable(
   "practice_history",
   {
-    id: integer("id").primaryKey({ autoIncrement: true }),
+    id: serial("id").primaryKey(),
     taskId: text("task_id")
       .notNull()
       .references(() => taskSpecs.id, { onDelete: "cascade" }),
@@ -313,23 +277,19 @@ export const practiceHistory = sqliteTable(
     renderer: text("renderer").notNull(),
     deviceId: text("device_id").notNull(),
     userId: integer("user_id").references(() => users.id),
-    result: text("result", { enum: practiceResult }).notNull(),
+    result: practiceResultEnum("result").notNull(),
     responseMs: integer("response_ms").notNull(),
-    submittedAt: integer("submitted_at", { mode: "timestamp" })
-      .default(sql`(unixepoch('now'))`)
-      .notNull(),
-    answeredAt: integer("answered_at", { mode: "timestamp" }),
-    queuedAt: integer("queued_at", { mode: "timestamp" }),
+    submittedAt: timestamp("submitted_at", { withTimezone: true }).defaultNow().notNull(),
+    answeredAt: timestamp("answered_at", { withTimezone: true }),
+    queuedAt: timestamp("queued_at", { withTimezone: true }),
     cefrLevel: text("cefr_level"),
     packId: text("pack_id"),
-    hintsUsed: integer("hints_used", { mode: "boolean" }).notNull().default(false),
-    featureFlags: text("feature_flags", { mode: "json" }).$type<
+    hintsUsed: boolean("hints_used").notNull().default(false),
+    featureFlags: jsonb("feature_flags").$type<
       Record<string, { enabled: boolean; stage?: string; defaultValue?: boolean }>
     >(),
-    metadata: text("metadata", { mode: "json" }).$type<Record<string, unknown>>(),
-    createdAt: integer("created_at", { mode: "timestamp" })
-      .default(sql`(unixepoch('now'))`)
-      .notNull(),
+    metadata: jsonb("metadata").$type<Record<string, unknown>>(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => ({
     taskIndex: index("practice_history_task_idx").on(table.taskId),
@@ -340,10 +300,10 @@ export const practiceHistory = sqliteTable(
   }),
 );
 
-export const verbs = sqliteTable(
+export const verbs = pgTable(
   "verbs",
   {
-    id: integer("id").primaryKey({ autoIncrement: true }),
+    id: serial("id").primaryKey(),
     infinitive: text("infinitive").notNull(),
     english: text("english").notNull(),
     praeteritum: text("präteritum").notNull(),
@@ -352,49 +312,43 @@ export const verbs = sqliteTable(
     level: text("level").notNull(),
     praeteritumExample: text("präteritumExample").notNull(),
     partizipIiExample: text("partizipIIExample").notNull(),
-    source: text("source", { mode: "json" }).$type<GermanVerb["source"]>().notNull(),
-    pattern: text("pattern", { mode: "json" }).$type<GermanVerb["pattern"]>(),
-    createdAt: integer("created_at", { mode: "timestamp" })
-      .default(sql`(unixepoch('now'))`)
-      .notNull(),
-    updatedAt: integer("updated_at", { mode: "timestamp" })
-      .default(sql`(unixepoch('now'))`)
-      .notNull(),
+    source: jsonb("source").$type<GermanVerb["source"]>().notNull(),
+    pattern: jsonb("pattern").$type<GermanVerb["pattern"]>(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => ({
     infinitiveIndex: uniqueIndex("verbs_infinitive_idx").on(table.infinitive),
   }),
 );
 
-export const verbPracticeHistory = sqliteTable("verb_practice_history", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const verbPracticeHistory = pgTable("verb_practice_history", {
+  id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id),
   verb: text("verb").notNull(),
   mode: text("mode").notNull(),
-  result: text("result", { enum: practiceResult }).notNull(),
+  result: practiceResultEnum("result").notNull(),
   attemptedAnswer: text("attempted_answer").notNull(),
-  timeSpent: integer("time_spent").notNull(), // in milliseconds
+  timeSpent: integer("time_spent").notNull(),
   level: text("level").notNull(),
   deviceId: text("device_id").notNull(),
-  createdAt: integer("created_at", { mode: "timestamp" })
-    .default(sql`(unixepoch('now'))`)
-    .notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-export const verbAnalytics = sqliteTable("verb_analytics", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const verbAnalytics = pgTable("verb_analytics", {
+  id: serial("id").primaryKey(),
   verb: text("verb").notNull(),
   totalAttempts: integer("total_attempts").notNull().default(0),
   correctAttempts: integer("correct_attempts").notNull().default(0),
-  averageTimeSpent: integer("average_time_spent").notNull().default(0), // in milliseconds
-  lastPracticedAt: integer("last_practiced_at", { mode: "timestamp" }),
+  averageTimeSpent: integer("average_time_spent").notNull().default(0),
+  lastPracticedAt: timestamp("last_practiced_at", { withTimezone: true }),
   level: text("level").notNull(),
 });
 
-export const verbSchedulingState = sqliteTable(
+export const verbSchedulingState = pgTable(
   "verb_scheduling_state",
   {
-    id: integer("id").primaryKey({ autoIncrement: true }),
+    id: serial("id").primaryKey(),
     userId: integer("user_id").references(() => users.id),
     deviceId: text("device_id").notNull(),
     verb: text("verb").notNull(),
@@ -403,47 +357,35 @@ export const verbSchedulingState = sqliteTable(
     totalAttempts: integer("total_attempts").notNull().default(0),
     correctAttempts: integer("correct_attempts").notNull().default(0),
     averageResponseMs: integer("average_response_ms").notNull().default(0),
-    accuracyWeight: real("accuracy_weight").notNull().default(0),
-    latencyWeight: real("latency_weight").notNull().default(0),
-    stabilityWeight: real("stability_weight").notNull().default(0),
-    priorityScore: real("priority_score").notNull().default(0),
-    dueAt: integer("due_at", { mode: "timestamp" }),
-    lastResult: text("last_result", { enum: practiceResult }).notNull().default("correct"),
-    lastPracticedAt: integer("last_practiced_at", { mode: "timestamp" }),
-    createdAt: integer("created_at", { mode: "timestamp" })
-      .default(sql`(unixepoch('now'))`)
-      .notNull(),
-    updatedAt: integer("updated_at", { mode: "timestamp" })
-      .default(sql`(unixepoch('now'))`)
-      .notNull(),
+    accuracyWeight: doublePrecision("accuracy_weight").notNull().default(0),
+    latencyWeight: doublePrecision("latency_weight").notNull().default(0),
+    stabilityWeight: doublePrecision("stability_weight").notNull().default(0),
+    priorityScore: doublePrecision("priority_score").notNull().default(0),
+    dueAt: timestamp("due_at", { withTimezone: true }),
+    lastResult: practiceResultEnum("last_result").notNull().default("correct"),
+    lastPracticedAt: timestamp("last_practiced_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => ({
     deviceVerbIndex: uniqueIndex("verb_srs_device_verb_idx").on(table.deviceId, table.verb),
   }),
 );
 
-export const verbReviewQueues = sqliteTable(
+export const verbReviewQueues = pgTable(
   "verb_review_queues",
   {
-    id: integer("id").primaryKey({ autoIncrement: true }),
+    id: serial("id").primaryKey(),
     userId: integer("user_id").references(() => users.id),
     deviceId: text("device_id").notNull(),
     version: text("version").notNull(),
-    generatedAt: integer("generated_at", { mode: "timestamp" })
-      .default(sql`(unixepoch('now'))`)
-      .notNull(),
-    validUntil: integer("valid_until", { mode: "timestamp" })
-      .default(sql`(unixepoch('now'))`)
-      .notNull(),
+    generatedAt: timestamp("generated_at", { withTimezone: true }).defaultNow().notNull(),
+    validUntil: timestamp("valid_until", { withTimezone: true }).defaultNow().notNull(),
     generationDurationMs: integer("generation_duration_ms").notNull().default(0),
     itemCount: integer("item_count").notNull().default(0),
-    items: text("items", { mode: "json" }).$type<AdaptiveQueueItem[]>().notNull(),
-    createdAt: integer("created_at", { mode: "timestamp" })
-      .default(sql`(unixepoch('now'))`)
-      .notNull(),
-    updatedAt: integer("updated_at", { mode: "timestamp" })
-      .default(sql`(unixepoch('now'))`)
-      .notNull(),
+    items: jsonb("items").$type<AdaptiveQueueItem[]>().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => ({
     deviceIndex: uniqueIndex("verb_queue_device_idx").on(table.deviceId),

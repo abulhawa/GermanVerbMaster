@@ -1,8 +1,8 @@
 import express from 'express';
 import request from 'supertest';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { registerRoutes } from '../server/routes';
 import type { AdaptiveQueueItem } from '@shared';
+import { setupTestDatabase, type TestDatabaseContext } from './helpers/pg';
 
 const srsEngineMock = vi.hoisted(() => ({
   startQueueRegenerator: vi.fn(() => ({ stop: vi.fn() })),
@@ -29,7 +29,17 @@ vi.mock('../server/tasks/shadow-mode', () => shadowModeMock);
 vi.mock('../server/config', () => configMock);
 
 describe('GET /api/review-queue', () => {
-  beforeEach(() => {
+  let registerRoutes: typeof import('../server/routes').registerRoutes;
+  let dbContext: TestDatabaseContext | undefined;
+  let server: import('http').Server | undefined;
+
+  beforeEach(async () => {
+    const context = await setupTestDatabase();
+    dbContext = context;
+    context.mock();
+
+    ({ registerRoutes } = await import('../server/routes'));
+
     srsEngineMock.startQueueRegenerator.mockReset();
     srsEngineMock.startQueueRegenerator.mockReturnValue({ stop: vi.fn() });
     srsEngineMock.fetchQueueForDevice.mockReset();
@@ -45,26 +55,34 @@ describe('GET /api/review-queue', () => {
     configMock.isLexemeSchemaEnabled.mockReturnValue(true);
   });
 
+  afterEach(async () => {
+    server?.close();
+    server = undefined;
+
+    if (dbContext) {
+      await dbContext.cleanup();
+      dbContext = undefined;
+    }
+  });
+
   it('returns 400 when deviceId is missing', async () => {
     srsEngineMock.isEnabled.mockReturnValue(true);
 
     const app = express();
-    const server = registerRoutes(app);
+    server = registerRoutes(app);
 
     const response = await request(app).get('/api/review-queue');
 
     expect(response.status).toBe(400);
     expect(response.body).toMatchObject({ code: 'INVALID_DEVICE' });
     expect(shadowModeMock.runVerbQueueShadowComparison).not.toHaveBeenCalled();
-
-    server.close();
   });
 
   it('returns 404 when feature flag disabled', async () => {
     srsEngineMock.isEnabled.mockReturnValue(false);
 
     const app = express();
-    const server = registerRoutes(app);
+    server = registerRoutes(app);
 
     const response = await request(app)
       .get('/api/review-queue')
@@ -72,8 +90,6 @@ describe('GET /api/review-queue', () => {
 
     expect(response.status).toBe(404);
     expect(response.body).toMatchObject({ code: 'FEATURE_DISABLED' });
-
-    server.close();
   });
 
   it('returns queue payload when available', async () => {
@@ -105,7 +121,7 @@ describe('GET /api/review-queue', () => {
     srsEngineMock.generateQueueForDevice.mockResolvedValueOnce(queueRecord as any);
 
     const app = express();
-    const server = registerRoutes(app);
+    server = registerRoutes(app);
 
     const response = await request(app)
       .get('/api/review-queue')
@@ -132,7 +148,6 @@ describe('GET /api/review-queue', () => {
       expect.objectContaining({ deviceId: 'device-123' }),
     );
 
-    server.close();
   });
 
   it('skips shadow comparison when lexeme schema flag is disabled', async () => {
@@ -165,7 +180,7 @@ describe('GET /api/review-queue', () => {
     configMock.isLexemeSchemaEnabled.mockReturnValue(false);
 
     const app = express();
-    const server = registerRoutes(app);
+    server = registerRoutes(app);
 
     await request(app)
       .get('/api/review-queue')
@@ -173,7 +188,5 @@ describe('GET /api/review-queue', () => {
       .expect(200);
 
     expect(shadowModeMock.runVerbQueueShadowComparison).not.toHaveBeenCalled();
-
-    server.close();
   });
 });

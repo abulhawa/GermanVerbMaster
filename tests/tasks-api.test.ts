@@ -1,12 +1,11 @@
 import express from 'express';
 import request from 'supertest';
 import { eq } from 'drizzle-orm';
-import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type * as schema from '../db/schema';
 
 import type { AggregatedWord } from '../scripts/etl/golden';
 import { buildGoldenBundles, upsertGoldenBundles } from '../scripts/etl/golden';
+import { setupTestDatabase, type TestDatabaseContext } from './helpers/pg';
 
 vi.mock('../server/srs', () => ({
   srsEngine: {
@@ -20,22 +19,24 @@ vi.mock('../server/srs', () => ({
 }));
 
 describe('tasks API', () => {
-  let server: import('http').Server;
+  let server: import('http').Server | undefined;
   let agent: request.SuperTest<request.Test>;
   let schedulingStateTable: typeof import('../db/schema').schedulingState;
   let telemetryTable: typeof import('../db/schema').telemetryPriorities;
   let practiceHistoryTable: typeof import('../db/schema').practiceHistory;
-  let drizzleDb: typeof import('../db/index').db;
+  let drizzleDb: typeof import('@db').db;
+  let dbContext: TestDatabaseContext | undefined;
 
   beforeEach(async () => {
-    process.env.DATABASE_FILE = ':memory:';
-    vi.resetModules();
+    const context = await setupTestDatabase();
+    dbContext = context;
+    context.mock();
 
     const schemaModule = await import('../db/schema');
     schedulingStateTable = schemaModule.schedulingState;
     telemetryTable = schemaModule.telemetryPriorities;
     practiceHistoryTable = schemaModule.practiceHistory;
-    const dbModule = await import('../db/index');
+    const dbModule = await import('@db');
     drizzleDb = dbModule.db;
 
     const sampleWords: AggregatedWord[] = [
@@ -111,10 +112,7 @@ describe('tasks API', () => {
     ];
 
     const bundles = buildGoldenBundles(sampleWords);
-    await upsertGoldenBundles(
-      drizzleDb as unknown as BetterSQLite3Database<typeof schema>,
-      bundles,
-    );
+    await upsertGoldenBundles(drizzleDb, bundles);
 
     const { registerRoutes } = await import('../server/routes');
     const app = express();
@@ -123,9 +121,14 @@ describe('tasks API', () => {
     agent = request(app);
   });
 
-  afterEach(() => {
-    server.close();
-    delete process.env.DATABASE_FILE;
+  afterEach(async () => {
+    server?.close();
+    server = undefined;
+
+    if (dbContext) {
+      await dbContext.cleanup();
+      dbContext = undefined;
+    }
   });
 
   it('returns seeded tasks with metadata', async () => {

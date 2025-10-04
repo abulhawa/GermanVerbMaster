@@ -1,8 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AdaptiveQueueItem } from '@shared';
 
+import { setupTestDatabase, type TestDatabaseContext } from './helpers/pg';
+
 describe('verb queue shadow mode', () => {
-  let db: typeof import('../db/index').db;
+  let db: typeof import('@db').db;
   let lexemesTable: typeof import('../db/schema').lexemes;
   let taskSpecsTable: typeof import('../db/schema').taskSpecs;
   let schedulingTable: typeof import('../db/schema').schedulingState;
@@ -10,14 +12,16 @@ describe('verb queue shadow mode', () => {
   let runVerbQueueShadowComparison: typeof import('../server/tasks/shadow-mode').runVerbQueueShadowComparison;
   let computeQueueDivergence: typeof import('../server/tasks/shadow-mode').computeQueueDivergence;
   let taskRegistry: typeof import('../server/tasks/registry').taskRegistry;
+  let dbContext: TestDatabaseContext | undefined;
 
   const baseTimestamp = new Date('2025-01-01T00:00:00.000Z');
 
   beforeEach(async () => {
-    process.env.DATABASE_FILE = ':memory:';
-    vi.resetModules();
+    const context = await setupTestDatabase();
+    dbContext = context;
+    context.mock();
 
-    ({ db } = await import('../db/index'));
+    ({ db } = await import('@db'));
     const schema = await import('../db/schema');
     lexemesTable = schema.lexemes;
     taskSpecsTable = schema.taskSpecs;
@@ -31,9 +35,11 @@ describe('verb queue shadow mode', () => {
     } = await import('../server/tasks/shadow-mode'));
   });
 
-  afterEach(() => {
-    delete process.env.DATABASE_FILE;
-    vi.resetModules();
+  afterEach(async () => {
+    if (dbContext) {
+      await dbContext.cleanup();
+      dbContext = undefined;
+    }
   });
 
   async function insertLexeme({

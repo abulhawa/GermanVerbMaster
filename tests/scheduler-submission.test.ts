@@ -3,22 +3,26 @@ import { count, eq } from 'drizzle-orm';
 
 import type { PracticeResult } from '@shared';
 
+import { setupTestDatabase, type TestDatabaseContext } from './helpers/pg';
+
 describe('processTaskSubmission', () => {
-  let db: typeof import('../db/index').db;
+  let db: typeof import('@db').db;
   let lexemesTable: typeof import('../db/schema').lexemes;
   let taskSpecsTable: typeof import('../db/schema').taskSpecs;
   let schedulingTable: typeof import('../db/schema').schedulingState;
   let telemetryTable: typeof import('../db/schema').telemetryPriorities;
   let processTaskSubmission: typeof import('../server/tasks/scheduler').processTaskSubmission;
   let taskRegistry: typeof import('../server/tasks/registry').taskRegistry;
+  let dbContext: TestDatabaseContext | undefined;
 
   const baseTimestamp = new Date('2025-01-01T00:00:00.000Z');
 
   beforeEach(async () => {
-    process.env.DATABASE_FILE = ':memory:';
-    vi.resetModules();
+    const context = await setupTestDatabase();
+    dbContext = context;
+    context.mock();
 
-    ({ db } = await import('../db/index'));
+    ({ db } = await import('@db'));
     const schema = await import('../db/schema');
     lexemesTable = schema.lexemes;
     taskSpecsTable = schema.taskSpecs;
@@ -29,9 +33,11 @@ describe('processTaskSubmission', () => {
     ({ taskRegistry } = await import('../server/tasks/registry'));
   });
 
-  afterEach(() => {
-    delete process.env.DATABASE_FILE;
-    vi.resetModules();
+  afterEach(async () => {
+    if (dbContext) {
+      await dbContext.cleanup();
+      dbContext = undefined;
+    }
   });
 
   async function seedLexeme({

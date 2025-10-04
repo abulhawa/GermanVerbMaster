@@ -3,11 +3,9 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse } from 'csv-parse/sync';
 import { and, eq, sql } from 'drizzle-orm';
-import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 
 import { db } from '@db';
 import { words } from '@db/schema';
-import type * as schema from '@db/schema';
 import {
   loadExternalWordRows,
   loadManualWordRows,
@@ -417,31 +415,44 @@ async function seedLegacyWords(wordsToUpsert: AggregatedWordWithKey[]): Promise<
           complete: sql`excluded.complete`,
           sourcesCsv: sql`excluded.sources_csv`,
           sourceNotes: sql`excluded.source_notes`,
-          updatedAt: sql`unixepoch('now')`,
+          updatedAt: sql`now()`,
         },
       });
   }
+}
+
+export async function seedDatabase(rootDir: string): Promise<{
+  aggregatedCount: number;
+  lexemeCount: number;
+  taskCount: number;
+  bundleCount: number;
+}> {
+  const aggregated = await aggregateWords(rootDir);
+  await seedLegacyWords(aggregated);
+
+  const bundles = buildGoldenBundles(aggregated);
+  await upsertGoldenBundles(db, bundles);
+  await writeGoldenBundlesToDisk(rootDir, bundles);
+
+  const lexemeCount = bundles.reduce((sum, bundle) => sum + bundle.lexemes.length, 0);
+  const taskCount = bundles.reduce((sum, bundle) => sum + bundle.tasks.length, 0);
+
+  return {
+    aggregatedCount: aggregated.length,
+    lexemeCount,
+    taskCount,
+    bundleCount: bundles.length,
+  };
 }
 
 async function main(): Promise<void> {
   const __filename = fileURLToPath(import.meta.url);
   const root = path.resolve(path.dirname(__filename), '..');
 
-  const aggregated = await aggregateWords(root);
-  await seedLegacyWords(aggregated);
+  const { aggregatedCount, lexemeCount, taskCount, bundleCount } = await seedDatabase(root);
 
-  const bundles = buildGoldenBundles(aggregated);
-  await upsertGoldenBundles(
-    db as unknown as BetterSQLite3Database<typeof schema>,
-    bundles,
-  );
-  await writeGoldenBundlesToDisk(root, bundles);
-
-  const lexemeCount = bundles.reduce((sum, bundle) => sum + bundle.lexemes.length, 0);
-  const taskCount = bundles.reduce((sum, bundle) => sum + bundle.tasks.length, 0);
-
-  console.log(`Seeded ${aggregated.length} words into legacy table.`);
-  console.log(`Upserted ${lexemeCount} lexemes and ${taskCount} task specs across ${bundles.length} packs.`);
+  console.log(`Seeded ${aggregatedCount} words into legacy table.`);
+  console.log(`Upserted ${lexemeCount} lexemes and ${taskCount} task specs across ${bundleCount} packs.`);
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {

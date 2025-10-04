@@ -1,203 +1,105 @@
-import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { newDb } from 'pg-mem';
+import { types } from 'pg';
 
-const spawnSyncMock = vi.hoisted(() => vi.fn());
+const ORIGINAL_DATABASE_URL = process.env.DATABASE_URL;
+let applyMigrations: typeof import('../scripts/db-push').applyMigrations;
 
-vi.mock("node:child_process", () => ({
-  __esModule: true,
-  spawnSync: spawnSyncMock,
-  default: { spawnSync: spawnSyncMock },
-}));
+beforeAll(async () => {
+  if (!process.env.DATABASE_URL) {
+    process.env.DATABASE_URL = 'postgres://local.test/database';
+  }
 
-import Database from "better-sqlite3";
-import * as childProcess from "node:child_process";
-import { mkdtempSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
-import { dropLegacyIndex, runDbPushWithRetry } from "../scripts/db-push";
-
-function createTempDbPath(): string {
-  const dir = mkdtempSync(join(tmpdir(), "db-push-test-"));
-  tempDirs.push(dir);
-  return join(dir, "test.sqlite");
-}
-
-const tempDirs: string[] = [];
+  ({ applyMigrations } = await import('../scripts/db-push'));
+});
 
 afterAll(() => {
-  for (const dir of tempDirs) {
-    rmSync(dir, { recursive: true, force: true });
+  if (ORIGINAL_DATABASE_URL === undefined) {
+    delete process.env.DATABASE_URL;
+    return;
   }
+
+  process.env.DATABASE_URL = ORIGINAL_DATABASE_URL;
 });
 
-type SqliteDatabase = InstanceType<typeof Database>;
+describe('applyMigrations', () => {
+  it('creates the expected tables and indexes in a fresh database', async () => {
+    const mem = newDb({ autoCreateForeignKeyIndices: true });
+    const { Pool } = mem.adapters.createPg();
+    const pool = new Pool({ types });
 
-const defaultDatabasePath = join(process.cwd(), "db", "data.sqlite");
+    const originalQuery = pool.query.bind(pool);
+    pool.query = ((configOrText: any, values?: any, callback?: any) => {
+      if (configOrText && typeof configOrText === 'object') {
+        const { types: _types, rowMode, ...rest } = configOrText;
+        if (rowMode === 'array' || _types !== undefined) {
+          let resolvedValues = values;
+          let resolvedCallback = callback;
 
-afterEach(() => {
-  vi.clearAllMocks();
-  rmSync(defaultDatabasePath, { force: true });
-  rmSync(`${defaultDatabasePath}-journal`, { force: true });
-});
+          if (typeof resolvedValues === 'function') {
+            resolvedCallback = resolvedValues;
+            resolvedValues = undefined;
+          }
 
-function countIndex(dbPath: string, indexName: string): number {
-  const sqlite = new Database(dbPath);
-  const result = sqlite
-    .prepare(
-      "SELECT COUNT(*) as count FROM sqlite_master WHERE type = 'index' AND name = ?",
-    )
-    .get(indexName) as { count: number };
-  sqlite.close();
-  return result.count;
-}
+          const mapResult = (result: any) => {
+            if (rowMode === 'array' && Array.isArray(result.rows)) {
+              const fieldNames = Array.isArray(result.fields) && result.fields.length > 0
+                ? result.fields.map((field: any) => field.name)
+                : Object.keys(result.rows[0] ?? {});
 
-function createSpawnResult(
-  status: number,
-  stderr: string,
-): ReturnType<typeof childProcess.spawnSync> {
-  return {
-    pid: 0,
-    output: ["", "", stderr],
-    stdout: "",
-    stderr,
-    status,
-    signal: null,
-    error: undefined,
-  } as ReturnType<typeof childProcess.spawnSync>;
-}
+              result.rows = result.rows.map((row: Record<string, unknown>) =>
+                fieldNames.map((field) => row[field]),
+              );
+            }
 
-describe("dropLegacyIndex", () => {
-  it.each([
-    {
-      indexName: "verbs_infinitive_idx",
-      setup: (sqlite: SqliteDatabase) => {
-        sqlite.exec(`
-          CREATE TABLE verbs (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            infinitive TEXT NOT NULL
-          );
-          CREATE UNIQUE INDEX verbs_infinitive_idx ON verbs (infinitive);
-        `);
-      },
-    },
-    {
-      indexName: "verb_queue_device_idx",
-      setup: (sqlite: SqliteDatabase) => {
-        sqlite.exec(`
-          CREATE TABLE verb_review_queues (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            device_id TEXT NOT NULL
-          );
-          CREATE UNIQUE INDEX verb_queue_device_idx ON verb_review_queues (device_id);
-        `);
-      },
-    },
-  ])("removes the %s when it exists", ({ indexName, setup }) => {
-    const dbPath = createTempDbPath();
-    const sqlite = new Database(dbPath);
-    setup(sqlite);
-    sqlite.close();
+            return result;
+          };
 
-    const removed = dropLegacyIndex(dbPath, indexName);
-    expect(removed).toBe(true);
+          const promise = originalQuery(rest, resolvedValues as any).then(mapResult);
 
-    expect(countIndex(dbPath, indexName)).toBe(0);
-  });
+          if (typeof resolvedCallback === 'function') {
+            promise.then(
+              (result) => resolvedCallback!(null, result),
+              (error) => resolvedCallback!(error),
+            );
+            return undefined as unknown as ReturnType<typeof pool.query>;
+          }
 
-  it("returns false when the index is absent", () => {
-    const dbPath = createTempDbPath();
-    const sqlite = new Database(dbPath);
-    sqlite.exec(
-      "CREATE TABLE verbs (id INTEGER PRIMARY KEY AUTOINCREMENT, infinitive TEXT NOT NULL);",
-    );
-    sqlite.close();
+          return promise;
+        }
+      }
 
-    const removed = dropLegacyIndex(dbPath, "verbs_infinitive_idx");
-    expect(removed).toBe(false);
-  });
-});
+      return originalQuery(configOrText, values, callback);
+    }) as typeof pool.query;
 
-describe("runDbPushWithRetry", () => {
-  it("retries after dropping a single legacy index", () => {
-    const sqlite = new Database(defaultDatabasePath);
-    sqlite.exec(`
-      CREATE TABLE verbs (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        infinitive TEXT NOT NULL
-      );
-      CREATE UNIQUE INDEX verbs_infinitive_idx ON verbs (infinitive);
-    `);
-    sqlite.close();
+    await applyMigrations(pool);
 
-    const spawnMock = vi.mocked(childProcess.spawnSync);
-    spawnMock
-      .mockReturnValueOnce(
-        createSpawnResult(1, "SqliteError: index verbs_infinitive_idx already exists"),
-      )
-      .mockReturnValueOnce(createSpawnResult(0, ""));
-
-    const exitCode = runDbPushWithRetry();
-
-    expect(exitCode).toBe(0);
-    expect(spawnMock).toHaveBeenCalledTimes(2);
-    expect(countIndex(defaultDatabasePath, "verbs_infinitive_idx")).toBe(0);
-  });
-
-  it("handles multiple sequential legacy index failures", () => {
-    const sqlite = new Database(defaultDatabasePath);
-    sqlite.exec(`
-      CREATE TABLE verbs (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        infinitive TEXT NOT NULL
-      );
-      CREATE UNIQUE INDEX verbs_infinitive_idx ON verbs (infinitive);
-    `);
-    sqlite.exec(`
-      CREATE TABLE verb_review_queues (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        device_id TEXT NOT NULL
-      );
-      CREATE UNIQUE INDEX verb_queue_device_idx ON verb_review_queues (device_id);
-    `);
-    sqlite.close();
-
-    const spawnMock = vi.mocked(childProcess.spawnSync);
-    spawnMock
-      .mockReturnValueOnce(
-        createSpawnResult(1, "SqliteError: index verbs_infinitive_idx already exists"),
-      )
-      .mockReturnValueOnce(
-        createSpawnResult(1, "SqliteError: index verb_queue_device_idx already exists"),
-      )
-      .mockReturnValueOnce(createSpawnResult(0, ""));
-
-    const exitCode = runDbPushWithRetry();
-
-    expect(exitCode).toBe(0);
-    expect(spawnMock).toHaveBeenCalledTimes(3);
-    expect(countIndex(defaultDatabasePath, "verbs_infinitive_idx")).toBe(0);
-    expect(countIndex(defaultDatabasePath, "verb_queue_device_idx")).toBe(0);
-  });
-
-  it("returns the drizzle failure status when the index is unknown", () => {
-    const sqlite = new Database(defaultDatabasePath);
-    sqlite.exec(`
-      CREATE TABLE verbs (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        infinitive TEXT NOT NULL
-      );
-      CREATE UNIQUE INDEX verbs_infinitive_idx ON verbs (infinitive);
-    `);
-    sqlite.close();
-
-    const spawnMock = vi.mocked(childProcess.spawnSync);
-    spawnMock.mockReturnValueOnce(
-      createSpawnResult(1, "SqliteError: index unrelated_idx already exists"),
+    const tables = await pool.query<{ table_name: string }>(
+      "select table_name from information_schema.tables where table_schema = 'public'",
     );
 
-    const exitCode = runDbPushWithRetry();
+    expect(tables.rows.map((row) => row.table_name)).toEqual(
+      expect.arrayContaining([
+        'lexemes',
+        'task_specs',
+        'scheduling_state',
+        'practice_history',
+        'pack_lexeme_map',
+      ]),
+    );
 
-    expect(exitCode).toBe(1);
-    expect(spawnMock).toHaveBeenCalledTimes(1);
-    expect(countIndex(defaultDatabasePath, "verbs_infinitive_idx")).toBe(1);
+    await pool.query(
+      "insert into lexemes (id, lemma, language, pos, source_ids, metadata) values ($1, $2, 'de', 'verb', $3::jsonb, $4::jsonb)",
+      ['lex:1', 'gehen', '[]', '{}'],
+    );
+
+    await expect(
+      pool.query(
+        "insert into lexemes (id, lemma, language, pos, source_ids, metadata) values ($1, $2, 'de', 'verb', $3::jsonb, $4::jsonb)",
+        ['lex:2', 'gehen', '[]', '{}'],
+      ),
+    ).rejects.toThrow(/unique/i);
+
+    await pool.end();
   });
 });

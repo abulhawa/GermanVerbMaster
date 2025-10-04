@@ -881,7 +881,7 @@ export function registerRoutes(app: Express): Server {
 
       updates.canonical = canonical;
       updates.complete = complete;
-      updates.updatedAt = sql`unixepoch('now')`;
+      updates.updatedAt = sql`now()`;
 
       await db.update(words).set(updates).where(eq(words.id, id));
 

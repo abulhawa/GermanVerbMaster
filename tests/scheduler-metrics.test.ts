@@ -1,10 +1,28 @@
-import { describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import {
-  calculateSubmissionMetrics,
-  computeCoverageScore,
-  type SchedulingSnapshot,
-} from '../server/tasks/scheduler';
+import { setupTestDatabase, type TestDatabaseContext } from './helpers/pg';
+
+let calculateSubmissionMetrics: typeof import('../server/tasks/scheduler').calculateSubmissionMetrics;
+let computeCoverageScore: typeof import('../server/tasks/scheduler').computeCoverageScore;
+type SchedulingSnapshot = import('../server/tasks/scheduler').SchedulingSnapshot;
+let dbContext: TestDatabaseContext | undefined;
+
+beforeAll(async () => {
+  const context = await setupTestDatabase();
+  dbContext = context;
+  context.mock();
+
+  const scheduler = await import('../server/tasks/scheduler');
+  calculateSubmissionMetrics = scheduler.calculateSubmissionMetrics;
+  computeCoverageScore = scheduler.computeCoverageScore;
+});
+
+afterAll(async () => {
+  if (dbContext) {
+    await dbContext.cleanup();
+    dbContext = undefined;
+  }
+});
 
 describe('scheduler metrics', () => {
   it('computes coverage score with saturation clamp', () => {

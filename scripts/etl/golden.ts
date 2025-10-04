@@ -1,6 +1,5 @@
 import { createHash } from 'node:crypto';
-import type { DrizzleD1Database } from 'drizzle-orm/d1';
-import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { inArray, sql } from 'drizzle-orm';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -138,9 +137,7 @@ export interface PackBundle {
   packLexemes: PackLexemeSeed[];
 }
 
-type DrizzleDatabase =
-  | BetterSQLite3Database<typeof import('@db/schema')>
-  | DrizzleD1Database<typeof import('@db/schema')>;
+type DrizzleDatabase = NodePgDatabase<typeof import('@db/schema')>;
 
 export function buildGoldenBundles(words: AggregatedWord[]): PackBundle[] {
   const verbs = selectVerbs(words);
@@ -216,7 +213,7 @@ export async function upsertGoldenBundles(
             gender: sql`excluded.gender`,
             metadata: sql`excluded.metadata`,
             sourceIds: sql`excluded.source_ids`,
-            updatedAt: sql`unixepoch('now')`,
+            updatedAt: sql`now()`,
           },
         });
     }
@@ -231,7 +228,7 @@ export async function upsertGoldenBundles(
             form: sql`excluded.form`,
             features: sql`excluded.features`,
             checksum: sql`excluded.checksum`,
-            updatedAt: sql`unixepoch('now')`,
+            updatedAt: sql`now()`,
           },
         });
     }
@@ -247,7 +244,7 @@ export async function upsertGoldenBundles(
             solution: sql`excluded.solution`,
             hints: sql`excluded.hints`,
             metadata: sql`excluded.metadata`,
-            updatedAt: sql`unixepoch('now')`,
+            updatedAt: sql`now()`,
           },
         });
     }
@@ -262,7 +259,7 @@ export async function upsertGoldenBundles(
           description: sql`excluded.description`,
           checksum: sql`excluded.checksum`,
           metadata: sql`excluded.metadata`,
-          updatedAt: sql`unixepoch('now')`,
+          updatedAt: sql`now()`,
         },
       });
 

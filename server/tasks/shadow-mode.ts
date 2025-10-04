@@ -87,7 +87,7 @@ export async function buildVerbShadowQueue(
     .where(and(eq(schedulingState.deviceId, deviceId), eq(taskSpecs.pos, 'verb')))
     .orderBy(
       desc(schedulingState.priorityScore),
-      sql`COALESCE(${schedulingState.dueAt}, 0)`,
+      sql`COALESCE(${schedulingState.dueAt}, '1970-01-01T00:00:00Z'::timestamptz)`,
       sql`lower(${lexemes.lemma})`,
     )
     .limit(safeLimit);
