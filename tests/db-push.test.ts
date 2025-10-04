@@ -1,7 +1,11 @@
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 
+const spawnSyncMock = vi.hoisted(() => vi.fn());
+
 vi.mock("node:child_process", () => ({
-  spawnSync: vi.fn(),
+  __esModule: true,
+  spawnSync: spawnSyncMock,
+  default: { spawnSync: spawnSyncMock },
 }));
 
 import Database from "better-sqlite3";

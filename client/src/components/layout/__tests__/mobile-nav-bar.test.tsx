@@ -1,23 +1,23 @@
-import { forwardRef, useState, type ReactNode } from 'react';
+import { forwardRef, useEffect, useMemo, type ReactNode } from 'react';
 import { describe, expect, it } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Router } from 'wouter';
+import { memoryLocation } from 'wouter/memory-location';
 import type { LucideIcon, LucideProps } from 'lucide-react';
 
 import { MobileNavBar } from '../mobile-nav-bar';
 import type { AppNavigationItem } from '../navigation';
 
 function MemoryRouter({ initialPath, children }: { initialPath: string; children: ReactNode }) {
-  const hook = () => {
-    const [location, setLocation] = useState(initialPath);
-    const navigate = (path: string) => {
-      setLocation(path);
-    };
-    return [location, navigate] as [string, (path: string) => void];
-  };
+  const location = useMemo(() => memoryLocation({ path: initialPath }), [initialPath]);
 
-  return <Router hook={hook}>{children}</Router>;
+  useEffect(() => {
+    window.history.replaceState({}, '', initialPath);
+    location.navigate(initialPath, { replace: true });
+  }, [initialPath, location]);
+
+  return <Router hook={location.hook}>{children}</Router>;
 }
 
 const PracticeIcon = forwardRef<SVGSVGElement, LucideProps>((props, ref) => (
@@ -40,8 +40,11 @@ describe('MobileNavBar', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByText('Analytics')).toHaveAttribute('aria-current', 'page');
-    expect(screen.getByText('Practice')).not.toHaveAttribute('aria-current');
+    const analyticsLink = screen.getByRole('link', { name: 'Analytics' });
+    const practiceLink = screen.getByRole('link', { name: 'Practice' });
+
+    expect(analyticsLink).toHaveAttribute('aria-current', 'page');
+    expect(practiceLink).not.toHaveAttribute('aria-current');
   });
 
   it('updates the active indicator when navigating', async () => {
@@ -53,11 +56,19 @@ describe('MobileNavBar', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByText('Practice')).toHaveAttribute('aria-current', 'page');
+    const practiceLink = screen.getByRole('link', { name: 'Practice' });
 
-    await user.click(screen.getByText('Analytics'));
+    expect(practiceLink).toHaveAttribute('aria-current', 'page');
 
-    expect(screen.getByText('Analytics')).toHaveAttribute('aria-current', 'page');
-    expect(screen.getByText('Practice')).not.toHaveAttribute('aria-current');
+    await user.click(screen.getByRole('link', { name: 'Analytics' }));
+
+    const analyticsLink = screen.getByRole('link', { name: 'Analytics' });
+    const practiceLinkAfterClick = screen.getByRole('link', { name: 'Practice' });
+
+    await waitFor(() => {
+      expect(analyticsLink).toHaveAttribute('aria-current', 'page');
+    });
+
+    expect(practiceLinkAfterClick).not.toHaveAttribute('aria-current');
   });
 });

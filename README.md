@@ -3,7 +3,7 @@
 GermanVerbMaster is a full-stack, lexeme-centric practice platform for German learners. It ships with a multi-part-of-speech task registry covering verbs, nouns, and adjectives, a React-based client that renders tasks by `taskType`, and an Express API backed by Drizzle ORM. The app can be installed as a Progressive Web App and works fully offline thanks to deterministic task packs seeded at build time.
 
 ## Local setup
-Requires Node.js 24.9.0 or newer and npm 10+ (see `package.json` engines field).
+Requires Node.js 22.0.0 or newer and npm 10+ (see `package.json` engines field).
 
 1. Install dependencies:
    ```bash
