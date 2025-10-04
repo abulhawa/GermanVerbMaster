@@ -116,7 +116,11 @@ export default defineConfig({
      * /api/* requests to http://localhost:5000 so they continue to hit Express.
      */
     fs: {
-      allow: [path.resolve(__dirname, "attached_assets"), path.resolve(__dirname, "data")],
+      allow: [
+        path.resolve(__dirname, "client"),
+        path.resolve(__dirname, "attached_assets"),
+        path.resolve(__dirname, "data"),
+      ],
     },
   },
   test: {

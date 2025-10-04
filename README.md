@@ -26,6 +26,7 @@ Requires Node.js 22.0.0 or newer and npm 10+ (see `package.json` engines field).
 5. Start the development server (Express API + Vite dev server):
    ```bash
    npm run dev
+   npm run dev:client # start only the Vite dev server on port 5000 for UI smoke tests
    ```
 6. Additional scripts:
    ```bash

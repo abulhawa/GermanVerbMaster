@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { drizzle, type NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { newDb } from 'pg-mem';
-import { type Pool, type PoolConfig, types } from 'pg';
+import { Pool, type PoolConfig, types } from 'pg';
 import { vi } from 'vitest';
 
 import * as schema from '../../db/schema';
