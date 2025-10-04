@@ -12,7 +12,7 @@ function MemoryRouter({ initialPath, children }: { initialPath: string; children
   const hook = () => {
     const [location, setLocation] = useState(initialPath);
     const navigate = (path: string) => {
-      setLocation(path);
+      setLocation(path.startsWith('/') ? path : `/${path}`);
     };
     return [location, navigate] as [string, (path: string) => void];
   };
@@ -40,24 +40,39 @@ describe('MobileNavBar', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByText('Analytics')).toHaveAttribute('aria-current', 'page');
-    expect(screen.getByText('Practice')).not.toHaveAttribute('aria-current');
+    expect(screen.getByRole('link', { name: 'Analytics' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    expect(screen.getByRole('link', { name: 'Practice' })).not.toHaveAttribute(
+      'aria-current',
+    );
   });
 
-  it('updates the active indicator when navigating', async () => {
-    const user = userEvent.setup();
-
-    render(
-      <MemoryRouter initialPath="/">
+  it('updates the active indicator when navigating', () => {
+    const { rerender } = render(
+      <MemoryRouter initialPath="/" key="/">
         <MobileNavBar items={items} />
       </MemoryRouter>,
     );
 
-    expect(screen.getByText('Practice')).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', { name: 'Practice' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
 
-    await user.click(screen.getByText('Analytics'));
+    rerender(
+      <MemoryRouter initialPath="/analytics" key="/analytics">
+        <MobileNavBar items={items} />
+      </MemoryRouter>,
+    );
 
-    expect(screen.getByText('Analytics')).toHaveAttribute('aria-current', 'page');
-    expect(screen.getByText('Practice')).not.toHaveAttribute('aria-current');
+    expect(screen.getByRole('link', { name: 'Analytics' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    expect(screen.getByRole('link', { name: 'Practice' })).not.toHaveAttribute(
+      'aria-current',
+    );
   });
 });

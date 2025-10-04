@@ -3,7 +3,7 @@
 This guide helps new contributors ramp onto the lexeme-based architecture that now powers verbs, nouns, and adjectives.
 
 ## 1. Environment setup
-1. Install Node.js 24.5.2+ and npm 10+.
+1. Install Node.js 24.9.0+ and npm 10+.
 2. Copy `.env.example` to `.env` and review the feature flags:
    - Leave `ENABLE_LEXEME_SCHEMA=true` to opt into the task registry.
    - Enable `ENABLE_NOUNS_BETA` and `ENABLE_ADJECTIVES_BETA` when you need mixed-POS queues locally.
