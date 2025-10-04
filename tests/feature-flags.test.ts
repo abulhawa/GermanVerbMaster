@@ -1,12 +1,10 @@
-import express from 'express';
-import { createServer } from 'http';
-import request from 'supertest';
 import { eq } from 'drizzle-orm';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { AggregatedWord } from '../scripts/etl/golden';
 import { buildGoldenBundles, upsertGoldenBundles } from '../scripts/etl/golden';
 import { setupTestDatabase, type TestDatabaseContext } from './helpers/pg';
+import { createApiInvoker } from './helpers/vercel';
 
 vi.mock('../server/srs', () => ({
   srsEngine: {
@@ -20,8 +18,7 @@ vi.mock('../server/srs', () => ({
 }));
 
 describe('feature flags', () => {
-  let server: import('http').Server | undefined;
-  let agent: request.SuperTest<request.Test>;
+  let invokeApi: ReturnType<typeof createApiInvoker>;
   let drizzleDb: typeof import('@db').db;
   let taskSpecsTable: typeof import('../db/schema').taskSpecs;
   let dbContext: TestDatabaseContext | undefined;
@@ -107,12 +104,9 @@ describe('feature flags', () => {
     const bundles = buildGoldenBundles(sampleWords);
     await upsertGoldenBundles(drizzleDb, bundles);
 
-    const { registerRoutes } = await import('../server/routes');
-    const app = express();
-    app.use(express.json());
-    registerRoutes(app);
-    server = createServer(app);
-    agent = request(app);
+    const { createVercelApiHandler } = await import('../server/api/vercel-handler');
+    const handler = createVercelApiHandler({ enableCors: false });
+    invokeApi = createApiInvoker(handler);
   }
 
   beforeEach(async () => {
@@ -125,8 +119,6 @@ describe('feature flags', () => {
   });
 
   afterEach(async () => {
-    server?.close();
-    server = undefined;
     delete process.env.ENABLE_NOUNS_BETA;
     delete process.env.ENABLE_ADJECTIVES_BETA;
     if (dbContext) {
@@ -136,29 +128,39 @@ describe('feature flags', () => {
   });
 
   it('filters disabled POS from the task feed', async () => {
-    const response = await agent.get('/api/tasks').expect(200);
-    expect(response.headers['x-feature-flags']).toMatch(/pos:noun=0/);
-    expect(response.headers['x-feature-flags']).toMatch(/pos:adjective=0/);
-    expect(response.body.tasks.length).toBeGreaterThan(0);
-    expect(response.body.tasks.every((task: any) => task.pos === 'verb')).toBe(true);
+    const response = await invokeApi('/api/tasks');
+
+    expect(response.status).toBe(200);
+
+    const flagHeader = response.headers.get('x-feature-flags') ?? '';
+    expect(flagHeader).toMatch(/pos:noun=0/);
+    expect(flagHeader).toMatch(/pos:adjective=0/);
+
+    const body = response.bodyJson as { tasks?: Array<{ pos: string }> };
+    expect(body?.tasks?.length ?? 0).toBeGreaterThan(0);
+    expect(body?.tasks?.every((task) => task.pos === 'verb')).toBe(true);
   });
 
   it('rejects noun-only requests when the noun flag is disabled', async () => {
-    const response = await agent.get('/api/tasks?pos=noun').expect(403);
-    expect(response.body.code).toBe('POS_FEATURE_DISABLED');
-    expect(response.headers['x-feature-flags']).toMatch(/pos:noun=0/);
+    const response = await invokeApi('/api/tasks?pos=noun');
+
+    expect(response.status).toBe(403);
+    expect(response.bodyJson && (response.bodyJson as any).code).toBe('POS_FEATURE_DISABLED');
+    expect((response.headers.get('x-feature-flags') ?? '')).toMatch(/pos:noun=0/);
   });
 
   it('enables nouns when the beta flag is set', async () => {
-    server?.close();
-    server = undefined;
     process.env.ENABLE_NOUNS_BETA = 'true';
     await bootstrapServer();
 
-    const nounTasks = await agent.get('/api/tasks?pos=noun').expect(200);
-    expect(nounTasks.headers['x-feature-flags']).toMatch(/pos:noun=1/);
-    expect(nounTasks.body.tasks.length).toBeGreaterThan(0);
-    expect(nounTasks.body.tasks.every((task: any) => task.pos === 'noun')).toBe(true);
+    const nounTasks = await invokeApi('/api/tasks?pos=noun');
+
+    expect(nounTasks.status).toBe(200);
+    expect(nounTasks.headers.get('x-feature-flags') ?? '').toMatch(/pos:noun=1/);
+
+    const nounBody = nounTasks.bodyJson as { tasks?: Array<{ pos: string }> };
+    expect(nounBody?.tasks?.length ?? 0).toBeGreaterThan(0);
+    expect(nounBody?.tasks?.every((task) => task.pos === 'noun')).toBe(true);
   });
 
   it('blocks adjective submissions when the flag is disabled', async () => {
@@ -175,9 +177,9 @@ describe('feature flags', () => {
 
     expect(adjectiveTask[0]).toBeDefined();
 
-    await agent
-      .post('/api/submission')
-      .send({
+    const submissionResponse = await invokeApi('/api/submission', {
+      method: 'POST',
+      body: {
         taskId: adjectiveTask[0]!.id,
         lexemeId: adjectiveTask[0]!.lexemeId,
         taskType: adjectiveTask[0]!.taskType,
@@ -186,18 +188,24 @@ describe('feature flags', () => {
         deviceId: 'device-456',
         result: 'correct',
         timeSpentMs: 1500,
-      })
-      .expect(403);
+      },
+    });
+
+    expect(submissionResponse.status).toBe(403);
   });
 
   it('exposes a feature flag snapshot endpoint', async () => {
-    const response = await agent.get('/api/feature-flags').expect(200);
-    expect(response.headers['x-feature-flags']).toBeDefined();
-    expect(response.body.pos).toMatchObject({
+    const response = await invokeApi('/api/feature-flags');
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('x-feature-flags')).toBeTruthy();
+
+    const body = response.bodyJson as any;
+    expect(body.pos).toMatchObject({
       verb: expect.objectContaining({ enabled: true }),
       noun: expect.objectContaining({ enabled: false, stage: 'beta' }),
       adjective: expect.objectContaining({ enabled: false, stage: 'beta' }),
     });
-    expect(typeof response.body.fetchedAt).toBe('string');
+    expect(typeof body.fetchedAt).toBe('string');
   });
 });

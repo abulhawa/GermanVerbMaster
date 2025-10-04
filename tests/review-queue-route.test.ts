@@ -1,9 +1,7 @@
-import express from 'express';
-import { createServer, type Server } from 'http';
-import request from 'supertest';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AdaptiveQueueItem } from '@shared';
 import { setupTestDatabase, type TestDatabaseContext } from './helpers/pg';
+import { createApiInvoker } from './helpers/vercel';
 
 const srsEngineMock = vi.hoisted(() => ({
   regenerateQueuesOnce: vi.fn(),
@@ -30,16 +28,18 @@ vi.mock('../server/tasks/shadow-mode', () => shadowModeMock);
 vi.mock('../server/config', () => configMock);
 
 describe('GET /api/review-queue', () => {
-  let registerRoutes: typeof import('../server/routes').registerRoutes;
   let dbContext: TestDatabaseContext | undefined;
-  let server: Server | undefined;
+  let invokeApi: ReturnType<typeof createApiInvoker>;
+  let createVercelApiHandler: typeof import('../server/api/vercel-handler').createVercelApiHandler;
 
   beforeEach(async () => {
     const context = await setupTestDatabase();
     dbContext = context;
     context.mock();
 
-    ({ registerRoutes } = await import('../server/routes'));
+    ({ createVercelApiHandler } = await import('../server/api/vercel-handler'));
+    const handler = createVercelApiHandler({ enableCors: false });
+    invokeApi = createApiInvoker(handler);
 
     srsEngineMock.regenerateQueuesOnce.mockReset();
     srsEngineMock.regenerateQueuesOnce.mockResolvedValue(undefined);
@@ -57,9 +57,6 @@ describe('GET /api/review-queue', () => {
   });
 
   afterEach(async () => {
-    server?.close();
-    server = undefined;
-
     if (dbContext) {
       await dbContext.cleanup();
       dbContext = undefined;
@@ -69,30 +66,20 @@ describe('GET /api/review-queue', () => {
   it('returns 400 when deviceId is missing', async () => {
     srsEngineMock.isEnabled.mockReturnValue(true);
 
-    const app = express();
-    registerRoutes(app);
-    server = createServer(app);
-
-    const response = await request(app).get('/api/review-queue');
+    const response = await invokeApi('/api/review-queue');
 
     expect(response.status).toBe(400);
-    expect(response.body).toMatchObject({ code: 'INVALID_DEVICE' });
+    expect(response.bodyJson).toMatchObject({ code: 'INVALID_DEVICE' });
     expect(shadowModeMock.runVerbQueueShadowComparison).not.toHaveBeenCalled();
   });
 
   it('returns 404 when feature flag disabled', async () => {
     srsEngineMock.isEnabled.mockReturnValue(false);
 
-    const app = express();
-    registerRoutes(app);
-    server = createServer(app);
-
-    const response = await request(app)
-      .get('/api/review-queue')
-      .query({ deviceId: 'device-123' });
+    const response = await invokeApi('/api/review-queue?deviceId=device-123');
 
     expect(response.status).toBe(404);
-    expect(response.body).toMatchObject({ code: 'FEATURE_DISABLED' });
+    expect(response.bodyJson).toMatchObject({ code: 'FEATURE_DISABLED' });
   });
 
   it('returns queue payload when available', async () => {
@@ -123,16 +110,10 @@ describe('GET /api/review-queue', () => {
     srsEngineMock.fetchQueueForDevice.mockResolvedValueOnce(null);
     srsEngineMock.generateQueueForDevice.mockResolvedValueOnce(queueRecord as any);
 
-    const app = express();
-    registerRoutes(app);
-    server = createServer(app);
-
-    const response = await request(app)
-      .get('/api/review-queue')
-      .query({ deviceId: 'device-123' });
+    const response = await invokeApi('/api/review-queue?deviceId=device-123');
 
     expect(response.status).toBe(200);
-    expect(response.body).toMatchObject({
+    expect(response.bodyJson).toMatchObject({
       deviceId: 'device-123',
       version: 'queue-version',
       featureEnabled: true,
@@ -183,14 +164,9 @@ describe('GET /api/review-queue', () => {
     srsEngineMock.generateQueueForDevice.mockResolvedValueOnce(queueRecord as any);
     configMock.isLexemeSchemaEnabled.mockReturnValue(false);
 
-    const app = express();
-    registerRoutes(app);
-    server = createServer(app);
+    const response = await invokeApi('/api/review-queue?deviceId=device-456');
 
-    await request(app)
-      .get('/api/review-queue')
-      .query({ deviceId: 'device-456' })
-      .expect(200);
+    expect(response.status).toBe(200);
 
     expect(shadowModeMock.runVerbQueueShadowComparison).not.toHaveBeenCalled();
   });

@@ -1,10 +1,7 @@
-import express from 'express';
-import { createServer } from 'http';
-import request from 'supertest';
 import { createHash } from 'node:crypto';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { registerRoutes } from '../server/routes';
 import { integrationUsage } from '../db/schema';
+import { createApiInvoker } from './helpers/vercel';
 
 const hoisted = vi.hoisted(() => {
   let selectResultData: any[] = [];
@@ -64,11 +61,25 @@ const srsEngineMock = vi.hoisted(() => ({
 
 vi.mock('@db', () => ({ db: hoisted.mockDb }));
 
+vi.mock('../server/db/client', () => ({
+  db: hoisted.mockDb,
+  createDb: () => hoisted.mockDb,
+  getDb: () => hoisted.mockDb,
+  createPool: vi.fn(),
+  getPool: vi.fn(),
+}));
+
 vi.mock('../server/srs', () => ({
   srsEngine: srsEngineMock,
 }));
 
 const { mockDb, selectChain, insertValuesMock, setSelectResultData } = hoisted;
+
+async function createTestInvoker() {
+  const { createVercelApiHandler } = await import('../server/api/vercel-handler');
+  const handler = createVercelApiHandler({ enableCors: false });
+  return createApiInvoker(handler);
+}
 
 const mockPartnerRecord = {
   id: 1,
@@ -117,17 +128,12 @@ describe('Partner integration routes', () => {
   });
 
   it('rejects requests without an API key', async () => {
-    const app = express();
-    app.use(express.json());
-    registerRoutes(app);
-    const server = createServer(app);
+    const invokeApi = await createTestInvoker();
 
-    const response = await request(app).get('/api/partner/drills');
+    const response = await invokeApi('/api/partner/drills');
 
     expect(response.status).toBe(401);
-    expect(response.body).toMatchObject({ code: 'MISSING_PARTNER_KEY' });
-
-    server.close();
+    expect(response.bodyJson).toMatchObject({ code: 'MISSING_PARTNER_KEY' });
   });
 
   it('returns drills for authenticated partners and logs usage', async () => {
@@ -150,18 +156,18 @@ describe('Partner integration routes', () => {
       },
     ]);
 
-    const app = express();
-    app.use(express.json());
-    registerRoutes(app);
-    const server = createServer(app);
+    const invokeApi = await createTestInvoker();
 
-    const response = await request(app)
-      .get('/api/partner/drills?level=A1&limit=5')
-      .set('X-Partner-Key', plainKey);
+    const response = await invokeApi('/api/partner/drills?level=A1&limit=5', {
+      headers: {
+        'X-Partner-Key': plainKey,
+      },
+    });
 
     expect(response.status).toBe(200);
-    expect(response.body.count).toBe(1);
-    expect(response.body.drills[0]).toMatchObject({
+    const body = response.bodyJson as any;
+    expect(body.count).toBe(1);
+    expect(body.drills[0]).toMatchObject({
       infinitive: 'gehen',
       prompts: expect.any(Object),
     });
@@ -169,8 +175,6 @@ describe('Partner integration routes', () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
     expect(mockDb.insert).toHaveBeenCalledWith(integrationUsage);
     expect(insertValuesMock).toHaveBeenCalled();
-
-    server.close();
   });
 
   it('summarizes usage data', async () => {
@@ -194,19 +198,17 @@ describe('Partner integration routes', () => {
       },
     ]);
 
-    const app = express();
-    app.use(express.json());
-    registerRoutes(app);
-    const server = createServer(app);
+    const invokeApi = await createTestInvoker();
 
-    const response = await request(app)
-      .get('/api/partner/usage-summary?windowHours=48')
-      .set('X-Partner-Key', plainKey);
+    const response = await invokeApi('/api/partner/usage-summary?windowHours=48', {
+      headers: {
+        'X-Partner-Key': plainKey,
+      },
+    });
 
     expect(response.status).toBe(200);
-    expect(response.body.totals.totalRequests).toBe(2);
-    expect(response.body.topEndpoints[0].endpoint).toBe('/api/partner/drills');
-
-    server.close();
+    const body = response.bodyJson as any;
+    expect(body.totals.totalRequests).toBe(2);
+    expect(body.topEndpoints[0].endpoint).toBe('/api/partner/drills');
   });
 });

@@ -1,8 +1,5 @@
-import express from 'express';
-import { createServer } from 'http';
-import request from 'supertest';
 import { describe, expect, it, vi } from 'vitest';
-import { registerRoutes } from '../server/routes';
+import { createApiInvoker } from './helpers/vercel';
 
 const srsEngineMock = vi.hoisted(() => ({
   regenerateQueuesOnce: vi.fn(),
@@ -21,30 +18,40 @@ const rateLimitMock = vi.hoisted(() => ({
   configureRateLimitPool: vi.fn(),
 }));
 
-vi.mock('@db', () => ({
-  db: {
-    insert: vi.fn(() => ({
-      values: vi.fn(() => Promise.resolve()),
-    })),
-    update: vi.fn(() => ({
-      set: vi.fn(() => ({ where: vi.fn(() => Promise.resolve()) })),
-    })),
-    query: {
-      verbs: {
-        findFirst: vi.fn(() => Promise.resolve(null)),
-      },
-      verbAnalytics: {
-        findFirst: vi.fn(() => Promise.resolve(null)),
-      },
-      verbPracticeHistory: {
-        findMany: vi.fn(() => Promise.resolve([])),
-      },
+const mockedDb = vi.hoisted(() => ({
+  insert: vi.fn(() => ({
+    values: vi.fn(() => Promise.resolve()),
+  })),
+  update: vi.fn(() => ({
+    set: vi.fn(() => ({ where: vi.fn(() => Promise.resolve()) })),
+  })),
+  query: {
+    verbs: {
+      findFirst: vi.fn(() => Promise.resolve(null)),
     },
-    select: vi.fn(() => ({
-      from: vi.fn().mockReturnThis(),
-      where: vi.fn().mockReturnThis(),
-    })),
+    verbAnalytics: {
+      findFirst: vi.fn(() => Promise.resolve(null)),
+    },
+    verbPracticeHistory: {
+      findMany: vi.fn(() => Promise.resolve([])),
+    },
   },
+  select: vi.fn(() => ({
+    from: vi.fn().mockReturnThis(),
+    where: vi.fn().mockReturnThis(),
+  })),
+}));
+
+vi.mock('@db', () => ({
+  db: mockedDb,
+}));
+
+vi.mock('../server/db/client', () => ({
+  db: mockedDb,
+  createDb: () => mockedDb,
+  getDb: () => mockedDb,
+  createPool: vi.fn(),
+  getPool: vi.fn(),
 }));
 
 vi.mock('@db/schema', async () => {
@@ -85,25 +92,24 @@ describe('POST /api/practice-history validation', () => {
   });
 
   it('rejects invalid payloads with a 400 error', async () => {
-    const app = express();
-    app.use(express.json());
-    registerRoutes(app);
-    const server = createServer(app);
+    const { createVercelApiHandler } = await import('../server/api/vercel-handler');
+    const invokeApi = createApiInvoker(createVercelApiHandler({ enableCors: false }));
 
-    const response = await request(app).post('/api/practice-history').send({
-      verb: '',
-      timeSpent: -50,
+    const response = await invokeApi('/api/practice-history', {
+      method: 'POST',
+      body: {
+        verb: '',
+        timeSpent: -50,
+      },
     });
 
     expect(response.status).toBe(400);
-    expect(response.body).toMatchObject({
+    expect(response.bodyJson).toMatchObject({
       error: expect.any(String),
       code: 'INVALID_INPUT',
     });
 
     expect(srsEngineMock.recordPracticeAttempt).not.toHaveBeenCalled();
-
-    server.close();
   });
 
   it('rejects requests that exceed the rate limit', async () => {
@@ -114,29 +120,28 @@ describe('POST /api/practice-history validation', () => {
       resetAt: new Date(Date.now() + 60_000),
     });
 
-    const app = express();
-    app.use(express.json());
-    registerRoutes(app);
-    const server = createServer(app);
+    const { createVercelApiHandler } = await import('../server/api/vercel-handler');
+    const invokeApi = createApiInvoker(createVercelApiHandler({ enableCors: false }));
 
-    const response = await request(app).post('/api/practice-history').send({
-      verb: 'gehen',
-      mode: 'präteritum',
-      result: 'correct',
-      attemptedAnswer: 'ging',
-      timeSpent: 1200,
-      level: 'A1',
-      deviceId: 'device-1234',
+    const response = await invokeApi('/api/practice-history', {
+      method: 'POST',
+      body: {
+        verb: 'gehen',
+        mode: 'präteritum',
+        result: 'correct',
+        attemptedAnswer: 'ging',
+        timeSpent: 1200,
+        level: 'A1',
+        deviceId: 'device-1234',
+      },
     });
 
     expect(response.status).toBe(429);
-    expect(response.body).toMatchObject({
+    expect(response.bodyJson).toMatchObject({
       error: 'Too many practice submissions',
       code: 'RATE_LIMITED',
     });
 
     expect(srsEngineMock.recordPracticeAttempt).not.toHaveBeenCalled();
-
-    server.close();
   });
 });

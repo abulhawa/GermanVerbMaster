@@ -39,6 +39,37 @@ Requires Node.js 22.0.0 or newer and npm 10+ (see `package.json` engines field).
 
 Point the backend at any Postgres instance (local Docker, Supabase, etc.) via `DATABASE_URL`. The driver enables SSL by default so managed providers just work; override `DATABASE_SSL=disable` or `PGSSLMODE=disable` for plain-text local development.
 
+### Quick Postgres sandbox
+
+Spin up a disposable Postgres container for local development or manual testing:
+
+```bash
+docker run --rm \
+  --name gvm-postgres \
+  -e POSTGRES_PASSWORD=postgres \
+  -p 5433:5432 \
+  postgres:16
+
+export DATABASE_URL=postgres://postgres:postgres@localhost:5433/postgres
+npm run db:push
+npm run seed
+
+# (optional) point the Vitest harness at the container instead of pg-mem
+export TEST_DATABASE_URL=$DATABASE_URL
+# disable SSL for the local container (pg-mem stays the default when unset)
+export TEST_DATABASE_SSL=disable
+npm test
+```
+
+Shut down the container with `docker stop gvm-postgres` when you are done.
+
+## Testing
+
+- `npm test` (aliased to `npm run test:unit`) executes the Vitest suites. API tests no longer boot an ad-hoc Express app; they call the Vercel-style handler exported from `server/api/vercel-handler.ts` using fetch-driven mocks from `tests/helpers/vercel.ts`.
+- `tests/helpers/pg.ts` provides an isolated Postgres harness backed by [`pg-mem`](https://github.com/oguimbal/pg-mem). Each suite applies the real Drizzle migrations from `migrations/` and installs the test data by mocking `server/db/client.ts`, so no external database is required to run the suites in CI or locally.
+- To run the suites against a real Postgres instance, export `TEST_DATABASE_URL` (and optionally `TEST_DATABASE_SSL=disable` for local containers). The helper will wipe the `public` + `drizzle` schemas before and after the test run, apply migrations, and reuse the live pool instead of pg-mem.
+- For manual verification against a live Postgres instance, point `DATABASE_URL` at your sandbox (see above) and use `npm run db:push` followed by `npm run seed` to hydrate tables before hitting the API through the Vercel handler or Express dev server.
+
 ## Theme system
 - Global color tokens live in `client/src/index.css`. Light and dark palettes share the same variable names (`--bg`, `--fg`, `--accent`, etc.), so components only reference semantic utilities such as `bg-card`, `text-fg`, and `ring-accent`.
 - Accent usage is intentionally small: primary buttons, selected states, focus rings, and toggled controls. Most surfaces rely on muted neutrals for both themes.

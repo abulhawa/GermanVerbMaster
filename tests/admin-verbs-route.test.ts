@@ -1,9 +1,6 @@
-import express from 'express';
-import { createServer } from 'http';
-import request from 'supertest';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Word } from '@shared';
-import { registerRoutes } from '../server/routes';
+import { createApiInvoker } from './helpers/vercel';
 
 const {
   selectMock,
@@ -42,16 +39,26 @@ const srsEngineMock = vi.hoisted(() => ({
   isQueueStale: vi.fn(() => false),
 }));
 
-vi.mock('@db', () => ({
-  db: {
-    select: selectMock,
-    update: updateMock,
-    query: {
-      words: {
-        findFirst: findFirstMock,
-      },
+const mockedDb = vi.hoisted(() => ({
+  select: selectMock,
+  update: updateMock,
+  query: {
+    words: {
+      findFirst: findFirstMock,
     },
   },
+}));
+
+vi.mock('@db', () => ({
+  db: mockedDb,
+}));
+
+vi.mock('../server/db/client', () => ({
+  db: mockedDb,
+  createDb: () => mockedDb,
+  getDb: () => mockedDb,
+  createPool: vi.fn(),
+  getPool: vi.fn(),
 }));
 
 vi.mock('@db/schema', async () => {
@@ -105,17 +112,18 @@ describe('Admin words API', () => {
     vi.unstubAllEnvs();
   });
 
-  it('rejects GET /api/words without the admin token', async () => {
-    const app = express();
-    registerRoutes(app);
-    const server = createServer(app);
+  async function createTestInvoker() {
+    const { createVercelApiHandler } = await import('../server/api/vercel-handler');
+    return createApiInvoker(createVercelApiHandler({ enableCors: false }));
+  }
 
-    const response = await request(app).get('/api/words');
+  it('rejects GET /api/words without the admin token', async () => {
+    const invokeApi = await createTestInvoker();
+
+    const response = await invokeApi('/api/words');
 
     expect(response.status).toBe(401);
-    expect(response.body).toMatchObject({ code: 'ADMIN_AUTH_FAILED' });
-
-    server.close();
+    expect(response.bodyJson).toMatchObject({ code: 'ADMIN_AUTH_FAILED' });
   });
 
   it('returns words for GET /api/words when authorised', async () => {
@@ -159,17 +167,18 @@ describe('Admin words API', () => {
 
     offsetMock.mockResolvedValueOnce(rows);
 
-    const app = express();
-    registerRoutes(app);
-    const server = createServer(app);
+    const invokeApi = await createTestInvoker();
 
-    const response = await request(app)
-      .get('/api/words')
-      .set('x-admin-token', 'secret');
+    const response = await invokeApi('/api/words', {
+      headers: {
+        'x-admin-token': 'secret',
+      },
+    });
 
     expect(response.status).toBe(200);
-    expect(response.body.data).toHaveLength(1);
-    expect(response.body.pagination).toMatchObject({
+    const body = response.bodyJson as any;
+    expect(body.data).toHaveLength(1);
+    expect(body.pagination).toMatchObject({
       page: 1,
       perPage: 50,
       total: rows.length,
@@ -179,8 +188,6 @@ describe('Admin words API', () => {
     expect(orderByMock).toHaveBeenCalled();
     expect(limitMock).toHaveBeenCalledWith(50);
     expect(offsetMock).toHaveBeenCalledWith(0);
-
-    server.close();
   });
 
   it('recomputes completeness when updating a verb', async () => {
@@ -217,19 +224,19 @@ describe('Admin words API', () => {
       .mockResolvedValueOnce(existing)
       .mockResolvedValueOnce(updated);
 
-    const app = express();
-    app.use(express.json());
-    registerRoutes(app);
-    const server = createServer(app);
+    const invokeApi = await createTestInvoker();
 
-    const response = await request(app)
-      .patch('/api/words/3')
-      .set('x-admin-token', 'secret')
-      .send({
+    const response = await invokeApi('/api/words/3', {
+      method: 'PATCH',
+      headers: {
+        'x-admin-token': 'secret',
+      },
+      body: {
         praeteritum: 'lief',
         partizipIi: 'gelaufen',
         perfekt: 'ist gelaufen',
-      });
+      },
+    });
 
     expect(response.status).toBe(200);
     expect(updateSetMock).toHaveBeenCalledWith(expect.objectContaining({
@@ -238,7 +245,5 @@ describe('Admin words API', () => {
       perfekt: 'ist gelaufen',
       complete: true,
     }));
-
-    server.close();
   });
 });

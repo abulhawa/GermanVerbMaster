@@ -1,32 +1,10 @@
-import express, { type Request, Response, NextFunction } from "express";
 import { createServer } from "http";
-import { registerRoutes } from "./routes";
+
+import { createApiApp } from "./api/app";
 import { setupVite, serveStatic, log } from "./vite";
 import { formatFeatureFlagHeader, getFeatureFlagSnapshot } from "./feature-flags";
-import cors, { type CorsOptions } from "cors";
 
-const app = express();
-const appOrigins = (process.env.APP_ORIGIN ?? "")
-  .split(",")
-  .map(origin => origin.trim())
-  .filter(Boolean);
-
-const corsOptions: CorsOptions = app.get("env") === "production"
-  ? {
-      origin(origin, callback) {
-        if (!origin || appOrigins.length === 0 || appOrigins.includes(origin)) {
-          callback(null, true);
-        } else {
-          callback(new Error("Not allowed by CORS"));
-        }
-      },
-    }
-  : { origin: true };
-
-app.use(cors(corsOptions));
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+const app = createApiApp();
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -54,18 +32,8 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  registerRoutes(app);
-
   const featureSnapshot = getFeatureFlagSnapshot();
   log(`feature flags initialised: ${formatFeatureFlagHeader(featureSnapshot)}`, "feature-flags");
-
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-
-    res.status(status).json({ error: message });
-    throw err;
-  });
 
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
