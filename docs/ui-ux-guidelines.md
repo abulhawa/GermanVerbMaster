@@ -5,7 +5,7 @@ This unified reference keeps the product experience and the component system in 
 ---
 
 ## 1. Experience Principles
-- **Practice-first layout**: The exercise input box stays the main focal point and spans the usable width on every screen.
+- **Practice-first layout**: The exercise input box stays the main focal point and spans the usable width on every screen. Avoid clamping the practice card with arbitrary `max-w-*` classes—let it inherit the full column width so the input, buttons, and feedback breathe.
 - **Responsive navigation**:
   - Desktop → collapsible left sidebar for navigation with analytics in an optional side panel.
   - Mobile → bottom navigation with analytics available below the practice flow (accordion or collapsible blocks).
@@ -31,6 +31,7 @@ This unified reference keeps the product experience and the component system in 
 - Accent colors highlight **interactive elements** only (buttons, selections, toggles) to keep the UI calm and focused.
 - Dark mode toggles the `.dark` class on `<html>`; components must remain visually correct using the same tokens in both themes.
 - Avoid whole-screen color washes—prefer subtle pops of accent to reinforce focus on the practice experience.
+- **Data visualisations**: Theme Recharts (and any third-party SVG/canvas output) by overriding fill/stroke via token-backed values (`hsl(var(--border))`, `hsl(var(--muted))`, etc.). Never target vendor defaults like `stroke="#ccc"`; instead, apply scoped selectors that set the full element state with token colours.
 
 ---
 
@@ -41,7 +42,7 @@ This unified reference keeps the product experience and the component system in 
 - Provide layout primitives like `<Page>`, `<Section>`, and `<Card>` with consistent surfaces (`bg-card text-fg border border-border rounded-2xl shadow-md`). Reuse them rather than redefining surfaces.
 - Follow the spacing rhythm: pages (`container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8`), sections (`space-y-6`), and grids (`gap-4` or `gap-6`).
 - Use CVA variants on UI components for `size: sm | md | lg` and `tone: default | primary | success | warning | danger` to avoid duplicated class strings.
-- Standardise z-index values by extending Tailwind with named levels (`overlay: 50`, `modal: 60`, `popover: 70`, `toast: 80`) and applying `z-overlay`, `z-modal`, etc. No ad-hoc `z-[9999]` values.
+- Standardise z-index values by extending Tailwind with named levels (`indicator: 10`, `overlay: 50`, `modal: 60`, `popover: 70`, `toast: 80`) and applying `z-indicator`, `z-overlay`, `z-modal`, etc. No ad-hoc `z-[9999]` values or unnamed `z-[number]` escapes.
 - Keep motion subtle (`duration-200`) and respect reduced motion preferences by clamping animation/transition durations when `prefers-reduced-motion: reduce` is set.
 - Maintain the documented file structure: Radix wrappers in `src/components/ui`, layout primitives in `src/components/primitives`, utility helpers in `src/lib`, and shared tokens/styles in `src/styles` + root config files. App-specific composites live in `src/components/*` and only consume the primitives.
 - Stick to the shared design language: avoid mixing in other component libraries (DaisyUI/HyperUI/etc.) or inline styling for colors when a tokenized class is available.

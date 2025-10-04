@@ -6,6 +6,7 @@ export default {
   theme: {
     extend: {
       zIndex: {
+        indicator: "10",
         overlay: "50",
         modal: "60",
         popover: "70",

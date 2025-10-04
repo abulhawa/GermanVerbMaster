@@ -342,4 +342,18 @@ describe('Home navigation controls', () => {
       expect(localStorage.getItem(MIGRATION_MARKER_KEY)).toBe('1');
     });
   });
+
+  it('keeps the practice surface full width to prioritise the input experience', async () => {
+    mockFetchPracticeTasks.mockResolvedValueOnce([createTask('task-1', 'arbeiten')]);
+    mockFetchPracticeTasks.mockResolvedValue([]);
+
+    renderHome();
+
+    await screen.findByRole('heading', { name: 'arbeiten' });
+
+    const practiceContainer = await screen.findByTestId('practice-card-container');
+    expect(practiceContainer.className).toContain('w-full');
+    expect(practiceContainer.className).toContain('xl:max-w-none');
+    expect(practiceContainer.className).not.toContain('max-w-2xl');
+  });
 });

@@ -740,8 +740,8 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="flex flex-1 flex-col items-center gap-6">
-            <div className="w-full max-w-2xl">
+          <div className="flex flex-1 flex-col gap-6">
+            <div className="w-full xl:max-w-none" data-testid="practice-card-container">
               {isInitialLoading ? (
                 <div className="flex h-[340px] items-center justify-center rounded-[28px] border border-dashed border-border/60 bg-background/70 shadow-2xl shadow-primary/15">
                   <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -753,7 +753,7 @@ export default function Home() {
                   settings={settings}
                   onResult={handleTaskResult}
                   isLoadingNext={isFetchingTasks && session.queue.length <= 1}
-                  className="mx-auto border-none bg-transparent shadow-2xl shadow-primary/20"
+                  className="w-full border-none bg-transparent shadow-2xl shadow-primary/20"
                   debugId="home-practice-card"
                 />
               ) : (
