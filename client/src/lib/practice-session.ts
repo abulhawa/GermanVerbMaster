@@ -1,3 +1,4 @@
+import { resolveLocalStorage } from '@/lib/storage';
 import type { PracticeTask } from '@/lib/tasks';
 
 export interface PracticeSessionState {
@@ -9,6 +10,7 @@ export interface PracticeSessionState {
 }
 
 const STORAGE_KEY = 'practice.session';
+const STORAGE_CONTEXT = 'practice session';
 
 export function createEmptySessionState(): PracticeSessionState {
   return {
@@ -20,20 +22,7 @@ export function createEmptySessionState(): PracticeSessionState {
   } satisfies PracticeSessionState;
 }
 
-function getStorage(): Storage | null {
-  try {
-    if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
-      return window.localStorage;
-    }
-    if (typeof globalThis.localStorage !== 'undefined') {
-      return globalThis.localStorage;
-    }
-    return null;
-  } catch (error) {
-    console.warn('Local storage unavailable for practice session:', error);
-    return null;
-  }
-}
+const getStorage = () => resolveLocalStorage({ context: STORAGE_CONTEXT });
 
 export function loadPracticeSession(): PracticeSessionState {
   const storage = getStorage();

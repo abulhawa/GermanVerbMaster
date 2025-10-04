@@ -1,9 +1,11 @@
+import { resolveLocalStorage } from '@/lib/storage';
 import type { PracticeProgressState, TaskProgressLexemeRecord, TaskProgressSummary, TaskType } from '@shared';
 import type { CEFRLevel } from '@shared';
 
 const STORAGE_KEY = 'practice.progress';
 const LEGACY_STORAGE_KEY = 'progress';
 const MIGRATION_MARKER_KEY = 'practice.progress.migrated';
+const STORAGE_CONTEXT = 'practice progress';
 
 interface LegacyProgress {
   correct: number;
@@ -37,20 +39,7 @@ export function createEmptyProgressState(): PracticeProgressState {
   } satisfies PracticeProgressState;
 }
 
-function getStorage(): Storage | null {
-  try {
-    if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
-      return window.localStorage;
-    }
-    if (typeof globalThis.localStorage !== 'undefined') {
-      return globalThis.localStorage;
-    }
-    return null;
-  } catch (error) {
-    console.warn('Local storage unavailable for practice progress:', error);
-    return null;
-  }
-}
+const getStorage = () => resolveLocalStorage({ context: STORAGE_CONTEXT });
 
 function parseLegacyProgress(raw: string): LegacyProgress | null {
   try {

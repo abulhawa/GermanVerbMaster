@@ -1,9 +1,11 @@
+import { resolveLocalStorage } from '@/lib/storage';
 import type { PracticeTask } from '@/lib/tasks';
 import type { CEFRLevel, PracticeTaskQueueItem } from '@shared';
 
 const QUEUE_STORAGE_KEY = 'practice.tasks.queue';
 const LEGACY_QUEUE_KEY = 'focus-review-queue';
 const MIGRATION_MARKER_KEY = 'practice.tasks.queue.migrated';
+const STORAGE_CONTEXT = 'review queue';
 
 interface EnqueueOptions {
   randomize?: boolean;
@@ -19,20 +21,7 @@ function isBrowser(): boolean {
   return typeof window !== 'undefined';
 }
 
-function getStorage(): Storage | null {
-  try {
-    if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
-      return window.localStorage;
-    }
-    if (typeof globalThis.localStorage !== 'undefined') {
-      return globalThis.localStorage;
-    }
-    return null;
-  } catch (error) {
-    console.warn('Local storage unavailable for review queue:', error);
-    return null;
-  }
-}
+const getStorage = () => resolveLocalStorage({ context: STORAGE_CONTEXT });
 
 function sanitizeLegacyVerbs(values: unknown): LegacyQueueItem[] {
   if (!Array.isArray(values)) {

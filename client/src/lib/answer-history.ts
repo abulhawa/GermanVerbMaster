@@ -1,3 +1,4 @@
+import { resolveLocalStorage } from '@/lib/storage';
 import { clientTaskRegistry } from '@/lib/tasks';
 import type { PracticeTask } from '@/lib/tasks';
 import type { CEFRLevel, PracticeMode, PracticeResult, TaskAnswerHistoryItem } from '@shared';
@@ -6,6 +7,7 @@ import type { GermanVerb } from '@shared';
 const ANSWER_HISTORY_STORAGE_KEY = 'practice.answerHistory';
 const LEGACY_STORAGE_KEY = 'answerHistory';
 const MIGRATION_MARKER_KEY = 'practice.answerHistory.migrated';
+const STORAGE_CONTEXT = 'answer history';
 export const DEFAULT_MAX_STORED_ANSWERS = 60;
 
 interface LegacyAnsweredQuestion {
@@ -77,20 +79,7 @@ export function createLegacyAnswerHistoryEntry(options: LegacyAnswerHistoryEntry
   };
 }
 
-function getStorage(): Storage | null {
-  try {
-    if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
-      return window.localStorage;
-    }
-    if (typeof globalThis.localStorage !== 'undefined') {
-      return globalThis.localStorage;
-    }
-    return null;
-  } catch (error) {
-    console.warn('Local storage unavailable for answer history:', error);
-    return null;
-  }
-}
+const getStorage = () => resolveLocalStorage({ context: STORAGE_CONTEXT });
 
 function createLegacyHistoryEntry(entry: LegacyAnsweredQuestion): TaskAnswerHistoryItem {
   return createLegacyAnswerHistoryEntry({

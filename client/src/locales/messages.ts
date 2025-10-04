@@ -11,7 +11,7 @@ export interface LanguageToggleMessages {
 }
 
 export interface PracticeCardMessages {
-  offline: { title: string; description: string };
+  offline: { title: string; description: string; announce: string };
   error: { title: string; generic: string };
   status: { correct: string; incorrect: string; expectedAnswer: string };
   hints: {
@@ -128,6 +128,7 @@ const MESSAGES: Record<Locale, AppMessages> = {
       offline: {
         title: 'Saved offline',
         description: "We'll sync this attempt once you're back online.",
+        announce: "Practice attempt stored for offline sync. We'll sync this attempt once you're back online.",
       },
       error: {
         title: 'Error',
@@ -278,6 +279,7 @@ const MESSAGES: Record<Locale, AppMessages> = {
       offline: {
         title: 'Offline gespeichert',
         description: 'Wir synchronisieren deinen Versuch, sobald du wieder online bist.',
+        announce: 'Übung wurde für die Offline-Synchronisierung gespeichert. Wir synchronisieren den Versuch, sobald du wieder online bist.',
       },
       error: {
         title: 'Fehler',

@@ -1,3 +1,4 @@
+import { resolveLocalStorage } from '@/lib/storage';
 import type { PracticeTaskQueueItem } from '@shared';
 
 export interface InstalledPack {
@@ -10,21 +11,9 @@ export interface InstalledPack {
 
 const STORAGE_KEY = 'practice.packs.installed';
 const MIGRATION_MARKER_KEY = 'practice.packs.migrated';
+const STORAGE_CONTEXT = 'practice packs';
 
-function getStorage(): Storage | null {
-  try {
-    if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
-      return window.localStorage;
-    }
-    if (typeof globalThis.localStorage !== 'undefined') {
-      return globalThis.localStorage;
-    }
-    return null;
-  } catch (error) {
-    console.warn('Local storage unavailable for practice packs:', error);
-    return null;
-  }
-}
+const getStorage = () => resolveLocalStorage({ context: STORAGE_CONTEXT });
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);

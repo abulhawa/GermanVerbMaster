@@ -213,9 +213,17 @@ function computeAnsweredAtAndTime(context: SubmissionContext, startedAt: number)
 }
 
 function createOfflineToast(copy: PracticeCardMessages, toast: ReturnType<typeof useToast>['toast']) {
+  const announce = copy.offline.announce || copy.offline.description;
   return () => {
     toast({
-      title: copy.offline.title,
+      title: (
+        <span
+          data-radix-toast-announce-exclude=""
+          data-radix-toast-announce-alt={announce}
+        >
+          {copy.offline.title}
+        </span>
+      ),
       description: copy.offline.description,
     });
   };

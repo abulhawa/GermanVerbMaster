@@ -752,7 +752,7 @@ export default function Home() {
                   task={activeTask}
                   settings={settings}
                   onResult={handleTaskResult}
-                  isLoadingNext={isFetchingTasks && session.queue.length <= 1}
+                  isLoadingNext={isFetchingTasks && session.queue.length === 0}
                   className="w-full border-none bg-transparent shadow-2xl shadow-primary/20"
                   debugId="home-practice-card"
                 />

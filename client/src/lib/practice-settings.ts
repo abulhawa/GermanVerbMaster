@@ -1,9 +1,11 @@
+import { resolveLocalStorage } from '@/lib/storage';
 import type { PracticeSettingsRendererPreferences, PracticeSettingsState, TaskType } from '@shared';
 import type { CEFRLevel, LexemePos } from '@shared';
 
 const STORAGE_KEY = 'practice.settings';
 const LEGACY_STORAGE_KEY = 'settings';
 const MIGRATION_MARKER_KEY = 'practice.settings.migrated';
+const STORAGE_CONTEXT = 'practice settings';
 
 interface LegacySettings {
   level: CEFRLevel;
@@ -34,20 +36,7 @@ export function createDefaultSettings(): PracticeSettingsState {
   } satisfies PracticeSettingsState;
 }
 
-function getStorage(): Storage | null {
-  try {
-    if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
-      return window.localStorage;
-    }
-    if (typeof globalThis.localStorage !== 'undefined') {
-      return globalThis.localStorage;
-    }
-    return null;
-  } catch (error) {
-    console.warn('Local storage unavailable for practice settings:', error);
-    return null;
-  }
-}
+const getStorage = () => resolveLocalStorage({ context: STORAGE_CONTEXT });
 
 function parseLegacySettings(raw: string): LegacySettings | null {
   try {
