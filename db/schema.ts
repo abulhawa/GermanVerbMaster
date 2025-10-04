@@ -31,6 +31,22 @@ export const integrationPartners = pgTable("integration_partners", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
+export const rateLimitCounters = pgTable(
+  "rate_limit_counters",
+  {
+    key: text("key").notNull(),
+    windowStart: timestamp("window_start", { withTimezone: true }).notNull(),
+    hits: integer("hits").notNull().default(0),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => ({
+    primaryKey: primaryKey({ columns: [table.key, table.windowStart], name: "rate_limit_counters_key_window_start_pk" }),
+    expiresIndex: index("rate_limit_counters_expires_idx").on(table.expiresAt),
+  }),
+);
+
 export const integrationUsage = pgTable("integration_usage", {
   id: serial("id").primaryKey(),
   partnerId: integer("partner_id")

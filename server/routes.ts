@@ -17,7 +17,6 @@ import {
 } from "@db/schema";
 import { z } from "zod";
 import { and, count, desc, eq, sql } from "drizzle-orm";
-import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 import { createHash, randomUUID } from "node:crypto";
 import type { GermanVerb } from "@shared";
 import type { LexemePos, TaskType } from "@shared/task-registry";
@@ -26,6 +25,7 @@ import { getTaskRegistryEntry, taskRegistry } from "./tasks/registry";
 import { processTaskSubmission } from "./tasks/scheduler";
 import { runVerbQueueShadowComparison } from "./tasks/shadow-mode";
 import { isLexemeSchemaEnabled } from "./config";
+import { enforceRateLimit, hashKey } from "./api/rate-limit";
 import {
   asLexemePos,
   ensurePosFeatureEnabled,
@@ -389,23 +389,6 @@ const recordPracticeSchema = z.object({
   level: levelSchema,
   deviceId: z.string().trim().min(6).max(64),
   queuedAt: z.string().datetime({ offset: true }).optional(),
-});
-
-const practiceHistoryLimiter = rateLimit({
-  windowMs: 60_000,
-  limit: 30,
-  standardHeaders: "draft-7",
-  legacyHeaders: false,
-  keyGenerator: (req) => {
-    if (req.body && typeof req.body.deviceId === "string") {
-      return req.body.deviceId;
-    }
-    const ip = typeof req.ip === "string" ? req.ip : undefined;
-    return ip ? ipKeyGenerator(ip) : "global";
-  },
-  handler: (_req, res) => {
-    res.status(429).json({ error: "Too many practice submissions", code: "RATE_LIMITED" });
-  },
 });
 
 function sendError(res: Response, status: number, message: string, code?: string) {
@@ -933,7 +916,7 @@ export function registerRoutes(app: Express): void {
     }
   });
 
-  app.post("/api/practice-history", practiceHistoryLimiter, async (req, res) => {
+  app.post("/api/practice-history", async (req, res) => {
     setLegacyDeprecation(res);
     try {
       const parsed = recordPracticeSchema.safeParse(req.body);
@@ -942,6 +925,17 @@ export function registerRoutes(app: Express): void {
       }
       const { queuedAt, ...data } = parsed.data;
       const practicedAt = queuedAt ? new Date(queuedAt) : new Date();
+
+      const limiterKey = hashKey(`practice-history:${data.deviceId}`);
+      const limitCheck = await enforceRateLimit({
+        key: limiterKey,
+        limit: 30,
+        windowMs: 60_000,
+      });
+
+      if (!limitCheck.allowed) {
+        return res.status(429).json({ error: "Too many practice submissions", code: "RATE_LIMITED" });
+      }
 
       await db.insert(verbPracticeHistory).values({
         ...data,

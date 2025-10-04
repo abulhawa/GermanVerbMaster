@@ -8,6 +8,13 @@
       "when": 1759606711532,
       "tag": "0000_majestic_ben_parker",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1759615811604,
+      "tag": "0001_shared_rate_limit_counters",
+      "breakpoints": false
     }
   ]
 }
