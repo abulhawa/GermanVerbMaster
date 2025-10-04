@@ -1,77 +1,34 @@
-import { writeFile } from 'fs/promises';
+import { access, writeFile } from 'fs/promises';
 import { db } from "@db";
 import { verbs } from "@db/schema";
 import { spawn } from 'child_process';
 import { sql } from 'drizzle-orm';
+import { tmpdir } from 'os';
+import path from 'path';
 
-// Python script to read pickle file and output JSON
-const PYTHON_SCRIPT = `
-import pandas as pd
-import json
-import sys
+const PICKLE_PATH = 'attached_assets/Final_German_Verbs.pkl';
 
-try:
-    # Read the pickle file
-    df = pd.read_pickle('attached_assets/Final_German_Verbs.pkl')
+function createPythonScript(picklePath: string): string {
+  const encodedPath = JSON.stringify(picklePath);
+  return `import pandas as pd\nimport json\nimport sys\n\ntry:\n    # Read the pickle file\n    df = pd.read_pickle(${encodedPath})\n\n    # Rename columns to match our schema\n    df = df.rename(columns={\n        'Infinitiv': 'infinitive',\n        'Praeteritum': 'praeteritum',\n        'Partizip II': 'partizipII',\n        'English Meaning': 'english',\n        'Auxiliary Verb': 'auxiliary',\n        'Regel/Unregel': 'isIrregular'\n    })\n\n    # Clean up the data\n    df['isIrregular'] = df['isIrregular'].map({'unregel': True, 'regel': False})\n\n    # Fill NaN values with appropriate defaults\n    df = df.fillna({\n        'infinitive': '',\n        'praeteritum': '',\n        'partizipII': '',\n        'english': '',\n        'auxiliary': 'haben',\n        'isIrregular': False,\n        'level': 'A2'\n    })\n\n    # Filter out rows with empty required fields\n    df = df[\n        (df['infinitive'].str.len() > 0) &\n        (df['praeteritum'].str.len() > 0) &\n        (df['partizipII'].str.len() > 0)\n    ]\n\n    # Convert to dictionary format\n    verbs_data = df.to_dict('records')\n\n    # Convert to JSON with NaN handling\n    class NaNEncoder(json.JSONEncoder):\n        def default(self, obj):\n            import numpy as np\n            if isinstance(obj, (np.floating, float)) and np.isnan(obj):\n                return None\n            return super().default(obj)\n\n    print(json.dumps(verbs_data, cls=NaNEncoder))\nexcept Exception as e:\n    print(f"Error processing pickle file: {str(e)}", file=sys.stderr)\n    sys.exit(1)\n`;
+}
 
-    # Rename columns to match our schema
-    df = df.rename(columns={
-        'Infinitiv': 'infinitive',
-        'Praeteritum': 'praeteritum',
-        'Partizip II': 'partizipII',
-        'English Meaning': 'english',
-        'Auxiliary Verb': 'auxiliary',
-        'Regel/Unregel': 'isIrregular'
-    })
+async function ensurePickleAsset(picklePath: string): Promise<void> {
+  try {
+    await access(picklePath);
+  } catch {
+    throw new Error(
+      `Missing verb dataset at "${picklePath}". Copy the pickle asset into attached_assets/ (see attached_assets/README.md).`,
+    );
+  }
+}
 
-    # Clean up the data
-    df['isIrregular'] = df['isIrregular'].map({'unregel': True, 'regel': False})
+async function readPickleFile(picklePath = PICKLE_PATH): Promise<any[]> {
+  await ensurePickleAsset(picklePath);
+  const tempScript = path.join(tmpdir(), 'read_pickle.py');
+  await writeFile(tempScript, createPythonScript(picklePath), 'utf8');
 
-    # Fill NaN values with appropriate defaults
-    df = df.fillna({
-        'infinitive': '',
-        'praeteritum': '',
-        'partizipII': '',
-        'english': '',
-        'auxiliary': 'haben',
-        'isIrregular': False,
-        'level': 'A2'
-    })
-
-    # Filter out rows with empty required fields
-    df = df[
-        (df['infinitive'].str.len() > 0) &
-        (df['praeteritum'].str.len() > 0) &
-        (df['partizipII'].str.len() > 0)
-    ]
-
-    # Convert to dictionary format
-    verbs_data = df.to_dict('records')
-
-    # Convert to JSON with NaN handling
-    class NaNEncoder(json.JSONEncoder):
-        def default(self, obj):
-            import numpy as np
-            if isinstance(obj, (np.floating, float)) and np.isnan(obj):
-                return None
-            return super().default(obj)
-
-    print(json.dumps(verbs_data, cls=NaNEncoder))
-except Exception as e:
-    print(f"Error processing pickle file: {str(e)}", file=sys.stderr)
-    sys.exit(1)
-`;
-
-async function readPickleFile(): Promise<any[]> {
   return new Promise((resolve, reject) => {
-    // Create a temporary Python script
-    const tempScript = '/tmp/read_pickle.py';
-    writeFile(tempScript, PYTHON_SCRIPT, 'utf8')
-      .catch(err => {
-        console.error('Error writing temp script:', err);
-        reject(err);
-      });
-
     const process = spawn('python3', [tempScript]);
     let output = '';
     let error = '';

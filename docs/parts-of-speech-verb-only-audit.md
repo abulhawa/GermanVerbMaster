@@ -30,7 +30,7 @@ This audit identifies server, client, database, and tooling surfaces that still 
 ## Scripts & Tooling
 | Script | File | Verb-only assumption | Generalisation requirement |
 | --- | --- | --- | --- |
-| Seed pipeline | `scripts/seed.mjs` | Generates QA bundles under `public/verbs` and only snapshots `pos = 'V'` entries for practice seeding. | Emit deterministic `lexeme`/`inflection` payloads for every POS and generate per-POS QA fixtures. |
+| Seed pipeline | `scripts/seed.mjs` | Generates QA bundles under `client/public/verbs` and only snapshots `pos = 'V'` entries for practice seeding. | Emit deterministic `lexeme`/`inflection` payloads for every POS and generate per-POS QA fixtures. |
 | Verb artifact builder | `scripts/build-verbs.mjs` | Produces `verbs.seed.json` plus level bundles derived from verb-only CSVs. | Supersede with a pack builder that emits per-POS task bundles (e.g., noun declension drills). |
 | External verb importers | `scripts/fetch-verbs.ts`, `scripts/import_verbs.ts`, `scripts/fetch-reverso-verbs.ts` | Crawl or import only verb sources and load them into verb tables. | Extend ETL to ingest noun/adjective datasets, validate required metadata, and write into shared lexeme/task tables. |
 | Analytics baseline | `scripts/baseline-kpis.ts` | Computes KPIs from `verb_practice_history` exclusively. | Update metrics scripts to query the unified practice tables and provide POS filters. |

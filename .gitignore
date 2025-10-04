@@ -1,9 +1,48 @@
+# Dependencies and build outputs
 node_modules
 dist
 !patches/**/dist
+
+# Operating system cruft
 .DS_Store
+
+# Archives and bundles
 *.tar.gz
+
+# SQLite and other local databases
+*.sqlite*
+*.db
+*.db-journal
+*.sqlite-journal
 db/*.sqlite*
+
+# Test and Playwright artifacts
 test-results/
+playwright-report/
+blob-report/
+playwright-report.zip
+playwright/.cache/
+playwright/.auth/
+
+# Coverage and build caches
+coverage/
+.nyc_output/
+*.tsbuildinfo
+.turbo/
+.parcel-cache/
+.eslintcache/
+
+# Local-only assets
+attached_assets/*
+!attached_assets/README.md
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor settings
 .vscode/settings.json
+
+# Snapshot output
 tests/ui/overlay.spec.ts-snapshots/

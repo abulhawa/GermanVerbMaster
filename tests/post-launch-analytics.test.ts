@@ -1,12 +1,12 @@
 import { describe, expect, it, vi, afterEach } from 'vitest';
 
-import { computePostLaunchAnalytics } from '../analytics/post-launch';
+import { computePostLaunchAnalytics } from '../server/analytics/post-launch';
 import type {
   PackMembershipAnalytics,
   PracticeAttemptAnalytics,
   SchedulingSnapshotAnalytics,
   TelemetrySnapshotAnalytics,
-} from '../analytics/post-launch';
+} from '../server/analytics/post-launch';
 
 const ORIGINAL_TZ = process.env.TZ;
 

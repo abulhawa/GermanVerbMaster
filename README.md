@@ -30,7 +30,9 @@ Requires Node.js 24.9.0 or newer and npm 10+ (see `package.json` engines field).
    ```bash
    npm run check      # type-check the project
    npm run build      # create production bundles and server output
-   npm run test       # run unit and API tests
+   npm run test:unit  # run unit and integration tests with Vitest
+   npm run test:e2e   # execute Playwright end-to-end tests (browsers required)
+   npm run test:all   # run unit tests followed by Playwright end-to-end coverage
    npm run packs:lint # validate generated content packs against the task registry
    ```
 

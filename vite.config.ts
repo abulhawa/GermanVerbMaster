@@ -108,6 +108,13 @@ export default defineConfig({
     },
   },
   server: {
+    /**
+     * The Express dev server (see server/vite.ts) mounts Vite in middleware mode and
+     * serves both API routes and client assets from http://localhost:5000. Because
+     * Express handles /api requests directly, no explicit proxy is needed here when
+     * you run `npm run dev`. If you start a standalone Vite server instead, proxy
+     * /api/* requests to http://localhost:5000 so they continue to hit Express.
+     */
     fs: {
       allow: [path.resolve(__dirname, "attached_assets"), path.resolve(__dirname, "data")],
     },
