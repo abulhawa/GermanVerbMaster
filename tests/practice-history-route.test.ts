@@ -1,10 +1,11 @@
 import express from 'express';
+import { createServer } from 'http';
 import request from 'supertest';
 import { describe, expect, it, vi } from 'vitest';
 import { registerRoutes } from '../server/routes';
 
 const srsEngineMock = vi.hoisted(() => ({
-  startQueueRegenerator: vi.fn(() => ({ stop: vi.fn() })),
+  regenerateQueuesOnce: vi.fn(),
   recordPracticeAttempt: vi.fn(),
   fetchQueueForDevice: vi.fn(),
   generateQueueForDevice: vi.fn(),
@@ -49,8 +50,8 @@ vi.mock('../server/srs', () => ({
 
 describe('POST /api/practice-history validation', () => {
   beforeEach(() => {
-    srsEngineMock.startQueueRegenerator.mockReset();
-    srsEngineMock.startQueueRegenerator.mockReturnValue({ stop: vi.fn() });
+    srsEngineMock.regenerateQueuesOnce.mockReset();
+    srsEngineMock.regenerateQueuesOnce.mockResolvedValue(undefined);
     srsEngineMock.recordPracticeAttempt.mockReset();
     srsEngineMock.recordPracticeAttempt.mockResolvedValue(undefined);
     srsEngineMock.fetchQueueForDevice.mockReset();
@@ -66,7 +67,8 @@ describe('POST /api/practice-history validation', () => {
   it('rejects invalid payloads with a 400 error', async () => {
     const app = express();
     app.use(express.json());
-    const server = registerRoutes(app);
+    registerRoutes(app);
+    const server = createServer(app);
 
     const response = await request(app).post('/api/practice-history').send({
       verb: '',

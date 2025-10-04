@@ -24,12 +24,9 @@ const FEATURE_FLAG_ENV = "FEATURE_ADAPTIVE_QUEUE";
 const MIN_QUEUE_SIZE_ENV = "ADAPTIVE_QUEUE_MIN_SIZE";
 const MAX_QUEUE_ITEMS_ENV = "ADAPTIVE_QUEUE_MAX_ITEMS";
 const QUEUE_TTL_ENV = "ADAPTIVE_QUEUE_TTL_MS";
-const REGEN_INTERVAL_ENV = "ADAPTIVE_QUEUE_REFRESH_MS";
-
 const DEFAULT_MIN_QUEUE_SIZE = 20;
 const DEFAULT_MAX_QUEUE_ITEMS = 50;
 const DEFAULT_QUEUE_TTL_MS = 15 * 60 * 1000;
-const DEFAULT_REGEN_INTERVAL_MS = 60 * 1000;
 
 interface SchedulingAttempt {
   deviceId: string;
@@ -69,14 +66,6 @@ function getQueueTtlMs(): number {
     return DEFAULT_QUEUE_TTL_MS;
   }
   return Math.min(parsed, 1000 * 60 * 60 * 24);
-}
-
-function getRegenerationInterval(): number {
-  const parsed = Number.parseInt(process.env[REGEN_INTERVAL_ENV] ?? "", 10);
-  if (!Number.isFinite(parsed) || parsed <= 0) {
-    return DEFAULT_REGEN_INTERVAL_MS;
-  }
-  return Math.max(15_000, parsed);
 }
 
 function now(): Date {
@@ -300,33 +289,23 @@ async function regenerateQueues(): Promise<void> {
   if (!isEnabled()) {
     return;
   }
-  if (regenerationState.running) {
-    return;
-  }
+  const devices = await db
+    .selectDistinct({ deviceId: verbSchedulingState.deviceId })
+    .from(verbSchedulingState);
 
-  regenerationState.running = true;
-  try {
-    const devices = await db
-      .selectDistinct({ deviceId: verbSchedulingState.deviceId })
-      .from(verbSchedulingState);
-
-    for (const entry of devices) {
-      const deviceId = entry.deviceId;
-      if (!deviceId) continue;
-      try {
-        await regenerateForDevice(deviceId, null);
-      } catch (error) {
-        console.error("Failed to regenerate queue for device", deviceId, error);
-      }
+  for (const entry of devices) {
+    const deviceId = entry.deviceId;
+    if (!deviceId) continue;
+    try {
+      await regenerateForDevice(deviceId, null);
+    } catch (error) {
+      console.error("Failed to regenerate queue for device", deviceId, error);
     }
-  } finally {
-    regenerationState.running = false;
   }
 }
 
-const regenerationState: { timer: NodeJS.Timeout | null; running: boolean } = {
-  timer: null,
-  running: false,
+const regenerationState: { activeRun: Promise<void> | null } = {
+  activeRun: null,
 };
 
 export function isEnabled(): boolean {
@@ -427,25 +406,25 @@ export async function generateQueueForDevice(deviceId: string, levelHint: string
   return regenerateForDevice(deviceId, levelHint);
 }
 
-export function startQueueRegenerator(intervalMs = getRegenerationInterval()): { stop: () => void } {
-  if (regenerationState.timer) {
-    return { stop: () => clearInterval(regenerationState.timer!) };
+export async function regenerateQueuesOnce(): Promise<void> {
+  if (!isEnabled()) {
+    return;
   }
 
-  const timer = setInterval(() => {
-    void regenerateQueues();
-  }, intervalMs);
-  timer.unref?.();
-  regenerationState.timer = timer;
+  if (regenerationState.activeRun) {
+    return regenerationState.activeRun;
+  }
 
-  return {
-    stop: () => {
-      if (regenerationState.timer) {
-        clearInterval(regenerationState.timer);
-        regenerationState.timer = null;
-      }
-    },
-  };
+  const runPromise = (async () => {
+    try {
+      await regenerateQueues();
+    } finally {
+      regenerationState.activeRun = null;
+    }
+  })();
+
+  regenerationState.activeRun = runPromise;
+  return runPromise;
 }
 
 export const srsEngine = {
@@ -454,5 +433,5 @@ export const srsEngine = {
   fetchQueueForDevice,
   generateQueueForDevice,
   isQueueStale,
-  startQueueRegenerator,
+  regenerateQueuesOnce,
 };

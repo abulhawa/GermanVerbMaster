@@ -1,4 +1,5 @@
 import express from 'express';
+import { createServer } from 'http';
 import request from 'supertest';
 import { eq } from 'drizzle-orm';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -9,7 +10,7 @@ import { setupTestDatabase, type TestDatabaseContext } from './helpers/pg';
 
 vi.mock('../server/srs', () => ({
   srsEngine: {
-    startQueueRegenerator: vi.fn(() => ({ stop: vi.fn() })),
+    regenerateQueuesOnce: vi.fn(),
     recordPracticeAttempt: vi.fn(),
     fetchQueueForDevice: vi.fn(),
     generateQueueForDevice: vi.fn(),
@@ -117,7 +118,8 @@ describe('tasks API', () => {
     const { registerRoutes } = await import('../server/routes');
     const app = express();
     app.use(express.json());
-    server = registerRoutes(app);
+    registerRoutes(app);
+    server = createServer(app);
     agent = request(app);
   });
 

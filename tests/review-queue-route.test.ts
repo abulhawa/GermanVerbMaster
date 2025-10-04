@@ -1,11 +1,12 @@
 import express from 'express';
+import { createServer, type Server } from 'http';
 import request from 'supertest';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AdaptiveQueueItem } from '@shared';
 import { setupTestDatabase, type TestDatabaseContext } from './helpers/pg';
 
 const srsEngineMock = vi.hoisted(() => ({
-  startQueueRegenerator: vi.fn(() => ({ stop: vi.fn() })),
+  regenerateQueuesOnce: vi.fn(),
   recordPracticeAttempt: vi.fn(),
   fetchQueueForDevice: vi.fn(),
   generateQueueForDevice: vi.fn(),
@@ -31,7 +32,7 @@ vi.mock('../server/config', () => configMock);
 describe('GET /api/review-queue', () => {
   let registerRoutes: typeof import('../server/routes').registerRoutes;
   let dbContext: TestDatabaseContext | undefined;
-  let server: import('http').Server | undefined;
+  let server: Server | undefined;
 
   beforeEach(async () => {
     const context = await setupTestDatabase();
@@ -40,8 +41,8 @@ describe('GET /api/review-queue', () => {
 
     ({ registerRoutes } = await import('../server/routes'));
 
-    srsEngineMock.startQueueRegenerator.mockReset();
-    srsEngineMock.startQueueRegenerator.mockReturnValue({ stop: vi.fn() });
+    srsEngineMock.regenerateQueuesOnce.mockReset();
+    srsEngineMock.regenerateQueuesOnce.mockResolvedValue(undefined);
     srsEngineMock.fetchQueueForDevice.mockReset();
     srsEngineMock.generateQueueForDevice.mockReset();
     srsEngineMock.isEnabled.mockReset();
@@ -69,7 +70,8 @@ describe('GET /api/review-queue', () => {
     srsEngineMock.isEnabled.mockReturnValue(true);
 
     const app = express();
-    server = registerRoutes(app);
+    registerRoutes(app);
+    server = createServer(app);
 
     const response = await request(app).get('/api/review-queue');
 
@@ -82,7 +84,8 @@ describe('GET /api/review-queue', () => {
     srsEngineMock.isEnabled.mockReturnValue(false);
 
     const app = express();
-    server = registerRoutes(app);
+    registerRoutes(app);
+    server = createServer(app);
 
     const response = await request(app)
       .get('/api/review-queue')
@@ -121,7 +124,8 @@ describe('GET /api/review-queue', () => {
     srsEngineMock.generateQueueForDevice.mockResolvedValueOnce(queueRecord as any);
 
     const app = express();
-    server = registerRoutes(app);
+    registerRoutes(app);
+    server = createServer(app);
 
     const response = await request(app)
       .get('/api/review-queue')
@@ -180,7 +184,8 @@ describe('GET /api/review-queue', () => {
     configMock.isLexemeSchemaEnabled.mockReturnValue(false);
 
     const app = express();
-    server = registerRoutes(app);
+    registerRoutes(app);
+    server = createServer(app);
 
     await request(app)
       .get('/api/review-queue')

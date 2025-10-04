@@ -1,4 +1,5 @@
 import express, { type Request, Response, NextFunction } from "express";
+import { createServer } from "http";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { formatFeatureFlagHeader, getFeatureFlagSnapshot } from "./feature-flags";
@@ -53,7 +54,7 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  const server = registerRoutes(app);
+  registerRoutes(app);
 
   const featureSnapshot = getFeatureFlagSnapshot();
   log(`feature flags initialised: ${formatFeatureFlagHeader(featureSnapshot)}`, "feature-flags");
@@ -69,6 +70,8 @@ app.use((req, res, next) => {
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
+  const server = createServer(app);
+
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {

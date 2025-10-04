@@ -1,4 +1,5 @@
 import express from 'express';
+import { createServer } from 'http';
 import request from 'supertest';
 import { createHash } from 'node:crypto';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -53,7 +54,7 @@ const hoisted = vi.hoisted(() => {
 });
 
 const srsEngineMock = vi.hoisted(() => ({
-  startQueueRegenerator: vi.fn(() => ({ stop: vi.fn() })),
+  regenerateQueuesOnce: vi.fn(),
   recordPracticeAttempt: vi.fn(),
   fetchQueueForDevice: vi.fn(),
   generateQueueForDevice: vi.fn(),
@@ -101,8 +102,8 @@ describe('Partner integration routes', () => {
       apiKeyHash: hashedKey,
     });
 
-    srsEngineMock.startQueueRegenerator.mockReset();
-    srsEngineMock.startQueueRegenerator.mockReturnValue({ stop: vi.fn() });
+    srsEngineMock.regenerateQueuesOnce.mockReset();
+    srsEngineMock.regenerateQueuesOnce.mockResolvedValue(undefined);
     srsEngineMock.recordPracticeAttempt.mockReset();
     srsEngineMock.recordPracticeAttempt.mockResolvedValue(undefined);
     srsEngineMock.fetchQueueForDevice.mockReset();
@@ -118,7 +119,8 @@ describe('Partner integration routes', () => {
   it('rejects requests without an API key', async () => {
     const app = express();
     app.use(express.json());
-    const server = registerRoutes(app);
+    registerRoutes(app);
+    const server = createServer(app);
 
     const response = await request(app).get('/api/partner/drills');
 
@@ -150,7 +152,8 @@ describe('Partner integration routes', () => {
 
     const app = express();
     app.use(express.json());
-    const server = registerRoutes(app);
+    registerRoutes(app);
+    const server = createServer(app);
 
     const response = await request(app)
       .get('/api/partner/drills?level=A1&limit=5')
@@ -193,7 +196,8 @@ describe('Partner integration routes', () => {
 
     const app = express();
     app.use(express.json());
-    const server = registerRoutes(app);
+    registerRoutes(app);
+    const server = createServer(app);
 
     const response = await request(app)
       .get('/api/partner/usage-summary?windowHours=48')

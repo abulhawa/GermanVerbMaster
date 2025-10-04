@@ -45,7 +45,7 @@ The orchestrator lives in [`server/srs/engine.ts`](../server/srs/engine.ts) and 
    - Gathers all state rows for a device and recomputes priority scores (`buildQueueItems`).
    - Sorts descending by priority, caps the list at `ADAPTIVE_QUEUE_MAX_ITEMS`, and records the work duration and TTL (`ADAPTIVE_QUEUE_TTL_MS`).
    - Assigns a UUID `version` per regeneration so clients can detect staleness.
-4. **Background refresh** – `startQueueRegenerator()` launches an interval (default `ADAPTIVE_QUEUE_REFRESH_MS`, min 15s) that iterates known devices and rebuilds queues proactively. `timer.unref()` keeps it from blocking shutdown.
+4. **External regeneration** – `regenerateQueuesOnce()` iterates the known devices and rebuilds queues. Deployments trigger it explicitly (for example via the `/api/jobs/regenerate-queues` endpoint wired for Vercel Cron) so serverless hosts can stay idle between runs.
 5. **Staleness detection** – `isQueueStale()` compares `validUntil` to `Date.now()` and allows the API layer to regenerate on demand.
 
 ## Configuration reference
@@ -56,9 +56,7 @@ The orchestrator lives in [`server/srs/engine.ts`](../server/srs/engine.ts) and 
 | `ADAPTIVE_QUEUE_MIN_SIZE` | `20` | Minimum number of `verb_scheduling_state` rows the engine maintains per device. Values above 200 are clamped. |
 | `ADAPTIVE_QUEUE_MAX_ITEMS` | `50` | Maximum queue length returned to clients. Values above 200 are clamped. |
 | `ADAPTIVE_QUEUE_TTL_MS` | `900000` (15 minutes) | Determines `validUntil` timestamps for stored queue snapshots. |
-| `ADAPTIVE_QUEUE_REFRESH_MS` | `60000` (1 minute) | Interval for the background regenerator. Minimum enforced interval is 15s. |
-
-All helpers defensively parse environment variables and fall back to defaults if values are missing or invalid.【F:server/srs/engine.ts†L21-L78】【F:server/srs/engine.ts†L181-L220】
+All helpers defensively parse environment variables and fall back to defaults if values are missing or invalid.【F:server/srs/engine.ts†L21-L74】【F:server/srs/engine.ts†L179-L218】
 
 ## API contract
 
@@ -120,7 +118,7 @@ Once the integration is complete, `enqueueReviewVerbs` can become a thin wrapper
 - Run `npm run db:push` after pulling the migration to create the new tables locally.
 - Seed verb data (`npm run seed`) before testing so `ensureMinimumDeviceStates` can backfill state rows.
 - Start the server with `FEATURE_ADAPTIVE_QUEUE=true` in `.env` or the shell to enable the route.
-- Launch the background regenerator with `srsEngine.startQueueRegenerator()` during server bootstrap if we want eager refreshes (optional in development).
+- Configure an external trigger (for example, a Vercel Cron job hitting `/api/jobs/regenerate-queues`) to keep queues fresh without relying on in-process intervals.
 - Execute `npm test` to cover the API and scoring utilities before shipping changes.
 
 Keeping these steps documented will make it straightforward to resume work on the adaptive scheduler months later without re-reading the entire codebase.

@@ -1,4 +1,12 @@
-export { srsEngine, isEnabled, recordPracticeAttempt, fetchQueueForDevice, generateQueueForDevice, isQueueStale, startQueueRegenerator } from "./engine";
+export {
+  srsEngine,
+  isEnabled,
+  recordPracticeAttempt,
+  fetchQueueForDevice,
+  generateQueueForDevice,
+  isQueueStale,
+  regenerateQueuesOnce,
+} from "./engine";
 export {
   BOX_INTERVALS_MS,
   MAX_LEITNER_BOX,

@@ -1,5 +1,4 @@
 import type { Express, NextFunction, Request, Response } from "express";
-import { createServer, type Server } from "http";
 import { db } from "@db";
 import {
   verbPracticeHistory,
@@ -440,7 +439,7 @@ function requireAdminToken(req: Request, res: Response, next: NextFunction) {
   return next();
 }
 
-export function registerRoutes(app: Express): Server {
+export function registerRoutes(app: Express): void {
   app.get("/api/tasks", async (req, res) => {
     const parsed = taskQuerySchema.safeParse(req.query ?? {});
     if (!parsed.success) {
@@ -1261,10 +1260,22 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
-  const httpServer = createServer(app);
-  const regenerator = srsEngine.startQueueRegenerator();
-  httpServer.on("close", () => {
-    regenerator.stop();
+  app.post("/api/jobs/regenerate-queues", async (_req, res) => {
+    try {
+      if (!srsEngine.isEnabled()) {
+        return res.status(200).json({ status: "disabled" });
+      }
+
+      await srsEngine.regenerateQueuesOnce();
+      return res.status(202).json({ status: "queued" });
+    } catch (error) {
+      console.error("Failed to regenerate adaptive review queues:", error);
+      return sendError(
+        res,
+        500,
+        "Failed to regenerate adaptive review queues",
+        "QUEUE_REGENERATION_FAILED",
+      );
+    }
   });
-  return httpServer;
 }

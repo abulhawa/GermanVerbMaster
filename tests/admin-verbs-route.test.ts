@@ -1,4 +1,5 @@
 import express from 'express';
+import { createServer } from 'http';
 import request from 'supertest';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Word } from '@shared';
@@ -33,7 +34,7 @@ const {
 }));
 
 const srsEngineMock = vi.hoisted(() => ({
-  startQueueRegenerator: vi.fn(() => ({ stop: vi.fn() })),
+  regenerateQueuesOnce: vi.fn(),
   recordPracticeAttempt: vi.fn(),
   fetchQueueForDevice: vi.fn(),
   generateQueueForDevice: vi.fn(),
@@ -67,8 +68,8 @@ describe('Admin words API', () => {
     vi.clearAllMocks();
     vi.stubEnv('ADMIN_API_TOKEN', 'secret');
 
-    srsEngineMock.startQueueRegenerator.mockReset();
-    srsEngineMock.startQueueRegenerator.mockReturnValue({ stop: vi.fn() });
+    srsEngineMock.regenerateQueuesOnce.mockReset();
+    srsEngineMock.regenerateQueuesOnce.mockResolvedValue(undefined);
     srsEngineMock.recordPracticeAttempt.mockReset();
     srsEngineMock.fetchQueueForDevice.mockReset();
     srsEngineMock.generateQueueForDevice.mockReset();
@@ -106,7 +107,8 @@ describe('Admin words API', () => {
 
   it('rejects GET /api/words without the admin token', async () => {
     const app = express();
-    const server = registerRoutes(app);
+    registerRoutes(app);
+    const server = createServer(app);
 
     const response = await request(app).get('/api/words');
 
@@ -158,7 +160,8 @@ describe('Admin words API', () => {
     offsetMock.mockResolvedValueOnce(rows);
 
     const app = express();
-    const server = registerRoutes(app);
+    registerRoutes(app);
+    const server = createServer(app);
 
     const response = await request(app)
       .get('/api/words')
@@ -216,7 +219,8 @@ describe('Admin words API', () => {
 
     const app = express();
     app.use(express.json());
-    const server = registerRoutes(app);
+    registerRoutes(app);
+    const server = createServer(app);
 
     const response = await request(app)
       .patch('/api/words/3')
