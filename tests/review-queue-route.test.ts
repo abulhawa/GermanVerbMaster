@@ -20,24 +20,24 @@ const configMock = vi.hoisted(() => ({
   isLexemeSchemaEnabled: vi.fn(() => true),
 }));
 
-vi.mock('../server/srs', () => ({
+vi.mock('../server/srs/index.js', () => ({
   srsEngine: srsEngineMock,
 }));
 
-vi.mock('../server/tasks/shadow-mode', () => shadowModeMock);
-vi.mock('../server/config', () => configMock);
+vi.mock('../server/tasks/shadow-mode.js', () => shadowModeMock);
+vi.mock('../server/config.js', () => configMock);
 
 describe('GET /api/review-queue', () => {
   let dbContext: TestDatabaseContext | undefined;
   let invokeApi: ReturnType<typeof createApiInvoker>;
-  let createVercelApiHandler: typeof import('../server/api/vercel-handler').createVercelApiHandler;
+  let createVercelApiHandler: typeof import('../server/api/vercel-handler.js').createVercelApiHandler;
 
   beforeEach(async () => {
     const context = await setupTestDatabase();
     dbContext = context;
     context.mock();
 
-    ({ createVercelApiHandler } = await import('../server/api/vercel-handler'));
+    ({ createVercelApiHandler } = await import('../server/api/vercel-handler.js'));
     const handler = createVercelApiHandler({ enableCors: false });
     invokeApi = createApiInvoker(handler);
 

@@ -6,7 +6,7 @@ import { buildGoldenBundles, upsertGoldenBundles } from '../scripts/etl/golden';
 import { setupTestDatabase, type TestDatabaseContext } from './helpers/pg';
 import { createApiInvoker } from './helpers/vercel';
 
-vi.mock('../server/srs', () => ({
+vi.mock('../server/srs/index.js', () => ({
   srsEngine: {
     regenerateQueuesOnce: vi.fn(),
     recordPracticeAttempt: vi.fn(),
@@ -20,11 +20,11 @@ vi.mock('../server/srs', () => ({
 describe('feature flags', () => {
   let invokeApi: ReturnType<typeof createApiInvoker>;
   let drizzleDb: typeof import('@db').db;
-  let taskSpecsTable: typeof import('../db/schema').taskSpecs;
+  let taskSpecsTable: typeof import('../db/schema.js').taskSpecs;
   let dbContext: TestDatabaseContext | undefined;
 
   async function bootstrapServer() {
-    const schemaModule = await import('../db/schema');
+    const schemaModule = await import('../db/schema.js');
     taskSpecsTable = schemaModule.taskSpecs;
     const dbModule = await import('@db');
     drizzleDb = dbModule.db;
@@ -104,7 +104,7 @@ describe('feature flags', () => {
     const bundles = buildGoldenBundles(sampleWords);
     await upsertGoldenBundles(drizzleDb, bundles);
 
-    const { createVercelApiHandler } = await import('../server/api/vercel-handler');
+    const { createVercelApiHandler } = await import('../server/api/vercel-handler.js');
     const handler = createVercelApiHandler({ enableCors: false });
     invokeApi = createApiInvoker(handler);
   }

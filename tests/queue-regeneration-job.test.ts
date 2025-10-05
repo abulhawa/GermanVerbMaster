@@ -7,7 +7,7 @@ const srsEngineMock = vi.hoisted(() => ({
   isEnabled: vi.fn(() => true),
 }));
 
-vi.mock('../server/srs', () => ({
+vi.mock('../server/srs/index.js', () => ({
   srsEngine: {
     isEnabled: (...args: Parameters<typeof srsEngineMock.isEnabled>) =>
       srsEngineMock.isEnabled(...args),
@@ -22,7 +22,7 @@ vi.mock('../server/srs', () => ({
 
 describe('POST /api/jobs/regenerate-queues', () => {
   let invokeApi: ReturnType<typeof createApiInvoker>;
-  let createVercelApiHandler: typeof import('../server/api/vercel-handler').createVercelApiHandler;
+  let createVercelApiHandler: typeof import('../server/api/vercel-handler.js').createVercelApiHandler;
   let dbContext: TestDatabaseContext | undefined;
 
   beforeEach(async () => {
@@ -36,7 +36,7 @@ describe('POST /api/jobs/regenerate-queues', () => {
     srsEngineMock.isEnabled.mockReturnValue(true);
     srsEngineMock.regenerateQueuesOnce.mockResolvedValue(undefined);
 
-    ({ createVercelApiHandler } = await import('../server/api/vercel-handler'));
+    ({ createVercelApiHandler } = await import('../server/api/vercel-handler.js'));
     const handler = createVercelApiHandler({ enableCors: false });
     invokeApi = createApiInvoker(handler);
   });

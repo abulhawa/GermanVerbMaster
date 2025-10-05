@@ -7,12 +7,12 @@ import { setupTestDatabase, type TestDatabaseContext } from './helpers/pg';
 
 describe('processTaskSubmission', () => {
   let db: typeof import('@db').db;
-  let lexemesTable: typeof import('../db/schema').lexemes;
-  let taskSpecsTable: typeof import('../db/schema').taskSpecs;
-  let schedulingTable: typeof import('../db/schema').schedulingState;
-  let telemetryTable: typeof import('../db/schema').telemetryPriorities;
-  let processTaskSubmission: typeof import('../server/tasks/scheduler').processTaskSubmission;
-  let taskRegistry: typeof import('../server/tasks/registry').taskRegistry;
+  let lexemesTable: typeof import('../db/schema.js').lexemes;
+  let taskSpecsTable: typeof import('../db/schema.js').taskSpecs;
+  let schedulingTable: typeof import('../db/schema.js').schedulingState;
+  let telemetryTable: typeof import('../db/schema.js').telemetryPriorities;
+  let processTaskSubmission: typeof import('../server/tasks/scheduler.js').processTaskSubmission;
+  let taskRegistry: typeof import('../server/tasks/registry.js').taskRegistry;
   let dbContext: TestDatabaseContext | undefined;
 
   const baseTimestamp = new Date('2025-01-01T00:00:00.000Z');
@@ -23,14 +23,14 @@ describe('processTaskSubmission', () => {
     context.mock();
 
     ({ db } = await import('@db'));
-    const schema = await import('../db/schema');
+    const schema = await import('../db/schema.js');
     lexemesTable = schema.lexemes;
     taskSpecsTable = schema.taskSpecs;
     schedulingTable = schema.schedulingState;
     telemetryTable = schema.telemetryPriorities;
 
-    ({ processTaskSubmission } = await import('../server/tasks/scheduler'));
-    ({ taskRegistry } = await import('../server/tasks/registry'));
+    ({ processTaskSubmission } = await import('../server/tasks/scheduler.js'));
+    ({ taskRegistry } = await import('../server/tasks/registry.js'));
   });
 
   afterEach(async () => {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { configureRateLimitPool, enforceRateLimit, hashKey } from '../server/api/rate-limit';
+import { configureRateLimitPool, enforceRateLimit, hashKey } from '../server/api/rate-limit.js';
 import { setupTestDatabase } from './helpers/pg';
 
 describe('rate limit helper', () => {

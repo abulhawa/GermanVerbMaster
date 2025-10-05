@@ -6,7 +6,7 @@ import { buildGoldenBundles, upsertGoldenBundles } from '../scripts/etl/golden';
 import { setupTestDatabase, type TestDatabaseContext } from './helpers/pg';
 import { createApiInvoker } from './helpers/vercel';
 
-vi.mock('../server/srs', () => ({
+vi.mock('../server/srs/index.js', () => ({
   srsEngine: {
     regenerateQueuesOnce: vi.fn(),
     recordPracticeAttempt: vi.fn(),
@@ -19,10 +19,10 @@ vi.mock('../server/srs', () => ({
 
 describe('tasks API', () => {
   let invokeApi: ReturnType<typeof createApiInvoker>;
-  let createVercelApiHandler: typeof import('../server/api/vercel-handler').createVercelApiHandler;
-  let schedulingStateTable: typeof import('../db/schema').schedulingState;
-  let telemetryTable: typeof import('../db/schema').telemetryPriorities;
-  let practiceHistoryTable: typeof import('../db/schema').practiceHistory;
+  let createVercelApiHandler: typeof import('../server/api/vercel-handler.js').createVercelApiHandler;
+  let schedulingStateTable: typeof import('../db/schema.js').schedulingState;
+  let telemetryTable: typeof import('../db/schema.js').telemetryPriorities;
+  let practiceHistoryTable: typeof import('../db/schema.js').practiceHistory;
   let drizzleDb: typeof import('@db').db;
   let dbContext: TestDatabaseContext | undefined;
 
@@ -31,7 +31,7 @@ describe('tasks API', () => {
     dbContext = context;
     context.mock();
 
-    const schemaModule = await import('../db/schema');
+    const schemaModule = await import('../db/schema.js');
     schedulingStateTable = schemaModule.schedulingState;
     telemetryTable = schemaModule.telemetryPriorities;
     practiceHistoryTable = schemaModule.practiceHistory;
@@ -113,7 +113,7 @@ describe('tasks API', () => {
     const bundles = buildGoldenBundles(sampleWords);
     await upsertGoldenBundles(drizzleDb, bundles);
 
-    ({ createVercelApiHandler } = await import('../server/api/vercel-handler'));
+    ({ createVercelApiHandler } = await import('../server/api/vercel-handler.js'));
     const handler = createVercelApiHandler({ enableCors: false });
     invokeApi = createApiInvoker(handler);
   });

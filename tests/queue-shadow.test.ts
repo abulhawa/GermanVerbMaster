@@ -5,13 +5,13 @@ import { setupTestDatabase, type TestDatabaseContext } from './helpers/pg';
 
 describe('verb queue shadow mode', () => {
   let db: typeof import('@db').db;
-  let lexemesTable: typeof import('../db/schema').lexemes;
-  let taskSpecsTable: typeof import('../db/schema').taskSpecs;
-  let schedulingTable: typeof import('../db/schema').schedulingState;
-  let buildVerbShadowQueue: typeof import('../server/tasks/shadow-mode').buildVerbShadowQueue;
-  let runVerbQueueShadowComparison: typeof import('../server/tasks/shadow-mode').runVerbQueueShadowComparison;
-  let computeQueueDivergence: typeof import('../server/tasks/shadow-mode').computeQueueDivergence;
-  let taskRegistry: typeof import('../server/tasks/registry').taskRegistry;
+  let lexemesTable: typeof import('../db/schema.js').lexemes;
+  let taskSpecsTable: typeof import('../db/schema.js').taskSpecs;
+  let schedulingTable: typeof import('../db/schema.js').schedulingState;
+  let buildVerbShadowQueue: typeof import('../server/tasks/shadow-mode.js').buildVerbShadowQueue;
+  let runVerbQueueShadowComparison: typeof import('../server/tasks/shadow-mode.js').runVerbQueueShadowComparison;
+  let computeQueueDivergence: typeof import('../server/tasks/shadow-mode.js').computeQueueDivergence;
+  let taskRegistry: typeof import('../server/tasks/registry.js').taskRegistry;
   let dbContext: TestDatabaseContext | undefined;
 
   const baseTimestamp = new Date('2025-01-01T00:00:00.000Z');
@@ -22,17 +22,17 @@ describe('verb queue shadow mode', () => {
     context.mock();
 
     ({ db } = await import('@db'));
-    const schema = await import('../db/schema');
+    const schema = await import('../db/schema.js');
     lexemesTable = schema.lexemes;
     taskSpecsTable = schema.taskSpecs;
     schedulingTable = schema.schedulingState;
 
-    ({ taskRegistry } = await import('../server/tasks/registry'));
+    ({ taskRegistry } = await import('../server/tasks/registry.js'));
     ({
       buildVerbShadowQueue,
       runVerbQueueShadowComparison,
       computeQueueDivergence,
-    } = await import('../server/tasks/shadow-mode'));
+    } = await import('../server/tasks/shadow-mode.js'));
   });
 
   afterEach(async () => {
@@ -166,7 +166,7 @@ describe('verb queue shadow mode', () => {
   });
 
   it('summarises divergence between legacy and shadow queues', () => {
-    const legacy: import('../server/tasks/shadow-mode').LegacyVerbQueueSnapshot = {
+    const legacy: import('../server/tasks/shadow-mode.js').LegacyVerbQueueSnapshot = {
       deviceId: 'device-compare',
       items: [
         {
@@ -192,7 +192,7 @@ describe('verb queue shadow mode', () => {
       ],
     };
 
-    const shadow: import('../server/tasks/shadow-mode').VerbShadowQueueSnapshot = {
+    const shadow: import('../server/tasks/shadow-mode.js').VerbShadowQueueSnapshot = {
       generatedAt: new Date('2025-01-05T00:00:00.000Z'),
       generationDurationMs: 12,
       items: [
@@ -242,7 +242,7 @@ describe('verb queue shadow mode', () => {
           predictedIntervalMinutes: 90,
         } satisfies AdaptiveQueueItem,
       ],
-    } satisfies import('../server/tasks/shadow-mode').LegacyVerbQueueSnapshot;
+    } satisfies import('../server/tasks/shadow-mode.js').LegacyVerbQueueSnapshot;
 
     const logger = {
       info: vi.fn(),
@@ -278,7 +278,7 @@ describe('verb queue shadow mode', () => {
           predictedIntervalMinutes: 90,
         } satisfies AdaptiveQueueItem,
       ],
-    } satisfies import('../server/tasks/shadow-mode').LegacyVerbQueueSnapshot;
+    } satisfies import('../server/tasks/shadow-mode.js').LegacyVerbQueueSnapshot;
 
     const logger = {
       info: vi.fn(),

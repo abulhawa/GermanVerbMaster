@@ -6,7 +6,7 @@ import {
   computePredictedIntervalMinutes,
   computePriorityScore,
   computeStabilityWeight,
-} from '../server/srs/priority';
+} from '../server/srs/priority.js';
 
 describe('adaptive priority calculations', () => {
   it('prioritises verbs with lower accuracy', () => {

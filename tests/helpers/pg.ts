@@ -7,7 +7,7 @@ import { newDb } from 'pg-mem';
 import { Pool, type PoolConfig, types } from 'pg';
 import { vi } from 'vitest';
 
-import * as schema from '../../db/schema';
+import * as schema from '../../db/schema.js';
 
 export interface TestDatabaseContext {
   db: NodePgDatabase<typeof schema>;
@@ -127,12 +127,12 @@ export async function setupTestDatabase(): Promise<TestDatabaseContext> {
     getDb: () => db,
     createPool: () => pool,
     getPool: () => pool,
-  } satisfies Partial<typeof import('../../server/db/client')> & { db: typeof db };
+  } satisfies Partial<typeof import('../../server/db/client.js')> & { db: typeof db };
 
   const mock = () => {
     vi.doMock('../../db/index.js', () => moduleExports);
     vi.doMock('@db', () => moduleExports);
-    vi.doMock('../../server/db/client', () => moduleExports);
+    vi.doMock('../../server/db/client.js', () => moduleExports);
   };
 
   let cleaned = false;

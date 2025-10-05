@@ -50,7 +50,7 @@ vi.mock('@db', () => ({
   db: mockedDb,
 }));
 
-vi.mock('../server/db/client', () => ({
+vi.mock('../server/db/client.js', () => ({
   db: mockedDb,
   createDb: () => mockedDb,
   getDb: () => mockedDb,
@@ -59,15 +59,15 @@ vi.mock('../server/db/client', () => ({
 }));
 
 vi.mock('../db/schema.js', async () => {
-  const actual = await vi.importActual<typeof import('../db/schema')>('../db/schema');
+  const actual = await vi.importActual<typeof import('../db/schema.js')>('../db/schema.js');
   return actual;
 });
 
-vi.mock('../server/srs', () => ({
+vi.mock('../server/srs/index.js', () => ({
   srsEngine: srsEngineMock,
 }));
 
-vi.mock('../server/api/rate-limit', () => rateLimitMock);
+vi.mock('../server/api/rate-limit.js', () => rateLimitMock);
 
 describe('POST /api/practice-history validation', () => {
   beforeEach(() => {
@@ -96,7 +96,7 @@ describe('POST /api/practice-history validation', () => {
   });
 
   it('rejects invalid payloads with a 400 error', async () => {
-    const { createVercelApiHandler } = await import('../server/api/vercel-handler');
+    const { createVercelApiHandler } = await import('../server/api/vercel-handler.js');
     const invokeApi = createApiInvoker(createVercelApiHandler({ enableCors: false }));
 
     const response = await invokeApi('/api/practice-history', {
@@ -124,7 +124,7 @@ describe('POST /api/practice-history validation', () => {
       resetAt: new Date(Date.now() + 60_000),
     });
 
-    const { createVercelApiHandler } = await import('../server/api/vercel-handler');
+    const { createVercelApiHandler } = await import('../server/api/vercel-handler.js');
     const invokeApi = createApiInvoker(createVercelApiHandler({ enableCors: false }));
 
     const response = await invokeApi('/api/practice-history', {

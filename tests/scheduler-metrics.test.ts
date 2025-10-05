@@ -2,9 +2,9 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { setupTestDatabase, type TestDatabaseContext } from './helpers/pg';
 
-let calculateSubmissionMetrics: typeof import('../server/tasks/scheduler').calculateSubmissionMetrics;
-let computeCoverageScore: typeof import('../server/tasks/scheduler').computeCoverageScore;
-type SchedulingSnapshot = import('../server/tasks/scheduler').SchedulingSnapshot;
+let calculateSubmissionMetrics: typeof import('../server/tasks/scheduler.js').calculateSubmissionMetrics;
+let computeCoverageScore: typeof import('../server/tasks/scheduler.js').computeCoverageScore;
+type SchedulingSnapshot = import('../server/tasks/scheduler.js').SchedulingSnapshot;
 let dbContext: TestDatabaseContext | undefined;
 
 beforeAll(async () => {
@@ -12,7 +12,7 @@ beforeAll(async () => {
   dbContext = context;
   context.mock();
 
-  const scheduler = await import('../server/tasks/scheduler');
+  const scheduler = await import('../server/tasks/scheduler.js');
   calculateSubmissionMetrics = scheduler.calculateSubmissionMetrics;
   computeCoverageScore = scheduler.computeCoverageScore;
 });

@@ -9,7 +9,7 @@ import {
 } from '@db/schema';
 import { eq, gte } from 'drizzle-orm';
 
-import { computePostLaunchAnalytics } from '../server/analytics/post-launch';
+import { computePostLaunchAnalytics } from '../server/analytics/post-launch.js';
 
 const LOOKBACK_DAYS = Number.parseInt(process.env.POS_ANALYTICS_LOOKBACK_DAYS ?? '', 10) || 30;
 

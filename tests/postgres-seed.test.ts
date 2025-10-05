@@ -22,7 +22,7 @@ describe('seedDatabase', () => {
           });
 
           const { seedDatabase } = await import('../scripts/seed');
-          const { words, lexemes, taskSpecs, packLexemeMap } = await import('../db/schema');
+          const { words, lexemes, taskSpecs, packLexemeMap } = await import('../db/schema.js');
 
           const result = await seedDatabase(process.cwd());
 

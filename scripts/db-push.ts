@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import type { Pool } from 'pg';
 
-import { createDb, createPool } from '../server/db/client';
+import { createDb, createPool } from '../server/db/client.js';
 
 async function applyMigrations(providedPool?: Pool): Promise<void> {
   const currentPath = fileURLToPath(import.meta.url);

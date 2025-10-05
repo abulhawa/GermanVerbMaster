@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { integrationUsage } from '../db/schema';
+import { integrationUsage } from '../db/schema.js';
 import { createApiInvoker } from './helpers/vercel';
 
 const hoisted = vi.hoisted(() => {
@@ -63,7 +63,7 @@ vi.mock('../db/index.js', () => ({ db: hoisted.mockDb }));
 
 vi.mock('@db', () => ({ db: hoisted.mockDb }));
 
-vi.mock('../server/db/client', () => ({
+vi.mock('../server/db/client.js', () => ({
   db: hoisted.mockDb,
   createDb: () => hoisted.mockDb,
   getDb: () => hoisted.mockDb,
@@ -71,14 +71,14 @@ vi.mock('../server/db/client', () => ({
   getPool: vi.fn(),
 }));
 
-vi.mock('../server/srs', () => ({
+vi.mock('../server/srs/index.js', () => ({
   srsEngine: srsEngineMock,
 }));
 
 const { mockDb, selectChain, insertValuesMock, setSelectResultData } = hoisted;
 
 async function createTestInvoker() {
-  const { createVercelApiHandler } = await import('../server/api/vercel-handler');
+  const { createVercelApiHandler } = await import('../server/api/vercel-handler.js');
   const handler = createVercelApiHandler({ enableCors: false });
   return createApiInvoker(handler);
 }

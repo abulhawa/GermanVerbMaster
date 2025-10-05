@@ -57,7 +57,7 @@ vi.mock('@db', () => ({
   db: mockedDb,
 }));
 
-vi.mock('../server/db/client', () => ({
+vi.mock('../server/db/client.js', () => ({
   db: mockedDb,
   createDb: () => mockedDb,
   getDb: () => mockedDb,
@@ -66,11 +66,11 @@ vi.mock('../server/db/client', () => ({
 }));
 
 vi.mock('../db/schema.js', async () => {
-  const actual = await vi.importActual<typeof import('../db/schema')>('../db/schema');
+  const actual = await vi.importActual<typeof import('../db/schema.js')>('../db/schema.js');
   return actual;
 });
 
-vi.mock('../server/srs', () => ({
+vi.mock('../server/srs/index.js', () => ({
   srsEngine: srsEngineMock,
 }));
 
@@ -117,7 +117,7 @@ describe('Admin words API', () => {
   });
 
   async function createTestInvoker() {
-    const { createVercelApiHandler } = await import('../server/api/vercel-handler');
+    const { createVercelApiHandler } = await import('../server/api/vercel-handler.js');
     return createApiInvoker(createVercelApiHandler({ enableCors: false }));
   }
 

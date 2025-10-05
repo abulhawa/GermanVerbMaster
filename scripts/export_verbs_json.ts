@@ -9,7 +9,7 @@ async function loadFromDatabase() {
 }
 
 async function loadFromSeed() {
-  const { verbsData } = await import('../db/seed-data');
+  const { verbsData } = await import('../db/seed-data.js');
   return verbsData;
 }
 
