@@ -11,6 +11,7 @@ async function main() {
       target: ['node22'],
       outdir: 'dist/server',
       packages: 'external',
+      sourcemap: true,
     });
 
     // Build the Vercel API handler
@@ -21,7 +22,7 @@ async function main() {
       format: 'esm',
       target: ['node22'],
       outdir: 'dist/api',
-      packages: 'inline',
+      sourcemap: true,
     });
 
     console.log('✓ Server and API built successfully');
