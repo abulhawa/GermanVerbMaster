@@ -42,15 +42,11 @@ const mockedDb = vi.hoisted(() => ({
   })),
 }));
 
-vi.mock('../db/index.js', () => ({
-  db: mockedDb,
-}));
-
 vi.mock('@db', () => ({
   db: mockedDb,
 }));
 
-vi.mock('../server/db/client.js', () => ({
+vi.mock('@db/client', () => ({
   db: mockedDb,
   createDb: () => mockedDb,
   getDb: () => mockedDb,

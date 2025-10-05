@@ -1,5 +1,5 @@
 import type { Express, NextFunction, Request, Response } from "express";
-import { db } from "../db/index.js";
+import { db } from "@db";
 import {
   verbPracticeHistory,
   verbAnalytics,
@@ -14,7 +14,7 @@ import {
   practiceHistory,
   type IntegrationPartner,
   type Word,
-} from "../db/schema.js";
+} from "@db/schema";
 import { z } from "zod";
 import { and, count, desc, eq, sql } from "drizzle-orm";
 import { createHash, randomUUID } from "node:crypto";

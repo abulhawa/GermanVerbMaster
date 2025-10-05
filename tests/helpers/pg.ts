@@ -127,12 +127,11 @@ export async function setupTestDatabase(): Promise<TestDatabaseContext> {
     getDb: () => db,
     createPool: () => pool,
     getPool: () => pool,
-  } satisfies Partial<typeof import('../../server/db/client.js')> & { db: typeof db };
+  } satisfies Partial<typeof import('@db/client')> & { db: typeof db };
 
   const mock = () => {
-    vi.doMock('../../db/index.js', () => moduleExports);
     vi.doMock('@db', () => moduleExports);
-    vi.doMock('../../server/db/client.js', () => moduleExports);
+    vi.doMock('@db/client', () => moduleExports);
   };
 
   let cleaned = false;

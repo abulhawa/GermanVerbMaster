@@ -10,8 +10,8 @@ describe("db/index module", () => {
     vi.clearAllMocks();
   });
 
-  it("re-exports the server db client module", async () => {
-    type ClientModule = typeof import("../server/db/client.js");
+  it("re-exports the db client module", async () => {
+    type ClientModule = typeof import("@db/client");
 
     const mockedExports: ClientModule = {
       createPool: vi.fn(),
@@ -21,9 +21,9 @@ describe("db/index module", () => {
       db: Symbol("db") as unknown as ClientModule["db"],
     };
 
-    vi.doMock("../server/db/client.js", () => mockedExports);
+    vi.doMock("@db/client", () => mockedExports);
 
-    const module = await import("../db/index.ts");
+    const module = await import("@db");
 
     expect(module.createPool).toBe(mockedExports.createPool);
     expect(module.getPool).toBe(mockedExports.getPool);

@@ -1,9 +1,9 @@
-import { db } from "../../db/index.js";
+import { db } from "@db";
 import {
   schedulingState,
   taskSpecs,
   telemetryPriorities,
-} from "../../db/schema.js";
+} from "@db/schema";
 import type { PracticeResult } from "@shared";
 import type { TaskType } from "@shared/task-registry";
 import { and, count, eq } from "drizzle-orm";

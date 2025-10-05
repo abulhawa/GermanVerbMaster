@@ -1,12 +1,12 @@
 import { randomUUID } from "node:crypto";
-import { db } from "../../db/index.js";
+import { db } from "@db";
 import {
   verbSchedulingState,
   verbReviewQueues,
   words,
   type VerbReviewQueue,
   type VerbSchedulingState,
-} from "../../db/schema.js";
+} from "@db/schema";
 import type { AdaptiveQueueItem, PracticeResult } from "@shared";
 import { and, eq, sql } from "drizzle-orm";
 import {

@@ -70,7 +70,7 @@ The adaptive scheduler relies on `POST /api/jobs/regenerate-queues` to recompute
 
 1. Follow the Supabase “Get started with Postgres” guide to [create a new project and database](https://supabase.com/docs/guides/database/overview).
 2. In the project dashboard, open **Project Settings → Database → Connection string** and copy the **URI** variant; this becomes `DATABASE_URL`.
-3. Still under **Project Settings → Database**, expand **SSL configuration** and enable client certificate access if required. Supabase exposes certificates compatible with the `rejectUnauthorized: false` fallback used by `server/db/client.ts`, so you can paste the full connection string directly. If you enforce strict SSL, supply the CA bundle and configure `DATABASE_SSL` with the appropriate JSON per the [Supabase SSL instructions](https://supabase.com/docs/guides/database/connecting/ssl). The client automatically relaxes TLS when `DATABASE_SSL=disable` or `PGSSLMODE=disable` in development.
+3. Still under **Project Settings → Database**, expand **SSL configuration** and enable client certificate access if required. Supabase exposes certificates compatible with the `rejectUnauthorized: false` fallback used by `db/client.ts`, so you can paste the full connection string directly. If you enforce strict SSL, supply the CA bundle and configure `DATABASE_SSL` with the appropriate JSON per the [Supabase SSL instructions](https://supabase.com/docs/guides/database/connecting/ssl). The client automatically relaxes TLS when `DATABASE_SSL=disable` or `PGSSLMODE=disable` in development.
 
 ### Quick Postgres sandbox
 
@@ -99,7 +99,7 @@ Shut down the container with `docker stop gvm-postgres` when you are done.
 ## Testing
 
 - `npm test` (aliased to `npm run test:unit`) executes the Vitest suites. API tests no longer boot an ad-hoc Express app; they call the Vercel-style handler exported from `server/api/vercel-handler.ts` using fetch-driven mocks from `tests/helpers/vercel.ts`.
-- `tests/helpers/pg.ts` provides an isolated Postgres harness backed by [`pg-mem`](https://github.com/oguimbal/pg-mem). Each suite applies the real Drizzle migrations from `migrations/` and installs the test data by mocking `server/db/client.ts`, so no external database is required to run the suites in CI or locally.
+- `tests/helpers/pg.ts` provides an isolated Postgres harness backed by [`pg-mem`](https://github.com/oguimbal/pg-mem). Each suite applies the real Drizzle migrations from `migrations/` and installs the test data by mocking `db/client.ts`, so no external database is required to run the suites in CI or locally.
 - To run the suites against a real Postgres instance, export `TEST_DATABASE_URL` (and optionally `TEST_DATABASE_SSL=disable` for local containers). The helper will wipe the `public` + `drizzle` schemas before and after the test run, apply migrations, and reuse the live pool instead of pg-mem.
 - For manual verification against a live Postgres instance, point `DATABASE_URL` at your sandbox (see above) and use `npm run db:push` followed by `npm run seed` to hydrate tables before hitting the API through the Vercel handler or Express dev server.
 

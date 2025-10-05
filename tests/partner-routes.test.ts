@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { integrationUsage } from '../db/schema.js';
+import { integrationUsage } from '@db/schema';
 import { createApiInvoker } from './helpers/vercel';
 
 const hoisted = vi.hoisted(() => {
@@ -59,11 +59,9 @@ const srsEngineMock = vi.hoisted(() => ({
   isQueueStale: vi.fn(() => false),
 }));
 
-vi.mock('../db/index.js', () => ({ db: hoisted.mockDb }));
-
 vi.mock('@db', () => ({ db: hoisted.mockDb }));
 
-vi.mock('../server/db/client.js', () => ({
+vi.mock('@db/client', () => ({
   db: hoisted.mockDb,
   createDb: () => hoisted.mockDb,
   getDb: () => hoisted.mockDb,
