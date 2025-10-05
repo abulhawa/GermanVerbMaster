@@ -1,3 +1,3 @@
 // api/index.js
-import handler from '../dist/api/index.js'; // this points to the built bundle
+import handler from './index.impl.js';
 export default handler;
