@@ -1,6 +1,6 @@
 import type { VercelApiHandler } from "@vercel/node";
 
-import { createApiApp, type CreateApiAppOptions } from "../server/api/app";
+import { createApiApp, type CreateApiAppOptions } from "../server/api/app.js";
 
 export interface CreateVercelHandlerOptions extends CreateApiAppOptions {}
 
