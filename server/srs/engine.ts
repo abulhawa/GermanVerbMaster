@@ -18,7 +18,7 @@ import {
   computePredictedIntervalMinutes,
   computePriorityScore,
   computeStabilityWeight,
-} from "./priority";
+} from "./priority.js";
 
 const FEATURE_FLAG_ENV = "FEATURE_ADAPTIVE_QUEUE";
 const MIN_QUEUE_SIZE_ENV = "ADAPTIVE_QUEUE_MIN_SIZE";

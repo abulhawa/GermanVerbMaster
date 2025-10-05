@@ -1,8 +1,8 @@
 import { createServer } from "http";
 
-import { createApiApp } from "./api/app";
-import { setupVite, serveStatic, log } from "./vite";
-import { formatFeatureFlagHeader, getFeatureFlagSnapshot } from "./feature-flags";
+import { createApiApp } from "./api/app.js";
+import { setupVite, serveStatic, log } from "./vite.js";
+import { formatFeatureFlagHeader, getFeatureFlagSnapshot } from "./feature-flags.js";
 
 const app = createApiApp();
 

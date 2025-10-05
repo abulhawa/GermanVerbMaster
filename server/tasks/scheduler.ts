@@ -16,7 +16,7 @@ import {
   computeNextDueDate,
   computePriorityScore,
   computeStabilityWeight,
-} from "../srs/priority";
+} from "../srs/priority.js";
 
 export interface SchedulingSnapshot {
   id?: number;

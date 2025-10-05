@@ -20,12 +20,12 @@ import { and, count, desc, eq, sql } from "drizzle-orm";
 import { createHash, randomUUID } from "node:crypto";
 import type { GermanVerb } from "@shared";
 import type { LexemePos, TaskType } from "@shared/task-registry";
-import { srsEngine } from "./srs";
-import { getTaskRegistryEntry, taskRegistry } from "./tasks/registry";
-import { processTaskSubmission } from "./tasks/scheduler";
-import { runVerbQueueShadowComparison } from "./tasks/shadow-mode";
-import { isLexemeSchemaEnabled } from "./config";
-import { enforceRateLimit, hashKey } from "./api/rate-limit";
+import { srsEngine } from "./srs/index.js";
+import { getTaskRegistryEntry, taskRegistry } from "./tasks/registry.js";
+import { processTaskSubmission } from "./tasks/scheduler.js";
+import { runVerbQueueShadowComparison } from "./tasks/shadow-mode.js";
+import { isLexemeSchemaEnabled } from "./config.js";
+import { enforceRateLimit, hashKey } from "./api/rate-limit.js";
 import {
   asLexemePos,
   ensurePosFeatureEnabled,
@@ -35,7 +35,7 @@ import {
   notifyPosFeatureBlocked,
   PosFeatureDisabledError,
   summarizeFeatureFlagSnapshot,
-} from "./feature-flags";
+} from "./feature-flags.js";
 
 const practiceModeSchema = z.enum(["präteritum", "partizipII", "auxiliary", "english"]);
 const levelSchema = z.enum(["A1", "A2", "B1", "B2", "C1", "C2"]);

@@ -1,7 +1,7 @@
 import express, { type Express, type NextFunction, type Request, type Response } from "express";
 import cors, { type CorsOptions } from "cors";
 
-import { registerRoutes } from "../routes";
+import { registerRoutes } from "../routes.js";
 
 export interface CreateApiAppOptions {
   /**

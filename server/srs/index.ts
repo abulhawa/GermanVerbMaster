@@ -6,7 +6,7 @@ export {
   generateQueueForDevice,
   isQueueStale,
   regenerateQueuesOnce,
-} from "./engine";
+} from "./engine.js";
 export {
   BOX_INTERVALS_MS,
   MAX_LEITNER_BOX,
@@ -16,4 +16,4 @@ export {
   computePredictedIntervalMinutes,
   computePriorityScore,
   computeStabilityWeight,
-} from "./priority";
+} from "./priority.js";
