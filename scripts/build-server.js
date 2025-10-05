@@ -14,7 +14,18 @@ async function main() {
       sourcemap: true,
     });
 
-    console.log('✓ Server built successfully. API shim will be used as-is.');
+    // Build the Vercel API handler
+    await build({
+      entryPoints: ['api/index.impl.ts'], // point to the real handler
+      bundle: true,
+      platform: 'node',
+      format: 'esm',
+      target: ['node22'],
+      outdir: 'dist/api',
+      sourcemap: true,
+    });
+
+    console.log('✓ Server and API built successfully');
   } catch (err) {
     console.error('❌ esbuild failed:', err);
     process.exit(1);

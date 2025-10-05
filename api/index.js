@@ -1,3 +1,3 @@
-// api/index.js (tiny shim — no TypeScript checks)
-import handler from '../dist/api/index.js';
+// api/index.js
+import handler from '../dist/api/index.js'; // this points to the built bundle
 export default handler;
