@@ -42,6 +42,10 @@ const mockedDb = vi.hoisted(() => ({
   })),
 }));
 
+vi.mock('../db/index.js', () => ({
+  db: mockedDb,
+}));
+
 vi.mock('@db', () => ({
   db: mockedDb,
 }));
@@ -54,7 +58,7 @@ vi.mock('../server/db/client', () => ({
   getPool: vi.fn(),
 }));
 
-vi.mock('@db/schema', async () => {
+vi.mock('../db/schema.js', async () => {
   const actual = await vi.importActual<typeof import('../db/schema')>('../db/schema');
   return actual;
 });

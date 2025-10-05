@@ -130,6 +130,7 @@ export async function setupTestDatabase(): Promise<TestDatabaseContext> {
   } satisfies Partial<typeof import('../../server/db/client')> & { db: typeof db };
 
   const mock = () => {
+    vi.doMock('../../db/index.js', () => moduleExports);
     vi.doMock('@db', () => moduleExports);
     vi.doMock('../../server/db/client', () => moduleExports);
   };

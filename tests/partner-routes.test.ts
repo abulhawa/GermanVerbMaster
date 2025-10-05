@@ -59,6 +59,8 @@ const srsEngineMock = vi.hoisted(() => ({
   isQueueStale: vi.fn(() => false),
 }));
 
+vi.mock('../db/index.js', () => ({ db: hoisted.mockDb }));
+
 vi.mock('@db', () => ({ db: hoisted.mockDb }));
 
 vi.mock('../server/db/client', () => ({
