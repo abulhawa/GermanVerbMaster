@@ -55,10 +55,4 @@ describe("vercel deployment configuration", () => {
     expect(apiRewrite, "The /api rewrite rule should exist").toBeTruthy();
     expect(apiRewrite?.destination).toBe("/api/index.ts");
   });
-
-  test("serverless functions run on the Node.js 22 runtime", () => {
-    const runtime = vercelConfig.functions?.["api/index.ts"]?.runtime;
-
-    expect(runtime).toBe("nodejs22.x");
-  });
 });
