@@ -1,5 +1,5 @@
 import { db } from '@db';
-import { lexemes, schedulingState, taskSpecs } from '@db/schema';
+import { lexemes, schedulingState, taskSpecs } from '@db';
 import type { AdaptiveQueueItem } from '@shared';
 import { and, desc, eq, sql } from 'drizzle-orm';
 

@@ -1,4 +1,4 @@
-import type { LexemePos } from '@shared/task-registry';
+import type { LexemePos } from '@shared';
 
 import { parseBooleanFlag } from './config';
 

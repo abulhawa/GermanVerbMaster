@@ -14,12 +14,12 @@ import {
   practiceHistory,
   type IntegrationPartner,
   type Word,
-} from "@db/schema";
+} from "@db";
 import { z } from "zod";
 import { and, count, desc, eq, sql } from "drizzle-orm";
 import { createHash, randomUUID } from "node:crypto";
 import type { GermanVerb } from "@shared";
-import type { LexemePos, TaskType } from "@shared/task-registry";
+import type { LexemePos, TaskType } from "@shared";
 import { srsEngine } from "./srs/index.js";
 import { getTaskRegistryEntry, taskRegistry } from "./tasks/registry.js";
 import { processTaskSubmission } from "./tasks/scheduler.js";

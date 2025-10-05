@@ -14,7 +14,7 @@ export interface RateLimitResult {
   resetAt: Date;
 }
 
-type DatabaseClientModule = typeof import("@db/client");
+type DatabaseClientModule = typeof import("@db");
 
 let configuredPool: Pool | undefined;
 let lastCleanup = 0;
@@ -51,7 +51,7 @@ function shouldUseMemoryFallback(error: unknown): boolean {
 
 async function loadDatabaseClient(): Promise<DatabaseClientModule> {
   if (!clientModulePromise) {
-    clientModulePromise = import("@db/client");
+    clientModulePromise = import("@db");
   }
   return clientModulePromise;
 }

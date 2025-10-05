@@ -3,9 +3,9 @@ import {
   schedulingState,
   taskSpecs,
   telemetryPriorities,
-} from "@db/schema";
+} from "@db";
 import type { PracticeResult } from "@shared";
-import type { TaskType } from "@shared/task-registry";
+import type { TaskType } from "@shared";
 import { and, count, eq } from "drizzle-orm";
 import {
   BOX_INTERVALS_MS,

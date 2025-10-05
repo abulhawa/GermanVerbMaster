@@ -2,7 +2,7 @@ import {
   taskTypeRegistry as sharedRegistry,
   type TaskType,
   type TaskRegistryEntry,
-} from '@shared/task-registry';
+} from '@shared';
 
 export type ServerTaskRegistryEntry = TaskRegistryEntry & {
   queueCap: number;

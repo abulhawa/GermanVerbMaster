@@ -6,7 +6,7 @@ import {
   words,
   type VerbReviewQueue,
   type VerbSchedulingState,
-} from "@db/schema";
+} from "@db";
 import type { AdaptiveQueueItem, PracticeResult } from "@shared";
 import { and, eq, sql } from "drizzle-orm";
 import {

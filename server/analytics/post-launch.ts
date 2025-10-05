@@ -1,5 +1,5 @@
 import type { PracticeResult } from "@shared";
-import type { LexemePos } from "@shared/task-registry";
+import type { LexemePos } from "@shared";
 
 type FeatureFlagSnapshotSummary = Record<string, { enabled: boolean; stage?: string; defaultValue?: boolean; flag?: string }>;
 
