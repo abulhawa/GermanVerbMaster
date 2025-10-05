@@ -4,6 +4,8 @@ import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 import { VitePWA } from "vite-plugin-pwa";
 
+import { classifyManualChunk } from "./scripts/manual-chunks";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 export default defineConfig({
@@ -69,41 +71,7 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          if (!id.includes("node_modules")) {
-            return undefined;
-          }
-
-          if (id.includes("recharts")) {
-            return "recharts";
-          }
-
-          if (id.includes("@tanstack/react-query")) {
-            return "react-query";
-          }
-
-          if (id.includes("@radix-ui")) {
-            return "radix";
-          }
-
-          if (id.includes("lucide-react")) {
-            return "icons";
-          }
-
-          if (id.includes("date-fns")) {
-            return "date-fns";
-          }
-
-          if (id.includes("dexie")) {
-            return "dexie";
-          }
-
-          if (id.includes("embla-carousel")) {
-            return "carousel";
-          }
-
-          return "vendor";
-        },
+        manualChunks: classifyManualChunk,
       },
     },
   },
