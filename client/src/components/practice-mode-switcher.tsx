@@ -166,8 +166,8 @@ export function PracticeModeSwitcher({
               key={mode.value}
               value={mode.value}
               className={cn(
-                'flex min-w-[110px] items-center gap-2 rounded-2xl px-4 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60',
-                'data-[state=active]:bg-primary data-[state=active]:text-primary-foreground',
+                'relative flex min-w-[110px] items-center gap-2 rounded-2xl border border-border/60 bg-muted/40 px-4 py-2 text-sm font-medium text-muted-foreground transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+                'hover:text-foreground data-[state=active]:border-transparent data-[state=active]:!bg-primary data-[state=active]:!text-primary-foreground data-[state=active]:shadow-lg data-[state=active]:ring-2 data-[state=active]:ring-primary/50 data-[state=active]:ring-offset-2 data-[state=active]:ring-offset-background',
               )}
             >
               <mode.icon className="h-4 w-4" aria-hidden />
