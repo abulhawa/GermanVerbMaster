@@ -14,6 +14,14 @@ export interface PracticeCardMessages {
   offline: { title: string; description: string; announce: string };
   error: { title: string; generic: string };
   status: { correct: string; incorrect: string; expectedAnswer: string };
+  header: {
+    appName: string;
+    profileLabel: string;
+    scoreLabel: string;
+    accuracyLabel: string;
+    streakLabel: string;
+    streakUnit: string;
+  };
   hints: {
     label: string;
     toggle: string;
@@ -26,6 +34,10 @@ export interface PracticeCardMessages {
   metadata: { sourceLabel: string };
   actions: { submit: string; pronounceSrLabel: string };
   loadingNext: string;
+  progress: {
+    label: string;
+    completedLabel: string;
+  };
   caseLabels: Record<'nominative' | 'accusative' | 'dative' | 'genitive', string>;
   numberLabels: Record<'singular' | 'plural', string>;
   degreeLabels: Record<'positive' | 'comparative' | 'superlative', string>;
@@ -139,6 +151,14 @@ const MESSAGES: Record<Locale, AppMessages> = {
         incorrect: 'Try again',
         expectedAnswer: 'Expected answer:',
       },
+      header: {
+        appName: 'Wortschatz',
+        profileLabel: 'Profile',
+        scoreLabel: 'Points',
+        accuracyLabel: 'Accuracy',
+        streakLabel: 'Streak',
+        streakUnit: 'days',
+      },
       hints: {
         label: 'Hint',
         toggle: 'Tap to reveal the hint',
@@ -156,6 +176,10 @@ const MESSAGES: Record<Locale, AppMessages> = {
         pronounceSrLabel: 'Play pronunciation',
       },
       loadingNext: 'Loading next task…',
+      progress: {
+        label: 'Day {current}/{target}',
+        completedLabel: 'Completed {count}',
+      },
       caseLabels: {
         nominative: 'Nominative',
         accusative: 'Accusative',
@@ -290,6 +314,14 @@ const MESSAGES: Record<Locale, AppMessages> = {
         incorrect: 'Versuch es erneut',
         expectedAnswer: 'Erwartete Antwort:',
       },
+      header: {
+        appName: 'Wortschatz',
+        profileLabel: 'Profil',
+        scoreLabel: 'Punkte',
+        accuracyLabel: 'Genauigkeit',
+        streakLabel: 'Serie',
+        streakUnit: 'Tage',
+      },
       hints: {
         label: 'Hinweis',
         toggle: 'Tippe, um den Hinweis anzuzeigen',
@@ -307,6 +339,10 @@ const MESSAGES: Record<Locale, AppMessages> = {
         pronounceSrLabel: 'Aussprache abspielen',
       },
       loadingNext: 'Lädt nächste Aufgabe…',
+      progress: {
+        label: 'Tag {current}/{target}',
+        completedLabel: '{count} abgeschlossen',
+      },
       caseLabels: {
         nominative: 'Nominativ',
         accusative: 'Akkusativ',

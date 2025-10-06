@@ -1,6 +1,5 @@
 import { ReactNode, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { ThemeToggle } from "@/components/theme-toggle";
 import {
   type DebuggableComponentProps,
   getDevAttributes,
@@ -78,12 +77,11 @@ export function AppShell({
             <header
               data-condensed={isHeaderCondensed}
               className={cn(
-                "group/header sticky top-4 z-overlay rounded-app border border-border bg-card/85 px-4 pr-14 shadow-soft backdrop-blur transition-all duration-200",
+                "group/header sticky top-4 z-overlay rounded-app border border-border bg-card/85 px-5 shadow-soft backdrop-blur transition-all duration-200",
                 isHeaderCondensed ? "py-2" : "py-4",
               )}
               style={{ maxHeight: "15vh" }}
             >
-              <ThemeToggle className="absolute right-4 top-1/2 -translate-y-1/2" debugId={`${resolvedDebugId}-theme-toggle`} />
               {topBar}
             </header>
             <main

@@ -5,7 +5,6 @@ import {
   BookOpen,
   ChevronDown,
   Compass,
-  Flame,
   History,
   Info,
   Loader2,
@@ -22,7 +21,6 @@ import { SettingsDialog } from '@/components/settings-dialog';
 import { PracticeModeSwitcher, type PracticeScope } from '@/components/practice-mode-switcher';
 import { LanguageToggle } from '@/components/language-toggle';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -281,7 +279,6 @@ export default function Home() {
   const [isFetchingTasks, setIsFetchingTasks] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [shouldReloadTasks, setShouldReloadTasks] = useState(false);
-  const [isPresetOpen, setIsPresetOpen] = useState(false);
   const [isRecapOpen, setIsRecapOpen] = useState(false);
   const [analyticsTab, setAnalyticsTab] = useState<'overview' | 'attempts'>('overview');
   const pendingFetchRef = useRef(false);
@@ -503,7 +500,6 @@ export default function Home() {
   const taskTypeCopy = getTaskTypeCopy(activeTaskType);
   const cefrLevelForDisplay = scope === 'verbs' ? verbLevel : undefined;
   const levelSummary = cefrLabel ?? (cefrLevelForDisplay ? `Level ${cefrLevelForDisplay}` : 'Mixed levels');
-  const queueLabel = scope === 'verbs' || scope === 'nouns' || scope === 'adjectives' ? taskTypeCopy.label : 'Task mix';
 
   const sessionCompleted = session.completed.length;
   const milestoneTarget = useMemo(() => {
@@ -600,20 +596,6 @@ export default function Home() {
           Stay focused on your next prompt
         </h1>
       </div>
-      <div className="flex items-center gap-3">
-        <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-muted/30 px-3 py-1.5 text-sm font-medium text-foreground">
-          <Flame className="h-4 w-4 text-primary" aria-hidden />
-          <span>{summary.streak} day{summary.streak === 1 ? '' : 's'}</span>
-        </div>
-        <SettingsDialog
-          debugId="topbar-settings-dialog"
-          settings={settings}
-          onSettingsChange={handleSettingsChange}
-          taskType={activeTaskType}
-          presetLabel={scopeBadgeLabel}
-          taskTypeLabel={taskTypeCopy.label}
-        />
-      </div>
     </div>
   );
 
@@ -631,26 +613,22 @@ export default function Home() {
             <SidebarNavButton href="/admin" icon={Settings2} label="Admin tools" />
           </div>
         </div>
-        <Collapsible open={isPresetOpen} onOpenChange={setIsPresetOpen}>
-          <CollapsibleTrigger
-            className="group inline-flex w-full items-center justify-between rounded-2xl border border-border/60 bg-muted/30 px-3 py-2 text-sm font-medium text-muted-foreground transition hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 group-data-[collapsed=true]/sidebar:hidden"
-          >
-            <span>Active preset</span>
-            <span className="flex items-center gap-2 text-primary">
-              <Badge variant="outline" className="rounded-full border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-                {scopeBadgeLabel}
-              </Badge>
-              <ChevronDown className="h-3 w-3 transition duration-200 ease-out group-data-[state=open]:rotate-180" aria-hidden />
-            </span>
-          </CollapsibleTrigger>
-          <CollapsibleContent className="mt-3 space-y-2 text-sm text-muted-foreground group-data-[collapsed=true]/sidebar:hidden">
-            <p className="font-medium text-foreground">{levelSummary}</p>
-            <p>{queueLabel}</p>
-          </CollapsibleContent>
-        </Collapsible>
         <div className="space-y-2 group-data-[collapsed=true]/sidebar:hidden">
           <p className="text-sm font-medium text-muted-foreground">Language</p>
           <LanguageToggle className="w-full rounded-2xl border-border/60 bg-background/90" debugId="sidebar-language-toggle" />
+        </div>
+        <div className="flex items-center gap-3 group-data-[collapsed=true]/sidebar:justify-center">
+          <SettingsDialog
+            debugId="sidebar-settings-dialog"
+            settings={settings}
+            onSettingsChange={handleSettingsChange}
+            taskType={activeTaskType}
+            presetLabel={scopeBadgeLabel}
+            taskTypeLabel={taskTypeCopy.label}
+          />
+          <span className="text-sm font-medium text-foreground group-data-[collapsed=true]/sidebar:hidden">
+            Settings & Level
+          </span>
         </div>
         <Collapsible open={isRecapOpen} onOpenChange={setIsRecapOpen}>
           <CollapsibleTrigger
@@ -727,8 +705,16 @@ export default function Home() {
                   settings={settings}
                   onResult={handleTaskResult}
                   isLoadingNext={isFetchingTasks && session.queue.length === 0}
-                  className="w-full border-none bg-transparent shadow-2xl shadow-primary/20"
                   debugId="home-practice-card"
+                  summary={{
+                    correct: summary.correct,
+                    accuracy: summary.accuracy,
+                    streak: summary.streak,
+                  }}
+                  sessionProgress={{
+                    completed: sessionCompleted,
+                    target: milestoneTarget,
+                  }}
                 />
               ) : (
                 <div className="flex h-[340px] flex-col items-center justify-center gap-3 rounded-[28px] border border-border/60 bg-background/70 text-center shadow-2xl shadow-primary/10">
