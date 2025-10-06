@@ -20,8 +20,14 @@ import path from 'path';
 
 /**
  * @type {string}
- * Entry file that creates the API app and registers routes (your server entry).
- * This file should call `registerRoutes(app)` so the bundled API includes routes.
+ * Entry file for the Vercel handler bundle. This should export the Express
+ * app without starting an HTTP server (see api/index.impl.ts).
+ */
+const entryApi = 'api/index.impl.ts';
+
+/**
+ * @type {string}
+ * Entry file that starts the HTTP server (used for dist/server/index.js).
  */
 const entryServer = 'server/index.ts';
 
@@ -110,7 +116,7 @@ async function buildApiBundle() {
 
   await build({
     ...baseBuildOptions(),
-    entryPoints: [entryServer], // bundle server entry (must register routes)
+    entryPoints: [entryApi], // bundle API handler entry (must register routes)
     outfile: apiOutfile,
     // If your code uses __dirname or __filename, consider adding:
     // define: { '__dirname': '"/var/task"' },
