@@ -1,10 +1,11 @@
-import { createServer } from "http";
-
 import { createApiApp } from "./api/app.js";
+import { registerRoutes } from "./routes.js";
+import { createServer } from "http";
 import { setupVite, serveStatic, log } from "./vite.js";
 import { formatFeatureFlagHeader, getFeatureFlagSnapshot } from "./feature-flags.js";
 
 const app = createApiApp();
+registerRoutes(app);
 
 app.use((req, res, next) => {
   const start = Date.now();
