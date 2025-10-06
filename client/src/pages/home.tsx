@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'wouter';
 import { motion } from 'framer-motion';
 import {
-  BarChart2,
   BookOpen,
   ChevronDown,
   Compass,
@@ -24,7 +23,6 @@ import { PracticeModeSwitcher, type PracticeScope } from '@/components/practice-
 import { LanguageToggle } from '@/components/language-toggle';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -85,7 +83,7 @@ function SessionProgressBar({ value, completed, target, debugId }: SessionProgre
       className="w-full rounded-3xl border border-border/70 bg-card/80 p-6 shadow-lg shadow-primary/5"
       {...getDevAttributes('session-progress-bar', resolvedDebugId)}
     >
-      <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+      <div className="flex items-center justify-between text-sm font-medium text-muted-foreground">
         <span>Session progress</span>
         <span>{Math.round(value)}%</span>
       </div>
@@ -97,7 +95,7 @@ function SessionProgressBar({ value, completed, target, debugId }: SessionProgre
           transition={{ duration: 0.6, ease: 'easeOut' }}
         />
       </div>
-      <p className="mt-3 text-xs text-muted-foreground">
+      <p className="mt-3 text-sm text-muted-foreground">
         {completed} of {target} tasks completed in this session.
       </p>
     </div>
@@ -285,7 +283,7 @@ export default function Home() {
   const [shouldReloadTasks, setShouldReloadTasks] = useState(false);
   const [isPresetOpen, setIsPresetOpen] = useState(false);
   const [isRecapOpen, setIsRecapOpen] = useState(false);
-  const [analyticsTab, setAnalyticsTab] = useState<'overview' | 'attempts' | 'milestones'>('overview');
+  const [analyticsTab, setAnalyticsTab] = useState<'overview' | 'attempts'>('overview');
   const pendingFetchRef = useRef(false);
 
   const scope = computeScope(settings);
@@ -524,23 +522,31 @@ export default function Home() {
   const isInitialLoading = !activeTask && isFetchingTasks;
 
   const overviewPanel = (
-    <ProgressDisplay
-      progress={progress}
-      taskType={activeTaskType}
-      taskTypes={activeTaskTypes}
-      taskLabel={scopeBadgeLabel}
-      cefrLevel={cefrLevelForDisplay}
-      cefrLabel={cefrLabel}
-      headline={`${scopeBadgeLabel} progress`}
-      debugId="sidebar-progress-display"
-    />
+    <div className="space-y-4">
+      <ProgressDisplay
+        progress={progress}
+        taskType={activeTaskType}
+        taskTypes={activeTaskTypes}
+        taskLabel={scopeBadgeLabel}
+        cefrLevel={cefrLevelForDisplay}
+        cefrLabel={cefrLabel}
+        headline={`${scopeBadgeLabel} progress`}
+        debugId="sidebar-progress-display"
+      />
+      <SessionProgressBar
+        value={milestoneProgress}
+        completed={sessionCompleted}
+        target={milestoneTarget}
+        debugId="home-session-progress"
+      />
+    </div>
   );
 
   const attemptsPanel = (
     <div className="rounded-2xl border border-border/60 bg-muted/30 p-5 shadow-inner shadow-primary/5">
-      <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+      <div className="flex items-center justify-between text-sm font-medium text-muted-foreground">
         Session recap
-        <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
+        <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
           {historyCount} entries
         </span>
       </div>
@@ -555,12 +561,12 @@ export default function Home() {
         </motion.div>
         <div className="space-y-2">
           <p className="font-medium text-foreground">{summary.correct} correct attempts logged</p>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             {summary.total > 0
               ? `${summary.total} attempt${summary.total === 1 ? '' : 's'} recorded · ${summary.accuracy}% accuracy`
               : 'Take your first attempt to unlock personalised insights.'}
           </p>
-          <Link href="/answers" className="inline-flex items-center text-xs font-semibold uppercase tracking-[0.22em] text-primary">
+          <Link href="/answers" className="inline-flex items-center text-sm font-medium text-primary">
             Review history
             <span aria-hidden className="ml-2">→</span>
           </Link>
@@ -569,32 +575,10 @@ export default function Home() {
     </div>
   );
 
-  const milestonesPanel = (
-    <div className="rounded-2xl border border-border/60 bg-muted/20 p-5 shadow-inner shadow-primary/5">
-      <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-        Next milestone
-        <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
-          {milestoneTarget} tasks
-        </span>
-      </div>
-      <div className="mt-4 h-2.5 w-full overflow-hidden rounded-full border border-border/50 bg-muted">
-        <motion.span
-          className="block h-full rounded-full bg-gradient-to-r from-brand-gradient-start via-primary to-brand-gradient-end"
-          initial={{ width: 0 }}
-          animate={{ width: `${milestoneProgress}%` }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
-        />
-      </div>
-      <p className="mt-3 text-xs text-muted-foreground">
-        {sessionCompleted} of {milestoneTarget} tasks completed in this streak cycle. Keep practising to unlock the next badge.
-      </p>
-    </div>
-  );
-
   const topBar = (
-    <div className="flex flex-col gap-3 transition-all group-data-[condensed=true]/header:flex-row group-data-[condensed=true]/header:items-center group-data-[condensed=true]/header:justify-between">
+    <div className="flex flex-col gap-4 transition-all group-data-[condensed=true]/header:flex-row group-data-[condensed=true]/header:items-center group-data-[condensed=true]/header:justify-between">
       <div className="space-y-2 transition-all group-data-[condensed=true]/header:space-y-1">
-        <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+        <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
           <Sparkles className="h-4 w-4 text-primary" aria-hidden />
           <span>Adaptive practice</span>
           <Tooltip>
@@ -607,9 +591,8 @@ export default function Home() {
                 <Info className="h-4 w-4" aria-hidden />
               </button>
             </TooltipTrigger>
-            <TooltipContent side="bottom" align="start" className="max-w-xs text-xs leading-relaxed">
-              Sessions pull from the shared task registry. Choose a scope to rotate between verbs, nouns, adjectives, or your
-              custom mix without cluttering the header.
+            <TooltipContent side="bottom" align="start" className="max-w-xs text-sm leading-relaxed">
+              Sessions pull from the shared task registry. Choose a scope to rotate between verbs, nouns, adjectives, or your custom mix without cluttering the header.
             </TooltipContent>
           </Tooltip>
         </div>
@@ -617,21 +600,11 @@ export default function Home() {
           Stay focused on your next prompt
         </h1>
       </div>
-      <div className="flex flex-wrap items-center justify-end gap-2">
-        <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-muted/40 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-foreground">
+      <div className="flex items-center gap-3">
+        <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-muted/30 px-3 py-1.5 text-sm font-medium text-foreground">
           <Flame className="h-4 w-4 text-primary" aria-hidden />
           <span>{summary.streak} day{summary.streak === 1 ? '' : 's'}</span>
         </div>
-        <LanguageToggle
-          className="h-11 w-[140px] rounded-full border-border/50 text-xs"
-          debugId="topbar-language-toggle"
-        />
-        <Link href="/analytics">
-          <Button debugId="topbar-insights-button" className="rounded-2xl px-5">
-            <BarChart2 className="mr-2 h-4 w-4" aria-hidden />
-            Insights
-          </Button>
-        </Link>
         <SettingsDialog
           debugId="topbar-settings-dialog"
           settings={settings}
@@ -640,9 +613,6 @@ export default function Home() {
           presetLabel={scopeBadgeLabel}
           taskTypeLabel={taskTypeCopy.label}
         />
-        <Avatar className="hidden h-11 w-11 border border-border/60 shadow-sm sm:block">
-          <AvatarFallback className="bg-primary/10 text-xs font-semibold uppercase tracking-wide text-primary">LV</AvatarFallback>
-        </Avatar>
       </div>
     </div>
   );
@@ -651,7 +621,7 @@ export default function Home() {
     <div className="flex h-full flex-col justify-between gap-6">
       <div className="space-y-6">
         <div className="space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground group-data-[collapsed=true]/sidebar:hidden">
+          <p className="text-sm font-medium text-muted-foreground group-data-[collapsed=true]/sidebar:hidden">
             Navigate
           </p>
           <div className="grid justify-center gap-2">
@@ -663,11 +633,11 @@ export default function Home() {
         </div>
         <Collapsible open={isPresetOpen} onOpenChange={setIsPresetOpen}>
           <CollapsibleTrigger
-            className="group inline-flex w-full items-center justify-between rounded-2xl border border-border/60 bg-muted/30 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground transition hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 group-data-[collapsed=true]/sidebar:hidden"
+            className="group inline-flex w-full items-center justify-between rounded-2xl border border-border/60 bg-muted/30 px-3 py-2 text-sm font-medium text-muted-foreground transition hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 group-data-[collapsed=true]/sidebar:hidden"
           >
             <span>Active preset</span>
             <span className="flex items-center gap-2 text-primary">
-              <Badge variant="outline" className="rounded-full border-primary/30 bg-primary/10 text-[10px] uppercase tracking-[0.2em] text-primary">
+              <Badge variant="outline" className="rounded-full border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
                 {scopeBadgeLabel}
               </Badge>
               <ChevronDown className="h-3 w-3 transition duration-200 ease-out group-data-[state=open]:rotate-180" aria-hidden />
@@ -678,14 +648,18 @@ export default function Home() {
             <p>{queueLabel}</p>
           </CollapsibleContent>
         </Collapsible>
+        <div className="space-y-2 group-data-[collapsed=true]/sidebar:hidden">
+          <p className="text-sm font-medium text-muted-foreground">Language</p>
+          <LanguageToggle className="w-full rounded-2xl border-border/60 bg-background/90" debugId="sidebar-language-toggle" />
+        </div>
         <Collapsible open={isRecapOpen} onOpenChange={setIsRecapOpen}>
           <CollapsibleTrigger
-            className="group inline-flex w-full items-center justify-between rounded-2xl border border-border/60 bg-muted/30 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground transition hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 group-data-[collapsed=true]/sidebar:hidden"
+            className="group inline-flex w-full items-center justify-between rounded-2xl border border-border/60 bg-muted/30 px-3 py-2 text-sm font-medium text-muted-foreground transition hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 group-data-[collapsed=true]/sidebar:hidden"
           >
             <span>Session recap</span>
             <ChevronDown className="h-3 w-3 transition duration-200 ease-out group-data-[state=open]:rotate-180" aria-hidden />
           </CollapsibleTrigger>
-          <CollapsibleContent className="mt-3 rounded-2xl bg-muted/30 p-4 text-xs text-muted-foreground group-data-[collapsed=true]/sidebar:hidden">
+          <CollapsibleContent className="mt-3 rounded-2xl bg-muted/30 p-4 text-sm text-muted-foreground group-data-[collapsed=true]/sidebar:hidden">
             {summary.total > 0 ? (
               <p>
                 {summary.total} attempt{summary.total === 1 ? '' : 's'} recorded · {summary.accuracy}% accuracy
@@ -693,13 +667,13 @@ export default function Home() {
             ) : (
               <p>Take your first attempt to unlock personalised insights.</p>
             )}
-            <p className="mt-2 text-[11px] uppercase tracking-[0.22em] text-muted-foreground/80">
+            <p className="mt-2 text-sm text-muted-foreground/80">
               Detailed recap now lives in the analytics panel.
             </p>
           </CollapsibleContent>
         </Collapsible>
       </div>
-      <div className="hidden text-center text-[11px] uppercase tracking-[0.22em] text-muted-foreground group-data-[collapsed=true]/sidebar:block">
+      <div className="hidden text-center text-sm text-muted-foreground group-data-[collapsed=true]/sidebar:block">
         Hold to expand
       </div>
     </div>
@@ -716,11 +690,11 @@ export default function Home() {
         <section className="flex min-h-[540px] flex-col gap-6 rounded-3xl border border-border/50 bg-card/80 p-6 shadow-xl shadow-primary/10">
           <div className="flex flex-col gap-4 text-left">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-sm font-medium text-primary">
                 <Sparkles className="h-3 w-3" aria-hidden />
                 {scopeBadgeLabel}
               </div>
-              <p className="text-xs text-muted-foreground">{levelSummary}</p>
+              <p className="text-sm text-muted-foreground">{levelSummary}</p>
             </div>
             <div className="space-y-2">
               <h2 className="text-2xl font-semibold text-foreground">Focus mode</h2>
@@ -757,36 +731,49 @@ export default function Home() {
                   debugId="home-practice-card"
                 />
               ) : (
-                <div className="flex h-[340px] items-center justify-center rounded-[28px] border border-border/60 bg-background/70 shadow-2xl shadow-primary/10">
-                  <p className="text-sm text-muted-foreground">No tasks available right now. Try refreshing in a moment.</p>
-                </div>
-              )}
-              {fetchError && (
-                <div className="mt-3 flex flex-wrap items-center justify-center gap-3 text-sm text-destructive" role="alert">
-                  <span>{fetchError}</span>
+                <div className="flex h-[340px] flex-col items-center justify-center gap-3 rounded-[28px] border border-border/60 bg-background/70 text-center shadow-2xl shadow-primary/10">
+                  <p className="text-sm text-muted-foreground">
+                    No tasks are queued right now. Adjust your practice scope or reload to fetch fresh prompts.
+                  </p>
                   <Button
-                    variant="link"
-                    className="h-auto px-0 text-destructive"
+                    variant="secondary"
+                    className="rounded-full px-4"
                     onClick={() => {
                       setFetchError(null);
                       void fetchAndEnqueueTasks({ replace: true });
                     }}
                   >
-                    Try again
+                    Reload tasks
                   </Button>
                 </div>
               )}
-            </div>
-            <div className="w-full max-w-xl self-stretch">
-              <SessionProgressBar
-                value={milestoneProgress}
-                completed={sessionCompleted}
-                target={milestoneTarget}
-                debugId="home-session-progress"
-              />
+              {fetchError && (
+                <div
+                  className="mt-4 rounded-2xl border border-destructive/40 bg-destructive/5 px-4 py-4 text-sm text-destructive"
+                  role="alert"
+                >
+                  <p className="text-center font-medium">
+                    We couldn't load new tasks. Check your connection or adjust your practice scope, then try again.
+                  </p>
+                  {fetchError ? (
+                    <p className="mt-1 text-center text-destructive/70">{fetchError}</p>
+                  ) : null}
+                  <div className="mt-3 flex justify-center">
+                    <Button
+                      variant="secondary"
+                      className="rounded-full px-4"
+                      onClick={() => {
+                        setFetchError(null);
+                        void fetchAndEnqueueTasks({ replace: true });
+                      }}
+                    >
+                      Retry loading
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-
           <div className="flex w-full flex-col gap-3 sm:flex-row">
             <Button
               variant="secondary"
@@ -810,14 +797,14 @@ export default function Home() {
           <div className="rounded-3xl border border-border/60 bg-card/80 shadow-xl shadow-primary/5 lg:hidden">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 px-5 py-4">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Performance center</p>
+                <p className="text-sm font-medium text-muted-foreground">Performance center</p>
                 <p className="text-lg font-semibold text-foreground">{summary.accuracy}% accuracy</p>
-                <p className="text-xs text-muted-foreground">Tracking {historyCount} logged attempt{historyCount === 1 ? '' : 's'}</p>
+                <p className="text-sm text-muted-foreground">Tracking {historyCount} logged attempt{historyCount === 1 ? '' : 's'}</p>
               </div>
             </div>
             <Accordion type="single" collapsible defaultValue="overview" className="divide-y divide-border/60">
               <AccordionItem value="overview">
-                <AccordionTrigger className="px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                <AccordionTrigger className="px-5 py-3 text-sm font-medium text-muted-foreground">
                   Overview
                 </AccordionTrigger>
                 <AccordionContent className="space-y-4 px-5 pb-5">
@@ -825,19 +812,11 @@ export default function Home() {
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="attempts">
-                <AccordionTrigger className="px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                <AccordionTrigger className="px-5 py-3 text-sm font-medium text-muted-foreground">
                   Attempts
                 </AccordionTrigger>
                 <AccordionContent className="space-y-4 px-5 pb-5">
                   {attemptsPanel}
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="milestones">
-                <AccordionTrigger className="px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                  Milestones
-                </AccordionTrigger>
-                <AccordionContent className="space-y-4 px-5 pb-5">
-                  {milestonesPanel}
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
@@ -845,33 +824,27 @@ export default function Home() {
 
           <Tabs
             value={analyticsTab}
-            onValueChange={(value) => setAnalyticsTab(value as 'overview' | 'attempts' | 'milestones')}
+            onValueChange={(value) => setAnalyticsTab(value as 'overview' | 'attempts')}
             className="hidden w-full rounded-3xl border border-border/60 bg-card/80 shadow-xl shadow-primary/5 lg:block"
           >
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 px-6 py-4">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Performance center</p>
+                <p className="text-sm font-medium text-muted-foreground">Performance center</p>
                 <p className="text-lg font-semibold text-foreground">{summary.accuracy}% accuracy</p>
-                <p className="text-xs text-muted-foreground">Tracking {historyCount} logged attempt{historyCount === 1 ? '' : 's'}</p>
+                <p className="text-sm text-muted-foreground">Tracking {historyCount} logged attempt{historyCount === 1 ? '' : 's'}</p>
               </div>
               <TabsList className="flex rounded-full bg-muted/40 p-1">
                 <TabsTrigger
                   value="overview"
-                  className="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground transition data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  className="rounded-full px-3 py-1 text-sm font-medium text-muted-foreground transition data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                 >
                   Overview
                 </TabsTrigger>
                 <TabsTrigger
                   value="attempts"
-                  className="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground transition data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  className="rounded-full px-3 py-1 text-sm font-medium text-muted-foreground transition data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                 >
                   Attempts
-                </TabsTrigger>
-                <TabsTrigger
-                  value="milestones"
-                  className="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground transition data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                >
-                  Milestones
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -882,10 +855,6 @@ export default function Home() {
 
             <TabsContent value="attempts" className="space-y-4 px-6 py-6">
               {attemptsPanel}
-            </TabsContent>
-
-            <TabsContent value="milestones" className="space-y-4 px-6 py-6">
-              {milestonesPanel}
             </TabsContent>
           </Tabs>
         </aside>

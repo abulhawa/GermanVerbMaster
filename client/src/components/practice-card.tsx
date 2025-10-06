@@ -271,7 +271,7 @@ function renderStatusBadge(
     >
       <StatusIcon className="h-5 w-5" aria-hidden />
       <div>
-        <p className="font-semibold uppercase tracking-[0.22em]">{statusLabel}</p>
+        <p className="text-sm font-semibold text-muted-foreground">{statusLabel}</p>
         {status === 'incorrect' && (displayAnswer || expectedForms.length > 0) && (
           <p className="text-xs normal-case text-muted-foreground">
             {copy.status.expectedAnswer}{' '}
@@ -333,7 +333,7 @@ function resolveCefrLevel(metadata: Record<string, unknown> | null | undefined):
 function renderMetadataRow(copy: PracticeCardMessages, task: PracticeTask) {
   const cefrLevel = resolveCefrLevel(task.lexeme.metadata) ?? 'A1';
   return (
-    <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.22em] text-muted-foreground">
+    <div className="flex flex-wrap items-center gap-3 text-xs font-medium text-muted-foreground">
       <span>CEFR {cefrLevel}</span>
       <span aria-hidden>•</span>
       <span>
@@ -484,7 +484,7 @@ function ConjugateFormRenderer({
           <div className="space-y-1">
             <Badge
               variant="outline"
-              className="rounded-full border-primary/40 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-primary"
+              className="rounded-full border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
             >
               {task.pos.toUpperCase()}
             </Badge>
@@ -496,7 +496,7 @@ function ConjugateFormRenderer({
             </Badge>
           )}
         </div>
-        <p className="text-sm text-muted-foreground">{instructionText}</p>
+        <p className="text-lg font-medium leading-snug text-foreground sm:text-xl">{instructionText}</p>
       </CardHeader>
       <CardContent className="space-y-5">
         <div className="flex items-center gap-3">
@@ -538,7 +538,7 @@ function ConjugateFormRenderer({
 
         {preferences.showExamples && exampleText && (
           <div className="rounded-2xl border border-border/60 bg-muted/40 p-4 text-sm">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">{copy.exampleLabel}</p>
+            <p className="text-sm font-medium text-muted-foreground">{copy.exampleLabel}</p>
             <p className="mt-2 text-muted-foreground">{exampleText}</p>
           </div>
         )}
@@ -552,7 +552,7 @@ function ConjugateFormRenderer({
           >
             <HelpCircle className="h-4 w-4" aria-hidden />
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.22em]">{copy.hints.label}</p>
+              <p className="text-sm font-medium">{copy.hints.label}</p>
               <AnimatePresence initial={false}>
                 {showHint ? (
                   <motion.p
@@ -736,7 +736,7 @@ function NounCaseDeclensionRenderer({
           <div className="space-y-1">
             <Badge
               variant="outline"
-              className="rounded-full border-primary/40 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-primary"
+              className="rounded-full border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
             >
               {task.pos.toUpperCase()}
             </Badge>
@@ -748,16 +748,16 @@ function NounCaseDeclensionRenderer({
             </Badge>
           )}
         </div>
-        <p className="text-sm text-muted-foreground">{instructionText}</p>
+        <p className="text-lg font-medium leading-snug text-foreground sm:text-xl">{instructionText}</p>
         <div className="flex flex-wrap gap-2">
-          <Badge variant="secondary" className="rounded-full bg-secondary/15 text-xs uppercase tracking-[0.22em]">
+          <Badge variant="secondary" className="rounded-full bg-secondary/15 text-xs font-medium">
             {caseLabel}
           </Badge>
-          <Badge variant="secondary" className="rounded-full bg-secondary/15 text-xs uppercase tracking-[0.22em]">
+          <Badge variant="secondary" className="rounded-full bg-secondary/15 text-xs font-medium">
             {numberLabel}
           </Badge>
           {task.prompt.gender && (
-            <Badge variant="secondary" className="rounded-full bg-secondary/15 text-xs uppercase tracking-[0.22em]">
+            <Badge variant="secondary" className="rounded-full bg-secondary/15 text-xs font-medium">
               {task.prompt.gender}
             </Badge>
           )}
@@ -801,7 +801,7 @@ function NounCaseDeclensionRenderer({
 
         {preferences.showExamples && exampleText && (
           <div className="rounded-2xl border border-border/60 bg-muted/40 p-4 text-sm">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">{copy.exampleLabel}</p>
+            <p className="text-sm font-medium text-muted-foreground">{copy.exampleLabel}</p>
             <p className="mt-2 text-muted-foreground">{exampleText}</p>
           </div>
         )}
@@ -815,7 +815,7 @@ function NounCaseDeclensionRenderer({
           >
             <HelpCircle className="h-4 w-4" aria-hidden />
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.22em]">{copy.hints.label}</p>
+              <p className="text-sm font-medium">{copy.hints.label}</p>
               <AnimatePresence initial={false}>
                 {showHint ? (
                   <motion.p
@@ -984,7 +984,7 @@ function AdjectiveEndingRenderer({
           <div className="space-y-1">
             <Badge
               variant="outline"
-              className="rounded-full border-primary/40 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-primary"
+              className="rounded-full border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
             >
               {task.pos.toUpperCase()}
             </Badge>
@@ -996,13 +996,13 @@ function AdjectiveEndingRenderer({
             </Badge>
           )}
         </div>
-        <p className="text-sm text-muted-foreground">{instructionText}</p>
+        <p className="text-lg font-medium leading-snug text-foreground sm:text-xl">{instructionText}</p>
         <div className="flex flex-wrap gap-2">
-          <Badge variant="secondary" className="rounded-full bg-secondary/15 text-xs uppercase tracking-[0.22em]">
+          <Badge variant="secondary" className="rounded-full bg-secondary/15 text-xs font-medium">
             {degreeLabel}
           </Badge>
           {task.prompt.syntacticFrame && (
-            <Badge variant="secondary" className="rounded-full bg-secondary/15 text-xs uppercase tracking-[0.22em]">
+            <Badge variant="secondary" className="rounded-full bg-secondary/15 text-xs font-medium">
               {copy.adjective.syntacticFrameLabel} {task.prompt.syntacticFrame}
             </Badge>
           )}
@@ -1046,7 +1046,7 @@ function AdjectiveEndingRenderer({
 
         {preferences.showExamples && exampleText && (
           <div className="rounded-2xl border border-border/60 bg-muted/40 p-4 text-sm">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">{copy.exampleLabel}</p>
+            <p className="text-sm font-medium text-muted-foreground">{copy.exampleLabel}</p>
             <p className="mt-2 text-muted-foreground">{exampleText}</p>
           </div>
         )}
@@ -1060,7 +1060,7 @@ function AdjectiveEndingRenderer({
           >
             <HelpCircle className="h-4 w-4" aria-hidden />
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.22em]">{copy.hints.label}</p>
+              <p className="text-sm font-medium">{copy.hints.label}</p>
               <AnimatePresence initial={false}>
                 {showHint ? (
                   <motion.p

@@ -134,7 +134,7 @@ export function PracticeModeSwitcher({
         {...getDevAttributes('practice-mode-switcher', resolvedDebugId)}
       >
       <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+        <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
           <span>Practice scope</span>
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
@@ -153,7 +153,7 @@ export function PracticeModeSwitcher({
         </div>
         <Badge
           variant="outline"
-          className="rounded-full border-primary/30 bg-primary/10 text-[10px] uppercase tracking-[0.2em] text-primary"
+          className="rounded-full border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
         >
           {selectedTaskTypes.length} selected
         </Badge>
@@ -166,7 +166,7 @@ export function PracticeModeSwitcher({
               key={mode.value}
               value={mode.value}
               className={cn(
-                'flex min-w-[110px] items-center gap-2 rounded-2xl px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60',
+                'flex min-w-[110px] items-center gap-2 rounded-2xl px-4 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60',
                 'data-[state=active]:bg-primary data-[state=active]:text-primary-foreground',
               )}
             >
@@ -179,7 +179,7 @@ export function PracticeModeSwitcher({
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/95 px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground"
+              className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/95 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground"
               aria-label="Configure custom task mix"
             >
               <SlidersHorizontal className="h-3.5 w-3.5" aria-hidden />
@@ -188,7 +188,7 @@ export function PracticeModeSwitcher({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-72 space-y-1 rounded-2xl border border-border/70 bg-card/95 p-3 shadow-xl" align="end">
-            <DropdownMenuLabel className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
+            <DropdownMenuLabel className="text-sm font-medium text-muted-foreground">
               Task types
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
