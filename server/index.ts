@@ -4,10 +4,13 @@ import { createServer } from "http";
 import { serveStatic } from "./serve-static.js";
 import { formatFeatureFlagHeader, getFeatureFlagSnapshot } from "./feature-flags.js";
 
+const defaultNodeEnv = process.env.VERCEL ? "production" : "development";
+process.env.NODE_ENV = process.env.NODE_ENV ?? defaultNodeEnv;
+
 const app = createApiApp();
 registerRoutes(app);
 
-const nodeEnv = process.env.NODE_ENV ?? "production";
+const nodeEnv = process.env.NODE_ENV ?? defaultNodeEnv;
 app.set("env", nodeEnv);
 
 function log(message: string, source = "express") {
