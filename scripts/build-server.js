@@ -57,7 +57,11 @@ const externalDeps = [
   '../pkg',
   // (the pattern `../lightningcss.*.node` cannot be expressed here; bundling lightningcss is avoided)
 
+  // Vite dev server dependencies are only needed during local development.
+  'vite',
+
   // Vite PWA generator runtime helpers — not needed in the runtime bundle, only at build-time
+  '@vite-pwa/assets-generator',
   '@vite-pwa/assets-generator/api/generate-assets',
   '@vite-pwa/assets-generator/api/instructions',
   '@vite-pwa/assets-generator/config',
@@ -83,6 +87,9 @@ function baseBuildOptions() {
     sourcemap: true,
     // Keep external modules out of the bundle so runtime can resolve them.
     external: externalDeps,
+    banner: {
+      js: "import { createRequire as __createRequire } from 'module';\nconst require = __createRequire(import.meta.url);",
+    },
     // Increase log level for debugging if necessary:
     // logLevel: 'info',
   };

@@ -1,11 +1,25 @@
 import { createApiApp } from "./api/app.js";
 import { registerRoutes } from "./routes.js";
 import { createServer } from "http";
-import { setupVite, serveStatic, log } from "./vite.js";
+import { serveStatic } from "./serve-static.js";
 import { formatFeatureFlagHeader, getFeatureFlagSnapshot } from "./feature-flags.js";
 
 const app = createApiApp();
 registerRoutes(app);
+
+const nodeEnv = process.env.NODE_ENV ?? "production";
+app.set("env", nodeEnv);
+
+function log(message: string, source = "express") {
+  const formattedTime = new Date().toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  });
+
+  console.log(`${formattedTime} [${source}] ${message}`);
+}
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -41,7 +55,8 @@ app.use((req, res, next) => {
   // doesn't interfere with the other routes
   const server = createServer(app);
 
-  if (app.get("env") === "development") {
+  if (nodeEnv === "development") {
+    const { setupVite } = await import("./vite.js");
     await setupVite(app, server);
   } else {
     serveStatic(app);
