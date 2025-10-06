@@ -20,8 +20,9 @@ import {
   type DebuggableComponentProps,
   getDevAttributes,
 } from '@/lib/dev-attributes';
+import type { PracticeScope } from '@/lib/practice-overview';
 
-export type PracticeScope = 'all' | 'verbs' | 'nouns' | 'adjectives' | 'custom';
+export type { PracticeScope } from '@/lib/practice-overview';
 
 interface PracticeModeSwitcherProps extends DebuggableComponentProps {
   scope: PracticeScope;
