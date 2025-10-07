@@ -19,6 +19,8 @@ vi.mock('@/contexts/auth-context', () => ({
     profile: null,
     role: 'standard',
     loading: false,
+    initializationError: null,
+    firebaseReady: false,
     signInWithEmail: vi.fn(),
     registerWithEmail: vi.fn(),
     signInWithGoogle: vi.fn(),

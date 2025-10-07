@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import { doc, getDoc, serverTimestamp, setDoc, type Firestore } from "firebase/firestore";
 import { FirebaseError } from "firebase/app";
 
 import { useAuth } from "@/contexts/auth-context";
@@ -91,8 +91,18 @@ const saveQueue = (uid: string, queue: PendingWrite[]) => {
 };
 
 export function useCloudSync() {
-  const { status, profile } = useAuth();
-  const firestore = useMemo(() => getFirebaseFirestore(), []);
+  const { status, profile, firebaseReady } = useAuth();
+  const firestore = useMemo<Firestore | null>(() => {
+    if (!firebaseReady) {
+      return null;
+    }
+    try {
+      return getFirebaseFirestore();
+    } catch (error) {
+      console.warn("[cloud-sync] Firebase unavailable; staying offline", error);
+      return null;
+    }
+  }, [firebaseReady]);
   const queueRef = useRef<PendingWrite[]>([]);
   const flushingRef = useRef(false);
   const suppressRef = useRef({
@@ -114,7 +124,7 @@ export function useCloudSync() {
   );
 
   const flushQueue = useCallback(async () => {
-    if (!profile || status !== "authenticated") {
+    if (!profile || status !== "authenticated" || !firestore) {
       return;
     }
 
@@ -187,9 +197,10 @@ export function useCloudSync() {
           queueRef.current.pop();
           saveQueue(profile.uid, queueRef.current);
         } catch (error) {
-          const isRetryable =
-            error instanceof FirebaseError &&
-            ["unavailable", "deadline-exceeded", "internal", "aborted"].includes(error.code);
+          let isRetryable = false;
+          if (error instanceof FirebaseError) {
+            isRetryable = ["unavailable", "deadline-exceeded", "internal", "aborted"].includes(error.code);
+          }
           if (!isRetryable) {
             console.error("[cloud-sync] Unable to flush write", error);
             queueRef.current.pop();
@@ -265,7 +276,7 @@ export function useCloudSync() {
   );
 
   useEffect(() => {
-    if (status !== "authenticated" || !profile) {
+    if (status !== "authenticated" || !profile || !firestore) {
       if (lastUidRef.current) {
         saveQueue(lastUidRef.current, []);
       }
@@ -277,6 +288,10 @@ export function useCloudSync() {
     lastUidRef.current = profile.uid;
 
     const runInitialSync = async () => {
+      if (!firestore) {
+        return;
+      }
+
       try {
         const baseRef = doc(firestore, "users", profile.uid);
         const [settingsSnap, progressSnap, answersSnap, themeSnap] = await Promise.all([
@@ -360,7 +375,17 @@ export function useCloudSync() {
     };
 
     void runInitialSync();
-  }, [applyRemoteAnswers, applyRemoteProgress, applyRemoteSettings, applyRemoteTheme, firestore, flushQueue, profile, queueWrite, status]);
+  }, [
+    applyRemoteAnswers,
+    applyRemoteProgress,
+    applyRemoteSettings,
+    applyRemoteTheme,
+    firestore,
+    flushQueue,
+    profile,
+    queueWrite,
+    status,
+  ]);
 
   useEffect(() => {
     if (status !== "authenticated" || !profile) {
