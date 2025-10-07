@@ -9,7 +9,6 @@ import { MobileNavBar } from "@/components/layout/mobile-nav-bar";
 import { primaryNavigationItems } from "@/components/layout/navigation";
 import { AnalyticsDashboard } from "@/components/analytics-dashboard";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ProgressDisplay } from "@/components/progress-display";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -26,6 +25,8 @@ import {
   getVerbLevel,
   normalisePreferredTaskTypes,
 } from "@/lib/practice-overview";
+import { AccountMenu } from "@/components/account/account-menu";
+import { useAuth } from "@/contexts/auth-context";
 
 interface SessionProgressBarProps {
   value: number;
@@ -172,13 +173,19 @@ export default function Analytics() {
             Back to practice
           </Button>
         </Link>
-        <Avatar className="h-11 w-11 border border-border/60 shadow-sm">
-          <AvatarFallback className="bg-primary/10 text-sm font-semibold text-primary">
-            LV
-          </AvatarFallback>
-        </Avatar>
+        <AccountMenu debugId="analytics-account" />
       </div>
     </div>
+  );
+
+  const { role } = useAuth();
+
+  const navigationItems = useMemo(
+    () =>
+      role === "admin"
+        ? primaryNavigationItems
+        : primaryNavigationItems.filter((item) => item.href !== "/admin"),
+    [role],
   );
 
   const sidebar = (
@@ -188,7 +195,7 @@ export default function Analytics() {
           Navigate
         </p>
         <div className="grid gap-2">
-          {primaryNavigationItems.map((item) => (
+          {navigationItems.map((item) => (
             <SidebarNavButton
               key={item.href}
               href={item.href}
@@ -206,7 +213,7 @@ export default function Analytics() {
     <AppShell
       sidebar={sidebar}
       topBar={topBar}
-      mobileNav={<MobileNavBar items={primaryNavigationItems} />}
+      mobileNav={<MobileNavBar items={navigationItems} />}
     >
       <div className="grid gap-6 xl:grid-cols-[minmax(0,2.4fr)_minmax(0,1.6fr)]">
         <div className="space-y-6">

@@ -1,6 +1,8 @@
 # Dependencies and build outputs
 node_modules
-dist
+dist/*
+!dist/api/
+!dist/api/index.js
 !patches/**/dist
 
 # Operating system cruft

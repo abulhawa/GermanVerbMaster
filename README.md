@@ -15,6 +15,7 @@ Requires Node.js 22.0.0 or newer and npm 10+ (see `package.json` engines field).
    - `APP_ORIGIN` – a comma-separated allow list used for CORS in production builds.
    - `ENABLE_LEXEME_SCHEMA` – disable to fall back to the legacy verb-only stack (defaults to `true`).
    - `ENABLE_NOUNS_BETA` / `ENABLE_ADJECTIVES_BETA` – flip feature flags for the new noun and adjective task cohorts. Both default to `false` so you can stage rollouts incrementally.
+   - `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_APP_ID` – Firebase web config used for optional account-based sync. Populate these when enabling cloud sync locally; omit them to stay offline-only.
 3. Apply the latest migrations to your Postgres database:
    ```bash
    npm run db:push

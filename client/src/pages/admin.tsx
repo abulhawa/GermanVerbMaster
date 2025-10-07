@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
-import { Sparkles, Settings2, PenSquare, Trash2 } from 'lucide-react';
+import { Loader2, ShieldAlert, Sparkles, Settings2, PenSquare, Trash2 } from 'lucide-react';
 import { Link } from 'wouter';
 
 import { AppShell } from '@/components/layout/app-shell';
@@ -19,6 +19,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import type { Word } from '@shared';
+import { AccountMenu } from '@/components/account/account-menu';
+import { useAuth } from '@/contexts/auth-context';
 
 const wordSchema = z.object({
   id: z.number(),
@@ -253,6 +255,7 @@ const AdminWordsPage = () => {
   const [formState, setFormState] = useState<WordFormState | null>(null);
 
   const pageDebugId = 'admin-words';
+  const { status, role } = useAuth();
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -271,6 +274,90 @@ const AdminWordsPage = () => {
     () => ({ search, pos, level, canonicalFilter, completeFilter, page, perPage }),
     [search, pos, level, canonicalFilter, completeFilter, page, perPage],
   );
+
+  const navigationItems = useMemo(
+    () =>
+      role === 'admin'
+        ? primaryNavigationItems
+        : primaryNavigationItems.filter((item) => item.href !== '/admin'),
+    [role],
+  );
+
+  const sidebar = (
+    <div className="flex h-full flex-col justify-between gap-8">
+      <div className="space-y-6">
+        <div className="space-y-3">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Navigate</p>
+          <div className="grid gap-2">
+            {navigationItems.map((item) => (
+              <SidebarNavButton
+                key={item.href}
+                href={item.href}
+                icon={item.icon}
+                label={item.label}
+                exact={item.exact}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="rounded-3xl border border-dashed border-border/60 bg-card/70 p-4 text-xs text-muted-foreground">
+        Tip: Adjust rows per page to speed through audits on large datasets.
+      </div>
+    </div>
+  );
+
+  if (status === 'loading') {
+    const loadingTopBar = (
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="space-y-1">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Admin console</p>
+          <h1 className="text-xl font-semibold text-foreground">Loading admin tools…</h1>
+        </div>
+        <AccountMenu debugId="admin-loading-account" />
+      </div>
+    );
+
+    return (
+      <AppShell sidebar={sidebar} topBar={loadingTopBar} mobileNav={<MobileNavBar items={navigationItems} />}>
+        <div className="flex min-h-[320px] items-center justify-center text-muted-foreground">
+          <Loader2 className="h-6 w-6 animate-spin" aria-hidden />
+          <span className="sr-only">Loading admin area</span>
+        </div>
+      </AppShell>
+    );
+  }
+
+  if (role !== 'admin') {
+    const restrictedTopBar = (
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="space-y-1">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Admin console</p>
+          <h1 className="text-xl font-semibold text-foreground">Admin access required</h1>
+        </div>
+        <AccountMenu debugId="admin-restricted-account" />
+      </div>
+    );
+
+    return (
+      <AppShell sidebar={sidebar} topBar={restrictedTopBar} mobileNav={<MobileNavBar items={navigationItems} />}>
+        <div className="mx-auto flex max-w-2xl flex-col items-center justify-center gap-4 py-16 text-center text-muted-foreground">
+          <ShieldAlert className="h-12 w-12 text-warning" aria-hidden />
+          <div className="space-y-2">
+            <p className="text-lg font-semibold text-foreground">Restricted area</p>
+            <p className="text-sm">
+              This section is limited to admin accounts. Ask a maintainer to grant you the admin role or continue practicing verbs.
+            </p>
+          </div>
+          <Link href="/">
+            <Button variant="secondary" className="rounded-2xl px-5">
+              Return to practice
+            </Button>
+          </Link>
+        </div>
+      </AppShell>
+    );
+  }
 
   const queryKey = useMemo(
     () => ['words', filters, normalizedAdminToken],
@@ -445,30 +532,7 @@ const AdminWordsPage = () => {
             Open analytics
           </Button>
         </Link>
-      </div>
-    </div>
-  );
-
-  const sidebar = (
-    <div className="flex h-full flex-col justify-between gap-8">
-      <div className="space-y-6">
-        <div className="space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Navigate</p>
-          <div className="grid gap-2">
-            {primaryNavigationItems.map((item) => (
-              <SidebarNavButton
-                key={item.href}
-                href={item.href}
-                icon={item.icon}
-                label={item.label}
-                exact={item.exact}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-      <div className="rounded-3xl border border-dashed border-border/60 bg-card/70 p-4 text-xs text-muted-foreground">
-        Tip: Adjust rows per page to speed through audits on large datasets.
+        <AccountMenu debugId="admin-account" />
       </div>
     </div>
   );
@@ -477,7 +541,7 @@ const AdminWordsPage = () => {
     <AppShell
       sidebar={sidebar}
       topBar={topBar}
-      mobileNav={<MobileNavBar items={primaryNavigationItems} />}
+      mobileNav={<MobileNavBar items={navigationItems} />}
     >
       <div className="space-y-6">
         <Card className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5">

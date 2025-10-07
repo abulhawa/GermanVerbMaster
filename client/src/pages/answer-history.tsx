@@ -10,6 +10,8 @@ import { primaryNavigationItems } from "@/components/layout/navigation";
 import { AnsweredQuestionsPanel } from "@/components/answered-questions-panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { AccountMenu } from "@/components/account/account-menu";
+import { useAuth } from "@/contexts/auth-context";
 import {
   AnsweredQuestion,
   loadAnswerHistory,
@@ -23,6 +25,7 @@ const LEVEL_FILTERS: LevelFilter[] = ["all", "A1", "A2", "B1", "B2", "C1", "C2"]
 const RESULT_FILTERS: ResultFilter[] = ["all", "correct", "incorrect"];
 
 export default function AnswerHistoryPage() {
+  const { role } = useAuth();
   const [history, setHistory] = useState<AnsweredQuestion[]>(() => loadAnswerHistory());
   const [levelFilter, setLevelFilter] = useState<LevelFilter>("all");
   const [resultFilter, setResultFilter] = useState<ResultFilter>("all");
@@ -51,6 +54,14 @@ export default function AnswerHistoryPage() {
     setHistory([]);
   };
 
+  const navigationItems = useMemo(
+    () =>
+      role === "admin"
+        ? primaryNavigationItems
+        : primaryNavigationItems.filter((item) => item.href !== "/admin"),
+    [role],
+  );
+
   const topBar = (
     <div className="flex flex-row items-center justify-between gap-3">
       <div className="space-y-1">
@@ -75,6 +86,7 @@ export default function AnswerHistoryPage() {
           <Trash2 className="mr-2 h-4 w-4" aria-hidden />
           Clear history
         </Button>
+        <AccountMenu debugId="answer-history-account" />
       </div>
     </div>
   );
@@ -87,16 +99,16 @@ export default function AnswerHistoryPage() {
             Navigate
           </p>
           <div className="grid gap-2">
-            {primaryNavigationItems.map((item) => (
-              <SidebarNavButton
-                key={item.href}
-                href={item.href}
-                icon={item.icon}
-                label={item.label}
-                exact={item.exact}
-              />
-            ))}
-          </div>
+          {navigationItems.map((item) => (
+            <SidebarNavButton
+              key={item.href}
+              href={item.href}
+              icon={item.icon}
+              label={item.label}
+              exact={item.exact}
+            />
+          ))}
+        </div>
         </div>
         <div className="rounded-3xl border border-border/60 bg-muted/40 p-5 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
@@ -176,7 +188,7 @@ export default function AnswerHistoryPage() {
     <AppShell
       sidebar={sidebar}
       topBar={topBar}
-      mobileNav={<MobileNavBar items={primaryNavigationItems} />}
+      mobileNav={<MobileNavBar items={navigationItems} />}
     >
       <div className="space-y-6">
         {filterControls}

@@ -195,6 +195,7 @@ export interface PracticeProgressState {
   totals: Record<TaskType, TaskProgressSummary>;
   lastPracticedTaskId: string | null;
   migratedFromLegacy?: boolean;
+  updatedAt?: string;
 }
 
 export interface PracticeSettingsRendererPreferences {

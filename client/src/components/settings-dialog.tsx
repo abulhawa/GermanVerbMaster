@@ -102,6 +102,10 @@ import {
 
 
 
+  persistThemeSetting,
+
+
+
   getInitialThemeSetting,
 
 
@@ -310,7 +314,7 @@ export function SettingsDialog({
 
 
 
-    window.localStorage.setItem(THEME_STORAGE_KEY, themeSetting);
+    persistThemeSetting(themeSetting);
 
 
 

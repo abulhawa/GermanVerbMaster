@@ -13,6 +13,22 @@ import { createDefaultSettings } from '@/lib/practice-settings';
 import type { PracticeSettingsState, TaskType } from '@shared';
 import { LocaleProvider } from '@/locales';
 
+vi.mock('@/contexts/auth-context', () => ({
+  useAuth: () => ({
+    status: 'unauthenticated',
+    profile: null,
+    role: 'standard',
+    loading: false,
+    signInWithEmail: vi.fn(),
+    registerWithEmail: vi.fn(),
+    signInWithGoogle: vi.fn(),
+    signInWithMicrosoft: vi.fn(),
+    updateDisplayName: vi.fn(),
+    refreshRole: vi.fn().mockResolvedValue('standard'),
+    signOut: vi.fn(),
+  }),
+}));
+
 vi.mock('@/components/settings-dialog', () => ({
   SettingsDialog: () => null,
 }));

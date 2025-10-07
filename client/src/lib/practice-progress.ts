@@ -36,6 +36,7 @@ export function createEmptyProgressState(): PracticeProgressState {
     version: 1,
     totals: createEmptyTotals(),
     lastPracticedTaskId: null,
+    updatedAt: new Date().toISOString(),
   } satisfies PracticeProgressState;
 }
 
@@ -91,6 +92,7 @@ function migrateLegacyProgress(storage: Storage): PracticeProgressState {
   const legacyRaw = storage.getItem(LEGACY_STORAGE_KEY);
   const legacy = legacyRaw ? parseLegacyProgress(legacyRaw) : null;
   const migrated = legacy ? convertLegacyProgress(legacy) : createEmptyProgressState();
+  migrated.updatedAt = new Date().toISOString();
 
   try {
     storage.setItem(STORAGE_KEY, JSON.stringify(migrated));
@@ -144,17 +146,43 @@ export function loadPracticeProgress(): PracticeProgressState {
   return ensureState(storage);
 }
 
-export function savePracticeProgress(state: PracticeProgressState): void {
+export interface SavePracticeProgressOptions {
+  preserveUpdatedAt?: boolean;
+}
+
+export function savePracticeProgress(
+  state: PracticeProgressState,
+  options: SavePracticeProgressOptions = {},
+): PracticeProgressState {
   const storage = getStorage();
   if (!storage) {
-    return;
+    return {
+      ...state,
+      updatedAt: options.preserveUpdatedAt && state.updatedAt ? state.updatedAt : new Date().toISOString(),
+    } satisfies PracticeProgressState;
   }
 
   try {
-    storage.setItem(STORAGE_KEY, JSON.stringify(state));
+    const nextState: PracticeProgressState = {
+      ...state,
+      updatedAt: options.preserveUpdatedAt && state.updatedAt ? state.updatedAt : new Date().toISOString(),
+    };
+    storage.setItem(STORAGE_KEY, JSON.stringify(nextState));
     storage.setItem(MIGRATION_MARKER_KEY, '1');
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(
+        new CustomEvent('practice-progress:updated', {
+          detail: { state: nextState },
+        }),
+      );
+    }
+    return nextState;
   } catch (error) {
     console.warn('Failed to persist practice progress', error);
+    return {
+      ...state,
+      updatedAt: options.preserveUpdatedAt && state.updatedAt ? state.updatedAt : new Date().toISOString(),
+    } satisfies PracticeProgressState;
   }
 }
 
@@ -216,5 +244,6 @@ export function recordTaskResult(
       [input.taskType]: summary,
     },
     lastPracticedTaskId: input.taskId,
+    updatedAt: timestamp,
   };
 }

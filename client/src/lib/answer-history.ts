@@ -15,6 +15,7 @@ const LEGACY_STORAGE_KEY = 'answerHistory';
 const MIGRATION_MARKER_KEY = 'practice.answerHistory.migrated';
 const STORAGE_CONTEXT = 'answer history';
 export const DEFAULT_MAX_STORED_ANSWERS = 60;
+const UPDATED_AT_STORAGE_KEY = 'practice.answerHistory.updatedAt';
 
 interface LegacyAnsweredQuestion {
   id: string;
@@ -227,6 +228,7 @@ function migrateLegacyEntries(storage: Storage): TaskAnswerHistoryItem[] {
   if (entries.length) {
     try {
       storage.setItem(ANSWER_HISTORY_STORAGE_KEY, JSON.stringify(entries.slice(0, DEFAULT_MAX_STORED_ANSWERS)));
+      storage.setItem(UPDATED_AT_STORAGE_KEY, new Date().toISOString());
     } catch (error) {
       console.warn('Unable to persist migrated answer history', error);
     }
@@ -307,20 +309,40 @@ export function loadAnswerHistory(): TaskAnswerHistoryItem[] {
     .map(ensureLexemeSnapshot);
 }
 
-export function saveAnswerHistory(history: TaskAnswerHistoryItem[]): void {
+export function getAnswerHistoryUpdatedAt(): string | null {
   const storage = getStorage();
   if (!storage) {
-    return;
+    return null;
+  }
+
+  return storage.getItem(UPDATED_AT_STORAGE_KEY);
+}
+
+export function saveAnswerHistory(history: TaskAnswerHistoryItem[]): TaskAnswerHistoryItem[] {
+  const storage = getStorage();
+  if (!storage) {
+    return history.slice(0, DEFAULT_MAX_STORED_ANSWERS).map(ensureLexemeSnapshot);
   }
 
   try {
     const normalised = history
       .slice(0, DEFAULT_MAX_STORED_ANSWERS)
       .map(ensureLexemeSnapshot);
+    const updatedAt = new Date().toISOString();
     storage.setItem(ANSWER_HISTORY_STORAGE_KEY, JSON.stringify(normalised));
     storage.setItem(MIGRATION_MARKER_KEY, '1');
+    storage.setItem(UPDATED_AT_STORAGE_KEY, updatedAt);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(
+        new CustomEvent('answer-history:updated', {
+          detail: { history: normalised, updatedAt },
+        }),
+      );
+    }
+    return normalised;
   } catch (error) {
     console.warn('Failed to persist answer history', error);
+    return history.slice(0, DEFAULT_MAX_STORED_ANSWERS).map(ensureLexemeSnapshot);
   }
 }
 

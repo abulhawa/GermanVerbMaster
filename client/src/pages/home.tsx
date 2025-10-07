@@ -16,6 +16,8 @@ import { PracticeCard, type PracticeCardResult } from '@/components/practice-car
 import { SettingsDialog } from '@/components/settings-dialog';
 import { PracticeModeSwitcher, type PracticeScope } from '@/components/practice-mode-switcher';
 import { LanguageToggle } from '@/components/language-toggle';
+import { AccountMenu } from '@/components/account/account-menu';
+import { useAuth } from '@/contexts/auth-context';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { SidebarNavButton } from '@/components/layout/sidebar-nav-button';
@@ -343,6 +345,36 @@ export default function Home() {
 
   const isInitialLoading = !activeTask && isFetchingTasks;
 
+  const { role } = useAuth();
+
+  const navigationItems = useMemo(
+    () =>
+      role === 'admin'
+        ? primaryNavigationItems
+        : primaryNavigationItems.filter((item) => item.href !== '/admin'),
+    [role],
+  );
+
+  const topBar = (
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="space-y-1">
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+          Practice focus
+        </p>
+        <h1 className="text-2xl font-semibold text-foreground">
+          Continue your personalised session
+        </h1>
+      </div>
+      <div className="flex items-center gap-2">
+        <LanguageToggle
+          className="hidden rounded-2xl border border-border/60 bg-background/90 px-4 py-2 md:flex"
+          debugId="header-language-toggle"
+        />
+        <AccountMenu debugId="home-account" />
+      </div>
+    </div>
+  );
+
   const sidebar = (
     <div className="flex h-full flex-col justify-between gap-6">
       <div className="space-y-6">
@@ -351,10 +383,15 @@ export default function Home() {
             Navigate
           </p>
           <div className="grid justify-center gap-2">
-            <SidebarNavButton href="/" icon={Sparkles} label="Practice" exact />
-            <SidebarNavButton href="/answers" icon={History} label="Answer history" />
-            <SidebarNavButton href="/analytics" icon={Compass} label="Analytics" />
-            <SidebarNavButton href="/admin" icon={Settings2} label="Admin tools" />
+            {navigationItems.map((item) => (
+              <SidebarNavButton
+                key={item.href}
+                href={item.href}
+                icon={item.icon}
+                label={item.label}
+                exact={item.exact}
+              />
+            ))}
           </div>
         </div>
         <div className="space-y-2">
@@ -384,8 +421,8 @@ export default function Home() {
   return (
     <AppShell
       sidebar={sidebar}
-      topBar={null}
-      mobileNav={<MobileNavBar items={primaryNavigationItems} />}
+      topBar={topBar}
+      mobileNav={<MobileNavBar items={navigationItems} />}
       debugId="home-app-shell"
     >
       <div className="space-y-6">

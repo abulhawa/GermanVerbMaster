@@ -5,6 +5,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { useSyncQueue } from "@/hooks/use-sync-queue";
 import { LocaleProvider } from "@/locales";
+import { AuthProvider } from "@/contexts/auth-context";
+import { useCloudSync } from "@/hooks/use-cloud-sync";
 
 const HomePage = lazy(() => import("@/pages/home"));
 const AnswerHistoryPage = lazy(() => import("@/pages/answer-history"));
@@ -41,14 +43,22 @@ function SyncManager() {
   return null;
 }
 
+function CloudSyncManager() {
+  useCloudSync();
+  return null;
+}
+
 function App() {
   return (
     <LocaleProvider>
-      <QueryClientProvider client={queryClient}>
-        <SyncManager />
-        <Router />
-        <Toaster />
-      </QueryClientProvider>
+      <AuthProvider>
+        <QueryClientProvider client={queryClient}>
+          <SyncManager />
+          <CloudSyncManager />
+          <Router />
+          <Toaster />
+        </QueryClientProvider>
+      </AuthProvider>
     </LocaleProvider>
   );
 }

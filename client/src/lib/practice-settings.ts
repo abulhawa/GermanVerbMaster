@@ -121,17 +121,44 @@ export function loadPracticeSettings(): PracticeSettingsState {
   return ensureSettings(storage);
 }
 
-export function savePracticeSettings(state: PracticeSettingsState): void {
+export interface SavePracticeSettingsOptions {
+  preserveUpdatedAt?: boolean;
+}
+
+export function savePracticeSettings(
+  state: PracticeSettingsState,
+  options: SavePracticeSettingsOptions = {},
+): PracticeSettingsState {
   const storage = getStorage();
   if (!storage) {
-    return;
+    const resolvedState: PracticeSettingsState = {
+      ...state,
+      updatedAt: options.preserveUpdatedAt && state.updatedAt ? state.updatedAt : new Date().toISOString(),
+    };
+    return resolvedState;
   }
 
   try {
-    storage.setItem(STORAGE_KEY, JSON.stringify({ ...state, updatedAt: new Date().toISOString() }));
+    const nextState: PracticeSettingsState = {
+      ...state,
+      updatedAt: options.preserveUpdatedAt && state.updatedAt ? state.updatedAt : new Date().toISOString(),
+    };
+    storage.setItem(STORAGE_KEY, JSON.stringify(nextState));
     storage.setItem(MIGRATION_MARKER_KEY, '1');
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(
+        new CustomEvent('practice-settings:updated', {
+          detail: { state: nextState },
+        }),
+      );
+    }
+    return nextState;
   } catch (error) {
     console.warn('Failed to persist practice settings', error);
+    return {
+      ...state,
+      updatedAt: options.preserveUpdatedAt && state.updatedAt ? state.updatedAt : new Date().toISOString(),
+    } satisfies PracticeSettingsState;
   }
 }
 
