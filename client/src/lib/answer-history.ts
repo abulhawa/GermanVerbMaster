@@ -1,7 +1,13 @@
 import { resolveLocalStorage } from '@/lib/storage';
 import { clientTaskRegistry } from '@/lib/tasks';
 import type { PracticeTask } from '@/lib/tasks';
-import type { CEFRLevel, PracticeMode, PracticeResult, TaskAnswerHistoryItem } from '@shared';
+import type {
+  AnswerHistoryLexemeSnapshot,
+  CEFRLevel,
+  PracticeMode,
+  PracticeResult,
+  TaskAnswerHistoryItem,
+} from '@shared';
 import type { GermanVerb } from '@shared';
 
 const ANSWER_HISTORY_STORAGE_KEY = 'practice.answerHistory';
@@ -46,9 +52,95 @@ export interface LegacyAnswerHistoryEntryOptions {
   level: CEFRLevel;
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value && typeof value === 'object');
+}
+
+function toLexemeSnapshotFromVerb(
+  verb: GermanVerb,
+  level?: CEFRLevel,
+): AnswerHistoryLexemeSnapshot {
+  return {
+    id: `legacy:verb:${verb.infinitive}`,
+    lemma: verb.infinitive,
+    pos: 'verb',
+    level,
+    english: verb.english,
+    example: verb.präteritumExample
+      ? { de: verb.präteritumExample }
+      : undefined,
+    auxiliary: verb.auxiliary,
+  } satisfies AnswerHistoryLexemeSnapshot;
+}
+
+function extractLexemeSnapshotFromTask(task: PracticeTask): AnswerHistoryLexemeSnapshot | undefined {
+  const metadata = task.lexeme.metadata;
+  let level: CEFRLevel | undefined;
+  let english: string | undefined;
+  let exampleDe: string | null | undefined;
+  let exampleEn: string | null | undefined;
+  let auxiliary: 'haben' | 'sein' | null | undefined;
+
+  if (isRecord(metadata)) {
+    if (typeof metadata.level === 'string') {
+      const upperLevel = metadata.level.toUpperCase();
+      if (upperLevel === 'A1' || upperLevel === 'A2' || upperLevel === 'B1' || upperLevel === 'B2' || upperLevel === 'C1' || upperLevel === 'C2') {
+        level = upperLevel as CEFRLevel;
+      }
+    }
+    if (typeof metadata.english === 'string') {
+      english = metadata.english;
+    }
+    if (isRecord(metadata.example)) {
+      if (typeof metadata.example.de === 'string') {
+        exampleDe = metadata.example.de;
+      }
+      if (typeof metadata.example.en === 'string') {
+        exampleEn = metadata.example.en;
+      }
+    }
+    if (metadata.auxiliary === 'haben' || metadata.auxiliary === 'sein') {
+      auxiliary = metadata.auxiliary;
+    }
+  }
+
+  return {
+    id: task.lexeme.id,
+    lemma: task.lexeme.lemma,
+    pos: task.pos,
+    level,
+    english,
+    example:
+      typeof exampleDe === 'string' || typeof exampleEn === 'string'
+        ? { de: exampleDe ?? undefined, en: exampleEn ?? undefined }
+        : undefined,
+    auxiliary: typeof auxiliary === 'string' ? auxiliary : undefined,
+  } satisfies AnswerHistoryLexemeSnapshot;
+}
+
+function ensureLexemeSnapshot(entry: TaskAnswerHistoryItem): TaskAnswerHistoryItem {
+  if (entry.lexeme) {
+    return entry;
+  }
+
+  if (entry.verb) {
+    return { ...entry, lexeme: toLexemeSnapshotFromVerb(entry.verb, entry.level ?? entry.cefrLevel) };
+  }
+
+  if (entry.legacyVerb?.verb) {
+    return {
+      ...entry,
+      lexeme: toLexemeSnapshotFromVerb(entry.legacyVerb.verb, entry.level ?? entry.cefrLevel),
+    };
+  }
+
+  return entry;
+}
+
 export function createLegacyAnswerHistoryEntry(options: LegacyAnswerHistoryEntryOptions): TaskAnswerHistoryItem {
   const legacyId = `legacy:verb:${options.verb.infinitive}`;
   const answeredAt = options.answeredAt ?? new Date().toISOString();
+  const lexeme = toLexemeSnapshotFromVerb(options.verb, options.level);
 
   return {
     id: options.id,
@@ -71,6 +163,7 @@ export function createLegacyAnswerHistoryEntry(options: LegacyAnswerHistoryEntry
     correctAnswer: options.correctAnswer,
     prompt: options.prompt,
     level: options.level,
+    lexeme,
     verb: options.verb,
     legacyVerb: {
       verb: options.verb,
@@ -174,6 +267,7 @@ export function createAnswerHistoryEntry(options: CreateHistoryEntryOptions): Ta
   const answeredAt = options.answeredAt ?? new Date().toISOString();
   const submitted = options.submittedResponse;
   const expected = options.expectedResponse;
+  const lexeme = extractLexemeSnapshotFromTask(options.task);
 
   return {
     id: `${options.task.taskId}:${answeredAt}`,
@@ -196,9 +290,10 @@ export function createAnswerHistoryEntry(options: CreateHistoryEntryOptions): Ta
     correctAnswer: typeof expected === 'string' ? expected : undefined,
     prompt: options.promptSummary,
     level: options.task.lexeme.metadata?.level as CEFRLevel | undefined,
+    lexeme,
     verb: undefined,
     legacyVerb: undefined,
-  };
+  } satisfies TaskAnswerHistoryItem;
 }
 
 export function loadAnswerHistory(): TaskAnswerHistoryItem[] {
@@ -207,7 +302,9 @@ export function loadAnswerHistory(): TaskAnswerHistoryItem[] {
     return [];
   }
 
-  return ensureMigrated(storage).slice(0, DEFAULT_MAX_STORED_ANSWERS);
+  return ensureMigrated(storage)
+    .slice(0, DEFAULT_MAX_STORED_ANSWERS)
+    .map(ensureLexemeSnapshot);
 }
 
 export function saveAnswerHistory(history: TaskAnswerHistoryItem[]): void {
@@ -217,7 +314,10 @@ export function saveAnswerHistory(history: TaskAnswerHistoryItem[]): void {
   }
 
   try {
-    storage.setItem(ANSWER_HISTORY_STORAGE_KEY, JSON.stringify(history.slice(0, DEFAULT_MAX_STORED_ANSWERS)));
+    const normalised = history
+      .slice(0, DEFAULT_MAX_STORED_ANSWERS)
+      .map(ensureLexemeSnapshot);
+    storage.setItem(ANSWER_HISTORY_STORAGE_KEY, JSON.stringify(normalised));
     storage.setItem(MIGRATION_MARKER_KEY, '1');
   } catch (error) {
     console.warn('Failed to persist answer history', error);

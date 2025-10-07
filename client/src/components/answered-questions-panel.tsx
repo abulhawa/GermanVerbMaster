@@ -2,6 +2,8 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { PracticeMode } from "@/lib/types";
 import type { AnsweredQuestion } from "@/lib/answer-history";
+import type { AnswerHistoryLexemeSnapshot } from "@shared";
+import { derivePromptLemmaFromEntry } from "@/lib/prompt-lemma";
 import {
   type DebuggableComponentProps,
   getDevAttributes,
@@ -76,20 +78,42 @@ export function AnsweredQuestionsPanel({
             const answeredDate = new Date(item.answeredAt);
             const answeredTime = answeredDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
             const verb = item.verb ?? item.legacyVerb?.verb;
+            const lexeme: AnswerHistoryLexemeSnapshot | undefined =
+              item.lexeme ??
+              (verb
+                ? ({
+                    id: `legacy:verb:${verb.infinitive}`,
+                    lemma: verb.infinitive,
+                    pos: "verb",
+                    level: verb.level,
+                    english: verb.english,
+                    example: verb.präteritumExample ? { de: verb.präteritumExample } : undefined,
+                    auxiliary: verb.auxiliary,
+                  } satisfies AnswerHistoryLexemeSnapshot)
+                : undefined);
             const mode = item.mode ?? item.legacyVerb?.mode ?? "präteritum";
             const level = item.level ?? item.cefrLevel ?? "A1";
             const prompt = item.prompt ?? item.promptSummary;
             const attempted = item.attemptedAnswer ?? (typeof item.submittedResponse === "string" ? item.submittedResponse : "");
+            const promptLemma = derivePromptLemmaFromEntry(item);
             const expected =
               item.result === "correct"
                 ? undefined
                 : item.correctAnswer ?? (typeof item.expectedResponse === "string" ? item.expectedResponse : undefined);
+            const displayTitle = lexeme?.lemma ?? verb?.infinitive ?? promptLemma ?? prompt ?? "Unknown task";
+            const subtitle = lexeme?.english ?? verb?.english ?? "";
+            const präteritumExample = verb?.präteritumExample;
+            const partizipIIExample = verb?.partizipIIExample;
+            const lexemeExampleDe = !verb ? lexeme?.example?.de : undefined;
+            const lexemeExampleEn = !verb ? lexeme?.example?.en : undefined;
+            const hasVerbExamples = Boolean(präteritumExample || partizipIIExample);
+            const hasLexemeExample = !hasVerbExamples && Boolean(lexemeExampleDe || lexemeExampleEn);
 
             return (
               <article
                 key={item.id}
                 className="rounded-2xl border border-border/70 bg-background/95 p-4 shadow-sm"
-                aria-label={`Answer review for ${verb?.infinitive ?? 'unbekannte Aufgabe'}`}
+                aria-label={`Answer review for ${displayTitle}`}
                 {...getDevAttributes(
                   "answered-questions-panel-item",
                   `${resolvedDebugId}-${item.id}`,
@@ -97,8 +121,8 @@ export function AnsweredQuestionsPanel({
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <h3 className="text-lg font-semibold text-foreground">{verb?.infinitive ?? "Unbekannt"}</h3>
-                    <p className="text-sm text-muted-foreground">{verb?.english ?? ""}</p>
+                    <h3 className="text-lg font-semibold text-foreground">{displayTitle}</h3>
+                    <p className="text-sm text-muted-foreground">{subtitle}</p>
                   </div>
                   <div className="flex flex-col items-end gap-2 text-right">
                     <Badge
@@ -145,14 +169,29 @@ export function AnsweredQuestionsPanel({
                 <div className="mt-4 rounded-2xl bg-muted/30 p-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Examples</p>
                   <ul className="mt-2 space-y-3 text-sm">
-                    <li>
-                      <p className="font-semibold text-foreground">Präteritum usage</p>
-                      <p className="text-muted-foreground">{verb?.präteritumExample || "No example available."}</p>
-                    </li>
-                    <li>
-                      <p className="font-semibold text-foreground">Partizip II usage</p>
-                      <p className="text-muted-foreground">{verb?.partizipIIExample || "No example available."}</p>
-                    </li>
+                    {hasVerbExamples ? (
+                      <>
+                        <li>
+                          <p className="font-semibold text-foreground">Präteritum usage</p>
+                          <p className="text-muted-foreground">{präteritumExample ?? "No example available."}</p>
+                        </li>
+                        <li>
+                          <p className="font-semibold text-foreground">Partizip II usage</p>
+                          <p className="text-muted-foreground">{partizipIIExample ?? "No example available."}</p>
+                        </li>
+                      </>
+                    ) : hasLexemeExample ? (
+                      <li>
+                        <p className="font-semibold text-foreground">Example usage</p>
+                        {lexemeExampleDe && <p className="text-muted-foreground">{lexemeExampleDe}</p>}
+                        {lexemeExampleEn && <p className="text-muted-foreground">{lexemeExampleEn}</p>}
+                      </li>
+                    ) : (
+                      <li>
+                        <p className="font-semibold text-foreground">Example usage</p>
+                        <p className="text-muted-foreground">No example available.</p>
+                      </li>
+                    )}
                   </ul>
                 </div>
               </article>

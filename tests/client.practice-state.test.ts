@@ -86,6 +86,7 @@ describe('practice state migrations', () => {
     expect(history).toHaveLength(1);
     expect(history[0]?.taskId).toBe('legacy:verb:gehen');
     expect(history[0]?.legacyVerb?.verb.infinitive).toBe('gehen');
+    expect(history[0]?.lexeme?.lemma).toBe('gehen');
     expect(localStorage.getItem('practice.answerHistory.migrated')).toBe('1');
     expect(localStorage.getItem('answerHistory')).toBeNull();
     expect(localStorage.getItem('practice.answerHistory')).not.toBeNull();
@@ -105,6 +106,7 @@ describe('practice state migrations', () => {
     const history = loadAnswerHistory();
     expect(history).toHaveLength(1);
     expect(history[0]?.taskId).toBe('task-1');
+    expect(history[0]?.lexeme?.lemma).toBe('gehen');
   });
 
   it('migrates review queue entries from verbs', () => {

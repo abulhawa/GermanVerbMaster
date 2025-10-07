@@ -69,6 +69,21 @@ export interface GermanVerb {
   separable?: boolean | null;
 }
 
+export interface AnswerHistoryLexemeExample {
+  de?: string | null;
+  en?: string | null;
+}
+
+export interface AnswerHistoryLexemeSnapshot {
+  id: string;
+  lemma: string;
+  pos: LexemePos;
+  level?: CEFRLevel;
+  english?: string;
+  example?: AnswerHistoryLexemeExample;
+  auxiliary?: 'haben' | 'sein' | null;
+}
+
 export interface PracticeAttemptPayload {
   verb: string;
   mode: PracticeMode;
@@ -101,6 +116,7 @@ export interface TaskAnswerHistoryItem {
   correctAnswer?: string;
   prompt?: string;
   level?: CEFRLevel;
+  lexeme?: AnswerHistoryLexemeSnapshot;
   verb?: GermanVerb;
   legacyVerb?: {
     verb: GermanVerb;
