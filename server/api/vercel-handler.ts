@@ -1,2 +1,2 @@
-export { default, handler, createVercelApiHandler } from "../../api/index.js";
-export type { CreateVercelHandlerOptions } from "../../api/index.js";
+export { default, handler, createVercelApiHandler } from "./vercel-runtime.js";
+export type { CreateVercelHandlerOptions, VercelApiHandler } from "./vercel-runtime.js";

@@ -47,3 +47,4 @@ yarn-error.log*
 # Snapshot output
 tests/ui/overlay.spec.ts-snapshots/
 .env
+.vercel

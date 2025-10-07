@@ -1,8 +1,2 @@
-// api/index.impl.ts
-import { createApiApp } from '../server/api/app';
-import { registerRoutes } from '../server/routes';
-
-const app = createApiApp();
-registerRoutes(app);
-
-export default app;
+export { default, handler, createVercelApiHandler } from '../server/api/vercel-runtime.js';
+export type { CreateVercelHandlerOptions, VercelApiHandler } from '../server/api/vercel-runtime.js';

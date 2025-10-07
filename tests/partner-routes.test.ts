@@ -59,7 +59,13 @@ const srsEngineMock = vi.hoisted(() => ({
   isQueueStale: vi.fn(() => false),
 }));
 
-vi.mock('@db', () => ({ db: hoisted.mockDb }));
+vi.mock('@db', async () => {
+  const schema = await vi.importActual<typeof import('../db/schema.js')>('../db/schema.js');
+  return {
+    db: hoisted.mockDb,
+    ...schema,
+  };
+});
 
 vi.mock('@db/client', () => ({
   db: hoisted.mockDb,

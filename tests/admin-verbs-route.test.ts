@@ -49,9 +49,13 @@ const mockedDb = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('@db', () => ({
-  db: mockedDb,
-}));
+vi.mock('@db', async () => {
+  const schema = await vi.importActual<typeof import('../db/schema.js')>('../db/schema.js');
+  return {
+    db: mockedDb,
+    ...schema,
+  };
+});
 
 vi.mock('@db/client', () => ({
   db: mockedDb,

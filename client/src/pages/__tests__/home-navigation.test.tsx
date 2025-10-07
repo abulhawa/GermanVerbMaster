@@ -1,7 +1,7 @@
 /* @vitest-environment jsdom */
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
@@ -269,14 +269,15 @@ describe('Home navigation controls', () => {
 
     renderHome();
 
-    const initialHeading = await screen.findByRole('heading', { name: 'gehen' });
-    expect(initialHeading).toBeInTheDocument();
+    const practiceCard = await screen.findByTestId('practice-card');
+    expect(within(practiceCard).getByText('gehen')).toBeInTheDocument();
 
     const skipButton = await screen.findByRole('button', { name: /skip to next/i });
     await userEvent.click(skipButton);
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: 'kommen' })).toBeInTheDocument();
+      const updatedCard = screen.getByTestId('practice-card');
+      expect(within(updatedCard).getByText('kommen')).toBeInTheDocument();
     });
   });
 
@@ -349,7 +350,8 @@ describe('Home navigation controls', () => {
 
     renderHome();
 
-    await screen.findByRole('heading', { name: 'arbeiten' });
+    const practiceCard = await screen.findByTestId('practice-card');
+    expect(within(practiceCard).getByText('arbeiten')).toBeInTheDocument();
 
     const practiceContainer = await screen.findByTestId('practice-card-container');
     expect(practiceContainer.className).toContain('w-full');
