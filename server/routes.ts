@@ -56,16 +56,16 @@ function getSessionUser(session: AuthSession | null | undefined): Record<string,
   return session.user as Record<string, unknown>;
 }
 
-function getSessionUserId(session: AuthSession | null | undefined): number | null {
+function getSessionUserId(session: AuthSession | null | undefined): string | null {
   const user = getSessionUser(session);
   const id = user?.id;
-  if (typeof id === "number") {
-    return Number.isFinite(id) ? id : null;
+  if (typeof id === "string") {
+    const trimmed = id.trim();
+    return trimmed.length > 0 ? trimmed : null;
   }
 
-  if (typeof id === "string") {
-    const parsed = Number.parseInt(id, 10);
-    return Number.isFinite(parsed) ? parsed : null;
+  if (typeof id === "number") {
+    return Number.isFinite(id) ? String(id) : null;
   }
 
   return null;

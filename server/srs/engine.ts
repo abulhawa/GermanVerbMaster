@@ -34,7 +34,7 @@ interface SchedulingAttempt {
   level: string;
   result: PracticeResult;
   timeSpent: number;
-  userId?: number | null;
+  userId?: string | null;
   practicedAt?: Date;
 }
 
@@ -221,7 +221,7 @@ async function storeQueue(
   generatedAt: Date,
   durationMs: number,
   items: AdaptiveQueueItem[],
-  userId: number | null,
+  userId: string | null,
 ): Promise<VerbReviewQueue> {
   const ttl = getQueueTtlMs();
   const validUntil = new Date(generatedAt.getTime() + ttl);

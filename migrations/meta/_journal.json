@@ -15,6 +15,13 @@
       "when": 1759615811604,
       "tag": "0001_shared_rate_limit_counters",
       "breakpoints": false
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1759620000000,
+      "tag": "0002_preserve_better_auth_user_ids",
+      "breakpoints": false
     }
   ]
 }

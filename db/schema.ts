@@ -275,7 +275,7 @@ export const schedulingState = pgTable(
   "scheduling_state",
   {
     id: serial("id").primaryKey(),
-    userId: integer("user_id").references(() => users.id),
+    userId: text("user_id").references(() => authUsers.id),
     deviceId: text("device_id").notNull(),
     taskId: text("task_id")
       .notNull()
@@ -383,7 +383,7 @@ export const practiceHistory = pgTable(
     taskType: text("task_type").notNull(),
     renderer: text("renderer").notNull(),
     deviceId: text("device_id").notNull(),
-    userId: integer("user_id").references(() => users.id),
+    userId: text("user_id").references(() => authUsers.id),
     result: practiceResultEnum("result").notNull(),
     responseMs: integer("response_ms").notNull(),
     submittedAt: timestamp("submitted_at", { withTimezone: true }).defaultNow().notNull(),
@@ -431,7 +431,7 @@ export const verbs = pgTable(
 
 export const verbPracticeHistory = pgTable("verb_practice_history", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id),
+  userId: text("user_id").references(() => authUsers.id),
   verb: text("verb").notNull(),
   mode: text("mode").notNull(),
   result: practiceResultEnum("result").notNull(),
@@ -456,7 +456,7 @@ export const verbSchedulingState = pgTable(
   "verb_scheduling_state",
   {
     id: serial("id").primaryKey(),
-    userId: integer("user_id").references(() => users.id),
+    userId: text("user_id").references(() => authUsers.id),
     deviceId: text("device_id").notNull(),
     verb: text("verb").notNull(),
     level: text("level").notNull(),
@@ -483,7 +483,7 @@ export const verbReviewQueues = pgTable(
   "verb_review_queues",
   {
     id: serial("id").primaryKey(),
-    userId: integer("user_id").references(() => users.id),
+    userId: text("user_id").references(() => authUsers.id),
     deviceId: text("device_id").notNull(),
     version: text("version").notNull(),
     generatedAt: timestamp("generated_at", { withTimezone: true }).defaultNow().notNull(),
