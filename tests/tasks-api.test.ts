@@ -1,3 +1,4 @@
+import './helpers/mock-auth';
 import { eq } from 'drizzle-orm';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 

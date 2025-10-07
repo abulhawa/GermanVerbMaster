@@ -1,4 +1,5 @@
 import { eq } from 'drizzle-orm';
+import './helpers/mock-auth';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { AggregatedWord } from '../scripts/etl/golden';

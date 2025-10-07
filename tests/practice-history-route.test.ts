@@ -1,3 +1,4 @@
+import './helpers/mock-auth';
 import { describe, expect, it, vi } from 'vitest';
 import { createApiInvoker } from './helpers/vercel';
 
@@ -42,9 +43,13 @@ const mockedDb = vi.hoisted(() => ({
   })),
 }));
 
-vi.mock('@db', () => ({
-  db: mockedDb,
-}));
+vi.mock('@db', async () => {
+  const actual = await vi.importActual<typeof import('../db/index.js')>('../db/index.js');
+  return {
+    ...actual,
+    db: mockedDb,
+  } satisfies Partial<typeof actual> & { db: typeof mockedDb };
+});
 
 vi.mock('@db/client', () => ({
   db: mockedDb,

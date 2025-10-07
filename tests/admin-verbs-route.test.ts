@@ -1,3 +1,4 @@
+import './helpers/mock-auth';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Word } from '@shared';
 import { createApiInvoker } from './helpers/vercel';
