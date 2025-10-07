@@ -16,9 +16,9 @@ import {
   type Word,
 } from "@db";
 import { z } from "zod";
-import { and, count, desc, eq, sql } from "drizzle-orm";
+import { and, count, desc, eq, inArray, sql } from "drizzle-orm";
 import { createHash, randomUUID } from "node:crypto";
-import type { GermanVerb } from "@shared";
+import type { GermanVerb, PracticeResult } from "@shared";
 import type { LexemePos, TaskType } from "@shared";
 import { srsEngine } from "./srs/index.js";
 import { getTaskRegistryEntry, taskRegistry } from "./tasks/registry.js";
@@ -55,6 +55,13 @@ const taskQuerySchema = z.object({
     .trim()
     .optional(),
   limit: z.coerce.number().int().min(1).max(100).default(25),
+  deviceId: z
+    .string()
+    .trim()
+    .min(6)
+    .max(64)
+    .optional(),
+  level: levelSchema.optional(),
 });
 
 type SubmissionFeatureFlagSummary = Record<string, { enabled: boolean; stage?: string; defaultValue?: boolean }>;
@@ -264,6 +271,59 @@ function parseTaskTypeFilter(value: string): TaskType | null {
   return key in taskRegistry ? (key as TaskType) : null;
 }
 
+interface SchedulingStateSnapshot {
+  taskId: string;
+  priorityScore: number | null;
+  dueAt: Date | null;
+  lastResult: PracticeResult | null;
+  totalAttempts: number;
+  correctAttempts: number;
+}
+
+function stableDeterministicNoise(value: string): number {
+  let hash = 0;
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) | 0;
+  }
+  return ((hash >>> 0) % 1000) / 1000;
+}
+
+function computeFallbackPriorityScore(
+  snapshot: SchedulingStateSnapshot | undefined,
+  taskId: string,
+  nowMs: number,
+): number {
+  const noise = stableDeterministicNoise(taskId) * 0.05;
+
+  if (!snapshot) {
+    return 1.25 + noise;
+  }
+
+  const baseScore = typeof snapshot.priorityScore === "number" && Number.isFinite(snapshot.priorityScore)
+    ? snapshot.priorityScore
+    : 0;
+
+  const totalAttempts = Math.max(snapshot.totalAttempts ?? 0, 0);
+  const correctAttempts = Math.max(Math.min(snapshot.correctAttempts ?? 0, totalAttempts), 0);
+  const accuracy = totalAttempts > 0 ? correctAttempts / totalAttempts : 0;
+  const accuracyPenalty = (1 - Math.min(Math.max(accuracy, 0), 1)) * 0.5;
+  const incorrectBonus = snapshot.lastResult === "incorrect" ? 0.75 : 0;
+
+  let dueBonus = 0.3;
+  if (snapshot.dueAt instanceof Date && !Number.isNaN(snapshot.dueAt.getTime())) {
+    const diffMs = snapshot.dueAt.getTime() - nowMs;
+    if (diffMs <= 0) {
+      dueBonus = 0.6;
+    } else {
+      const hours = diffMs / 3_600_000;
+      const urgency = Math.max(0, 1 - Math.min(hours, 72) / 72);
+      dueBonus = urgency * 0.4;
+    }
+  }
+
+  return baseScore + accuracyPenalty + incorrectBonus + dueBonus + noise;
+}
+
 function setLegacyDeprecation(res: Response): void {
   res.setHeader('Deprecation', 'Sun, 01 Oct 2025 00:00:00 GMT');
   res.setHeader('Link', '</api/tasks>; rel="successor-version"; title="GET /api/tasks"');
@@ -433,23 +493,24 @@ export function registerRoutes(app: Express): void {
       });
     }
 
-    const { pos, taskType, pack, limit } = parsed.data;
+    const { pos, taskType, pack, limit, deviceId, level } = parsed.data;
     const filters: Array<ReturnType<typeof eq>> = [];
+    let normalisedPos: LexemePos | null = null;
 
     const snapshot = getFeatureFlagSnapshot();
     res.setHeader("Cache-Control", "no-store");
     res.setHeader("X-Feature-Flags", formatFeatureFlagHeader(snapshot));
 
     if (pos) {
-      const normalised = normaliseTaskPosFilter(pos);
-      if (!normalised) {
+      normalisedPos = normaliseTaskPosFilter(pos);
+      if (!normalisedPos) {
         return res.status(400).json({
           error: `Unsupported part-of-speech filter: ${pos}`,
           code: "INVALID_POS_FILTER",
         });
       }
       try {
-        ensurePosFeatureEnabled(normalised, "tasks:list:filter", snapshot, {
+        ensurePosFeatureEnabled(normalisedPos, "tasks:list:filter", snapshot, {
           filter: pos,
         });
       } catch (error) {
@@ -457,12 +518,12 @@ export function registerRoutes(app: Express): void {
           return res.status(403).json({
             error: error.message,
             code: "POS_FEATURE_DISABLED",
-            pos: normalised,
+            pos: normalisedPos,
           });
         }
         throw error;
       }
-      filters.push(eq(taskSpecs.pos, normalised));
+      filters.push(eq(taskSpecs.pos, normalisedPos));
     }
 
     let resolvedTaskType: TaskType | null = null;
@@ -503,7 +564,187 @@ export function registerRoutes(app: Express): void {
 
     const filteredQuery = filters.length ? baseQuery.where(and(...filters)) : baseQuery;
 
-    const rows = await filteredQuery.orderBy(desc(taskSpecs.updatedAt)).limit(limit);
+    const prioritizedLemmas: string[] = [];
+    const canUseAdaptiveQueue =
+      Boolean(deviceId)
+      && !pack
+      && (!pos || pos === "verb")
+      && (!taskType || taskType === "conjugate_form")
+      && srsEngine.isEnabled();
+
+    if (canUseAdaptiveQueue && deviceId) {
+      try {
+        let queue = await srsEngine.fetchQueueForDevice(deviceId);
+        if (!queue || srsEngine.isQueueStale(queue)) {
+          queue = await srsEngine.generateQueueForDevice(deviceId, level ?? null);
+        }
+
+        if (queue?.items?.length) {
+          const seen = new Set<string>();
+          const maxQueueSamples = Math.max(limit * 2, limit + 5);
+          for (const item of queue.items) {
+            const normalized = item.verb?.trim();
+            if (!normalized) {
+              continue;
+            }
+            const key = normalized.toLowerCase();
+            if (seen.has(key)) {
+              continue;
+            }
+            seen.add(key);
+            prioritizedLemmas.push(normalized);
+            if (prioritizedLemmas.length >= maxQueueSamples) {
+              break;
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Failed to resolve adaptive queue for /api/tasks", {
+          deviceId,
+          error,
+        });
+      }
+    }
+
+    const fallbackFetchLimit = prioritizedLemmas.length
+      ? Math.min(100, Math.max(limit, limit + prioritizedLemmas.length))
+      : limit;
+
+    const fallbackRows = await filteredQuery.orderBy(desc(taskSpecs.updatedAt)).limit(fallbackFetchLimit);
+
+    const prioritizedRows = prioritizedLemmas.length
+      ? await (
+          (filters.length
+            ? baseQuery.where(and(...filters, inArray(lexemes.lemma, prioritizedLemmas)))
+            : baseQuery.where(inArray(lexemes.lemma, prioritizedLemmas)))
+        )
+          .orderBy(desc(taskSpecs.updatedAt))
+          .limit(Math.min(fallbackFetchLimit, prioritizedLemmas.length * 2))
+      : ([] as typeof fallbackRows);
+
+    let schedulingStateRows: SchedulingStateSnapshot[] = [];
+    if (deviceId) {
+      try {
+        const schedulingFilters = [eq(schedulingState.deviceId, deviceId)];
+        if (normalisedPos) {
+          schedulingFilters.push(eq(taskSpecs.pos, normalisedPos));
+        }
+        if (resolvedTaskType) {
+          schedulingFilters.push(eq(taskSpecs.taskType, resolvedTaskType));
+        }
+        const whereCondition = schedulingFilters.length === 1
+          ? schedulingFilters[0]!
+          : and(...schedulingFilters);
+
+        const rows = await db
+          .select({
+            taskId: schedulingState.taskId,
+            priorityScore: schedulingState.priorityScore,
+            dueAt: schedulingState.dueAt,
+            lastResult: schedulingState.lastResult,
+            totalAttempts: schedulingState.totalAttempts,
+            correctAttempts: schedulingState.correctAttempts,
+          })
+          .from(schedulingState)
+          .innerJoin(taskSpecs, eq(taskSpecs.id, schedulingState.taskId))
+          .where(whereCondition)
+          .orderBy(
+            desc(sql`coalesce(${schedulingState.priorityScore}, 0)`),
+            sql`coalesce(${schedulingState.dueAt}, now())`,
+          )
+          .limit(Math.min(limit * 3, 150));
+
+        schedulingStateRows = rows as SchedulingStateSnapshot[];
+      } catch (error) {
+        console.error("Failed to load scheduling state for tasks list", {
+          deviceId,
+          error,
+        });
+        schedulingStateRows = [];
+      }
+    }
+
+    const schedulingStateMap = new Map<string, SchedulingStateSnapshot>();
+    const schedulingOrder = new Map<string, number>();
+    schedulingStateRows.forEach((row, index) => {
+      schedulingStateMap.set(row.taskId, row);
+      schedulingOrder.set(row.taskId, index);
+    });
+
+    let schedulingRows: typeof fallbackRows = [];
+    if (deviceId && schedulingStateRows.length) {
+      const schedulingTaskIds = schedulingStateRows.map((row) => row.taskId);
+      schedulingRows = await (
+        filters.length
+          ? baseQuery.where(and(...filters, inArray(taskSpecs.id, schedulingTaskIds)))
+          : baseQuery.where(inArray(taskSpecs.id, schedulingTaskIds))
+      )
+        .orderBy(desc(taskSpecs.updatedAt))
+        .limit(Math.min(100, Math.max(limit, schedulingTaskIds.length)));
+    }
+
+    const schedulingSorted = schedulingRows.length
+      ? [...schedulingRows].sort((a, b) => {
+          const indexA = schedulingOrder.get(a.id) ?? Number.MAX_SAFE_INTEGER;
+          const indexB = schedulingOrder.get(b.id) ?? Number.MAX_SAFE_INTEGER;
+          if (indexA !== indexB) {
+            return indexA - indexB;
+          }
+          return 0;
+        })
+      : [];
+
+    const queueOrder = new Map<string, number>();
+    prioritizedLemmas.forEach((lemma, index) => {
+      queueOrder.set(lemma.toLowerCase(), index);
+    });
+
+    const combinedRows: typeof fallbackRows = [];
+    const seenTaskIds = new Set<string>();
+    const pushRow = (row: (typeof fallbackRows)[number]) => {
+      if (!row || seenTaskIds.has(row.id)) {
+        return;
+      }
+      seenTaskIds.add(row.id);
+      combinedRows.push(row);
+    };
+
+    if (queueOrder.size) {
+      const prioritizedSorted = [...prioritizedRows].sort((a, b) => {
+        const indexA = queueOrder.get((a.lexemeLemma ?? "").toLowerCase()) ?? Number.MAX_SAFE_INTEGER;
+        const indexB = queueOrder.get((b.lexemeLemma ?? "").toLowerCase()) ?? Number.MAX_SAFE_INTEGER;
+        if (indexA !== indexB) {
+          return indexA - indexB;
+        }
+        return 0;
+      });
+      prioritizedSorted.forEach(pushRow);
+    }
+
+    if (schedulingSorted.length) {
+      schedulingSorted.forEach(pushRow);
+    }
+
+    fallbackRows.forEach(pushRow);
+
+    let orderedRows = combinedRows;
+    if (!queueOrder.size && deviceId) {
+      const nowMs = Date.now();
+      orderedRows = [...combinedRows]
+        .map((row) => ({
+          row,
+          score: computeFallbackPriorityScore(schedulingStateMap.get(row.id), row.id, nowMs),
+        }))
+        .sort((a, b) => {
+          if (a.score === b.score) {
+            return a.row.id.localeCompare(b.row.id);
+          }
+          return b.score - a.score;
+        })
+        .map((entry) => entry.row);
+    }
+
+    const rows = orderedRows.slice(0, limit);
 
     const allowedRows: typeof rows = [];
     const blockedCounts = new Map<LexemePos, number>();

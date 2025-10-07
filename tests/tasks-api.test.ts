@@ -25,6 +25,7 @@ describe('tasks API', () => {
   let practiceHistoryTable: typeof import('../db/schema.js').practiceHistory;
   let drizzleDb: typeof import('@db').db;
   let dbContext: TestDatabaseContext | undefined;
+  let mockedSrsEngine: any;
 
   beforeEach(async () => {
     const context = await setupTestDatabase();
@@ -55,6 +56,29 @@ describe('tasks API', () => {
         praeteritum: 'ging',
         partizipIi: 'gegangen',
         perfekt: 'ist gegangen',
+        comparative: null,
+        superlative: null,
+        canonical: true,
+        complete: true,
+        sourcesCsv: 'test-source',
+        sourceNotes: null,
+      },
+      {
+        lemma: 'kommen',
+        pos: 'V',
+        level: 'A1',
+        english: 'to come',
+        exampleDe: 'Sie kommen später.',
+        exampleEn: 'They come later.',
+        gender: null,
+        plural: null,
+        separable: false,
+        aux: 'sein',
+        praesensIch: 'komme',
+        praesensEr: 'kommt',
+        praeteritum: 'kam',
+        partizipIi: 'gekommen',
+        perfekt: 'ist gekommen',
         comparative: null,
         superlative: null,
         canonical: true,
@@ -116,6 +140,21 @@ describe('tasks API', () => {
     ({ createVercelApiHandler } = await import('../server/api/vercel-handler.js'));
     const handler = createVercelApiHandler({ enableCors: false });
     invokeApi = createApiInvoker(handler);
+
+    mockedSrsEngine = (await import('../server/srs/index.js')).srsEngine as any;
+    if (mockedSrsEngine) {
+      Object.values(mockedSrsEngine).forEach((fn: any) => {
+        if (typeof fn?.mockReset === 'function') {
+          fn.mockReset();
+        }
+      });
+      if (typeof mockedSrsEngine.isEnabled?.mockReturnValue === 'function') {
+        mockedSrsEngine.isEnabled.mockReturnValue(false);
+      }
+      if (typeof mockedSrsEngine.isQueueStale?.mockReturnValue === 'function') {
+        mockedSrsEngine.isQueueStale.mockReturnValue(false);
+      }
+    }
   });
 
   afterEach(async () => {
@@ -217,5 +256,114 @@ describe('tasks API', () => {
       queueCap: submissionBody.queueCap,
       leitnerBox: submissionBody.leitnerBox,
     });
+  });
+
+  it('prioritizes verbs surfaced by the adaptive queue when enabled', async () => {
+    if (!mockedSrsEngine) {
+      throw new Error('srsEngine mock not initialised');
+    }
+
+    mockedSrsEngine.isEnabled.mockReturnValue(true);
+    mockedSrsEngine.fetchQueueForDevice.mockResolvedValue({
+      deviceId: 'device-123',
+      version: 'v1',
+      generatedAt: new Date(),
+      validUntil: new Date(Date.now() + 60_000),
+      generationDurationMs: 5,
+      itemCount: 2,
+      items: [
+        {
+          verb: 'kommen',
+          priority: 1,
+          dueAt: new Date().toISOString(),
+          leitnerBox: 2,
+          accuracyWeight: 0.6,
+          latencyWeight: 0.7,
+          stabilityWeight: 0.4,
+          predictedIntervalMinutes: 180,
+        },
+        {
+          verb: 'gehen',
+          priority: 0.8,
+          dueAt: new Date().toISOString(),
+          leitnerBox: 1,
+          accuracyWeight: 0.5,
+          latencyWeight: 0.6,
+          stabilityWeight: 0.3,
+          predictedIntervalMinutes: 120,
+        },
+      ],
+    });
+
+    const response = await invokeApi('/api/tasks?pos=verb&limit=2&deviceId=device-123&level=A1');
+    expect(response.status).toBe(200);
+    const payload = response.bodyJson as { tasks: any[] };
+    expect(payload.tasks).toHaveLength(2);
+    expect(payload.tasks[0]?.lexeme?.lemma).toBe('kommen');
+    expect(payload.tasks[1]?.lexeme?.lemma).toBeDefined();
+    expect(mockedSrsEngine.fetchQueueForDevice).toHaveBeenCalledWith('device-123');
+    expect(mockedSrsEngine.generateQueueForDevice).not.toHaveBeenCalled();
+  });
+
+  it('reorders fallback tasks using scheduling state when adaptive queue is disabled', async () => {
+    const deviceId = 'device-priority';
+    const initialResponse = await invokeApi(`/api/tasks?pos=verb&limit=2&deviceId=${deviceId}`);
+    expect(initialResponse.status).toBe(200);
+    const initialTasks = (initialResponse.bodyJson as any).tasks as Array<{ id: string }>;
+    expect(initialTasks.length).toBeGreaterThanOrEqual(2);
+
+    const [firstTask, secondTask] = initialTasks;
+    expect(firstTask).toBeDefined();
+    expect(secondTask).toBeDefined();
+
+    await drizzleDb.delete(schedulingStateTable).where(eq(schedulingStateTable.deviceId, deviceId));
+
+    const now = new Date('2025-01-01T12:00:00.000Z');
+    const incorrectDueAt = new Date(now.getTime() - 10 * 60 * 1000);
+    const farFuture = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+    await drizzleDb.insert(schedulingStateTable).values([
+      {
+        deviceId,
+        taskId: firstTask.id,
+        leitnerBox: 3,
+        totalAttempts: 4,
+        correctAttempts: 4,
+        averageResponseMs: 1800,
+        accuracyWeight: 0.9,
+        latencyWeight: 0.85,
+        stabilityWeight: 0.65,
+        priorityScore: 0.1,
+        dueAt: farFuture,
+        lastResult: 'correct',
+        lastPracticedAt: now,
+        createdAt: now,
+        updatedAt: now,
+      },
+      {
+        deviceId,
+        taskId: secondTask.id,
+        leitnerBox: 1,
+        totalAttempts: 3,
+        correctAttempts: 1,
+        averageResponseMs: 4200,
+        accuracyWeight: 0.4,
+        latencyWeight: 0.5,
+        stabilityWeight: 0.25,
+        priorityScore: 1.35,
+        dueAt: incorrectDueAt,
+        lastResult: 'incorrect',
+        lastPracticedAt: incorrectDueAt,
+        createdAt: incorrectDueAt,
+        updatedAt: incorrectDueAt,
+      },
+    ]);
+
+    const prioritizedResponse = await invokeApi(`/api/tasks?pos=verb&limit=2&deviceId=${deviceId}`);
+    expect(prioritizedResponse.status).toBe(200);
+    const prioritizedTasks = (prioritizedResponse.bodyJson as any).tasks as Array<{ id: string }>;
+    expect(prioritizedTasks).toHaveLength(2);
+    expect(prioritizedTasks[0]?.id).toBe(secondTask.id);
+    expect(prioritizedTasks[0]?.id).not.toBe(firstTask.id);
   });
 });
