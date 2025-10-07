@@ -52,18 +52,12 @@ export default function AnswerHistoryPage() {
   };
 
   const topBar = (
-    <div className="flex flex-col gap-3 transition-all group-data-[condensed=true]/header:flex-row group-data-[condensed=true]/header:items-center group-data-[condensed=true]/header:justify-between">
-      <div className="space-y-1 transition-all group-data-[condensed=true]/header:space-y-0.5">
-        <p className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-primary">
+    <div className="flex flex-row items-center justify-between gap-3">
+      <div className="space-y-1">
+        <h1 className="inline-flex items-center gap-2 text-sm font-semibold tracking-[0.22em]">
           <History className="h-4 w-4" aria-hidden />
-          Answer review hub
-        </p>
-        <h1 className="text-2xl font-semibold text-foreground transition-all group-data-[condensed=true]/header:text-xl">
           Answer history
         </h1>
-        <p className="max-w-xl text-sm text-muted-foreground group-data-[condensed=true]/header:hidden">
-          Explore every attempt you have made, filter by CEFR level or result, and revisit the verbs that need extra attention.
-        </p>
       </div>
       <div className="flex flex-wrap items-center justify-end gap-2">
         <Link href="/">
