@@ -6,7 +6,9 @@ import { BarChart3, BookOpen } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
 import { SidebarNavButton } from "@/components/layout/sidebar-nav-button";
 import { MobileNavBar } from "@/components/layout/mobile-nav-bar";
-import { primaryNavigationItems } from "@/components/layout/navigation";
+import { AccountSidebarCard } from "@/components/auth/account-sidebar-card";
+import { AccountMobileTrigger } from "@/components/auth/account-mobile-trigger";
+import { getPrimaryNavigationItems } from "@/components/layout/navigation";
 import { AnalyticsDashboard } from "@/components/analytics-dashboard";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -14,6 +16,7 @@ import { ProgressDisplay } from "@/components/progress-display";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getDevAttributes } from "@/lib/dev-attributes";
+import { useAuthSession } from "@/auth/session";
 import { loadPracticeSettings } from "@/lib/practice-settings";
 import { loadPracticeProgress } from "@/lib/practice-progress";
 import { loadPracticeSession } from "@/lib/practice-session";
@@ -64,7 +67,7 @@ function SessionProgressBar({ value, completed, target, debugId }: SessionProgre
 export default function Analytics() {
   const settings = useMemo(() => loadPracticeSettings(), []);
   const progress = useMemo(() => loadPracticeProgress(), []);
-  const session = useMemo(() => loadPracticeSession(), []);
+  const practiceSession = useMemo(() => loadPracticeSession(), []);
   const answerHistory = useMemo(() => loadAnswerHistory(), []);
 
   const scope = computeScope(settings);
@@ -86,7 +89,7 @@ export default function Analytics() {
   const cefrLabel = useMemo(() => buildCefrLabel(activeTaskTypes, settings), [activeTaskTypes, settings]);
   const cefrLevelForDisplay = scope === "verbs" ? getVerbLevel(settings) : undefined;
 
-  const sessionCompleted = session.completed.length;
+  const sessionCompleted = practiceSession.completed.length;
   const milestoneTarget = useMemo(() => {
     if (sessionCompleted === 0) {
       return 10;
@@ -181,14 +184,21 @@ export default function Analytics() {
     </div>
   );
 
+  const { data: authSession } = useAuthSession();
+  const navigationItems = useMemo(
+    () => getPrimaryNavigationItems(authSession?.user.role ?? null),
+    [authSession?.user.role],
+  );
+
   const sidebar = (
     <div className="space-y-6">
+      <AccountSidebarCard />
       <div className="space-y-3">
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
           Navigate
         </p>
         <div className="grid gap-2">
-          {primaryNavigationItems.map((item) => (
+          {navigationItems.map((item) => (
             <SidebarNavButton
               key={item.href}
               href={item.href}
@@ -206,7 +216,7 @@ export default function Analytics() {
     <AppShell
       sidebar={sidebar}
       topBar={topBar}
-      mobileNav={<MobileNavBar items={primaryNavigationItems} />}
+      mobileNav={<MobileNavBar items={navigationItems} accountAction={<AccountMobileTrigger />} />}
     >
       <div className="grid gap-6 xl:grid-cols-[minmax(0,2.4fr)_minmax(0,1.6fr)]">
         <div className="space-y-6">

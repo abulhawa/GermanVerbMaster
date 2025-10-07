@@ -6,15 +6,14 @@ import { ArrowLeft, History, Trash2 } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
 import { SidebarNavButton } from "@/components/layout/sidebar-nav-button";
 import { MobileNavBar } from "@/components/layout/mobile-nav-bar";
-import { primaryNavigationItems } from "@/components/layout/navigation";
+import { AccountSidebarCard } from "@/components/auth/account-sidebar-card";
+import { AccountMobileTrigger } from "@/components/auth/account-mobile-trigger";
+import { getPrimaryNavigationItems } from "@/components/layout/navigation";
 import { AnsweredQuestionsPanel } from "@/components/answered-questions-panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  AnsweredQuestion,
-  loadAnswerHistory,
-  saveAnswerHistory,
-} from "@/lib/answer-history";
+import { AnsweredQuestion, loadAnswerHistory, saveAnswerHistory } from "@/lib/answer-history";
+import { useAuthSession } from "@/auth/session";
 
 type LevelFilter = CEFRLevel | "all";
 type ResultFilter = "all" | "correct" | "incorrect";
@@ -79,15 +78,22 @@ export default function AnswerHistoryPage() {
     </div>
   );
 
+  const { data: authSession } = useAuthSession();
+  const navigationItems = useMemo(
+    () => getPrimaryNavigationItems(authSession?.user.role ?? null),
+    [authSession?.user.role],
+  );
+
   const sidebar = (
     <div className="flex h-full flex-col justify-between gap-8">
-      <div className="space-y-8">
+      <div className="space-y-6">
+        <AccountSidebarCard />
         <div className="space-y-3">
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
             Navigate
           </p>
           <div className="grid gap-2">
-            {primaryNavigationItems.map((item) => (
+            {navigationItems.map((item) => (
               <SidebarNavButton
                 key={item.href}
                 href={item.href}
@@ -176,7 +182,7 @@ export default function AnswerHistoryPage() {
     <AppShell
       sidebar={sidebar}
       topBar={topBar}
-      mobileNav={<MobileNavBar items={primaryNavigationItems} />}
+      mobileNav={<MobileNavBar items={navigationItems} accountAction={<AccountMobileTrigger />} />}
     >
       <div className="space-y-6">
         {filterControls}

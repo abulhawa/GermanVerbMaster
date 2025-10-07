@@ -11,7 +11,9 @@ import {
 
 import { AppShell } from '@/components/layout/app-shell';
 import { MobileNavBar } from '@/components/layout/mobile-nav-bar';
-import { primaryNavigationItems } from '@/components/layout/navigation';
+import { AccountSidebarCard } from '@/components/auth/account-sidebar-card';
+import { AccountMobileTrigger } from '@/components/auth/account-mobile-trigger';
+import { getPrimaryNavigationItems } from '@/components/layout/navigation';
 import { PracticeCard, type PracticeCardResult } from '@/components/practice-card';
 import { SettingsDialog } from '@/components/settings-dialog';
 import { PracticeModeSwitcher, type PracticeScope } from '@/components/practice-mode-switcher';
@@ -19,6 +21,7 @@ import { LanguageToggle } from '@/components/language-toggle';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { SidebarNavButton } from '@/components/layout/sidebar-nav-button';
+import { useAuthSession } from '@/auth/session';
 import {
   loadPracticeSettings,
   savePracticeSettings,
@@ -106,6 +109,12 @@ export default function Home() {
   const [shouldReloadTasks, setShouldReloadTasks] = useState(false);
   const [isRecapOpen, setIsRecapOpen] = useState(false);
   const pendingFetchRef = useRef(false);
+
+  const authSession = useAuthSession();
+  const navigationItems = useMemo(
+    () => getPrimaryNavigationItems(authSession.data?.user.role ?? null),
+    [authSession.data?.user.role],
+  );
 
   const scope = computeScope(settings);
   const activeTaskTypes = useMemo(() => {
@@ -346,15 +355,21 @@ export default function Home() {
   const sidebar = (
     <div className="flex h-full flex-col justify-between gap-6">
       <div className="space-y-6">
+        <AccountSidebarCard />
         <div className="space-y-3">
           <p className="text-sm font-medium text-muted-foreground group-data-[collapsed=true]/sidebar:hidden">
             Navigate
           </p>
           <div className="grid justify-center gap-2">
-            <SidebarNavButton href="/" icon={Sparkles} label="Practice" exact />
-            <SidebarNavButton href="/answers" icon={History} label="Answer history" />
-            <SidebarNavButton href="/analytics" icon={Compass} label="Analytics" />
-            <SidebarNavButton href="/admin" icon={Settings2} label="Admin tools" />
+            {navigationItems.map((item) => (
+              <SidebarNavButton
+                key={item.href}
+                href={item.href}
+                icon={item.icon}
+                label={item.label}
+                exact={item.exact}
+              />
+            ))}
           </div>
         </div>
         <div className="space-y-2">
@@ -385,7 +400,7 @@ export default function Home() {
     <AppShell
       sidebar={sidebar}
       topBar={null}
-      mobileNav={<MobileNavBar items={primaryNavigationItems} />}
+      mobileNav={<MobileNavBar items={navigationItems} accountAction={<AccountMobileTrigger />} />}
       debugId="home-app-shell"
     >
       <div className="space-y-6">
@@ -502,4 +517,3 @@ export default function Home() {
     </AppShell>
   );
 }
-
