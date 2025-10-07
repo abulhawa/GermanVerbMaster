@@ -4,7 +4,6 @@ import {
   ChevronDown,
   Compass,
   History,
-  Info,
   Loader2,
   Settings2,
   Sparkles,
@@ -18,7 +17,6 @@ import { SettingsDialog } from '@/components/settings-dialog';
 import { PracticeModeSwitcher, type PracticeScope } from '@/components/practice-mode-switcher';
 import { LanguageToggle } from '@/components/language-toggle';
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { SidebarNavButton } from '@/components/layout/sidebar-nav-button';
 import {
@@ -345,34 +343,6 @@ export default function Home() {
 
   const isInitialLoading = !activeTask && isFetchingTasks;
 
-  const topBar = (
-    <div className="flex flex-col gap-4 transition-all group-data-[condensed=true]/header:flex-row group-data-[condensed=true]/header:items-center group-data-[condensed=true]/header:justify-between">
-      <div className="space-y-2 transition-all group-data-[condensed=true]/header:space-y-1">
-        <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-          <Sparkles className="h-4 w-4 text-primary" aria-hidden />
-          <span>Adaptive practice</span>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                type="button"
-                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border/60 bg-muted/50 text-muted-foreground transition hover:text-foreground"
-                aria-label="Learn more about adaptive practice"
-              >
-                <Info className="h-4 w-4" aria-hidden />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" align="start" className="max-w-xs text-sm leading-relaxed">
-              Sessions pull from the shared task registry. Choose a scope to rotate between verbs, nouns, adjectives, or your custom mix without cluttering the header.
-            </TooltipContent>
-          </Tooltip>
-        </div>
-        <h1 className="text-2xl font-semibold text-foreground transition-all group-data-[condensed=true]/header:text-xl">
-          Stay focused on your next prompt
-        </h1>
-      </div>
-    </div>
-  );
-
   const sidebar = (
     <div className="flex h-full flex-col justify-between gap-6">
       <div className="space-y-6">
@@ -387,8 +357,8 @@ export default function Home() {
             <SidebarNavButton href="/admin" icon={Settings2} label="Admin tools" />
           </div>
         </div>
-        <div className="space-y-2 group-data-[collapsed=true]/sidebar:hidden">
-          <p className="text-sm font-medium text-muted-foreground">Language</p>
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-muted-foreground group-data-[collapsed=true]/sidebar:hidden">Language</p>
           <LanguageToggle className="w-full rounded-2xl border-border/60 bg-background/90" debugId="sidebar-language-toggle" />
         </div>
         <div className="flex items-center gap-3 group-data-[collapsed=true]/sidebar:justify-center">
@@ -404,26 +374,6 @@ export default function Home() {
             Settings & Level
           </span>
         </div>
-        <Collapsible open={isRecapOpen} onOpenChange={setIsRecapOpen}>
-          <CollapsibleTrigger
-            className="group inline-flex w-full items-center justify-between rounded-2xl border border-border/60 bg-muted/30 px-3 py-2 text-sm font-medium text-muted-foreground transition hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 group-data-[collapsed=true]/sidebar:hidden"
-          >
-            <span>Session recap</span>
-            <ChevronDown className="h-3 w-3 transition duration-200 ease-out group-data-[state=open]:rotate-180" aria-hidden />
-          </CollapsibleTrigger>
-          <CollapsibleContent className="mt-3 rounded-2xl bg-muted/30 p-4 text-sm text-muted-foreground group-data-[collapsed=true]/sidebar:hidden">
-            {summary.total > 0 ? (
-              <p>
-                {summary.total} attempt{summary.total === 1 ? '' : 's'} recorded · {summary.accuracy}% accuracy
-              </p>
-            ) : (
-              <p>Take your first attempt to unlock personalised insights.</p>
-            )}
-            <p className="mt-2 text-sm text-muted-foreground/80">
-              Detailed recap now lives in the analytics panel.
-            </p>
-          </CollapsibleContent>
-        </Collapsible>
       </div>
       <div className="hidden text-center text-sm text-muted-foreground group-data-[collapsed=true]/sidebar:block">
         Hold to expand
@@ -434,7 +384,7 @@ export default function Home() {
   return (
     <AppShell
       sidebar={sidebar}
-      topBar={topBar}
+      topBar={null}
       mobileNav={<MobileNavBar items={primaryNavigationItems} />}
       debugId="home-app-shell"
     >
@@ -447,12 +397,6 @@ export default function Home() {
                 {scopeBadgeLabel}
               </div>
               <p className="text-sm text-muted-foreground">{levelSummary}</p>
-            </div>
-            <div className="space-y-2">
-              <h2 className="text-2xl font-semibold text-foreground">Focus mode</h2>
-              <p className="max-w-2xl text-sm text-muted-foreground">
-                Answer the prompt below to keep your streak alive and build mixed-part-of-speech mastery.
-              </p>
             </div>
             <div className="w-full">
               <PracticeModeSwitcher

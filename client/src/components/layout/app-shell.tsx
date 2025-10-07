@@ -26,8 +26,14 @@ export function AppShell({
   const resolvedDebugId = debugId && debugId.trim().length > 0 ? debugId : "layout-app-shell";
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const [isHeaderCondensed, setIsHeaderCondensed] = useState(false);
+  const hasTopBarContent = Boolean(topBar);
 
   useEffect(() => {
+    if (!hasTopBarContent) {
+      setIsHeaderCondensed(false);
+      return;
+    }
+
     const handleScroll = () => {
       setIsHeaderCondensed(window.scrollY > 40);
     };
@@ -37,7 +43,7 @@ export function AppShell({
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [hasTopBarContent]);
 
   const handleSidebarEnter = () => {
     setIsSidebarExpanded(true);
@@ -74,16 +80,18 @@ export function AppShell({
               mobileNav ? "pb-16" : "",
             )}
           >
-            <header
-              data-condensed={isHeaderCondensed}
-              className={cn(
-                "group/header sticky top-4 z-overlay rounded-app border border-border bg-card/85 px-5 shadow-soft backdrop-blur transition-all duration-200",
-                isHeaderCondensed ? "py-2" : "py-4",
-              )}
-              style={{ maxHeight: "15vh" }}
-            >
-              {topBar}
-            </header>
+            {hasTopBarContent ? (
+              <header
+                data-condensed={isHeaderCondensed}
+                className={cn(
+                  "group/header sticky top-4 z-overlay rounded-app border border-border bg-card/85 px-5 shadow-soft backdrop-blur transition-all duration-200",
+                  isHeaderCondensed ? "py-2" : "py-4",
+                )}
+                style={{ maxHeight: "15vh" }}
+              >
+                {topBar}
+              </header>
+            ) : null}
             <main
               className={cn(
                 "flex-1 rounded-app bg-card/60 px-4 pb-16 pt-4 ring-1 ring-inset ring-border/40 sm:px-6 lg:px-8 xl:px-10",

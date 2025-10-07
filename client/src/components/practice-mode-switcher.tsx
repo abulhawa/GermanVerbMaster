@@ -134,32 +134,6 @@ export function PracticeModeSwitcher({
         className="w-full space-y-3"
         {...getDevAttributes('practice-mode-switcher', resolvedDebugId)}
       >
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-          <span>Practice scope</span>
-          <Tooltip delayDuration={0}>
-            <TooltipTrigger asChild>
-              <button
-                type="button"
-                className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-border/60 bg-muted/50 text-muted-foreground transition hover:text-foreground"
-                aria-label={activeMode.description}
-              >
-                <Info className="h-3 w-3" aria-hidden />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent side="top" align="start" className="max-w-xs text-xs leading-relaxed">
-              {activeMode.description}
-            </TooltipContent>
-          </Tooltip>
-        </div>
-        <Badge
-          variant="outline"
-          className="rounded-full border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
-        >
-          {selectedTaskTypes.length} selected
-        </Badge>
-      </div>
-
       <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-border/60 bg-background/85 px-2 py-2 shadow-sm">
         <TabsList className="flex flex-1 flex-wrap gap-2 bg-transparent p-0">
           {MODE_CONFIG.map((mode) => (

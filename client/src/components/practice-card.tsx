@@ -49,6 +49,11 @@ const DEFAULT_SESSION_PROGRESS: PracticeCardSessionProgress = {
   target: 10,
 };
 
+function formatPartOfSpeechLabel(task: PracticeTask): string {
+  const base = task.pos ?? task.taskType;
+  return base.replace(/[_-]+/g, ' ').toUpperCase();
+}
+
 interface RendererProps<T extends TaskType = TaskType> extends DebuggableComponentProps {
   task: PracticeTask<T>;
   settings: PracticeSettingsState;
@@ -382,6 +387,7 @@ interface PracticeCardScaffoldProps extends DebuggableComponentProps {
   supportSections?: ReactNode[];
   className?: string;
   isLoadingNext?: boolean;
+  badgeLabel?: string;
 }
 
 function PracticeCardScaffold({
@@ -395,6 +401,7 @@ function PracticeCardScaffold({
   className,
   debugId,
   isLoadingNext,
+  badgeLabel,
 }: PracticeCardScaffoldProps) {
   const safeTarget = Math.max(sessionProgress.target, 1);
   const currentIndex = Math.max(Math.min(sessionProgress.completed + 1, safeTarget), 1);
@@ -409,6 +416,7 @@ function PracticeCardScaffold({
   const streakValue = Math.max(summary.streak, 0);
   const supplementarySections = supportSections.filter(Boolean);
   const resolvedDebugId = debugId && debugId.trim().length > 0 ? debugId : 'practice-card';
+  const resolvedBadgeLabel = badgeLabel && badgeLabel.trim().length > 0 ? badgeLabel : copy.header.appName;
 
   return (
     <div
@@ -427,8 +435,11 @@ function PracticeCardScaffold({
         <div className="pointer-events-none absolute inset-0 bg-card/25 backdrop-blur-md" aria-hidden />
         <div className="relative flex w-full flex-col items-center gap-8 text-center">
           <header className="flex w-full flex-wrap items-center justify-between gap-4 text-left">
-            <span className="inline-flex items-center rounded-full bg-card/30 px-5 py-2 text-sm font-semibold uppercase tracking-[0.35em] text-primary-foreground/90">
-              {copy.header.appName}
+            <span
+              className="inline-flex items-center rounded-full bg-card/30 px-5 py-2 text-sm font-semibold uppercase tracking-[0.35em] text-primary-foreground/90"
+              aria-label={copy.header.appName}
+            >
+              {resolvedBadgeLabel}
             </span>
           <div className="flex items-center gap-3">
             <div className="relative flex h-12 w-12 items-center justify-center rounded-full bg-card/30 text-primary-foreground backdrop-blur">
@@ -484,6 +495,7 @@ function ConjugateFormRenderer({
   const startTimeRef = useRef(Date.now());
   const preferences = getRendererPreferences(settings, task.taskType);
   const instructionText = useMemo(() => getTaskInstructions(copy, task), [copy, task]);
+  const partOfSpeechLabel = useMemo(() => formatPartOfSpeechLabel(task), [task.pos, task.taskType]);
 
   useEffect(() => {
     setAnswer('');
@@ -722,6 +734,7 @@ function ConjugateFormRenderer({
       className={className}
       debugId={debugId}
       isLoadingNext={isLoadingNext}
+      badgeLabel={partOfSpeechLabel}
     />
   );
 }
@@ -745,6 +758,7 @@ function NounCaseDeclensionRenderer({
   const startTimeRef = useRef(Date.now());
   const preferences = getRendererPreferences(settings, task.taskType);
   const instructionText = useMemo(() => getTaskInstructions(copy, task), [copy, task]);
+  const partOfSpeechLabel = useMemo(() => formatPartOfSpeechLabel(task), [task.pos, task.taskType]);
 
   useEffect(() => {
     setAnswer('');
@@ -997,6 +1011,7 @@ function NounCaseDeclensionRenderer({
       className={className}
       debugId={debugId}
       isLoadingNext={isLoadingNext}
+      badgeLabel={partOfSpeechLabel}
     />
   );
 }
@@ -1020,6 +1035,7 @@ function AdjectiveEndingRenderer({
   const startTimeRef = useRef(Date.now());
   const preferences = getRendererPreferences(settings, task.taskType);
   const instructionText = useMemo(() => getTaskInstructions(copy, task), [copy, task]);
+  const partOfSpeechLabel = useMemo(() => formatPartOfSpeechLabel(task), [task.pos, task.taskType]);
 
   useEffect(() => {
     setAnswer('');
@@ -1261,6 +1277,7 @@ function AdjectiveEndingRenderer({
       className={className}
       debugId={debugId}
       isLoadingNext={isLoadingNext}
+      badgeLabel={partOfSpeechLabel}
     />
   );
 }
