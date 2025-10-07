@@ -4,7 +4,6 @@ import { Compass, History, Loader2, Settings2, Sparkles } from 'lucide-react';
 
 import { AppShell } from '@/components/layout/app-shell';
 import { MobileNavBar } from '@/components/layout/mobile-nav-bar';
-import { AccountSidebarCard } from '@/components/auth/account-sidebar-card';
 import { AccountMobileTrigger } from '@/components/auth/account-mobile-trigger';
 import { AccountTopBarButton } from '@/components/auth/account-top-bar-button';
 import { getPrimaryNavigationItems } from '@/components/layout/navigation';
@@ -357,7 +356,6 @@ export default function Home() {
   const sidebar = (
     <div className="flex h-full flex-col justify-between gap-6">
       <div className="space-y-6">
-        <AccountSidebarCard />
         <div className="space-y-3">
           <p className="text-sm font-medium text-muted-foreground group-data-[collapsed=true]/sidebar:hidden">
             Navigate

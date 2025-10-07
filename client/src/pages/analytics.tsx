@@ -6,7 +6,6 @@ import { BarChart3, BookOpen } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
 import { SidebarNavButton } from "@/components/layout/sidebar-nav-button";
 import { MobileNavBar } from "@/components/layout/mobile-nav-bar";
-import { AccountSidebarCard } from "@/components/auth/account-sidebar-card";
 import { AccountMobileTrigger } from "@/components/auth/account-mobile-trigger";
 import { getPrimaryNavigationItems } from "@/components/layout/navigation";
 import { AnalyticsDashboard } from "@/components/analytics-dashboard";
@@ -192,7 +191,6 @@ export default function Analytics() {
 
   const sidebar = (
     <div className="space-y-6">
-      <AccountSidebarCard />
       <div className="space-y-3">
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
           Navigate

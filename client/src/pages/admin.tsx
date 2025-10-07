@@ -7,7 +7,6 @@ import { Link } from 'wouter';
 import { AppShell } from '@/components/layout/app-shell';
 import { SidebarNavButton } from '@/components/layout/sidebar-nav-button';
 import { MobileNavBar } from '@/components/layout/mobile-nav-bar';
-import { AccountSidebarCard } from '@/components/auth/account-sidebar-card';
 import { AccountMobileTrigger } from '@/components/auth/account-mobile-trigger';
 import { getPrimaryNavigationItems } from '@/components/layout/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -461,7 +460,6 @@ const AdminWordsPage = () => {
   const sidebar = (
     <div className="flex h-full flex-col justify-between gap-8">
       <div className="space-y-6">
-        <AccountSidebarCard />
         <div className="space-y-3">
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Navigate</p>
           <div className="grid gap-2">

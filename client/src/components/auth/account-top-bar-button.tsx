@@ -17,7 +17,8 @@ export function AccountTopBarButton({ className }: AccountTopBarButtonProps) {
   const [open, setOpen] = useState(false);
   const copy = useTranslations().auth;
 
-  const isPending = isLoading || isFetching;
+  const hasResolvedSession = typeof session !== "undefined";
+  const showInitialLoading = !hasResolvedSession && (isLoading || isFetching);
   const label = session ? copy.sidebar.manageAccountCta : copy.sidebar.signInCta;
   const actionLabel = session ? copy.mobile.manageAccountLabel : copy.mobile.signInLabel;
 
@@ -31,10 +32,10 @@ export function AccountTopBarButton({ className }: AccountTopBarButtonProps) {
           className,
         )}
         onClick={() => setOpen(true)}
-        disabled={isPending}
+        disabled={showInitialLoading}
         aria-label={actionLabel}
       >
-        {isPending ? (
+        {showInitialLoading ? (
           <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
         ) : (
           <UserCircle2 className="h-4 w-4" aria-hidden />
@@ -46,7 +47,7 @@ export function AccountTopBarButton({ className }: AccountTopBarButtonProps) {
         onOpenChange={setOpen}
         defaultMode="sign-in"
         session={session ?? null}
-        isSessionLoading={isPending}
+        isSessionLoading={showInitialLoading}
       />
     </>
   );
