@@ -1,18 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'wouter';
-import {
-  ChevronDown,
-  Compass,
-  History,
-  Loader2,
-  Settings2,
-  Sparkles,
-} from 'lucide-react';
+import { Compass, History, Loader2, Settings2, Sparkles } from 'lucide-react';
 
 import { AppShell } from '@/components/layout/app-shell';
 import { MobileNavBar } from '@/components/layout/mobile-nav-bar';
 import { AccountSidebarCard } from '@/components/auth/account-sidebar-card';
 import { AccountMobileTrigger } from '@/components/auth/account-mobile-trigger';
+import { AccountTopBarButton } from '@/components/auth/account-top-bar-button';
 import { getPrimaryNavigationItems } from '@/components/layout/navigation';
 import { PracticeCard, type PracticeCardResult } from '@/components/practice-card';
 import { SettingsDialog } from '@/components/settings-dialog';
@@ -52,6 +46,7 @@ import {
   clientTaskRegistry,
 } from '@/lib/tasks';
 import { getTaskTypeCopy } from '@/lib/task-metadata';
+import { useTranslations } from '@/locales';
 import type {
   CEFRLevel,
   PracticeSettingsState,
@@ -115,6 +110,13 @@ export default function Home() {
     () => getPrimaryNavigationItems(authSession.data?.user.role ?? null),
     [authSession.data?.user.role],
   );
+  const translations = useTranslations();
+  const homeTopBarCopy = translations.home.topBar;
+  const unknownUserLabel = translations.auth.dialog.unknownUser;
+  const topBarDisplayName = authSession.data?.user.name?.trim() || authSession.data?.user.email || unknownUserLabel;
+  const topBarSubtitle = authSession.data
+    ? homeTopBarCopy.signedInSubtitle.replace('{name}', topBarDisplayName)
+    : homeTopBarCopy.signedOutSubtitle;
 
   const scope = computeScope(settings);
   const activeTaskTypes = useMemo(() => {
@@ -396,10 +398,28 @@ export default function Home() {
     </div>
   );
 
+  const topBarContent = (
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 self-start rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+            <Sparkles className="h-3.5 w-3.5" aria-hidden />
+            {homeTopBarCopy.focusLabel}
+          </div>
+          <div className="space-y-1">
+            <h1 className="text-xl font-semibold text-foreground sm:text-2xl">{homeTopBarCopy.title}</h1>
+            <p className="text-sm text-muted-foreground sm:text-base">{topBarSubtitle}</p>
+          </div>
+        </div>
+        <AccountTopBarButton className="self-start sm:self-auto" />
+      </div>
+    </div>
+  );
+
   return (
     <AppShell
       sidebar={sidebar}
-      topBar={null}
+      topBar={topBarContent}
       mobileNav={<MobileNavBar items={navigationItems} accountAction={<AccountMobileTrigger />} />}
       debugId="home-app-shell"
     >

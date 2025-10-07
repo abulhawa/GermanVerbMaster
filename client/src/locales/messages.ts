@@ -121,6 +121,15 @@ export interface ProgressDisplayMessages {
   insight: string;
 }
 
+export interface HomeMessages {
+  topBar: {
+    focusLabel: string;
+    title: string;
+    signedOutSubtitle: string;
+    signedInSubtitle: string;
+  };
+}
+
 export interface AuthMessages {
   sidebar: {
     signedOutTitle: string;
@@ -187,6 +196,7 @@ export interface AppMessages {
   languageToggle: LanguageToggleMessages;
   practiceCard: PracticeCardMessages;
   progressDisplay: ProgressDisplayMessages;
+  home: HomeMessages;
   auth: AuthMessages;
 }
 
@@ -198,6 +208,14 @@ const MESSAGES: Record<Locale, AppMessages> = {
       label: 'Language',
       english: 'English',
       german: 'Deutsch',
+    },
+    home: {
+      topBar: {
+        focusLabel: 'Practice focus',
+        title: 'Continue your personalised session',
+        signedOutSubtitle: 'Sign in to sync your progress and unlock analytics.',
+        signedInSubtitle: 'Signed in as {name}.',
+      },
     },
     auth: {
       sidebar: {
@@ -422,6 +440,14 @@ const MESSAGES: Record<Locale, AppMessages> = {
       label: 'Sprache',
       english: 'Englisch',
       german: 'Deutsch',
+    },
+    home: {
+      topBar: {
+        focusLabel: 'Übungsschwerpunkt',
+        title: 'Setze deine personalisierte Sitzung fort',
+        signedOutSubtitle: 'Melde dich an, um deinen Fortschritt zu synchronisieren und Analysen freizuschalten.',
+        signedInSubtitle: 'Angemeldet als {name}.',
+      },
     },
     auth: {
       sidebar: {
