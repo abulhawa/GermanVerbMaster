@@ -97,6 +97,31 @@ describe('fetchPracticeTasks', () => {
     expect(task.source).toBe('scheduler');
   });
 
+  it('attaches the device identifier to task feed requests', async () => {
+    const payload = {
+      tasks: [],
+    } satisfies Record<string, unknown>;
+
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const url = requestToUrl(input);
+      if (url.includes('/api/tasks')) {
+        return new Response(JSON.stringify(payload), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+      throw new Error(`Unexpected request: ${input}`);
+    });
+
+    vi.stubGlobal('fetch', fetchMock);
+
+    await fetchPracticeTasks({ pos: 'verb', taskType: 'conjugate_form', limit: 5 });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const url = new URL(requestToUrl(fetchMock.mock.calls[0]![0]!));
+    expect(url.searchParams.get('deviceId')).toMatch(/\w+/);
+  });
+
   it('falls back to the legacy verb feed and records telemetry when the task feed fails', async () => {
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const debugSpy = vi.spyOn(console, 'debug').mockImplementation(() => {});

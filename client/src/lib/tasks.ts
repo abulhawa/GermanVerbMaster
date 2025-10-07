@@ -7,6 +7,7 @@ import {
   type TaskRegistryEntry,
   type TaskType,
 } from '@shared/task-registry';
+import { getDeviceId } from '@/lib/device';
 import type { GermanVerb } from '@shared';
 
 const DEFAULT_TASK_LIMIT = 25;
@@ -43,6 +44,7 @@ export interface TaskFetchOptions {
   packSlug?: string;
   limit?: number;
   signal?: AbortSignal;
+  deviceId?: string;
   /**
    * Controls whether the legacy `/api/quiz/verbs` endpoint should be used when the new task feed fails.
    * Defaults to `true` for backwards compatibility while POS work is in flight.
@@ -306,6 +308,8 @@ function buildTasksQuery(options: TaskFetchOptions): string {
   }
   const limit = options.limit ?? DEFAULT_TASK_LIMIT;
   params.set('limit', String(limit));
+  const deviceId = options.deviceId?.trim() || getDeviceId();
+  params.set('deviceId', deviceId);
   return params.toString();
 }
 
@@ -339,18 +343,19 @@ async function fetchFromTaskFeed(options: TaskFetchOptions): Promise<PracticeTas
 }
 
 export async function fetchPracticeTasks(options: TaskFetchOptions = {}): Promise<PracticeTask[]> {
+  const resolvedOptions = options.deviceId ? options : { ...options, deviceId: getDeviceId() };
   try {
-    return await fetchFromTaskFeed(options);
+    return await fetchFromTaskFeed(resolvedOptions);
   } catch (error) {
-    if (!shouldUseLegacyFallback(options)) {
+    if (!shouldUseLegacyFallback(resolvedOptions)) {
       throw error instanceof Error ? error : new Error('Failed to fetch tasks');
     }
 
-    const limit = options.limit ?? DEFAULT_TASK_LIMIT;
+    const limit = resolvedOptions.limit ?? DEFAULT_TASK_LIMIT;
     const reason = error instanceof Error ? error.message : 'Unknown task feed failure';
 
     try {
-      return await fetchLegacyVerbTasks(limit, reason, options.signal);
+      return await fetchLegacyVerbTasks(limit, reason, resolvedOptions.signal);
     } catch (fallbackError) {
       const aggregate = new AggregateError([error as Error, fallbackError as Error], 'Unable to fetch practice tasks');
       throw aggregate;
