@@ -28,7 +28,11 @@ import {
   queuePracticeSettingsOpen,
 } from "@/lib/practice-settings-events";
 
-export function FloatingUserMenu() {
+interface UserMenuControlProps {
+  className?: string;
+}
+
+export function UserMenuControl({ className }: UserMenuControlProps) {
   const { data: session, isLoading, isFetching } = useAuthSession();
   const signOutMutation = useSignOutMutation();
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
@@ -89,14 +93,14 @@ export function FloatingUserMenu() {
   };
 
   const menuButton = isSignedIn ? (
-    <DropdownMenu debugId="floating-user-menu">
+    <DropdownMenu debugId="user-menu-control">
       <DropdownMenuTrigger asChild>
         <Button
           type="button"
           variant="ghost"
           size="icon"
           className={cn(
-            "pointer-events-auto relative h-12 w-12 rounded-full border border-border/70 bg-background/95 text-foreground shadow-soft transition hover:border-primary/60 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+            "relative h-12 w-12 rounded-full border border-border/60 bg-background/95 text-foreground shadow-soft transition hover:border-primary/60 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
           )}
           aria-label={menuCopy.ariaLabel}
           disabled={isSessionLoading}
@@ -173,7 +177,7 @@ export function FloatingUserMenu() {
     <Button
       type="button"
       variant="outline"
-      className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/95 px-4 py-2 text-sm font-semibold text-foreground shadow-soft transition hover:border-primary/60 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/95 px-4 py-2 text-sm font-semibold text-foreground shadow-soft transition hover:border-primary/60 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       onClick={() => setAuthDialogOpen(true)}
       disabled={isSessionLoading}
       aria-label={menuCopy.signInLabel}
@@ -184,8 +188,8 @@ export function FloatingUserMenu() {
   );
 
   return (
-    <div className="pointer-events-none fixed right-4 top-4 z-popover sm:right-6 sm:top-6">
-      <div className="pointer-events-auto">{menuButton}</div>
+    <>
+      <div className={cn("flex w-full items-center justify-end", className)}>{menuButton}</div>
       <AuthDialog
         open={authDialogOpen}
         onOpenChange={setAuthDialogOpen}
@@ -193,6 +197,6 @@ export function FloatingUserMenu() {
         session={session ?? null}
         isSessionLoading={isSessionLoading}
       />
-    </div>
+    </>
   );
 }

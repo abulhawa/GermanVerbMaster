@@ -7,7 +7,6 @@ import { useSyncQueue } from "@/hooks/use-sync-queue";
 import { LocaleProvider } from "@/locales";
 import { ThemeProvider } from "next-themes";
 import { THEME_STORAGE_KEY } from "@/lib/theme";
-import { FloatingUserMenu } from "@/components/auth/floating-user-menu";
 
 const HomePage = lazy(() => import("@/pages/home"));
 const AnswerHistoryPage = lazy(() => import("@/pages/answer-history"));
@@ -56,7 +55,6 @@ function App() {
       <LocaleProvider>
         <QueryClientProvider client={queryClient}>
           <SyncManager />
-          <FloatingUserMenu />
           <Router />
           <Toaster />
         </QueryClientProvider>
