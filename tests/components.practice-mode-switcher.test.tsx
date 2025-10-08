@@ -19,10 +19,12 @@ describe('PracticeModeSwitcher', () => {
         selectedTaskTypes={['conjugate_form']}
         onTaskTypesChange={handleTaskTypesChange}
         availableTaskTypes={AVAILABLE_TYPES}
+        scopeBadgeLabel="Verbs only"
       />,
     );
 
-    await userEvent.click(screen.getByRole('button', { name: /nouns/i }));
+    await userEvent.click(screen.getByRole('button', { name: /adjust practice scope/i }));
+    await userEvent.click(screen.getByRole('tab', { name: /nouns/i }));
 
     expect(handleScopeChange).toHaveBeenCalledWith('nouns');
     expect(handleTaskTypesChange).not.toHaveBeenCalled();
@@ -39,16 +41,17 @@ describe('PracticeModeSwitcher', () => {
         selectedTaskTypes={['conjugate_form']}
         onTaskTypesChange={handleTaskTypesChange}
         availableTaskTypes={AVAILABLE_TYPES}
+        scopeBadgeLabel="Custom mix"
       />,
     );
 
-    await userEvent.click(screen.getByRole('button', { name: /configure custom mix/i }));
-    await userEvent.click(screen.getByLabelText(/Adjective endings/i));
+    await userEvent.click(screen.getByRole('button', { name: /adjust practice scope/i }));
+    await userEvent.click(screen.getByRole('checkbox', { name: /adjective endings/i }));
 
     expect(handleTaskTypesChange).toHaveBeenCalled();
   });
 
-  it('renders task types in the provided order without duplicates', () => {
+  it('renders task types in the provided order without duplicates', async () => {
     render(
       <PracticeModeSwitcher
         scope="custom"
@@ -56,8 +59,11 @@ describe('PracticeModeSwitcher', () => {
         selectedTaskTypes={['conjugate_form', 'adj_ending']}
         onTaskTypesChange={vi.fn()}
         availableTaskTypes={['noun_case_declension', 'conjugate_form', 'adj_ending', 'conjugate_form']}
+        scopeBadgeLabel="Custom mix"
       />,
     );
+
+    await userEvent.click(screen.getByRole('button', { name: /adjust practice scope/i }));
 
     const checkboxes = screen.getAllByRole('checkbox');
     expect(checkboxes).toHaveLength(3);

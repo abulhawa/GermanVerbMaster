@@ -1,18 +1,10 @@
 import { useMemo } from 'react';
-import { BookOpen, Flame, Info, PenLine, SlidersHorizontal, Sparkles, ChevronDown } from 'lucide-react';
+import { BookOpen, Flame, PenLine, SlidersHorizontal, Sparkles } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { getTaskTypeCopy } from '@/lib/task-metadata';
 import type { TaskType } from '@shared';
@@ -30,6 +22,7 @@ interface PracticeModeSwitcherProps extends DebuggableComponentProps {
   selectedTaskTypes: TaskType[];
   onTaskTypesChange: (taskTypes: TaskType[]) => void;
   availableTaskTypes: ReadonlyArray<TaskType>;
+  scopeBadgeLabel: string;
 }
 
 interface ModeConfig {
@@ -78,6 +71,7 @@ export function PracticeModeSwitcher({
   selectedTaskTypes,
   onTaskTypesChange,
   availableTaskTypes,
+  scopeBadgeLabel,
   debugId,
 }: PracticeModeSwitcherProps) {
   const resolvedDebugId = debugId && debugId.trim().length > 0 ? debugId : 'practice-mode-switcher';
@@ -127,68 +121,93 @@ export function PracticeModeSwitcher({
   const activeMode = MODE_CONFIG.find((mode) => mode.value === scope) ?? MODE_CONFIG[0];
 
   return (
-    <TooltipProvider delayDuration={0}>
-      <Tabs
-        value={scope}
-        onValueChange={(value) => handleScopeChange(value as PracticeScope | '')}
-        className="w-full space-y-3"
-        {...getDevAttributes('practice-mode-switcher', resolvedDebugId)}
+    <Popover debugId={`${resolvedDebugId}-popover`}>
+      <PopoverTrigger asChild debugId={`${resolvedDebugId}-trigger`}>
+        <button
+          type="button"
+          className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-sm font-medium text-primary transition hover:border-primary/50 hover:bg-primary/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          aria-label="Adjust practice scope"
+          {...getDevAttributes('practice-mode-switcher-trigger', `${resolvedDebugId}-trigger`)}
+        >
+          <Sparkles className="h-3.5 w-3.5" aria-hidden />
+          {scopeBadgeLabel}
+        </button>
+      </PopoverTrigger>
+      <PopoverContent
+        align="start"
+        sideOffset={12}
+        className="w-[360px] space-y-5 rounded-3xl border border-border/60 bg-card/95 p-5 shadow-xl"
+        debugId={`${resolvedDebugId}-content`}
       >
-      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-border/60 bg-background/85 px-2 py-2 shadow-sm">
-        <TabsList className="flex flex-1 flex-wrap gap-2 bg-transparent p-0">
-          {MODE_CONFIG.map((mode) => (
-            <TabsTrigger
-              key={mode.value}
-              value={mode.value}
-              className={cn(
-                'relative flex min-w-[110px] items-center gap-2 rounded-2xl border border-border/60 bg-muted/40 px-4 py-2 text-sm font-medium text-muted-foreground transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-                'hover:text-foreground data-[state=active]:border-transparent data-[state=active]:!bg-primary data-[state=active]:!text-primary-foreground data-[state=active]:shadow-lg data-[state=active]:ring-2 data-[state=active]:ring-primary/50 data-[state=active]:ring-offset-2 data-[state=active]:ring-offset-background',
-              )}
-            >
-              <mode.icon className="h-4 w-4" aria-hidden />
-              <span className="hidden sm:inline">{mode.label}</span>
-            </TabsTrigger>
-          ))}
-        </TabsList>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/95 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground"
-              aria-label="Configure custom task mix"
-            >
-              <SlidersHorizontal className="h-3.5 w-3.5" aria-hidden />
-              Custom mix
-              <ChevronDown className="h-3 w-3" aria-hidden />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-72 space-y-1 rounded-2xl border border-border/70 bg-card/95 p-3 shadow-xl" align="end">
-            <DropdownMenuLabel className="text-sm font-medium text-muted-foreground">
+        <div className="space-y-1">
+          <p className="text-sm font-semibold text-foreground">Practice scope</p>
+          <p className="text-xs text-muted-foreground">Pick a preset or fine-tune the mix.</p>
+        </div>
+
+        <Tabs
+          value={activeMode.value}
+          onValueChange={(value) => handleScopeChange(value as PracticeScope | '')}
+          className="w-full"
+          {...getDevAttributes('practice-mode-switcher', resolvedDebugId)}
+        >
+          <TabsList className="flex flex-wrap gap-2 bg-transparent p-0">
+            {MODE_CONFIG.map((mode) => (
+              <TabsTrigger
+                key={mode.value}
+                value={mode.value}
+                className={cn(
+                  'flex min-w-[110px] items-center gap-2 rounded-2xl border border-border/60 bg-muted/40 px-4 py-2 text-sm font-medium text-muted-foreground transition',
+                  'hover:text-foreground data-[state=active]:border-transparent data-[state=active]:!bg-primary data-[state=active]:!text-primary-foreground data-[state=active]:shadow-lg data-[state=active]:ring-2 data-[state=active]:ring-primary/50 data-[state=active]:ring-offset-2 data-[state=active]:ring-offset-background',
+                )}
+              >
+                <mode.icon className="h-4 w-4 shrink-0" aria-hidden />
+                <span>{mode.label}</span>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Task types
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
+            </p>
+            <span className="text-xs text-muted-foreground">{selectedSet.size} selected</span>
+          </div>
+          <div className="max-h-60 space-y-2 overflow-y-auto pr-1">
             {sortedTaskTypes.map((taskType) => {
               const copy = getTaskTypeCopy(taskType);
               const checked = selectedSet.has(taskType);
+              const checkboxId = `${resolvedDebugId}-${taskType}`;
               return (
-                <DropdownMenuCheckboxItem
+                <div
                   key={taskType}
-                  checked={checked}
-                  onCheckedChange={(value) => handleTaskTypeToggle(taskType, Boolean(value))}
-                  aria-label={copy.label}
-                  className="flex items-start gap-3 rounded-xl px-2 py-1.5 text-sm text-foreground focus:bg-muted"
+                  className={cn(
+                    'flex items-center gap-3 rounded-2xl border border-transparent px-3 py-2 transition',
+                    checked ? 'bg-muted/60 border-border/80' : 'hover:bg-muted/40',
+                  )}
                 >
-                  <div className="space-y-1">
-                    <p className="font-medium leading-none">{copy.label}</p>
-                    <p className="text-xs text-muted-foreground">{copy.description}</p>
-                  </div>
-                </DropdownMenuCheckboxItem>
+                  <Checkbox
+                    id={checkboxId}
+                    checked={checked}
+                    onCheckedChange={(value) => handleTaskTypeToggle(taskType, Boolean(value))}
+                    aria-label={copy.label}
+                    className="mt-0.5 shrink-0"
+                  />
+                  <Label
+                    htmlFor={checkboxId}
+                    className="space-y-1 text-sm text-foreground"
+                    debugId={`${resolvedDebugId}-${taskType}-label`}
+                  >
+                    <span className="block font-medium leading-none">{copy.label}</span>
+                    <span className="block text-xs text-muted-foreground">{copy.description}</span>
+                  </Label>
+                </div>
               );
             })}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    </Tabs>
-    </TooltipProvider>
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }

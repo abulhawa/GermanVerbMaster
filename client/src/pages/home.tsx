@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'wouter';
-import { Compass, History, Loader2, Settings2, Sparkles } from 'lucide-react';
+import { Compass, History, Loader2, Settings2 } from 'lucide-react';
 
 import { AppShell } from '@/components/layout/app-shell';
 import { MobileNavBar } from '@/components/layout/mobile-nav-bar';
@@ -398,13 +398,6 @@ export default function Home() {
         <section className="flex min-h-[540px] flex-col gap-6 rounded-3xl border border-border/50 bg-card/80 p-6 shadow-xl shadow-primary/10">
           <div className="space-y-6 text-left">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-sm font-medium text-primary">
-                <Sparkles className="h-3 w-3" aria-hidden />
-                {scopeBadgeLabel}
-              </div>
-              <p className="text-sm text-muted-foreground">{levelSummary}</p>
-            </div>
-            <div className="w-full">
               <PracticeModeSwitcher
                 debugId="topbar-mode-switcher"
                 scope={scope}
@@ -412,6 +405,7 @@ export default function Home() {
                 selectedTaskTypes={activeTaskTypes}
                 onTaskTypesChange={handleCustomTaskTypesChange}
                 availableTaskTypes={AVAILABLE_TASK_TYPES}
+                scopeBadgeLabel={scopeBadgeLabel}
               />
             </div>
           </div>
