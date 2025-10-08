@@ -58,6 +58,21 @@ describe('GET /api/me', () => {
     expect(response.bodyJson).toMatchObject({ code: 'UNAUTHENTICATED' });
   });
 
+  it('returns 401 when the session payload is incomplete', async () => {
+    getSessionFromRequestMock.mockResolvedValueOnce({
+      session: null,
+      user: null,
+    } as any);
+
+    const { createVercelApiHandler } = await import('../server/api/vercel-handler.js');
+    const invokeApi = createApiInvoker(createVercelApiHandler({ enableCors: false }));
+
+    const response = await invokeApi('/api/me');
+
+    expect(response.status).toBe(401);
+    expect(response.bodyJson).toMatchObject({ code: 'UNAUTHENTICATED' });
+  });
+
   it('returns session payload when authenticated', async () => {
     const now = new Date('2024-01-02T03:04:05.000Z');
 

@@ -541,24 +541,18 @@ export function registerRoutes(app: Express): void {
 
   app.get("/api/me", async (req, res, next) => {
     try {
-      const session = req.authSession ?? null;
-      if (!session) {
+      const authSession = req.authSession ?? undefined;
+      const activeSession = authSession?.session ?? null;
+      const user = authSession?.user ?? null;
+
+      if (!authSession || !activeSession || !user) {
         return res.status(401).json({
           error: "Not authenticated",
           code: "UNAUTHENTICATED",
         });
       }
 
-      const activeSession = session.session ?? null;
-      if (!activeSession) {
-        return res.status(401).json({
-          error: "Not authenticated",
-          code: "UNAUTHENTICATED",
-        });
-      }
-
-      const { user } = session;
-      const resolvedRole = getSessionRole(session) ?? "standard";
+      const resolvedRole = getSessionRole(authSession) ?? "standard";
 
       res.setHeader("Cache-Control", "no-store");
 
