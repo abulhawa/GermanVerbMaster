@@ -10,6 +10,19 @@ export interface LanguageToggleMessages {
   german: string;
 }
 
+export interface UserMenuMessages {
+  ariaLabel: string;
+  signInLabel: string;
+  accountLabel: string;
+  settingsLabel: string;
+  languageLabel: string;
+  theme: {
+    toggleToDark: string;
+    toggleToLight: string;
+  };
+  unknownUserInitial: string;
+}
+
 export interface PracticeCardMessages {
   offline: { title: string; description: string; announce: string };
   error: { title: string; generic: string };
@@ -202,6 +215,7 @@ export interface AuthMessages {
 
 export interface AppMessages {
   languageToggle: LanguageToggleMessages;
+  userMenu: UserMenuMessages;
   practiceCard: PracticeCardMessages;
   progressDisplay: ProgressDisplayMessages;
   home: HomeMessages;
@@ -216,6 +230,18 @@ const MESSAGES: Record<Locale, AppMessages> = {
       label: 'Language',
       english: 'English',
       german: 'Deutsch',
+    },
+    userMenu: {
+      ariaLabel: 'Open user menu',
+      signInLabel: 'Open sign in dialog',
+      accountLabel: 'Account',
+      settingsLabel: 'Settings',
+      languageLabel: 'Language',
+      theme: {
+        toggleToDark: 'Switch to dark theme',
+        toggleToLight: 'Switch to light theme',
+      },
+      unknownUserInitial: '?',
     },
     home: {
       topBar: {
@@ -456,6 +482,18 @@ const MESSAGES: Record<Locale, AppMessages> = {
       label: 'Sprache',
       english: 'Englisch',
       german: 'Deutsch',
+    },
+    userMenu: {
+      ariaLabel: 'Benutzermenü öffnen',
+      signInLabel: 'Anmeldedialog öffnen',
+      accountLabel: 'Konto',
+      settingsLabel: 'Einstellungen',
+      languageLabel: 'Sprache',
+      theme: {
+        toggleToDark: 'Zum dunklen Design wechseln',
+        toggleToLight: 'Zum hellen Design wechseln',
+      },
+      unknownUserInitial: '?',
     },
     home: {
       topBar: {

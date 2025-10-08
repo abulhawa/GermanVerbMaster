@@ -49,34 +49,6 @@ export default function AnswerHistoryPage() {
     setHistory([]);
   };
 
-  const topBar = (
-    <div className="flex flex-row items-center justify-between gap-3">
-      <div className="space-y-1">
-        <h1 className="inline-flex items-center gap-2 text-sm font-semibold tracking-[0.22em]">
-          <History className="h-4 w-4" aria-hidden />
-          Answer history
-        </h1>
-      </div>
-      <div className="flex flex-wrap items-center justify-end gap-2">
-        <Link href="/">
-          <Button variant="secondary" className="rounded-2xl px-5">
-            <ArrowLeft className="mr-2 h-4 w-4" aria-hidden />
-            Back to practice
-          </Button>
-        </Link>
-        <Button
-          variant="outline"
-          onClick={handleClearHistory}
-          disabled={totalAnswers === 0}
-          className="rounded-2xl px-5"
-        >
-          <Trash2 className="mr-2 h-4 w-4" aria-hidden />
-          Clear history
-        </Button>
-      </div>
-    </div>
-  );
-
   const { data: authSession } = useAuthSession();
   const navigationItems = useMemo(
     () => getPrimaryNavigationItems(authSession?.user.role ?? null),
@@ -179,10 +151,34 @@ export default function AnswerHistoryPage() {
   return (
     <AppShell
       sidebar={sidebar}
-      topBar={topBar}
       mobileNav={<MobileNavBar items={navigationItems} accountAction={<AccountMobileTrigger />} />}
     >
       <div className="space-y-6">
+        <section className="flex flex-col gap-3 rounded-3xl border border-border/60 bg-card/85 p-6 shadow-soft shadow-primary/5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1">
+            <h1 className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.22em] text-foreground">
+              <History className="h-4 w-4" aria-hidden />
+              Answer history
+            </h1>
+          </div>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <Link href="/">
+              <Button variant="secondary" className="rounded-2xl px-5">
+                <ArrowLeft className="mr-2 h-4 w-4" aria-hidden />
+                Back to practice
+              </Button>
+            </Link>
+            <Button
+              variant="outline"
+              onClick={handleClearHistory}
+              disabled={totalAnswers === 0}
+              className="rounded-2xl px-5"
+            >
+              <Trash2 className="mr-2 h-4 w-4" aria-hidden />
+              Clear history
+            </Button>
+          </div>
+        </section>
         {filterControls}
         <AnsweredQuestionsPanel
           history={filteredHistory}
