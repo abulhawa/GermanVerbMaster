@@ -4,6 +4,7 @@ import { betterAuth, type Auth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { google, microsoft, type SocialProviders } from "better-auth/social-providers";
 import { db, authAccounts, authSessions, authUsers, authVerifications, userRoleEnum } from "@db";
+import { sendPasswordResetEmail as deliverPasswordResetEmail, sendVerificationEmail as deliverVerificationEmail } from "./emails.js";
 
 const BASE_PATH = "/api/auth";
 const baseURL = resolveBaseURL();
@@ -24,10 +25,40 @@ const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
+    async sendResetPassword({
+      user,
+      url,
+      token,
+    }: {
+      user: { email: string; name?: string | null };
+      url: string;
+      token: string;
+    }) {
+      await deliverPasswordResetEmail(user.email, {
+        url,
+        token,
+        name: user.name ?? undefined,
+      });
+    },
   },
   emailVerification: {
     sendOnSignUp: true,
     autoSignInAfterVerification: false,
+    async sendVerificationEmail({
+      user,
+      url,
+      token,
+    }: {
+      user: { email: string; name?: string | null };
+      url: string;
+      token: string;
+    }) {
+      await deliverVerificationEmail(user.email, {
+        url,
+        token,
+        name: user.name ?? undefined,
+      });
+    },
   },
   socialProviders: buildSocialProviders(baseURL),
   user: {
@@ -274,7 +305,7 @@ function resolveBaseURL(): string {
     return vercelUrl.startsWith("http") ? vercelUrl : `https://${vercelUrl}`;
   }
 
-  return "http://localhost:3000";
+  return "http://localhost:5000";
 }
 
 export { auth };

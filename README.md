@@ -14,7 +14,7 @@ Requires Node.js 22.0.0 or newer and npm 10+ (see `package.json` engines field).
    - `DATABASE_SSL` / `PGSSLMODE` – set to `disable` when connecting to a local instance without TLS.
    - `APP_ORIGIN` – a comma-separated allow list used for CORS in production builds.
    - `BETTER_AUTH_SECRET` – 64-byte secret used to sign Better Auth cookies and tokens.
-   - `BETTER_AUTH_URL` – external base URL Better Auth should use when generating callbacks (defaults to `http://localhost:3000`).
+   - `BETTER_AUTH_URL` – external base URL Better Auth should use when generating callbacks (defaults to `http://localhost:5000`).
    - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` – optional credentials for Google OAuth sign-in.
    - `MICROSOFT_CLIENT_ID` / `MICROSOFT_CLIENT_SECRET` – optional credentials for Microsoft OAuth sign-in.
    - `ENABLE_LEXEME_SCHEMA` – disable to fall back to the legacy verb-only stack (defaults to `true`).

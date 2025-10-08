@@ -42,15 +42,15 @@ Supabase (RLS enabled)
 ## 6. Environment & Configuration
 Set the following environment variables in Vercel and local `.env` (never commit values):
 - `BETTER_AUTH_SECRET`: 64-byte random string (rotate quarterly).
-- `BETTER_AUTH_URL`: Base URL (`https://<production-domain>` / `http://localhost:3000` in dev).
+- `BETTER_AUTH_URL`: Base URL (`https://<production-domain>` / `http://localhost:5000` in dev).
 - `DATABASE_URL`: Existing Supabase Postgres connection URL.
 - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`.
 - `MICROSOFT_CLIENT_ID` / `MICROSOFT_CLIENT_SECRET`.
 - Optional: `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD` if using custom SMTP; otherwise rely on Better Auth email provider defaults.
 
 OAuth redirect URIs (production + local):
-- Google: `https://<domain>/api/auth/callback/google`, `http://localhost:3000/api/auth/callback/google`
-- Microsoft: `https://<domain>/api/auth/callback/microsoft`, `http://localhost:3000/api/auth/callback/microsoft`
+- Google: `https://<domain>/api/auth/callback/google`, `http://localhost:5000/api/auth/callback/google`
+- Microsoft: `https://<domain>/api/auth/callback/microsoft`, `http://localhost:5000/api/auth/callback/microsoft`
 
 ## 7. Data Model & Migrations
 1. Run `npx better-auth generate --adapter drizzle` to scaffold Better Auth schema files.
