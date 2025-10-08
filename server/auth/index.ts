@@ -69,12 +69,17 @@ export async function getSessionFromRequest(req: ExpressRequest, res?: ExpressRe
     headers: request.headers,
     returnHeaders: true,
   })) as
-    | { headers: Headers; response: SessionPayload }
-    | SessionPayload;
+    | { headers: Headers; response: SessionPayload | null }
+    | SessionPayload
+    | null;
+
+  if (!result) {
+    return null;
+  }
 
   const payload = "response" in result ? result.response : result;
 
-  if (!payload.session) {
+  if (!payload || !payload.session) {
     return null;
   }
 
