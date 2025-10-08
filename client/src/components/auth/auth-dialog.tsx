@@ -47,6 +47,9 @@ export function AuthDialog({ open, onOpenChange, defaultMode = "sign-in", sessio
   const signInMutation = useSignInMutation();
   const signUpMutation = useSignUpMutation();
   const signOutMutation = useSignOutMutation();
+  const resetSignInMutation = signInMutation.reset;
+  const resetSignUpMutation = signUpMutation.reset;
+  const resetSignOutMutation = signOutMutation.reset;
 
   useEffect(() => {
     if (open) {
@@ -59,11 +62,11 @@ export function AuthDialog({ open, onOpenChange, defaultMode = "sign-in", sessio
       setFormState(INITIAL_FORM_STATE);
       setErrorMessage(null);
       setSuccessMessage(null);
-      signInMutation.reset();
-      signUpMutation.reset();
-      signOutMutation.reset();
+      resetSignInMutation();
+      resetSignUpMutation();
+      resetSignOutMutation();
     }
-  }, [open, signInMutation, signOutMutation, signUpMutation]);
+  }, [open, resetSignInMutation, resetSignOutMutation, resetSignUpMutation]);
 
   const isSubmitting = useMemo(() => {
     if (session) {
