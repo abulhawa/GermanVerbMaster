@@ -1,3 +1,4 @@
+import './helpers/mock-auth';
 import { createHash } from 'node:crypto';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { integrationUsage } from '@db/schema';

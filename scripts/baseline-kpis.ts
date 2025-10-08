@@ -5,7 +5,7 @@ import { verbPracticeHistory } from '@db/schema';
 
 type PracticeRow = {
   deviceId: string | null;
-  userId: number;
+  userId: string | null;
   result: 'correct' | 'incorrect';
   timeSpent: number;
   level: string;
@@ -37,7 +37,7 @@ async function loadPracticeRows(since: Date): Promise<PracticeRow[]> {
 
   return rows.map((row) => ({
     deviceId: row.deviceId,
-    userId: row.userId ?? 0,
+    userId: row.userId ?? null,
     result: row.result,
     timeSpent: row.timeSpent,
     level: row.level ?? 'unknown',
@@ -52,8 +52,10 @@ async function main(): Promise<void> {
   const rows = await loadPracticeRows(cutoff);
   const dataWindow = rows.some((row) => row.createdAt >= cutoff) ? '30d' : 'all-time';
 
-  const byDevice = new Set(rows.map((row) => row.deviceId ?? `anon-${row.userId}`));
-  const byUser = new Set(rows.filter((row) => row.userId !== 0).map((row) => row.userId));
+  const byDevice = new Set(
+    rows.map((row) => row.deviceId ?? `anon-${row.userId ?? 'unknown'}`),
+  );
+  const byUser = new Set(rows.filter((row) => row.userId).map((row) => row.userId as string));
 
   const totals = rows.reduce<PracticeTotals>(
     (acc, row) => {

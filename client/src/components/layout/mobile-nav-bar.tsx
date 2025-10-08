@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Link, useLocation } from "wouter";
 
 import { cn } from "@/lib/utils";
@@ -5,9 +6,10 @@ import type { AppNavigationItem } from "./navigation";
 
 interface MobileNavBarProps {
   items: AppNavigationItem[];
+  accountAction?: ReactNode;
 }
 
-export function MobileNavBar({ items }: MobileNavBarProps) {
+export function MobileNavBar({ items, accountAction }: MobileNavBarProps) {
   const [location] = useLocation();
 
   return (
@@ -47,6 +49,9 @@ export function MobileNavBar({ items }: MobileNavBarProps) {
           </Link>
         );
       })}
+      {accountAction ? (
+        <div className="flex flex-1 justify-center">{accountAction}</div>
+      ) : null}
     </nav>
   );
 }

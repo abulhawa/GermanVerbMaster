@@ -1,3 +1,4 @@
+import './helpers/mock-auth';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { setupTestDatabase, type TestDatabaseContext } from './helpers/pg';
 import { createApiInvoker } from './helpers/vercel';

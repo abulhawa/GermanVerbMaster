@@ -6,9 +6,10 @@ export interface AppNavigationItem {
   label: string;
   icon: LucideIcon;
   exact?: boolean;
+  requiresAdmin?: boolean;
 }
 
-export const primaryNavigationItems: AppNavigationItem[] = [
+const BASE_PRIMARY_NAVIGATION_ITEMS: AppNavigationItem[] = [
   {
     href: "/",
     label: "Practice",
@@ -29,5 +30,12 @@ export const primaryNavigationItems: AppNavigationItem[] = [
     href: "/admin",
     label: "Admin tools",
     icon: Settings2,
+    requiresAdmin: true,
   },
 ];
+
+export function getPrimaryNavigationItems(role: string | null | undefined): AppNavigationItem[] {
+  const normalizedRole = role?.trim().toLowerCase();
+  const isAdmin = normalizedRole === "admin";
+  return BASE_PRIMARY_NAVIGATION_ITEMS.filter((item) => !item.requiresAdmin || isAdmin);
+}

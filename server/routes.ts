@@ -1,4 +1,4 @@
-import type { Express, NextFunction, Request, Response } from "express";
+import type { Express, NextFunction, Request, RequestHandler, Response } from "express";
 import { db } from "@db";
 import {
   verbPracticeHistory,
@@ -36,6 +36,50 @@ import {
   PosFeatureDisabledError,
   summarizeFeatureFlagSnapshot,
 } from "./feature-flags.js";
+import { authRouter, getSessionFromRequest } from "./auth/index.js";
+import type { AuthSession } from "./auth/index.js";
+
+const attachAuthSessionMiddleware: RequestHandler = async (req, res, next) => {
+  try {
+    const session = await getSessionFromRequest(req, res);
+    req.authSession = session;
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+function getSessionUser(session: AuthSession | null | undefined): Record<string, unknown> | null {
+  if (!session?.user || typeof session.user !== "object") {
+    return null;
+  }
+  return session.user as Record<string, unknown>;
+}
+
+function getSessionUserId(session: AuthSession | null | undefined): string | null {
+  const user = getSessionUser(session);
+  const id = user?.id;
+  if (typeof id === "string") {
+    const trimmed = id.trim();
+    return trimmed.length > 0 ? trimmed : null;
+  }
+
+  if (typeof id === "number") {
+    return Number.isFinite(id) ? String(id) : null;
+  }
+
+  return null;
+}
+
+function getSessionRole(session: AuthSession | null | undefined): string | null {
+  const user = getSessionUser(session);
+  const role = user?.role;
+  return typeof role === "string" ? role : null;
+}
+
+function toIsoString(value: Date | string): string {
+  return value instanceof Date ? value.toISOString() : value;
+}
 
 const practiceModeSchema = z.enum(["präteritum", "partizipII", "auxiliary", "english"]);
 const levelSchema = z.enum(["A1", "A2", "B1", "B2", "C1", "C2"]);
@@ -460,29 +504,84 @@ function sendError(res: Response, status: number, message: string, code?: string
 
 let adminAuthWarningLogged = false;
 
-function requireAdminToken(req: Request, res: Response, next: NextFunction) {
-  const expectedToken = process.env.ADMIN_API_TOKEN?.trim();
-
-  if (!expectedToken) {
-    if (!adminAuthWarningLogged) {
-      console.warn(
-        "ADMIN_API_TOKEN is not configured; skipping admin authentication. This should only happen in local development."
-      );
-      adminAuthWarningLogged = true;
-    }
+function requireAdminAccess(req: Request, res: Response, next: NextFunction) {
+  const sessionRole = getSessionRole(req.authSession);
+  if (sessionRole === "admin") {
     return next();
   }
 
-  const providedToken = normalizeStringParam(req.headers["x-admin-token"])?.trim();
+  const expectedToken = process.env.ADMIN_API_TOKEN?.trim();
+  if (expectedToken) {
+    const providedToken = normalizeStringParam(req.headers["x-admin-token"])?.trim();
+    if (providedToken === expectedToken) {
+      return next();
+    }
 
-  if (!providedToken || providedToken !== expectedToken) {
     return sendError(res, 401, "Invalid admin token", "ADMIN_AUTH_FAILED");
   }
 
-  return next();
+  if (!adminAuthWarningLogged) {
+    console.warn(
+      "ADMIN_API_TOKEN is not configured; admin routes now require an authenticated Better Auth admin session."
+    );
+    adminAuthWarningLogged = true;
+  }
+
+  if (!req.authSession) {
+    return res.status(401).json({ error: "Authentication required", code: "UNAUTHENTICATED" });
+  }
+
+  return res.status(403).json({ error: "Admin privileges required", code: "FORBIDDEN" });
 }
 
 export function registerRoutes(app: Express): void {
+  app.use("/api/auth", authRouter);
+
+  app.use("/api", attachAuthSessionMiddleware);
+
+  app.get("/api/me", async (req, res, next) => {
+    try {
+      const authSession = req.authSession ?? undefined;
+      const activeSession = authSession?.session ?? null;
+      const user = authSession?.user ?? null;
+
+      if (!authSession || !activeSession || !user) {
+        return res.status(401).json({
+          error: "Not authenticated",
+          code: "UNAUTHENTICATED",
+        });
+      }
+
+      const resolvedRole = getSessionRole(authSession) ?? "standard";
+
+      res.setHeader("Cache-Control", "no-store");
+
+      const activeSessionRecord = activeSession as Record<string, any>;
+      const userRecord = user as Record<string, any>;
+
+      return res.json({
+        session: {
+          id: activeSessionRecord.id,
+          expiresAt: activeSessionRecord.expiresAt
+            ? toIsoString(activeSessionRecord.expiresAt)
+            : null,
+        },
+        user: {
+          id: userRecord.id,
+          name: userRecord.name,
+          email: userRecord.email,
+          image: userRecord.image ?? null,
+          emailVerified: Boolean(userRecord.emailVerified),
+          role: resolvedRole,
+          createdAt: userRecord.createdAt ? toIsoString(userRecord.createdAt) : null,
+          updatedAt: userRecord.updatedAt ? toIsoString(userRecord.updatedAt) : null,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+
   app.get("/api/tasks", async (req, res) => {
     const parsed = taskQuerySchema.safeParse(req.query ?? {});
     if (!parsed.success) {
@@ -941,7 +1040,7 @@ export function registerRoutes(app: Express): void {
         taskType: taskRow[0].taskType,
         renderer: taskRow[0].renderer,
         deviceId: payload.deviceId,
-        userId: (req as any).user?.id ?? null,
+        userId: getSessionUserId(req.authSession),
         result: payload.result,
         responseMs,
         submittedAt: submittedAt ?? new Date(),
@@ -983,7 +1082,7 @@ export function registerRoutes(app: Express): void {
     }
   });
 
-  app.get("/api/words", requireAdminToken, async (req, res) => {
+  app.get("/api/words", requireAdminAccess, async (req, res) => {
     try {
       const pos = normalizeStringParam(req.query.pos)?.trim();
       const level = normalizeStringParam(req.query.level)?.trim();
@@ -1046,7 +1145,7 @@ export function registerRoutes(app: Express): void {
     }
   });
 
-  app.patch("/api/words/:id", requireAdminToken, async (req, res) => {
+  app.patch("/api/words/:id", requireAdminAccess, async (req, res) => {
     try {
       const id = Number.parseInt(req.params.id, 10);
       if (!Number.isFinite(id) || id <= 0) {
@@ -1180,7 +1279,7 @@ export function registerRoutes(app: Express): void {
 
       await db.insert(verbPracticeHistory).values({
         ...data,
-        userId: (req as any).user?.id,
+        userId: getSessionUserId(req.authSession),
       });
 
       const analytics = await db.query.verbAnalytics.findFirst({
@@ -1218,7 +1317,7 @@ export function registerRoutes(app: Express): void {
           level: data.level,
           result: data.result,
           timeSpent: data.timeSpent,
-          userId: (req as any).user?.id ?? null,
+          userId: getSessionUserId(req.authSession),
           practicedAt,
         });
       } catch (error) {
@@ -1238,10 +1337,9 @@ export function registerRoutes(app: Express): void {
   app.get("/api/practice-history", async (req, res) => {
     setLegacyDeprecation(res);
     try {
+      const sessionUserId = getSessionUserId(req.authSession);
       const history = await db.query.verbPracticeHistory.findMany({
-        where: (req as any).user?.id
-          ? eq(verbPracticeHistory.userId, (req as any).user.id)
-          : undefined,
+        where: sessionUserId ? eq(verbPracticeHistory.userId, sessionUserId) : undefined,
         orderBy: [desc(verbPracticeHistory.createdAt)],
         limit: 100,
       });

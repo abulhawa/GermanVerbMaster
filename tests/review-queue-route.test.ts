@@ -1,3 +1,4 @@
+import './helpers/mock-auth';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AdaptiveQueueItem } from '@shared';
 import { setupTestDatabase, type TestDatabaseContext } from './helpers/pg';

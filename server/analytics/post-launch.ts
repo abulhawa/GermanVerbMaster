@@ -10,7 +10,7 @@ export interface PracticeAttemptAnalytics {
   readonly taskType: string;
   readonly renderer: string;
   readonly deviceId: string;
-  readonly userId: number | null;
+  readonly userId: string | null;
   readonly result: PracticeResult;
   readonly responseMs: number;
   readonly submittedAt: Date;

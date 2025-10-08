@@ -7,7 +7,8 @@ import { Link } from 'wouter';
 import { AppShell } from '@/components/layout/app-shell';
 import { SidebarNavButton } from '@/components/layout/sidebar-nav-button';
 import { MobileNavBar } from '@/components/layout/mobile-nav-bar';
-import { primaryNavigationItems } from '@/components/layout/navigation';
+import { AccountMobileTrigger } from '@/components/auth/account-mobile-trigger';
+import { getPrimaryNavigationItems } from '@/components/layout/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -18,6 +19,7 @@ import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerT
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { useAuthSession } from '@/auth/session';
 import type { Word } from '@shared';
 
 const wordSchema = z.object({
@@ -449,13 +451,19 @@ const AdminWordsPage = () => {
     </div>
   );
 
+  const { data: authSession } = useAuthSession();
+  const navigationItems = useMemo(
+    () => getPrimaryNavigationItems(authSession?.user.role ?? null),
+    [authSession?.user.role],
+  );
+
   const sidebar = (
     <div className="flex h-full flex-col justify-between gap-8">
       <div className="space-y-6">
         <div className="space-y-3">
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Navigate</p>
           <div className="grid gap-2">
-            {primaryNavigationItems.map((item) => (
+            {navigationItems.map((item) => (
               <SidebarNavButton
                 key={item.href}
                 href={item.href}
@@ -477,7 +485,7 @@ const AdminWordsPage = () => {
     <AppShell
       sidebar={sidebar}
       topBar={topBar}
-      mobileNav={<MobileNavBar items={primaryNavigationItems} />}
+      mobileNav={<MobileNavBar items={navigationItems} accountAction={<AccountMobileTrigger />} />}
     >
       <div className="space-y-6">
         <Card className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5">

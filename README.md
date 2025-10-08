@@ -13,6 +13,10 @@ Requires Node.js 22.0.0 or newer and npm 10+ (see `package.json` engines field).
    - `DATABASE_URL` – Postgres connection string (e.g. Supabase or local `postgres://` URL).
    - `DATABASE_SSL` / `PGSSLMODE` – set to `disable` when connecting to a local instance without TLS.
    - `APP_ORIGIN` – a comma-separated allow list used for CORS in production builds.
+   - `BETTER_AUTH_SECRET` – 64-byte secret used to sign Better Auth cookies and tokens.
+   - `BETTER_AUTH_URL` – external base URL Better Auth should use when generating callbacks (defaults to `http://localhost:3000`).
+   - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` – optional credentials for Google OAuth sign-in.
+   - `MICROSOFT_CLIENT_ID` / `MICROSOFT_CLIENT_SECRET` – optional credentials for Microsoft OAuth sign-in.
    - `ENABLE_LEXEME_SCHEMA` – disable to fall back to the legacy verb-only stack (defaults to `true`).
    - `ENABLE_NOUNS_BETA` / `ENABLE_ADJECTIVES_BETA` – flip feature flags for the new noun and adjective task cohorts. Both default to `false` so you can stage rollouts incrementally.
 3. Apply the latest migrations to your Postgres database:
@@ -49,6 +53,10 @@ Before running `npm run db:push` or `npm run seed` in any managed environment, s
 - `DATABASE_URL` (required) – Postgres connection string for the production database.
 - `DATABASE_SSL` / `PGSSLMODE` (optional) – leave unset to negotiate TLS automatically or set to `disable` when targeting a local database without SSL.
 - `APP_ORIGIN` – comma-separated allow list of trusted origins that should be able to hit the production API.
+- `BETTER_AUTH_SECRET` – secret shared with Better Auth for signing cookies and tokens.
+- `BETTER_AUTH_URL` – public base URL Better Auth should advertise in emails and OAuth callbacks.
+- `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` – optional Google OAuth credentials.
+- `MICROSOFT_CLIENT_ID` / `MICROSOFT_CLIENT_SECRET` – optional Microsoft OAuth credentials.
 - Feature flags (`ENABLE_LEXEME_SCHEMA`, `ENABLE_NOUNS_BETA`, `ENABLE_ADJECTIVES_BETA`) – opt-in toggles you can adjust per environment before generating packs.
 
 These must be present both in Vercel’s Environment Variables UI and in any CI job that invokes the migration (`npm run db:push`) and seeding (`npm run seed`) scripts so the Drizzle client connects with the correct SSL options.
