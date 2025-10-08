@@ -1,21 +1,33 @@
-import { Resend } from "resend";
+import * as ResendModule from "resend";
+
+type ResendConstructor = new (apiKey: string) => ResendModule.Resend;
+
+const resolvedResendClass: ResendConstructor | undefined =
+  (ResendModule as { Resend?: ResendConstructor }).Resend ??
+  (ResendModule as { default?: ResendConstructor }).default;
+
+if (!resolvedResendClass) {
+  throw new Error("The Resend module does not export a Resend client constructor.");
+}
+
+const ResendClass: ResendConstructor = resolvedResendClass;
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL?.trim() || "German Verb Master <onboarding@resend.dev>";
 
-let cachedResend: Resend | null = null;
+let cachedResend: ResendModule.Resend | null = null;
 
 function escapeHtml(value: string): string {
   return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
-function getResendClient(): Resend {
+function getResendClient(): ResendModule.Resend {
   if (!RESEND_API_KEY) {
     throw new Error("RESEND_API_KEY is not configured. Email delivery is disabled.");
   }
 
   if (!cachedResend) {
-    cachedResend = new Resend(RESEND_API_KEY);
+    cachedResend = new ResendClass(RESEND_API_KEY);
   }
 
   return cachedResend;

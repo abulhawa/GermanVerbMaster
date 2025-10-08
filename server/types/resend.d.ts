@@ -15,4 +15,7 @@ declare module "resend" {
     constructor(apiKey: string);
     emails: ResendEmailsApi;
   }
+
+  const ResendClient: typeof Resend;
+  export default ResendClient;
 }
