@@ -29,11 +29,6 @@ export interface PracticeCardMessages {
   status: { correct: string; incorrect: string; expectedAnswer: string };
   header: {
     appName: string;
-    profileLabel: string;
-    scoreLabel: string;
-    accuracyLabel: string;
-    streakLabel: string;
-    streakUnit: string;
   };
   hints: {
     label: string;
@@ -48,7 +43,6 @@ export interface PracticeCardMessages {
   actions: { submit: string; pronounceSrLabel: string };
   loadingNext: string;
   progress: {
-    label: string;
     completedLabel: string;
   };
   caseLabels: Record<'nominative' | 'accusative' | 'dative' | 'genitive', string>;
@@ -337,11 +331,6 @@ const MESSAGES: Record<Locale, AppMessages> = {
       },
       header: {
         appName: 'Wortschatz',
-        profileLabel: 'Profile',
-        scoreLabel: 'Points',
-        accuracyLabel: 'Accuracy',
-        streakLabel: 'Streak',
-        streakUnit: 'days',
       },
       hints: {
         label: 'Hint',
@@ -361,7 +350,6 @@ const MESSAGES: Record<Locale, AppMessages> = {
       },
       loadingNext: 'Loading next task…',
       progress: {
-        label: 'Day {current}/{target}',
         completedLabel: 'Completed {count}',
       },
       caseLabels: {
@@ -589,11 +577,6 @@ const MESSAGES: Record<Locale, AppMessages> = {
       },
       header: {
         appName: 'Wortschatz',
-        profileLabel: 'Profil',
-        scoreLabel: 'Punkte',
-        accuracyLabel: 'Genauigkeit',
-        streakLabel: 'Serie',
-        streakUnit: 'Tage',
       },
       hints: {
         label: 'Hinweis',
@@ -613,7 +596,6 @@ const MESSAGES: Record<Locale, AppMessages> = {
       },
       loadingNext: 'Lädt nächste Aufgabe…',
       progress: {
-        label: 'Tag {current}/{target}',
         completedLabel: '{count} abgeschlossen',
       },
       caseLabels: {

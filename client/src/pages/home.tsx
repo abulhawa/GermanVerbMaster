@@ -56,7 +56,6 @@ import {
   AVAILABLE_TASK_TYPES,
   SCOPE_LABELS,
   buildCefrLabel,
-  computePracticeSummary,
   computeScope,
   getVerbLevel,
   normalisePreferredTaskTypes,
@@ -324,11 +323,6 @@ export default function Home() {
     setShouldReloadTasks(true);
   }, []);
 
-  const summary = useMemo(
-    () => computePracticeSummary(progress, activeTaskTypes),
-    [progress, activeTaskTypes],
-  );
-
   const scopeBadgeLabel = scope === 'custom'
     ? `${SCOPE_LABELS[scope]} (${activeTaskTypes.length})`
     : SCOPE_LABELS[scope];
@@ -403,16 +397,6 @@ export default function Home() {
       <div className="space-y-6">
         <section className="flex min-h-[540px] flex-col gap-6 rounded-3xl border border-border/50 bg-card/80 p-6 shadow-xl shadow-primary/10">
           <div className="space-y-6 text-left">
-            <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-                <Sparkles className="h-3.5 w-3.5" aria-hidden />
-                {homeTopBarCopy.focusLabel}
-              </div>
-              <div className="space-y-1">
-                <h1 className="text-xl font-semibold text-foreground sm:text-2xl">{homeTopBarCopy.title}</h1>
-                <p className="text-sm text-muted-foreground sm:text-base">{topBarSubtitle}</p>
-              </div>
-            </div>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-sm font-medium text-primary">
                 <Sparkles className="h-3 w-3" aria-hidden />
@@ -446,11 +430,6 @@ export default function Home() {
                   onResult={handleTaskResult}
                   isLoadingNext={isFetchingTasks && session.queue.length === 0}
                   debugId="home-practice-card"
-                  summary={{
-                    correct: summary.correct,
-                    accuracy: summary.accuracy,
-                    streak: summary.streak,
-                  }}
                   sessionProgress={{
                     completed: sessionCompleted,
                     target: milestoneTarget,
