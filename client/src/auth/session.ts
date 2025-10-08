@@ -31,6 +31,10 @@ interface EmailCredentials {
   name?: string;
 }
 
+interface EmailPayload {
+  email: string;
+}
+
 function isNonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
 }
@@ -153,6 +157,20 @@ async function signOutRequest(): Promise<void> {
   });
 }
 
+async function resendVerificationEmailRequest(email: string): Promise<void> {
+  await requestJson<unknown>("/api/auth/send-verification-email", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+}
+
+async function requestPasswordResetEmail(email: string): Promise<void> {
+  await requestJson<unknown>("/api/auth/request-password-reset", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+}
+
 export function useAuthSession() {
   return useQuery<AuthSessionState, Error>({
     queryKey: SESSION_QUERY_KEY,
@@ -195,6 +213,22 @@ export function useSignOutMutation() {
     onSuccess: async () => {
       queryClient.setQueryData(SESSION_QUERY_KEY, null satisfies AuthSessionState);
       await queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY });
+    },
+  });
+}
+
+export function useResendVerificationEmailMutation() {
+  return useMutation<void, Error, EmailPayload>({
+    mutationFn: async ({ email }) => {
+      await resendVerificationEmailRequest(email);
+    },
+  });
+}
+
+export function useRequestPasswordResetMutation() {
+  return useMutation<void, Error, EmailPayload>({
+    mutationFn: async ({ email }) => {
+      await requestPasswordResetEmail(email);
     },
   });
 }

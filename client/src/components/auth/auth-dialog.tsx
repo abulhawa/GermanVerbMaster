@@ -11,6 +11,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useTranslations } from "@/locales";
 import {
   type AuthSessionState,
+  useRequestPasswordResetMutation,
+  useResendVerificationEmailMutation,
   useSignInMutation,
   useSignOutMutation,
   useSignUpMutation,
@@ -47,9 +49,13 @@ export function AuthDialog({ open, onOpenChange, defaultMode = "sign-in", sessio
   const signInMutation = useSignInMutation();
   const signUpMutation = useSignUpMutation();
   const signOutMutation = useSignOutMutation();
+  const resendVerificationMutation = useResendVerificationEmailMutation();
+  const requestPasswordResetMutation = useRequestPasswordResetMutation();
   const resetSignInMutation = signInMutation.reset;
   const resetSignUpMutation = signUpMutation.reset;
   const resetSignOutMutation = signOutMutation.reset;
+  const resetResendVerificationMutation = resendVerificationMutation.reset;
+  const resetPasswordResetMutation = requestPasswordResetMutation.reset;
 
   useEffect(() => {
     if (open) {
@@ -65,8 +71,17 @@ export function AuthDialog({ open, onOpenChange, defaultMode = "sign-in", sessio
       resetSignInMutation();
       resetSignUpMutation();
       resetSignOutMutation();
+      resetResendVerificationMutation();
+      resetPasswordResetMutation();
     }
-  }, [open, resetSignInMutation, resetSignOutMutation, resetSignUpMutation]);
+  }, [
+    open,
+    resetPasswordResetMutation,
+    resetResendVerificationMutation,
+    resetSignInMutation,
+    resetSignOutMutation,
+    resetSignUpMutation,
+  ]);
 
   const isSubmitting = useMemo(() => {
     if (session) {
@@ -133,6 +148,46 @@ export function AuthDialog({ open, onOpenChange, defaultMode = "sign-in", sessio
       });
       toast({ title: copy.feedback.signInSuccess });
       onOpenChange(false);
+    } catch (error) {
+      handleError(error, copy.feedback.unknownError);
+    }
+  };
+
+  const handleResendVerificationEmail = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    if (!formState.email.trim()) {
+      setErrorMessage(copy.dialog.validation.emailRequired);
+      return;
+    }
+
+    try {
+      await resendVerificationMutation.mutateAsync({
+        email: formState.email.trim(),
+      });
+      setSuccessMessage(copy.dialog.resendVerificationSuccess);
+    } catch (error) {
+      handleError(error, copy.feedback.unknownError);
+    }
+  };
+
+  const handleRequestPasswordReset = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    if (!formState.email.trim()) {
+      setErrorMessage(copy.dialog.validation.emailRequired);
+      return;
+    }
+
+    try {
+      await requestPasswordResetMutation.mutateAsync({
+        email: formState.email.trim(),
+      });
+      setSuccessMessage(copy.dialog.forgotPasswordSuccess);
     } catch (error) {
       handleError(error, copy.feedback.unknownError);
     }
@@ -264,16 +319,44 @@ export function AuthDialog({ open, onOpenChange, defaultMode = "sign-in", sessio
                   <Button type="submit" className="w-full rounded-2xl" disabled={isSubmitting}>
                     {isSubmitting ? copy.dialog.signingInLabel : copy.dialog.submitSignInLabel}
                   </Button>
-                  <p className="text-sm text-muted-foreground">
-                    {copy.dialog.switchToSignUpPrompt}{" "}
-                    <button
-                      type="button"
-                      className="font-semibold text-primary underline-offset-4 hover:underline"
-                      onClick={() => setMode("sign-up")}
-                    >
-                      {copy.dialog.switchToSignUpCta}
-                    </button>
-                  </p>
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground">
+                      {copy.dialog.switchToSignUpPrompt}{" "}
+                      <button
+                        type="button"
+                        className="font-semibold text-primary underline-offset-4 hover:underline"
+                        onClick={() => setMode("sign-up")}
+                      >
+                        {copy.dialog.switchToSignUpCta}
+                      </button>
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {copy.dialog.resendVerificationPrompt}{" "}
+                      <button
+                        type="button"
+                        className="font-semibold text-primary underline-offset-4 hover:underline disabled:pointer-events-none disabled:opacity-60"
+                        onClick={handleResendVerificationEmail}
+                        disabled={resendVerificationMutation.isPending}
+                      >
+                        {resendVerificationMutation.isPending
+                          ? copy.dialog.resendVerificationPendingLabel
+                          : copy.dialog.resendVerificationCta}
+                      </button>
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {copy.dialog.forgotPasswordPrompt}{" "}
+                      <button
+                        type="button"
+                        className="font-semibold text-primary underline-offset-4 hover:underline disabled:pointer-events-none disabled:opacity-60"
+                        onClick={handleRequestPasswordReset}
+                        disabled={requestPasswordResetMutation.isPending}
+                      >
+                        {requestPasswordResetMutation.isPending
+                          ? copy.dialog.forgotPasswordPendingLabel
+                          : copy.dialog.forgotPasswordCta}
+                      </button>
+                    </p>
+                  </div>
                 </form>
               </TabsContent>
               <TabsContent value="sign-up">

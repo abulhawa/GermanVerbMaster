@@ -170,6 +170,14 @@ export interface AuthMessages {
     switchToSignUpCta: string;
     switchToSignInPrompt: string;
     switchToSignInCta: string;
+    resendVerificationPrompt: string;
+    resendVerificationCta: string;
+    resendVerificationPendingLabel: string;
+    resendVerificationSuccess: string;
+    forgotPasswordPrompt: string;
+    forgotPasswordCta: string;
+    forgotPasswordPendingLabel: string;
+    forgotPasswordSuccess: string;
     verificationNotice: string;
     successTitle: string;
     errorTitle: string;
@@ -257,6 +265,14 @@ const MESSAGES: Record<Locale, AppMessages> = {
         switchToSignUpCta: 'Create one',
         switchToSignInPrompt: 'Already have an account?',
         switchToSignInCta: 'Sign in',
+        resendVerificationPrompt: "Didn't receive the verification email?",
+        resendVerificationCta: 'Resend verification email',
+        resendVerificationPendingLabel: 'Sending…',
+        resendVerificationSuccess: 'Verification email sent. Check your inbox.',
+        forgotPasswordPrompt: 'Forgot your password?',
+        forgotPasswordCta: 'Send reset link',
+        forgotPasswordPendingLabel: 'Sending…',
+        forgotPasswordSuccess: 'If that email exists, a reset link is on its way.',
         verificationNotice: 'We\'ve sent a verification email. Confirm it to finish setting up your account.',
         successTitle: 'Almost there',
         errorTitle: 'Something went wrong',
@@ -489,6 +505,14 @@ const MESSAGES: Record<Locale, AppMessages> = {
         switchToSignUpCta: 'Jetzt erstellen',
         switchToSignInPrompt: 'Bereits ein Konto?',
         switchToSignInCta: 'Anmelden',
+        resendVerificationPrompt: 'Keine Verifizierungs-E-Mail erhalten?',
+        resendVerificationCta: 'Verifizierungs-E-Mail erneut senden',
+        resendVerificationPendingLabel: 'Senden…',
+        resendVerificationSuccess: 'Verifizierungs-E-Mail gesendet. Prüfe deinen Posteingang.',
+        forgotPasswordPrompt: 'Passwort vergessen?',
+        forgotPasswordCta: 'Link zum Zurücksetzen senden',
+        forgotPasswordPendingLabel: 'Senden…',
+        forgotPasswordSuccess: 'Falls die E-Mail existiert, ist ein Link zum Zurücksetzen unterwegs.',
         verificationNotice: 'Wir haben dir eine Verifizierungs-E-Mail gesendet. Bestätige sie, um dein Konto zu aktivieren.',
         successTitle: 'Fast geschafft',
         errorTitle: 'Etwas ist schiefgelaufen',
