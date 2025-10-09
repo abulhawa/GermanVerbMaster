@@ -7,7 +7,6 @@ import { Link } from 'wouter';
 import { AppShell } from '@/components/layout/app-shell';
 import { SidebarNavButton } from '@/components/layout/sidebar-nav-button';
 import { MobileNavBar } from '@/components/layout/mobile-nav-bar';
-import { AccountMobileTrigger } from '@/components/auth/account-mobile-trigger';
 import { getPrimaryNavigationItems } from '@/components/layout/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -444,16 +443,13 @@ const AdminWordsPage = () => {
           </div>
         </div>
       </div>
-      <div className="rounded-3xl border border-dashed border-border/60 bg-card/70 p-4 text-xs text-muted-foreground">
-        Tip: Adjust rows per page to speed through audits on large datasets.
-      </div>
     </div>
   );
 
   return (
     <AppShell
       sidebar={sidebar}
-      mobileNav={<MobileNavBar items={navigationItems} accountAction={<AccountMobileTrigger />} />}
+      mobileNav={<MobileNavBar items={navigationItems} />}
     >
       <div className="space-y-6">
         <section className="space-y-4 rounded-3xl border border-border/60 bg-card/85 p-6 shadow-soft shadow-primary/5">

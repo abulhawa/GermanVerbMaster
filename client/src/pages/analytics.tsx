@@ -6,7 +6,6 @@ import { BarChart3, BookOpen } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
 import { SidebarNavButton } from "@/components/layout/sidebar-nav-button";
 import { MobileNavBar } from "@/components/layout/mobile-nav-bar";
-import { AccountMobileTrigger } from "@/components/auth/account-mobile-trigger";
 import { getPrimaryNavigationItems } from "@/components/layout/navigation";
 import { AnalyticsDashboard } from "@/components/analytics-dashboard";
 import { Button } from "@/components/ui/button";
@@ -186,7 +185,7 @@ export default function Analytics() {
   return (
     <AppShell
       sidebar={sidebar}
-      mobileNav={<MobileNavBar items={navigationItems} accountAction={<AccountMobileTrigger />} />}
+      mobileNav={<MobileNavBar items={navigationItems} />}
     >
       <section className="space-y-4 rounded-3xl border border-border/60 bg-card/85 p-6 shadow-soft shadow-primary/5">
         <div className="space-y-1">

@@ -71,14 +71,4 @@ describe('MobileNavBar', () => {
 
     expect(practiceLinkAfterClick).not.toHaveAttribute('aria-current');
   });
-
-  it('renders a custom account action when provided', () => {
-    render(
-      <MemoryRouter initialPath="/analytics">
-        <MobileNavBar items={items} accountAction={<button type="button">Account</button>} />
-      </MemoryRouter>,
-    );
-
-    expect(screen.getByRole('button', { name: 'Account' })).toBeInTheDocument();
-  });
 });

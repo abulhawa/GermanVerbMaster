@@ -6,7 +6,6 @@ import { ArrowLeft, History, Trash2 } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
 import { SidebarNavButton } from "@/components/layout/sidebar-nav-button";
 import { MobileNavBar } from "@/components/layout/mobile-nav-bar";
-import { AccountMobileTrigger } from "@/components/auth/account-mobile-trigger";
 import { getPrimaryNavigationItems } from "@/components/layout/navigation";
 import { AnsweredQuestionsPanel } from "@/components/answered-questions-panel";
 import { Badge } from "@/components/ui/badge";
@@ -74,41 +73,6 @@ export default function AnswerHistoryPage() {
             ))}
           </div>
         </div>
-        <div className="rounded-3xl border border-border/60 bg-muted/40 p-5 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-            Snapshot
-          </p>
-          <div className="mt-4 space-y-3 text-sm text-foreground">
-            <div className="flex items-center justify-between">
-              <span>Total answers</span>
-              <Badge className="rounded-full bg-primary/20 text-primary">{totalAnswers}</Badge>
-            </div>
-            <div className="flex items-center justify-between">
-              <span>Correct</span>
-              <Badge className="rounded-full border-success-border/50 bg-success-muted text-success-muted-foreground">
-                {totalCorrect}
-              </Badge>
-            </div>
-            <div className="flex items-center justify-between">
-              <span>Incorrect</span>
-              <Badge className="rounded-full border-warning-border/50 bg-warning-muted text-warning-muted-foreground">
-                {totalIncorrect}
-              </Badge>
-            </div>
-            <div className="flex items-center justify-between">
-              <span>Accuracy</span>
-              <Badge variant="outline" className="rounded-full border-primary/40 text-primary">
-                {accuracy}%
-              </Badge>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="space-y-3 rounded-3xl border border-border/60 bg-muted/40 p-5 text-sm shadow-sm">
-        <p className="font-semibold text-foreground">Why keep a log?</p>
-        <p className="text-xs text-muted-foreground">
-          Reviewing your past answers helps reinforce correct forms and spot patterns in mistakes so you can adjust your study plan.
-        </p>
       </div>
     </div>
   );
@@ -151,7 +115,7 @@ export default function AnswerHistoryPage() {
   return (
     <AppShell
       sidebar={sidebar}
-      mobileNav={<MobileNavBar items={navigationItems} accountAction={<AccountMobileTrigger />} />}
+      mobileNav={<MobileNavBar items={navigationItems} />}
     >
       <div className="space-y-6">
         <section className="flex flex-col gap-3 rounded-3xl border border-border/60 bg-card/85 p-6 shadow-soft shadow-primary/5 sm:flex-row sm:items-center sm:justify-between">

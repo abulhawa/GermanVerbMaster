@@ -72,7 +72,7 @@ export function AppShell({
           </div>
         </div>
         {mobileNav ? (
-          <div className="fixed inset-x-0 bottom-0 z-overlay border-t border-border/60 bg-card/95 px-6 pb-4 pt-3 shadow-soft backdrop-blur lg:hidden">
+          <div className="fixed inset-x-0 bottom-0 z-overlay border-t border-border/40 bg-card/95 px-2 pb-1 pt-1 shadow-soft backdrop-blur lg:hidden">
             {mobileNav}
           </div>
         ) : null}

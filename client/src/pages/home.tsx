@@ -4,7 +4,6 @@ import { Compass, History, Loader2, Settings2 } from 'lucide-react';
 
 import { AppShell } from '@/components/layout/app-shell';
 import { MobileNavBar } from '@/components/layout/mobile-nav-bar';
-import { AccountMobileTrigger } from '@/components/auth/account-mobile-trigger';
 import { getPrimaryNavigationItems } from '@/components/layout/navigation';
 import { PracticeCard, type PracticeCardResult } from '@/components/practice-card';
 import { SettingsDialog } from '@/components/settings-dialog';
@@ -391,7 +390,7 @@ export default function Home() {
   return (
     <AppShell
       sidebar={sidebar}
-      mobileNav={<MobileNavBar items={navigationItems} accountAction={<AccountMobileTrigger />} />}
+      mobileNav={<MobileNavBar items={navigationItems} />}
       debugId="home-app-shell"
     >
       <div className="space-y-6">
