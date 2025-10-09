@@ -10,6 +10,9 @@ const OPEN_THESAURUS_API = "https://www.openthesaurus.de/synonyme/search";
 const MY_MEMORY_API = "https://api.mymemory.translated.net/get";
 const TATOEBA_API = "https://tatoeba.org/en/api_v0/search";
 const OPENAI_CHAT_COMPLETIONS = "https://api.openai.com/v1/chat/completions";
+const WIKTEXTRACT_SEARCH_API = "https://kaikki.org/dewiktionary/search/start";
+
+const WIKTEXTRACT_RAW_MARKER = "[Show JSON for raw wiktextract data ▼]";
 
 export interface WiktionaryVerbForms {
   praeteritum?: string;
@@ -99,8 +102,68 @@ interface TatoebaResponse {
   }>;
 }
 
+type WiktextractSearchResponse = [boolean, Array<[string, string]>];
+
+interface WiktextractTranslationEntry {
+  lang?: string;
+  lang_code?: string;
+  word?: string;
+}
+
+interface WiktextractSynonymEntry {
+  word?: string;
+}
+
+interface WiktextractExampleEntry {
+  text?: string;
+  translation?: string;
+}
+
+interface WiktextractSenseEntry {
+  examples?: WiktextractExampleEntry[];
+}
+
+interface WiktextractEntry {
+  translations?: WiktextractTranslationEntry[];
+  synonyms?: WiktextractSynonymEntry[];
+  senses?: WiktextractSenseEntry[];
+}
+
+export interface WiktextractLookup {
+  translations: string[];
+  synonyms: string[];
+  example?: {
+    exampleDe?: string;
+    exampleEn?: string;
+  };
+}
+
 function toArray<T>(value: unknown): T[] {
   return Array.isArray(value) ? (value as T[]) : [];
+}
+
+function encodeWiktextractPrefix(prefix: string): string {
+  return encodeURIComponent(
+    prefix
+      .replace(/\//g, "_slash_")
+      .replace(/\\/g, "_backslash_")
+      .replace(/\*/g, "_star_")
+      .replace(/\?/g, "_ques_")
+      .replace(/#/g, "_hash_")
+      .replace(/\./g, "_dot_"),
+  );
+}
+
+function decodeHtmlEntities(value: string): string {
+  return value
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex: string) => String.fromCharCode(parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_, dec: string) => String.fromCharCode(parseInt(dec, 10)));
 }
 
 function normaliseKey(value: string): string {
@@ -469,6 +532,127 @@ export async function lookupExampleSentence(lemma: string): Promise<ExampleLooku
   }
 
   return null;
+}
+
+async function resolveWiktextractUrl(lemma: string): Promise<string | null> {
+  const trimmed = lemma.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  const normalised = trimmed.normalize("NFC");
+  const lower = normalised.toLowerCase();
+  const prefixLengths = Array.from(
+    new Set([3, 2, 1].filter((length) => length <= lower.length && length > 0)),
+  );
+
+  for (const length of prefixLengths) {
+    const prefix = lower.slice(0, length);
+    const response = await fetchJson<WiktextractSearchResponse>(
+      `${WIKTEXTRACT_SEARCH_API}/${encodeWiktextractPrefix(prefix)}.json`,
+    );
+    const entries = response?.[1] ?? [];
+    const directMatch = entries.find(([title]) => title?.toLowerCase() === lower);
+    if (directMatch) {
+      return directMatch[1];
+    }
+
+    const looseMatch = entries.find(([title]) => title?.toLowerCase().startsWith(lower));
+    if (looseMatch) {
+      return looseMatch[1];
+    }
+  }
+
+  return null;
+}
+
+async function fetchWiktextractEntry(url: string): Promise<WiktextractEntry | null> {
+  const response = await fetch(url, { headers: REQUEST_HEADERS });
+  if (!response.ok) {
+    throw new Error(`Request failed with status ${response.status}: ${await response.text()}`);
+  }
+
+  const html = await response.text();
+  const markerIndex = html.indexOf(WIKTEXTRACT_RAW_MARKER);
+  if (markerIndex === -1) {
+    return null;
+  }
+
+  const preStart = html.indexOf("<pre>", markerIndex);
+  const preEnd = html.indexOf("</pre>", preStart);
+  if (preStart === -1 || preEnd === -1) {
+    return null;
+  }
+
+  const rawJson = decodeHtmlEntities(html.slice(preStart + 5, preEnd));
+  try {
+    return JSON.parse(rawJson) as WiktextractEntry;
+  } catch (error) {
+    throw new Error(`Failed to parse Wiktextract response: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export async function lookupWiktextract(lemma: string): Promise<WiktextractLookup | null> {
+  const url = await resolveWiktextractUrl(lemma);
+  if (!url) {
+    return null;
+  }
+
+  const entry = await fetchWiktextractEntry(url);
+  if (!entry) {
+    return null;
+  }
+
+  const translationSet = new Set<string>();
+  for (const translation of toArray<WiktextractTranslationEntry>(entry.translations)) {
+    const lang = translation.lang?.toLowerCase();
+    const code = translation.lang_code?.toLowerCase();
+    const word = translation.word?.trim();
+    if (!word) continue;
+    if (word.toLowerCase() === lemma.toLowerCase()) continue;
+    if (lang?.startsWith("engl") || code === "en") {
+      translationSet.add(word);
+    }
+  }
+
+  const synonymSet = new Set<string>();
+  for (const synonym of toArray<WiktextractSynonymEntry>(entry.synonyms)) {
+    const word = synonym.word?.trim();
+    if (word) {
+      synonymSet.add(word);
+    }
+  }
+
+  let example: WiktextractLookup["example"] | undefined;
+  outer: for (const sense of toArray<WiktextractSenseEntry>(entry.senses)) {
+    for (const candidate of toArray<WiktextractExampleEntry>(sense.examples)) {
+      const exampleDe = candidate.text?.trim();
+      const exampleEn = candidate.translation?.trim();
+      if (!exampleDe && !exampleEn) {
+        continue;
+      }
+      example = {
+        exampleDe: exampleDe || undefined,
+        exampleEn: exampleEn || undefined,
+      };
+      if (exampleEn) {
+        break outer;
+      }
+      if (!exampleDe) {
+        example = undefined;
+      }
+    }
+  }
+
+  if (!translationSet.size && !synonymSet.size && !example) {
+    return null;
+  }
+
+  return {
+    translations: Array.from(translationSet).slice(0, 10),
+    synonyms: Array.from(synonymSet),
+    example,
+  };
 }
 
 export async function lookupAiAssistance(

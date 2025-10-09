@@ -22,6 +22,7 @@ import {
   lookupExampleSentence,
   lookupOpenThesaurusSynonyms,
   lookupTranslation,
+  lookupWiktextract,
   lookupWiktionarySummary,
   type ExampleLookup,
   type SynonymLookup,
@@ -89,6 +90,7 @@ export interface PipelineConfig {
   collectExamples: boolean;
   collectTranslations: boolean;
   collectWiktionary: boolean;
+  collectWiktextract: boolean;
 }
 
 export interface PipelineRun {
@@ -122,6 +124,7 @@ export function resolveConfigFromEnv(overrides: Partial<PipelineConfig> = {}): P
   const envCollectExamples = parseBoolean(process.env.COLLECT_EXAMPLES, true);
   const envCollectTranslations = parseBoolean(process.env.COLLECT_TRANSLATIONS, true);
   const envCollectWiktionary = parseBoolean(process.env.COLLECT_WIKTIONARY, true);
+  const envCollectWiktextract = parseBoolean(process.env.COLLECT_WIKTEXTRACT, true);
 
   const apply = overrides.apply ?? envApply;
   const dryRunEnv = overrides.dryRun ?? envDryRun;
@@ -153,6 +156,7 @@ export function resolveConfigFromEnv(overrides: Partial<PipelineConfig> = {}): P
     collectExamples: overrides.collectExamples ?? envCollectExamples,
     collectTranslations: overrides.collectTranslations ?? envCollectTranslations,
     collectWiktionary: overrides.collectWiktionary ?? envCollectWiktionary,
+    collectWiktextract: overrides.collectWiktextract ?? envCollectWiktextract,
   } satisfies PipelineConfig;
 }
 
@@ -373,6 +377,50 @@ async function collectSuggestions(
   let wiktionarySummary: string | undefined;
   const diagnostics: EnrichmentProviderDiagnostic[] = [];
 
+  const addTranslationCandidate = (
+    value: string | undefined,
+    source: string,
+    confidence?: number,
+  ) => {
+    const trimmed = value?.trim();
+    if (!trimmed) {
+      return;
+    }
+    if (translations.some((entry) => entry.value.toLowerCase() === trimmed.toLowerCase())) {
+      return;
+    }
+    translations.push({ value: trimmed, source, confidence });
+    sources.add(source);
+  };
+
+  const addExampleCandidate = (candidate: ExampleCandidate) => {
+    if (!candidate.exampleDe && !candidate.exampleEn) {
+      return;
+    }
+    const matchesExisting = examples.some(
+      (entry) =>
+        entry.source === candidate.source
+        && (entry.exampleDe ?? "").trim() === (candidate.exampleDe ?? "").trim()
+        && (entry.exampleEn ?? "").trim() === (candidate.exampleEn ?? "").trim(),
+    );
+    if (matchesExisting) {
+      return;
+    }
+    examples.push(candidate);
+    sources.add(candidate.source);
+  };
+
+  const addSynonym = (value: string | undefined) => {
+    const trimmed = value?.trim();
+    if (!trimmed) {
+      return;
+    }
+    if (synonyms.some((existing) => existing.toLowerCase() === trimmed.toLowerCase())) {
+      return;
+    }
+    synonyms.push(trimmed);
+  };
+
   if (config.collectWiktionary) {
     try {
       const value = await lookupWiktionarySummary(word.lemma);
@@ -417,8 +465,13 @@ async function collectSuggestions(
     try {
       const value = await lookupOpenThesaurusSynonyms(word.lemma);
       if (value?.synonyms.length) {
-        synonyms = value.synonyms;
-        sources.add("openthesaurus.de");
+        const before = synonyms.length;
+        for (const synonym of value.synonyms) {
+          addSynonym(synonym);
+        }
+        if (synonyms.length > before) {
+          sources.add("openthesaurus.de");
+        }
       }
       diagnostics.push({
         id: "openthesaurus",
@@ -444,12 +497,7 @@ async function collectSuggestions(
     try {
       const value = await lookupTranslation(word.lemma);
       if (value?.translation) {
-        translations.push({
-          value: value.translation,
-          source: value.source,
-          confidence: value.confidence,
-        });
-        sources.add(value.source);
+        addTranslationCandidate(value.translation, value.source, value.confidence);
       }
       diagnostics.push({
         id: "mymemory",
@@ -475,12 +523,11 @@ async function collectSuggestions(
     try {
       const value = await lookupExampleSentence(word.lemma);
       if (value && (value.exampleDe || value.exampleEn)) {
-        examples.push({
+        addExampleCandidate({
           exampleDe: value.exampleDe,
           exampleEn: value.exampleEn,
           source: value.source,
         });
-        sources.add(value.source);
       }
       diagnostics.push({
         id: "tatoeba",
@@ -502,6 +549,48 @@ async function collectSuggestions(
     diagnostics.push({ id: "tatoeba", label: "Tatoeba", status: "skipped" });
   }
 
+  if (config.collectWiktextract) {
+    try {
+      const value = await lookupWiktextract(word.lemma);
+      if (value) {
+        for (const translation of value.translations) {
+          addTranslationCandidate(translation, "kaikki.org");
+        }
+        const before = synonyms.length;
+        for (const synonym of value.synonyms) {
+          addSynonym(synonym);
+        }
+        if (value.synonyms.length && synonyms.length > before) {
+          sources.add("kaikki.org");
+        }
+        if (value.example) {
+          addExampleCandidate({
+            exampleDe: value.example.exampleDe,
+            exampleEn: value.example.exampleEn,
+            source: "kaikki.org",
+          });
+        }
+      }
+      diagnostics.push({
+        id: "wiktextract",
+        label: "Wiktextract",
+        status: "success",
+        payload: value ?? null,
+      });
+    } catch (error) {
+      const message = formatError("Wiktextract", error);
+      errors.push(message);
+      diagnostics.push({
+        id: "wiktextract",
+        label: "Wiktextract",
+        status: "error",
+        error: message,
+      });
+    }
+  } else {
+    diagnostics.push({ id: "wiktextract", label: "Wiktextract", status: "skipped" });
+  }
+
   let aiUsed = false;
   if (config.enableAi && openAiKey) {
     try {
@@ -509,16 +598,14 @@ async function collectSuggestions(
       if (aiResult) {
         aiUsed = true;
         if (aiResult.translation) {
-          translations.push({ value: aiResult.translation, source: aiResult.source });
-          sources.add(aiResult.source);
+          addTranslationCandidate(aiResult.translation, aiResult.source);
         }
         if (aiResult.exampleDe || aiResult.exampleEn) {
-          examples.push({
+          addExampleCandidate({
             exampleDe: aiResult.exampleDe,
             exampleEn: aiResult.exampleEn,
             source: aiResult.source,
           });
-          sources.add(aiResult.source);
         }
         diagnostics.push({
           id: "openai",

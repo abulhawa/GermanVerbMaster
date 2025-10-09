@@ -43,6 +43,7 @@ export type EnrichmentProviderId =
   | "openthesaurus"
   | "mymemory"
   | "tatoeba"
+  | "wiktextract"
   | "openai";
 
 export interface EnrichmentProviderDiagnostic {
