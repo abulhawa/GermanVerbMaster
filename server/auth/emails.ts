@@ -1,21 +1,57 @@
-import { Resend } from "resend";
+import * as ResendModule from "resend";
+import { createRequire } from "node:module";
+
+type ResendConstructor = new (apiKey: string) => ResendModule.Resend;
+
+function resolveResendConstructor(): ResendConstructor {
+  const moduleRecord = ResendModule as Record<string, unknown>;
+  const namedExport = moduleRecord["Resend"];
+  if (typeof namedExport === "function") {
+    return namedExport as ResendConstructor;
+  }
+
+  const defaultExport = moduleRecord["default"];
+  if (typeof defaultExport === "function") {
+    return defaultExport as ResendConstructor;
+  }
+
+  try {
+    const require = createRequire(import.meta.url);
+    const cjsModule = require("resend") as Record<string, unknown>;
+    const cjsNamedExport = cjsModule["Resend"];
+    if (typeof cjsNamedExport === "function") {
+      return cjsNamedExport as ResendConstructor;
+    }
+
+    const cjsDefaultExport = cjsModule["default"];
+    if (typeof cjsDefaultExport === "function") {
+      return cjsDefaultExport as ResendConstructor;
+    }
+  } catch {
+    // ignore require resolution errors and fall through to the shared error path
+  }
+
+  throw new Error("The Resend module does not export a Resend client constructor.");
+}
+
+const ResendClass: ResendConstructor = resolveResendConstructor();
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL?.trim() || "German Verb Master <onboarding@resend.dev>";
 
-let cachedResend: Resend | null = null;
+let cachedResend: ResendModule.Resend | null = null;
 
 function escapeHtml(value: string): string {
   return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
-function getResendClient(): Resend {
+function getResendClient(): ResendModule.Resend {
   if (!RESEND_API_KEY) {
     throw new Error("RESEND_API_KEY is not configured. Email delivery is disabled.");
   }
 
   if (!cachedResend) {
-    cachedResend = new Resend(RESEND_API_KEY);
+    cachedResend = new ResendClass(RESEND_API_KEY);
   }
 
   return cachedResend;

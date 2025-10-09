@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { CheckCircle2, HelpCircle, Loader2, User, Volume2, XCircle } from 'lucide-react';
+import { CheckCircle2, HelpCircle, Loader2, Volume2, XCircle } from 'lucide-react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -27,22 +27,10 @@ export interface PracticeCardResult {
   answeredAt: string;
 }
 
-interface PracticeCardSummaryStats {
-  correct: number;
-  accuracy: number;
-  streak: number;
-}
-
 interface PracticeCardSessionProgress {
   completed: number;
   target: number;
 }
-
-const DEFAULT_SUMMARY_STATS: PracticeCardSummaryStats = {
-  correct: 0,
-  accuracy: 0,
-  streak: 0,
-};
 
 const DEFAULT_SESSION_PROGRESS: PracticeCardSessionProgress = {
   completed: 0,
@@ -60,7 +48,6 @@ interface RendererProps<T extends TaskType = TaskType> extends DebuggableCompone
   onResult: (result: PracticeCardResult) => void;
   isLoadingNext?: boolean;
   className?: string;
-  summary: PracticeCardSummaryStats;
   sessionProgress: PracticeCardSessionProgress;
 }
 
@@ -379,7 +366,6 @@ function renderMetadataRow(copy: PracticeCardMessages, task: PracticeTask, class
 
 interface PracticeCardScaffoldProps extends DebuggableComponentProps {
   copy: PracticeCardMessages;
-  summary: PracticeCardSummaryStats;
   sessionProgress: PracticeCardSessionProgress;
   prompt: ReactNode;
   answerSection: ReactNode;
@@ -392,7 +378,6 @@ interface PracticeCardScaffoldProps extends DebuggableComponentProps {
 
 function PracticeCardScaffold({
   copy,
-  summary,
   sessionProgress,
   prompt,
   answerSection,
@@ -403,17 +388,9 @@ function PracticeCardScaffold({
   isLoadingNext,
   badgeLabel,
 }: PracticeCardScaffoldProps) {
-  const safeTarget = Math.max(sessionProgress.target, 1);
-  const currentIndex = Math.max(Math.min(sessionProgress.completed + 1, safeTarget), 1);
-  const progressLabel = formatInstructionTemplate(copy.progress.label, {
-    current: String(currentIndex),
-    target: String(safeTarget),
-  });
   const completedLabel = formatInstructionTemplate(copy.progress.completedLabel, {
     count: String(Math.max(sessionProgress.completed, 0)),
   });
-  const accuracyValue = Number.isFinite(summary.accuracy) ? Math.round(summary.accuracy) : 0;
-  const streakValue = Math.max(summary.streak, 0);
   const supplementarySections = supportSections.filter(Boolean);
   const resolvedDebugId = debugId && debugId.trim().length > 0 ? debugId : 'practice-card';
   const resolvedBadgeLabel = badgeLabel && badgeLabel.trim().length > 0 ? badgeLabel : copy.header.appName;
@@ -441,27 +418,12 @@ function PracticeCardScaffold({
             >
               {resolvedBadgeLabel}
             </span>
-          <div className="flex items-center gap-3">
-            <div className="relative flex h-12 w-12 items-center justify-center rounded-full bg-card/30 text-primary-foreground backdrop-blur">
-              <User className="h-5 w-5" aria-hidden />
-              <span className="sr-only">{copy.header.profileLabel}</span>
-            </div>
-            <div className="flex flex-col items-end gap-1 text-right">
-              <span className="text-xs font-semibold uppercase tracking-[0.3em] text-primary-foreground/80">
-                {copy.header.accuracyLabel}: {accuracyValue}%
-              </span>
-              <span className="text-xs font-semibold uppercase tracking-[0.3em] text-primary-foreground/80">
-                {copy.header.streakLabel}: {streakValue} {copy.header.streakUnit}
-                </span>
-              </div>
-            </div>
           </header>
           <div className="flex w-full flex-col items-center gap-4 text-center">{prompt}</div>
           {statusBadge ? <div className="w-full">{statusBadge}</div> : null}
           <div className="w-full">{answerSection}</div>
           {supplementarySections.length > 0 ? <div className="w-full space-y-3">{supplementarySections}</div> : null}
           <footer className="flex w-full flex-col gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-primary-foreground/80 sm:flex-row sm:items-center sm:justify-between">
-            <span>{progressLabel}</span>
             <span className="text-primary-foreground/70">{completedLabel}</span>
           </footer>
         </div>
@@ -483,7 +445,6 @@ function ConjugateFormRenderer({
   className,
   debugId,
   isLoadingNext,
-  summary,
   sessionProgress,
 }: RendererProps<'conjugate_form'>) {
   const { toast } = useToast();
@@ -661,14 +622,7 @@ function ConjugateFormRenderer({
     </div>
   );
 
-  const supportSections: ReactNode[] = [
-    <div
-      key="metadata"
-      className="rounded-2xl border border-border/40 bg-card/25 px-5 py-3 shadow-soft backdrop-blur"
-    >
-      {renderMetadataRow(copy, task, 'justify-center text-primary-foreground/80')}
-    </div>,
-  ];
+  const supportSections: ReactNode[] = [];
 
   if (preferences.showExamples && exampleText) {
     supportSections.push(
@@ -725,7 +679,6 @@ function ConjugateFormRenderer({
   return (
     <PracticeCardScaffold
       copy={copy}
-      summary={summary}
       sessionProgress={sessionProgress}
       prompt={promptSection}
       answerSection={answerSection}
@@ -746,7 +699,6 @@ function NounCaseDeclensionRenderer({
   className,
   debugId,
   isLoadingNext,
-  summary,
   sessionProgress,
 }: RendererProps<'noun_case_declension'>) {
   const { toast } = useToast();
@@ -1002,7 +954,6 @@ function NounCaseDeclensionRenderer({
   return (
     <PracticeCardScaffold
       copy={copy}
-      summary={summary}
       sessionProgress={sessionProgress}
       prompt={promptSection}
       answerSection={answerSection}
@@ -1023,7 +974,6 @@ function AdjectiveEndingRenderer({
   className,
   debugId,
   isLoadingNext,
-  summary,
   sessionProgress,
 }: RendererProps<'adj_ending'>) {
   const { toast } = useToast();
@@ -1268,7 +1218,6 @@ function AdjectiveEndingRenderer({
   return (
     <PracticeCardScaffold
       copy={copy}
-      summary={summary}
       sessionProgress={sessionProgress}
       prompt={promptSection}
       answerSection={answerSection}
@@ -1302,14 +1251,12 @@ function UnsupportedRenderer({ task, debugId }: RendererProps) {
 }
 
 export function PracticeCard(props: PracticeCardProps) {
-  const summary = props.summary ?? DEFAULT_SUMMARY_STATS;
   const sessionProgress = props.sessionProgress ?? DEFAULT_SESSION_PROGRESS;
 
   if (isTaskOfType(props.task, 'conjugate_form')) {
     const rendererProps: RendererProps<'conjugate_form'> = {
       ...props,
       task: props.task,
-      summary,
       sessionProgress,
     };
     return <ConjugateFormRenderer {...rendererProps} />;
@@ -1318,7 +1265,6 @@ export function PracticeCard(props: PracticeCardProps) {
     const rendererProps: RendererProps<'noun_case_declension'> = {
       ...props,
       task: props.task,
-      summary,
       sessionProgress,
     };
     return <NounCaseDeclensionRenderer {...rendererProps} />;
@@ -1327,14 +1273,12 @@ export function PracticeCard(props: PracticeCardProps) {
     const rendererProps: RendererProps<'adj_ending'> = {
       ...props,
       task: props.task,
-      summary,
       sessionProgress,
     };
     return <AdjectiveEndingRenderer {...rendererProps} />;
   }
   const rendererProps: RendererProps = {
     ...props,
-    summary,
     sessionProgress,
   };
   return <UnsupportedRenderer {...rendererProps} />;
@@ -1346,6 +1290,5 @@ interface PracticeCardProps extends DebuggableComponentProps {
   onResult: (result: PracticeCardResult) => void;
   isLoadingNext?: boolean;
   className?: string;
-  summary?: PracticeCardSummaryStats;
   sessionProgress?: PracticeCardSessionProgress;
 }

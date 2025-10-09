@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Monitor, Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
 
 import { cn } from "@/lib/utils";
 import {
@@ -11,14 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import {
-  THEME_STORAGE_KEY,
-  applyThemeSetting,
-  getInitialThemeSetting,
-  resolveTheme,
-  subscribeToSystemTheme,
-  type ThemeSetting,
-} from "@/lib/theme";
+import { type ThemeSetting } from "@/lib/theme";
 import { type DebuggableComponentProps } from "@/lib/dev-attributes";
 
 interface ThemeToggleProps extends DebuggableComponentProps {
@@ -26,30 +20,25 @@ interface ThemeToggleProps extends DebuggableComponentProps {
 }
 
 export function ThemeToggle({ className, debugId }: ThemeToggleProps) {
-  const [setting, setSetting] = useState<ThemeSetting>(() => getInitialThemeSetting());
-
-  const resolvedTheme = useMemo(() => resolveTheme(setting), [setting]);
+  const { theme, setTheme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    applyThemeSetting(setting);
+    setMounted(true);
+  }, []);
 
-    if (typeof window === "undefined") return;
-
-    window.localStorage.setItem(THEME_STORAGE_KEY, setting);
-
-    if (setting !== "system") {
-      return;
-    }
-
-    return subscribeToSystemTheme(() => applyThemeSetting("system"));
-  }, [setting]);
+  const currentSetting = (theme ?? "system") as ThemeSetting;
+  const currentTheme = (resolvedTheme ?? "light") as "light" | "dark";
 
   const handleChange = (nextSetting: ThemeSetting) => {
-    setSetting(nextSetting);
-    applyThemeSetting(nextSetting);
+    setTheme(nextSetting);
   };
 
   const resolvedDebugId = debugId && debugId.trim().length > 0 ? debugId : "theme-toggle";
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <DropdownMenu debugId={resolvedDebugId}>
@@ -70,14 +59,14 @@ export function ThemeToggle({ className, debugId }: ThemeToggleProps) {
           <Sun
             className={cn(
               "h-4 w-4 transition-all",
-              resolvedTheme === "dark" ? "scale-0 opacity-0" : "scale-100 opacity-100",
+              currentTheme === "dark" ? "scale-0 opacity-0" : "scale-100 opacity-100",
             )}
             aria-hidden
           />
           <Moon
             className={cn(
               "absolute h-4 w-4 transition-all",
-              resolvedTheme === "dark" ? "scale-100 opacity-100" : "scale-0 opacity-0",
+              currentTheme === "dark" ? "scale-100 opacity-100" : "scale-0 opacity-0",
             )}
             aria-hidden
           />
@@ -91,7 +80,7 @@ export function ThemeToggle({ className, debugId }: ThemeToggleProps) {
       >
         <DropdownMenuLabel debugId={`${resolvedDebugId}-label`}>Theme</DropdownMenuLabel>
         <DropdownMenuRadioGroup
-          value={setting}
+          value={currentSetting}
           onValueChange={(value) => handleChange(value as ThemeSetting)}
         >
           <DropdownMenuRadioItem

@@ -5,6 +5,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { useSyncQueue } from "@/hooks/use-sync-queue";
 import { LocaleProvider } from "@/locales";
+import { ThemeProvider } from "next-themes";
+import { THEME_STORAGE_KEY } from "@/lib/theme";
 
 const HomePage = lazy(() => import("@/pages/home"));
 const AnswerHistoryPage = lazy(() => import("@/pages/answer-history"));
@@ -43,13 +45,21 @@ function SyncManager() {
 
 function App() {
   return (
-    <LocaleProvider>
-      <QueryClientProvider client={queryClient}>
-        <SyncManager />
-        <Router />
-        <Toaster />
-      </QueryClientProvider>
-    </LocaleProvider>
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      storageKey={THEME_STORAGE_KEY}
+      disableTransitionOnChange
+    >
+      <LocaleProvider>
+        <QueryClientProvider client={queryClient}>
+          <SyncManager />
+          <Router />
+          <Toaster />
+        </QueryClientProvider>
+      </LocaleProvider>
+    </ThemeProvider>
   );
 }
 

@@ -94,31 +94,12 @@ import {
 
 
 
+import { type ThemeSetting } from '@/lib/theme';
+import { useTheme } from 'next-themes';
 import {
-
-
-
-  applyThemeSetting,
-
-
-
-  getInitialThemeSetting,
-
-
-
-  subscribeToSystemTheme,
-
-
-
-  THEME_STORAGE_KEY,
-
-
-
-  type ThemeSetting,
-
-
-
-} from '@/lib/theme';
+  consumeQueuedPracticeSettingsOpen,
+  PRACTICE_SETTINGS_OPEN_EVENT,
+} from '@/lib/practice-settings-events';
 
 
 
@@ -222,7 +203,10 @@ export function SettingsDialog({
 
 
 
-  const [themeSetting, setThemeSetting] = useState<ThemeSetting>(() => getInitialThemeSetting());
+  const { theme, setTheme } = useTheme();
+  const [themeSetting, setThemeSetting] = useState<ThemeSetting>('system');
+  const [hasMountedTheme, setHasMountedTheme] = useState(false);
+  const [open, setOpen] = useState(false);
 
 
 
@@ -283,62 +267,32 @@ export function SettingsDialog({
 
 
   useEffect(() => {
+    setHasMountedTheme(true);
+  }, []);
 
+  useEffect(() => {
+    if (!theme) {
+      return;
+    }
+    setThemeSetting(theme as ThemeSetting);
+  }, [theme]);
 
-
-    applyThemeSetting(themeSetting);
-
-
-
-
-
-
+  useEffect(() => {
+    if (consumeQueuedPracticeSettingsOpen()) {
+      setOpen(true);
+    }
 
     if (typeof window === 'undefined') {
-
-
-
       return;
-
-
-
     }
 
+    const handleExternalOpen = () => setOpen(true);
+    window.addEventListener(PRACTICE_SETTINGS_OPEN_EVENT, handleExternalOpen);
 
-
-
-
-
-
-    window.localStorage.setItem(THEME_STORAGE_KEY, themeSetting);
-
-
-
-
-
-
-
-    if (themeSetting !== 'system') {
-
-
-
-      return;
-
-
-
-    }
-
-
-
-
-
-
-
-    return subscribeToSystemTheme(() => applyThemeSetting('system'));
-
-
-
-  }, [themeSetting]);
+    return () => {
+      window.removeEventListener(PRACTICE_SETTINGS_OPEN_EVENT, handleExternalOpen);
+    };
+  }, []);
 
 
 
@@ -366,7 +320,7 @@ export function SettingsDialog({
 
 
 
-    applyThemeSetting(next);
+    setTheme(next);
 
 
 
@@ -382,7 +336,7 @@ export function SettingsDialog({
 
 
 
-    <Dialog debugId={resolvedDebugId}>
+    <Dialog debugId={resolvedDebugId} open={open} onOpenChange={setOpen}>
 
 
 
@@ -525,7 +479,7 @@ export function SettingsDialog({
             <ToggleGroup
               type="single"
               aria-label="Select theme"
-              value={themeSetting}
+              value={hasMountedTheme ? themeSetting : 'system'}
               onValueChange={(value) => handleThemeChange(value as ThemeSetting | '')}
               className="flex w-full gap-2"
               debugId={`${resolvedDebugId}-theme-toggle-group`}

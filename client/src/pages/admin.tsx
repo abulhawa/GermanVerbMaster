@@ -420,37 +420,6 @@ const AdminWordsPage = () => {
     return base;
   }, [activePos]);
 
-  const topBar = (
-    <div className="flex flex-col gap-3 transition-all group-data-[condensed=true]/header:flex-row group-data-[condensed=true]/header:items-center group-data-[condensed=true]/header:justify-between">
-      <div className="space-y-1 transition-all group-data-[condensed=true]/header:space-y-0.5">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Admin console</p>
-        <h1 className="flex items-center gap-2 text-2xl font-semibold text-foreground transition-all group-data-[condensed=true]/header:text-xl">
-          <Settings2 className="h-6 w-6 text-primary" aria-hidden />
-          Lexicon management
-        </h1>
-        <p className="max-w-2xl text-sm text-muted-foreground group-data-[condensed=true]/header:hidden">
-          Curate the verb bank, manage metadata, and keep entries aligned across CEFR levels.
-        </p>
-      </div>
-      <div className="flex flex-wrap items-center justify-end gap-2">
-        <Link href="/">
-          <Button
-            variant="secondary"
-            className="rounded-2xl px-5"
-            debugId={`${pageDebugId}-topbar-back-button`}
-          >
-            Back to practice
-          </Button>
-        </Link>
-        <Link href="/analytics">
-          <Button className="rounded-2xl px-5" debugId={`${pageDebugId}-topbar-analytics-button`}>
-            Open analytics
-          </Button>
-        </Link>
-      </div>
-    </div>
-  );
-
   const { data: authSession } = useAuthSession();
   const navigationItems = useMemo(
     () => getPrimaryNavigationItems(authSession?.user.role ?? null),
@@ -484,10 +453,37 @@ const AdminWordsPage = () => {
   return (
     <AppShell
       sidebar={sidebar}
-      topBar={topBar}
       mobileNav={<MobileNavBar items={navigationItems} accountAction={<AccountMobileTrigger />} />}
     >
       <div className="space-y-6">
+        <section className="space-y-4 rounded-3xl border border-border/60 bg-card/85 p-6 shadow-soft shadow-primary/5">
+          <div className="space-y-1">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Admin console</p>
+            <h1 className="flex items-center gap-2 text-2xl font-semibold text-foreground">
+              <Settings2 className="h-6 w-6 text-primary" aria-hidden />
+              Lexicon management
+            </h1>
+            <p className="max-w-2xl text-sm text-muted-foreground">
+              Curate the verb bank, manage metadata, and keep entries aligned across CEFR levels.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center justify-start gap-2 sm:justify-end">
+            <Link href="/">
+              <Button
+                variant="secondary"
+                className="rounded-2xl px-5"
+                debugId={`${pageDebugId}-topbar-back-button`}
+              >
+                Back to practice
+              </Button>
+            </Link>
+            <Link href="/analytics">
+              <Button className="rounded-2xl px-5" debugId={`${pageDebugId}-topbar-analytics-button`}>
+                Open analytics
+              </Button>
+            </Link>
+          </div>
+        </section>
         <Card className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5">
           <CardHeader className="space-y-2">
             <CardTitle>Admin: Words</CardTitle>

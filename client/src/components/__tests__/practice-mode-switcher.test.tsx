@@ -14,7 +14,8 @@ describe('PracticeModeSwitcher', () => {
   function renderSwitcher({
     scope = 'all' as PracticeScope,
     selectedTaskTypes = availableTaskTypes,
-  }: Partial<{ scope: PracticeScope; selectedTaskTypes: TaskType[] }> = {}) {
+    scopeBadgeLabel = 'All tasks',
+  }: Partial<{ scope: PracticeScope; selectedTaskTypes: TaskType[]; scopeBadgeLabel: string }> = {}) {
     const onScopeChange = vi.fn();
     const onTaskTypesChange = vi.fn();
 
@@ -25,6 +26,8 @@ describe('PracticeModeSwitcher', () => {
         selectedTaskTypes={selectedTaskTypes}
         onTaskTypesChange={onTaskTypesChange}
         availableTaskTypes={availableTaskTypes}
+        scopeBadgeLabel={scopeBadgeLabel}
+        debugId="test-practice-mode-switcher"
       />,
     );
 
@@ -33,23 +36,25 @@ describe('PracticeModeSwitcher', () => {
 
   it('switches scope when selecting a different segment', async () => {
     const user = userEvent.setup();
-    const { onScopeChange } = renderSwitcher({ scope: 'all' });
+    const { onScopeChange } = renderSwitcher({ scope: 'all', scopeBadgeLabel: 'All tasks' });
 
+    await user.click(screen.getByRole('button', { name: /adjust practice scope/i }));
     await user.click(screen.getByRole('tab', { name: /nouns/i }));
 
     expect(onScopeChange).toHaveBeenCalledWith('nouns');
   });
 
-  it('opens custom mix dropdown and toggles task types', async () => {
+  it('opens task mix flyout and toggles task types', async () => {
     const user = userEvent.setup();
     const { onScopeChange, onTaskTypesChange } = renderSwitcher({
       scope: 'verbs',
       selectedTaskTypes: ['conjugate_form'],
+      scopeBadgeLabel: 'Verbs only',
     });
 
-    await user.click(screen.getByRole('button', { name: /configure custom task mix/i }));
+    await user.click(screen.getByRole('button', { name: /adjust practice scope/i }));
 
-    const nounOption = await screen.findByRole('menuitemcheckbox', { name: /noun/i });
+    const nounOption = await screen.findByRole('checkbox', { name: /noun/i });
     await user.click(nounOption);
 
     expect(onScopeChange).toHaveBeenCalledWith('custom');

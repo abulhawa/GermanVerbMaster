@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'wouter';
-import { Compass, History, Loader2, Settings2, Sparkles } from 'lucide-react';
+import { Compass, History, Loader2, Settings2 } from 'lucide-react';
 
 import { AppShell } from '@/components/layout/app-shell';
 import { MobileNavBar } from '@/components/layout/mobile-nav-bar';
 import { AccountMobileTrigger } from '@/components/auth/account-mobile-trigger';
-import { AccountTopBarButton } from '@/components/auth/account-top-bar-button';
 import { getPrimaryNavigationItems } from '@/components/layout/navigation';
 import { PracticeCard, type PracticeCardResult } from '@/components/practice-card';
 import { SettingsDialog } from '@/components/settings-dialog';
@@ -57,7 +56,6 @@ import {
   AVAILABLE_TASK_TYPES,
   SCOPE_LABELS,
   buildCefrLabel,
-  computePracticeSummary,
   computeScope,
   getVerbLevel,
   normalisePreferredTaskTypes,
@@ -325,11 +323,6 @@ export default function Home() {
     setShouldReloadTasks(true);
   }, []);
 
-  const summary = useMemo(
-    () => computePracticeSummary(progress, activeTaskTypes),
-    [progress, activeTaskTypes],
-  );
-
   const scopeBadgeLabel = scope === 'custom'
     ? `${SCOPE_LABELS[scope]} (${activeTaskTypes.length})`
     : SCOPE_LABELS[scope];
@@ -395,43 +388,16 @@ export default function Home() {
       </div>
     </div>
   );
-
-  const topBarContent = (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 self-start rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-            <Sparkles className="h-3.5 w-3.5" aria-hidden />
-            {homeTopBarCopy.focusLabel}
-          </div>
-          <div className="space-y-1">
-            <h1 className="text-xl font-semibold text-foreground sm:text-2xl">{homeTopBarCopy.title}</h1>
-            <p className="text-sm text-muted-foreground sm:text-base">{topBarSubtitle}</p>
-          </div>
-        </div>
-        <AccountTopBarButton className="self-start sm:self-auto" />
-      </div>
-    </div>
-  );
-
   return (
     <AppShell
       sidebar={sidebar}
-      topBar={topBarContent}
       mobileNav={<MobileNavBar items={navigationItems} accountAction={<AccountMobileTrigger />} />}
       debugId="home-app-shell"
     >
       <div className="space-y-6">
         <section className="flex min-h-[540px] flex-col gap-6 rounded-3xl border border-border/50 bg-card/80 p-6 shadow-xl shadow-primary/10">
-          <div className="flex flex-col gap-4 text-left">
+          <div className="space-y-6 text-left">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-sm font-medium text-primary">
-                <Sparkles className="h-3 w-3" aria-hidden />
-                {scopeBadgeLabel}
-              </div>
-              <p className="text-sm text-muted-foreground">{levelSummary}</p>
-            </div>
-            <div className="w-full">
               <PracticeModeSwitcher
                 debugId="topbar-mode-switcher"
                 scope={scope}
@@ -439,6 +405,7 @@ export default function Home() {
                 selectedTaskTypes={activeTaskTypes}
                 onTaskTypesChange={handleCustomTaskTypesChange}
                 availableTaskTypes={AVAILABLE_TASK_TYPES}
+                scopeBadgeLabel={scopeBadgeLabel}
               />
             </div>
           </div>
@@ -457,11 +424,6 @@ export default function Home() {
                   onResult={handleTaskResult}
                   isLoadingNext={isFetchingTasks && session.queue.length === 0}
                   debugId="home-practice-card"
-                  summary={{
-                    correct: summary.correct,
-                    accuracy: summary.accuracy,
-                    streak: summary.streak,
-                  }}
                   sessionProgress={{
                     completed: sessionCompleted,
                     target: milestoneTarget,
