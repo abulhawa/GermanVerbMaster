@@ -1,23 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'wouter';
-import { Compass, History, Loader2, Settings2, Sparkles } from 'lucide-react';
+import { History, Loader2 } from 'lucide-react';
 
 import { AppShell } from '@/components/layout/app-shell';
 import { MobileNavBar } from '@/components/layout/mobile-nav-bar';
-import { AccountMobileTrigger } from '@/components/auth/account-mobile-trigger';
-import { AccountTopBarButton } from '@/components/auth/account-top-bar-button';
 import { getPrimaryNavigationItems } from '@/components/layout/navigation';
 import { PracticeCard, type PracticeCardResult } from '@/components/practice-card';
-import { SettingsDialog } from '@/components/settings-dialog';
 import { PracticeModeSwitcher, type PracticeScope } from '@/components/practice-mode-switcher';
-import { LanguageToggle } from '@/components/language-toggle';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { SidebarNavButton } from '@/components/layout/sidebar-nav-button';
 import { useAuthSession } from '@/auth/session';
 import {
-  loadPracticeSettings,
-  savePracticeSettings,
   updatePreferredTaskTypes,
 } from '@/lib/practice-settings';
 import {
@@ -46,18 +40,12 @@ import {
 } from '@/lib/tasks';
 import { getTaskTypeCopy } from '@/lib/task-metadata';
 import { useTranslations } from '@/locales';
-import type {
-  CEFRLevel,
-  PracticeSettingsState,
-  PracticeProgressState,
-  TaskType,
-  LexemePos,
-} from '@shared';
+import { usePracticeSettings } from '@/contexts/practice-settings-context';
+import type { CEFRLevel, PracticeProgressState, TaskType, LexemePos } from '@shared';
 import {
   AVAILABLE_TASK_TYPES,
   SCOPE_LABELS,
   buildCefrLabel,
-  computePracticeSummary,
   computeScope,
   getVerbLevel,
   normalisePreferredTaskTypes,
@@ -93,7 +81,7 @@ function mergeTaskLists(lists: PracticeTask[][], limit: number): PracticeTask[] 
 }
 
 export default function Home() {
-  const [settings, setSettings] = useState<PracticeSettingsState>(() => loadPracticeSettings());
+  const { settings, updateSettings } = usePracticeSettings();
   const [progress, setProgress] = useState<PracticeProgressState>(() => loadPracticeProgress());
   const [session, setSession] = useState<PracticeSessionState>(() => loadPracticeSession());
   const [answerHistory, setAnswerHistory] = useState(() => loadAnswerHistory());
@@ -126,10 +114,14 @@ export default function Home() {
   }, [settings.preferredTaskTypes, settings.defaultTaskType]);
   const activeTaskType = activeTaskTypes[0] ?? 'conjugate_form';
   const verbLevel = getVerbLevel(settings);
+  const previousVerbLevelRef = useRef(verbLevel);
 
   useEffect(() => {
-    savePracticeSettings(settings);
-  }, [settings]);
+    if (previousVerbLevelRef.current !== verbLevel) {
+      previousVerbLevelRef.current = verbLevel;
+      setShouldReloadTasks(true);
+    }
+  }, [verbLevel]);
 
   useEffect(() => {
     savePracticeProgress(progress);
@@ -281,23 +273,11 @@ export default function Home() {
     });
   }, [activeTask]);
 
-  const handleSettingsChange = useCallback(
-    (nextSettings: PracticeSettingsState) => {
-      const previousLevel = getVerbLevel(settings);
-      const nextLevel = getVerbLevel(nextSettings);
-      setSettings(nextSettings);
-      if (previousLevel !== nextLevel) {
-        setShouldReloadTasks(true);
-      }
-    },
-    [settings],
-  );
-
   const handleScopeChange = useCallback(
     (nextScope: PracticeScope) => {
       const nextTypes = scopeToTaskTypes(nextScope);
       if (nextScope !== 'custom' && nextTypes.length > 0) {
-        setSettings((prev) => {
+        updateSettings((prev) => {
           const current = normalisePreferredTaskTypes(
             prev.preferredTaskTypes.length ? prev.preferredTaskTypes : [prev.defaultTaskType],
           );
@@ -314,21 +294,16 @@ export default function Home() {
         setShouldReloadTasks(true);
       }
     },
-    [scope],
+    [scope, updateSettings],
   );
 
   const handleCustomTaskTypesChange = useCallback((taskTypes: TaskType[]) => {
     if (!taskTypes.length) {
       return;
     }
-    setSettings((prev) => updatePreferredTaskTypes(prev, normalisePreferredTaskTypes(taskTypes)));
+    updateSettings((prev) => updatePreferredTaskTypes(prev, normalisePreferredTaskTypes(taskTypes)));
     setShouldReloadTasks(true);
-  }, []);
-
-  const summary = useMemo(
-    () => computePracticeSummary(progress, activeTaskTypes),
-    [progress, activeTaskTypes],
-  );
+  }, [updateSettings]);
 
   const scopeBadgeLabel = scope === 'custom'
     ? `${SCOPE_LABELS[scope]} (${activeTaskTypes.length})`
@@ -354,13 +329,10 @@ export default function Home() {
   const isInitialLoading = !activeTask && isFetchingTasks;
 
   const sidebar = (
-    <div className="flex h-full flex-col justify-between gap-6">
+    <div className="flex h-full flex-col justify-between gap-8">
       <div className="space-y-6">
         <div className="space-y-3">
-          <p className="text-sm font-medium text-muted-foreground group-data-[collapsed=true]/sidebar:hidden">
-            Navigate
-          </p>
-          <div className="grid justify-center gap-2">
+          <div className="grid gap-2">
             {navigationItems.map((item) => (
               <SidebarNavButton
                 key={item.href}
@@ -372,66 +344,19 @@ export default function Home() {
             ))}
           </div>
         </div>
-        <div className="space-y-2">
-          <p className="text-sm font-medium text-muted-foreground group-data-[collapsed=true]/sidebar:hidden">Language</p>
-          <LanguageToggle className="w-full rounded-2xl border-border/60 bg-background/90" debugId="sidebar-language-toggle" />
-        </div>
-        <div className="flex items-center gap-3 group-data-[collapsed=true]/sidebar:justify-center">
-          <SettingsDialog
-            debugId="sidebar-settings-dialog"
-            settings={settings}
-            onSettingsChange={handleSettingsChange}
-            taskType={activeTaskType}
-            presetLabel={scopeBadgeLabel}
-            taskTypeLabel={taskTypeCopy.label}
-          />
-          <span className="text-sm font-medium text-foreground group-data-[collapsed=true]/sidebar:hidden">
-            Settings & Level
-          </span>
-        </div>
-      </div>
-      <div className="hidden text-center text-sm text-muted-foreground group-data-[collapsed=true]/sidebar:block">
-        Hold to expand
       </div>
     </div>
   );
-
-  const topBarContent = (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 self-start rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-            <Sparkles className="h-3.5 w-3.5" aria-hidden />
-            {homeTopBarCopy.focusLabel}
-          </div>
-          <div className="space-y-1">
-            <h1 className="text-xl font-semibold text-foreground sm:text-2xl">{homeTopBarCopy.title}</h1>
-            <p className="text-sm text-muted-foreground sm:text-base">{topBarSubtitle}</p>
-          </div>
-        </div>
-        <AccountTopBarButton className="self-start sm:self-auto" />
-      </div>
-    </div>
-  );
-
   return (
     <AppShell
       sidebar={sidebar}
-      topBar={topBarContent}
-      mobileNav={<MobileNavBar items={navigationItems} accountAction={<AccountMobileTrigger />} />}
+      mobileNav={<MobileNavBar items={navigationItems} />}
       debugId="home-app-shell"
     >
       <div className="space-y-6">
         <section className="flex min-h-[540px] flex-col gap-6 rounded-3xl border border-border/50 bg-card/80 p-6 shadow-xl shadow-primary/10">
-          <div className="flex flex-col gap-4 text-left">
+          <div className="space-y-6 text-left">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-sm font-medium text-primary">
-                <Sparkles className="h-3 w-3" aria-hidden />
-                {scopeBadgeLabel}
-              </div>
-              <p className="text-sm text-muted-foreground">{levelSummary}</p>
-            </div>
-            <div className="w-full">
               <PracticeModeSwitcher
                 debugId="topbar-mode-switcher"
                 scope={scope}
@@ -439,6 +364,7 @@ export default function Home() {
                 selectedTaskTypes={activeTaskTypes}
                 onTaskTypesChange={handleCustomTaskTypesChange}
                 availableTaskTypes={AVAILABLE_TASK_TYPES}
+                scopeBadgeLabel={scopeBadgeLabel}
               />
             </div>
           </div>
@@ -457,11 +383,6 @@ export default function Home() {
                   onResult={handleTaskResult}
                   isLoadingNext={isFetchingTasks && session.queue.length === 0}
                   debugId="home-practice-card"
-                  summary={{
-                    correct: summary.correct,
-                    accuracy: summary.accuracy,
-                    streak: summary.streak,
-                  }}
                   sessionProgress={{
                     completed: sessionCompleted,
                     target: milestoneTarget,
@@ -529,8 +450,6 @@ export default function Home() {
             </Link>
           </div>
         </section>
-
-        
       </div>
     </AppShell>
   );

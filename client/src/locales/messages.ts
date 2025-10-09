@@ -10,17 +10,25 @@ export interface LanguageToggleMessages {
   german: string;
 }
 
+export interface UserMenuMessages {
+  ariaLabel: string;
+  signInLabel: string;
+  accountLabel: string;
+  settingsLabel: string;
+  languageLabel: string;
+  theme: {
+    toggleToDark: string;
+    toggleToLight: string;
+  };
+  unknownUserInitial: string;
+}
+
 export interface PracticeCardMessages {
   offline: { title: string; description: string; announce: string };
   error: { title: string; generic: string };
   status: { correct: string; incorrect: string; expectedAnswer: string };
   header: {
     appName: string;
-    profileLabel: string;
-    scoreLabel: string;
-    accuracyLabel: string;
-    streakLabel: string;
-    streakUnit: string;
   };
   hints: {
     label: string;
@@ -35,7 +43,6 @@ export interface PracticeCardMessages {
   actions: { submit: string; pronounceSrLabel: string };
   loadingNext: string;
   progress: {
-    label: string;
     completedLabel: string;
   };
   caseLabels: Record<'nominative' | 'accusative' | 'dative' | 'genitive', string>;
@@ -202,6 +209,7 @@ export interface AuthMessages {
 
 export interface AppMessages {
   languageToggle: LanguageToggleMessages;
+  userMenu: UserMenuMessages;
   practiceCard: PracticeCardMessages;
   progressDisplay: ProgressDisplayMessages;
   home: HomeMessages;
@@ -216,6 +224,18 @@ const MESSAGES: Record<Locale, AppMessages> = {
       label: 'Language',
       english: 'English',
       german: 'Deutsch',
+    },
+    userMenu: {
+      ariaLabel: 'Open user menu',
+      signInLabel: 'Open sign in dialog',
+      accountLabel: 'Account',
+      settingsLabel: 'Settings',
+      languageLabel: 'Language',
+      theme: {
+        toggleToDark: 'Switch to dark theme',
+        toggleToLight: 'Switch to light theme',
+      },
+      unknownUserInitial: '?',
     },
     home: {
       topBar: {
@@ -311,11 +331,6 @@ const MESSAGES: Record<Locale, AppMessages> = {
       },
       header: {
         appName: 'Wortschatz',
-        profileLabel: 'Profile',
-        scoreLabel: 'Points',
-        accuracyLabel: 'Accuracy',
-        streakLabel: 'Streak',
-        streakUnit: 'days',
       },
       hints: {
         label: 'Hint',
@@ -335,7 +350,6 @@ const MESSAGES: Record<Locale, AppMessages> = {
       },
       loadingNext: 'Loading next task…',
       progress: {
-        label: 'Day {current}/{target}',
         completedLabel: 'Completed {count}',
       },
       caseLabels: {
@@ -457,6 +471,18 @@ const MESSAGES: Record<Locale, AppMessages> = {
       english: 'Englisch',
       german: 'Deutsch',
     },
+    userMenu: {
+      ariaLabel: 'Benutzermenü öffnen',
+      signInLabel: 'Anmeldedialog öffnen',
+      accountLabel: 'Konto',
+      settingsLabel: 'Einstellungen',
+      languageLabel: 'Sprache',
+      theme: {
+        toggleToDark: 'Zum dunklen Design wechseln',
+        toggleToLight: 'Zum hellen Design wechseln',
+      },
+      unknownUserInitial: '?',
+    },
     home: {
       topBar: {
         focusLabel: 'Übungsschwerpunkt',
@@ -551,11 +577,6 @@ const MESSAGES: Record<Locale, AppMessages> = {
       },
       header: {
         appName: 'Wortschatz',
-        profileLabel: 'Profil',
-        scoreLabel: 'Punkte',
-        accuracyLabel: 'Genauigkeit',
-        streakLabel: 'Serie',
-        streakUnit: 'Tage',
       },
       hints: {
         label: 'Hinweis',
@@ -575,7 +596,6 @@ const MESSAGES: Record<Locale, AppMessages> = {
       },
       loadingNext: 'Lädt nächste Aufgabe…',
       progress: {
-        label: 'Tag {current}/{target}',
         completedLabel: '{count} abgeschlossen',
       },
       caseLabels: {

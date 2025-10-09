@@ -6,7 +6,6 @@ import { BarChart3, BookOpen } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
 import { SidebarNavButton } from "@/components/layout/sidebar-nav-button";
 import { MobileNavBar } from "@/components/layout/mobile-nav-bar";
-import { AccountMobileTrigger } from "@/components/auth/account-mobile-trigger";
 import { getPrimaryNavigationItems } from "@/components/layout/navigation";
 import { AnalyticsDashboard } from "@/components/analytics-dashboard";
 import { Button } from "@/components/ui/button";
@@ -16,7 +15,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getDevAttributes } from "@/lib/dev-attributes";
 import { useAuthSession } from "@/auth/session";
-import { loadPracticeSettings } from "@/lib/practice-settings";
 import { loadPracticeProgress } from "@/lib/practice-progress";
 import { loadPracticeSession } from "@/lib/practice-session";
 import { loadAnswerHistory } from "@/lib/answer-history";
@@ -28,6 +26,7 @@ import {
   getVerbLevel,
   normalisePreferredTaskTypes,
 } from "@/lib/practice-overview";
+import { usePracticeSettings } from "@/contexts/practice-settings-context";
 
 interface SessionProgressBarProps {
   value: number;
@@ -64,7 +63,7 @@ function SessionProgressBar({ value, completed, target, debugId }: SessionProgre
 }
 
 export default function Analytics() {
-  const settings = useMemo(() => loadPracticeSettings(), []);
+  const { settings } = usePracticeSettings();
   const progress = useMemo(() => loadPracticeProgress(), []);
   const practiceSession = useMemo(() => loadPracticeSession(), []);
   const answerHistory = useMemo(() => loadAnswerHistory(), []);
@@ -156,33 +155,6 @@ export default function Analytics() {
       </div>
     </div>
   );
-  const topBar = (
-    <div className="flex flex-col gap-3 transition-all group-data-[condensed=true]/header:flex-row group-data-[condensed=true]/header:items-center group-data-[condensed=true]/header:justify-between">
-      <div className="space-y-1 transition-all group-data-[condensed=true]/header:space-y-0.5">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Performance insights</p>
-        <h1 className="flex items-center gap-2 text-2xl font-semibold text-foreground transition-all group-data-[condensed=true]/header:text-xl">
-          <BarChart3 className="h-6 w-6 text-primary" aria-hidden />
-          Analytics dashboard
-        </h1>
-        <p className="max-w-2xl text-sm text-muted-foreground group-data-[condensed=true]/header:hidden">
-          Dive into your progress trends, identify tricky verbs, and celebrate your growth with responsive dashboards.
-        </p>
-      </div>
-      <div className="flex flex-wrap items-center justify-end gap-2">
-        <Link href="/">
-          <Button variant="secondary" className="rounded-2xl px-5">
-            Back to practice
-          </Button>
-        </Link>
-        <Avatar className="h-11 w-11 border border-border/60 shadow-sm">
-          <AvatarFallback className="bg-primary/10 text-sm font-semibold text-primary">
-            LV
-          </AvatarFallback>
-        </Avatar>
-      </div>
-    </div>
-  );
-
   const { data: authSession } = useAuthSession();
   const navigationItems = useMemo(
     () => getPrimaryNavigationItems(authSession?.user.role ?? null),
@@ -192,9 +164,6 @@ export default function Analytics() {
   const sidebar = (
     <div className="space-y-6">
       <div className="space-y-3">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-          Navigate
-        </p>
         <div className="grid gap-2">
           {navigationItems.map((item) => (
             <SidebarNavButton
@@ -213,9 +182,30 @@ export default function Analytics() {
   return (
     <AppShell
       sidebar={sidebar}
-      topBar={topBar}
-      mobileNav={<MobileNavBar items={navigationItems} accountAction={<AccountMobileTrigger />} />}
+      mobileNav={<MobileNavBar items={navigationItems} />}
     >
+      <section className="space-y-4 rounded-3xl border border-border/60 bg-card/85 p-6 shadow-soft shadow-primary/5">
+        <div className="space-y-1">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Performance insights</p>
+          <h1 className="flex items-center gap-2 text-2xl font-semibold text-foreground">
+            <BarChart3 className="h-6 w-6 text-primary" aria-hidden />
+            Analytics dashboard
+          </h1>
+          <p className="max-w-2xl text-sm text-muted-foreground">
+            Dive into your progress trends, identify tricky verbs, and celebrate your growth with responsive dashboards.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center justify-start gap-2 sm:justify-end">
+          <Link href="/">
+            <Button variant="secondary" className="rounded-2xl px-5">
+              Back to practice
+            </Button>
+          </Link>
+          <Avatar className="h-11 w-11 border border-border/60 shadow-sm">
+            <AvatarFallback className="bg-primary/10 text-sm font-semibold text-primary">LV</AvatarFallback>
+          </Avatar>
+        </div>
+      </section>
       <div className="grid gap-6 xl:grid-cols-[minmax(0,2.4fr)_minmax(0,1.6fr)]">
         <div className="space-y-6">
           <AnalyticsDashboard />
