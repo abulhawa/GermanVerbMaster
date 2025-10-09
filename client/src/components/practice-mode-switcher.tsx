@@ -136,7 +136,7 @@ export function PracticeModeSwitcher({
       <PopoverContent
         align="start"
         sideOffset={12}
-        className="w-[360px] space-y-5 rounded-3xl border border-border/60 bg-card/95 p-5 shadow-xl"
+        className="w-[360px] space-y-5 rounded-3xl border border-border/60 bg-card p-5 shadow-xl"
         debugId={`${resolvedDebugId}-content`}
       >
         <div className="space-y-1">
@@ -150,8 +150,8 @@ export function PracticeModeSwitcher({
           className="w-full"
           {...getDevAttributes('practice-mode-switcher', resolvedDebugId)}
         >
-          <TabsList className="flex flex-wrap gap-2 bg-transparent p-0">
-            {MODE_CONFIG.map((mode) => (
+          <TabsList className="flex h-auto w-full flex-wrap gap-2 bg-transparent p-0">
+            {MODE_CONFIG.filter((mode) => mode.value !== 'custom').map((mode) => (
               <TabsTrigger
                 key={mode.value}
                 value={mode.value}
@@ -168,12 +168,6 @@ export function PracticeModeSwitcher({
         </Tabs>
 
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Task types
-            </p>
-            <span className="text-xs text-muted-foreground">{selectedSet.size} selected</span>
-          </div>
           <div className="max-h-60 space-y-2 overflow-y-auto pr-1">
             {sortedTaskTypes.map((taskType) => {
               const copy = getTaskTypeCopy(taskType);
