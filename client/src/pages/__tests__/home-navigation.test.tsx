@@ -12,6 +12,7 @@ import { clientTaskRegistry } from '@/lib/tasks';
 import { createDefaultSettings } from '@/lib/practice-settings';
 import type { PracticeSettingsState, TaskType } from '@shared';
 import { LocaleProvider } from '@/locales';
+import { PracticeSettingsProvider } from '@/contexts/practice-settings-context';
 
 vi.mock('@/components/settings-dialog', () => ({
   SettingsDialog: () => null,
@@ -215,7 +216,9 @@ function renderHome() {
   return render(
     <LocaleProvider>
       <QueryClientProvider client={client}>
-        <Home />
+        <PracticeSettingsProvider>
+          <Home />
+        </PracticeSettingsProvider>
       </QueryClientProvider>
     </LocaleProvider>,
   );
@@ -321,7 +324,7 @@ describe('Home navigation controls', () => {
 
     mockFetchPracticeTasks.mockClear();
 
-    const customMixButton = await screen.findByRole('button', { name: /configure custom task mix/i });
+    const customMixButton = await screen.findByRole('button', { name: /adjust practice scope/i });
     await userEvent.click(customMixButton);
     const adjectiveCheckbox = await screen.findByLabelText(/Adjective endings/i);
     await userEvent.click(adjectiveCheckbox);

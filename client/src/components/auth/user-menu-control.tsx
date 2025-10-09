@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { Loader2, LogOut, Moon, Settings2, Sun, User, Languages } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useLocation } from "wouter";
 
 import {
   DropdownMenu,
@@ -23,10 +22,7 @@ import { useAuthSession, useSignOutMutation } from "@/auth/session";
 import { AuthDialog } from "@/components/auth/auth-dialog";
 import { useTranslations, useLocale, type Locale } from "@/locales";
 import { type ThemeSetting } from "@/lib/theme";
-import {
-  dispatchPracticeSettingsOpenEvent,
-  queuePracticeSettingsOpen,
-} from "@/lib/practice-settings-events";
+import { dispatchPracticeSettingsOpenEvent } from "@/lib/practice-settings-events";
 
 interface UserMenuControlProps {
   className?: string;
@@ -42,7 +38,6 @@ export function UserMenuControl({ className }: UserMenuControlProps) {
   const menuCopy = translations.userMenu;
   const languageCopy = translations.languageToggle;
   const authCopy = translations.auth;
-  const [location, navigate] = useLocation();
 
   const isSessionLoading = isLoading || isFetching;
   const isSignedIn = Boolean(session);
@@ -75,12 +70,6 @@ export function UserMenuControl({ className }: UserMenuControlProps) {
   };
 
   const handleSettingsSelect = () => {
-    if (location !== "/") {
-      queuePracticeSettingsOpen();
-      navigate("/");
-      return;
-    }
-
     dispatchPracticeSettingsOpenEvent();
   };
 

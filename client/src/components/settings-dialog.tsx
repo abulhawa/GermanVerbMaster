@@ -135,6 +135,10 @@ interface SettingsDialogProps extends DebuggableComponentProps {
 
 
 
+  showTrigger?: boolean;
+
+
+
 }
 
 
@@ -172,6 +176,10 @@ export function SettingsDialog({
 
 
   taskTypeLabel,
+
+
+
+  showTrigger = true,
 
 
 
@@ -340,6 +348,7 @@ export function SettingsDialog({
 
 
 
+      {showTrigger ? (
       <DialogTrigger debugId={`${resolvedDebugId}-trigger`} asChild>
 
 
@@ -381,6 +390,7 @@ export function SettingsDialog({
 
 
       </DialogTrigger>
+      ) : null
 
 
 

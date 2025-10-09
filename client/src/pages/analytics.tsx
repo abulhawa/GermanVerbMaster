@@ -15,7 +15,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getDevAttributes } from "@/lib/dev-attributes";
 import { useAuthSession } from "@/auth/session";
-import { loadPracticeSettings } from "@/lib/practice-settings";
 import { loadPracticeProgress } from "@/lib/practice-progress";
 import { loadPracticeSession } from "@/lib/practice-session";
 import { loadAnswerHistory } from "@/lib/answer-history";
@@ -27,6 +26,7 @@ import {
   getVerbLevel,
   normalisePreferredTaskTypes,
 } from "@/lib/practice-overview";
+import { usePracticeSettings } from "@/contexts/practice-settings-context";
 
 interface SessionProgressBarProps {
   value: number;
@@ -63,7 +63,7 @@ function SessionProgressBar({ value, completed, target, debugId }: SessionProgre
 }
 
 export default function Analytics() {
-  const settings = useMemo(() => loadPracticeSettings(), []);
+  const { settings } = usePracticeSettings();
   const progress = useMemo(() => loadPracticeProgress(), []);
   const practiceSession = useMemo(() => loadPracticeSession(), []);
   const answerHistory = useMemo(() => loadAnswerHistory(), []);

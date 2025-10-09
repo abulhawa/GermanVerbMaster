@@ -7,6 +7,7 @@ import { useSyncQueue } from "@/hooks/use-sync-queue";
 import { LocaleProvider } from "@/locales";
 import { ThemeProvider } from "next-themes";
 import { THEME_STORAGE_KEY } from "@/lib/theme";
+import { PracticeSettingsProvider } from "@/contexts/practice-settings-context";
 
 const HomePage = lazy(() => import("@/pages/home"));
 const AnswerHistoryPage = lazy(() => import("@/pages/answer-history"));
@@ -54,9 +55,11 @@ function App() {
     >
       <LocaleProvider>
         <QueryClientProvider client={queryClient}>
-          <SyncManager />
-          <Router />
-          <Toaster />
+          <PracticeSettingsProvider>
+            <SyncManager />
+            <Router />
+            <Toaster />
+          </PracticeSettingsProvider>
         </QueryClientProvider>
       </LocaleProvider>
     </ThemeProvider>

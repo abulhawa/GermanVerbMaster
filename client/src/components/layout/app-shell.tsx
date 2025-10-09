@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   type DebuggableComponentProps,
@@ -7,6 +7,10 @@ import {
 import { SidebarCollapsibleProvider } from "./sidebar-collapsible-context";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { UserMenuControl } from "@/components/auth/user-menu-control";
+import { SettingsDialog } from "@/components/settings-dialog";
+import { usePracticeSettings } from "@/contexts/practice-settings-context";
+import { SCOPE_LABELS, computeScope, normalisePreferredTaskTypes } from "@/lib/practice-overview";
+import { getTaskTypeCopy } from "@/lib/task-metadata";
 
 interface AppShellProps extends DebuggableComponentProps {
   sidebar: ReactNode;
@@ -24,6 +28,20 @@ export function AppShell({
 }: AppShellProps) {
   const resolvedDebugId = debugId && debugId.trim().length > 0 ? debugId : "layout-app-shell";
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
+  const { settings, updateSettings } = usePracticeSettings();
+
+  const scope = computeScope(settings);
+  const activeTaskTypes = useMemo(() => {
+    const preferred = settings.preferredTaskTypes.length
+      ? settings.preferredTaskTypes
+      : [settings.defaultTaskType];
+    return normalisePreferredTaskTypes(preferred);
+  }, [settings.defaultTaskType, settings.preferredTaskTypes]);
+  const activeTaskType = activeTaskTypes[0] ?? settings.defaultTaskType;
+  const taskTypeCopy = getTaskTypeCopy(activeTaskType);
+  const scopeBadgeLabel =
+    scope === "custom" ? `${SCOPE_LABELS[scope]} (${activeTaskTypes.length})` : SCOPE_LABELS[scope];
+  const presetLabel = scopeBadgeLabel;
 
   const handleSidebarEnter = () => {
     setIsSidebarExpanded(true);
@@ -39,6 +57,15 @@ export function AppShell({
         {...getDevAttributes("layout-app-shell-root", resolvedDebugId)}
         className="min-h-screen bg-background text-muted-foreground"
       >
+        <SettingsDialog
+          debugId="app-shell-settings-dialog"
+          settings={settings}
+          onSettingsChange={updateSettings}
+          taskType={activeTaskType}
+          presetLabel={presetLabel}
+          taskTypeLabel={taskTypeCopy.label}
+          showTrigger={false}
+        />
         <div className="mx-auto grid min-h-screen w-full max-w-[1600px] grid-cols-1 gap-6 px-4 pb-28 pt-6 lg:grid-cols-[auto_1fr] lg:pb-6">
           <SidebarCollapsibleProvider collapsed={!isSidebarExpanded}>
             <aside
@@ -55,10 +82,7 @@ export function AppShell({
           </aside>
         </SidebarCollapsibleProvider>
           <div
-            className={cn(
-              "flex min-h-screen flex-col gap-4 pb-20 lg:pb-6",
-              mobileNav ? "pb-16" : "",
-            )}
+            className={cn("flex min-h-screen flex-col gap-4 pb-20 lg:pb-6", mobileNav ? "pb-16" : "")}
           >
             <main
               className={cn(
