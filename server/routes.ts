@@ -209,6 +209,21 @@ const optionalNullableBoolean = z
   }, z.union([z.boolean(), z.null()]))
   .optional();
 
+const optionalAuxiliary = z
+  .preprocess((value) => {
+    if (value === undefined) return undefined;
+    if (value === null) return null;
+    if (typeof value === "string") {
+      const normalized = value.trim().toLowerCase();
+      if (!normalized) return null;
+      if (["haben", "sein"].includes(normalized)) {
+        return normalized;
+      }
+    }
+    return value;
+  }, z.union([z.enum(["haben", "sein"]), z.null()]))
+  .optional();
+
 const optionalAux = z
   .preprocess((value) => {
     if (value === undefined) return undefined;
@@ -296,6 +311,10 @@ const enrichmentPatchSchema = z
     exampleEn: optionalText(800),
     sourcesCsv: optionalText(800),
     complete: optionalBoolean,
+    praeteritum: optionalText(200),
+    partizipIi: optionalText(200),
+    perfekt: optionalText(200),
+    aux: optionalAuxiliary,
   })
   .partial();
 
@@ -1402,6 +1421,7 @@ export function registerRoutes(app: Express): void {
           synonyms: computation.suggestions.synonyms,
           englishHints: computation.suggestions.englishHints,
           wiktionarySummary: computation.suggestions.wiktionarySummary,
+          verbForms: computation.suggestions.verbForms,
           providerDiagnostics: computation.suggestions.diagnostics,
         },
       };
@@ -1457,6 +1477,30 @@ export function registerRoutes(app: Express): void {
         if (patch.sourcesCsv !== existing.sourcesCsv) {
           updates.sourcesCsv = patch.sourcesCsv;
           appliedFields.push("sourcesCsv");
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(patch, "praeteritum") && patch.praeteritum !== undefined) {
+        if (patch.praeteritum !== existing.praeteritum) {
+          updates.praeteritum = patch.praeteritum;
+          appliedFields.push("praeteritum");
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(patch, "partizipIi") && patch.partizipIi !== undefined) {
+        if (patch.partizipIi !== existing.partizipIi) {
+          updates.partizipIi = patch.partizipIi;
+          appliedFields.push("partizipIi");
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(patch, "perfekt") && patch.perfekt !== undefined) {
+        if (patch.perfekt !== existing.perfekt) {
+          updates.perfekt = patch.perfekt;
+          appliedFields.push("perfekt");
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(patch, "aux") && patch.aux !== undefined) {
+        if (patch.aux !== existing.aux) {
+          updates.aux = patch.aux;
+          appliedFields.push("aux");
         }
       }
 

@@ -1,6 +1,15 @@
 import type { PartOfSpeech } from "./types.js";
 
-export type EnrichmentField = "english" | "exampleDe" | "exampleEn" | "sourcesCsv" | "complete";
+export type EnrichmentField =
+  | "english"
+  | "exampleDe"
+  | "exampleEn"
+  | "sourcesCsv"
+  | "complete"
+  | "praeteritum"
+  | "partizipIi"
+  | "perfekt"
+  | "aux";
 
 export interface EnrichmentFieldUpdate {
   field: EnrichmentField;
@@ -19,6 +28,14 @@ export interface EnrichmentExampleCandidate {
   exampleDe?: string;
   exampleEn?: string;
   source: string;
+}
+
+export interface EnrichmentVerbFormSuggestion {
+  source: string;
+  praeteritum?: string;
+  partizipIi?: string;
+  perfekt?: string;
+  aux?: string;
 }
 
 export type EnrichmentProviderId =
@@ -42,6 +59,7 @@ export interface WordEnrichmentSuggestions {
   synonyms: string[];
   englishHints: string[];
   wiktionarySummary?: string;
+  verbForms: EnrichmentVerbFormSuggestion[];
   providerDiagnostics: EnrichmentProviderDiagnostic[];
 }
 
@@ -55,6 +73,7 @@ export interface EnrichmentWordSummary {
   synonyms: string[];
   wiktionarySummary?: string;
   example?: EnrichmentExampleCandidate;
+  verbForms?: EnrichmentVerbFormSuggestion;
   updates: EnrichmentFieldUpdate[];
   applied: boolean;
   sources: string[];
@@ -68,6 +87,10 @@ export type EnrichmentPatch = Partial<{
   exampleEn: string | null;
   sourcesCsv: string | null;
   complete: boolean;
+  praeteritum: string | null;
+  partizipIi: string | null;
+  perfekt: string | null;
+  aux: "haben" | "sein" | null;
 }>;
 
 export interface WordEnrichmentPreview {

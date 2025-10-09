@@ -11,6 +11,7 @@ import type {
   EnrichmentPatch,
   EnrichmentProviderDiagnostic,
   EnrichmentTranslationCandidate,
+  EnrichmentVerbFormSuggestion,
   EnrichmentWordSummary,
   WordEnrichmentSuggestions,
 } from "@shared/enrichment";
@@ -31,7 +32,19 @@ import {
 export type WordRecord = typeof words.$inferSelect;
 
 type WordPatch = Partial<
-  Pick<WordRecord, "english" | "exampleDe" | "exampleEn" | "sourcesCsv" | "complete" | "updatedAt">
+  Pick<
+    WordRecord,
+    | "english"
+    | "exampleDe"
+    | "exampleEn"
+    | "sourcesCsv"
+    | "complete"
+    | "updatedAt"
+    | "praeteritum"
+    | "partizipIi"
+    | "perfekt"
+    | "aux"
+  >
 >;
 
 type SuggestionBundle = {
@@ -44,6 +57,7 @@ type SuggestionBundle = {
   sources: string[];
   aiUsed: boolean;
   diagnostics: EnrichmentProviderDiagnostic[];
+  verbForms: EnrichmentVerbFormSuggestion[];
 };
 
 type FieldUpdate = EnrichmentFieldUpdate;
@@ -247,7 +261,11 @@ export async function computeWordEnrichment(
 ): Promise<WordEnrichmentComputation> {
   const missingFields = detectMissingFields(word);
   const suggestions = await collectSuggestions(word, config, openAiKey);
-  const { patch, updates, translationCandidate, exampleCandidate } = determineUpdates(word, suggestions, config);
+  const { patch, updates, translationCandidate, exampleCandidate, verbFormCandidate } = determineUpdates(
+    word,
+    suggestions,
+    config,
+  );
 
   const summary: EnrichmentWordSummary = {
     id: word.id,
@@ -259,6 +277,7 @@ export async function computeWordEnrichment(
     synonyms: suggestions.synonyms,
     wiktionarySummary: suggestions.wiktionarySummary,
     example: exampleCandidate,
+    verbForms: verbFormCandidate,
     updates,
     applied: false,
     sources: suggestions.sources,
@@ -348,6 +367,7 @@ async function collectSuggestions(
   const errors: string[] = [];
   const translations: EnrichmentTranslationCandidate[] = [];
   const examples: ExampleCandidate[] = [];
+  const verbForms: EnrichmentVerbFormSuggestion[] = [];
   let synonyms: string[] = [];
   let englishHints: string[] = [];
   let wiktionarySummary: string | undefined;
@@ -358,7 +378,19 @@ async function collectSuggestions(
       const value = await lookupWiktionarySummary(word.lemma);
       wiktionarySummary = value?.summary;
       englishHints = value?.englishHints ?? [];
-      if (value && (value.summary || value.englishHints.length)) {
+      if (value?.forms) {
+        const { praeteritum, partizipIi, perfekt, aux } = value.forms;
+        if (praeteritum || partizipIi || perfekt || aux) {
+          verbForms.push({
+            source: "de.wiktionary.org",
+            praeteritum,
+            partizipIi,
+            perfekt,
+            aux,
+          });
+        }
+      }
+      if (value && (value.summary || value.englishHints.length || verbForms.length)) {
         sources.add("de.wiktionary.org");
       }
       diagnostics.push({
@@ -526,6 +558,7 @@ async function collectSuggestions(
     sources: Array.from(sources).sort(),
     aiUsed,
     diagnostics,
+    verbForms,
   };
 }
 
@@ -538,6 +571,7 @@ function determineUpdates(
   updates: FieldUpdate[];
   translationCandidate?: EnrichmentTranslationCandidate;
   exampleCandidate?: ExampleCandidate;
+  verbFormCandidate?: EnrichmentVerbFormSuggestion;
 } {
   const patch: WordPatch = {};
   const updates: FieldUpdate[] = [];
@@ -585,6 +619,59 @@ function determineUpdates(
     });
   }
 
+  let verbFormCandidate: EnrichmentVerbFormSuggestion | undefined;
+  if (word.pos === "V") {
+    verbFormCandidate = suggestions.verbForms.find((candidate) =>
+      Boolean(
+        candidate.praeteritum?.trim() ||
+          candidate.partizipIi?.trim() ||
+          candidate.perfekt?.trim() ||
+          candidate.aux,
+      ),
+    );
+
+    if (verbFormCandidate) {
+      const applyVerbStringField = (
+        field: "praeteritum" | "partizipIi" | "perfekt",
+        value: string | undefined,
+      ) => {
+        if (!value) return;
+        const cleaned = value.trim();
+        if (!cleaned) return;
+        const previous = word[field];
+        if (config.allowOverwrite || isBlank(previous)) {
+          if (previous !== cleaned) {
+            patch[field] = cleaned;
+            updates.push({
+              field,
+              previous,
+              next: cleaned,
+              source: verbFormCandidate?.source,
+            });
+          }
+        }
+      };
+
+      applyVerbStringField("praeteritum", verbFormCandidate.praeteritum);
+      applyVerbStringField("partizipIi", verbFormCandidate.partizipIi);
+      applyVerbStringField("perfekt", verbFormCandidate.perfekt);
+
+      const auxValue = verbFormCandidate.aux?.trim();
+      if (auxValue && (config.allowOverwrite || isBlank(word.aux))) {
+        const normalised = auxValue === "sein" ? "sein" : auxValue === "haben" ? "haben" : undefined;
+        if (normalised && word.aux !== normalised) {
+          patch.aux = normalised;
+          updates.push({
+            field: "aux",
+            previous: word.aux,
+            next: normalised,
+            source: verbFormCandidate?.source,
+          });
+        }
+      }
+    }
+  }
+
   const mergedSources = mergeSourcesCsv(word.sourcesCsv, suggestions.sources);
   if (mergedSources !== word.sourcesCsv) {
     patch.sourcesCsv = mergedSources;
@@ -609,7 +696,7 @@ function determineUpdates(
     patch.updatedAt = new Date();
   }
 
-  return { patch, updates, translationCandidate, exampleCandidate };
+  return { patch, updates, translationCandidate, exampleCandidate, verbFormCandidate };
 }
 
 function pickExampleCandidate(examples: ExampleCandidate[]): ExampleCandidate | undefined {
@@ -639,9 +726,9 @@ function computeCompleteness(word: WordRecord, patch: WordPatch): boolean {
   const exampleDe = patch.exampleDe ?? word.exampleDe;
   const gender = word.gender;
   const plural = word.plural;
-  const praeteritum = word.praeteritum;
-  const partizipIi = word.partizipIi;
-  const perfekt = word.perfekt;
+  const praeteritum = patch.praeteritum ?? word.praeteritum;
+  const partizipIi = patch.partizipIi ?? word.partizipIi;
+  const perfekt = patch.perfekt ?? word.perfekt;
   const comparative = word.comparative;
   const superlative = word.superlative;
 

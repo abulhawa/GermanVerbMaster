@@ -32,6 +32,7 @@ import type {
   EnrichmentPatch,
   EnrichmentProviderDiagnostic,
   EnrichmentTranslationCandidate,
+  EnrichmentVerbFormSuggestion,
   WordEnrichmentPreview,
 } from '@shared/enrichment';
 
@@ -42,6 +43,10 @@ interface FieldDrafts {
   exampleDe: string;
   exampleEn: string;
   sourcesCsv: string;
+  praeteritum: string;
+  partizipIi: string;
+  perfekt: string;
+  aux: string;
 }
 
 export interface WordConfigState extends WordEnrichmentOptions {
@@ -81,11 +86,19 @@ const WordEnrichmentDetailView = ({
     exampleDe: '',
     exampleEn: '',
     sourcesCsv: '',
+    praeteritum: '',
+    partizipIi: '',
+    perfekt: '',
+    aux: '',
   });
   const [selectedOptions, setSelectedOptions] = useState<{
     english?: string;
     exampleDe?: string;
     exampleEn?: string;
+    praeteritum?: string;
+    partizipIi?: string;
+    perfekt?: string;
+    aux?: string;
   }>({});
   const [previewData, setPreviewData] = useState<WordEnrichmentPreview | null>(null);
   const [applyResult, setApplyResult] = useState<ApplyEnrichmentResponse | null>(null);
@@ -116,12 +129,20 @@ const WordEnrichmentDetailView = ({
         exampleDe: word.exampleDe ?? '',
         exampleEn: word.exampleEn ?? '',
         sourcesCsv: word.sourcesCsv ?? '',
+        praeteritum: word.praeteritum ?? '',
+        partizipIi: word.partizipIi ?? '',
+        perfekt: word.perfekt ?? '',
+        aux: word.aux ?? '',
       });
       setPreviewData(null);
       setSelectedOptions({
         english: word.english ? MANUAL_OPTION : undefined,
         exampleDe: word.exampleDe ? MANUAL_OPTION : undefined,
         exampleEn: word.exampleEn ? MANUAL_OPTION : undefined,
+        praeteritum: word.praeteritum ? MANUAL_OPTION : undefined,
+        partizipIi: word.partizipIi ? MANUAL_OPTION : undefined,
+        perfekt: word.perfekt ? MANUAL_OPTION : undefined,
+        aux: word.aux ? MANUAL_OPTION : undefined,
       });
       setApplyResult(null);
     }
@@ -150,6 +171,31 @@ const WordEnrichmentDetailView = ({
   const exampleEnOptions = useMemo(
     () => exampleOptions.filter((option) => option.candidate.exampleEn),
     [exampleOptions],
+  );
+
+  const verbFormOptions = useMemo(() => {
+    if (!previewData) return [] as Array<{ id: string; candidate: EnrichmentVerbFormSuggestion }>;
+    return previewData.suggestions.verbForms.map((candidate, index) => ({
+      id: `verb-${index}`,
+      candidate,
+    }));
+  }, [previewData]);
+
+  const praeteritumOptions = useMemo(
+    () => verbFormOptions.filter((option) => option.candidate.praeteritum),
+    [verbFormOptions],
+  );
+  const partizipIiOptions = useMemo(
+    () => verbFormOptions.filter((option) => option.candidate.partizipIi),
+    [verbFormOptions],
+  );
+  const perfektOptions = useMemo(
+    () => verbFormOptions.filter((option) => option.candidate.perfekt),
+    [verbFormOptions],
+  );
+  const auxOptions = useMemo(
+    () => verbFormOptions.filter((option) => option.candidate.aux),
+    [verbFormOptions],
   );
 
   const mergedWord = useMemo(() => (word ? mergeWordWithDrafts(word, drafts) : null), [word, drafts]);
@@ -201,12 +247,41 @@ const WordEnrichmentDetailView = ({
           (data.patch.exampleEn !== undefined || (word?.exampleEn ?? '').length
             ? MANUAL_OPTION
             : undefined),
+        praeteritum:
+          findMatchingVerbFormOptionId(data.patch.praeteritum, data.suggestions.verbForms, 'praeteritum') ??
+          current.praeteritum ??
+          (data.patch.praeteritum !== undefined || (word?.praeteritum ?? '').length
+            ? MANUAL_OPTION
+            : undefined),
+        partizipIi:
+          findMatchingVerbFormOptionId(data.patch.partizipIi, data.suggestions.verbForms, 'partizipIi') ??
+          current.partizipIi ??
+          (data.patch.partizipIi !== undefined || (word?.partizipIi ?? '').length
+            ? MANUAL_OPTION
+            : undefined),
+        perfekt:
+          findMatchingVerbFormOptionId(data.patch.perfekt, data.suggestions.verbForms, 'perfekt') ??
+          current.perfekt ??
+          (data.patch.perfekt !== undefined || (word?.perfekt ?? '').length
+            ? MANUAL_OPTION
+            : undefined),
+        aux:
+          findMatchingVerbFormOptionId(data.patch.aux, data.suggestions.verbForms, 'aux') ??
+          current.aux ??
+          (data.patch.aux !== undefined || (word?.aux ?? '').length ? MANUAL_OPTION : undefined),
       }));
       setDrafts((previous) => ({
         english: data.patch.english !== undefined ? data.patch.english ?? '' : previous.english,
         exampleDe: data.patch.exampleDe !== undefined ? data.patch.exampleDe ?? '' : previous.exampleDe,
         exampleEn: data.patch.exampleEn !== undefined ? data.patch.exampleEn ?? '' : previous.exampleEn,
         sourcesCsv: data.patch.sourcesCsv !== undefined ? data.patch.sourcesCsv ?? '' : previous.sourcesCsv,
+        praeteritum: data.patch.praeteritum !== undefined ? data.patch.praeteritum ?? '' : previous.praeteritum,
+        partizipIi: data.patch.partizipIi !== undefined ? data.patch.partizipIi ?? '' : previous.partizipIi,
+        perfekt: data.patch.perfekt !== undefined ? data.patch.perfekt ?? '' : previous.perfekt,
+        aux:
+          data.patch.aux !== undefined
+            ? data.patch.aux ?? ''
+            : previous.aux,
       }));
       toast({
         title: 'Preview ready',
@@ -289,6 +364,52 @@ const WordEnrichmentDetailView = ({
     setApplyResult(null);
   };
 
+  const handleVerbFormSelect = (
+    field: 'praeteritum' | 'partizipIi' | 'perfekt' | 'aux',
+    optionId: string,
+  ) => {
+    if (optionId === MANUAL_OPTION) {
+      setSelectedOptions((current) => ({ ...current, [field]: MANUAL_OPTION }));
+      setApplyResult(null);
+      return;
+    }
+
+    const sourceMap: Record<typeof field, Array<{ id: string; candidate: EnrichmentVerbFormSuggestion }>> = {
+      praeteritum: praeteritumOptions,
+      partizipIi: partizipIiOptions,
+      perfekt: perfektOptions,
+      aux: auxOptions,
+    };
+
+    const option = sourceMap[field].find((entry) => entry.id === optionId);
+    if (!option) {
+      setSelectedOptions((current) => ({ ...current, [field]: undefined }));
+      return;
+    }
+
+    const candidateValue = option.candidate[field];
+    const value = typeof candidateValue === 'string' ? candidateValue : '';
+    setDrafts((previous) => ({ ...previous, [field]: value }));
+    setSelectedOptions((current) => ({ ...current, [field]: optionId }));
+    setApplyResult(null);
+  };
+
+  const handleVerbFieldInput = (
+    field: 'praeteritum' | 'partizipIi' | 'perfekt',
+    value: string,
+  ) => {
+    setDrafts((previous) => ({ ...previous, [field]: value }));
+    setSelectedOptions((current) => ({ ...current, [field]: MANUAL_OPTION }));
+    setApplyResult(null);
+  };
+
+  const handleAuxManualChange = (value: string) => {
+    const normalized = value === 'haben' || value === 'sein' ? value : '';
+    setDrafts((previous) => ({ ...previous, aux: normalized }));
+    setSelectedOptions((current) => ({ ...current, aux: MANUAL_OPTION }));
+    setApplyResult(null);
+  };
+
   const providerDiagnostics = previewData?.suggestions.providerDiagnostics ?? [];
 
   const handleDraftChange = (
@@ -309,6 +430,15 @@ const WordEnrichmentDetailView = ({
     selectedOptions.exampleDe ?? (drafts.exampleDe.trim().length ? MANUAL_OPTION : undefined);
   const exampleEnSelectValue =
     selectedOptions.exampleEn ?? (drafts.exampleEn.trim().length ? MANUAL_OPTION : undefined);
+  const praeteritumSelectValue =
+    selectedOptions.praeteritum ?? (drafts.praeteritum.trim().length ? MANUAL_OPTION : undefined);
+  const partizipIiSelectValue =
+    selectedOptions.partizipIi ?? (drafts.partizipIi.trim().length ? MANUAL_OPTION : undefined);
+  const perfektSelectValue =
+    selectedOptions.perfekt ?? (drafts.perfekt.trim().length ? MANUAL_OPTION : undefined);
+  const auxSelectValue =
+    selectedOptions.aux ?? (drafts.aux.trim().length ? MANUAL_OPTION : undefined);
+  const auxManualValue = drafts.aux === 'sein' ? 'sein' : drafts.aux === 'haben' ? 'haben' : 'none';
 
   const renderStatusBadge = (label: string, tone: 'default' | 'success' | 'warning' | 'destructive') => {
     const toneClassMap: Record<typeof tone, string> = {
@@ -635,6 +765,118 @@ const WordEnrichmentDetailView = ({
                   onChange={(event) => handleDraftChange('sourcesCsv', event.target.value)}
                 />
               </div>
+
+              {word.pos === 'V' ? (
+                <div className="space-y-4">
+                  <Separator />
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="praeteritum-select">Präteritum</Label>
+                      <Select
+                        value={praeteritumSelectValue}
+                        onValueChange={(value) => handleVerbFormSelect('praeteritum', value)}
+                      >
+                        <SelectTrigger id="praeteritum-select">
+                          <SelectValue placeholder="Choose a Präteritum form" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value={MANUAL_OPTION}>Manual entry</SelectItem>
+                          {praeteritumOptions.map((option) => (
+                            <SelectItem key={option.id} value={option.id}>
+                              {option.candidate.praeteritum} · {option.candidate.source}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Input
+                        value={drafts.praeteritum}
+                        placeholder="Enter präteritum"
+                        onChange={(event) => handleVerbFieldInput('praeteritum', event.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="partizip-select">Partizip II</Label>
+                      <Select
+                        value={partizipIiSelectValue}
+                        onValueChange={(value) => handleVerbFormSelect('partizipIi', value)}
+                      >
+                        <SelectTrigger id="partizip-select">
+                          <SelectValue placeholder="Choose a Partizip II" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value={MANUAL_OPTION}>Manual entry</SelectItem>
+                          {partizipIiOptions.map((option) => (
+                            <SelectItem key={option.id} value={option.id}>
+                              {option.candidate.partizipIi} · {option.candidate.source}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Input
+                        value={drafts.partizipIi}
+                        placeholder="Enter Partizip II"
+                        onChange={(event) => handleVerbFieldInput('partizipIi', event.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="perfekt-select">Perfekt</Label>
+                      <Select
+                        value={perfektSelectValue}
+                        onValueChange={(value) => handleVerbFormSelect('perfekt', value)}
+                      >
+                        <SelectTrigger id="perfekt-select">
+                          <SelectValue placeholder="Choose a Perfekt form" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value={MANUAL_OPTION}>Manual entry</SelectItem>
+                          {perfektOptions.map((option) => (
+                            <SelectItem key={option.id} value={option.id}>
+                              {option.candidate.perfekt} · {option.candidate.source}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Input
+                        value={drafts.perfekt}
+                        placeholder="Enter Perfekt"
+                        onChange={(event) => handleVerbFieldInput('perfekt', event.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="aux-select">Auxiliary verb</Label>
+                      <Select value={auxSelectValue} onValueChange={(value) => handleVerbFormSelect('aux', value)}>
+                        <SelectTrigger id="aux-select">
+                          <SelectValue placeholder="Choose auxiliary source" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value={MANUAL_OPTION}>Manual entry</SelectItem>
+                          {auxOptions.map((option) => (
+                            <SelectItem key={option.id} value={option.id}>
+                              {option.candidate.aux} · {option.candidate.source}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Select
+                        value={auxManualValue}
+                        onValueChange={handleAuxManualChange}
+                        disabled={auxSelectValue !== MANUAL_OPTION}
+                      >
+                        <SelectTrigger id="aux-manual-select">
+                          <SelectValue placeholder="Select auxiliary verb" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">Not set</SelectItem>
+                          <SelectItem value="haben">haben</SelectItem>
+                          <SelectItem value="sein">sein</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
             </div>
           </CardContent>
         </Card>
@@ -728,6 +970,10 @@ function mergeWordWithDrafts(word: AdminWord, drafts: FieldDrafts): AdminWord {
     exampleDe: drafts.exampleDe.trim().length ? drafts.exampleDe.trim() : null,
     exampleEn: drafts.exampleEn.trim().length ? drafts.exampleEn.trim() : null,
     sourcesCsv: drafts.sourcesCsv.trim().length ? drafts.sourcesCsv.trim() : null,
+    praeteritum: drafts.praeteritum.trim().length ? drafts.praeteritum.trim() : null,
+    partizipIi: drafts.partizipIi.trim().length ? drafts.partizipIi.trim() : null,
+    perfekt: drafts.perfekt.trim().length ? drafts.perfekt.trim() : null,
+    aux: drafts.aux === 'haben' || drafts.aux === 'sein' ? drafts.aux : null,
   };
 }
 
@@ -739,7 +985,14 @@ function computeCompletenessWithDraft(word: AdminWord, drafts: FieldDrafts): boo
 function buildPatchFromDrafts(word: AdminWord, drafts: FieldDrafts): EnrichmentPatch {
   const patch: EnrichmentPatch = {};
 
-  type StringField = 'english' | 'exampleDe' | 'exampleEn' | 'sourcesCsv';
+  type StringField =
+    | 'english'
+    | 'exampleDe'
+    | 'exampleEn'
+    | 'sourcesCsv'
+    | 'praeteritum'
+    | 'partizipIi'
+    | 'perfekt';
 
   const applyField = (field: StringField) => {
     const draftValue = drafts[field].trim();
@@ -761,6 +1014,20 @@ function buildPatchFromDrafts(word: AdminWord, drafts: FieldDrafts): EnrichmentP
   applyField('exampleDe');
   applyField('exampleEn');
   applyField('sourcesCsv');
+  applyField('praeteritum');
+  applyField('partizipIi');
+  applyField('perfekt');
+
+  const auxDraft = drafts.aux.trim().toLowerCase();
+  const auxNormalised = auxDraft === 'haben' || auxDraft === 'sein' ? auxDraft : '';
+  const currentAux = word.aux ?? '';
+  if (!auxNormalised.length) {
+    if (word.aux) {
+      patch.aux = null;
+    }
+  } else if (auxNormalised !== currentAux) {
+    patch.aux = auxNormalised as 'haben' | 'sein';
+  }
 
   const nextComplete = computeCompletenessWithDraft(word, drafts);
   if (word.complete !== nextComplete) {
@@ -805,5 +1072,35 @@ function findMatchingExampleOptionId(
     return `example-${matchIndex}`;
   }
   return MANUAL_OPTION;
+}
+
+function findMatchingVerbFormOptionId(
+  value:
+    | EnrichmentPatch['praeteritum']
+    | EnrichmentPatch['partizipIi']
+    | EnrichmentPatch['perfekt']
+    | EnrichmentPatch['aux'],
+  options: EnrichmentVerbFormSuggestion[],
+  field: 'praeteritum' | 'partizipIi' | 'perfekt' | 'aux',
+): string | undefined {
+  if (value === undefined || value === null) {
+    return value === null ? MANUAL_OPTION : undefined;
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed.length) {
+    return MANUAL_OPTION;
+  }
+
+  const normalised = trimmed.toLowerCase();
+  const matchIndex = options.findIndex((candidate) => {
+    const candidateValue = candidate[field];
+    if (!candidateValue) return false;
+    if (field === 'aux') {
+      return candidateValue === normalised;
+    }
+    return candidateValue.trim().toLowerCase() === normalised;
+  });
+  return matchIndex >= 0 ? `verb-${matchIndex}` : MANUAL_OPTION;
 }
 
