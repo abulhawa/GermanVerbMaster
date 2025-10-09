@@ -58,9 +58,6 @@ export default function AnswerHistoryPage() {
     <div className="flex h-full flex-col justify-between gap-8">
       <div className="space-y-6">
         <div className="space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-            Navigate
-          </p>
           <div className="grid gap-2">
             {navigationItems.map((item) => (
               <SidebarNavButton
