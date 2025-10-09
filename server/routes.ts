@@ -27,6 +27,14 @@ import { runVerbQueueShadowComparison } from "./tasks/shadow-mode.js";
 import { isLexemeSchemaEnabled } from "./config.js";
 import { enforceRateLimit, hashKey } from "./api/rate-limit.js";
 import {
+  computeWordEnrichment,
+  resolveConfigFromEnv as resolveEnrichmentConfigFromEnv,
+  runEnrichment,
+  toEnrichmentPatch,
+  type PipelineConfig,
+} from "../scripts/enrichment/pipeline.js";
+import type { BulkEnrichmentResponse, EnrichmentPatch, WordEnrichmentPreview } from "@shared/enrichment";
+import {
   asLexemePos,
   ensurePosFeatureEnabled,
   formatFeatureFlagHeader,
@@ -251,6 +259,45 @@ const wordUpdateSchema = z
     canonical: optionalBoolean,
     sourcesCsv: optionalText(500),
     sourceNotes: optionalText(500),
+  })
+  .strict();
+
+const enrichmentModeSchema = z.enum(["non-canonical", "canonical", "all"]);
+
+const enrichmentRunSchema = z
+  .object({
+    limit: z.coerce.number().int().min(1).max(200).optional(),
+    mode: enrichmentModeSchema.optional(),
+    onlyIncomplete: optionalBoolean,
+    enableAi: optionalBoolean,
+    allowOverwrite: optionalBoolean,
+    collectSynonyms: optionalBoolean,
+    collectExamples: optionalBoolean,
+  })
+  .partial();
+
+const enrichmentPreviewSchema = z
+  .object({
+    enableAi: optionalBoolean,
+    allowOverwrite: optionalBoolean,
+    collectSynonyms: optionalBoolean,
+    collectExamples: optionalBoolean,
+  })
+  .partial();
+
+const enrichmentPatchSchema = z
+  .object({
+    english: optionalText(400),
+    exampleDe: optionalText(800),
+    exampleEn: optionalText(800),
+    sourcesCsv: optionalText(800),
+    complete: optionalBoolean,
+  })
+  .partial();
+
+const enrichmentApplySchema = z
+  .object({
+    patch: enrichmentPatchSchema,
   })
   .strict();
 
@@ -1222,6 +1269,190 @@ export function registerRoutes(app: Express): void {
         return sendError(res, 400, "Invalid word payload", "INVALID_WORD_INPUT");
       }
       sendError(res, 500, "Failed to update word", "WORD_UPDATE_FAILED");
+    }
+  });
+
+  app.post("/api/enrichment/run", requireAdminAccess, async (req, res) => {
+    try {
+      const parsed = enrichmentRunSchema.safeParse(req.body ?? {});
+      if (!parsed.success) {
+        return sendError(res, 400, "Invalid enrichment configuration", "INVALID_ENRICHMENT_CONFIG");
+      }
+
+      const overrides: Partial<PipelineConfig> = {
+        limit: parsed.data.limit,
+        mode: parsed.data.mode,
+        onlyIncomplete: parsed.data.onlyIncomplete,
+        enableAi: parsed.data.enableAi,
+        allowOverwrite: parsed.data.allowOverwrite,
+        collectSynonyms: parsed.data.collectSynonyms,
+        collectExamples: parsed.data.collectExamples,
+        delayMs: 0,
+        apply: false,
+        dryRun: true,
+        emitReport: false,
+        backup: false,
+      };
+
+      const baseConfig = resolveEnrichmentConfigFromEnv(overrides);
+      const config: PipelineConfig = {
+        ...baseConfig,
+        apply: false,
+        dryRun: true,
+        emitReport: false,
+        backup: false,
+        delayMs: 0,
+      };
+
+      const result = await runEnrichment(config);
+      const response: BulkEnrichmentResponse = {
+        scanned: result.scanned,
+        updated: result.updated,
+        words: result.words.map((word) => ({ ...word, applied: false })),
+      };
+
+      res.setHeader("Cache-Control", "no-store");
+      res.json(response);
+    } catch (error) {
+      console.error("Failed to run enrichment pipeline", error);
+      sendError(res, 500, "Failed to run enrichment", "ENRICHMENT_FAILED");
+    }
+  });
+
+  app.post("/api/enrichment/words/:id/preview", requireAdminAccess, async (req, res) => {
+    try {
+      const id = Number.parseInt(req.params.id, 10);
+      if (!Number.isFinite(id) || id <= 0) {
+        return sendError(res, 400, "Invalid word id", "INVALID_WORD_ID");
+      }
+
+      const parsed = enrichmentPreviewSchema.safeParse(req.body ?? {});
+      if (!parsed.success) {
+        return sendError(res, 400, "Invalid enrichment configuration", "INVALID_ENRICHMENT_CONFIG");
+      }
+
+      const existing = await db.query.words.findFirst({ where: eq(words.id, id) });
+      if (!existing) {
+        return sendError(res, 404, "Word not found", "WORD_NOT_FOUND");
+      }
+
+      const overrides: Partial<PipelineConfig> = {
+        limit: 1,
+        mode: "all",
+        onlyIncomplete: false,
+        enableAi: parsed.data.enableAi,
+        allowOverwrite: parsed.data.allowOverwrite,
+        collectSynonyms: parsed.data.collectSynonyms,
+        collectExamples: parsed.data.collectExamples,
+        delayMs: 0,
+        apply: false,
+        dryRun: true,
+        emitReport: false,
+        backup: false,
+      };
+
+      const baseConfig = resolveEnrichmentConfigFromEnv(overrides);
+      const config: PipelineConfig = {
+        ...baseConfig,
+        apply: false,
+        dryRun: true,
+        emitReport: false,
+        backup: false,
+        delayMs: 0,
+      };
+
+      const openAiKey = config.enableAi ? process.env.OPENAI_API_KEY?.trim() || undefined : undefined;
+      const computation = await computeWordEnrichment(existing, config, openAiKey);
+      const summary = { ...computation.summary, applied: false };
+      const preview: WordEnrichmentPreview = {
+        summary,
+        patch: toEnrichmentPatch(computation.patch),
+        hasUpdates: computation.hasUpdates,
+      };
+
+      res.setHeader("Cache-Control", "no-store");
+      res.json(preview);
+    } catch (error) {
+      console.error("Failed to preview word enrichment", error);
+      sendError(res, 500, "Failed to preview enrichment", "ENRICHMENT_PREVIEW_FAILED");
+    }
+  });
+
+  app.post("/api/enrichment/words/:id/apply", requireAdminAccess, async (req, res) => {
+    try {
+      const id = Number.parseInt(req.params.id, 10);
+      if (!Number.isFinite(id) || id <= 0) {
+        return sendError(res, 400, "Invalid word id", "INVALID_WORD_ID");
+      }
+
+      const parsed = enrichmentApplySchema.safeParse(req.body ?? {});
+      if (!parsed.success) {
+        return sendError(res, 400, "Invalid enrichment payload", "INVALID_ENRICHMENT_INPUT");
+      }
+
+      const existing = await db.query.words.findFirst({ where: eq(words.id, id) });
+      if (!existing) {
+        return sendError(res, 404, "Word not found", "WORD_NOT_FOUND");
+      }
+
+      const patch = parsed.data.patch as EnrichmentPatch;
+      const updates: Record<string, unknown> = {};
+      const appliedFields: string[] = [];
+
+      if (Object.prototype.hasOwnProperty.call(patch, "english") && patch.english !== undefined) {
+        if (patch.english !== existing.english) {
+          updates.english = patch.english;
+          appliedFields.push("english");
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(patch, "exampleDe") && patch.exampleDe !== undefined) {
+        if (patch.exampleDe !== existing.exampleDe) {
+          updates.exampleDe = patch.exampleDe;
+          appliedFields.push("exampleDe");
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(patch, "exampleEn") && patch.exampleEn !== undefined) {
+        if (patch.exampleEn !== existing.exampleEn) {
+          updates.exampleEn = patch.exampleEn;
+          appliedFields.push("exampleEn");
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(patch, "sourcesCsv") && patch.sourcesCsv !== undefined) {
+        if (patch.sourcesCsv !== existing.sourcesCsv) {
+          updates.sourcesCsv = patch.sourcesCsv;
+          appliedFields.push("sourcesCsv");
+        }
+      }
+
+      const merged: Word = {
+        ...existing,
+        ...updates,
+      };
+
+      const nextComplete = computeWordCompleteness(merged);
+      if (nextComplete !== existing.complete) {
+        updates.complete = nextComplete;
+        appliedFields.push("complete");
+      }
+
+      if (!appliedFields.length) {
+        return sendError(res, 400, "No enrichment updates to apply", "ENRICHMENT_NO_CHANGES");
+      }
+
+      updates.updatedAt = sql`now()`;
+
+      await db.update(words).set(updates).where(eq(words.id, id));
+
+      const refreshed = await db.query.words.findFirst({ where: eq(words.id, id) });
+      if (!refreshed) {
+        return sendError(res, 500, "Failed to apply enrichment", "ENRICHMENT_APPLY_FAILED");
+      }
+
+      res.setHeader("Cache-Control", "no-store");
+      res.json({ word: refreshed, appliedFields });
+    } catch (error) {
+      console.error("Failed to apply enrichment updates", error);
+      sendError(res, 500, "Failed to apply enrichment", "ENRICHMENT_APPLY_FAILED");
     }
   });
 

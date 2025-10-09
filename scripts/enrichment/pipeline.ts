@@ -5,6 +5,14 @@ import { db } from "@db";
 import { words } from "@db/schema";
 import { and, eq } from "drizzle-orm";
 
+import type {
+  EnrichmentExampleCandidate,
+  EnrichmentFieldUpdate,
+  EnrichmentPatch,
+  EnrichmentTranslationCandidate,
+  EnrichmentWordSummary,
+} from "@shared/enrichment";
+
 import {
   delay,
   lookupAiAssistance,
@@ -18,57 +26,30 @@ import {
   type WiktionaryLookup,
 } from "./providers";
 
-type WordRecord = typeof words.$inferSelect;
+export type WordRecord = typeof words.$inferSelect;
 
 type WordPatch = Partial<
   Pick<WordRecord, "english" | "exampleDe" | "exampleEn" | "sourcesCsv" | "complete" | "updatedAt">
 >;
 
-type FieldUpdate = {
-  field: keyof WordPatch;
-  previous: unknown;
-  next: unknown;
-  source?: string;
-};
-
-interface FieldCandidate {
-  value: string;
-  source: string;
-  confidence?: number;
-}
-
-interface ExampleCandidate {
-  exampleDe?: string;
-  exampleEn?: string;
-  source: string;
-}
-
-interface SuggestionBundle {
-  translations: FieldCandidate[];
+type SuggestionBundle = {
+  translations: EnrichmentTranslationCandidate[];
   synonyms: string[];
   englishHints: string[];
   wiktionarySummary?: string;
-  examples: ExampleCandidate[];
+  examples: EnrichmentExampleCandidate[];
   errors: string[];
   sources: string[];
   aiUsed: boolean;
-}
+};
 
-export interface PipelineWordSummary {
-  id: number;
-  lemma: string;
-  pos: string;
-  missingFields: string[];
-  translation?: FieldCandidate;
-  englishHints?: string[];
-  synonyms: string[];
-  wiktionarySummary?: string;
-  example?: ExampleCandidate;
-  updates: FieldUpdate[];
-  applied: boolean;
-  sources: string[];
-  errors?: string[];
-  aiUsed: boolean;
+type FieldUpdate = EnrichmentFieldUpdate;
+type ExampleCandidate = EnrichmentExampleCandidate;
+
+export interface WordEnrichmentComputation {
+  summary: EnrichmentWordSummary;
+  patch: WordPatch;
+  hasUpdates: boolean;
 }
 
 export interface PipelineConfig {
@@ -97,7 +78,7 @@ export interface PipelineRun {
   applied: number;
   reportPath?: string;
   backupPath?: string;
-  words: PipelineWordSummary[];
+  words: EnrichmentWordSummary[];
 }
 
 const DEFAULT_LIMIT = 50;
@@ -184,38 +165,18 @@ export async function runEnrichment(config: PipelineConfig): Promise<PipelineRun
     console.warn("ENABLE_AI was set but OPENAI_API_KEY is missing. AI assistance will be skipped.");
   }
 
-  const results: PipelineWordSummary[] = [];
+  const results: EnrichmentWordSummary[] = [];
   const updatesToApply: Array<{ word: WordRecord; patch: WordPatch }> = [];
 
   for (const word of targets) {
     console.log(`Enriching ${word.lemma} (${word.pos}) [id=${word.id}]...`);
-    const missingFields = detectMissingFields(word);
-
-    const suggestions = await collectSuggestions(word, config, openAiKey);
-    const { patch, updates, translationCandidate, exampleCandidate } = determineUpdates(word, suggestions, config);
-    const hasUpdates = Object.keys(patch).some((key) => key !== "updatedAt");
-
-    const summary: PipelineWordSummary = {
-      id: word.id,
-      lemma: word.lemma,
-      pos: word.pos,
-      missingFields,
-      translation: translationCandidate,
-      englishHints: suggestions.englishHints.length ? suggestions.englishHints : undefined,
-      synonyms: suggestions.synonyms,
-      wiktionarySummary: suggestions.wiktionarySummary,
-      example: exampleCandidate,
-      updates,
-      applied: shouldApply && hasUpdates,
-      sources: suggestions.sources,
-      errors: suggestions.errors.length ? suggestions.errors : undefined,
-      aiUsed: suggestions.aiUsed,
-    };
-
+    const computation = await computeWordEnrichment(word, config, openAiKey);
+    const summary = computation.summary;
+    summary.applied = shouldApply && computation.hasUpdates;
     results.push(summary);
 
-    if (shouldApply && hasUpdates) {
-      updatesToApply.push({ word, patch });
+    if (shouldApply && computation.hasUpdates) {
+      updatesToApply.push({ word, patch: computation.patch });
     }
 
     if (config.delayMs > 0) {
@@ -267,6 +228,44 @@ export async function runEnrichment(config: PipelineConfig): Promise<PipelineRun
     backupPath,
     words: results,
   };
+}
+
+export async function computeWordEnrichment(
+  word: WordRecord,
+  config: PipelineConfig,
+  openAiKey?: string,
+): Promise<WordEnrichmentComputation> {
+  const missingFields = detectMissingFields(word);
+  const suggestions = await collectSuggestions(word, config, openAiKey);
+  const { patch, updates, translationCandidate, exampleCandidate } = determineUpdates(word, suggestions, config);
+
+  const summary: EnrichmentWordSummary = {
+    id: word.id,
+    lemma: word.lemma,
+    pos: word.pos,
+    missingFields,
+    translation: translationCandidate,
+    englishHints: suggestions.englishHints.length ? suggestions.englishHints : undefined,
+    synonyms: suggestions.synonyms,
+    wiktionarySummary: suggestions.wiktionarySummary,
+    example: exampleCandidate,
+    updates,
+    applied: false,
+    sources: suggestions.sources,
+    errors: suggestions.errors.length ? suggestions.errors : undefined,
+    aiUsed: suggestions.aiUsed,
+  };
+
+  return {
+    summary,
+    patch,
+    hasUpdates: updates.length > 0,
+  } satisfies WordEnrichmentComputation;
+}
+
+export function toEnrichmentPatch(patch: WordPatch): EnrichmentPatch {
+  const { updatedAt: _updatedAt, ...rest } = patch;
+  return rest as EnrichmentPatch;
 }
 
 function parsePositiveInt(value: string | undefined, fallback: number): number {
@@ -336,7 +335,7 @@ async function collectSuggestions(
 ): Promise<SuggestionBundle> {
   const sources = new Set<string>();
   const errors: string[] = [];
-  const translations: FieldCandidate[] = [];
+  const translations: EnrichmentTranslationCandidate[] = [];
   const examples: ExampleCandidate[] = [];
   let synonyms: string[] = [];
   let englishHints: string[] = [];
@@ -450,7 +449,7 @@ function determineUpdates(
 ): {
   patch: WordPatch;
   updates: FieldUpdate[];
-  translationCandidate?: FieldCandidate;
+  translationCandidate?: EnrichmentTranslationCandidate;
   exampleCandidate?: ExampleCandidate;
 } {
   const patch: WordPatch = {};
