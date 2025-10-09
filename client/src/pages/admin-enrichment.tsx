@@ -8,7 +8,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
-import { useLocation } from 'wouter';
+import { useLocation, useSearch } from 'wouter';
 
 import { AppShell } from '@/components/layout/app-shell';
 import { SidebarNavButton } from '@/components/layout/sidebar-nav-button';
@@ -88,7 +88,8 @@ const AdminEnrichmentPage = () => {
     [session?.user?.role],
   );
   const { toast } = useToast();
-  const [location, navigate] = useLocation();
+  const [, navigate] = useLocation();
+  const searchString = useSearch();
 
   const [adminToken, setAdminToken] = useState(() => localStorage.getItem('gvm-admin-token') ?? '');
   const normalizedAdminToken = adminToken.trim();
@@ -96,7 +97,7 @@ const AdminEnrichmentPage = () => {
     localStorage.setItem('gvm-admin-token', normalizedAdminToken);
   }, [normalizedAdminToken]);
 
-  const searchParams = useMemo(() => new URLSearchParams(location.split('?')[1] ?? ''), [location]);
+  const searchParams = useMemo(() => new URLSearchParams(searchString ?? ''), [searchString]);
   const wordParam = searchParams.get('word');
   const parsedWordId = wordParam ? Number.parseInt(wordParam, 10) : NaN;
   const selectedWordId = Number.isFinite(parsedWordId) && parsedWordId > 0 ? parsedWordId : null;
