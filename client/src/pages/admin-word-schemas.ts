@@ -38,3 +38,4 @@ export const wordsResponseSchema = z.object({
 });
 
 export type AdminWord = z.infer<typeof wordSchema>;
+export type WordsResponse = z.infer<typeof wordsResponseSchema>;

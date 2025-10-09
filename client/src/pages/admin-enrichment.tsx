@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Wand2, UploadCloud, Sparkles } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import { Wand2, UploadCloud, Sparkles, ChevronDown, ListChecks, ChevronLeft, ChevronRight } from 'lucide-react';
 
 import { AppShell } from '@/components/layout/app-shell';
 import { SidebarNavButton } from '@/components/layout/sidebar-nav-button';
@@ -15,9 +16,18 @@ import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { useAuthSession } from '@/auth/session';
-import { wordsResponseSchema, type AdminWord } from './admin-word-schemas';
+import { wordsResponseSchema, type AdminWord, type WordsResponse } from './admin-word-schemas';
 import type { BulkEnrichmentResponse, WordEnrichmentPreview } from '@shared/enrichment';
 import {
   applyWordEnrichment,
@@ -27,8 +37,11 @@ import {
   type RunEnrichmentPayload,
   type WordEnrichmentOptions,
 } from '@/lib/admin-enrichment';
+import { cn } from '@/lib/utils';
 
 const WORDS_PER_SEARCH = 10;
+const MISSING_WORDS_PER_PAGE_OPTIONS = [10, 25, 50, 100] as const;
+const DEFAULT_MISSING_PER_PAGE = 25;
 
 interface BulkConfigState extends RunEnrichmentPayload {
   limit: number;
@@ -80,6 +93,9 @@ const AdminEnrichmentPage = () => {
 
   const [bulkConfig, setBulkConfig] = useState<BulkConfigState>(DEFAULT_BULK_CONFIG);
   const [bulkResult, setBulkResult] = useState<BulkEnrichmentResponse | null>(null);
+  const [isBulkOpen, setIsBulkOpen] = useState(true);
+  const [isReviewOpen, setIsReviewOpen] = useState(true);
+  const [isMissingOpen, setIsMissingOpen] = useState(true);
 
   const [wordConfig, setWordConfig] = useState<WordConfigState>(DEFAULT_WORD_CONFIG);
   const [searchInput, setSearchInput] = useState('');
@@ -87,6 +103,10 @@ const AdminEnrichmentPage = () => {
   const [previewWord, setPreviewWord] = useState<AdminWord | null>(null);
   const [previewData, setPreviewData] = useState<WordEnrichmentPreview | null>(null);
   const [applyResult, setApplyResult] = useState<ApplyEnrichmentResponse | null>(null);
+  const [missingPage, setMissingPage] = useState(1);
+  const [missingPerPage, setMissingPerPage] = useState(DEFAULT_MISSING_PER_PAGE);
+  const [wordDialogOpen, setWordDialogOpen] = useState(false);
+  const [selectedWord, setSelectedWord] = useState<AdminWord | null>(null);
 
   const bulkMutation = useMutation({
     mutationFn: async () => {
@@ -117,7 +137,7 @@ const AdminEnrichmentPage = () => {
     },
   });
 
-  const searchQuery = useQuery({
+  const searchQuery = useQuery<WordsResponse>({
     queryKey: ['admin-enrichment', 'search', searchTerm, normalizedAdminToken],
     queryFn: async () => {
       const params = new URLSearchParams({
@@ -138,6 +158,68 @@ const AdminEnrichmentPage = () => {
     },
     enabled: Boolean(searchTerm.trim()),
   });
+
+  const missingWordsQuery = useQuery<WordsResponse>({
+    queryKey: [
+      'admin-enrichment',
+      'missing',
+      { page: missingPage, perPage: missingPerPage, token: normalizedAdminToken },
+    ],
+    queryFn: async () => {
+      const params = new URLSearchParams({
+        canonical: 'false',
+        complete: 'false',
+        perPage: String(missingPerPage),
+        page: String(missingPage),
+      });
+      const headers: Record<string, string> = {};
+      if (normalizedAdminToken) {
+        headers['x-admin-token'] = normalizedAdminToken;
+      }
+      const response = await fetch(`/api/words?${params.toString()}`, { headers });
+      if (!response.ok) {
+        throw new Error(`Failed to load missing words (${response.status})`);
+      }
+      const payload = await response.json();
+      return wordsResponseSchema.parse(payload);
+    },
+  });
+
+  useEffect(() => {
+    const safePage = missingWordsQuery.data?.pagination.page;
+    if (typeof safePage === 'number' && safePage !== missingPage) {
+      setMissingPage(safePage);
+    }
+  }, [missingWordsQuery.data, missingPage]);
+
+  useEffect(() => {
+    setMissingPage(1);
+  }, [normalizedAdminToken]);
+
+  const missingWords = missingWordsQuery.data?.data ?? [];
+  const missingPagination = missingWordsQuery.data?.pagination;
+  const effectiveMissingPerPage = missingPagination?.perPage ?? missingPerPage;
+  const currentMissingPage = missingPagination?.page ?? missingPage;
+  const totalMissingPages = missingPagination?.totalPages ?? 0;
+  const totalMissingWords = missingPagination?.total ?? 0;
+  const missingRangeStart =
+    totalMissingWords > 0 && missingWords.length > 0
+      ? (currentMissingPage - 1) * effectiveMissingPerPage + 1
+      : 0;
+  const missingRangeEnd = missingRangeStart > 0 ? missingRangeStart + missingWords.length - 1 : 0;
+  const missingSummaryText =
+    totalMissingWords > 0 && missingRangeStart > 0
+      ? `Showing ${missingRangeStart.toLocaleString()}–${missingRangeEnd.toLocaleString()} of ${totalMissingWords.toLocaleString()} words`
+      : 'No non-canonical words with missing data were found.';
+  const displayMissingPage = currentMissingPage > 0 ? currentMissingPage : 1;
+  const displayTotalMissingPages =
+    totalMissingPages > 0 ? totalMissingPages : Math.max(displayMissingPage, 1);
+  const canGoToPreviousMissingPage = currentMissingPage > 1;
+  const canGoToNextMissingPage =
+    totalMissingPages > 0
+      ? currentMissingPage < totalMissingPages
+      : missingWords.length === effectiveMissingPerPage && missingWords.length > 0;
+  const selectedWordMissingFields = selectedWord ? getMissingFields(selectedWord) : [];
 
   const previewMutation = useMutation({
     mutationFn: async (word: AdminWord) => {
@@ -178,6 +260,7 @@ const AdminEnrichmentPage = () => {
     },
     onSuccess: () => {
       searchQuery.refetch();
+      missingWordsQuery.refetch();
       setPreviewData(null);
       setPreviewWord(null);
     },
@@ -218,6 +301,30 @@ const AdminEnrichmentPage = () => {
     );
   };
 
+  const handleWordClick = (word: AdminWord) => {
+    setSelectedWord(word);
+    setWordDialogOpen(true);
+  };
+
+  const handleDialogOpenChange = (open: boolean) => {
+    setWordDialogOpen(open);
+    if (!open) {
+      setSelectedWord(null);
+    }
+  };
+
+  const handleLoadWordInReview = () => {
+    if (!selectedWord) {
+      return;
+    }
+    setSearchInput(selectedWord.lemma);
+    setPreviewData(null);
+    setPreviewWord(null);
+    setApplyResult(null);
+    setSearchTerm(selectedWord.lemma);
+    setWordDialogOpen(false);
+  };
+
   return (
     <AppShell
       sidebar={(
@@ -236,17 +343,15 @@ const AdminEnrichmentPage = () => {
       mobileNav={<MobileNavBar items={navigationItems} />}
     >
       <div className="flex flex-col gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-start justify-between gap-4">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <Wand2 className="h-5 w-5" /> Bulk enrichment preview
-              </CardTitle>
-              <CardDescription>
-                Generate suggestions for multiple words without immediately applying them.
-              </CardDescription>
-            </div>
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <CollapsibleSection
+          icon={Wand2}
+          title="Bulk enrichment preview"
+          description="Generate suggestions for multiple words without immediately applying them."
+          open={isBulkOpen}
+          onOpenChange={setIsBulkOpen}
+          triggerId="bulk-enrichment"
+          headerActions={
+            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
               <Label htmlFor="admin-token" className="text-sm text-muted-foreground">
                 Admin token
               </Label>
@@ -258,243 +363,244 @@ const AdminEnrichmentPage = () => {
                 className="w-full sm:w-64"
               />
             </div>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <form
-              className="grid gap-4 md:grid-cols-2"
-              onSubmit={(event) => {
-                event.preventDefault();
-                bulkMutation.mutate();
-              }}
-            >
-              <div className="space-y-2">
-                <Label htmlFor="bulk-limit">Word limit</Label>
-                <Input
-                  id="bulk-limit"
-                  type="number"
-                  min={1}
-                  max={200}
-                  value={bulkConfig.limit}
-                  onChange={(event) =>
-                    setBulkConfig((config) => ({
-                      ...config,
-                      limit: Math.max(1, Math.min(200, Number.parseInt(event.target.value, 10) || config.limit)),
-                    }))
-                  }
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Mode</Label>
-                <Select
-                  value={bulkConfig.mode}
-                  onValueChange={(value: BulkConfigState['mode']) =>
-                    setBulkConfig((config) => ({ ...config, mode: value }))
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select mode" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="non-canonical">Non-canonical only</SelectItem>
-                    <SelectItem value="canonical">Canonical only</SelectItem>
-                    <SelectItem value="all">All words</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <BooleanToggle
-                label="Only incomplete entries"
-                description="Skip words that already have full data"
-                checked={bulkConfig.onlyIncomplete}
-                onCheckedChange={(checked) =>
-                  setBulkConfig((config) => ({ ...config, onlyIncomplete: checked }))
-                }
-              />
-              <BooleanToggle
-                label="Allow overwrite"
-                description="Replace existing translations/examples when higher confidence results are found"
-                checked={bulkConfig.allowOverwrite}
-                onCheckedChange={(checked) =>
-                  setBulkConfig((config) => ({ ...config, allowOverwrite: checked }))
-                }
-              />
-              <BooleanToggle
-                label="Collect synonyms"
-                checked={bulkConfig.collectSynonyms}
-                onCheckedChange={(checked) =>
-                  setBulkConfig((config) => ({ ...config, collectSynonyms: checked }))
-                }
-              />
-              <BooleanToggle
-                label="Collect example sentences"
-                checked={bulkConfig.collectExamples}
-                onCheckedChange={(checked) =>
-                  setBulkConfig((config) => ({ ...config, collectExamples: checked }))
-                }
-              />
-              <BooleanToggle
-                label="Use AI assistance"
-                description="Requires the OPENAI_API_KEY environment variable"
-                checked={bulkConfig.enableAi}
-                onCheckedChange={(checked) =>
-                  setBulkConfig((config) => ({ ...config, enableAi: checked }))
-                }
-              />
-              <div className="md:col-span-2 flex justify-end">
-                <Button type="submit" disabled={bulkMutation.isPending}>
-                  {bulkMutation.isPending ? 'Running…' : 'Run enrichment'}
-                </Button>
-              </div>
-            </form>
-
-            {bulkResult && (
-              <div className="space-y-4">
-                <Separator />
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Sparkles className="h-4 w-4" />
-                  Suggested updates for {bulkResult.updated} of {bulkResult.scanned} scanned words
-                </div>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Word</TableHead>
-                      <TableHead>Missing fields</TableHead>
-                      <TableHead>Proposed updates</TableHead>
-                      <TableHead>Sources</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {bulkResult.words.map((summary) => (
-                      <TableRow key={summary.id}>
-                        <TableCell className="space-y-1">
-                          <div className="font-semibold">{summary.lemma}</div>
-                          <div className="text-xs text-muted-foreground">{summary.pos}</div>
-                          {summary.translation && (
-                            <div className="text-xs text-muted-foreground">
-                              ↦ {summary.translation.value}
-                              {summary.translation.source ? ` · ${summary.translation.source}` : ''}
-                            </div>
-                          )}
-                          {summary.example?.exampleDe && (
-                            <div className="text-xs text-muted-foreground">Example: {summary.example.exampleDe}</div>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {summary.missingFields.length ? (
-                            <div className="flex flex-wrap gap-1">
-                              {summary.missingFields.map((field) => (
-                                <Badge key={field} variant="secondary">
-                                  {field}
-                                </Badge>
-                              ))}
-                            </div>
-                          ) : (
-                            <span className="text-xs text-muted-foreground">None</span>
-                          )}
-                        </TableCell>
-                        <TableCell>{renderUpdateSummary(summary)}</TableCell>
-                        <TableCell>
-                          <div className="text-xs text-muted-foreground space-y-1">
-                            {summary.sources.length ? (
-                              <div>Sources: {summary.sources.join(', ')}</div>
-                            ) : (
-                              <div>No sources recorded</div>
-                            )}
-                            {summary.errors?.length ? (
-                              <div className="text-red-500">Errors: {summary.errors.join('; ')}</div>
-                            ) : null}
-                            {summary.aiUsed ? <div>Used AI assistance</div> : null}
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <UploadCloud className="h-5 w-5" /> Review &amp; apply per-word enrichment
-            </CardTitle>
-            <CardDescription>
-              Search for a single word, preview suggested updates, and apply them after manual review.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid gap-4 md:grid-cols-2">
-              <BooleanToggle
-                label="Use AI assistance"
-                checked={wordConfig.enableAi}
-                onCheckedChange={(checked) =>
-                  setWordConfig((config) => ({ ...config, enableAi: checked }))
-                }
-              />
-              <BooleanToggle
-                label="Allow overwrite"
-                checked={wordConfig.allowOverwrite}
-                onCheckedChange={(checked) =>
-                  setWordConfig((config) => ({ ...config, allowOverwrite: checked }))
-                }
-              />
-              <BooleanToggle
-                label="Collect synonyms"
-                checked={wordConfig.collectSynonyms}
-                onCheckedChange={(checked) =>
-                  setWordConfig((config) => ({ ...config, collectSynonyms: checked }))
-                }
-              />
-              <BooleanToggle
-                label="Collect example sentences"
-                checked={wordConfig.collectExamples}
-                onCheckedChange={(checked) =>
-                  setWordConfig((config) => ({ ...config, collectExamples: checked }))
+          }
+        >
+          <form
+            className="grid gap-4 md:grid-cols-2"
+            onSubmit={(event) => {
+              event.preventDefault();
+              bulkMutation.mutate();
+            }}
+          >
+            <div className="space-y-2">
+              <Label htmlFor="bulk-limit">Word limit</Label>
+              <Input
+                id="bulk-limit"
+                type="number"
+                min={1}
+                max={200}
+                value={bulkConfig.limit}
+                onChange={(event) =>
+                  setBulkConfig((config) => ({
+                    ...config,
+                    limit: Math.max(1, Math.min(200, Number.parseInt(event.target.value, 10) || config.limit)),
+                  }))
                 }
               />
             </div>
-
-            <form className="flex flex-col gap-3 sm:flex-row" onSubmit={handleSearchSubmit}>
-              <Input
-                placeholder="Search lemma or English translation"
-                value={searchInput}
-                onChange={(event) => setSearchInput(event.target.value)}
-              />
-              <Button type="submit" variant="secondary" disabled={!searchInput.trim()}>
-                Search
+            <div className="space-y-2">
+              <Label>Mode</Label>
+              <Select
+                value={bulkConfig.mode}
+                onValueChange={(value: BulkConfigState['mode']) =>
+                  setBulkConfig((config) => ({ ...config, mode: value }))
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select mode" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="non-canonical">Non-canonical only</SelectItem>
+                  <SelectItem value="canonical">Canonical only</SelectItem>
+                  <SelectItem value="all">All words</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <BooleanToggle
+              label="Only incomplete entries"
+              description="Skip words that already have full data"
+              checked={bulkConfig.onlyIncomplete}
+              onCheckedChange={(checked) =>
+                setBulkConfig((config) => ({ ...config, onlyIncomplete: checked }))
+              }
+            />
+            <BooleanToggle
+              label="Allow overwrite"
+              description="Replace existing translations/examples when higher confidence results are found"
+              checked={bulkConfig.allowOverwrite}
+              onCheckedChange={(checked) =>
+                setBulkConfig((config) => ({ ...config, allowOverwrite: checked }))
+              }
+            />
+            <BooleanToggle
+              label="Collect synonyms"
+              checked={bulkConfig.collectSynonyms}
+              onCheckedChange={(checked) =>
+                setBulkConfig((config) => ({ ...config, collectSynonyms: checked }))
+              }
+            />
+            <BooleanToggle
+              label="Collect example sentences"
+              checked={bulkConfig.collectExamples}
+              onCheckedChange={(checked) =>
+                setBulkConfig((config) => ({ ...config, collectExamples: checked }))
+              }
+            />
+            <BooleanToggle
+              label="Use AI assistance"
+              description="Requires the OPENAI_API_KEY environment variable"
+              checked={bulkConfig.enableAi}
+              onCheckedChange={(checked) =>
+                setBulkConfig((config) => ({ ...config, enableAi: checked }))
+              }
+            />
+            <div className="md:col-span-2 flex justify-end">
+              <Button type="submit" disabled={bulkMutation.isPending}>
+                {bulkMutation.isPending ? 'Running…' : 'Run enrichment'}
               </Button>
-            </form>
+            </div>
+          </form>
 
-            {searchQuery.isFetching ? (
-              <p className="text-sm text-muted-foreground">Loading words…</p>
-            ) : null}
+          {bulkResult && (
+            <div className="space-y-4">
+              <Separator />
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Sparkles className="h-4 w-4" />
+                Suggested updates for {bulkResult.updated} of {bulkResult.scanned} scanned words
+              </div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Word</TableHead>
+                    <TableHead>Missing fields</TableHead>
+                    <TableHead>Proposed updates</TableHead>
+                    <TableHead>Sources</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {bulkResult.words.map((summary) => (
+                    <TableRow key={summary.id}>
+                      <TableCell className="space-y-1">
+                        <div className="font-semibold">{summary.lemma}</div>
+                        <div className="text-xs text-muted-foreground">{summary.pos}</div>
+                        {summary.translation && (
+                          <div className="text-xs text-muted-foreground">
+                            ↦ {summary.translation.value}
+                            {summary.translation.source ? ` · ${summary.translation.source}` : ''}
+                          </div>
+                        )}
+                        {summary.example?.exampleDe && (
+                          <div className="text-xs text-muted-foreground">Example: {summary.example.exampleDe}</div>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {summary.missingFields.length ? (
+                          <div className="flex flex-wrap gap-1">
+                            {summary.missingFields.map((field) => (
+                              <Badge key={field} variant="secondary">
+                                {field}
+                              </Badge>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">None</span>
+                        )}
+                      </TableCell>
+                      <TableCell>{renderUpdateSummary(summary)}</TableCell>
+                      <TableCell>
+                        <div className="text-xs text-muted-foreground space-y-1">
+                          {summary.sources.length ? (
+                            <div>Sources: {summary.sources.join(', ')}</div>
+                          ) : (
+                            <div>No sources recorded</div>
+                          )}
+                          {summary.errors?.length ? (
+                            <div className="text-destructive">Errors: {summary.errors.join('; ')}</div>
+                          ) : null}
+                          {summary.aiUsed ? <div>Used AI assistance</div> : null}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          icon={UploadCloud}
+          title="Review &amp; apply per-word enrichment"
+          description="Search for a single word, preview suggested updates, and apply them after manual review."
+          open={isReviewOpen}
+          onOpenChange={setIsReviewOpen}
+          triggerId="per-word-review"
+        >
+          <div className="grid gap-4 md:grid-cols-2">
+            <BooleanToggle
+              label="Use AI assistance"
+              checked={wordConfig.enableAi}
+              onCheckedChange={(checked) =>
+                setWordConfig((config) => ({ ...config, enableAi: checked }))
+              }
+            />
+            <BooleanToggle
+              label="Allow overwrite"
+              checked={wordConfig.allowOverwrite}
+              onCheckedChange={(checked) =>
+                setWordConfig((config) => ({ ...config, allowOverwrite: checked }))
+              }
+            />
+            <BooleanToggle
+              label="Collect synonyms"
+              checked={wordConfig.collectSynonyms}
+              onCheckedChange={(checked) =>
+                setWordConfig((config) => ({ ...config, collectSynonyms: checked }))
+              }
+            />
+            <BooleanToggle
+              label="Collect example sentences"
+              checked={wordConfig.collectExamples}
+              onCheckedChange={(checked) =>
+                setWordConfig((config) => ({ ...config, collectExamples: checked }))
+              }
+            />
+          </div>
+
+          <form className="flex flex-col gap-3 sm:flex-row" onSubmit={handleSearchSubmit}>
+            <Input
+              placeholder="Search lemma or English translation"
+              value={searchInput}
+              onChange={(event) => setSearchInput(event.target.value)}
+            />
+            <Button type="submit" variant="secondary" disabled={!searchInput.trim()}>
+              Search
+            </Button>
+          </form>
+
+          {searchQuery.isFetching ? (
+            <p className="text-sm text-muted-foreground">Loading words…</p>
+          ) : null}
 
             {searchQuery.isError ? (
-              <p className="text-sm text-red-500">
-                {(searchQuery.error as Error)?.message ?? 'Failed to load words'}
+              <p className="text-sm text-destructive">
+                {searchQuery.error instanceof Error ? searchQuery.error.message : 'Failed to load words'}
               </p>
             ) : null}
 
-            {searchQuery.isSuccess && searchQuery.data.data.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No words found for that search.</p>
-            ) : null}
+          {searchQuery.isSuccess && searchQuery.data.data.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No words found for that search.</p>
+          ) : null}
 
-            {searchQuery.data?.data.length ? (
-              <div className="space-y-3">
-                {searchQuery.data.data.map((word) => (
-                  <div
-                    key={word.id}
-                    className="flex flex-col gap-2 rounded-lg border border-border p-3 sm:flex-row sm:items-center sm:justify-between"
-                  >
-                    <div>
-                      <div className="font-medium">
-                        {word.lemma} <span className="text-xs text-muted-foreground">({word.pos})</span>
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        English: {word.english ?? '—'} · Example: {word.exampleDe ?? '—'}
-                      </div>
+          {searchQuery.data?.data.length ? (
+            <div className="space-y-3">
+              {searchQuery.data.data.map((word) => (
+                <div
+                  key={word.id}
+                  className="flex flex-col gap-2 rounded-lg border border-border p-3 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div>
+                    <div className="font-medium">
+                      {word.lemma} <span className="text-xs text-muted-foreground">({word.pos})</span>
                     </div>
+                    <div className="text-xs text-muted-foreground">
+                      English: {word.english ?? '—'} · Example: {word.exampleDe ?? '—'}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button type="button" variant="ghost" size="sm" onClick={() => handleWordClick(word)}>
+                      Inspect
+                    </Button>
                     <Button
                       variant="outline"
                       size="sm"
@@ -504,96 +610,335 @@ const AdminEnrichmentPage = () => {
                       {previewMutation.isPending && previewWord?.id === word.id ? 'Loading…' : 'Preview enrichment'}
                     </Button>
                   </div>
-                ))}
-              </div>
-            ) : null}
+                </div>
+              ))}
+            </div>
+          ) : null}
 
-            {previewWord && previewData && (
-              <div className="space-y-4 rounded-lg border border-border p-4">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <h3 className="text-lg font-semibold">{previewWord.lemma}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Proposed updates for {previewWord.pos} · Missing fields:{' '}
-                      {previewData.summary.missingFields.length
-                        ? previewData.summary.missingFields.join(', ')
-                        : 'none'}
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    {previewData.summary.sources.map((source) => (
-                      <Badge key={source} variant="secondary">
-                        {source}
+          {previewWord && previewData && (
+            <div className="space-y-4 rounded-lg border border-border p-4">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <h3 className="text-lg font-semibold">{previewWord.lemma}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Proposed updates for {previewWord.pos} · Missing fields{' '}
+                    {previewData.summary.missingFields.length
+                      ? previewData.summary.missingFields.join(', ')
+                      : 'none'}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  {previewData.summary.sources.map((source) => (
+                    <Badge key={source} variant="secondary">
+                      {source}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <h4 className="font-medium">Translation &amp; examples</h4>
+                  {previewData.summary.translation ? (
+                    <div className="text-sm text-muted-foreground">
+                      Translation: {previewData.summary.translation.value}
+                      {previewData.summary.translation.source
+                        ? ` · ${previewData.summary.translation.source}`
+                        : ''}
+                    </div>
+                  ) : (
+                    <div className="text-sm text-muted-foreground">No translation found</div>
+                  )}
+                  {previewData.summary.example ? (
+                    <div className="text-sm text-muted-foreground">
+                      Example: {previewData.summary.example.exampleDe ?? '—'}
+                      {previewData.summary.example.exampleEn
+                        ? ` / ${previewData.summary.example.exampleEn}`
+                        : ''}
+                      {previewData.summary.example.source ? ` · ${previewData.summary.example.source}` : ''}
+                    </div>
+                  ) : (
+                    <div className="text-sm text-muted-foreground">No example suggested</div>
+                  )}
+                  {previewData.summary.synonyms.length ? (
+                    <div className="text-sm text-muted-foreground">
+                      Synonyms: {previewData.summary.synonyms.join(', ')}
+                    </div>
+                  ) : null}
+                </div>
+                <div className="space-y-2">
+                  <h4 className="font-medium">Proposed field updates</h4>
+                  {renderUpdateSummary(previewData.summary)}
+                  {previewData.summary.errors?.length ? (
+                    <div className="text-sm text-destructive">
+                      {previewData.summary.errors.join(' • ')}
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-sm text-muted-foreground">
+                  {previewData.hasUpdates
+                    ? 'Review the updates below and apply them once you are satisfied.'
+                    : 'No updates were suggested for this word.'}
+                </p>
+                <Button
+                  onClick={() => applyMutation.mutate()}
+                  disabled={!previewData.hasUpdates || applyMutation.isPending}
+                >
+                  {applyMutation.isPending ? 'Applying…' : 'Apply updates'}
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {applyResult && (
+            <p className="text-sm text-muted-foreground">
+              Applied fields: {applyResult.appliedFields.join(', ')}
+            </p>
+          )}
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          icon={ListChecks}
+          title="Words missing information"
+          description="Browse non-canonical entries that still need translations or examples."
+          open={isMissingOpen}
+          onOpenChange={setIsMissingOpen}
+          triggerId="missing-words"
+        >
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-muted-foreground">{missingSummaryText}</p>
+            <div className="flex items-center gap-2">
+              <Label htmlFor="missing-per-page" className="text-sm text-muted-foreground">
+                Words per page
+              </Label>
+              <Select
+                value={String(missingPerPage)}
+                onValueChange={(value) => {
+                  const next = Number.parseInt(value, 10);
+                  setMissingPerPage(Number.isFinite(next) ? next : DEFAULT_MISSING_PER_PAGE);
+                  setMissingPage(1);
+                }}
+              >
+                <SelectTrigger id="missing-per-page" className="w-32">
+                  <SelectValue placeholder="Select amount" />
+                </SelectTrigger>
+                <SelectContent>
+                  {MISSING_WORDS_PER_PAGE_OPTIONS.map((option) => (
+                    <SelectItem key={option} value={String(option)}>
+                      {option} per page
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {missingWordsQuery.isFetching ? (
+            <p className="text-sm text-muted-foreground">Loading words…</p>
+          ) : null}
+
+          {missingWordsQuery.isError ? (
+            <p className="text-sm text-destructive">
+              {missingWordsQuery.error instanceof Error
+                ? missingWordsQuery.error.message
+                : 'Failed to load words'}
+            </p>
+          ) : null}
+
+          {!missingWordsQuery.isFetching && !missingWordsQuery.isError && !missingWords.length ? (
+            <p className="text-sm text-muted-foreground">
+              No non-canonical words are currently missing required data.
+            </p>
+          ) : null}
+
+          {missingWords.length ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Word</TableHead>
+                  <TableHead>Missing fields</TableHead>
+                  <TableHead>Available data</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {missingWords.map((word) => {
+                  const missingFields = getMissingFields(word);
+                  return (
+                    <TableRow
+                      key={word.id}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => handleWordClick(word)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
+                          handleWordClick(word);
+                        }
+                      }}
+                      className="cursor-pointer transition-colors hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                    >
+                      <TableCell className="space-y-1">
+                        <div className="font-semibold">{word.lemma}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {word.pos} · Level {word.level ?? '—'}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          Updated {word.updatedAt.toLocaleDateString()}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {missingFields.length ? (
+                          <div className="flex flex-wrap gap-1">
+                            {missingFields.map((field) => (
+                              <Badge key={field} variant="secondary">
+                                {formatMissingField(field)}
+                              </Badge>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">No missing fields</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="space-y-1 text-xs text-muted-foreground">
+                        <div>English: {word.english ?? '—'}</div>
+                        <div>Example (DE): {word.exampleDe ?? '—'}</div>
+                        <div>Example (EN): {word.exampleEn ?? '—'}</div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          ) : null}
+
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="text-xs text-muted-foreground">
+              Page {displayMissingPage.toLocaleString()} of {displayTotalMissingPages.toLocaleString()} ·{' '}
+              {totalMissingWords.toLocaleString()} total words
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setMissingPage((page) => Math.max(1, page - 1))}
+                disabled={!canGoToPreviousMissingPage || missingWordsQuery.isFetching}
+              >
+                <ChevronLeft className="mr-1 h-4 w-4" aria-hidden />
+                Previous
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  setMissingPage((page) =>
+                    totalMissingPages > 0 ? Math.min(page + 1, totalMissingPages) : page + 1,
+                  )
+                }
+                disabled={!canGoToNextMissingPage || missingWordsQuery.isFetching}
+              >
+                Next
+                <ChevronRight className="ml-1 h-4 w-4" aria-hidden />
+              </Button>
+            </div>
+          </div>
+        </CollapsibleSection>
+      </div>
+
+      <Dialog open={wordDialogOpen} onOpenChange={handleDialogOpenChange}>
+        {selectedWord ? (
+          <DialogContent className="max-w-3xl space-y-6">
+            <DialogHeader>
+              <DialogTitle>{selectedWord.lemma}</DialogTitle>
+              <DialogDescription>
+                {selectedWord.pos} · {selectedWord.canonical ? 'Canonical' : 'Non-canonical'} ·{' '}
+                {selectedWord.complete ? 'Complete' : 'Incomplete'}
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4">
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground">Missing fields</h4>
+                {selectedWordMissingFields.length ? (
+                  <div className="mt-2 flex flex-wrap gap-1">
+                    {selectedWordMissingFields.map((field) => (
+                      <Badge key={field} variant="secondary">
+                        {formatMissingField(field)}
                       </Badge>
                     ))}
                   </div>
-                </div>
-
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <h4 className="font-medium">Translation &amp; examples</h4>
-                    {previewData.summary.translation ? (
-                      <div className="text-sm text-muted-foreground">
-                        Translation: {previewData.summary.translation.value}
-                        {previewData.summary.translation.source
-                          ? ` · ${previewData.summary.translation.source}`
-                          : ''}
-                      </div>
-                    ) : (
-                      <div className="text-sm text-muted-foreground">No translation found</div>
-                    )}
-                    {previewData.summary.example ? (
-                      <div className="text-sm text-muted-foreground">
-                        Example: {previewData.summary.example.exampleDe ?? '—'}
-                        {previewData.summary.example.exampleEn
-                          ? ` / ${previewData.summary.example.exampleEn}`
-                          : ''}
-                        {previewData.summary.example.source ? ` · ${previewData.summary.example.source}` : ''}
-                      </div>
-                    ) : (
-                      <div className="text-sm text-muted-foreground">No example suggested</div>
-                    )}
-                    {previewData.summary.synonyms.length ? (
-                      <div className="text-sm text-muted-foreground">
-                        Synonyms: {previewData.summary.synonyms.join(', ')}
-                      </div>
-                    ) : null}
-                  </div>
-                  <div className="space-y-2">
-                    <h4 className="font-medium">Proposed field updates</h4>
-                    {renderUpdateSummary(previewData.summary)}
-                    {previewData.summary.errors?.length ? (
-                      <div className="text-sm text-red-500">
-                        {previewData.summary.errors.join(' • ')}
-                      </div>
-                    ) : null}
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between gap-2">
-                  <p className="text-sm text-muted-foreground">
-                    {previewData.hasUpdates
-                      ? 'Review the updates below and apply them once you are satisfied.'
-                      : 'No updates were suggested for this word.'}
-                  </p>
-                  <Button
-                    onClick={() => applyMutation.mutate()}
-                    disabled={!previewData.hasUpdates || applyMutation.isPending}
-                  >
-                    {applyMutation.isPending ? 'Applying…' : 'Apply updates'}
-                  </Button>
-                </div>
+                ) : (
+                  <p className="mt-2 text-sm text-muted-foreground">All required fields are present.</p>
+                )}
               </div>
-            )}
 
-            {applyResult && (
-              <p className="text-sm text-muted-foreground">
-                Applied fields: {applyResult.appliedFields.join(', ')}
-              </p>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <DetailField label="English translation" value={selectedWord.english ?? '—'} />
+                <DetailField label="Example (DE)" value={selectedWord.exampleDe ?? '—'} />
+                <DetailField label="Example (EN)" value={selectedWord.exampleEn ?? '—'} />
+                <DetailField label="Sources" value={selectedWord.sourcesCsv ?? '—'} />
+              </div>
+
+              {selectedWord.pos === 'V' ? (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <DetailField label="Präteritum" value={selectedWord.praeteritum ?? '—'} />
+                  <DetailField label="Partizip II" value={selectedWord.partizipIi ?? '—'} />
+                  <DetailField label="Perfekt" value={selectedWord.perfekt ?? '—'} />
+                  <DetailField label="Auxiliary" value={selectedWord.aux ?? '—'} />
+                </div>
+              ) : null}
+
+              {selectedWord.pos === 'N' ? (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <DetailField label="Gender" value={selectedWord.gender ?? '—'} />
+                  <DetailField label="Plural" value={selectedWord.plural ?? '—'} />
+                </div>
+              ) : null}
+
+              {selectedWord.pos === 'Adj' ? (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <DetailField label="Comparative" value={selectedWord.comparative ?? '—'} />
+                  <DetailField label="Superlative" value={selectedWord.superlative ?? '—'} />
+                </div>
+              ) : null}
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <DetailField label="CEFR level" value={selectedWord.level ?? '—'} />
+                <DetailField label="Source notes" value={selectedWord.sourceNotes ?? '—'} />
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <DetailField label="Created" value={selectedWord.createdAt.toLocaleString()} />
+                <DetailField label="Updated" value={selectedWord.updatedAt.toLocaleString()} />
+              </div>
+            </div>
+
+            <DialogFooter className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <Button type="button" variant="secondary" onClick={handleLoadWordInReview}>
+                Load in review panel
+              </Button>
+              <Button
+                type="button"
+                onClick={() => {
+                  if (selectedWord) {
+                    previewMutation.mutate(selectedWord);
+                    setWordDialogOpen(false);
+                  }
+                }}
+                disabled={previewMutation.isPending && previewWord?.id === selectedWord.id}
+              >
+                {previewMutation.isPending && previewWord?.id === selectedWord.id
+                  ? 'Loading…'
+                  : 'Preview enrichment'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        ) : null}
+      </Dialog>
     </AppShell>
   );
 };
@@ -615,6 +960,141 @@ function BooleanToggle({ label, checked, onCheckedChange, description }: Boolean
       <Switch checked={checked} onCheckedChange={onCheckedChange} />
     </div>
   );
+}
+
+interface CollapsibleSectionProps {
+  icon: LucideIcon;
+  title: string;
+  description?: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  triggerId: string;
+  children: ReactNode;
+  headerActions?: ReactNode;
+}
+
+function CollapsibleSection({
+  icon: Icon,
+  title,
+  description,
+  open,
+  onOpenChange,
+  triggerId,
+  children,
+  headerActions,
+}: CollapsibleSectionProps) {
+  const contentId = `${triggerId}-content`;
+  return (
+    <Collapsible open={open} onOpenChange={onOpenChange}>
+      <Card>
+        <CardHeader className="space-y-4">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Icon className="h-5 w-5" /> {title}
+              </CardTitle>
+              {description ? <CardDescription>{description}</CardDescription> : null}
+            </div>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end">
+              {headerActions}
+              <CollapsibleTrigger asChild>
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="ghost"
+                  aria-label={open ? `Collapse ${title}` : `Expand ${title}`}
+                  aria-controls={contentId}
+                >
+                  <ChevronDown className={cn('h-4 w-4 transition-transform', open ? 'rotate-180' : 'rotate-0')} />
+                </Button>
+              </CollapsibleTrigger>
+            </div>
+          </div>
+        </CardHeader>
+        <CollapsibleContent id={contentId}>
+          <CardContent className="space-y-6">{children}</CardContent>
+        </CollapsibleContent>
+      </Card>
+    </Collapsible>
+  );
+}
+
+interface DetailFieldProps {
+  label: string;
+  value: ReactNode;
+}
+
+function DetailField({ label, value }: DetailFieldProps) {
+  const displayValue =
+    value === null ||
+    value === undefined ||
+    (typeof value === 'string' && value.trim().length === 0)
+      ? '—'
+      : value;
+
+  return (
+    <div className="rounded-lg border border-border p-3">
+      <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</div>
+      <div className="mt-1 break-words text-sm text-foreground">{displayValue}</div>
+    </div>
+  );
+}
+
+const MISSING_FIELD_LABELS: Record<string, string> = {
+  english: 'English translation',
+  exampleDe: 'German example',
+  exampleEn: 'English example',
+  sourcesCsv: 'Sources',
+  praeteritum: 'Präteritum',
+  partizipIi: 'Partizip II',
+  perfekt: 'Perfekt',
+  gender: 'Gender',
+  plural: 'Plural',
+  comparative: 'Comparative',
+  superlative: 'Superlative',
+};
+
+function formatMissingField(field: string): string {
+  return MISSING_FIELD_LABELS[field] ?? field;
+}
+
+function getMissingFields(word: AdminWord): string[] {
+  const missing = new Set<string>();
+
+  const check = (value: unknown, key: string) => {
+    if (value === null || value === undefined) {
+      missing.add(key);
+      return;
+    }
+    if (typeof value === 'string' && value.trim().length === 0) {
+      missing.add(key);
+    }
+  };
+
+  check(word.english, 'english');
+  check(word.exampleDe, 'exampleDe');
+  check(word.exampleEn, 'exampleEn');
+  check(word.sourcesCsv, 'sourcesCsv');
+
+  switch (word.pos) {
+    case 'V':
+      check(word.praeteritum, 'praeteritum');
+      check(word.partizipIi, 'partizipIi');
+      check(word.perfekt, 'perfekt');
+      break;
+    case 'N':
+      check(word.gender, 'gender');
+      check(word.plural, 'plural');
+      break;
+    case 'Adj':
+      check(word.comparative, 'comparative');
+      check(word.superlative, 'superlative');
+      break;
+    default:
+      break;
+  }
+
+  return Array.from(missing);
 }
 
 export default AdminEnrichmentPage;
