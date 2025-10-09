@@ -72,10 +72,15 @@ interface MyMemoryResponse {
   matches?: MyMemoryMatch[];
 }
 
+interface TatoebaTranslation {
+  lang?: string;
+  text?: string;
+}
+
 interface TatoebaResponse {
   results?: Array<{
     text?: string;
-    translations?: unknown[];
+    translations?: TatoebaTranslation[];
   }>;
 }
 
@@ -204,17 +209,15 @@ export async function lookupExampleSentence(lemma: string): Promise<ExampleLooku
     return null;
   }
 
-  const translationGroups = toArray<unknown[]>(result.translations);
-  for (const group of translationGroups) {
-    const entries = toArray<{ text?: string }>(group);
-    const englishEntry = entries.find((entry) => typeof entry.text === "string" && entry.text.trim());
-    if (englishEntry && englishEntry.text) {
-      return {
-        exampleDe: german,
-        exampleEn: englishEntry.text.trim(),
-        source: "tatoeba.org",
-      };
-    }
+  const englishEntry = toArray<TatoebaTranslation>(result.translations).find(
+    (translation) => translation.lang === "eng" && typeof translation.text === "string" && translation.text.trim(),
+  );
+  if (englishEntry?.text) {
+    return {
+      exampleDe: german,
+      exampleEn: englishEntry.text.trim(),
+      source: "tatoeba.org",
+    };
   }
 
   return null;
