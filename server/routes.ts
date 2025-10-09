@@ -273,6 +273,8 @@ const enrichmentRunSchema = z
     allowOverwrite: optionalBoolean,
     collectSynonyms: optionalBoolean,
     collectExamples: optionalBoolean,
+    collectTranslations: optionalBoolean,
+    collectWiktionary: optionalBoolean,
   })
   .partial();
 
@@ -282,6 +284,8 @@ const enrichmentPreviewSchema = z
     allowOverwrite: optionalBoolean,
     collectSynonyms: optionalBoolean,
     collectExamples: optionalBoolean,
+    collectTranslations: optionalBoolean,
+    collectWiktionary: optionalBoolean,
   })
   .partial();
 
@@ -1192,6 +1196,26 @@ export function registerRoutes(app: Express): void {
     }
   });
 
+  app.get("/api/words/:id", requireAdminAccess, async (req, res) => {
+    try {
+      const id = Number.parseInt(req.params.id, 10);
+      if (!Number.isFinite(id) || id <= 0) {
+        return sendError(res, 400, "Invalid word id", "INVALID_WORD_ID");
+      }
+
+      const word = await db.query.words.findFirst({ where: eq(words.id, id) });
+      if (!word) {
+        return sendError(res, 404, "Word not found", "WORD_NOT_FOUND");
+      }
+
+      res.setHeader("Cache-Control", "no-store");
+      res.json(word);
+    } catch (error) {
+      console.error("Error fetching word", error);
+      sendError(res, 500, "Failed to fetch word", "WORD_FETCH_FAILED");
+    }
+  });
+
   app.patch("/api/words/:id", requireAdminAccess, async (req, res) => {
     try {
       const id = Number.parseInt(req.params.id, 10);
@@ -1287,6 +1311,8 @@ export function registerRoutes(app: Express): void {
         allowOverwrite: parsed.data.allowOverwrite,
         collectSynonyms: parsed.data.collectSynonyms,
         collectExamples: parsed.data.collectExamples,
+        collectTranslations: parsed.data.collectTranslations,
+        collectWiktionary: parsed.data.collectWiktionary,
         delayMs: 0,
         apply: false,
         dryRun: true,
@@ -1344,6 +1370,8 @@ export function registerRoutes(app: Express): void {
         allowOverwrite: parsed.data.allowOverwrite,
         collectSynonyms: parsed.data.collectSynonyms,
         collectExamples: parsed.data.collectExamples,
+        collectTranslations: parsed.data.collectTranslations,
+        collectWiktionary: parsed.data.collectWiktionary,
         delayMs: 0,
         apply: false,
         dryRun: true,
@@ -1368,6 +1396,14 @@ export function registerRoutes(app: Express): void {
         summary,
         patch: toEnrichmentPatch(computation.patch),
         hasUpdates: computation.hasUpdates,
+        suggestions: {
+          translations: computation.suggestions.translations,
+          examples: computation.suggestions.examples,
+          synonyms: computation.suggestions.synonyms,
+          englishHints: computation.suggestions.englishHints,
+          wiktionarySummary: computation.suggestions.wiktionarySummary,
+          providerDiagnostics: computation.suggestions.diagnostics,
+        },
       };
 
       res.setHeader("Cache-Control", "no-store");

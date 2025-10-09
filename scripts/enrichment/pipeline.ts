@@ -9,8 +9,10 @@ import type {
   EnrichmentExampleCandidate,
   EnrichmentFieldUpdate,
   EnrichmentPatch,
+  EnrichmentProviderDiagnostic,
   EnrichmentTranslationCandidate,
   EnrichmentWordSummary,
+  WordEnrichmentSuggestions,
 } from "@shared/enrichment";
 
 import {
@@ -41,6 +43,7 @@ type SuggestionBundle = {
   errors: string[];
   sources: string[];
   aiUsed: boolean;
+  diagnostics: EnrichmentProviderDiagnostic[];
 };
 
 type FieldUpdate = EnrichmentFieldUpdate;
@@ -50,6 +53,7 @@ export interface WordEnrichmentComputation {
   summary: EnrichmentWordSummary;
   patch: WordPatch;
   hasUpdates: boolean;
+  suggestions: SuggestionBundle;
 }
 
 export interface PipelineConfig {
@@ -69,6 +73,8 @@ export interface PipelineConfig {
   allowOverwrite: boolean;
   collectSynonyms: boolean;
   collectExamples: boolean;
+  collectTranslations: boolean;
+  collectWiktionary: boolean;
 }
 
 export interface PipelineRun {
@@ -100,6 +106,8 @@ export function resolveConfigFromEnv(overrides: Partial<PipelineConfig> = {}): P
   const envAllowOverwrite = parseBoolean(process.env.OVERWRITE_EXISTING, false);
   const envCollectSynonyms = parseBoolean(process.env.COLLECT_SYNONYMS, true);
   const envCollectExamples = parseBoolean(process.env.COLLECT_EXAMPLES, true);
+  const envCollectTranslations = parseBoolean(process.env.COLLECT_TRANSLATIONS, true);
+  const envCollectWiktionary = parseBoolean(process.env.COLLECT_WIKTIONARY, true);
 
   const apply = overrides.apply ?? envApply;
   const dryRunEnv = overrides.dryRun ?? envDryRun;
@@ -129,6 +137,8 @@ export function resolveConfigFromEnv(overrides: Partial<PipelineConfig> = {}): P
     allowOverwrite: overrides.allowOverwrite ?? envAllowOverwrite,
     collectSynonyms: overrides.collectSynonyms ?? envCollectSynonyms,
     collectExamples: overrides.collectExamples ?? envCollectExamples,
+    collectTranslations: overrides.collectTranslations ?? envCollectTranslations,
+    collectWiktionary: overrides.collectWiktionary ?? envCollectWiktionary,
   } satisfies PipelineConfig;
 }
 
@@ -260,6 +270,7 @@ export async function computeWordEnrichment(
     summary,
     patch,
     hasUpdates: updates.length > 0,
+    suggestions,
   } satisfies WordEnrichmentComputation;
 }
 
@@ -340,70 +351,123 @@ async function collectSuggestions(
   let synonyms: string[] = [];
   let englishHints: string[] = [];
   let wiktionarySummary: string | undefined;
+  const diagnostics: EnrichmentProviderDiagnostic[] = [];
 
-  const tasks = await Promise.allSettled([
-    lookupWiktionarySummary(word.lemma),
-    config.collectSynonyms ? lookupOpenThesaurusSynonyms(word.lemma) : Promise.resolve<SynonymLookup | null>(null),
-    lookupTranslation(word.lemma),
-    config.collectExamples ? lookupExampleSentence(word.lemma) : Promise.resolve<ExampleLookup | null>(null),
-  ]);
-
-  const [wiktionaryResult, synonymsResult, translationResult, exampleResult] = tasks as [
-    PromiseSettledResult<WiktionaryLookup | null>,
-    PromiseSettledResult<SynonymLookup | null>,
-    PromiseSettledResult<TranslationLookup | null>,
-    PromiseSettledResult<ExampleLookup | null>,
-  ];
-
-  if (wiktionaryResult.status === "fulfilled") {
-    const value = wiktionaryResult.value;
-    if (value) {
-      wiktionarySummary = value.summary;
-      englishHints = value.englishHints;
-      if (value.summary || value.englishHints.length) {
+  if (config.collectWiktionary) {
+    try {
+      const value = await lookupWiktionarySummary(word.lemma);
+      wiktionarySummary = value?.summary;
+      englishHints = value?.englishHints ?? [];
+      if (value && (value.summary || value.englishHints.length)) {
         sources.add("de.wiktionary.org");
       }
-    }
-  } else {
-    errors.push(formatError("Wiktionary", wiktionaryResult.reason));
-  }
-
-  if (synonymsResult.status === "fulfilled") {
-    const value = synonymsResult.value;
-    if (value?.synonyms.length) {
-      synonyms = value.synonyms;
-      sources.add("openthesaurus.de");
-    }
-  } else {
-    errors.push(formatError("OpenThesaurus", synonymsResult.reason));
-  }
-
-  if (translationResult.status === "fulfilled") {
-    const value = translationResult.value;
-    if (value?.translation) {
-      translations.push({
-        value: value.translation,
-        source: value.source,
-        confidence: value.confidence,
+      diagnostics.push({
+        id: "wiktionary",
+        label: "Wiktionary",
+        status: "success",
+        payload: value ?? null,
       });
-      sources.add(value.source);
+    } catch (error) {
+      const message = formatError("Wiktionary", error);
+      errors.push(message);
+      diagnostics.push({
+        id: "wiktionary",
+        label: "Wiktionary",
+        status: "error",
+        error: message,
+      });
     }
   } else {
-    errors.push(formatError("MyMemory", translationResult.reason));
+    diagnostics.push({ id: "wiktionary", label: "Wiktionary", status: "skipped" });
   }
 
-  if (exampleResult.status === "fulfilled") {
-    const value = exampleResult.value;
-    if (value && (value.exampleDe || value.exampleEn)) {
-      examples.push({
-        exampleDe: value.exampleDe,
-        exampleEn: value.exampleEn,
-        source: value.source,
+  if (config.collectSynonyms) {
+    try {
+      const value = await lookupOpenThesaurusSynonyms(word.lemma);
+      if (value?.synonyms.length) {
+        synonyms = value.synonyms;
+        sources.add("openthesaurus.de");
+      }
+      diagnostics.push({
+        id: "openthesaurus",
+        label: "OpenThesaurus",
+        status: "success",
+        payload: value ?? null,
       });
-      sources.add(value.source);
+    } catch (error) {
+      const message = formatError("OpenThesaurus", error);
+      errors.push(message);
+      diagnostics.push({
+        id: "openthesaurus",
+        label: "OpenThesaurus",
+        status: "error",
+        error: message,
+      });
     }
   } else {
-    errors.push(formatError("Tatoeba", exampleResult.reason));
+    diagnostics.push({ id: "openthesaurus", label: "OpenThesaurus", status: "skipped" });
+  }
+
+  if (config.collectTranslations) {
+    try {
+      const value = await lookupTranslation(word.lemma);
+      if (value?.translation) {
+        translations.push({
+          value: value.translation,
+          source: value.source,
+          confidence: value.confidence,
+        });
+        sources.add(value.source);
+      }
+      diagnostics.push({
+        id: "mymemory",
+        label: "MyMemory",
+        status: "success",
+        payload: value ?? null,
+      });
+    } catch (error) {
+      const message = formatError("MyMemory", error);
+      errors.push(message);
+      diagnostics.push({
+        id: "mymemory",
+        label: "MyMemory",
+        status: "error",
+        error: message,
+      });
+    }
+  } else {
+    diagnostics.push({ id: "mymemory", label: "MyMemory", status: "skipped" });
+  }
+
+  if (config.collectExamples) {
+    try {
+      const value = await lookupExampleSentence(word.lemma);
+      if (value && (value.exampleDe || value.exampleEn)) {
+        examples.push({
+          exampleDe: value.exampleDe,
+          exampleEn: value.exampleEn,
+          source: value.source,
+        });
+        sources.add(value.source);
+      }
+      diagnostics.push({
+        id: "tatoeba",
+        label: "Tatoeba",
+        status: "success",
+        payload: value ?? null,
+      });
+    } catch (error) {
+      const message = formatError("Tatoeba", error);
+      errors.push(message);
+      diagnostics.push({
+        id: "tatoeba",
+        label: "Tatoeba",
+        status: "error",
+        error: message,
+      });
+    }
+  } else {
+    diagnostics.push({ id: "tatoeba", label: "Tatoeba", status: "skipped" });
   }
 
   let aiUsed = false;
@@ -424,10 +488,32 @@ async function collectSuggestions(
           });
           sources.add(aiResult.source);
         }
+        diagnostics.push({
+          id: "openai",
+          label: "OpenAI",
+          status: "success",
+          payload: aiResult,
+        });
       }
     } catch (error) {
-      errors.push(formatError("OpenAI", error));
+      const message = formatError("OpenAI", error);
+      errors.push(message);
+      diagnostics.push({
+        id: "openai",
+        label: "OpenAI",
+        status: "error",
+        error: message,
+      });
     }
+  } else if (config.enableAi) {
+    diagnostics.push({
+      id: "openai",
+      label: "OpenAI",
+      status: "error",
+      error: "Missing OpenAI API key",
+    });
+  } else {
+    diagnostics.push({ id: "openai", label: "OpenAI", status: "skipped" });
   }
 
   return {
@@ -439,6 +525,7 @@ async function collectSuggestions(
     errors,
     sources: Array.from(sources).sort(),
     aiUsed,
+    diagnostics,
   };
 }
 

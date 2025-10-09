@@ -12,6 +12,8 @@ export interface RunEnrichmentPayload {
   allowOverwrite?: boolean;
   collectSynonyms?: boolean;
   collectExamples?: boolean;
+  collectTranslations?: boolean;
+  collectWiktionary?: boolean;
 }
 
 export interface WordEnrichmentOptions {
@@ -19,6 +21,8 @@ export interface WordEnrichmentOptions {
   allowOverwrite?: boolean;
   collectSynonyms?: boolean;
   collectExamples?: boolean;
+  collectTranslations?: boolean;
+  collectWiktionary?: boolean;
 }
 
 async function handleResponse<T>(response: Response): Promise<T> {

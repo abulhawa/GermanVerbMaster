@@ -21,6 +21,30 @@ export interface EnrichmentExampleCandidate {
   source: string;
 }
 
+export type EnrichmentProviderId =
+  | "wiktionary"
+  | "openthesaurus"
+  | "mymemory"
+  | "tatoeba"
+  | "openai";
+
+export interface EnrichmentProviderDiagnostic {
+  id: EnrichmentProviderId;
+  label: string;
+  status: "success" | "error" | "skipped";
+  error?: string;
+  payload?: unknown;
+}
+
+export interface WordEnrichmentSuggestions {
+  translations: EnrichmentTranslationCandidate[];
+  examples: EnrichmentExampleCandidate[];
+  synonyms: string[];
+  englishHints: string[];
+  wiktionarySummary?: string;
+  providerDiagnostics: EnrichmentProviderDiagnostic[];
+}
+
 export interface EnrichmentWordSummary {
   id: number;
   lemma: string;
@@ -50,6 +74,7 @@ export interface WordEnrichmentPreview {
   summary: EnrichmentWordSummary;
   patch: EnrichmentPatch;
   hasUpdates: boolean;
+  suggestions: WordEnrichmentSuggestions;
 }
 
 export interface BulkEnrichmentResponse {

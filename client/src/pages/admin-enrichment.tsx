@@ -1,30 +1,26 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import type { LucideIcon } from 'lucide-react';
-import { Wand2, UploadCloud, Sparkles, ChevronDown, ListChecks, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  Wand2,
+  UploadCloud,
+  Sparkles,
+  ListChecks,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
+import { useLocation } from 'wouter';
 
 import { AppShell } from '@/components/layout/app-shell';
 import { SidebarNavButton } from '@/components/layout/sidebar-nav-button';
 import { MobileNavBar } from '@/components/layout/mobile-nav-bar';
 import { getPrimaryNavigationItems } from '@/components/layout/navigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { useAuthSession } from '@/auth/session';
 import { wordsResponseSchema, type AdminWord, type WordsResponse } from './admin-word-schemas';
@@ -37,7 +33,16 @@ import {
   type RunEnrichmentPayload,
   type WordEnrichmentOptions,
 } from '@/lib/admin-enrichment';
-import { cn } from '@/lib/utils';
+import WordEnrichmentDetailView, {
+  formatDisplayDate,
+  type WordConfigState,
+} from './admin-enrichment-detail';
+import {
+  BooleanToggle,
+  CollapsibleSection,
+  formatMissingField,
+  getMissingFields,
+} from './admin-enrichment-shared';
 
 const WORDS_PER_SEARCH = 10;
 const MISSING_WORDS_PER_PAGE_OPTIONS = [10, 25, 50, 100] as const;
@@ -51,13 +56,8 @@ interface BulkConfigState extends RunEnrichmentPayload {
   allowOverwrite: boolean;
   collectSynonyms: boolean;
   collectExamples: boolean;
-}
-
-interface WordConfigState extends WordEnrichmentOptions {
-  enableAi: boolean;
-  allowOverwrite: boolean;
-  collectSynonyms: boolean;
-  collectExamples: boolean;
+  collectTranslations: boolean;
+  collectWiktionary: boolean;
 }
 
 const DEFAULT_BULK_CONFIG: BulkConfigState = {
@@ -68,6 +68,8 @@ const DEFAULT_BULK_CONFIG: BulkConfigState = {
   allowOverwrite: false,
   collectSynonyms: true,
   collectExamples: true,
+  collectTranslations: true,
+  collectWiktionary: true,
 };
 
 const DEFAULT_WORD_CONFIG: WordConfigState = {
@@ -75,6 +77,8 @@ const DEFAULT_WORD_CONFIG: WordConfigState = {
   allowOverwrite: false,
   collectSynonyms: true,
   collectExamples: true,
+  collectTranslations: true,
+  collectWiktionary: true,
 };
 
 const AdminEnrichmentPage = () => {
@@ -84,12 +88,36 @@ const AdminEnrichmentPage = () => {
     [session?.user?.role],
   );
   const { toast } = useToast();
+  const [location, navigate] = useLocation();
 
   const [adminToken, setAdminToken] = useState(() => localStorage.getItem('gvm-admin-token') ?? '');
   const normalizedAdminToken = adminToken.trim();
   useEffect(() => {
     localStorage.setItem('gvm-admin-token', normalizedAdminToken);
   }, [normalizedAdminToken]);
+
+  const searchParams = useMemo(() => new URLSearchParams(location.split('?')[1] ?? ''), [location]);
+  const wordParam = searchParams.get('word');
+  const parsedWordId = wordParam ? Number.parseInt(wordParam, 10) : NaN;
+  const selectedWordId = Number.isFinite(parsedWordId) && parsedWordId > 0 ? parsedWordId : null;
+  const isDetailMode = selectedWordId !== null;
+
+  const openWordDetails = useCallback(
+    (wordId: number) => {
+      const params = new URLSearchParams(searchParams);
+      params.set('word', String(wordId));
+      const queryString = params.toString();
+      navigate(queryString ? `/admin/enrichment?${queryString}` : `/admin/enrichment?word=${wordId}`);
+    },
+    [navigate, searchParams],
+  );
+
+  const closeWordDetails = useCallback(() => {
+    const params = new URLSearchParams(searchParams);
+    params.delete('word');
+    const queryString = params.toString();
+    navigate(queryString ? `/admin/enrichment?${queryString}` : '/admin/enrichment');
+  }, [navigate, searchParams]);
 
   const [bulkConfig, setBulkConfig] = useState<BulkConfigState>(DEFAULT_BULK_CONFIG);
   const [bulkResult, setBulkResult] = useState<BulkEnrichmentResponse | null>(null);
@@ -105,8 +133,6 @@ const AdminEnrichmentPage = () => {
   const [applyResult, setApplyResult] = useState<ApplyEnrichmentResponse | null>(null);
   const [missingPage, setMissingPage] = useState(1);
   const [missingPerPage, setMissingPerPage] = useState(DEFAULT_MISSING_PER_PAGE);
-  const [wordDialogOpen, setWordDialogOpen] = useState(false);
-  const [selectedWord, setSelectedWord] = useState<AdminWord | null>(null);
 
   const bulkMutation = useMutation({
     mutationFn: async () => {
@@ -118,6 +144,8 @@ const AdminEnrichmentPage = () => {
         allowOverwrite: bulkConfig.allowOverwrite,
         collectSynonyms: bulkConfig.collectSynonyms,
         collectExamples: bulkConfig.collectExamples,
+        collectTranslations: bulkConfig.collectTranslations,
+        collectWiktionary: bulkConfig.collectWiktionary,
       };
       return runBulkEnrichment(payload, normalizedAdminToken);
     },
@@ -156,7 +184,7 @@ const AdminEnrichmentPage = () => {
       const payload = await response.json();
       return wordsResponseSchema.parse(payload);
     },
-    enabled: Boolean(searchTerm.trim()),
+    enabled: !isDetailMode && Boolean(searchTerm.trim()),
   });
 
   const missingWordsQuery = useQuery<WordsResponse>({
@@ -183,6 +211,7 @@ const AdminEnrichmentPage = () => {
       const payload = await response.json();
       return wordsResponseSchema.parse(payload);
     },
+    enabled: !isDetailMode,
   });
 
   useEffect(() => {
@@ -219,8 +248,6 @@ const AdminEnrichmentPage = () => {
     totalMissingPages > 0
       ? currentMissingPage < totalMissingPages
       : missingWords.length === effectiveMissingPerPage && missingWords.length > 0;
-  const selectedWordMissingFields = selectedWord ? getMissingFields(selectedWord) : [];
-
   const previewMutation = useMutation({
     mutationFn: async (word: AdminWord) => {
       setPreviewWord(word);
@@ -230,6 +257,8 @@ const AdminEnrichmentPage = () => {
         allowOverwrite: wordConfig.allowOverwrite,
         collectSynonyms: wordConfig.collectSynonyms,
         collectExamples: wordConfig.collectExamples,
+        collectTranslations: wordConfig.collectTranslations,
+        collectWiktionary: wordConfig.collectWiktionary,
       };
       const result = await previewWordEnrichment(word.id, options, normalizedAdminToken);
       setPreviewData(result);
@@ -301,29 +330,44 @@ const AdminEnrichmentPage = () => {
     );
   };
 
-  const handleWordClick = (word: AdminWord) => {
-    setSelectedWord(word);
-    setWordDialogOpen(true);
-  };
+  const handleWordClick = useCallback(
+    (word: AdminWord) => {
+      openWordDetails(word.id);
+    },
+    [openWordDetails],
+  );
 
-  const handleDialogOpenChange = (open: boolean) => {
-    setWordDialogOpen(open);
-    if (!open) {
-      setSelectedWord(null);
-    }
-  };
-
-  const handleLoadWordInReview = () => {
-    if (!selectedWord) {
-      return;
-    }
-    setSearchInput(selectedWord.lemma);
-    setPreviewData(null);
-    setPreviewWord(null);
-    setApplyResult(null);
-    setSearchTerm(selectedWord.lemma);
-    setWordDialogOpen(false);
-  };
+  if (isDetailMode && selectedWordId) {
+    return (
+      <AppShell
+        sidebar={(
+          <>
+            {navigationItems.map((item) => (
+              <SidebarNavButton
+                key={item.href}
+                href={item.href}
+                icon={item.icon}
+                label={item.label}
+                exact={item.exact}
+              />
+            ))}
+          </>
+        )}
+        mobileNav={<MobileNavBar items={navigationItems} />}
+      >
+        <WordEnrichmentDetailView
+          wordId={selectedWordId}
+          adminToken={adminToken}
+          normalizedAdminToken={normalizedAdminToken}
+          onAdminTokenChange={setAdminToken}
+          toast={toast}
+          onClose={closeWordDetails}
+          wordConfig={wordConfig}
+          setWordConfig={setWordConfig}
+        />
+      </AppShell>
+    );
+  }
 
   return (
     <AppShell
@@ -434,6 +478,20 @@ const AdminEnrichmentPage = () => {
               checked={bulkConfig.collectExamples}
               onCheckedChange={(checked) =>
                 setBulkConfig((config) => ({ ...config, collectExamples: checked }))
+              }
+            />
+            <BooleanToggle
+              label="Collect translations"
+              checked={bulkConfig.collectTranslations}
+              onCheckedChange={(checked) =>
+                setBulkConfig((config) => ({ ...config, collectTranslations: checked }))
+              }
+            />
+            <BooleanToggle
+              label="Collect Wiktionary summaries"
+              checked={bulkConfig.collectWiktionary}
+              onCheckedChange={(checked) =>
+                setBulkConfig((config) => ({ ...config, collectWiktionary: checked }))
               }
             />
             <BooleanToggle
@@ -555,6 +613,20 @@ const AdminEnrichmentPage = () => {
                 setWordConfig((config) => ({ ...config, collectExamples: checked }))
               }
             />
+            <BooleanToggle
+              label="Collect translations"
+              checked={wordConfig.collectTranslations}
+              onCheckedChange={(checked) =>
+                setWordConfig((config) => ({ ...config, collectTranslations: checked }))
+              }
+            />
+            <BooleanToggle
+              label="Collect Wiktionary summaries"
+              checked={wordConfig.collectWiktionary}
+              onCheckedChange={(checked) =>
+                setWordConfig((config) => ({ ...config, collectWiktionary: checked }))
+              }
+            />
           </div>
 
           <form className="flex flex-col gap-3 sm:flex-row" onSubmit={handleSearchSubmit}>
@@ -599,7 +671,7 @@ const AdminEnrichmentPage = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <Button type="button" variant="ghost" size="sm" onClick={() => handleWordClick(word)}>
-                      Inspect
+                      Open detail page
                     </Button>
                     <Button
                       variant="outline"
@@ -786,7 +858,7 @@ const AdminEnrichmentPage = () => {
                           {word.pos} · Level {word.level ?? '—'}
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          Updated {word.updatedAt.toLocaleDateString()}
+                          Updated {formatDisplayDate(word.updatedAt)}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -849,252 +921,8 @@ const AdminEnrichmentPage = () => {
         </CollapsibleSection>
       </div>
 
-      <Dialog open={wordDialogOpen} onOpenChange={handleDialogOpenChange}>
-        {selectedWord ? (
-          <DialogContent className="max-w-3xl space-y-6">
-            <DialogHeader>
-              <DialogTitle>{selectedWord.lemma}</DialogTitle>
-              <DialogDescription>
-                {selectedWord.pos} · {selectedWord.canonical ? 'Canonical' : 'Non-canonical'} ·{' '}
-                {selectedWord.complete ? 'Complete' : 'Incomplete'}
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="space-y-4">
-              <div>
-                <h4 className="text-sm font-medium text-muted-foreground">Missing fields</h4>
-                {selectedWordMissingFields.length ? (
-                  <div className="mt-2 flex flex-wrap gap-1">
-                    {selectedWordMissingFields.map((field) => (
-                      <Badge key={field} variant="secondary">
-                        {formatMissingField(field)}
-                      </Badge>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="mt-2 text-sm text-muted-foreground">All required fields are present.</p>
-                )}
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-2">
-                <DetailField label="English translation" value={selectedWord.english ?? '—'} />
-                <DetailField label="Example (DE)" value={selectedWord.exampleDe ?? '—'} />
-                <DetailField label="Example (EN)" value={selectedWord.exampleEn ?? '—'} />
-                <DetailField label="Sources" value={selectedWord.sourcesCsv ?? '—'} />
-              </div>
-
-              {selectedWord.pos === 'V' ? (
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <DetailField label="Präteritum" value={selectedWord.praeteritum ?? '—'} />
-                  <DetailField label="Partizip II" value={selectedWord.partizipIi ?? '—'} />
-                  <DetailField label="Perfekt" value={selectedWord.perfekt ?? '—'} />
-                  <DetailField label="Auxiliary" value={selectedWord.aux ?? '—'} />
-                </div>
-              ) : null}
-
-              {selectedWord.pos === 'N' ? (
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <DetailField label="Gender" value={selectedWord.gender ?? '—'} />
-                  <DetailField label="Plural" value={selectedWord.plural ?? '—'} />
-                </div>
-              ) : null}
-
-              {selectedWord.pos === 'Adj' ? (
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <DetailField label="Comparative" value={selectedWord.comparative ?? '—'} />
-                  <DetailField label="Superlative" value={selectedWord.superlative ?? '—'} />
-                </div>
-              ) : null}
-
-              <div className="grid gap-3 sm:grid-cols-2">
-                <DetailField label="CEFR level" value={selectedWord.level ?? '—'} />
-                <DetailField label="Source notes" value={selectedWord.sourceNotes ?? '—'} />
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-2">
-                <DetailField label="Created" value={selectedWord.createdAt.toLocaleString()} />
-                <DetailField label="Updated" value={selectedWord.updatedAt.toLocaleString()} />
-              </div>
-            </div>
-
-            <DialogFooter className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <Button type="button" variant="secondary" onClick={handleLoadWordInReview}>
-                Load in review panel
-              </Button>
-              <Button
-                type="button"
-                onClick={() => {
-                  if (selectedWord) {
-                    previewMutation.mutate(selectedWord);
-                    setWordDialogOpen(false);
-                  }
-                }}
-                disabled={previewMutation.isPending && previewWord?.id === selectedWord.id}
-              >
-                {previewMutation.isPending && previewWord?.id === selectedWord.id
-                  ? 'Loading…'
-                  : 'Preview enrichment'}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        ) : null}
-      </Dialog>
     </AppShell>
   );
 };
-
-interface BooleanToggleProps {
-  label: string;
-  checked: boolean;
-  onCheckedChange: (checked: boolean) => void;
-  description?: string;
-}
-
-function BooleanToggle({ label, checked, onCheckedChange, description }: BooleanToggleProps) {
-  return (
-    <div className="flex items-start justify-between gap-4 rounded-lg border border-border p-3">
-      <div>
-        <Label>{label}</Label>
-        {description ? <p className="text-xs text-muted-foreground">{description}</p> : null}
-      </div>
-      <Switch checked={checked} onCheckedChange={onCheckedChange} />
-    </div>
-  );
-}
-
-interface CollapsibleSectionProps {
-  icon: LucideIcon;
-  title: string;
-  description?: string;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  triggerId: string;
-  children: ReactNode;
-  headerActions?: ReactNode;
-}
-
-function CollapsibleSection({
-  icon: Icon,
-  title,
-  description,
-  open,
-  onOpenChange,
-  triggerId,
-  children,
-  headerActions,
-}: CollapsibleSectionProps) {
-  const contentId = `${triggerId}-content`;
-  return (
-    <Collapsible open={open} onOpenChange={onOpenChange}>
-      <Card>
-        <CardHeader className="space-y-4">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <Icon className="h-5 w-5" /> {title}
-              </CardTitle>
-              {description ? <CardDescription>{description}</CardDescription> : null}
-            </div>
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end">
-              {headerActions}
-              <CollapsibleTrigger asChild>
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="ghost"
-                  aria-label={open ? `Collapse ${title}` : `Expand ${title}`}
-                  aria-controls={contentId}
-                >
-                  <ChevronDown className={cn('h-4 w-4 transition-transform', open ? 'rotate-180' : 'rotate-0')} />
-                </Button>
-              </CollapsibleTrigger>
-            </div>
-          </div>
-        </CardHeader>
-        <CollapsibleContent id={contentId}>
-          <CardContent className="space-y-6">{children}</CardContent>
-        </CollapsibleContent>
-      </Card>
-    </Collapsible>
-  );
-}
-
-interface DetailFieldProps {
-  label: string;
-  value: ReactNode;
-}
-
-function DetailField({ label, value }: DetailFieldProps) {
-  const displayValue =
-    value === null ||
-    value === undefined ||
-    (typeof value === 'string' && value.trim().length === 0)
-      ? '—'
-      : value;
-
-  return (
-    <div className="rounded-lg border border-border p-3">
-      <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</div>
-      <div className="mt-1 break-words text-sm text-foreground">{displayValue}</div>
-    </div>
-  );
-}
-
-const MISSING_FIELD_LABELS: Record<string, string> = {
-  english: 'English translation',
-  exampleDe: 'German example',
-  exampleEn: 'English example',
-  sourcesCsv: 'Sources',
-  praeteritum: 'Präteritum',
-  partizipIi: 'Partizip II',
-  perfekt: 'Perfekt',
-  gender: 'Gender',
-  plural: 'Plural',
-  comparative: 'Comparative',
-  superlative: 'Superlative',
-};
-
-function formatMissingField(field: string): string {
-  return MISSING_FIELD_LABELS[field] ?? field;
-}
-
-function getMissingFields(word: AdminWord): string[] {
-  const missing = new Set<string>();
-
-  const check = (value: unknown, key: string) => {
-    if (value === null || value === undefined) {
-      missing.add(key);
-      return;
-    }
-    if (typeof value === 'string' && value.trim().length === 0) {
-      missing.add(key);
-    }
-  };
-
-  check(word.english, 'english');
-  check(word.exampleDe, 'exampleDe');
-  check(word.exampleEn, 'exampleEn');
-  check(word.sourcesCsv, 'sourcesCsv');
-
-  switch (word.pos) {
-    case 'V':
-      check(word.praeteritum, 'praeteritum');
-      check(word.partizipIi, 'partizipIi');
-      check(word.perfekt, 'perfekt');
-      break;
-    case 'N':
-      check(word.gender, 'gender');
-      check(word.plural, 'plural');
-      break;
-    case 'Adj':
-      check(word.comparative, 'comparative');
-      check(word.superlative, 'superlative');
-      break;
-    default:
-      break;
-  }
-
-  return Array.from(missing);
-}
 
 export default AdminEnrichmentPage;
