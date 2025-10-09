@@ -1,16 +1,40 @@
 import * as ResendModule from "resend";
+import { createRequire } from "node:module";
 
 type ResendConstructor = new (apiKey: string) => ResendModule.Resend;
 
-const resolvedResendClass: ResendConstructor | undefined =
-  (ResendModule as { Resend?: ResendConstructor }).Resend ??
-  (ResendModule as { default?: ResendConstructor }).default;
+function resolveResendConstructor(): ResendConstructor {
+  const moduleRecord = ResendModule as Record<string, unknown>;
+  const namedExport = moduleRecord["Resend"];
+  if (typeof namedExport === "function") {
+    return namedExport as ResendConstructor;
+  }
 
-if (!resolvedResendClass) {
+  const defaultExport = moduleRecord["default"];
+  if (typeof defaultExport === "function") {
+    return defaultExport as ResendConstructor;
+  }
+
+  try {
+    const require = createRequire(import.meta.url);
+    const cjsModule = require("resend") as Record<string, unknown>;
+    const cjsNamedExport = cjsModule["Resend"];
+    if (typeof cjsNamedExport === "function") {
+      return cjsNamedExport as ResendConstructor;
+    }
+
+    const cjsDefaultExport = cjsModule["default"];
+    if (typeof cjsDefaultExport === "function") {
+      return cjsDefaultExport as ResendConstructor;
+    }
+  } catch {
+    // ignore require resolution errors and fall through to the shared error path
+  }
+
   throw new Error("The Resend module does not export a Resend client constructor.");
 }
 
-const ResendClass: ResendConstructor = resolvedResendClass;
+const ResendClass: ResendConstructor = resolveResendConstructor();
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL?.trim() || "German Verb Master <onboarding@resend.dev>";
