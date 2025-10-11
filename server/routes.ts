@@ -1504,6 +1504,7 @@ export function registerRoutes(app: Express): void {
           englishHints: computation.suggestions.englishHints,
           verbForms: computation.suggestions.verbForms,
           providerDiagnostics: computation.suggestions.diagnostics,
+          snapshots: computation.suggestions.snapshots,
         },
       };
 

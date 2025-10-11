@@ -1,4 +1,11 @@
-import type { AdaptiveQueueItem, GermanVerb, PracticeResult } from "@shared";
+import type {
+  AdaptiveQueueItem,
+  GermanVerb,
+  PracticeResult,
+  WordExample,
+  WordTranslation,
+} from "@shared";
+import type { EnrichmentVerbFormSuggestion } from "@shared/enrichment";
 import { sql } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import {
@@ -213,6 +220,36 @@ export const words = pgTable(
   },
   (table) => ({
     lemmaPosIndex: uniqueIndex("words_lemma_pos_idx").on(table.lemma, table.pos),
+  }),
+);
+
+export const enrichmentProviderSnapshots = pgTable(
+  "enrichment_provider_snapshots",
+  {
+    id: serial("id").primaryKey(),
+    wordId: integer("word_id")
+      .notNull()
+      .references(() => words.id, { onDelete: "cascade" }),
+    lemma: text("lemma").notNull(),
+    pos: text("pos").notNull(),
+    providerId: text("provider_id").notNull(),
+    providerLabel: text("provider_label"),
+    status: text("status").notNull(),
+    error: text("error"),
+    trigger: text("trigger").notNull(),
+    mode: text("mode").notNull(),
+    translations: jsonb("translations").$type<WordTranslation[] | null>(),
+    examples: jsonb("examples").$type<WordExample[] | null>(),
+    synonyms: jsonb("synonyms").$type<string[] | null>(),
+    englishHints: jsonb("english_hints").$type<string[] | null>(),
+    verbForms: jsonb("verb_forms").$type<EnrichmentVerbFormSuggestion[] | null>(),
+    rawPayload: jsonb("raw_payload"),
+    collectedAt: timestamp("collected_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => ({
+    wordProviderIndex: index("enrichment_snapshots_word_provider_idx").on(table.wordId, table.providerId),
+    providerCollectedIndex: index("enrichment_snapshots_provider_collected_idx").on(table.providerId, table.collectedAt),
   }),
 );
 

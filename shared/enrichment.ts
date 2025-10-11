@@ -1,4 +1,13 @@
-import type { EnrichmentMethod, PartOfSpeech, WordExample, WordTranslation } from "./types.js";
+import type {
+  EnrichmentMethod,
+  PartOfSpeech,
+  WordExample,
+  WordTranslation,
+} from "./types.js";
+
+export type EnrichmentRunMode = "non-canonical" | "canonical" | "all";
+export type EnrichmentSnapshotStatus = "success" | "error";
+export type EnrichmentSnapshotTrigger = "preview" | "apply";
 
 export type EnrichmentField =
   | "english"
@@ -58,6 +67,38 @@ export interface EnrichmentProviderDiagnostic {
   status: "success" | "error" | "skipped";
   error?: string;
   payload?: unknown;
+  currentSnapshot?: EnrichmentProviderSnapshot;
+  previousSnapshot?: EnrichmentProviderSnapshot | null;
+  hasChanges?: boolean;
+}
+
+export interface EnrichmentProviderSnapshot {
+  id: number;
+  wordId: number;
+  lemma: string;
+  pos: PartOfSpeech | string;
+  providerId: EnrichmentProviderId | string;
+  providerLabel?: string | null;
+  status: EnrichmentSnapshotStatus;
+  error?: string | null;
+  trigger: EnrichmentSnapshotTrigger;
+  mode: EnrichmentRunMode;
+  translations?: WordTranslation[] | null;
+  examples?: WordExample[] | null;
+  synonyms?: string[] | null;
+  englishHints?: string[] | null;
+  verbForms?: EnrichmentVerbFormSuggestion[] | null;
+  rawPayload?: unknown;
+  collectedAt: string;
+  createdAt: string;
+}
+
+export interface EnrichmentProviderSnapshotComparison {
+  providerId: EnrichmentProviderId | string;
+  providerLabel?: string | null;
+  current: EnrichmentProviderSnapshot;
+  previous?: EnrichmentProviderSnapshot | null;
+  hasChanges: boolean;
 }
 
 export interface WordEnrichmentSuggestions {
@@ -67,6 +108,7 @@ export interface WordEnrichmentSuggestions {
   englishHints: string[];
   verbForms: EnrichmentVerbFormSuggestion[];
   providerDiagnostics: EnrichmentProviderDiagnostic[];
+  snapshots: EnrichmentProviderSnapshotComparison[];
 }
 
 export interface EnrichmentWordSummary {

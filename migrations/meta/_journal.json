@@ -29,6 +29,13 @@
       "when": 1759630000000,
       "tag": "0003_expand_word_enrichment",
       "breakpoints": false
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1760196546436,
+      "tag": "0004_store_enrichment_snapshots",
+      "breakpoints": false
     }
   ]
 }

@@ -31,6 +31,8 @@ import type {
   EnrichmentExampleCandidate,
   EnrichmentPatch,
   EnrichmentProviderDiagnostic,
+  EnrichmentProviderSnapshot,
+  EnrichmentSnapshotTrigger,
   EnrichmentTranslationCandidate,
   EnrichmentVerbFormSuggestion,
   WordEnrichmentPreview,
@@ -987,6 +989,41 @@ const WordEnrichmentDetailView = ({
                   </button>
                 </CollapsibleTrigger>
                 <CollapsibleContent className="space-y-3 border-t border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
+                  {diagnostic.currentSnapshot || diagnostic.previousSnapshot ? (
+                    <div className="space-y-3 text-foreground">
+                      {diagnostic.currentSnapshot ? (
+                        <div className="space-y-2">
+                          <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                            Latest snapshot · {formatDisplayDate(diagnostic.currentSnapshot.collectedAt)}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {formatSnapshotTriggerLabel(diagnostic.currentSnapshot.trigger)} ·{' '}
+                            {formatSnapshotModeLabel(diagnostic.currentSnapshot.mode)}
+                          </div>
+                          <SnapshotDataList snapshot={diagnostic.currentSnapshot} />
+                        </div>
+                      ) : (
+                        <p className="text-xs text-muted-foreground">No snapshot captured for this provider yet.</p>
+                      )}
+                      {diagnostic.previousSnapshot ? (
+                        diagnostic.hasChanges ? (
+                          <div className="space-y-2">
+                            <Separator />
+                            <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                              Previous snapshot · {formatDisplayDate(diagnostic.previousSnapshot.collectedAt)}
+                            </div>
+                            <SnapshotDataList snapshot={diagnostic.previousSnapshot} />
+                          </div>
+                        ) : (
+                          <p className="text-xs text-muted-foreground">
+                            No changes since {formatDisplayDate(diagnostic.previousSnapshot.collectedAt)}.
+                          </p>
+                        )
+                      ) : null}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">No snapshot captured for this provider yet.</p>
+                  )}
                   {diagnostic.error ? (
                     <div className="text-destructive">Error: {diagnostic.error}</div>
                   ) : null}
@@ -1012,6 +1049,107 @@ const WordEnrichmentDetailView = ({
 };
 
 export default WordEnrichmentDetailView;
+
+function SnapshotDataList({ snapshot }: { snapshot: EnrichmentProviderSnapshot }) {
+  const translations = snapshot.translations ?? [];
+  const examples = snapshot.examples ?? [];
+  const synonyms = snapshot.synonyms ?? [];
+  const englishHints = snapshot.englishHints ?? [];
+  const verbForms = snapshot.verbForms ?? [];
+  const hasData =
+    translations.length || examples.length || synonyms.length || englishHints.length || verbForms.length;
+
+  if (!hasData) {
+    return <p className="text-xs text-muted-foreground">No structured data captured for this run.</p>;
+  }
+
+  return (
+    <div className="space-y-3 text-sm text-foreground">
+      {translations.length ? (
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Translations</div>
+          <ul className="list-disc space-y-1 pl-4">
+            {translations.map((translation, index) => (
+              <li key={`${translation.value}-${translation.source ?? 'unknown'}-${index}`}>
+                <span className="font-medium">{translation.value}</span>
+                {translation.language ? <span className="text-muted-foreground"> ({translation.language})</span> : null}
+                {translation.source ? <span className="text-muted-foreground"> · {translation.source}</span> : null}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      {examples.length ? (
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Examples</div>
+          <ul className="space-y-1">
+            {examples.map((example, index) => (
+              <li key={`${example.exampleDe ?? '—'}-${example.exampleEn ?? '—'}-${index}`} className="leading-snug">
+                <span className="font-medium text-foreground">{example.exampleDe ?? '—'}</span>
+                {example.exampleEn ? <span className="text-muted-foreground"> · {example.exampleEn}</span> : null}
+                {example.source ? <span className="text-muted-foreground"> · {example.source}</span> : null}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      {synonyms.length ? (
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Synonyms</div>
+          <p className="text-sm text-foreground">{synonyms.join(', ')}</p>
+        </div>
+      ) : null}
+
+      {englishHints.length ? (
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">English hints</div>
+          <p className="text-sm text-foreground">{englishHints.join(', ')}</p>
+        </div>
+      ) : null}
+
+      {verbForms.length ? (
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Verb forms</div>
+          <ul className="space-y-1">
+            {verbForms.map((form, index) => (
+              <li key={`${form.source}-${index}`} className="leading-snug">
+                {form.praeteritum ? <span>Präteritum: {form.praeteritum} </span> : null}
+                {form.partizipIi ? <span>· Partizip II: {form.partizipIi} </span> : null}
+                {form.perfekt ? <span>· Perfekt: {form.perfekt} </span> : null}
+                {form.perfektOptions?.length ? <span>· Perfekt options: {form.perfektOptions.join(' / ')} </span> : null}
+                {form.auxiliaries?.length ? <span>· Aux: {form.auxiliaries.join(' / ')} </span> : null}
+                {form.aux && !form.auxiliaries?.length ? <span>· Aux: {form.aux}</span> : null}
+                <span className="text-muted-foreground"> · {form.source}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function formatSnapshotTriggerLabel(trigger: EnrichmentSnapshotTrigger): string {
+  switch (trigger) {
+    case 'apply':
+      return 'Applied run';
+    default:
+      return 'Preview run';
+  }
+}
+
+function formatSnapshotModeLabel(mode: string): string {
+  switch (mode) {
+    case 'canonical':
+      return 'Canonical mode';
+    case 'all':
+      return 'Full dataset';
+    default:
+      return 'Non-canonical mode';
+  }
+}
 
 export function formatDisplayDate(value: Date | string): string {
   const date = value instanceof Date ? value : new Date(value);

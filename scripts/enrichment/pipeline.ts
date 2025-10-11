@@ -2,19 +2,26 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { db } from "@db";
-import { words } from "@db/schema";
-import { and, eq } from "drizzle-orm";
+import { enrichmentProviderSnapshots, words } from "@db/schema";
+import { and, desc, eq } from "drizzle-orm";
 
 import type {
   EnrichmentExampleCandidate,
   EnrichmentFieldUpdate,
   EnrichmentPatch,
   EnrichmentProviderDiagnostic,
+  EnrichmentProviderId,
+  EnrichmentProviderSnapshot,
+  EnrichmentProviderSnapshotComparison,
+  EnrichmentRunMode,
+  EnrichmentSnapshotStatus,
+  EnrichmentSnapshotTrigger,
   EnrichmentTranslationCandidate,
   EnrichmentVerbFormSuggestion,
   EnrichmentWordSummary,
   WordEnrichmentSuggestions,
 } from "@shared/enrichment";
+import type { WordExample, WordTranslation } from "@shared/types";
 
 import {
   delay,
@@ -29,6 +36,7 @@ import {
 } from "./providers";
 
 export type WordRecord = typeof words.$inferSelect;
+type ProviderSnapshotRecord = typeof enrichmentProviderSnapshots.$inferSelect;
 
 type WordPatch = Partial<
   Pick<
@@ -60,6 +68,20 @@ type SuggestionBundle = {
   aiUsed: boolean;
   diagnostics: EnrichmentProviderDiagnostic[];
   verbForms: EnrichmentVerbFormSuggestion[];
+  snapshots: EnrichmentProviderSnapshotComparison[];
+};
+
+type ProviderSnapshotDraft = {
+  providerId: EnrichmentProviderId | string;
+  providerLabel: string;
+  status: EnrichmentSnapshotStatus;
+  error?: string;
+  translations: EnrichmentTranslationCandidate[];
+  examples: ExampleCandidate[];
+  synonyms: string[];
+  englishHints: string[];
+  verbForms: EnrichmentVerbFormSuggestion[];
+  rawPayload?: unknown;
 };
 
 type FieldUpdate = EnrichmentFieldUpdate;
@@ -428,72 +450,117 @@ async function collectSuggestions(
   let synonyms: string[] = [];
   let englishHints: string[] = [];
   const diagnostics: EnrichmentProviderDiagnostic[] = [];
+  const diagnosticMap = new Map<EnrichmentProviderId, EnrichmentProviderDiagnostic>();
+  const snapshotDrafts = new Map<string, ProviderSnapshotDraft>();
+
+  const registerDiagnostic = (diagnostic: EnrichmentProviderDiagnostic) => {
+    diagnostics.push(diagnostic);
+    diagnosticMap.set(diagnostic.id, diagnostic);
+  };
+
+  const ensureSnapshotDraft = (id: EnrichmentProviderId, label: string): ProviderSnapshotDraft => {
+    const existing = snapshotDrafts.get(id);
+    if (existing) {
+      return existing;
+    }
+    const draft: ProviderSnapshotDraft = {
+      providerId: id,
+      providerLabel: label,
+      status: "success",
+      translations: [],
+      examples: [],
+      synonyms: [],
+      englishHints: [],
+      verbForms: [],
+    };
+    snapshotDrafts.set(id, draft);
+    return draft;
+  };
+
+  const markSnapshotError = (id: EnrichmentProviderId, label: string, message: string) => {
+    const draft = ensureSnapshotDraft(id, label);
+    draft.status = "error";
+    draft.error = message;
+  };
 
   const addTranslationCandidate = (
     value: string | undefined,
     source: string,
     confidence?: number,
     language?: string,
-  ) => {
+  ): EnrichmentTranslationCandidate | null => {
     const trimmed = value?.trim();
     if (!trimmed) {
-      return;
+      return null;
     }
-    if (
-      translations.some(
-        (entry) =>
-          entry.value.toLowerCase() === trimmed.toLowerCase()
-          && entry.source === source
-          && (entry.language ?? "") === (language ?? ""),
-      )
-    ) {
-      return;
-    }
-    translations.push({ value: trimmed, source, confidence, language });
-    sources.add(source);
-  };
-
-  const addExampleCandidate = (candidate: ExampleCandidate) => {
-    if (!candidate.exampleDe && !candidate.exampleEn) {
-      return;
-    }
-    const matchesExisting = examples.some(
+    const candidate: EnrichmentTranslationCandidate = {
+      value: trimmed,
+      source,
+      confidence,
+      language,
+    };
+    const alreadyPresent = translations.some(
       (entry) =>
-        entry.source === candidate.source
-        && (entry.exampleDe ?? "").trim() === (candidate.exampleDe ?? "").trim()
-        && (entry.exampleEn ?? "").trim() === (candidate.exampleEn ?? "").trim(),
+        entry.value.toLowerCase() === trimmed.toLowerCase()
+        && entry.source === source
+        && (entry.language ?? "") === (language ?? ""),
     );
-    if (matchesExisting) {
-      return;
+    if (!alreadyPresent) {
+      translations.push(candidate);
     }
-    examples.push(candidate);
-    sources.add(candidate.source);
+    sources.add(source);
+    return candidate;
   };
 
-  const addSynonym = (value: string | undefined) => {
+  const addExampleCandidate = (candidate: ExampleCandidate): ExampleCandidate | null => {
+    const sanitized: ExampleCandidate = {
+      source: candidate.source,
+      exampleDe: candidate.exampleDe?.trim() || undefined,
+      exampleEn: candidate.exampleEn?.trim() || undefined,
+    };
+    if (!sanitized.exampleDe && !sanitized.exampleEn) {
+      return null;
+    }
+    const exists = examples.some(
+      (entry) =>
+        entry.source === sanitized.source
+        && (entry.exampleDe ?? "") === (sanitized.exampleDe ?? "")
+        && (entry.exampleEn ?? "") === (sanitized.exampleEn ?? ""),
+    );
+    if (!exists) {
+      examples.push(sanitized);
+    }
+    sources.add(sanitized.source);
+    return sanitized;
+  };
+
+  const addSynonym = (value: string | undefined): string | null => {
     const trimmed = value?.trim();
     if (!trimmed) {
-      return;
+      return null;
     }
-    if (synonyms.some((existing) => existing.toLowerCase() === trimmed.toLowerCase())) {
-      return;
+    if (!synonyms.some((existing) => existing.toLowerCase() === trimmed.toLowerCase())) {
+      synonyms.push(trimmed);
     }
-    synonyms.push(trimmed);
+    return trimmed;
   };
 
   if (config.collectSynonyms) {
     try {
       const value = await lookupOpenThesaurusSynonyms(word.lemma);
-      if (value?.synonyms.length) {
-        const before = synonyms.length;
-        for (const synonym of value.synonyms) {
+      const snapshot = ensureSnapshotDraft("openthesaurus", "OpenThesaurus");
+      snapshot.rawPayload = value ?? null;
+      if (value?.synonyms?.length) {
+        const cleaned = normalizeStringList(value.synonyms);
+        snapshot.synonyms = cleaned;
+        for (const synonym of cleaned) {
           addSynonym(synonym);
         }
-        if (synonyms.length > before) {
+        if (cleaned.length) {
           sources.add("openthesaurus.de");
         }
       }
-      diagnostics.push({
+      registerDiagnostic({
         id: "openthesaurus",
         label: "OpenThesaurus",
         status: "success",
@@ -502,7 +569,8 @@ async function collectSuggestions(
     } catch (error) {
       const message = formatError("OpenThesaurus", error);
       errors.push(message);
-      diagnostics.push({
+      markSnapshotError("openthesaurus", "OpenThesaurus", message);
+      registerDiagnostic({
         id: "openthesaurus",
         label: "OpenThesaurus",
         status: "error",
@@ -510,16 +578,21 @@ async function collectSuggestions(
       });
     }
   } else {
-    diagnostics.push({ id: "openthesaurus", label: "OpenThesaurus", status: "skipped" });
+    registerDiagnostic({ id: "openthesaurus", label: "OpenThesaurus", status: "skipped" });
   }
 
   if (config.collectTranslations) {
     try {
       const value = await lookupTranslation(word.lemma);
+      const snapshot = ensureSnapshotDraft("mymemory", "MyMemory");
+      snapshot.rawPayload = value ?? null;
       if (value?.translation) {
-        addTranslationCandidate(value.translation, value.source, value.confidence, value.language);
+        const candidate = addTranslationCandidate(value.translation, value.source, value.confidence, value.language);
+        if (candidate) {
+          snapshot.translations.push(candidate);
+        }
       }
-      diagnostics.push({
+      registerDiagnostic({
         id: "mymemory",
         label: "MyMemory",
         status: "success",
@@ -528,7 +601,8 @@ async function collectSuggestions(
     } catch (error) {
       const message = formatError("MyMemory", error);
       errors.push(message);
-      diagnostics.push({
+      markSnapshotError("mymemory", "MyMemory", message);
+      registerDiagnostic({
         id: "mymemory",
         label: "MyMemory",
         status: "error",
@@ -536,20 +610,25 @@ async function collectSuggestions(
       });
     }
   } else {
-    diagnostics.push({ id: "mymemory", label: "MyMemory", status: "skipped" });
+    registerDiagnostic({ id: "mymemory", label: "MyMemory", status: "skipped" });
   }
 
   if (config.collectExamples) {
     try {
       const value = await lookupExampleSentence(word.lemma);
+      const snapshot = ensureSnapshotDraft("tatoeba", "Tatoeba");
+      snapshot.rawPayload = value ?? null;
       if (value && (value.exampleDe || value.exampleEn)) {
-        addExampleCandidate({
+        const candidate = addExampleCandidate({
           exampleDe: value.exampleDe,
           exampleEn: value.exampleEn,
           source: value.source,
         });
+        if (candidate) {
+          snapshot.examples.push(candidate);
+        }
       }
-      diagnostics.push({
+      registerDiagnostic({
         id: "tatoeba",
         label: "Tatoeba",
         status: "success",
@@ -558,7 +637,8 @@ async function collectSuggestions(
     } catch (error) {
       const message = formatError("Tatoeba", error);
       errors.push(message);
-      diagnostics.push({
+      markSnapshotError("tatoeba", "Tatoeba", message);
+      registerDiagnostic({
         id: "tatoeba",
         label: "Tatoeba",
         status: "error",
@@ -566,43 +646,51 @@ async function collectSuggestions(
       });
     }
   } else {
-    diagnostics.push({ id: "tatoeba", label: "Tatoeba", status: "skipped" });
+    registerDiagnostic({ id: "tatoeba", label: "Tatoeba", status: "skipped" });
   }
 
   if (config.collectWiktextract) {
     try {
       const value = await lookupWiktextract(word.lemma);
+      const snapshot = ensureSnapshotDraft("wiktextract", "Wiktextract");
+      snapshot.rawPayload = value ?? null;
       if (value) {
         if (value.englishHints.length) {
-          const mergedHints = new Set<string>(englishHints);
-          for (const hint of value.englishHints) {
-            if (hint.trim()) {
-              mergedHints.add(hint.trim());
+          const cleanedHints = normalizeStringList(value.englishHints);
+          snapshot.englishHints = cleanedHints;
+          englishHints = mergeStringLists(englishHints, cleanedHints);
+        }
+        if (value.translations.length) {
+          for (const translation of value.translations) {
+            const candidate = addTranslationCandidate(translation.value, "kaikki.org", undefined, translation.language);
+            if (candidate) {
+              snapshot.translations.push(candidate);
             }
           }
-          englishHints = Array.from(mergedHints);
         }
-        for (const translation of value.translations) {
-          addTranslationCandidate(translation.value, "kaikki.org", undefined, translation.language);
+        if (value.synonyms.length) {
+          const cleanedSynonyms = normalizeStringList(value.synonyms);
+          snapshot.synonyms = cleanedSynonyms;
+          for (const synonym of cleanedSynonyms) {
+            addSynonym(synonym);
+          }
         }
-        const before = synonyms.length;
-        for (const synonym of value.synonyms) {
-          addSynonym(synonym);
-        }
-        if (value.synonyms.length && synonyms.length > before) {
-          sources.add("kaikki.org");
-        }
-        for (const example of value.examples) {
-          addExampleCandidate({
-            exampleDe: example.exampleDe,
-            exampleEn: example.exampleEn,
-            source: "kaikki.org",
-          });
+        if (value.examples.length) {
+          for (const example of value.examples) {
+            const candidate = addExampleCandidate({
+              exampleDe: example.exampleDe,
+              exampleEn: example.exampleEn,
+              source: "kaikki.org",
+            });
+            if (candidate) {
+              snapshot.examples.push(candidate);
+            }
+          }
         }
         if (value.verbForms) {
           const { praeteritum, partizipIi, perfekt, auxiliaries, perfektOptions } = value.verbForms;
           if (praeteritum || partizipIi || perfekt || auxiliaries.length) {
-            verbForms.push({
+            const suggestion: EnrichmentVerbFormSuggestion = {
               source: "kaikki.org",
               praeteritum,
               partizipIi,
@@ -610,7 +698,9 @@ async function collectSuggestions(
               aux: auxiliaries.length === 1 ? auxiliaries[0] : undefined,
               auxiliaries: auxiliaries.length ? auxiliaries : undefined,
               perfektOptions: perfektOptions.length ? perfektOptions : undefined,
-            });
+            };
+            verbForms.push(suggestion);
+            snapshot.verbForms.push(suggestion);
           }
         }
         if (
@@ -623,7 +713,7 @@ async function collectSuggestions(
           sources.add("kaikki.org");
         }
       }
-      diagnostics.push({
+      registerDiagnostic({
         id: "wiktextract",
         label: "Wiktextract",
         status: "success",
@@ -632,7 +722,8 @@ async function collectSuggestions(
     } catch (error) {
       const message = formatError("Wiktextract", error);
       errors.push(message);
-      diagnostics.push({
+      markSnapshotError("wiktextract", "Wiktextract", message);
+      registerDiagnostic({
         id: "wiktextract",
         label: "Wiktextract",
         status: "error",
@@ -640,7 +731,7 @@ async function collectSuggestions(
       });
     }
   } else {
-    diagnostics.push({ id: "wiktextract", label: "Wiktextract", status: "skipped" });
+    registerDiagnostic({ id: "wiktextract", label: "Wiktextract", status: "skipped" });
   }
 
   let aiUsed = false;
@@ -649,17 +740,25 @@ async function collectSuggestions(
       const aiResult = await lookupAiAssistance(word.lemma, word.pos, openAiKey, config.openAiModel);
       if (aiResult) {
         aiUsed = true;
+        const snapshot = ensureSnapshotDraft("openai", "OpenAI");
+        snapshot.rawPayload = aiResult;
         if (aiResult.translation) {
-          addTranslationCandidate(aiResult.translation, aiResult.source);
+          const candidate = addTranslationCandidate(aiResult.translation, aiResult.source);
+          if (candidate) {
+            snapshot.translations.push(candidate);
+          }
         }
         if (aiResult.exampleDe || aiResult.exampleEn) {
-          addExampleCandidate({
+          const candidate = addExampleCandidate({
             exampleDe: aiResult.exampleDe,
             exampleEn: aiResult.exampleEn,
             source: aiResult.source,
           });
+          if (candidate) {
+            snapshot.examples.push(candidate);
+          }
         }
-        diagnostics.push({
+        registerDiagnostic({
           id: "openai",
           label: "OpenAI",
           status: "success",
@@ -669,7 +768,8 @@ async function collectSuggestions(
     } catch (error) {
       const message = formatError("OpenAI", error);
       errors.push(message);
-      diagnostics.push({
+      markSnapshotError("openai", "OpenAI", message);
+      registerDiagnostic({
         id: "openai",
         label: "OpenAI",
         status: "error",
@@ -677,15 +777,22 @@ async function collectSuggestions(
       });
     }
   } else if (config.enableAi) {
-    diagnostics.push({
+    registerDiagnostic({
       id: "openai",
       label: "OpenAI",
       status: "error",
       error: "Missing OpenAI API key",
     });
   } else {
-    diagnostics.push({ id: "openai", label: "OpenAI", status: "skipped" });
+    registerDiagnostic({ id: "openai", label: "OpenAI", status: "skipped" });
   }
+
+  const snapshotComparisons = await persistProviderSnapshotsForWord(
+    word,
+    config,
+    snapshotDrafts,
+    diagnosticMap,
+  );
 
   return {
     translations,
@@ -697,7 +804,298 @@ async function collectSuggestions(
     aiUsed,
     diagnostics,
     verbForms,
+    snapshots: snapshotComparisons,
   };
+}
+
+async function persistProviderSnapshotsForWord(
+  word: WordRecord,
+  config: PipelineConfig,
+  snapshotDrafts: Map<string, ProviderSnapshotDraft>,
+  diagnosticMap: Map<EnrichmentProviderId, EnrichmentProviderDiagnostic>,
+): Promise<EnrichmentProviderSnapshotComparison[]> {
+  if (!snapshotDrafts.size) {
+    return [];
+  }
+
+  const trigger: EnrichmentSnapshotTrigger = config.apply && !config.dryRun ? "apply" : "preview";
+  const mode: EnrichmentRunMode = config.mode;
+  const comparisons: EnrichmentProviderSnapshotComparison[] = [];
+
+  for (const draft of snapshotDrafts.values()) {
+    const [previousRecord] = await db
+      .select()
+      .from(enrichmentProviderSnapshots)
+      .where(
+        and(
+          eq(enrichmentProviderSnapshots.wordId, word.id),
+          eq(enrichmentProviderSnapshots.providerId, draft.providerId),
+        ),
+      )
+      .orderBy(desc(enrichmentProviderSnapshots.collectedAt))
+      .limit(1);
+
+    const [insertedRecord] = await db
+      .insert(enrichmentProviderSnapshots)
+      .values({
+        wordId: word.id,
+        lemma: word.lemma,
+        pos: word.pos,
+        providerId: draft.providerId,
+        providerLabel: draft.providerLabel,
+        status: draft.status,
+        error: draft.status === "error" ? draft.error ?? null : null,
+        trigger,
+        mode,
+        translations: draft.status === "success" ? toWordTranslations(draft.translations) : null,
+        examples: draft.status === "success" ? toWordExamples(draft.examples) : null,
+        synonyms: draft.status === "success" && draft.synonyms.length ? draft.synonyms : null,
+        englishHints: draft.status === "success" && draft.englishHints.length ? draft.englishHints : null,
+        verbForms: draft.status === "success" && draft.verbForms.length ? draft.verbForms : null,
+        rawPayload: draft.rawPayload ?? null,
+      })
+      .returning();
+
+    const currentSnapshot = buildProviderSnapshotFromRecord(insertedRecord);
+    const previousSnapshot = previousRecord ? buildProviderSnapshotFromRecord(previousRecord) : null;
+    const hasChanges = previousSnapshot ? !areProviderSnapshotsEqual(previousSnapshot, currentSnapshot) : true;
+
+    comparisons.push({
+      providerId: currentSnapshot.providerId,
+      providerLabel: currentSnapshot.providerLabel,
+      current: currentSnapshot,
+      previous: previousSnapshot,
+      hasChanges,
+    });
+
+    const diagnostic = diagnosticMap.get(draft.providerId as EnrichmentProviderId);
+    if (diagnostic) {
+      diagnostic.currentSnapshot = currentSnapshot;
+      diagnostic.previousSnapshot = previousSnapshot;
+      diagnostic.hasChanges = hasChanges;
+    }
+  }
+
+  return comparisons.sort((a, b) => {
+    const labelA = a.providerLabel ?? a.providerId;
+    const labelB = b.providerLabel ?? b.providerId;
+    return labelA.localeCompare(labelB);
+  });
+}
+
+function toWordTranslations(candidates: EnrichmentTranslationCandidate[]): WordTranslation[] | null {
+  if (!candidates.length) {
+    return null;
+  }
+  const seen = new Set<string>();
+  const records: WordTranslation[] = [];
+  for (const candidate of candidates) {
+    const value = candidate.value.trim();
+    if (!value) {
+      continue;
+    }
+    const source = candidate.source?.trim() ?? null;
+    const language = candidate.language?.trim() ?? null;
+    const confidence = typeof candidate.confidence === "number" ? candidate.confidence : null;
+    const key = `${value.toLowerCase()}::${(source ?? "").toLowerCase()}::${(language ?? "").toLowerCase()}::${confidence ?? ""}`;
+    if (seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+    records.push({ value, source, language, confidence });
+  }
+  return records.length ? records : null;
+}
+
+function toWordExamples(candidates: ExampleCandidate[]): WordExample[] | null {
+  if (!candidates.length) {
+    return null;
+  }
+  const seen = new Set<string>();
+  const records: WordExample[] = [];
+  for (const candidate of candidates) {
+    const exampleDe = candidate.exampleDe?.trim() ?? null;
+    const exampleEn = candidate.exampleEn?.trim() ?? null;
+    const source = candidate.source?.trim() ?? null;
+    if (!exampleDe && !exampleEn) {
+      continue;
+    }
+    const key = `${(exampleDe ?? "").toLowerCase()}::${(exampleEn ?? "").toLowerCase()}::${(source ?? "").toLowerCase()}`;
+    if (seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+    records.push({ exampleDe, exampleEn, source });
+  }
+  return records.length ? records : null;
+}
+
+function buildProviderSnapshotFromRecord(record: ProviderSnapshotRecord): EnrichmentProviderSnapshot {
+  return {
+    id: record.id,
+    wordId: record.wordId,
+    lemma: record.lemma,
+    pos: record.pos,
+    providerId: record.providerId,
+    providerLabel: record.providerLabel,
+    status: record.status as EnrichmentSnapshotStatus,
+    error: record.error,
+    trigger: (record.trigger as EnrichmentSnapshotTrigger) ?? "preview",
+    mode: (record.mode as EnrichmentRunMode) ?? "non-canonical",
+    translations: (record.translations as WordTranslation[] | null) ?? null,
+    examples: (record.examples as WordExample[] | null) ?? null,
+    synonyms: (record.synonyms as string[] | null) ?? null,
+    englishHints: (record.englishHints as string[] | null) ?? null,
+    verbForms: (record.verbForms as EnrichmentVerbFormSuggestion[] | null) ?? null,
+    rawPayload: record.rawPayload ?? undefined,
+    collectedAt: serialiseDate(record.collectedAt),
+    createdAt: serialiseDate(record.createdAt),
+  } satisfies EnrichmentProviderSnapshot;
+}
+
+function serialiseDate(value: Date | string | null): string {
+  if (!value) {
+    return new Date().toISOString();
+  }
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+  return new Date(value).toISOString();
+}
+
+function areProviderSnapshotsEqual(
+  previous: EnrichmentProviderSnapshot,
+  next: EnrichmentProviderSnapshot,
+): boolean {
+  if (previous.status !== next.status) {
+    return false;
+  }
+  if ((previous.error ?? null) !== (next.error ?? null)) {
+    return false;
+  }
+  return (
+    JSON.stringify(buildSnapshotComparisonPayload(previous))
+    === JSON.stringify(buildSnapshotComparisonPayload(next))
+  );
+}
+
+function buildSnapshotComparisonPayload(snapshot: EnrichmentProviderSnapshot) {
+  return {
+    translations: sortTranslations(snapshot.translations ?? []),
+    examples: sortExamples(snapshot.examples ?? []),
+    synonyms: sortStrings(snapshot.synonyms ?? []),
+    englishHints: sortStrings(snapshot.englishHints ?? []),
+    verbForms: sortVerbForms(snapshot.verbForms ?? []),
+  };
+}
+
+function sortTranslations(values: WordTranslation[]): WordTranslation[] {
+  return [...values]
+    .map((entry) => ({
+      value: entry.value.trim(),
+      source: entry.source?.trim() ?? null,
+      language: entry.language?.trim() ?? null,
+      confidence: entry.confidence ?? null,
+    }))
+    .sort((a, b) => {
+      const valueCompare = a.value.localeCompare(b.value);
+      if (valueCompare !== 0) return valueCompare;
+      const sourceCompare = (a.source ?? "").localeCompare(b.source ?? "");
+      if (sourceCompare !== 0) return sourceCompare;
+      const languageCompare = (a.language ?? "").localeCompare(b.language ?? "");
+      if (languageCompare !== 0) return languageCompare;
+      return (a.confidence ?? 0) - (b.confidence ?? 0);
+    });
+}
+
+function sortExamples(values: WordExample[]): WordExample[] {
+  return [...values]
+    .map((entry) => ({
+      exampleDe: entry.exampleDe?.trim() ?? null,
+      exampleEn: entry.exampleEn?.trim() ?? null,
+      source: entry.source?.trim() ?? null,
+    }))
+    .sort((a, b) => {
+      const deCompare = (a.exampleDe ?? "").localeCompare(b.exampleDe ?? "");
+      if (deCompare !== 0) return deCompare;
+      const enCompare = (a.exampleEn ?? "").localeCompare(b.exampleEn ?? "");
+      if (enCompare !== 0) return enCompare;
+      return (a.source ?? "").localeCompare(b.source ?? "");
+    });
+}
+
+function sortVerbForms(values: EnrichmentVerbFormSuggestion[]): EnrichmentVerbFormSuggestion[] {
+  return [...values]
+    .map((entry) => ({
+      source: entry.source,
+      praeteritum: entry.praeteritum?.trim() || undefined,
+      partizipIi: entry.partizipIi?.trim() || undefined,
+      perfekt: entry.perfekt?.trim() || undefined,
+      aux: entry.aux?.trim() || undefined,
+      auxiliaries: entry.auxiliaries ? sortStrings(entry.auxiliaries) : [],
+      perfektOptions: entry.perfektOptions ? sortStrings(entry.perfektOptions) : [],
+    }))
+    .sort((a, b) => {
+      const sourceCompare = a.source.localeCompare(b.source);
+      if (sourceCompare !== 0) return sourceCompare;
+      const praeteritumCompare = (a.praeteritum ?? "").localeCompare(b.praeteritum ?? "");
+      if (praeteritumCompare !== 0) return praeteritumCompare;
+      const partizipCompare = (a.partizipIi ?? "").localeCompare(b.partizipIi ?? "");
+      if (partizipCompare !== 0) return partizipCompare;
+      const perfektCompare = (a.perfekt ?? "").localeCompare(b.perfekt ?? "");
+      if (perfektCompare !== 0) return perfektCompare;
+      const auxCompare = (a.aux ?? "").localeCompare(b.aux ?? "");
+      if (auxCompare !== 0) return auxCompare;
+      const auxiliariesCompare = a.auxiliaries.join("||").localeCompare(b.auxiliaries.join("||"));
+      if (auxiliariesCompare !== 0) return auxiliariesCompare;
+      return a.perfektOptions.join("||").localeCompare(b.perfektOptions.join("||"));
+    });
+}
+
+function sortStrings(values: string[]): string[] {
+  return normalizeStringList(values).sort((a, b) => a.localeCompare(b));
+}
+
+function normalizeStringList(values: Array<string | null | undefined>): string[] {
+  const seen = new Set<string>();
+  const result: string[] = [];
+  for (const value of values) {
+    const trimmed = value?.trim();
+    if (!trimmed) {
+      continue;
+    }
+    const key = trimmed.toLowerCase();
+    if (!seen.has(key)) {
+      seen.add(key);
+      result.push(trimmed);
+    }
+  }
+  return result;
+}
+
+function mergeStringLists(existing: string[], additions: string[]): string[] {
+  const seen = new Map<string, string>();
+  for (const value of existing) {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      continue;
+    }
+    const key = trimmed.toLowerCase();
+    if (!seen.has(key)) {
+      seen.set(key, trimmed);
+    }
+  }
+  for (const value of additions) {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      continue;
+    }
+    const key = trimmed.toLowerCase();
+    if (!seen.has(key)) {
+      seen.set(key, trimmed);
+    }
+  }
+  return Array.from(seen.values());
 }
 
 function determineUpdates(
@@ -716,10 +1114,8 @@ function determineUpdates(
   const patch: WordPatch = {};
   const updates: FieldUpdate[] = [];
 
-  const translationCandidate = suggestions.translations.find((candidate) => candidate.value.trim());
-  const englishTranslationCandidate = suggestions.translations.find(
-    (candidate) => candidate.value.trim() && isEnglishTranslationCandidate(candidate.language),
-  );
+  const translationCandidate = pickPreferredTranslationCandidate(suggestions.translations);
+  const englishTranslationCandidate = pickPreferredEnglishTranslationCandidate(suggestions.translations);
   const mergedTranslations = mergeTranslationRecords(word.translations, suggestions.translations);
   if (!areTranslationRecordsEqual(word.translations, mergedTranslations)) {
     patch.translations = mergedTranslations;
@@ -922,10 +1318,40 @@ function determineUpdates(
 }
 
 function pickExampleCandidate(examples: ExampleCandidate[]): ExampleCandidate | undefined {
+  const preferKaikki = examples.filter((example) => example.source === "kaikki.org");
+  const fallback = examples.filter((example) => example.source !== "kaikki.org");
   return (
-    examples.find((example) => example.exampleDe && example.exampleEn) ??
-    examples.find((example) => example.exampleDe) ??
-    examples.find((example) => example.exampleEn)
+    preferKaikki.find((example) => example.exampleDe && example.exampleEn)
+    ?? preferKaikki.find((example) => example.exampleDe)
+    ?? preferKaikki.find((example) => example.exampleEn)
+    ?? fallback.find((example) => example.exampleDe && example.exampleEn)
+    ?? fallback.find((example) => example.exampleDe)
+    ?? fallback.find((example) => example.exampleEn)
+  );
+}
+
+function pickPreferredTranslationCandidate(
+  candidates: EnrichmentTranslationCandidate[],
+): EnrichmentTranslationCandidate | undefined {
+  return (
+    candidates.find((candidate) => candidate.source === "kaikki.org" && candidate.value.trim())
+    ?? candidates.find((candidate) => candidate.value.trim())
+  );
+}
+
+function pickPreferredEnglishTranslationCandidate(
+  candidates: EnrichmentTranslationCandidate[],
+): EnrichmentTranslationCandidate | undefined {
+  return (
+    candidates.find(
+      (candidate) =>
+        candidate.source === "kaikki.org"
+        && candidate.value.trim()
+        && isEnglishTranslationCandidate(candidate.language),
+    )
+    ?? candidates.find(
+      (candidate) => candidate.value.trim() && isEnglishTranslationCandidate(candidate.language),
+    )
   );
 }
 
