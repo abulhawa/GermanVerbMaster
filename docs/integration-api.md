@@ -23,6 +23,10 @@ Fetch a curated drill bundle suitable for embedding into an LMS module.
 | `level` | string | Optional CEFR level filter (`A1`–`C2`). |
 | `patternGroup` | string | Filter verbs by conjugation pattern group. |
 
+**Auxiliary values**
+
+Verbs can return `haben`, `sein`, or `haben / sein` for the auxiliary field when both helpers are valid in Perfekt constructions.
+
 **Response**
 ```jsonc
 {

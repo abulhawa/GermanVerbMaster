@@ -19,6 +19,12 @@ import {
 const practiceResult = ["correct", "incorrect"] as const satisfies ReadonlyArray<PracticeResult>;
 const practiceResultEnum = pgEnum("practice_result", practiceResult);
 export const userRoleEnum = pgEnum("user_role", ["standard", "admin"]);
+export const enrichmentMethodEnum = pgEnum("enrichment_method", [
+  "bulk",
+  "manual_api",
+  "manual_entry",
+  "preexisting",
+]);
 
 export const integrationPartners = pgTable("integration_partners", {
   id: serial("id").primaryKey(),
@@ -183,6 +189,25 @@ export const words = pgTable(
     complete: boolean("complete").default(false).notNull(),
     sourcesCsv: text("sources_csv"),
     sourceNotes: text("source_notes"),
+    translations: jsonb("translations").$type<
+      | Array<{
+          value: string;
+          source?: string | null;
+          language?: string | null;
+          confidence?: number | null;
+        }>
+      | null
+    >(),
+    examples: jsonb("examples").$type<
+      | Array<{
+          exampleDe?: string | null;
+          exampleEn?: string | null;
+          source?: string | null;
+        }>
+      | null
+    >(),
+    enrichmentAppliedAt: timestamp("enrichment_applied_at", { withTimezone: true }),
+    enrichmentMethod: enrichmentMethodEnum("enrichment_method"),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },

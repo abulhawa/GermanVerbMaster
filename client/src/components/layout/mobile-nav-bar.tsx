@@ -2,6 +2,7 @@ import { Link, useLocation } from "wouter";
 
 import { cn } from "@/lib/utils";
 import type { AppNavigationItem } from "./navigation";
+import { isNavigationItemActive } from "./navigation";
 
 interface MobileNavBarProps {
   items: AppNavigationItem[];
@@ -16,7 +17,7 @@ export function MobileNavBar({ items }: MobileNavBarProps) {
       className="flex items-center justify-around gap-1"
     >
       {items.map((item) => {
-        const isActive = item.exact ? location === item.href : location.startsWith(item.href);
+        const isActive = isNavigationItemActive(location, item);
         const Icon = item.icon;
 
         return (
