@@ -400,6 +400,21 @@ function isBlank(value: string | null | undefined): boolean {
   return value === undefined || value === null || !value.trim();
 }
 
+function isEnglishTranslationCandidate(language?: string): boolean {
+  if (!language) {
+    return true;
+  }
+  const normalised = language.trim().toLowerCase();
+  if (!normalised) {
+    return true;
+  }
+  if (normalised === "en" || normalised === "eng" || normalised === "english") {
+    return true;
+  }
+  const sanitized = normalised.replace(/[_\s]/g, "-");
+  return sanitized.startsWith("en-") || normalised.startsWith("english");
+}
+
 async function collectSuggestions(
   word: WordRecord,
   config: PipelineConfig,
@@ -702,6 +717,9 @@ function determineUpdates(
   const updates: FieldUpdate[] = [];
 
   const translationCandidate = suggestions.translations.find((candidate) => candidate.value.trim());
+  const englishTranslationCandidate = suggestions.translations.find(
+    (candidate) => candidate.value.trim() && isEnglishTranslationCandidate(candidate.language),
+  );
   const mergedTranslations = mergeTranslationRecords(word.translations, suggestions.translations);
   if (!areTranslationRecordsEqual(word.translations, mergedTranslations)) {
     patch.translations = mergedTranslations;
@@ -713,16 +731,16 @@ function determineUpdates(
     });
   }
   if (
-    translationCandidate &&
+    englishTranslationCandidate &&
     (config.allowOverwrite || isBlank(word.english)) &&
-    !isBlank(translationCandidate.value)
+    !isBlank(englishTranslationCandidate.value)
   ) {
-    patch.english = translationCandidate.value;
+    patch.english = englishTranslationCandidate.value;
     updates.push({
       field: "english",
       previous: word.english,
-      next: translationCandidate.value,
-      source: translationCandidate.source,
+      next: englishTranslationCandidate.value,
+      source: englishTranslationCandidate.source,
     });
   }
 
