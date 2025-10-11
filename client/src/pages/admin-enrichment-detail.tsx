@@ -308,7 +308,7 @@ const WordEnrichmentDetailView = ({
       if (!word) {
         throw new Error('Word is not loaded yet');
       }
-      const patch = buildPatchFromDrafts(word, drafts);
+      const patch = buildPatchFromDrafts(word, drafts, previewData);
       if (!hasPatchChanges(patch)) {
         throw new Error('No changes to apply');
       }
@@ -395,7 +395,11 @@ const WordEnrichmentDetailView = ({
     let value = typeof candidateValue === 'string' ? candidateValue : '';
     if (field === 'aux' && !value) {
       const auxiliaries = option.candidate.auxiliaries ?? [];
-      value = auxiliaries.length === 1 ? auxiliaries[0] : '';
+      if (auxiliaries.length === 1) {
+        value = auxiliaries[0];
+      } else if (auxiliaries.length > 1) {
+        value = auxiliaries.join(' / ');
+      }
     }
     if (field === 'perfekt' && !value) {
       const options = option.candidate.perfektOptions ?? [];
@@ -416,7 +420,15 @@ const WordEnrichmentDetailView = ({
   };
 
   const handleAuxManualChange = (value: string) => {
-    const normalized = value === 'haben' || value === 'sein' ? value : '';
+    const lower = value.toLowerCase();
+    const normalized =
+      lower === 'haben'
+        ? 'haben'
+        : lower === 'sein'
+          ? 'sein'
+          : lower.replace(/\s+/g, '') === 'haben/sein'
+            ? 'haben / sein'
+            : '';
     setDrafts((previous) => ({ ...previous, aux: normalized }));
     setSelectedOptions((current) => ({ ...current, aux: MANUAL_OPTION }));
     setApplyResult(null);
@@ -450,7 +462,14 @@ const WordEnrichmentDetailView = ({
     selectedOptions.perfekt ?? (drafts.perfekt.trim().length ? MANUAL_OPTION : undefined);
   const auxSelectValue =
     selectedOptions.aux ?? (drafts.aux.trim().length ? MANUAL_OPTION : undefined);
-  const auxManualValue = drafts.aux === 'sein' ? 'sein' : drafts.aux === 'haben' ? 'haben' : 'none';
+  const auxManualValue =
+    drafts.aux === 'sein'
+      ? 'sein'
+      : drafts.aux === 'haben'
+        ? 'haben'
+        : drafts.aux === 'haben / sein'
+          ? 'haben / sein'
+          : 'none';
 
   const renderStatusBadge = (label: string, tone: 'default' | 'success' | 'warning' | 'destructive') => {
     const toneClassMap: Record<typeof tone, string> = {
@@ -684,6 +703,36 @@ const WordEnrichmentDetailView = ({
                   <span className="text-muted-foreground">{previewData.suggestions.englishHints.join(', ')}</span>
                 </div>
               ) : null}
+              {previewData.summary.translations?.length ? (
+                <div>
+                  <span className="font-medium">Collected translations:</span>
+                  <ul className="mt-1 list-disc list-inside space-y-1 text-muted-foreground">
+                    {previewData.summary.translations.map((entry, index) => (
+                      <li key={`${entry.value}-${entry.source ?? index}`}>
+                        <span>{entry.value}</span>
+                        {entry.language ? <span>{` (${entry.language})`}</span> : null}
+                        {entry.source ? <span>{` · ${entry.source}`}</span> : null}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+              {previewData.summary.examples?.length ? (
+                <div className="space-y-1">
+                  <span className="font-medium">Collected examples:</span>
+                  <ul className="mt-1 space-y-2 text-muted-foreground">
+                    {previewData.summary.examples.map((entry, index) => (
+                      <li key={`${entry.exampleDe ?? ''}-${entry.exampleEn ?? ''}-${index}`} className="space-y-0.5">
+                        <div>{entry.exampleDe ?? '—'}</div>
+                        {entry.exampleEn ? <div className="text-xs text-muted-foreground">EN: {entry.exampleEn}</div> : null}
+                        {entry.source ? (
+                          <div className="text-xs text-muted-foreground">Source: {entry.source}</div>
+                        ) : null}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
             </div>
             <Separator />
             <div className="space-y-4">
@@ -875,12 +924,13 @@ const WordEnrichmentDetailView = ({
                         <SelectTrigger id="aux-manual-select">
                           <SelectValue placeholder="Select auxiliary verb" />
                         </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="none">Not set</SelectItem>
-                          <SelectItem value="haben">haben</SelectItem>
-                          <SelectItem value="sein">sein</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <SelectContent>
+                        <SelectItem value="none">Not set</SelectItem>
+                        <SelectItem value="haben">haben</SelectItem>
+                        <SelectItem value="sein">sein</SelectItem>
+                        <SelectItem value="haben / sein">haben / sein</SelectItem>
+                      </SelectContent>
+                    </Select>
                     </div>
                   </div>
                 </div>
@@ -981,7 +1031,10 @@ function mergeWordWithDrafts(word: AdminWord, drafts: FieldDrafts): AdminWord {
     praeteritum: drafts.praeteritum.trim().length ? drafts.praeteritum.trim() : null,
     partizipIi: drafts.partizipIi.trim().length ? drafts.partizipIi.trim() : null,
     perfekt: drafts.perfekt.trim().length ? drafts.perfekt.trim() : null,
-    aux: drafts.aux === 'haben' || drafts.aux === 'sein' ? drafts.aux : null,
+    aux:
+      drafts.aux === 'haben' || drafts.aux === 'sein' || drafts.aux === 'haben / sein'
+        ? drafts.aux
+        : null,
   };
 }
 
@@ -990,7 +1043,11 @@ function computeCompletenessWithDraft(word: AdminWord, drafts: FieldDrafts): boo
   return getMissingFields(merged).length === 0;
 }
 
-function buildPatchFromDrafts(word: AdminWord, drafts: FieldDrafts): EnrichmentPatch {
+function buildPatchFromDrafts(
+  word: AdminWord,
+  drafts: FieldDrafts,
+  preview?: WordEnrichmentPreview | null,
+): EnrichmentPatch {
   const patch: EnrichmentPatch = {};
 
   type StringField =
@@ -1027,19 +1084,31 @@ function buildPatchFromDrafts(word: AdminWord, drafts: FieldDrafts): EnrichmentP
   applyField('perfekt');
 
   const auxDraft = drafts.aux.trim().toLowerCase();
-  const auxNormalised = auxDraft === 'haben' || auxDraft === 'sein' ? auxDraft : '';
-  const currentAux = word.aux ?? '';
-  if (!auxNormalised.length) {
+  let auxNormalised: string | null = null;
+  if (auxDraft === 'haben' || auxDraft === 'sein') {
+    auxNormalised = auxDraft;
+  } else if (auxDraft.replace(/\s+/g, '') === 'haben/sein') {
+    auxNormalised = 'haben / sein';
+  }
+  const currentAux = (word.aux ?? '').toLowerCase();
+  if (!auxNormalised) {
     if (word.aux) {
       patch.aux = null;
     }
   } else if (auxNormalised !== currentAux) {
-    patch.aux = auxNormalised as 'haben' | 'sein';
+    patch.aux = auxNormalised as EnrichmentPatch['aux'];
   }
 
   const nextComplete = computeCompletenessWithDraft(word, drafts);
   if (word.complete !== nextComplete) {
     patch.complete = nextComplete;
+  }
+
+  if (preview?.patch.translations !== undefined) {
+    patch.translations = preview.patch.translations ?? null;
+  }
+  if (preview?.patch.examples !== undefined) {
+    patch.examples = preview.patch.examples ?? null;
   }
 
   return patch;
@@ -1103,9 +1172,19 @@ function findMatchingVerbFormOptionId(
   const normalised = trimmed.toLowerCase();
   const matchIndex = options.findIndex((candidate) => {
     const candidateValue = candidate[field];
-    if (!candidateValue) return false;
     if (field === 'aux') {
-      return candidateValue === normalised;
+      const target = normalised.replace(/\s+/g, '');
+      const candidates: string[] = [];
+      if (typeof candidateValue === 'string') {
+        candidates.push(candidateValue);
+      }
+      if (candidate.auxiliaries?.length) {
+        candidates.push(candidate.auxiliaries.join(' / '));
+      }
+      return candidates.some((entry) => entry.replace(/\s+/g, '').toLowerCase() === target);
+    }
+    if (typeof candidateValue !== 'string') {
+      return false;
     }
     return candidateValue.trim().toLowerCase() === normalised;
   });

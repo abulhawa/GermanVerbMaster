@@ -19,6 +19,21 @@ export type PartOfSpeech =
   | 'Part'
   | 'Interj';
 
+export interface WordTranslation {
+  value: string;
+  source?: string | null;
+  language?: string | null;
+  confidence?: number | null;
+}
+
+export interface WordExample {
+  exampleDe?: string | null;
+  exampleEn?: string | null;
+  source?: string | null;
+}
+
+export type EnrichmentMethod = 'bulk' | 'manual_api' | 'manual_entry' | 'preexisting';
+
 export interface Word {
   id: number;
   lemma: string;
@@ -30,7 +45,7 @@ export interface Word {
   gender: string | null;
   plural: string | null;
   separable: boolean | null;
-  aux: 'haben' | 'sein' | null;
+  aux: 'haben' | 'sein' | 'haben / sein' | null;
   praesensIch: string | null;
   praesensEr: string | null;
   praeteritum: string | null;
@@ -42,6 +57,10 @@ export interface Word {
   complete: boolean;
   sourcesCsv: string | null;
   sourceNotes: string | null;
+  translations: WordTranslation[] | null;
+  examples: WordExample[] | null;
+  enrichmentAppliedAt: Date | null;
+  enrichmentMethod: EnrichmentMethod | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -51,7 +70,7 @@ export interface GermanVerb {
   english: string;
   präteritum: string;
   partizipII: string;
-  auxiliary: 'haben' | 'sein';
+  auxiliary: 'haben' | 'sein' | 'haben / sein';
   level: CEFRLevel;
   präteritumExample: string;
   partizipIIExample: string;
@@ -81,7 +100,7 @@ export interface AnswerHistoryLexemeSnapshot {
   level?: CEFRLevel;
   english?: string;
   example?: AnswerHistoryLexemeExample;
-  auxiliary?: 'haben' | 'sein' | null;
+  auxiliary?: 'haben' | 'sein' | 'haben / sein' | null;
 }
 
 export interface PracticeAttemptPayload {
