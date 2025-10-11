@@ -34,6 +34,7 @@ import {
   type SynonymLookup,
   type TranslationLookup,
 } from "./providers";
+import { persistProviderSnapshotToFile } from "./storage";
 
 export type WordRecord = typeof words.$inferSelect;
 type ProviderSnapshotRecord = typeof enrichmentProviderSnapshots.$inferSelect;
@@ -858,6 +859,8 @@ async function persistProviderSnapshotsForWord(
 
     const currentSnapshot = buildProviderSnapshotFromRecord(insertedRecord);
     const previousSnapshot = previousRecord ? buildProviderSnapshotFromRecord(previousRecord) : null;
+
+    await persistProviderSnapshotToFile(currentSnapshot);
     const hasChanges = previousSnapshot ? !areProviderSnapshotsEqual(previousSnapshot, currentSnapshot) : true;
 
     comparisons.push({

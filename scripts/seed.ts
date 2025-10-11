@@ -19,6 +19,9 @@ import {
   upsertGoldenBundles,
   writeGoldenBundlesToDisk,
 } from './etl/golden';
+import type { EnrichmentMethod, WordExample, WordTranslation } from '@shared/types';
+import type { PersistedProviderEntry, PersistedWordData } from '@shared/enrichment';
+import { loadPersistedWordData } from './enrichment/storage';
 
 const LEVEL_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
 const POS_MAP = new Map<string, ExternalPartOfSpeech>([
@@ -84,6 +87,10 @@ interface RawWordRow {
   superlative?: string | null;
   sourcesCsv?: string | null;
   sourceNotes?: string | null;
+  translations?: WordTranslation[] | null;
+  examples?: WordExample[] | null;
+  enrichmentAppliedAt?: string | null;
+  enrichmentMethod?: EnrichmentMethod | null;
 }
 
 interface AggregatedWordWithKey extends AggregatedWord {
@@ -218,6 +225,13 @@ function mergeWord(existing: RawWordRow | null, incoming: RawWordRow): RawWordRo
   merged.superlative = existing.superlative ?? incoming.superlative ?? null;
   merged.sourcesCsv = dedupeSources(existing.sourcesCsv, incoming.sourcesCsv);
   merged.sourceNotes = dedupeSources(existing.sourceNotes, incoming.sourceNotes);
+  merged.translations = mergeTranslations(existing.translations, incoming.translations);
+  merged.examples = mergeExamples(existing.examples, incoming.examples);
+  merged.enrichmentAppliedAt = pickLatestTimestamp(
+    existing.enrichmentAppliedAt ?? null,
+    incoming.enrichmentAppliedAt ?? null,
+  );
+  merged.enrichmentMethod = existing.enrichmentMethod ?? incoming.enrichmentMethod ?? null;
 
   return merged;
 }
@@ -246,6 +260,278 @@ function dedupeSources(existing: string | null | undefined, incoming: string | n
       .forEach((entry) => values.add(entry));
   }
   return values.size ? Array.from(values).join('; ') : null;
+}
+
+function mergeTranslations(
+  existing: WordTranslation[] | null | undefined,
+  incoming: WordTranslation[] | null | undefined,
+): WordTranslation[] | null {
+  const combined = [...(existing ?? []), ...(incoming ?? [])];
+  if (!combined.length) {
+    return null;
+  }
+  const seen = new Set<string>();
+  const deduped: WordTranslation[] = [];
+  for (const entry of combined) {
+    if (!entry || typeof entry.value !== 'string') {
+      continue;
+    }
+    const value = entry.value.trim();
+    if (!value) {
+      continue;
+    }
+    const source = entry.source?.trim() ?? null;
+    const language = entry.language?.trim() ?? null;
+    const confidence = typeof entry.confidence === 'number' ? entry.confidence : null;
+    const key = `${value.toLowerCase()}::${source ?? ''}::${language ?? ''}::${confidence ?? ''}`;
+    if (seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+    deduped.push({ value, source, language, confidence });
+  }
+  return deduped.length ? deduped : null;
+}
+
+function mergeExamples(
+  existing: WordExample[] | null | undefined,
+  incoming: WordExample[] | null | undefined,
+): WordExample[] | null {
+  const combined = [...(existing ?? []), ...(incoming ?? [])];
+  if (!combined.length) {
+    return null;
+  }
+  const seen = new Set<string>();
+  const deduped: WordExample[] = [];
+  for (const entry of combined) {
+    if (!entry) {
+      continue;
+    }
+    const exampleDe = entry.exampleDe?.trim() ?? null;
+    const exampleEn = entry.exampleEn?.trim() ?? null;
+    const source = entry.source?.trim() ?? null;
+    if (!exampleDe && !exampleEn) {
+      continue;
+    }
+    const key = `${exampleDe ?? ''}::${exampleEn ?? ''}::${source ?? ''}`.toLowerCase();
+    if (seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+    deduped.push({ exampleDe, exampleEn, source });
+  }
+  return deduped.length ? deduped : null;
+}
+
+function pickLatestTimestamp(a: string | null, b: string | null): string | null {
+  const candidates = [a, b]
+    .filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
+    .map((value) => new Date(value).getTime())
+    .filter((value) => Number.isFinite(value));
+  if (!candidates.length) {
+    return a ?? b ?? null;
+  }
+  const max = Math.max(...candidates);
+  return new Date(max).toISOString();
+}
+
+function isEnglishLanguage(language?: string | null): boolean {
+  if (!language) {
+    return true;
+  }
+  const normalised = language.trim().toLowerCase();
+  if (!normalised) {
+    return true;
+  }
+  if (normalised === 'en' || normalised === 'eng' || normalised === 'english') {
+    return true;
+  }
+  const sanitized = normalised.replace(/[_\s]/g, '-');
+  return sanitized.startsWith('en-') || normalised.startsWith('english');
+}
+
+function addAuxCandidate(target: Set<'haben' | 'sein'>, value: string | null | undefined): void {
+  if (!value) {
+    return;
+  }
+  const normalised = value.trim().toLowerCase();
+  if (!normalised) {
+    return;
+  }
+  if (normalised.includes('haben') && normalised.includes('sein')) {
+    target.add('haben');
+    target.add('sein');
+    return;
+  }
+  if (normalised.startsWith('hab')) {
+    target.add('haben');
+    return;
+  }
+  if (normalised.startsWith('sein') || normalised.startsWith('ist')) {
+    target.add('sein');
+  }
+}
+
+function determineAuxFromSet(auxiliaries: Set<'haben' | 'sein'>): string | null {
+  if (!auxiliaries.size) {
+    return null;
+  }
+  if (auxiliaries.size > 1) {
+    return 'haben / sein';
+  }
+  const [value] = auxiliaries;
+  return value ?? null;
+}
+
+function buildRowFromPersistedWordData(data: PersistedWordData): RawWordRow | null {
+  const pos = normalisePos(data.pos);
+  if (!pos) {
+    return null;
+  }
+
+  let english: string | null = null;
+  let exampleDe: string | null = null;
+  let exampleEn: string | null = null;
+  let translations: WordTranslation[] | null = null;
+  let examples: WordExample[] | null = null;
+  const auxiliaries = new Set<'haben' | 'sein'>();
+  const perfektValues = new Set<string>();
+  let praeteritum: string | null = null;
+  let partizipIi: string | null = null;
+  let enrichmentAppliedAt: string | null = data.updatedAt ?? null;
+  let enrichmentMethod: EnrichmentMethod | null = null;
+  let separable: boolean | null = null;
+  let sourcesCsv: string | null = null;
+
+  for (const provider of data.providers) {
+    sourcesCsv = dedupeSources(sourcesCsv, provider.providerLabel ?? provider.providerId ?? null);
+
+    translations = mergeTranslations(translations, provider.translations);
+    if (!english && provider.translations) {
+      const candidate = provider.translations.find((entry) => isEnglishLanguage(entry.language));
+      if (candidate?.value?.trim()) {
+        english = candidate.value.trim();
+      }
+    }
+
+    examples = mergeExamples(examples, provider.examples);
+    if ((!exampleDe || !exampleEn) && provider.examples) {
+      const candidate = provider.examples.find(
+        (entry) => Boolean(entry.exampleDe?.trim() || entry.exampleEn?.trim()),
+      );
+      if (candidate) {
+        exampleDe = exampleDe ?? candidate.exampleDe?.trim() ?? null;
+        exampleEn = exampleEn ?? candidate.exampleEn?.trim() ?? null;
+      }
+    }
+
+    if (provider.verbForms) {
+      for (const suggestion of provider.verbForms) {
+        if (!praeteritum && suggestion.praeteritum?.trim()) {
+          praeteritum = suggestion.praeteritum.trim();
+        }
+        if (!partizipIi && suggestion.partizipIi?.trim()) {
+          partizipIi = suggestion.partizipIi.trim();
+        }
+        if (suggestion.perfekt?.trim()) {
+          perfektValues.add(suggestion.perfekt.trim());
+        }
+        if (Array.isArray(suggestion.perfektOptions)) {
+          for (const option of suggestion.perfektOptions) {
+            const trimmed = option?.trim();
+            if (trimmed) {
+              perfektValues.add(trimmed);
+            }
+          }
+        }
+        addAuxCandidate(auxiliaries, suggestion.aux);
+        if (Array.isArray(suggestion.auxiliaries)) {
+          for (const aux of suggestion.auxiliaries) {
+            addAuxCandidate(auxiliaries, aux);
+          }
+        }
+      }
+    }
+
+    if (provider.metadata && typeof provider.metadata === 'object') {
+      const method = provider.metadata.enrichmentMethod;
+      if (!enrichmentMethod && typeof method === 'string') {
+        enrichmentMethod = method as EnrichmentMethod;
+      }
+      const appliedAt = provider.metadata.appliedAt ?? provider.metadata.collectedAt;
+      if (typeof appliedAt === 'string') {
+        enrichmentAppliedAt = pickLatestTimestamp(enrichmentAppliedAt, appliedAt);
+      }
+      if (typeof provider.metadata.separable === 'boolean' && separable === null) {
+        separable = provider.metadata.separable;
+      }
+    }
+
+    if (provider.collectedAt) {
+      enrichmentAppliedAt = pickLatestTimestamp(enrichmentAppliedAt, provider.collectedAt);
+    }
+  }
+
+  if (!english && translations) {
+    const candidate = translations.find((entry) => isEnglishLanguage(entry.language));
+    if (candidate?.value?.trim()) {
+      english = candidate.value.trim();
+    }
+  }
+
+  if ((!exampleDe || !exampleEn) && examples) {
+    const candidate = examples.find((entry) => Boolean(entry.exampleDe || entry.exampleEn));
+    if (candidate) {
+      exampleDe = exampleDe ?? candidate.exampleDe ?? null;
+      exampleEn = exampleEn ?? candidate.exampleEn ?? null;
+    }
+  }
+
+  const aux = determineAuxFromSet(auxiliaries);
+  let perfekt = perfektValues.size ? Array.from(perfektValues).join('; ') : null;
+
+  if (!perfekt && partizipIi && auxiliaries.size) {
+    const auxList = Array.from(auxiliaries);
+    if (auxList.length === 1) {
+      perfekt = `${auxList[0]} ${partizipIi}`;
+    } else {
+      perfekt = auxList.map((value) => `${value} ${partizipIi}`).join('; ');
+    }
+  }
+
+  return {
+    lemma: data.lemma,
+    pos,
+    level: null,
+    english,
+    exampleDe,
+    exampleEn,
+    gender: null,
+    plural: null,
+    separable,
+    aux,
+    praesensIch: null,
+    praesensEr: null,
+    praeteritum,
+    partizipIi,
+    perfekt,
+    comparative: null,
+    superlative: null,
+    sourcesCsv,
+    sourceNotes: null,
+    translations,
+    examples,
+    enrichmentAppliedAt,
+    enrichmentMethod,
+  } satisfies RawWordRow;
+}
+
+function toDateOrNull(value: string | null | undefined): Date | null {
+  if (!value) {
+    return null;
+  }
+  const date = new Date(value);
+  return Number.isFinite(date.getTime()) ? date : null;
 }
 
 async function aggregateWords(rootDir: string): Promise<AggregatedWordWithKey[]> {
@@ -281,6 +567,12 @@ async function aggregateWords(rootDir: string): Promise<AggregatedWordWithKey[]>
 
   for (const row of externalRows) {
     const mapped = mapRow(row as unknown as Record<string, unknown>);
+    if (mapped) combinedRows.push(mapped);
+  }
+
+  const persistedWordData = await loadPersistedWordData(rootDir);
+  for (const entry of persistedWordData) {
+    const mapped = buildRowFromPersistedWordData(entry);
     if (mapped) combinedRows.push(mapped);
   }
 
@@ -341,6 +633,10 @@ async function aggregateWords(rootDir: string): Promise<AggregatedWordWithKey[]>
       complete,
       sourcesCsv: value.sourcesCsv ?? null,
       sourceNotes: value.sourceNotes ?? null,
+      translations: value.translations ?? null,
+      examples: value.examples ?? null,
+      enrichmentAppliedAt: value.enrichmentAppliedAt ?? null,
+      enrichmentMethod: value.enrichmentMethod ?? null,
     });
   }
 
@@ -392,6 +688,10 @@ async function seedLegacyWords(wordsToUpsert: AggregatedWordWithKey[]): Promise<
         complete: word.complete,
         sourcesCsv: word.sourcesCsv,
         sourceNotes: word.sourceNotes,
+        translations: word.translations ?? null,
+        examples: word.examples ?? null,
+        enrichmentAppliedAt: toDateOrNull(word.enrichmentAppliedAt),
+        enrichmentMethod: word.enrichmentMethod ?? null,
       })
       .onConflictDoUpdate({
         target: [words.lemma, words.pos],
@@ -415,6 +715,10 @@ async function seedLegacyWords(wordsToUpsert: AggregatedWordWithKey[]): Promise<
           complete: sql`excluded.complete`,
           sourcesCsv: sql`excluded.sources_csv`,
           sourceNotes: sql`excluded.source_notes`,
+          translations: sql`excluded.translations`,
+          examples: sql`excluded.examples`,
+          enrichmentAppliedAt: sql`excluded.enrichment_applied_at`,
+          enrichmentMethod: sql`excluded.enrichment_method`,
           updatedAt: sql`now()`,
         },
       });

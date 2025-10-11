@@ -4,7 +4,7 @@ import { inArray, sql } from 'drizzle-orm';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import type { PartOfSpeech } from '@shared';
+import type { EnrichmentMethod, PartOfSpeech, WordExample, WordTranslation } from '@shared';
 import {
   type LexemePos,
   taskTypeRegistry,
@@ -60,6 +60,10 @@ export interface AggregatedWord {
   complete: boolean;
   sourcesCsv: string | null;
   sourceNotes: string | null;
+  translations: WordTranslation[] | null;
+  examples: WordExample[] | null;
+  enrichmentAppliedAt: string | null;
+  enrichmentMethod: EnrichmentMethod | null;
 }
 
 export interface LexemeSeed {

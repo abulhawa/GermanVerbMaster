@@ -101,6 +101,41 @@ export interface EnrichmentProviderSnapshotComparison {
   hasChanges: boolean;
 }
 
+export interface PersistedProviderEntry {
+  lemma: string;
+  pos: PartOfSpeech | string;
+  providerId: EnrichmentProviderId | string;
+  providerLabel?: string | null;
+  status: EnrichmentSnapshotStatus;
+  error?: string | null;
+  collectedAt?: string | null;
+  translations?: WordTranslation[] | null;
+  examples?: WordExample[] | null;
+  synonyms?: string[] | null;
+  englishHints?: string[] | null;
+  verbForms?: EnrichmentVerbFormSuggestion[] | null;
+  rawPayload?: unknown;
+  wordId?: number | null;
+  metadata?: Record<string, unknown> | null;
+}
+
+export interface PersistedProviderFile {
+  schemaVersion?: number;
+  providerId?: EnrichmentProviderId | string;
+  providerLabel?: string | null;
+  pos?: PartOfSpeech | string;
+  updatedAt?: string;
+  entries?: Record<string, PersistedProviderEntry>;
+  meta?: Record<string, unknown> | null;
+}
+
+export interface PersistedWordData {
+  lemma: string;
+  pos: PartOfSpeech | string;
+  providers: PersistedProviderEntry[];
+  updatedAt: string;
+}
+
 export interface WordEnrichmentSuggestions {
   translations: EnrichmentTranslationCandidate[];
   examples: EnrichmentExampleCandidate[];

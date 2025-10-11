@@ -149,6 +149,7 @@ Shut down the container with `docker stop gvm-postgres` when you are done.
 
 ## Vocabulary enrichment helpers
 - Run `npm run enrich` to execute the enrichment pipeline. By default it inspects incomplete entries (`ONLY_INCOMPLETE=true`), queries Kaikki's Wiktextract dataset, OpenThesaurus, MyMemory, Tatoeba, and optionally OpenAI (`ENABLE_AI=true`) for missing metadata, and writes a structured report under `data/generated/enrichment/`. Set `APPLY_UPDATES=true` to upsert the suggested `english`/example values back into Postgres after taking a JSON backup (`data/generated/backups/words-backup-*.json`). Use `COLLECT_WIKTEXTRACT=false` to disable the Wiktextract integration when debugging network behaviour.
+- Every provider snapshot is also persisted under `data/enrichment/<pos>/<provider>.json` so Kaikki/Wiktextract, MyMemory, Tatoeba, OpenThesaurus, and OpenAI responses remain source-of-truth across schema changes. The seeding script loads these files and replays their translations, examples, verb forms, and enrichment metadata back into Postgres to keep canonical words intact.
 - `LIMIT=<n>`, `CANONICAL_MODE=<non-canonical|canonical|all>`, `DELAY_MS=<ms>`, and `OVERWRITE_EXISTING=true` fine-tune batch size, target scope, rate limiting, and whether existing translations/examples may be replaced.
 - The legacy `tsx scripts/enrich-non-canonical-words.ts` wrapper remains for quick exports to `data/generated/non-canonical-enrichment.json` without mutating the database.
 
