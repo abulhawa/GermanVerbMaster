@@ -55,9 +55,12 @@ describe('lookupWiktextract', () => {
     const result = await lookupWiktextract('abbiegen');
 
     expect(result).not.toBeNull();
-    expect(result?.translations).toEqual(['turn', 'turn off']);
+    expect(result?.translations.map((entry) => entry.value)).toEqual(['turn', 'turn off']);
+    expect(result?.translations.map((entry) => entry.language)).toEqual(['English', 'English']);
     expect(result?.englishHints).toEqual(['to turn']);
-    expect(result?.example).toEqual({ exampleDe: 'Biegen Sie links ab.', exampleEn: 'Turn left.' });
+    expect(result?.examples).toEqual([
+      { exampleDe: 'Biegen Sie links ab.', exampleEn: 'Turn left.' },
+    ]);
     expect(result?.synonyms).toEqual(['abbiegen']);
     expect(result?.verbForms?.praeteritum).toBe('bog ab');
     expect(result?.verbForms?.partizipIi).toBe('abgebogen');
@@ -94,7 +97,9 @@ describe('lookupWiktextract', () => {
     const result = await lookupWiktextract('abbiegen');
 
     expect(result).not.toBeNull();
-    expect(result?.translations).toEqual(expect.arrayContaining(['to turn', 'abbiegen']));
+    expect(result?.translations.map((entry) => entry.value)).toEqual(
+      expect.arrayContaining(['to turn', 'abbiegen']),
+    );
     expect(result?.pivotUsed).toBe(true);
   });
 });

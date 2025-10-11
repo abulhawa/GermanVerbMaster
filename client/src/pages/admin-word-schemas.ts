@@ -11,7 +11,7 @@ export const wordSchema = z.object({
   gender: z.string().nullable(),
   plural: z.string().nullable(),
   separable: z.boolean().nullable(),
-  aux: z.enum(['haben', 'sein']).nullable(),
+  aux: z.enum(['haben', 'sein', 'haben / sein']).nullable(),
   praesensIch: z.string().nullable(),
   praesensEr: z.string().nullable(),
   praeteritum: z.string().nullable(),
@@ -23,6 +23,27 @@ export const wordSchema = z.object({
   complete: z.boolean(),
   sourcesCsv: z.string().nullable(),
   sourceNotes: z.string().nullable(),
+  translations: z
+    .array(
+      z.object({
+        value: z.string(),
+        source: z.string().nullable().optional(),
+        language: z.string().nullable().optional(),
+        confidence: z.number().nullable().optional(),
+      }),
+    )
+    .nullable(),
+  examples: z
+    .array(
+      z.object({
+        exampleDe: z.string().nullable().optional(),
+        exampleEn: z.string().nullable().optional(),
+        source: z.string().nullable().optional(),
+      }),
+    )
+    .nullable(),
+  enrichmentAppliedAt: z.coerce.date().nullable(),
+  enrichmentMethod: z.enum(['bulk', 'manual_api', 'manual_entry', 'preexisting']).nullable(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 });

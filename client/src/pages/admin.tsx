@@ -88,6 +88,7 @@ const verbFields: EditFieldConfig[] = [
     { label: 'Unset', value: 'unset' },
     { label: 'haben', value: 'haben' },
     { label: 'sein', value: 'sein' },
+    { label: 'haben / sein', value: 'haben / sein' },
   ] },
   { key: 'separable', label: 'Separable', type: 'select', options: [
     { label: 'Unset', value: 'unset' },
@@ -173,7 +174,11 @@ function preparePayload(form: WordFormState, pos: Word['pos']) {
   if (pos === 'V') {
     if (form.aux === 'unset') {
       payload.aux = null;
-    } else if (form.aux === 'haben' || form.aux === 'sein') {
+    } else if (
+      form.aux === 'haben'
+      || form.aux === 'sein'
+      || form.aux === 'haben / sein'
+    ) {
       payload.aux = form.aux;
     }
 

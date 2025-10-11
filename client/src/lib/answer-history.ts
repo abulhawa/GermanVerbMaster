@@ -79,7 +79,7 @@ function extractLexemeSnapshotFromTask(task: PracticeTask): AnswerHistoryLexemeS
   let english: string | undefined;
   let exampleDe: string | null | undefined;
   let exampleEn: string | null | undefined;
-  let auxiliary: 'haben' | 'sein' | null | undefined;
+  let auxiliary: 'haben' | 'sein' | 'haben / sein' | null | undefined;
 
   if (isRecord(metadata)) {
     if (typeof metadata.level === 'string') {
@@ -99,7 +99,11 @@ function extractLexemeSnapshotFromTask(task: PracticeTask): AnswerHistoryLexemeS
         exampleEn = metadata.example.en;
       }
     }
-    if (metadata.auxiliary === 'haben' || metadata.auxiliary === 'sein') {
+    if (
+      metadata.auxiliary === 'haben'
+      || metadata.auxiliary === 'sein'
+      || metadata.auxiliary === 'haben / sein'
+    ) {
       auxiliary = metadata.auxiliary;
     }
   }

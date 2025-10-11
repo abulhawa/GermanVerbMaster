@@ -1,4 +1,4 @@
-import type { PartOfSpeech } from "./types.js";
+import type { EnrichmentMethod, PartOfSpeech, WordExample, WordTranslation } from "./types.js";
 
 export type EnrichmentField =
   | "english"
@@ -9,7 +9,11 @@ export type EnrichmentField =
   | "praeteritum"
   | "partizipIi"
   | "perfekt"
-  | "aux";
+  | "aux"
+  | "translations"
+  | "examples"
+  | "enrichmentAppliedAt"
+  | "enrichmentMethod";
 
 export interface EnrichmentFieldUpdate {
   field: EnrichmentField;
@@ -22,6 +26,7 @@ export interface EnrichmentTranslationCandidate {
   value: string;
   source: string;
   confidence?: number;
+  language?: string;
 }
 
 export interface EnrichmentExampleCandidate {
@@ -70,9 +75,11 @@ export interface EnrichmentWordSummary {
   pos: PartOfSpeech | string;
   missingFields: string[];
   translation?: EnrichmentTranslationCandidate;
+  translations?: WordTranslation[];
   englishHints?: string[];
   synonyms: string[];
   example?: EnrichmentExampleCandidate;
+  examples?: WordExample[];
   verbForms?: EnrichmentVerbFormSuggestion;
   updates: EnrichmentFieldUpdate[];
   applied: boolean;
@@ -90,7 +97,11 @@ export type EnrichmentPatch = Partial<{
   praeteritum: string | null;
   partizipIi: string | null;
   perfekt: string | null;
-  aux: "haben" | "sein" | null;
+  aux: "haben" | "sein" | "haben / sein" | null;
+  translations: WordTranslation[] | null;
+  examples: WordExample[] | null;
+  enrichmentAppliedAt: string | null;
+  enrichmentMethod: EnrichmentMethod | null;
 }>;
 
 export interface WordEnrichmentPreview {

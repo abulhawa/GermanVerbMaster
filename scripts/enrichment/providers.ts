@@ -20,6 +20,7 @@ export interface TranslationLookup {
   translation?: string;
   source: string;
   confidence?: number;
+  language?: string;
 }
 
 export interface ExampleLookup {
@@ -114,13 +115,20 @@ interface WiktextractVerbForms {
   auxiliaries: string[];
 }
 
+export interface WiktextractTranslation {
+  value: string;
+  language?: string;
+}
+
+export interface WiktextractExample {
+  exampleDe?: string;
+  exampleEn?: string;
+}
+
 export interface WiktextractLookup {
-  translations: string[];
+  translations: WiktextractTranslation[];
   synonyms: string[];
-  example?: {
-    exampleDe?: string;
-    exampleEn?: string;
-  };
+  examples: WiktextractExample[];
   englishHints: string[];
   verbForms?: WiktextractVerbForms;
   sourceDe: string;
@@ -240,10 +248,10 @@ function extractVerbForms(entry: KaikkiEntry): WiktextractVerbForms | undefined 
   };
 }
 
-function pickExampleFromEntry(entry: KaikkiEntry): {
-  exampleDe?: string;
-  exampleEn?: string;
-} | undefined {
+function collectExamples(entry: KaikkiEntry): WiktextractExample[] {
+  const results: WiktextractExample[] = [];
+  const seen = new Set<string>();
+
   for (const sense of toArray<KaikkiSenseEntry>(entry.senses)) {
     for (const example of toArray<KaikkiExampleEntry>(sense.examples)) {
       const exampleDe = example.text?.trim();
@@ -251,13 +259,19 @@ function pickExampleFromEntry(entry: KaikkiEntry): {
       if (!exampleDe && !exampleEn) {
         continue;
       }
-      return {
+      const key = `${(exampleDe ?? "").toLowerCase()}::${(exampleEn ?? "").toLowerCase()}`;
+      if (seen.has(key)) {
+        continue;
+      }
+      seen.add(key);
+      results.push({
         exampleDe: exampleDe || undefined,
         exampleEn: exampleEn || undefined,
-      };
+      });
     }
   }
-  return undefined;
+
+  return results;
 }
 
 function collectSynonyms(entry: KaikkiEntry): string[] {
@@ -300,17 +314,20 @@ function collectGlosses(entry: KaikkiEntry): string[] {
   return Array.from(new Set(glosses));
 }
 
-function collectTranslations(entry: KaikkiEntry): string[] {
-  const translations = new Set<string>();
+function collectTranslations(entry: KaikkiEntry): WiktextractTranslation[] {
+  const translations = new Map<string, WiktextractTranslation>();
   for (const sense of toArray<KaikkiSenseEntry>(entry.senses)) {
     for (const translation of toArray<KaikkiTranslationEntry>(sense.translations)) {
       const word = translation.word?.trim();
-      if (word) {
-        translations.add(word);
+      if (!word) continue;
+      const language = translation.lang?.trim() || translation.lang_code?.trim();
+      const key = `${word.toLowerCase()}::${(language ?? "").toLowerCase()}`;
+      if (!translations.has(key)) {
+        translations.set(key, { value: word, language: language || undefined });
       }
     }
   }
-  return Array.from(translations);
+  return Array.from(translations.values());
 }
 
 export async function lookupWiktextract(lemma: string): Promise<WiktextractLookup | null> {
@@ -330,15 +347,28 @@ export async function lookupWiktextract(lemma: string): Promise<WiktextractLooku
   const translations = collectTranslations(verbEntry);
   const synonyms = collectSynonyms(verbEntry);
   const englishHints = collectGlosses(verbEntry);
-  const example = pickExampleFromEntry(verbEntry);
+  const examples = collectExamples(verbEntry);
   const verbForms = extractVerbForms(verbEntry);
 
   let pivotUsed = false;
-  const collectedTranslations = new Set(translations);
+  const collectedTranslations = new Map<string, WiktextractTranslation>();
+  const addTranslation = (value: string | undefined, language?: string | null) => {
+    const trimmed = value?.trim();
+    if (!trimmed) return;
+    const lang = language?.trim();
+    const key = `${trimmed.toLowerCase()}::${(lang ?? "").toLowerCase()}`;
+    if (!collectedTranslations.has(key)) {
+      collectedTranslations.set(key, { value: trimmed, language: lang || undefined });
+    }
+  };
+
+  for (const translation of translations) {
+    addTranslation(translation.value, translation.language);
+  }
 
   if (!collectedTranslations.size && englishHints.length) {
     for (const hint of englishHints) {
-      collectedTranslations.add(hint);
+      addTranslation(hint, "en");
     }
   }
 
@@ -352,10 +382,7 @@ export async function lookupWiktextract(lemma: string): Promise<WiktextractLooku
         if (entry.lang !== "English") continue;
         for (const sense of toArray<KaikkiSenseEntry>(entry.senses)) {
           for (const translation of toArray<KaikkiTranslationEntry>(sense.translations)) {
-            const word = translation.word?.trim();
-            if (word) {
-              collectedTranslations.add(word);
-            }
+            addTranslation(translation.word, translation.lang ?? translation.lang_code);
           }
         }
       }
@@ -363,9 +390,9 @@ export async function lookupWiktextract(lemma: string): Promise<WiktextractLooku
   }
 
   return {
-    translations: Array.from(collectedTranslations),
+    translations: Array.from(collectedTranslations.values()),
     synonyms,
-    example,
+    examples,
     englishHints,
     verbForms,
     sourceDe: germanUrl,
@@ -431,6 +458,7 @@ export async function lookupTranslation(lemma: string): Promise<TranslationLooku
       translation: highQualityMatch.translation,
       confidence: typeof highQualityMatch.confidence === "number" ? highQualityMatch.confidence : undefined,
       source: "mymemory.translated.net",
+      language: "en",
     };
   }
 
@@ -440,6 +468,7 @@ export async function lookupTranslation(lemma: string): Promise<TranslationLooku
       translation: fallback,
       source: "mymemory.translated.net",
       confidence: typeof data.responseData?.match === "number" ? data.responseData.match * 100 : undefined,
+      language: "en",
     };
   }
 

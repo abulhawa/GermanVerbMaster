@@ -219,9 +219,12 @@ const optionalAuxiliary = z
       if (["haben", "sein"].includes(normalized)) {
         return normalized;
       }
+      if (normalized.replace(/\s+/g, "") === "haben/sein") {
+        return "haben / sein";
+      }
     }
     return value;
-  }, z.union([z.enum(["haben", "sein"]), z.null()]))
+  }, z.union([z.enum(["haben", "sein", "haben / sein"]), z.null()]))
   .optional();
 
 const optionalAux = z
@@ -232,10 +235,47 @@ const optionalAux = z
       const normalized = value.trim().toLowerCase();
       if (!normalized) return null;
       if (normalized === "haben" || normalized === "sein") return normalized;
+      if (normalized.replace(/\s+/g, "") === "haben/sein") return "haben / sein";
     }
     return value;
-  }, z.union([z.literal("haben"), z.literal("sein"), z.null()]))
+  }, z.union([z.literal("haben"), z.literal("sein"), z.literal("haben / sein"), z.null()]))
   .optional();
+
+const optionalConfidence = z
+  .preprocess((value) => {
+    if (value === undefined) return undefined;
+    if (value === null) return null;
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }, z.union([z.number(), z.null()]))
+  .optional();
+
+const translationRecordSchema = z.object({
+  value: z.string().min(1).max(400),
+  source: optionalText(200),
+  language: optionalText(50),
+  confidence: optionalConfidence,
+});
+
+const exampleRecordSchema = z.object({
+  exampleDe: optionalText(800),
+  exampleEn: optionalText(800),
+  source: optionalText(200),
+});
+
+const optionalTimestamp = z
+  .preprocess((value) => {
+    if (value === undefined) return undefined;
+    if (value === null) return null;
+    if (value instanceof Date) {
+      return value;
+    }
+    const date = new Date(String(value));
+    return Number.isNaN(date.getTime()) ? null : date;
+  }, z.union([z.date(), z.null()]))
+  .optional();
+
+const enrichmentMethodSchema = z.enum(["bulk", "manual_api", "manual_entry", "preexisting"]);
 
 const optionalLevel = z
   .preprocess((value) => {
@@ -274,6 +314,10 @@ const wordUpdateSchema = z
     canonical: optionalBoolean,
     sourcesCsv: optionalText(500),
     sourceNotes: optionalText(500),
+    translations: translationRecordSchema.array().nullable().optional(),
+    examples: exampleRecordSchema.array().nullable().optional(),
+    enrichmentAppliedAt: optionalTimestamp,
+    enrichmentMethod: enrichmentMethodSchema.nullable().optional(),
   })
   .strict();
 
@@ -315,6 +359,10 @@ const enrichmentPatchSchema = z
     partizipIi: optionalText(200),
     perfekt: optionalText(200),
     aux: optionalAuxiliary,
+    translations: translationRecordSchema.array().nullable().optional(),
+    examples: exampleRecordSchema.array().nullable().optional(),
+    enrichmentAppliedAt: optionalTimestamp,
+    enrichmentMethod: enrichmentMethodSchema.nullable().optional(),
   })
   .partial();
 
@@ -457,11 +505,25 @@ function computeWordCompleteness(word: Pick<Word, "pos"> & Partial<Word>): boole
   }
 }
 
+function normaliseAuxiliaryValue(aux: string | null | undefined): 'haben' | 'sein' | 'haben / sein' {
+  if (!aux) {
+    return 'haben';
+  }
+  const trimmed = aux.trim().toLowerCase();
+  if (trimmed === 'sein') {
+    return 'sein';
+  }
+  if (trimmed.replace(/\s+/g, '') === 'haben/sein') {
+    return 'haben / sein';
+  }
+  return 'haben';
+}
+
 function toGermanVerb(word: Word): GermanVerb {
   const english = word.english ?? "";
   const prateritum = word.praeteritum ?? "";
   const partizip = word.partizipIi ?? "";
-  const auxiliary = word.aux === "sein" ? "sein" : "haben";
+  const auxiliary = normaliseAuxiliaryValue(word.aux);
   const level = LEVEL_ORDER.includes((word.level ?? "A1") as typeof LEVEL_ORDER[number])
     ? (word.level as GermanVerb["level"])
     : "A1";
@@ -1281,6 +1343,10 @@ export function registerRoutes(app: Express): void {
       assign("superlative", "superlative");
       assign("sourcesCsv", "sourcesCsv");
       assign("sourceNotes", "sourceNotes");
+      assign("translations", "translations");
+      assign("examples", "examples");
+      assign("enrichmentAppliedAt", "enrichmentAppliedAt");
+      assign("enrichmentMethod", "enrichmentMethod");
 
       const canonical = data.canonical ?? existing.canonical;
       const merged: Pick<Word, "pos"> & Partial<Word> = {
@@ -1293,6 +1359,22 @@ export function registerRoutes(app: Express): void {
 
       updates.canonical = canonical;
       updates.complete = complete;
+      const hasContentUpdates = Object.keys(updates).some((key) =>
+        ![
+          "canonical",
+          "complete",
+          "updatedAt",
+          "enrichmentAppliedAt",
+          "enrichmentMethod",
+        ].includes(key),
+      );
+
+      if (hasContentUpdates && !Object.prototype.hasOwnProperty.call(updates, "enrichmentAppliedAt")) {
+        updates.enrichmentAppliedAt = sql`now()`;
+      }
+      if (hasContentUpdates && !Object.prototype.hasOwnProperty.call(updates, "enrichmentMethod")) {
+        updates.enrichmentMethod = "manual_entry";
+      }
       updates.updatedAt = sql`now()`;
 
       await db.update(words).set(updates).where(eq(words.id, id));
@@ -1453,53 +1535,80 @@ export function registerRoutes(app: Express): void {
       const patch = parsed.data.patch as EnrichmentPatch;
       const updates: Record<string, unknown> = {};
       const appliedFields: string[] = [];
+      let contentApplied = false;
 
       if (Object.prototype.hasOwnProperty.call(patch, "english") && patch.english !== undefined) {
         if (patch.english !== existing.english) {
           updates.english = patch.english;
           appliedFields.push("english");
+          contentApplied = true;
         }
       }
       if (Object.prototype.hasOwnProperty.call(patch, "exampleDe") && patch.exampleDe !== undefined) {
         if (patch.exampleDe !== existing.exampleDe) {
           updates.exampleDe = patch.exampleDe;
           appliedFields.push("exampleDe");
+          contentApplied = true;
         }
       }
       if (Object.prototype.hasOwnProperty.call(patch, "exampleEn") && patch.exampleEn !== undefined) {
         if (patch.exampleEn !== existing.exampleEn) {
           updates.exampleEn = patch.exampleEn;
           appliedFields.push("exampleEn");
+          contentApplied = true;
         }
       }
       if (Object.prototype.hasOwnProperty.call(patch, "sourcesCsv") && patch.sourcesCsv !== undefined) {
         if (patch.sourcesCsv !== existing.sourcesCsv) {
           updates.sourcesCsv = patch.sourcesCsv;
           appliedFields.push("sourcesCsv");
+          contentApplied = true;
         }
       }
       if (Object.prototype.hasOwnProperty.call(patch, "praeteritum") && patch.praeteritum !== undefined) {
         if (patch.praeteritum !== existing.praeteritum) {
           updates.praeteritum = patch.praeteritum;
           appliedFields.push("praeteritum");
+          contentApplied = true;
         }
       }
       if (Object.prototype.hasOwnProperty.call(patch, "partizipIi") && patch.partizipIi !== undefined) {
         if (patch.partizipIi !== existing.partizipIi) {
           updates.partizipIi = patch.partizipIi;
           appliedFields.push("partizipIi");
+          contentApplied = true;
         }
       }
       if (Object.prototype.hasOwnProperty.call(patch, "perfekt") && patch.perfekt !== undefined) {
         if (patch.perfekt !== existing.perfekt) {
           updates.perfekt = patch.perfekt;
           appliedFields.push("perfekt");
+          contentApplied = true;
         }
       }
       if (Object.prototype.hasOwnProperty.call(patch, "aux") && patch.aux !== undefined) {
         if (patch.aux !== existing.aux) {
           updates.aux = patch.aux;
           appliedFields.push("aux");
+          contentApplied = true;
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(patch, "translations") && patch.translations !== undefined) {
+        const nextTranslations = patch.translations ?? null;
+        const existingTranslations = existing.translations ?? null;
+        if (JSON.stringify(existingTranslations) !== JSON.stringify(nextTranslations)) {
+          updates.translations = nextTranslations;
+          appliedFields.push("translations");
+          contentApplied = true;
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(patch, "examples") && patch.examples !== undefined) {
+        const nextExamples = patch.examples ?? null;
+        const existingExamples = existing.examples ?? null;
+        if (JSON.stringify(existingExamples) !== JSON.stringify(nextExamples)) {
+          updates.examples = nextExamples;
+          appliedFields.push("examples");
+          contentApplied = true;
         }
       }
 
@@ -1514,8 +1623,28 @@ export function registerRoutes(app: Express): void {
         appliedFields.push("complete");
       }
 
-      if (!appliedFields.length) {
+      if (!contentApplied) {
         return sendError(res, 400, "No enrichment updates to apply", "ENRICHMENT_NO_CHANGES");
+      }
+
+      if (Object.prototype.hasOwnProperty.call(patch, "enrichmentAppliedAt") && patch.enrichmentAppliedAt !== undefined) {
+        if (patch.enrichmentAppliedAt !== existing.enrichmentAppliedAt) {
+          updates.enrichmentAppliedAt = patch.enrichmentAppliedAt;
+          appliedFields.push("enrichmentAppliedAt");
+        }
+      } else {
+        updates.enrichmentAppliedAt = new Date();
+        appliedFields.push("enrichmentAppliedAt");
+      }
+
+      if (Object.prototype.hasOwnProperty.call(patch, "enrichmentMethod") && patch.enrichmentMethod !== undefined) {
+        if (patch.enrichmentMethod !== existing.enrichmentMethod) {
+          updates.enrichmentMethod = patch.enrichmentMethod;
+          appliedFields.push("enrichmentMethod");
+        }
+      } else {
+        updates.enrichmentMethod = "manual_api";
+        appliedFields.push("enrichmentMethod");
       }
 
       updates.updatedAt = sql`now()`;
@@ -1767,7 +1896,7 @@ export function registerRoutes(app: Express): void {
       const drills = wordRows.map((word) => ({
         infinitive: word.lemma,
         english: word.english ?? "",
-        auxiliary: word.aux === "sein" ? "sein" : "haben",
+        auxiliary: normaliseAuxiliaryValue(word.aux),
         level: word.level ?? null,
         patternGroup: null,
         prompts: {
@@ -1783,7 +1912,7 @@ export function registerRoutes(app: Express): void {
           },
           auxiliary: {
             question: `Welches Hilfsverb wird mit “${word.lemma}” verwendet?`,
-            answer: word.aux === "sein" ? "sein" : "haben",
+            answer: normaliseAuxiliaryValue(word.aux),
             example: null,
           },
           english: {
