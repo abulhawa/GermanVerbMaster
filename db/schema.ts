@@ -5,7 +5,11 @@ import type {
   WordExample,
   WordTranslation,
 } from "@shared";
-import type { EnrichmentVerbFormSuggestion } from "@shared/enrichment";
+import type {
+  EnrichmentAdjectiveFormSuggestion,
+  EnrichmentNounFormSuggestion,
+  EnrichmentVerbFormSuggestion,
+} from "@shared/enrichment";
 import { sql } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import {
@@ -243,6 +247,8 @@ export const enrichmentProviderSnapshots = pgTable(
     synonyms: jsonb("synonyms").$type<string[] | null>(),
     englishHints: jsonb("english_hints").$type<string[] | null>(),
     verbForms: jsonb("verb_forms").$type<EnrichmentVerbFormSuggestion[] | null>(),
+    nounForms: jsonb("noun_forms").$type<EnrichmentNounFormSuggestion[] | null>(),
+    adjectiveForms: jsonb("adjective_forms").$type<EnrichmentAdjectiveFormSuggestion[] | null>(),
     rawPayload: jsonb("raw_payload"),
     collectedAt: timestamp("collected_at", { withTimezone: true }).defaultNow().notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),

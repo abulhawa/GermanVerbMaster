@@ -6,8 +6,10 @@ import { enrichmentProviderSnapshots, words } from "@db/schema";
 import { and, desc, eq } from "drizzle-orm";
 
 import type {
+  EnrichmentAdjectiveFormSuggestion,
   EnrichmentExampleCandidate,
   EnrichmentFieldUpdate,
+  EnrichmentNounFormSuggestion,
   EnrichmentPatch,
   EnrichmentProviderDiagnostic,
   EnrichmentProviderId,
@@ -52,6 +54,10 @@ type WordPatch = Partial<
     | "partizipIi"
     | "perfekt"
     | "aux"
+    | "gender"
+    | "plural"
+    | "comparative"
+    | "superlative"
     | "translations"
     | "examples"
     | "enrichmentAppliedAt"
@@ -69,6 +75,8 @@ type SuggestionBundle = {
   aiUsed: boolean;
   diagnostics: EnrichmentProviderDiagnostic[];
   verbForms: EnrichmentVerbFormSuggestion[];
+  nounForms: EnrichmentNounFormSuggestion[];
+  adjectiveForms: EnrichmentAdjectiveFormSuggestion[];
   snapshots: EnrichmentProviderSnapshotComparison[];
 };
 
@@ -82,6 +90,8 @@ type ProviderSnapshotDraft = {
   synonyms: string[];
   englishHints: string[];
   verbForms: EnrichmentVerbFormSuggestion[];
+  nounForms: EnrichmentNounFormSuggestion[];
+  adjectiveForms: EnrichmentAdjectiveFormSuggestion[];
   rawPayload?: unknown;
 };
 
@@ -310,6 +320,8 @@ export async function computeWordEnrichment(
     translationCandidate,
     exampleCandidate,
     verbFormCandidate,
+    nounFormCandidate,
+    adjectiveFormCandidate,
     storedTranslations,
     storedExamples,
   } = determineUpdates(
@@ -330,6 +342,8 @@ export async function computeWordEnrichment(
     example: exampleCandidate,
     examples: storedExamples ?? undefined,
     verbForms: verbFormCandidate,
+    nounForms: nounFormCandidate,
+    adjectiveForms: adjectiveFormCandidate,
     updates,
     applied: false,
     sources: suggestions.sources,
@@ -448,6 +462,8 @@ async function collectSuggestions(
   const translations: EnrichmentTranslationCandidate[] = [];
   const examples: ExampleCandidate[] = [];
   const verbForms: EnrichmentVerbFormSuggestion[] = [];
+  const nounForms: EnrichmentNounFormSuggestion[] = [];
+  const adjectiveForms: EnrichmentAdjectiveFormSuggestion[] = [];
   let synonyms: string[] = [];
   let englishHints: string[] = [];
   const diagnostics: EnrichmentProviderDiagnostic[] = [];
@@ -473,6 +489,8 @@ async function collectSuggestions(
       synonyms: [],
       englishHints: [],
       verbForms: [],
+      nounForms: [],
+      adjectiveForms: [],
     };
     snapshotDrafts.set(id, draft);
     return draft;
@@ -652,7 +670,7 @@ async function collectSuggestions(
 
   if (config.collectWiktextract) {
     try {
-      const value = await lookupWiktextract(word.lemma);
+      const value = await lookupWiktextract(word.lemma, word.pos);
       const snapshot = ensureSnapshotDraft("wiktextract", "Wiktextract");
       snapshot.rawPayload = value ?? null;
       if (value) {
@@ -704,11 +722,33 @@ async function collectSuggestions(
             snapshot.verbForms.push(suggestion);
           }
         }
+        if (value.nounForms) {
+          const suggestion: EnrichmentNounFormSuggestion = {
+            source: "kaikki.org",
+            genders: value.nounForms.genders.length ? value.nounForms.genders : undefined,
+            plurals: value.nounForms.plurals.length ? value.nounForms.plurals : undefined,
+            forms: value.nounForms.forms.length ? value.nounForms.forms : undefined,
+          };
+          nounForms.push(suggestion);
+          snapshot.nounForms.push(suggestion);
+        }
+        if (value.adjectiveForms) {
+          const suggestion: EnrichmentAdjectiveFormSuggestion = {
+            source: "kaikki.org",
+            comparatives: value.adjectiveForms.comparatives.length ? value.adjectiveForms.comparatives : undefined,
+            superlatives: value.adjectiveForms.superlatives.length ? value.adjectiveForms.superlatives : undefined,
+            forms: value.adjectiveForms.forms.length ? value.adjectiveForms.forms : undefined,
+          };
+          adjectiveForms.push(suggestion);
+          snapshot.adjectiveForms.push(suggestion);
+        }
         if (
           value.translations.length
           || value.synonyms.length
           || value.examples.length
           || value.verbForms
+          || value.nounForms
+          || value.adjectiveForms
           || value.englishHints.length
         ) {
           sources.add("kaikki.org");
@@ -805,6 +845,8 @@ async function collectSuggestions(
     aiUsed,
     diagnostics,
     verbForms,
+    nounForms,
+    adjectiveForms,
     snapshots: snapshotComparisons,
   };
 }
@@ -853,6 +895,8 @@ async function persistProviderSnapshotsForWord(
         synonyms: draft.status === "success" && draft.synonyms.length ? draft.synonyms : null,
         englishHints: draft.status === "success" && draft.englishHints.length ? draft.englishHints : null,
         verbForms: draft.status === "success" && draft.verbForms.length ? draft.verbForms : null,
+        nounForms: draft.status === "success" && draft.nounForms.length ? draft.nounForms : null,
+        adjectiveForms: draft.status === "success" && draft.adjectiveForms.length ? draft.adjectiveForms : null,
         rawPayload: draft.rawPayload ?? null,
       })
       .returning();
@@ -950,6 +994,8 @@ function buildProviderSnapshotFromRecord(record: ProviderSnapshotRecord): Enrich
     synonyms: (record.synonyms as string[] | null) ?? null,
     englishHints: (record.englishHints as string[] | null) ?? null,
     verbForms: (record.verbForms as EnrichmentVerbFormSuggestion[] | null) ?? null,
+    nounForms: (record.nounForms as EnrichmentNounFormSuggestion[] | null) ?? null,
+    adjectiveForms: (record.adjectiveForms as EnrichmentAdjectiveFormSuggestion[] | null) ?? null,
     rawPayload: record.rawPayload ?? undefined,
     collectedAt: serialiseDate(record.collectedAt),
     createdAt: serialiseDate(record.createdAt),
@@ -989,6 +1035,8 @@ function buildSnapshotComparisonPayload(snapshot: EnrichmentProviderSnapshot) {
     synonyms: sortStrings(snapshot.synonyms ?? []),
     englishHints: sortStrings(snapshot.englishHints ?? []),
     verbForms: sortVerbForms(snapshot.verbForms ?? []),
+    nounForms: sortNounForms(snapshot.nounForms ?? []),
+    adjectiveForms: sortAdjectiveForms(snapshot.adjectiveForms ?? []),
   };
 }
 
@@ -1055,6 +1103,68 @@ function sortVerbForms(values: EnrichmentVerbFormSuggestion[]): EnrichmentVerbFo
     });
 }
 
+function sortNounForms(values: EnrichmentNounFormSuggestion[]): EnrichmentNounFormSuggestion[] {
+  return [...values]
+    .map((entry) => ({
+      source: entry.source,
+      genders: entry.genders ? sortStrings(entry.genders) : [],
+      plurals: entry.plurals ? sortStrings(entry.plurals) : [],
+      forms: (entry.forms ?? [])
+        .map((form) => ({
+          form: form.form.trim(),
+          tags: (form.tags ?? []).map((tag) => tag.trim().toLowerCase()).sort(),
+        }))
+        .sort((a, b) => {
+          const formCompare = a.form.localeCompare(b.form);
+          if (formCompare !== 0) return formCompare;
+          return a.tags.join("||").localeCompare(b.tags.join("||"));
+        }),
+    }))
+    .sort((a, b) => {
+      const sourceCompare = a.source.localeCompare(b.source);
+      if (sourceCompare !== 0) return sourceCompare;
+      const genderCompare = a.genders.join("||").localeCompare(b.genders.join("||"));
+      if (genderCompare !== 0) return genderCompare;
+      const pluralCompare = a.plurals.join("||").localeCompare(b.plurals.join("||"));
+      if (pluralCompare !== 0) return pluralCompare;
+      return a.forms
+        .map((form) => `${form.form}::${form.tags.join("|")}`)
+        .join("||")
+        .localeCompare(b.forms.map((form) => `${form.form}::${form.tags.join("|")}`).join("||"));
+    });
+}
+
+function sortAdjectiveForms(values: EnrichmentAdjectiveFormSuggestion[]): EnrichmentAdjectiveFormSuggestion[] {
+  return [...values]
+    .map((entry) => ({
+      source: entry.source,
+      comparatives: entry.comparatives ? sortStrings(entry.comparatives) : [],
+      superlatives: entry.superlatives ? sortStrings(entry.superlatives) : [],
+      forms: (entry.forms ?? [])
+        .map((form) => ({
+          form: form.form.trim(),
+          tags: (form.tags ?? []).map((tag) => tag.trim().toLowerCase()).sort(),
+        }))
+        .sort((a, b) => {
+          const formCompare = a.form.localeCompare(b.form);
+          if (formCompare !== 0) return formCompare;
+          return a.tags.join("||").localeCompare(b.tags.join("||"));
+        }),
+    }))
+    .sort((a, b) => {
+      const sourceCompare = a.source.localeCompare(b.source);
+      if (sourceCompare !== 0) return sourceCompare;
+      const comparativeCompare = a.comparatives.join("||").localeCompare(b.comparatives.join("||"));
+      if (comparativeCompare !== 0) return comparativeCompare;
+      const superlativeCompare = a.superlatives.join("||").localeCompare(b.superlatives.join("||"));
+      if (superlativeCompare !== 0) return superlativeCompare;
+      return a.forms
+        .map((form) => `${form.form}::${form.tags.join("|")}`)
+        .join("||")
+        .localeCompare(b.forms.map((form) => `${form.form}::${form.tags.join("|")}`).join("||"));
+    });
+}
+
 function sortStrings(values: string[]): string[] {
   return normalizeStringList(values).sort((a, b) => a.localeCompare(b));
 }
@@ -1111,6 +1221,8 @@ function determineUpdates(
   translationCandidate?: EnrichmentTranslationCandidate;
   exampleCandidate?: ExampleCandidate;
   verbFormCandidate?: EnrichmentVerbFormSuggestion;
+  nounFormCandidate?: EnrichmentNounFormSuggestion;
+  adjectiveFormCandidate?: EnrichmentAdjectiveFormSuggestion;
   storedTranslations: WordRecord["translations"] | null;
   storedExamples: WordRecord["examples"] | null;
 } {
@@ -1181,8 +1293,82 @@ function determineUpdates(
     });
   }
 
+  let nounFormCandidate: EnrichmentNounFormSuggestion | undefined;
+  let adjectiveFormCandidate: EnrichmentAdjectiveFormSuggestion | undefined;
   let verbFormCandidate: EnrichmentVerbFormSuggestion | undefined;
   let candidateAux: WordPatch["aux"] | undefined;
+
+  if (word.pos === "N") {
+    const genderCandidate = pickPreferredGenderCandidate(suggestions.nounForms);
+    if (genderCandidate) {
+      nounFormCandidate = genderCandidate.suggestion;
+      const previous = word.gender;
+      if (config.allowOverwrite || isBlank(previous)) {
+        if (previous !== genderCandidate.value) {
+          patch.gender = genderCandidate.value;
+          updates.push({
+            field: "gender",
+            previous,
+            next: genderCandidate.value,
+            source: genderCandidate.source,
+          });
+        }
+      }
+    }
+
+    const pluralCandidate = pickPreferredPluralCandidate(suggestions.nounForms);
+    if (pluralCandidate) {
+      nounFormCandidate = nounFormCandidate ?? pluralCandidate.suggestion;
+      const previous = word.plural;
+      if (config.allowOverwrite || isBlank(previous)) {
+        if (previous !== pluralCandidate.value) {
+          patch.plural = pluralCandidate.value;
+          updates.push({
+            field: "plural",
+            previous,
+            next: pluralCandidate.value,
+            source: pluralCandidate.source,
+          });
+        }
+      }
+    }
+  }
+
+  if (word.pos === "Adj") {
+    const comparativeCandidate = pickPreferredAdjectiveCandidate(suggestions.adjectiveForms, "comparative");
+    if (comparativeCandidate) {
+      adjectiveFormCandidate = comparativeCandidate.suggestion;
+      const previous = word.comparative;
+      if (config.allowOverwrite || isBlank(previous)) {
+        if (previous !== comparativeCandidate.value) {
+          patch.comparative = comparativeCandidate.value;
+          updates.push({
+            field: "comparative",
+            previous,
+            next: comparativeCandidate.value,
+            source: comparativeCandidate.source,
+          });
+        }
+      }
+    }
+
+    const superlativeCandidate = pickPreferredAdjectiveCandidate(suggestions.adjectiveForms, "superlative");
+    if (superlativeCandidate) {
+      adjectiveFormCandidate = adjectiveFormCandidate ?? superlativeCandidate.suggestion;
+      const previous = word.superlative;
+      if (config.allowOverwrite || isBlank(previous)) {
+        if (previous !== superlativeCandidate.value) {
+          patch.superlative = superlativeCandidate.value;
+          updates.push({
+            field: "superlative",
+            previous,
+            next: superlativeCandidate.value,
+            source: superlativeCandidate.source,
+          });
+        }
+      }
+    }
+  }
   if (word.pos === "V") {
     verbFormCandidate = suggestions.verbForms.find((candidate) =>
       Boolean(
@@ -1315,6 +1501,8 @@ function determineUpdates(
     translationCandidate,
     exampleCandidate,
     verbFormCandidate,
+    nounFormCandidate,
+    adjectiveFormCandidate,
     storedTranslations: mergedTranslations,
     storedExamples: mergedExamples,
   };
@@ -1356,6 +1544,157 @@ function pickPreferredEnglishTranslationCandidate(
       (candidate) => candidate.value.trim() && isEnglishTranslationCandidate(candidate.language),
     )
   );
+}
+
+type GenderSelection = {
+  value: string;
+  source: string;
+  suggestion: EnrichmentNounFormSuggestion;
+};
+
+type PluralSelection = {
+  value: string;
+  source: string;
+  suggestion: EnrichmentNounFormSuggestion;
+};
+
+type AdjectiveSelection = {
+  value: string;
+  source: string;
+  suggestion: EnrichmentAdjectiveFormSuggestion;
+};
+
+const GENDER_VALUE_MAP: Record<string, string> = {
+  masculine: "der",
+  feminine: "die",
+  neuter: "das",
+  m: "der",
+  f: "die",
+  n: "das",
+};
+
+function normaliseGenderValue(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  const trimmed = value.trim().toLowerCase();
+  if (!trimmed) return undefined;
+  if (trimmed === "der" || trimmed === "die" || trimmed === "das") {
+    return trimmed;
+  }
+  return GENDER_VALUE_MAP[trimmed];
+}
+
+function collectGenderHintsFromForms(forms: EnrichmentNounFormSuggestion["forms"]): string[] {
+  const results: string[] = [];
+  if (!forms) return results;
+  for (const form of forms) {
+    for (const tag of form.tags ?? []) {
+      const gender = normaliseGenderValue(tag);
+      if (gender) {
+        results.push(gender);
+      }
+    }
+  }
+  return results;
+}
+
+function pickPreferredGenderCandidate(
+  suggestions: EnrichmentNounFormSuggestion[],
+): GenderSelection | undefined {
+  const preference = ["der", "die", "das"];
+  for (const suggestion of suggestions) {
+    const collected = new Set<string>();
+    for (const gender of suggestion.genders ?? []) {
+      const normalised = normaliseGenderValue(gender);
+      if (normalised) {
+        collected.add(normalised);
+      }
+    }
+    for (const gender of collectGenderHintsFromForms(suggestion.forms)) {
+      collected.add(gender);
+    }
+    if (!collected.size) {
+      continue;
+    }
+    for (const target of preference) {
+      if (collected.has(target)) {
+        return { value: target, source: suggestion.source, suggestion };
+      }
+    }
+    const [first] = Array.from(collected.values()).sort();
+    if (first) {
+      return { value: first, source: suggestion.source, suggestion };
+    }
+  }
+  return undefined;
+}
+
+function pickPreferredPluralCandidate(
+  suggestions: EnrichmentNounFormSuggestion[],
+): PluralSelection | undefined {
+  type Candidate = { value: string; priority: number; suggestion: EnrichmentNounFormSuggestion };
+  const candidates: Candidate[] = [];
+
+  for (const suggestion of suggestions) {
+    for (const plural of suggestion.plurals ?? []) {
+      const trimmed = plural.trim();
+      if (!trimmed) continue;
+      candidates.push({ value: trimmed, priority: 2, suggestion });
+    }
+    for (const form of suggestion.forms ?? []) {
+      if (!form.form?.trim()) continue;
+      if (!form.tags?.some((tag) => tag.includes("plural"))) continue;
+      const tags = form.tags.map((tag) => tag.toLowerCase());
+      let priority = 1;
+      if (tags.some((tag) => tag.includes("nominative"))) {
+        priority = 0;
+      }
+      candidates.push({ value: form.form.trim(), priority, suggestion });
+    }
+  }
+
+  if (!candidates.length) {
+    return undefined;
+  }
+
+  candidates.sort((a, b) => {
+    if (a.priority !== b.priority) {
+      return a.priority - b.priority;
+    }
+    return a.value.localeCompare(b.value);
+  });
+
+  const best = candidates[0];
+  return { value: best.value, source: best.suggestion.source, suggestion: best.suggestion };
+}
+
+function pickPreferredAdjectiveCandidate(
+  suggestions: EnrichmentAdjectiveFormSuggestion[],
+  field: "comparative" | "superlative",
+): AdjectiveSelection | undefined {
+  for (const suggestion of suggestions) {
+    const values = new Set<string>();
+    const direct = field === "comparative" ? suggestion.comparatives : suggestion.superlatives;
+    for (const value of direct ?? []) {
+      const trimmed = value.trim();
+      if (trimmed) {
+        values.add(trimmed);
+      }
+    }
+    for (const form of suggestion.forms ?? []) {
+      if (!form.form?.trim()) continue;
+      if (form.tags?.some((tag) => tag.toLowerCase().includes(field))) {
+        values.add(form.form.trim());
+      }
+    }
+    if (!values.size) {
+      continue;
+    }
+    const [best] = Array.from(values.values()).sort();
+    if (best) {
+      return { value: best, source: suggestion.source, suggestion };
+    }
+  }
+  return undefined;
 }
 
 function mergeSourcesCsv(existing: string | null | undefined, additions: string[]): string | null {
@@ -1522,13 +1861,13 @@ function buildPerfektFromForms(aux: string, partizip: string): string | null {
 function computeCompleteness(word: WordRecord, patch: WordPatch): boolean {
   const english = patch.english ?? word.english;
   const exampleDe = patch.exampleDe ?? word.exampleDe;
-  const gender = word.gender;
-  const plural = word.plural;
+  const gender = patch.gender ?? word.gender;
+  const plural = patch.plural ?? word.plural;
   const praeteritum = patch.praeteritum ?? word.praeteritum;
   const partizipIi = patch.partizipIi ?? word.partizipIi;
   const perfekt = patch.perfekt ?? word.perfekt;
-  const comparative = word.comparative;
-  const superlative = word.superlative;
+  const comparative = patch.comparative ?? word.comparative;
+  const superlative = patch.superlative ?? word.superlative;
 
   switch (word.pos) {
     case "V":

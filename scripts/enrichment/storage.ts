@@ -5,11 +5,11 @@ import type {
   EnrichmentProviderSnapshot,
   PersistedProviderEntry,
   PersistedProviderFile,
+  PersistedProviderFileMeta,
   PersistedWordData,
 } from "@shared/enrichment";
 
 const STORAGE_SCHEMA_VERSION = 1;
-const ENRICHMENT_DATA_DIR = path.resolve(process.cwd(), "data", "enrichment");
 const PROVIDER_PRIORITY: readonly string[] = [
   "wiktextract",
   "kaikki",
@@ -18,6 +18,10 @@ const PROVIDER_PRIORITY: readonly string[] = [
   "openthesaurus",
   "openai",
 ];
+
+function resolveEnrichmentDataDir(): string {
+  return path.resolve(process.cwd(), "data", "enrichment");
+}
 
 function toPosSegment(pos: string | number | null | undefined): string {
   if (!pos) {
@@ -29,7 +33,7 @@ function toPosSegment(pos: string | number | null | undefined): string {
 function providerFilePath(providerId: string | number, pos: string | number | null | undefined): string {
   const posSegment = toPosSegment(pos);
   const providerSegment = String(providerId).toLowerCase();
-  return path.join(ENRICHMENT_DATA_DIR, posSegment, `${providerSegment}.json`);
+  return path.join(resolveEnrichmentDataDir(), posSegment, `${providerSegment}.json`);
 }
 
 async function readJsonFile<T>(filePath: string): Promise<T | null> {
@@ -44,37 +48,78 @@ async function readJsonFile<T>(filePath: string): Promise<T | null> {
   }
 }
 
+type ProviderFileMeta = PersistedProviderFileMeta & Record<string, unknown>;
+
+function ensureMeta(meta: PersistedProviderFile["meta"]): ProviderFileMeta {
+  if (meta && typeof meta === "object") {
+    return { ...meta } as ProviderFileMeta;
+  }
+  return {};
+}
+
+function upgradeProviderFile(file: PersistedProviderFile | null): PersistedProviderFile | null {
+  if (!file) return null;
+
+  const currentVersion = typeof file.schemaVersion === "number" ? file.schemaVersion : 0;
+  const meta = ensureMeta(file.meta);
+
+  if (currentVersion < STORAGE_SCHEMA_VERSION) {
+    const history = new Set<number>(
+      Array.isArray(meta.previousSchemaVersions)
+        ? meta.previousSchemaVersions.filter((value): value is number => typeof value === "number")
+        : [],
+    );
+    if (Number.isFinite(currentVersion)) {
+      history.add(currentVersion);
+    }
+    meta.previousSchemaVersions = Array.from(history).sort((a, b) => a - b);
+    meta.lastUpgradedAt = new Date().toISOString();
+  }
+
+  return {
+    ...file,
+    schemaVersion: STORAGE_SCHEMA_VERSION,
+    meta,
+  } satisfies PersistedProviderFile;
+}
+
 function normaliseProviderFile(
   file: PersistedProviderFile | null,
   snapshot: EnrichmentProviderSnapshot,
 ): PersistedProviderFile {
+  const now = new Date().toISOString();
   if (!file) {
     return {
       schemaVersion: STORAGE_SCHEMA_VERSION,
       providerId: snapshot.providerId,
       providerLabel: snapshot.providerLabel ?? null,
       pos: snapshot.pos,
-      updatedAt: new Date().toISOString(),
+      updatedAt: now,
       entries: {},
       meta: {
-        createdAt: new Date().toISOString(),
+        createdAt: now,
       },
     } satisfies PersistedProviderFile;
   }
 
-  const schemaVersion = typeof file.schemaVersion === "number" ? file.schemaVersion : STORAGE_SCHEMA_VERSION;
-  const providerId = file.providerId ?? snapshot.providerId;
-  const providerLabel = file.providerLabel ?? snapshot.providerLabel ?? null;
-  const pos = file.pos ?? snapshot.pos;
-  const meta = typeof file.meta === "object" && file.meta !== null ? file.meta : {};
+  const upgraded = upgradeProviderFile(file) ?? file;
+  const providerId = upgraded.providerId ?? snapshot.providerId;
+  const providerLabel = upgraded.providerLabel ?? snapshot.providerLabel ?? null;
+  const pos = upgraded.pos ?? snapshot.pos;
+  const entries =
+    typeof upgraded.entries === "object" && upgraded.entries !== null ? upgraded.entries : ({} as PersistedProviderFile["entries"]);
+  const meta = ensureMeta(upgraded.meta);
+  if (!meta.createdAt) {
+    meta.createdAt = now;
+  }
 
   return {
-    schemaVersion,
+    schemaVersion: STORAGE_SCHEMA_VERSION,
     providerId,
     providerLabel,
     pos,
-    updatedAt: file.updatedAt ?? new Date().toISOString(),
-    entries: typeof file.entries === "object" && file.entries !== null ? file.entries : {},
+    updatedAt: upgraded.updatedAt ?? now,
+    entries,
     meta,
   } satisfies PersistedProviderFile;
 }
@@ -106,6 +151,8 @@ function buildPersistedEntry(snapshot: EnrichmentProviderSnapshot): PersistedPro
     synonyms: snapshot.synonyms ?? null,
     englishHints: snapshot.englishHints ?? null,
     verbForms: snapshot.verbForms ?? null,
+    nounForms: snapshot.nounForms ?? null,
+    adjectiveForms: snapshot.adjectiveForms ?? null,
     rawPayload: snapshot.rawPayload,
     wordId: snapshot.wordId,
     metadata,

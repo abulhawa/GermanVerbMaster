@@ -19,6 +19,10 @@ export type EnrichmentField =
   | "partizipIi"
   | "perfekt"
   | "aux"
+  | "gender"
+  | "plural"
+  | "comparative"
+  | "superlative"
   | "translations"
   | "examples"
   | "enrichmentAppliedAt"
@@ -52,6 +56,25 @@ export interface EnrichmentVerbFormSuggestion {
   aux?: string;
   auxiliaries?: string[];
   perfektOptions?: string[];
+}
+
+export interface EnrichmentNounFormEntry {
+  form: string;
+  tags: string[];
+}
+
+export interface EnrichmentNounFormSuggestion {
+  source: string;
+  genders?: string[];
+  plurals?: string[];
+  forms?: EnrichmentNounFormEntry[];
+}
+
+export interface EnrichmentAdjectiveFormSuggestion {
+  source: string;
+  comparatives?: string[];
+  superlatives?: string[];
+  forms?: EnrichmentNounFormEntry[];
 }
 
 export type EnrichmentProviderId =
@@ -88,6 +111,8 @@ export interface EnrichmentProviderSnapshot {
   synonyms?: string[] | null;
   englishHints?: string[] | null;
   verbForms?: EnrichmentVerbFormSuggestion[] | null;
+  nounForms?: EnrichmentNounFormSuggestion[] | null;
+  adjectiveForms?: EnrichmentAdjectiveFormSuggestion[] | null;
   rawPayload?: unknown;
   collectedAt: string;
   createdAt: string;
@@ -114,9 +139,17 @@ export interface PersistedProviderEntry {
   synonyms?: string[] | null;
   englishHints?: string[] | null;
   verbForms?: EnrichmentVerbFormSuggestion[] | null;
+  nounForms?: EnrichmentNounFormSuggestion[] | null;
+  adjectiveForms?: EnrichmentAdjectiveFormSuggestion[] | null;
   rawPayload?: unknown;
   wordId?: number | null;
   metadata?: Record<string, unknown> | null;
+}
+
+export interface PersistedProviderFileMeta extends Record<string, unknown> {
+  createdAt?: string;
+  lastUpgradedAt?: string;
+  previousSchemaVersions?: number[];
 }
 
 export interface PersistedProviderFile {
@@ -126,7 +159,7 @@ export interface PersistedProviderFile {
   pos?: PartOfSpeech | string;
   updatedAt?: string;
   entries?: Record<string, PersistedProviderEntry>;
-  meta?: Record<string, unknown> | null;
+  meta?: PersistedProviderFileMeta | null;
 }
 
 export interface PersistedWordData {
@@ -142,6 +175,8 @@ export interface WordEnrichmentSuggestions {
   synonyms: string[];
   englishHints: string[];
   verbForms: EnrichmentVerbFormSuggestion[];
+  nounForms: EnrichmentNounFormSuggestion[];
+  adjectiveForms: EnrichmentAdjectiveFormSuggestion[];
   providerDiagnostics: EnrichmentProviderDiagnostic[];
   snapshots: EnrichmentProviderSnapshotComparison[];
 }
@@ -158,6 +193,8 @@ export interface EnrichmentWordSummary {
   example?: EnrichmentExampleCandidate;
   examples?: WordExample[];
   verbForms?: EnrichmentVerbFormSuggestion;
+  nounForms?: EnrichmentNounFormSuggestion;
+  adjectiveForms?: EnrichmentAdjectiveFormSuggestion;
   updates: EnrichmentFieldUpdate[];
   applied: boolean;
   sources: string[];
@@ -175,6 +212,10 @@ export type EnrichmentPatch = Partial<{
   partizipIi: string | null;
   perfekt: string | null;
   aux: "haben" | "sein" | "haben / sein" | null;
+  gender: string | null;
+  plural: string | null;
+  comparative: string | null;
+  superlative: string | null;
   translations: WordTranslation[] | null;
   examples: WordExample[] | null;
   enrichmentAppliedAt: string | null;

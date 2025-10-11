@@ -1,5 +1,7 @@
 import fetch from "node-fetch";
 
+import type { PartOfSpeech } from "@shared/types";
+
 const REQUEST_HEADERS = {
   Accept: "application/json",
   "User-Agent": "GermanVerbMaster/1.0 (data enrichment pipeline)",
@@ -115,6 +117,18 @@ interface WiktextractVerbForms {
   auxiliaries: string[];
 }
 
+interface WiktextractNounForms {
+  genders: string[];
+  plurals: string[];
+  forms: Array<{ form: string; tags: string[] }>;
+}
+
+interface WiktextractAdjectiveForms {
+  comparatives: string[];
+  superlatives: string[];
+  forms: Array<{ form: string; tags: string[] }>;
+}
+
 export interface WiktextractTranslation {
   value: string;
   language?: string;
@@ -131,6 +145,8 @@ export interface WiktextractLookup {
   examples: WiktextractExample[];
   englishHints: string[];
   verbForms?: WiktextractVerbForms;
+  nounForms?: WiktextractNounForms;
+  adjectiveForms?: WiktextractAdjectiveForms;
   sourceDe: string;
   pivotUsed: boolean;
 }
@@ -138,6 +154,34 @@ export interface WiktextractLookup {
 function toArray<T>(value: unknown): T[] {
   return Array.isArray(value) ? (value as T[]) : [];
 }
+
+const CASE_TAGS = new Set([
+  "nominative",
+  "genitive",
+  "dative",
+  "accusative",
+  "instrumental",
+  "ablative",
+  "locative",
+  "vocative",
+]);
+
+const GENDER_MAP: Record<string, string> = {
+  masculine: "der",
+  feminine: "die",
+  neuter: "das",
+};
+
+const POS_MAP: Record<string, string[]> = {
+  v: ["verb"],
+  verb: ["verb"],
+  n: ["noun", "proper noun"],
+  noun: ["noun", "proper noun"],
+  adj: ["adjective"],
+  adjective: ["adjective"],
+  adv: ["adverb"],
+  adverb: ["adverb"],
+};
 
 function buildKaikkiEntryUrl(base: string, lemma: string): string {
   const normalised = lemma.trim().toLowerCase();
@@ -166,6 +210,15 @@ async function fetchJsonLines<T>(url: string): Promise<T[]> {
 function hasTag(entry: KaikkiFormEntry, ...expected: string[]): boolean {
   const tags = entry.tags?.map((tag) => tag.toLowerCase()) ?? [];
   return expected.every((needle) => tags.includes(needle.toLowerCase()));
+}
+
+function normaliseTags(tags: string[] | undefined): string[] {
+  if (!Array.isArray(tags)) {
+    return [];
+  }
+  return tags
+    .map((tag) => tag.trim().toLowerCase())
+    .filter((tag, index, array) => tag && array.indexOf(tag) === index);
 }
 
 function collectAuxiliaries(entry: KaikkiEntry): string[] {
@@ -330,7 +383,137 @@ function collectTranslations(entry: KaikkiEntry): WiktextractTranslation[] {
   return Array.from(translations.values());
 }
 
-export async function lookupWiktextract(lemma: string): Promise<WiktextractLookup | null> {
+function extractNounForms(entry: KaikkiEntry): WiktextractNounForms | undefined {
+  const forms = toArray<KaikkiFormEntry>(entry.forms);
+  const genders = new Set<string>();
+  const plurals = new Set<string>();
+  const records: Array<{ form: string; tags: string[] }> = [];
+
+  const pushGender = (value: string | undefined) => {
+    if (!value) return;
+    const normalised = value.trim().toLowerCase();
+    if (!normalised) return;
+    const mapped = GENDER_MAP[normalised] ?? (GENDER_MAP[normalised.replace(/[^a-z]+/g, "")] ?? undefined);
+    if (mapped) {
+      genders.add(mapped);
+    } else if (normalised === "der" || normalised === "die" || normalised === "das") {
+      genders.add(normalised);
+    }
+  };
+
+  for (const form of forms) {
+    const formValue = form.form?.trim();
+    if (!formValue) continue;
+    const tags = normaliseTags(form.tags);
+    if (tags.includes("plural")) {
+      plurals.add(formValue);
+    }
+    if (tags.some((tag) => GENDER_MAP[tag])) {
+      for (const tag of tags) {
+        pushGender(tag);
+      }
+    }
+    if (tags.length) {
+      records.push({ form: formValue, tags });
+    }
+  }
+
+  for (const template of toArray<KaikkiHeadTemplate>(entry.head_templates)) {
+    const expansion = template.expansion?.trim();
+    if (!expansion) continue;
+    const article = expansion.split(/\s+/)[0]?.trim().toLowerCase();
+    pushGender(article);
+  }
+
+  for (const sense of toArray<KaikkiSenseEntry>(entry.senses)) {
+    for (const gloss of toArray<string>(sense.glosses)) {
+      const lower = gloss.trim().toLowerCase();
+      if (lower.includes("masculine")) pushGender("masculine");
+      if (lower.includes("feminine")) pushGender("feminine");
+      if (lower.includes("neuter")) pushGender("neuter");
+    }
+    for (const raw of toArray<string>(sense.raw_glosses)) {
+      const lower = raw.trim().toLowerCase();
+      if (lower.includes("masculine")) pushGender("masculine");
+      if (lower.includes("feminine")) pushGender("feminine");
+      if (lower.includes("neuter")) pushGender("neuter");
+    }
+  }
+
+  if (!genders.size && !plurals.size && !records.length) {
+    return undefined;
+  }
+
+  // Include additional case forms for plural/declensions when not already captured.
+  for (const form of forms) {
+    const formValue = form.form?.trim();
+    if (!formValue) continue;
+    const tags = normaliseTags(form.tags);
+    if (!tags.length) continue;
+    if (!records.some((record) => record.form === formValue && record.tags.join("|") === tags.join("|"))) {
+      if (tags.some((tag) => CASE_TAGS.has(tag)) || tags.includes("plural")) {
+        records.push({ form: formValue, tags });
+      }
+    }
+  }
+
+  const sortedRecords = records.sort((a, b) => a.form.localeCompare(b.form));
+
+  return {
+    genders: Array.from(genders).sort(),
+    plurals: Array.from(plurals).sort(),
+    forms: sortedRecords,
+  };
+}
+
+function extractAdjectiveForms(entry: KaikkiEntry): WiktextractAdjectiveForms | undefined {
+  const forms = toArray<KaikkiFormEntry>(entry.forms);
+  const comparatives = new Set<string>();
+  const superlatives = new Set<string>();
+  const records: Array<{ form: string; tags: string[] }> = [];
+
+  for (const form of forms) {
+    const formValue = form.form?.trim();
+    if (!formValue) continue;
+    const tags = normaliseTags(form.tags);
+    if (!tags.length) continue;
+    if (tags.includes("comparative")) {
+      comparatives.add(formValue);
+    }
+    if (tags.includes("superlative")) {
+      superlatives.add(formValue);
+    }
+    records.push({ form: formValue, tags });
+  }
+
+  if (!comparatives.size && !superlatives.size && !records.length) {
+    return undefined;
+  }
+
+  const sortedRecords = records.sort((a, b) => a.form.localeCompare(b.form));
+
+  return {
+    comparatives: Array.from(comparatives).sort(),
+    superlatives: Array.from(superlatives).sort(),
+    forms: sortedRecords,
+  };
+}
+
+function resolveTargetPos(pos?: PartOfSpeech | string): string[] | undefined {
+  if (!pos) return undefined;
+  const normalised = String(pos).trim().toLowerCase();
+  if (!normalised) return undefined;
+  const direct = POS_MAP[normalised];
+  if (direct?.length) {
+    return direct;
+  }
+  return [normalised];
+}
+
+export async function lookupWiktextract(
+  lemma: string,
+  pos?: PartOfSpeech | string,
+): Promise<WiktextractLookup | null> {
   const trimmed = lemma.trim();
   if (!trimmed) {
     return null;
@@ -338,17 +521,39 @@ export async function lookupWiktextract(lemma: string): Promise<WiktextractLooku
 
   const germanUrl = buildKaikkiEntryUrl(KAIKKI_GERMAN_BASE, trimmed);
   const germanEntries = await fetchJsonLines<KaikkiEntry>(germanUrl);
-  const verbEntry = germanEntries.find((entry) => entry.lang === "German" && entry.pos === "verb");
+  const targets = resolveTargetPos(pos);
+  const germanCandidates = germanEntries.filter((entry) => entry.lang === "German");
+  const match = germanCandidates.find((entry) => {
+    if (!entry.pos) {
+      return false;
+    }
+    if (!targets?.length) {
+      return entry.pos?.toLowerCase() === "verb";
+    }
+    const entryPos = entry.pos.trim().toLowerCase();
+    return targets.some((target) => entryPos === target || entryPos.includes(target));
+  });
 
-  if (!verbEntry) {
+  const fallback = germanCandidates.find((entry) => entry.pos?.toLowerCase() === "verb");
+  const selectedEntry = match ?? fallback ?? germanCandidates[0];
+
+  if (!selectedEntry) {
     return null;
   }
 
-  const translations = collectTranslations(verbEntry);
-  const synonyms = collectSynonyms(verbEntry);
-  const englishHints = collectGlosses(verbEntry);
-  const examples = collectExamples(verbEntry);
-  const verbForms = extractVerbForms(verbEntry);
+  const translations = collectTranslations(selectedEntry);
+  const synonyms = collectSynonyms(selectedEntry);
+  const englishHints = collectGlosses(selectedEntry);
+  const examples = collectExamples(selectedEntry);
+  const verbForms = selectedEntry.pos?.toLowerCase().includes("verb")
+    ? extractVerbForms(selectedEntry)
+    : undefined;
+  const nounForms = selectedEntry.pos?.toLowerCase().includes("noun")
+    ? extractNounForms(selectedEntry)
+    : undefined;
+  const adjectiveForms = selectedEntry.pos?.toLowerCase().includes("adjective")
+    ? extractAdjectiveForms(selectedEntry)
+    : undefined;
 
   let pivotUsed = false;
   const collectedTranslations = new Map<string, WiktextractTranslation>();
@@ -395,6 +600,8 @@ export async function lookupWiktextract(lemma: string): Promise<WiktextractLooku
     examples,
     englishHints,
     verbForms,
+    nounForms,
+    adjectiveForms,
     sourceDe: germanUrl,
     pivotUsed,
   };

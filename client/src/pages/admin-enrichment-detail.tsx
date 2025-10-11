@@ -35,6 +35,8 @@ import type {
   EnrichmentSnapshotTrigger,
   EnrichmentTranslationCandidate,
   EnrichmentVerbFormSuggestion,
+  EnrichmentNounFormSuggestion,
+  EnrichmentAdjectiveFormSuggestion,
   WordEnrichmentPreview,
 } from '@shared/enrichment';
 
@@ -49,6 +51,10 @@ interface FieldDrafts {
   partizipIi: string;
   perfekt: string;
   aux: string;
+  gender: string;
+  plural: string;
+  comparative: string;
+  superlative: string;
 }
 
 export interface WordConfigState extends WordEnrichmentOptions {
@@ -72,6 +78,95 @@ interface WordEnrichmentDetailViewProps {
 
 const MANUAL_OPTION = 'manual';
 
+const GENDER_OPTION_MAP: Record<string, string> = {
+  masculine: 'der',
+  feminine: 'die',
+  neuter: 'das',
+  m: 'der',
+  f: 'die',
+  n: 'das',
+};
+
+function normaliseGenderCandidateValue(value: string | undefined | null): string | null {
+  if (!value) return null;
+  const trimmed = value.trim().toLowerCase();
+  if (!trimmed) return null;
+  if (trimmed === 'der' || trimmed === 'die' || trimmed === 'das') {
+    return trimmed;
+  }
+  return GENDER_OPTION_MAP[trimmed] ?? null;
+}
+
+function extractGenderValues(candidate: EnrichmentNounFormSuggestion): string[] {
+  const results = new Set<string>();
+  for (const gender of candidate.genders ?? []) {
+    const normalised = normaliseGenderCandidateValue(gender);
+    if (normalised) {
+      results.add(normalised);
+    }
+  }
+  for (const form of candidate.forms ?? []) {
+    for (const tag of form.tags ?? []) {
+      const normalised = normaliseGenderCandidateValue(tag);
+      if (normalised) {
+        results.add(normalised);
+      }
+    }
+  }
+  return Array.from(results);
+}
+
+function extractPluralValues(candidate: EnrichmentNounFormSuggestion): Array<{ value: string; descriptor?: string }> {
+  const results = new Map<string, string | undefined>();
+  for (const plural of candidate.plurals ?? []) {
+    const trimmed = plural.trim();
+    if (trimmed && !results.has(trimmed)) {
+      results.set(trimmed, undefined);
+    }
+  }
+  for (const form of candidate.forms ?? []) {
+    const formValue = form.form?.trim();
+    if (!formValue) continue;
+    if (!form.tags?.some((tag) => tag.toLowerCase().includes('plural'))) {
+      continue;
+    }
+    const descriptor = form.tags?.join(', ');
+    if (!results.has(formValue)) {
+      results.set(formValue, descriptor);
+    }
+  }
+  return Array.from(results.entries()).map(([value, descriptor]) => ({ value, descriptor }));
+}
+
+function extractAdjectiveValues(
+  candidate: EnrichmentAdjectiveFormSuggestion,
+  field: 'comparatives' | 'superlatives',
+): string[] {
+  const values = new Set<string>();
+  for (const entry of candidate[field] ?? []) {
+    const trimmed = entry.trim();
+    if (trimmed) {
+      values.add(trimmed);
+    }
+  }
+  for (const form of candidate.forms ?? []) {
+    const formValue = form.form?.trim();
+    if (!formValue) continue;
+    if (form.tags?.some((tag) => tag.toLowerCase().includes(field === 'comparatives' ? 'comparative' : 'superlative'))) {
+      values.add(formValue);
+    }
+  }
+  return Array.from(values);
+}
+
+const buildGenderOptionId = (candidateIndex: number, valueIndex: number) => `noun-gender-${candidateIndex}-${valueIndex}`;
+const buildPluralOptionId = (candidateIndex: number, valueIndex: number) => `noun-plural-${candidateIndex}-${valueIndex}`;
+const buildAdjectiveOptionId = (
+  type: 'comparative' | 'superlative',
+  candidateIndex: number,
+  valueIndex: number,
+) => `adjective-${type}-${candidateIndex}-${valueIndex}`;
+
 const WordEnrichmentDetailView = ({
   wordId,
   adminToken,
@@ -91,6 +186,10 @@ const WordEnrichmentDetailView = ({
     partizipIi: '',
     perfekt: '',
     aux: '',
+    gender: '',
+    plural: '',
+    comparative: '',
+    superlative: '',
   });
   const [selectedOptions, setSelectedOptions] = useState<{
     english?: string;
@@ -100,6 +199,10 @@ const WordEnrichmentDetailView = ({
     partizipIi?: string;
     perfekt?: string;
     aux?: string;
+    gender?: string;
+    plural?: string;
+    comparative?: string;
+    superlative?: string;
   }>({});
   const [previewData, setPreviewData] = useState<WordEnrichmentPreview | null>(null);
   const [applyResult, setApplyResult] = useState<ApplyEnrichmentResponse | null>(null);
@@ -134,6 +237,10 @@ const WordEnrichmentDetailView = ({
         partizipIi: word.partizipIi ?? '',
         perfekt: word.perfekt ?? '',
         aux: word.aux ?? '',
+        gender: word.gender ?? '',
+        plural: word.plural ?? '',
+        comparative: word.comparative ?? '',
+        superlative: word.superlative ?? '',
       });
       setPreviewData(null);
       setSelectedOptions({
@@ -144,6 +251,10 @@ const WordEnrichmentDetailView = ({
         partizipIi: word.partizipIi ? MANUAL_OPTION : undefined,
         perfekt: word.perfekt ? MANUAL_OPTION : undefined,
         aux: word.aux ? MANUAL_OPTION : undefined,
+        gender: word.gender ? MANUAL_OPTION : undefined,
+        plural: word.plural ? MANUAL_OPTION : undefined,
+        comparative: word.comparative ? MANUAL_OPTION : undefined,
+        superlative: word.superlative ? MANUAL_OPTION : undefined,
       });
       setApplyResult(null);
     }
@@ -204,6 +315,89 @@ const WordEnrichmentDetailView = ({
       ),
     [verbFormOptions],
   );
+
+  const nounGenderOptions = useMemo(() => {
+    if (!previewData) {
+      return [] as Array<{ id: string; value: string; source: string; suggestion: EnrichmentNounFormSuggestion }>;
+    }
+    const options: Array<{ id: string; value: string; source: string; suggestion: EnrichmentNounFormSuggestion }> = [];
+    previewData.suggestions.nounForms.forEach((candidate, candidateIndex) => {
+      const values = extractGenderValues(candidate);
+      values.forEach((value, valueIndex) => {
+        options.push({
+          id: buildGenderOptionId(candidateIndex, valueIndex),
+          value,
+          source: candidate.source,
+          suggestion: candidate,
+        });
+      });
+    });
+    return options;
+  }, [previewData]);
+
+  const nounPluralOptions = useMemo(() => {
+    if (!previewData) {
+      return [] as Array<{ id: string; value: string; label?: string; source: string; suggestion: EnrichmentNounFormSuggestion }>;
+    }
+    const options: Array<{
+      id: string;
+      value: string;
+      label?: string;
+      source: string;
+      suggestion: EnrichmentNounFormSuggestion;
+    }> = [];
+    previewData.suggestions.nounForms.forEach((candidate, candidateIndex) => {
+      const values = extractPluralValues(candidate);
+      values.forEach((entry, valueIndex) => {
+        options.push({
+          id: buildPluralOptionId(candidateIndex, valueIndex),
+          value: entry.value,
+          label: entry.descriptor,
+          source: candidate.source,
+          suggestion: candidate,
+        });
+      });
+    });
+    return options;
+  }, [previewData]);
+
+  const adjectiveComparativeOptions = useMemo(() => {
+    if (!previewData) {
+      return [] as Array<{ id: string; value: string; source: string; suggestion: EnrichmentAdjectiveFormSuggestion }>;
+    }
+    const options: Array<{ id: string; value: string; source: string; suggestion: EnrichmentAdjectiveFormSuggestion }> = [];
+    previewData.suggestions.adjectiveForms.forEach((candidate, candidateIndex) => {
+      const values = extractAdjectiveValues(candidate, 'comparatives');
+      values.forEach((value, valueIndex) => {
+        options.push({
+          id: buildAdjectiveOptionId('comparative', candidateIndex, valueIndex),
+          value,
+          source: candidate.source,
+          suggestion: candidate,
+        });
+      });
+    });
+    return options;
+  }, [previewData]);
+
+  const adjectiveSuperlativeOptions = useMemo(() => {
+    if (!previewData) {
+      return [] as Array<{ id: string; value: string; source: string; suggestion: EnrichmentAdjectiveFormSuggestion }>;
+    }
+    const options: Array<{ id: string; value: string; source: string; suggestion: EnrichmentAdjectiveFormSuggestion }> = [];
+    previewData.suggestions.adjectiveForms.forEach((candidate, candidateIndex) => {
+      const values = extractAdjectiveValues(candidate, 'superlatives');
+      values.forEach((value, valueIndex) => {
+        options.push({
+          id: buildAdjectiveOptionId('superlative', candidateIndex, valueIndex),
+          value,
+          source: candidate.source,
+          suggestion: candidate,
+        });
+      });
+    });
+    return options;
+  }, [previewData]);
 
   const mergedWord = useMemo(() => (word ? mergeWordWithDrafts(word, drafts) : null), [word, drafts]);
   const missingBefore = useMemo(() => (word ? getMissingFields(word) : []), [word]);
@@ -275,6 +469,46 @@ const WordEnrichmentDetailView = ({
           findMatchingVerbFormOptionId(data.patch.aux, data.suggestions.verbForms, 'aux') ??
           current.aux ??
           (data.patch.aux !== undefined || (word?.aux ?? '').length ? MANUAL_OPTION : undefined),
+        gender:
+          word?.pos === 'N'
+            ? findMatchingGenderOptionId(data.patch.gender, data.suggestions.nounForms) ??
+              current.gender ??
+              (data.patch.gender !== undefined || (word?.gender ?? '').length
+                ? MANUAL_OPTION
+                : undefined)
+            : undefined,
+        plural:
+          word?.pos === 'N'
+            ? findMatchingPluralOptionId(data.patch.plural, data.suggestions.nounForms) ??
+              current.plural ??
+              (data.patch.plural !== undefined || (word?.plural ?? '').length
+                ? MANUAL_OPTION
+                : undefined)
+            : undefined,
+        comparative:
+          word?.pos === 'Adj'
+            ? findMatchingAdjectiveOptionId(
+                data.patch.comparative,
+                data.suggestions.adjectiveForms,
+                'comparative',
+              )
+                ?? current.comparative
+                ?? (data.patch.comparative !== undefined || (word?.comparative ?? '').length
+                  ? MANUAL_OPTION
+                  : undefined)
+            : undefined,
+        superlative:
+          word?.pos === 'Adj'
+            ? findMatchingAdjectiveOptionId(
+                data.patch.superlative,
+                data.suggestions.adjectiveForms,
+                'superlative',
+              )
+                ?? current.superlative
+                ?? (data.patch.superlative !== undefined || (word?.superlative ?? '').length
+                  ? MANUAL_OPTION
+                  : undefined)
+            : undefined,
       }));
       setDrafts((previous) => ({
         english: data.patch.english !== undefined ? data.patch.english ?? '' : previous.english,
@@ -288,6 +522,12 @@ const WordEnrichmentDetailView = ({
           data.patch.aux !== undefined
             ? data.patch.aux ?? ''
             : previous.aux,
+        gender: data.patch.gender !== undefined ? data.patch.gender ?? '' : previous.gender,
+        plural: data.patch.plural !== undefined ? data.patch.plural ?? '' : previous.plural,
+        comparative:
+          data.patch.comparative !== undefined ? data.patch.comparative ?? '' : previous.comparative,
+        superlative:
+          data.patch.superlative !== undefined ? data.patch.superlative ?? '' : previous.superlative,
       }));
       toast({
         title: 'Preview ready',
@@ -436,12 +676,48 @@ const WordEnrichmentDetailView = ({
     setApplyResult(null);
   };
 
+  const handleNounSelect = (field: 'gender' | 'plural', optionId: string) => {
+    if (optionId === MANUAL_OPTION) {
+      setSelectedOptions((current) => ({ ...current, [field]: MANUAL_OPTION }));
+      setApplyResult(null);
+      return;
+    }
+    const options = field === 'gender' ? nounGenderOptions : nounPluralOptions;
+    const option = options.find((entry) => entry.id === optionId);
+    if (!option) {
+      return;
+    }
+    setDrafts((previous) => ({ ...previous, [field]: option.value }));
+    setSelectedOptions((current) => ({ ...current, [field]: optionId }));
+    setApplyResult(null);
+  };
+
+  const handleAdjectiveSelect = (
+    field: 'comparative' | 'superlative',
+    optionId: string,
+  ) => {
+    if (optionId === MANUAL_OPTION) {
+      setSelectedOptions((current) => ({ ...current, [field]: MANUAL_OPTION }));
+      setApplyResult(null);
+      return;
+    }
+    const options =
+      field === 'comparative' ? adjectiveComparativeOptions : adjectiveSuperlativeOptions;
+    const option = options.find((entry) => entry.id === optionId);
+    if (!option) {
+      return;
+    }
+    setDrafts((previous) => ({ ...previous, [field]: option.value }));
+    setSelectedOptions((current) => ({ ...current, [field]: optionId }));
+    setApplyResult(null);
+  };
+
   const providerDiagnostics = previewData?.suggestions.providerDiagnostics ?? [];
 
   const handleDraftChange = (
     field: keyof FieldDrafts,
     value: string,
-    optionsField?: 'english' | 'exampleDe' | 'exampleEn',
+    optionsField?: 'english' | 'exampleDe' | 'exampleEn' | 'gender' | 'plural' | 'comparative' | 'superlative',
   ) => {
     setDrafts((previous) => ({ ...previous, [field]: value }));
     setApplyResult(null);
@@ -472,6 +748,14 @@ const WordEnrichmentDetailView = ({
         : drafts.aux === 'haben / sein'
           ? 'haben / sein'
           : 'none';
+  const genderSelectValue =
+    selectedOptions.gender ?? (drafts.gender.trim().length ? MANUAL_OPTION : undefined);
+  const pluralSelectValue =
+    selectedOptions.plural ?? (drafts.plural.trim().length ? MANUAL_OPTION : undefined);
+  const comparativeSelectValue =
+    selectedOptions.comparative ?? (drafts.comparative.trim().length ? MANUAL_OPTION : undefined);
+  const superlativeSelectValue =
+    selectedOptions.superlative ?? (drafts.superlative.trim().length ? MANUAL_OPTION : undefined);
 
   const renderStatusBadge = (label: string, tone: 'default' | 'success' | 'warning' | 'destructive') => {
     const toneClassMap: Record<typeof tone, string> = {
@@ -735,6 +1019,56 @@ const WordEnrichmentDetailView = ({
                   </ul>
                 </div>
               ) : null}
+              {previewData.summary.nounForms ? (
+                <div className="space-y-1">
+                  <span className="font-medium">Noun forms:</span>
+                  <div className="text-muted-foreground">
+                    {previewData.summary.nounForms.genders?.length ? (
+                      <div>Genders: {previewData.summary.nounForms.genders.join(', ')}</div>
+                    ) : null}
+                    {previewData.summary.nounForms.plurals?.length ? (
+                      <div>Plurals: {previewData.summary.nounForms.plurals.join(', ')}</div>
+                    ) : null}
+                    {previewData.summary.nounForms.forms?.length ? (
+                      <ul className="mt-1 list-disc list-inside space-y-1">
+                        {previewData.summary.nounForms.forms.map((form, index) => (
+                          <li key={`${form.form}-${index}`}>
+                            {form.form}
+                            {form.tags?.length ? <span className="text-xs"> ({form.tags.join(', ')})</span> : null}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : null}
+                  </div>
+                </div>
+              ) : null}
+              {previewData.summary.adjectiveForms ? (
+                <div className="space-y-1">
+                  <span className="font-medium">Adjective forms:</span>
+                  <div className="text-muted-foreground">
+                    {previewData.summary.adjectiveForms.comparatives?.length ? (
+                      <div>
+                        Comparatives: {previewData.summary.adjectiveForms.comparatives.join(', ')}
+                      </div>
+                    ) : null}
+                    {previewData.summary.adjectiveForms.superlatives?.length ? (
+                      <div>
+                        Superlatives: {previewData.summary.adjectiveForms.superlatives.join(', ')}
+                      </div>
+                    ) : null}
+                    {previewData.summary.adjectiveForms.forms?.length ? (
+                      <ul className="mt-1 list-disc list-inside space-y-1">
+                        {previewData.summary.adjectiveForms.forms.map((form, index) => (
+                          <li key={`${form.form}-${index}`}>
+                            {form.form}
+                            {form.tags?.length ? <span className="text-xs"> ({form.tags.join(', ')})</span> : null}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : null}
+                  </div>
+                </div>
+              ) : null}
             </div>
             <Separator />
             <div className="space-y-4">
@@ -814,6 +1148,123 @@ const WordEnrichmentDetailView = ({
                   onChange={(event) => handleDraftChange('sourcesCsv', event.target.value)}
                 />
               </div>
+
+              {word.pos === 'N' ? (
+                <div className="space-y-4">
+                  <Separator />
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="gender-select">Gender</Label>
+                      <Select
+                        value={genderSelectValue}
+                        onValueChange={(value) => handleNounSelect('gender', value)}
+                      >
+                        <SelectTrigger id="gender-select">
+                          <SelectValue placeholder="Choose a gender" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value={MANUAL_OPTION}>Manual entry</SelectItem>
+                          {nounGenderOptions.map((option) => (
+                            <SelectItem key={option.id} value={option.id}>
+                              {option.value} · {option.source}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Input
+                        value={drafts.gender}
+                        placeholder="Enter gender (der/die/das)"
+                        onChange={(event) => handleDraftChange('gender', event.target.value, 'gender')}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="plural-select">Plural form</Label>
+                      <Select
+                        value={pluralSelectValue}
+                        onValueChange={(value) => handleNounSelect('plural', value)}
+                      >
+                        <SelectTrigger id="plural-select">
+                          <SelectValue placeholder="Choose a plural form" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value={MANUAL_OPTION}>Manual entry</SelectItem>
+                          {nounPluralOptions.map((option) => (
+                            <SelectItem key={option.id} value={option.id}>
+                              {option.value}
+                              {option.label ? ` · ${option.label}` : ''} · {option.source}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Input
+                        value={drafts.plural}
+                        placeholder="Enter plural form"
+                        onChange={(event) => handleDraftChange('plural', event.target.value, 'plural')}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+
+              {word.pos === 'Adj' ? (
+                <div className="space-y-4">
+                  <Separator />
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="comparative-select">Comparative</Label>
+                      <Select
+                        value={comparativeSelectValue}
+                        onValueChange={(value) => handleAdjectiveSelect('comparative', value)}
+                      >
+                        <SelectTrigger id="comparative-select">
+                          <SelectValue placeholder="Choose a comparative" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value={MANUAL_OPTION}>Manual entry</SelectItem>
+                          {adjectiveComparativeOptions.map((option) => (
+                            <SelectItem key={option.id} value={option.id}>
+                              {option.value} · {option.source}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Input
+                        value={drafts.comparative}
+                        placeholder="Enter comparative"
+                        onChange={(event) =>
+                          handleDraftChange('comparative', event.target.value, 'comparative')
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="superlative-select">Superlative</Label>
+                      <Select
+                        value={superlativeSelectValue}
+                        onValueChange={(value) => handleAdjectiveSelect('superlative', value)}
+                      >
+                        <SelectTrigger id="superlative-select">
+                          <SelectValue placeholder="Choose a superlative" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value={MANUAL_OPTION}>Manual entry</SelectItem>
+                          {adjectiveSuperlativeOptions.map((option) => (
+                            <SelectItem key={option.id} value={option.id}>
+                              {option.value} · {option.source}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Input
+                        value={drafts.superlative}
+                        placeholder="Enter superlative"
+                        onChange={(event) =>
+                          handleDraftChange('superlative', event.target.value, 'superlative')
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : null}
 
               {word.pos === 'V' ? (
                 <div className="space-y-4">
@@ -1173,6 +1624,10 @@ function mergeWordWithDrafts(word: AdminWord, drafts: FieldDrafts): AdminWord {
       drafts.aux === 'haben' || drafts.aux === 'sein' || drafts.aux === 'haben / sein'
         ? drafts.aux
         : null,
+    gender: drafts.gender.trim().length ? drafts.gender.trim() : null,
+    plural: drafts.plural.trim().length ? drafts.plural.trim() : null,
+    comparative: drafts.comparative.trim().length ? drafts.comparative.trim() : null,
+    superlative: drafts.superlative.trim().length ? drafts.superlative.trim() : null,
   };
 }
 
@@ -1195,7 +1650,11 @@ function buildPatchFromDrafts(
     | 'sourcesCsv'
     | 'praeteritum'
     | 'partizipIi'
-    | 'perfekt';
+    | 'perfekt'
+    | 'gender'
+    | 'plural'
+    | 'comparative'
+    | 'superlative';
 
   const applyField = (field: StringField) => {
     const draftValue = drafts[field].trim();
@@ -1220,6 +1679,10 @@ function buildPatchFromDrafts(
   applyField('praeteritum');
   applyField('partizipIi');
   applyField('perfekt');
+  applyField('gender');
+  applyField('plural');
+  applyField('comparative');
+  applyField('superlative');
 
   const auxDraft = drafts.aux.trim().toLowerCase();
   let auxNormalised: string | null = null;
@@ -1327,5 +1790,82 @@ function findMatchingVerbFormOptionId(
     return candidateValue.trim().toLowerCase() === normalised;
   });
   return matchIndex >= 0 ? `verb-${matchIndex}` : MANUAL_OPTION;
+}
+
+function findMatchingGenderOptionId(
+  value: EnrichmentPatch['gender'],
+  suggestions: EnrichmentNounFormSuggestion[],
+): string | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (value === null) {
+    return MANUAL_OPTION;
+  }
+  const normalised = normaliseGenderCandidateValue(value);
+  if (!normalised) {
+    return MANUAL_OPTION;
+  }
+  for (let index = 0; index < suggestions.length; index += 1) {
+    const candidate = suggestions[index];
+    const values = extractGenderValues(candidate);
+    const matchIndex = values.findIndex((entry) => entry === normalised);
+    if (matchIndex >= 0) {
+      return buildGenderOptionId(index, matchIndex);
+    }
+  }
+  return MANUAL_OPTION;
+}
+
+function findMatchingPluralOptionId(
+  value: EnrichmentPatch['plural'],
+  suggestions: EnrichmentNounFormSuggestion[],
+): string | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (value === null) {
+    return MANUAL_OPTION;
+  }
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return MANUAL_OPTION;
+  }
+  for (let index = 0; index < suggestions.length; index += 1) {
+    const candidate = suggestions[index];
+    const values = extractPluralValues(candidate);
+    const matchIndex = values.findIndex((entry) => entry.value.trim().toLowerCase() === trimmed.toLowerCase());
+    if (matchIndex >= 0) {
+      return buildPluralOptionId(index, matchIndex);
+    }
+  }
+  return MANUAL_OPTION;
+}
+
+function findMatchingAdjectiveOptionId(
+  value: EnrichmentPatch['comparative'] | EnrichmentPatch['superlative'],
+  suggestions: EnrichmentAdjectiveFormSuggestion[],
+  field: 'comparative' | 'superlative',
+): string | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (value === null) {
+    return MANUAL_OPTION;
+  }
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return MANUAL_OPTION;
+  }
+  const listField = field === 'comparative' ? 'comparatives' : 'superlatives';
+  for (let index = 0; index < suggestions.length; index += 1) {
+    const candidate = suggestions[index];
+    const values = extractAdjectiveValues(candidate, listField);
+    const matchIndex = values.findIndex((entry) => entry.trim().toLowerCase() === trimmed.toLowerCase());
+    if (matchIndex >= 0) {
+      return buildAdjectiveOptionId(field, index, matchIndex);
+    }
+  }
+  return MANUAL_OPTION;
 }
 

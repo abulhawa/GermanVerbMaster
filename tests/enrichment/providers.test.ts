@@ -102,4 +102,56 @@ describe('lookupWiktextract', () => {
     );
     expect(result?.pivotUsed).toBe(true);
   });
+
+  it('extracts noun genders and plural forms when requested for nouns', async () => {
+    const germanEntry = {
+      lang: 'German',
+      pos: 'noun',
+      word: 'Apfel',
+      head_templates: [{ expansion: 'der Apfel' }],
+      forms: [
+        { form: 'Äpfel', tags: ['plural', 'nominative'] },
+        { form: 'des Apfels', tags: ['genitive', 'singular'] },
+      ],
+      senses: [
+        {
+          translations: [{ word: 'apple', lang: 'English' }],
+        },
+      ],
+    };
+
+    mockedFetch.mockResolvedValueOnce(createResponse(`${JSON.stringify(germanEntry)}\n`));
+
+    const result = await lookupWiktextract('Apfel', 'N');
+
+    expect(result?.nounForms?.genders).toEqual(['der']);
+    expect(result?.nounForms?.plurals).toEqual(['Äpfel']);
+    expect(result?.nounForms?.forms).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ form: 'Äpfel', tags: expect.arrayContaining(['plural', 'nominative']) }),
+      ]),
+    );
+  });
+
+  it('extracts comparative and superlative forms for adjectives', async () => {
+    const germanEntry = {
+      lang: 'German',
+      pos: 'adjective',
+      word: 'schnell',
+      forms: [
+        { form: 'schneller', tags: ['comparative'] },
+        { form: 'am schnellsten', tags: ['superlative'] },
+      ],
+    };
+
+    mockedFetch.mockResolvedValueOnce(createResponse(`${JSON.stringify(germanEntry)}\n`));
+
+    const result = await lookupWiktextract('schnell', 'Adj');
+
+    expect(result?.adjectiveForms?.comparatives).toEqual(['schneller']);
+    expect(result?.adjectiveForms?.superlatives).toEqual(['am schnellsten']);
+    expect(result?.adjectiveForms?.forms).toEqual(
+      expect.arrayContaining([expect.objectContaining({ form: 'am schnellsten' })]),
+    );
+  });
 });

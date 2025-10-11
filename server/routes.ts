@@ -1503,6 +1503,8 @@ export function registerRoutes(app: Express): void {
           synonyms: computation.suggestions.synonyms,
           englishHints: computation.suggestions.englishHints,
           verbForms: computation.suggestions.verbForms,
+          nounForms: computation.suggestions.nounForms,
+          adjectiveForms: computation.suggestions.adjectiveForms,
           providerDiagnostics: computation.suggestions.diagnostics,
           snapshots: computation.suggestions.snapshots,
         },
@@ -1566,6 +1568,20 @@ export function registerRoutes(app: Express): void {
           contentApplied = true;
         }
       }
+      if (Object.prototype.hasOwnProperty.call(patch, "gender") && patch.gender !== undefined) {
+        if (patch.gender !== existing.gender) {
+          updates.gender = patch.gender;
+          appliedFields.push("gender");
+          contentApplied = true;
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(patch, "plural") && patch.plural !== undefined) {
+        if (patch.plural !== existing.plural) {
+          updates.plural = patch.plural;
+          appliedFields.push("plural");
+          contentApplied = true;
+        }
+      }
       if (Object.prototype.hasOwnProperty.call(patch, "praeteritum") && patch.praeteritum !== undefined) {
         if (patch.praeteritum !== existing.praeteritum) {
           updates.praeteritum = patch.praeteritum;
@@ -1577,6 +1593,20 @@ export function registerRoutes(app: Express): void {
         if (patch.partizipIi !== existing.partizipIi) {
           updates.partizipIi = patch.partizipIi;
           appliedFields.push("partizipIi");
+          contentApplied = true;
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(patch, "comparative") && patch.comparative !== undefined) {
+        if (patch.comparative !== existing.comparative) {
+          updates.comparative = patch.comparative;
+          appliedFields.push("comparative");
+          contentApplied = true;
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(patch, "superlative") && patch.superlative !== undefined) {
+        if (patch.superlative !== existing.superlative) {
+          updates.superlative = patch.superlative;
+          appliedFields.push("superlative");
           contentApplied = true;
         }
       }
