@@ -36,10 +36,11 @@ export interface EnrichmentVerbFormSuggestion {
   partizipIi?: string;
   perfekt?: string;
   aux?: string;
+  auxiliaries?: string[];
+  perfektOptions?: string[];
 }
 
 export type EnrichmentProviderId =
-  | "wiktionary"
   | "openthesaurus"
   | "mymemory"
   | "tatoeba"
@@ -59,7 +60,6 @@ export interface WordEnrichmentSuggestions {
   examples: EnrichmentExampleCandidate[];
   synonyms: string[];
   englishHints: string[];
-  wiktionarySummary?: string;
   verbForms: EnrichmentVerbFormSuggestion[];
   providerDiagnostics: EnrichmentProviderDiagnostic[];
 }
@@ -72,7 +72,6 @@ export interface EnrichmentWordSummary {
   translation?: EnrichmentTranslationCandidate;
   englishHints?: string[];
   synonyms: string[];
-  wiktionarySummary?: string;
   example?: EnrichmentExampleCandidate;
   verbForms?: EnrichmentVerbFormSuggestion;
   updates: EnrichmentFieldUpdate[];

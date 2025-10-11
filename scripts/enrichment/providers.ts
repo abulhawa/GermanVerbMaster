@@ -5,27 +5,12 @@ const REQUEST_HEADERS = {
   "User-Agent": "GermanVerbMaster/1.0 (data enrichment pipeline)",
 };
 
-const WIKTIONARY_API = "https://de.wiktionary.org/w/api.php";
+const KAIKKI_GERMAN_BASE = "https://kaikki.org/dictionary/German/meaning";
+const KAIKKI_ENGLISH_BASE = "https://kaikki.org/dictionary/English/meaning";
 const OPEN_THESAURUS_API = "https://www.openthesaurus.de/synonyme/search";
 const MY_MEMORY_API = "https://api.mymemory.translated.net/get";
 const TATOEBA_API = "https://tatoeba.org/en/api_v0/search";
 const OPENAI_CHAT_COMPLETIONS = "https://api.openai.com/v1/chat/completions";
-const WIKTEXTRACT_SEARCH_API = "https://kaikki.org/dewiktionary/search/start";
-
-const WIKTEXTRACT_RAW_MARKER = "[Show JSON for raw wiktextract data ▼]";
-
-export interface WiktionaryVerbForms {
-  praeteritum?: string;
-  partizipIi?: string;
-  perfekt?: string;
-  aux?: "haben" | "sein";
-}
-
-export interface WiktionaryLookup {
-  summary?: string;
-  englishHints: string[];
-  forms?: WiktionaryVerbForms;
-}
 
 export interface SynonymLookup {
   synonyms: string[];
@@ -48,32 +33,6 @@ export interface AiLookup {
   exampleDe?: string;
   exampleEn?: string;
   source: string;
-}
-
-interface WiktionaryResponse {
-  query?: {
-    pages?: Array<{
-      title: string;
-      extract?: string;
-      langlinks?: Array<{ lang: string; title: string }>;
-      missing?: boolean;
-      revisions?: Array<{
-        slots?: {
-          main?: {
-            content?: string;
-          };
-        };
-      }>;
-    }>;
-  };
-}
-
-interface OpenThesaurusResponse {
-  synsets?: Array<{
-    terms?: Array<{
-      term: string;
-    }>;
-  }>;
 }
 
 interface MyMemoryMatch {
@@ -102,31 +61,57 @@ interface TatoebaResponse {
   }>;
 }
 
-type WiktextractSearchResponse = [boolean, Array<[string, string]>];
-
-interface WiktextractTranslationEntry {
-  lang?: string;
-  lang_code?: string;
-  word?: string;
+interface KaikkiFormEntry {
+  form?: string;
+  tags?: string[];
+  source?: string;
 }
 
-interface WiktextractSynonymEntry {
-  word?: string;
-}
-
-interface WiktextractExampleEntry {
+interface KaikkiExampleEntry {
   text?: string;
   translation?: string;
+  english?: string;
 }
 
-interface WiktextractSenseEntry {
-  examples?: WiktextractExampleEntry[];
+interface KaikkiTranslationEntry {
+  word?: string;
+  lang?: string;
+  lang_code?: string;
 }
 
-interface WiktextractEntry {
-  translations?: WiktextractTranslationEntry[];
-  synonyms?: WiktextractSynonymEntry[];
-  senses?: WiktextractSenseEntry[];
+interface KaikkiSynonymEntry {
+  word?: string;
+}
+
+interface KaikkiSenseEntry {
+  examples?: KaikkiExampleEntry[];
+  translations?: KaikkiTranslationEntry[];
+  glosses?: string[];
+  raw_glosses?: string[];
+  synonyms?: KaikkiSynonymEntry[];
+}
+
+interface KaikkiHeadTemplate {
+  expansion?: string;
+}
+
+interface KaikkiEntry {
+  word?: string;
+  lang?: string;
+  lang_code?: string;
+  pos?: string;
+  forms?: KaikkiFormEntry[];
+  senses?: KaikkiSenseEntry[];
+  head_templates?: KaikkiHeadTemplate[];
+  synonyms?: KaikkiSynonymEntry[];
+}
+
+interface WiktextractVerbForms {
+  praeteritum?: string;
+  partizipIi?: string;
+  perfekt?: string;
+  perfektOptions: string[];
+  auxiliaries: string[];
 }
 
 export interface WiktextractLookup {
@@ -136,309 +121,255 @@ export interface WiktextractLookup {
     exampleDe?: string;
     exampleEn?: string;
   };
+  englishHints: string[];
+  verbForms?: WiktextractVerbForms;
+  sourceDe: string;
+  pivotUsed: boolean;
 }
 
 function toArray<T>(value: unknown): T[] {
   return Array.isArray(value) ? (value as T[]) : [];
 }
 
-function encodeWiktextractPrefix(prefix: string): string {
-  return encodeURIComponent(
-    prefix
-      .replace(/\//g, "_slash_")
-      .replace(/\\/g, "_backslash_")
-      .replace(/\*/g, "_star_")
-      .replace(/\?/g, "_ques_")
-      .replace(/#/g, "_hash_")
-      .replace(/\./g, "_dot_"),
-  );
+function buildKaikkiEntryUrl(base: string, lemma: string): string {
+  const normalised = lemma.trim().toLowerCase();
+  const first = normalised[0] ?? "_";
+  const firstTwo = normalised.slice(0, 2) || first;
+  const encoded = encodeURIComponent(normalised);
+  return `${base}/${first}/${firstTwo}/${encoded}.jsonl`;
 }
 
-function decodeHtmlEntities(value: string): string {
-  return value
-    .replace(/&quot;/g, '"')
-    .replace(/&apos;/g, "'")
-    .replace(/&#39;/g, "'")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex: string) => String.fromCharCode(parseInt(hex, 16)))
-    .replace(/&#(\d+);/g, (_, dec: string) => String.fromCharCode(parseInt(dec, 10)));
+async function fetchJsonLines<T>(url: string): Promise<T[]> {
+  const response = await fetch(url, { headers: REQUEST_HEADERS });
+  if (response.status === 404) {
+    return [];
+  }
+  if (!response.ok) {
+    throw new Error(`Request failed with status ${response.status}: ${await response.text()}`);
+  }
+  const text = await response.text();
+  return text
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => JSON.parse(line) as T);
 }
 
-function normaliseKey(value: string): string {
-  return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "");
+function hasTag(entry: KaikkiFormEntry, ...expected: string[]): boolean {
+  const tags = entry.tags?.map((tag) => tag.toLowerCase()) ?? [];
+  return expected.every((needle) => tags.includes(needle.toLowerCase()));
 }
 
-function splitTemplateArguments(template: string): string[] {
-  const content = template.slice(2, -2); // remove leading {{ and trailing }}
-  const parts: string[] = [];
-  let depth = 0;
-  let buffer = "";
+function collectAuxiliaries(entry: KaikkiEntry): string[] {
+  const auxiliaries = new Set<string>();
+  const pushCandidates = (value: string | undefined) => {
+    if (!value) return;
+    value
+      .split(/[,;/]|\bor\b|\border\b|\bund\b|\boder\b/gi)
+      .map((part) => part.trim().toLowerCase())
+      .forEach((part) => {
+        if (part === "haben" || part === "sein") {
+          auxiliaries.add(part);
+        }
+      });
+  };
 
-  for (let i = 0; i < content.length; i += 1) {
-    const char = content[i];
-    const next = content[i + 1];
-
-    if (char === "{" && next === "{") {
-      depth += 1;
-      buffer += "{{";
-      i += 1;
-      continue;
+  for (const form of toArray<KaikkiFormEntry>(entry.forms)) {
+    if (hasTag(form, "auxiliary")) {
+      pushCandidates(form.form);
     }
-    if (char === "}" && next === "}") {
-      depth = Math.max(depth - 1, 0);
-      buffer += "}}";
-      i += 1;
-      continue;
-    }
-    if (char === "|" && depth === 0) {
-      parts.push(buffer);
-      buffer = "";
-      continue;
-    }
-    buffer += char;
   }
 
-  if (buffer.length) {
-    parts.push(buffer);
+  for (const template of toArray<KaikkiHeadTemplate>(entry.head_templates)) {
+    if (!template.expansion) continue;
+    pushCandidates(template.expansion);
   }
 
-  return parts.map((part) => part.trim()).filter(Boolean);
+  for (const sense of toArray<KaikkiSenseEntry>(entry.senses)) {
+    for (const raw of toArray<string>(sense.raw_glosses)) {
+      pushCandidates(raw);
+    }
+    for (const gloss of toArray<string>(sense.glosses)) {
+      pushCandidates(gloss);
+    }
+  }
+
+  return Array.from(auxiliaries);
 }
 
-function extractTemplate(content: string, templateName: string): string | null {
-  const needle = `{{${templateName}`;
-  const start = content.indexOf(needle);
-  if (start === -1) {
-    return null;
+function extractVerbForms(entry: KaikkiEntry): WiktextractVerbForms | undefined {
+  const forms = toArray<KaikkiFormEntry>(entry.forms);
+  if (!forms.length) {
+    return undefined;
   }
 
-  let depth = 0;
-  for (let i = start; i < content.length - 1; i += 1) {
-    if (content[i] === "{" && content[i + 1] === "{") {
-      depth += 1;
-      i += 1;
-      continue;
+  const auxiliaries = collectAuxiliaries(entry);
+
+  const praeteritumCandidate = forms.find((form) => {
+    if (!form.form) return false;
+    const tags = form.tags?.map((tag) => tag.toLowerCase()) ?? [];
+    if (tags.includes("subjunctive") || tags.includes("subjunctive-i") || tags.includes("subjunctive-ii")) {
+      return false;
     }
-    if (content[i] === "}" && content[i + 1] === "}") {
-      depth -= 1;
-      i += 1;
-      if (depth === 0) {
-        return content.slice(start, i + 1);
+    return tags.includes("past") || tags.includes("preterite");
+  });
+
+  const partizipCandidate = forms.find((form) => {
+    if (!form.form) return false;
+    const tags = form.tags?.map((tag) => tag.toLowerCase()) ?? [];
+    return tags.includes("participle") && (tags.includes("past") || tags.includes("perfect"));
+  });
+
+  const perfektOptions = forms
+    .filter((form) => form.form && hasTag(form, "perfect"))
+    .map((form) => form.form!.trim())
+    .filter(Boolean);
+
+  const perfekt = perfektOptions.find((value) => /\bist\b|\bhat\b/.test(value)) ?? perfektOptions[0];
+
+  if (!praeteritumCandidate && !partizipCandidate && !perfekt && !auxiliaries.length) {
+    return undefined;
+  }
+
+  return {
+    praeteritum: praeteritumCandidate?.form?.trim(),
+    partizipIi: partizipCandidate?.form?.trim(),
+    perfekt: perfekt?.trim(),
+    perfektOptions,
+    auxiliaries,
+  };
+}
+
+function pickExampleFromEntry(entry: KaikkiEntry): {
+  exampleDe?: string;
+  exampleEn?: string;
+} | undefined {
+  for (const sense of toArray<KaikkiSenseEntry>(entry.senses)) {
+    for (const example of toArray<KaikkiExampleEntry>(sense.examples)) {
+      const exampleDe = example.text?.trim();
+      const exampleEn = example.translation?.trim() || example.english?.trim();
+      if (!exampleDe && !exampleEn) {
+        continue;
       }
+      return {
+        exampleDe: exampleDe || undefined,
+        exampleEn: exampleEn || undefined,
+      };
     }
-  }
-
-  return null;
-}
-
-function stripWikiMarkup(value: string): string {
-  let result = value
-    .replace(/'''/g, "")
-    .replace(/''/g, "")
-    .replace(/<[^>]+>/g, " ")
-    .replace(/&nbsp;/g, " ")
-    .replace(/\{\{(?:[lL]|link-de)\|[^|}]+\|([^}|]+)(?:\|[^}]*)*}}/gi, "$1")
-    .replace(/\{\{lang\|[^|}]+\|([^}]+)}}/g, "$1")
-    .replace(/\{\{[^}]+}}/g, " ")
-    .replace(/\[\[([^|\]]*\|)?([^\]]+)]]/g, "$2");
-
-  result = result.replace(/\s+/g, " ").trim();
-  return result;
-}
-
-function normaliseAuxiliary(value: string | undefined): "haben" | "sein" | undefined {
-  if (!value) return undefined;
-  const normalised = value.trim().toLowerCase();
-  if (normalised.includes("sein")) {
-    return "sein";
-  }
-  if (normalised.includes("haben")) {
-    return "haben";
   }
   return undefined;
 }
 
-function selectPrimary(value: string | undefined): string | undefined {
-  if (!value) return undefined;
-  const parts = value
-    .split(/[;,/]| oder | bzw\.| bzw /gi)
-    .map((part) => stripWikiMarkup(part))
-    .map((part) => part.trim())
-    .filter(Boolean);
-  return (parts[0] ?? stripWikiMarkup(value)).trim() || undefined;
-}
-
-function matchFromMarkup(content: string, pattern: RegExp): string | undefined {
-  const match = pattern.exec(content);
-  if (!match) return undefined;
-  return stripWikiMarkup(match[1] ?? "");
-}
-
-export function extractVerbForms(content: string): WiktionaryVerbForms | undefined {
-  const templateNames = ["Deutsch Verb Übersicht", "Deutsch Verb Flexion"];
-  const forms: WiktionaryVerbForms = {};
-  const collectedKeys = new Map<string, string>();
-  const positional: string[] = [];
-
-  for (const name of templateNames) {
-    const template = extractTemplate(content, name);
-    if (!template) {
-      continue;
+function collectSynonyms(entry: KaikkiEntry): string[] {
+  const synonyms = new Set<string>();
+  for (const synonym of toArray<KaikkiSynonymEntry>(entry.synonyms)) {
+    const word = synonym.word?.trim();
+    if (word) {
+      synonyms.add(word);
     }
+  }
+  for (const sense of toArray<KaikkiSenseEntry>(entry.senses)) {
+    for (const synonym of toArray<KaikkiSynonymEntry>(sense.synonyms)) {
+      const word = synonym.word?.trim();
+      if (word) {
+        synonyms.add(word);
+      }
+    }
+  }
+  return Array.from(synonyms);
+}
 
-    const parts = splitTemplateArguments(template);
-    for (const part of parts.slice(1)) {
-      const equalsIndex = part.indexOf("=");
-      if (equalsIndex === -1) {
-        positional.push(stripWikiMarkup(part));
-        continue;
+function collectGlosses(entry: KaikkiEntry): string[] {
+  const glosses: string[] = [];
+  for (const sense of toArray<KaikkiSenseEntry>(entry.senses)) {
+    for (const gloss of toArray<string>(sense.glosses)) {
+      const cleaned = gloss.trim();
+      if (cleaned) {
+        glosses.push(cleaned);
       }
-      const key = normaliseKey(part.slice(0, equalsIndex));
-      const value = stripWikiMarkup(part.slice(equalsIndex + 1));
-      if (!key || !value) {
-        continue;
+    }
+    if (!sense.glosses?.length) {
+      for (const raw of toArray<string>(sense.raw_glosses)) {
+        const cleaned = raw.replace(/\[[^\]]*\]/g, "").trim();
+        if (cleaned) {
+          glosses.push(cleaned);
+        }
       }
-      collectedKeys.set(key, value.trim());
+    }
+  }
+  return Array.from(new Set(glosses));
+}
+
+function collectTranslations(entry: KaikkiEntry): string[] {
+  const translations = new Set<string>();
+  for (const sense of toArray<KaikkiSenseEntry>(entry.senses)) {
+    for (const translation of toArray<KaikkiTranslationEntry>(sense.translations)) {
+      const word = translation.word?.trim();
+      if (word) {
+        translations.add(word);
+      }
+    }
+  }
+  return Array.from(translations);
+}
+
+export async function lookupWiktextract(lemma: string): Promise<WiktextractLookup | null> {
+  const trimmed = lemma.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  const germanUrl = buildKaikkiEntryUrl(KAIKKI_GERMAN_BASE, trimmed);
+  const germanEntries = await fetchJsonLines<KaikkiEntry>(germanUrl);
+  const verbEntry = germanEntries.find((entry) => entry.lang === "German" && entry.pos === "verb");
+
+  if (!verbEntry) {
+    return null;
+  }
+
+  const translations = collectTranslations(verbEntry);
+  const synonyms = collectSynonyms(verbEntry);
+  const englishHints = collectGlosses(verbEntry);
+  const example = pickExampleFromEntry(verbEntry);
+  const verbForms = extractVerbForms(verbEntry);
+
+  let pivotUsed = false;
+  const collectedTranslations = new Set(translations);
+
+  if (!collectedTranslations.size && englishHints.length) {
+    for (const hint of englishHints) {
+      collectedTranslations.add(hint);
     }
   }
 
-  const first = <T>(...selectors: Array<string | RegExp>): T | undefined => {
-    for (const selector of selectors) {
-      if (typeof selector === "string") {
-        const value = collectedKeys.get(selector);
-        if (value) {
-          return value as unknown as T;
-        }
-      } else {
-        for (const [key, value] of collectedKeys.entries()) {
-          if (selector.test(key) && value) {
-            return value as unknown as T;
+  if (!collectedTranslations.size && englishHints.length) {
+    const headword = englishHints[0];
+    const englishUrl = buildKaikkiEntryUrl(KAIKKI_ENGLISH_BASE, headword);
+    const englishEntries = await fetchJsonLines<KaikkiEntry>(englishUrl);
+    if (englishEntries.length) {
+      pivotUsed = true;
+      for (const entry of englishEntries) {
+        if (entry.lang !== "English") continue;
+        for (const sense of toArray<KaikkiSenseEntry>(entry.senses)) {
+          for (const translation of toArray<KaikkiTranslationEntry>(sense.translations)) {
+            const word = translation.word?.trim();
+            if (word) {
+              collectedTranslations.add(word);
+            }
           }
         }
       }
     }
-    return undefined;
-  };
-
-  forms.praeteritum = selectPrimary(
-    first<string>(
-      "prateritumich",
-      "praeteritumich",
-      "prateritum",
-      "praeteritum",
-      /^(praeteritum|prateritum)/,
-    ) ?? positional[2],
-  );
-  forms.partizipIi = selectPrimary(
-    first<string>("partizipii", "partizip2", "partizipii1", /^(partizip|partizipii|partizip2)/) ?? positional[3],
-  );
-  const auxValue = first<string>(
-    "hilfsverb",
-    "auxiliar",
-    "auxiliary",
-    "perfektauxiliar",
-    /^hilfsverb/,
-    /^aux/,
-  );
-  forms.aux = normaliseAuxiliary(auxValue);
-
-  const perfektCandidate = first<string>("perfektich", "perfektwir", "perfekt", "perfekt1", /^perfekt/)
-    ?? positional[4];
-  forms.perfekt = selectPrimary(perfektCandidate);
-
-  if (!forms.praeteritum) {
-    forms.praeteritum = selectPrimary(matchFromMarkup(content, /'''Pr[aä]teritum:?'''([^\n]+)/i));
   }
-  if (!forms.partizipIi) {
-    forms.partizipIi = selectPrimary(matchFromMarkup(content, /'''Partizip(?:\s+II)?[:]?'''([^\n]+)/i));
-  }
-  if (!forms.aux) {
-    forms.aux = normaliseAuxiliary(matchFromMarkup(content, /'''Hilfsverb:?'''([^\n]+)/i));
-  }
-
-  if (!forms.perfekt) {
-    const perfektFromText = matchFromMarkup(content, /'''Perfekt:?'''([^\n]+)/i);
-    forms.perfekt = selectPrimary(perfektFromText);
-  }
-
-  if (!forms.perfekt && forms.partizipIi && forms.aux) {
-    const auxiliary = forms.aux === "sein" ? "ist" : "hat";
-    forms.perfekt = `${auxiliary} ${forms.partizipIi}`;
-  }
-
-  if (forms.partizipIi) {
-    forms.partizipIi = selectPrimary(forms.partizipIi);
-  }
-  if (forms.praeteritum) {
-    forms.praeteritum = selectPrimary(forms.praeteritum);
-  }
-  if (forms.perfekt) {
-    forms.perfekt = selectPrimary(forms.perfekt);
-  }
-
-  if (!forms.praeteritum && !forms.partizipIi && !forms.perfekt && !forms.aux) {
-    return undefined;
-  }
-
-  if (forms.aux && !["haben", "sein"].includes(forms.aux)) {
-    delete forms.aux;
-  }
-
-  return forms;
-}
-
-async function fetchJson<T>(url: string, headers: Record<string, string> = REQUEST_HEADERS): Promise<T> {
-  const response = await fetch(url, { headers });
-  if (!response.ok) {
-    throw new Error(`Request failed with status ${response.status}: ${await response.text()}`);
-  }
-  return (await response.json()) as T;
-}
-
-export async function lookupWiktionarySummary(lemma: string): Promise<WiktionaryLookup | null> {
-  const params = new URLSearchParams({
-    action: "query",
-    format: "json",
-    formatversion: "2",
-    titles: lemma,
-    prop: "extracts|langlinks|revisions",
-    explaintext: "1",
-    origin: "*",
-    lllang: "en",
-    rvslots: "main",
-    rvprop: "content",
-  });
-
-  const data = await fetchJson<WiktionaryResponse>(`${WIKTIONARY_API}?${params.toString()}`);
-  const page = data.query?.pages?.[0];
-  if (!page || page.missing) {
-    return null;
-  }
-
-  const summary = page.extract
-    ?.split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .slice(0, 4)
-    .join("\n");
-
-  const englishHints = toArray<{ lang: string; title: string }>(page.langlinks)
-    .filter((link) => link.lang === "en" && link.title)
-    .map((link) => link.title.trim());
-
-  const rawContent = page.revisions?.[0]?.slots?.main?.content ?? "";
-  const forms = rawContent ? extractVerbForms(rawContent) : undefined;
 
   return {
-    summary: summary || undefined,
+    translations: Array.from(collectedTranslations),
+    synonyms,
+    example,
     englishHints,
-    forms,
+    verbForms,
+    sourceDe: germanUrl,
+    pivotUsed,
   };
 }
 
@@ -448,7 +379,17 @@ export async function lookupOpenThesaurusSynonyms(lemma: string): Promise<Synony
     format: "application/json",
   });
 
-  const data = await fetchJson<OpenThesaurusResponse>(`${OPEN_THESAURUS_API}?${params.toString()}`);
+  const response = await fetch(`${OPEN_THESAURUS_API}?${params.toString()}`, { headers: REQUEST_HEADERS });
+  if (!response.ok) {
+    throw new Error(`Request failed with status ${response.status}: ${await response.text()}`);
+  }
+
+  const data = (await response.json()) as {
+    synsets?: Array<{
+      terms?: Array<{ term: string }>;
+    }>;
+  };
+
   const collected = new Set<string>();
 
   for (const synset of toArray<{ terms?: Array<{ term: string }> }>(data.synsets)) {
@@ -471,7 +412,12 @@ export async function lookupTranslation(lemma: string): Promise<TranslationLooku
     langpair: "de|en",
   });
 
-  const data = await fetchJson<MyMemoryResponse>(`${MY_MEMORY_API}?${params.toString()}`);
+  const response = await fetch(`${MY_MEMORY_API}?${params.toString()}`, { headers: REQUEST_HEADERS });
+  if (!response.ok) {
+    throw new Error(`Request failed with status ${response.status}: ${await response.text()}`);
+  }
+
+  const data = (await response.json()) as MyMemoryResponse;
   const highQualityMatch = toArray<MyMemoryMatch>(data.matches)
     .filter((match) => typeof match.quality === "number" && (match.quality ?? 0) >= 80 && match.translation)
     .map((match) => ({
@@ -509,7 +455,12 @@ export async function lookupExampleSentence(lemma: string): Promise<ExampleLooku
     limit: "1",
   });
 
-  const data = await fetchJson<TatoebaResponse>(`${TATOEBA_API}?${params.toString()}`);
+  const response = await fetch(`${TATOEBA_API}?${params.toString()}`, { headers: REQUEST_HEADERS });
+  if (!response.ok) {
+    throw new Error(`Request failed with status ${response.status}: ${await response.text()}`);
+  }
+
+  const data = (await response.json()) as TatoebaResponse;
   const result = data.results?.[0];
   if (!result) {
     return null;
@@ -520,138 +471,20 @@ export async function lookupExampleSentence(lemma: string): Promise<ExampleLooku
     return null;
   }
 
-  const englishEntry = toArray<TatoebaTranslation>(result.translations).find(
-    (translation) => translation.lang === "eng" && typeof translation.text === "string" && translation.text.trim(),
-  );
-  if (englishEntry?.text) {
-    return {
-      exampleDe: german,
-      exampleEn: englishEntry.text.trim(),
-      source: "tatoeba.org",
-    };
-  }
-
-  return null;
-}
-
-async function resolveWiktextractUrl(lemma: string): Promise<string | null> {
-  const trimmed = lemma.trim();
-  if (!trimmed) {
-    return null;
-  }
-
-  const normalised = trimmed.normalize("NFC");
-  const lower = normalised.toLowerCase();
-  const prefixLengths = Array.from(
-    new Set([3, 2, 1].filter((length) => length <= lower.length && length > 0)),
-  );
-
-  for (const length of prefixLengths) {
-    const prefix = lower.slice(0, length);
-    const response = await fetchJson<WiktextractSearchResponse>(
-      `${WIKTEXTRACT_SEARCH_API}/${encodeWiktextractPrefix(prefix)}.json`,
-    );
-    const entries = response?.[1] ?? [];
-    const directMatch = entries.find(([title]) => title?.toLowerCase() === lower);
-    if (directMatch) {
-      return directMatch[1];
+  let english: string | undefined;
+  for (const translation of toArray<TatoebaTranslation>(result.translations)) {
+    const candidate = translation.text?.trim();
+    if (!candidate) continue;
+    if (!translation.lang || translation.lang === "eng") {
+      english = candidate;
+      break;
     }
-
-    const looseMatch = entries.find(([title]) => title?.toLowerCase().startsWith(lower));
-    if (looseMatch) {
-      return looseMatch[1];
-    }
-  }
-
-  return null;
-}
-
-async function fetchWiktextractEntry(url: string): Promise<WiktextractEntry | null> {
-  const response = await fetch(url, { headers: REQUEST_HEADERS });
-  if (!response.ok) {
-    throw new Error(`Request failed with status ${response.status}: ${await response.text()}`);
-  }
-
-  const html = await response.text();
-  const markerIndex = html.indexOf(WIKTEXTRACT_RAW_MARKER);
-  if (markerIndex === -1) {
-    return null;
-  }
-
-  const preStart = html.indexOf("<pre>", markerIndex);
-  const preEnd = html.indexOf("</pre>", preStart);
-  if (preStart === -1 || preEnd === -1) {
-    return null;
-  }
-
-  const rawJson = decodeHtmlEntities(html.slice(preStart + 5, preEnd));
-  try {
-    return JSON.parse(rawJson) as WiktextractEntry;
-  } catch (error) {
-    throw new Error(`Failed to parse Wiktextract response: ${error instanceof Error ? error.message : String(error)}`);
-  }
-}
-
-export async function lookupWiktextract(lemma: string): Promise<WiktextractLookup | null> {
-  const url = await resolveWiktextractUrl(lemma);
-  if (!url) {
-    return null;
-  }
-
-  const entry = await fetchWiktextractEntry(url);
-  if (!entry) {
-    return null;
-  }
-
-  const translationSet = new Set<string>();
-  for (const translation of toArray<WiktextractTranslationEntry>(entry.translations)) {
-    const lang = translation.lang?.toLowerCase();
-    const code = translation.lang_code?.toLowerCase();
-    const word = translation.word?.trim();
-    if (!word) continue;
-    if (word.toLowerCase() === lemma.toLowerCase()) continue;
-    if (lang?.startsWith("engl") || code === "en") {
-      translationSet.add(word);
-    }
-  }
-
-  const synonymSet = new Set<string>();
-  for (const synonym of toArray<WiktextractSynonymEntry>(entry.synonyms)) {
-    const word = synonym.word?.trim();
-    if (word) {
-      synonymSet.add(word);
-    }
-  }
-
-  let example: WiktextractLookup["example"] | undefined;
-  outer: for (const sense of toArray<WiktextractSenseEntry>(entry.senses)) {
-    for (const candidate of toArray<WiktextractExampleEntry>(sense.examples)) {
-      const exampleDe = candidate.text?.trim();
-      const exampleEn = candidate.translation?.trim();
-      if (!exampleDe && !exampleEn) {
-        continue;
-      }
-      example = {
-        exampleDe: exampleDe || undefined,
-        exampleEn: exampleEn || undefined,
-      };
-      if (exampleEn) {
-        break outer;
-      }
-      if (!exampleDe) {
-        example = undefined;
-      }
-    }
-  }
-
-  if (!translationSet.size && !synonymSet.size && !example) {
-    return null;
   }
 
   return {
-    translations: Array.from(translationSet).slice(0, 10),
-    synonyms: Array.from(synonymSet),
-    example,
+    exampleDe: german,
+    exampleEn: english,
+    source: "tatoeba.org",
   };
 }
 

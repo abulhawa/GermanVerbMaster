@@ -33,7 +33,6 @@ async function main() {
       translation: entry.translation?.value,
       englishHints: entry.englishHints ?? [],
       synonyms: entry.synonyms,
-      wiktionarySummary: entry.wiktionarySummary,
       exampleDe: entry.example?.exampleDe,
       exampleEn: entry.example?.exampleEn,
       sources: entry.sources,

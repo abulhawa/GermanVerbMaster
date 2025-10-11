@@ -55,7 +55,6 @@ export interface WordConfigState extends WordEnrichmentOptions {
   collectSynonyms: boolean;
   collectExamples: boolean;
   collectTranslations: boolean;
-  collectWiktionary: boolean;
 }
 
 interface WordEnrichmentDetailViewProps {
@@ -190,11 +189,17 @@ const WordEnrichmentDetailView = ({
     [verbFormOptions],
   );
   const perfektOptions = useMemo(
-    () => verbFormOptions.filter((option) => option.candidate.perfekt),
+    () =>
+      verbFormOptions.filter(
+        (option) => option.candidate.perfekt || (option.candidate.perfektOptions?.length ?? 0) > 0,
+      ),
     [verbFormOptions],
   );
   const auxOptions = useMemo(
-    () => verbFormOptions.filter((option) => option.candidate.aux),
+    () =>
+      verbFormOptions.filter(
+        (option) => option.candidate.aux || (option.candidate.auxiliaries?.length ?? 0) > 0,
+      ),
     [verbFormOptions],
   );
 
@@ -220,7 +225,6 @@ const WordEnrichmentDetailView = ({
         collectSynonyms: wordConfig.collectSynonyms,
         collectExamples: wordConfig.collectExamples,
         collectTranslations: wordConfig.collectTranslations,
-        collectWiktionary: wordConfig.collectWiktionary,
       };
       const result = await previewWordEnrichment(word.id, options, normalizedAdminToken);
       return result;
@@ -388,7 +392,15 @@ const WordEnrichmentDetailView = ({
     }
 
     const candidateValue = option.candidate[field];
-    const value = typeof candidateValue === 'string' ? candidateValue : '';
+    let value = typeof candidateValue === 'string' ? candidateValue : '';
+    if (field === 'aux' && !value) {
+      const auxiliaries = option.candidate.auxiliaries ?? [];
+      value = auxiliaries.length === 1 ? auxiliaries[0] : '';
+    }
+    if (field === 'perfekt' && !value) {
+      const options = option.candidate.perfektOptions ?? [];
+      value = options[0] ?? '';
+    }
     setDrafts((previous) => ({ ...previous, [field]: value }));
     setSelectedOptions((current) => ({ ...current, [field]: optionId }));
     setApplyResult(null);
@@ -638,14 +650,6 @@ const WordEnrichmentDetailView = ({
                 setApplyResult(null);
               }}
             />
-            <BooleanToggle
-              label="Collect Wiktionary summaries"
-              checked={wordConfig.collectWiktionary}
-              onCheckedChange={(checked) => {
-                setWordConfig((current) => ({ ...current, collectWiktionary: checked }));
-                setApplyResult(null);
-              }}
-            />
           </div>
         </CardContent>
       </Card>
@@ -678,12 +682,6 @@ const WordEnrichmentDetailView = ({
                 <div>
                   <span className="font-medium">English hints:</span>{' '}
                   <span className="text-muted-foreground">{previewData.suggestions.englishHints.join(', ')}</span>
-                </div>
-              ) : null}
-              {previewData.suggestions.wiktionarySummary ? (
-                <div>
-                  <span className="font-medium">Wiktionary summary:</span>{' '}
-                  <span className="text-muted-foreground">{previewData.suggestions.wiktionarySummary}</span>
                 </div>
               ) : null}
             </div>
@@ -833,7 +831,12 @@ const WordEnrichmentDetailView = ({
                           <SelectItem value={MANUAL_OPTION}>Manual entry</SelectItem>
                           {perfektOptions.map((option) => (
                             <SelectItem key={option.id} value={option.id}>
-                              {option.candidate.perfekt} · {option.candidate.source}
+                              {(
+                                option.candidate.perfektOptions?.length
+                                  ? option.candidate.perfektOptions.join(' / ')
+                                  : option.candidate.perfekt
+                              ) ?? '—'}{' '}
+                              · {option.candidate.source}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -854,7 +857,12 @@ const WordEnrichmentDetailView = ({
                           <SelectItem value={MANUAL_OPTION}>Manual entry</SelectItem>
                           {auxOptions.map((option) => (
                             <SelectItem key={option.id} value={option.id}>
-                              {option.candidate.aux} · {option.candidate.source}
+                              {(
+                                option.candidate.auxiliaries?.length
+                                  ? option.candidate.auxiliaries.join(' / ')
+                                  : option.candidate.aux ?? '—'
+                              )}{' '}
+                              · {option.candidate.source}
                             </SelectItem>
                           ))}
                         </SelectContent>

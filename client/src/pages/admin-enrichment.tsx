@@ -57,7 +57,6 @@ interface BulkConfigState extends RunEnrichmentPayload {
   collectSynonyms: boolean;
   collectExamples: boolean;
   collectTranslations: boolean;
-  collectWiktionary: boolean;
 }
 
 const DEFAULT_BULK_CONFIG: BulkConfigState = {
@@ -69,7 +68,6 @@ const DEFAULT_BULK_CONFIG: BulkConfigState = {
   collectSynonyms: true,
   collectExamples: true,
   collectTranslations: true,
-  collectWiktionary: true,
 };
 
 const DEFAULT_WORD_CONFIG: WordConfigState = {
@@ -78,7 +76,6 @@ const DEFAULT_WORD_CONFIG: WordConfigState = {
   collectSynonyms: true,
   collectExamples: true,
   collectTranslations: true,
-  collectWiktionary: true,
 };
 
 const AdminEnrichmentPage = () => {
@@ -146,7 +143,6 @@ const AdminEnrichmentPage = () => {
         collectSynonyms: bulkConfig.collectSynonyms,
         collectExamples: bulkConfig.collectExamples,
         collectTranslations: bulkConfig.collectTranslations,
-        collectWiktionary: bulkConfig.collectWiktionary,
       };
       return runBulkEnrichment(payload, normalizedAdminToken);
     },
@@ -259,7 +255,6 @@ const AdminEnrichmentPage = () => {
         collectSynonyms: wordConfig.collectSynonyms,
         collectExamples: wordConfig.collectExamples,
         collectTranslations: wordConfig.collectTranslations,
-        collectWiktionary: wordConfig.collectWiktionary,
       };
       const result = await previewWordEnrichment(word.id, options, normalizedAdminToken);
       setPreviewData(result);
@@ -489,13 +484,6 @@ const AdminEnrichmentPage = () => {
               }
             />
             <BooleanToggle
-              label="Collect Wiktionary summaries"
-              checked={bulkConfig.collectWiktionary}
-              onCheckedChange={(checked) =>
-                setBulkConfig((config) => ({ ...config, collectWiktionary: checked }))
-              }
-            />
-            <BooleanToggle
               label="Use AI assistance"
               description="Requires the OPENAI_API_KEY environment variable"
               checked={bulkConfig.enableAi}
@@ -619,13 +607,6 @@ const AdminEnrichmentPage = () => {
               checked={wordConfig.collectTranslations}
               onCheckedChange={(checked) =>
                 setWordConfig((config) => ({ ...config, collectTranslations: checked }))
-              }
-            />
-            <BooleanToggle
-              label="Collect Wiktionary summaries"
-              checked={wordConfig.collectWiktionary}
-              onCheckedChange={(checked) =>
-                setWordConfig((config) => ({ ...config, collectWiktionary: checked }))
               }
             />
           </div>

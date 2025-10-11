@@ -289,7 +289,7 @@ const enrichmentRunSchema = z
     collectSynonyms: optionalBoolean,
     collectExamples: optionalBoolean,
     collectTranslations: optionalBoolean,
-    collectWiktionary: optionalBoolean,
+    collectWiktextract: optionalBoolean,
   })
   .partial();
 
@@ -300,7 +300,7 @@ const enrichmentPreviewSchema = z
     collectSynonyms: optionalBoolean,
     collectExamples: optionalBoolean,
     collectTranslations: optionalBoolean,
-    collectWiktionary: optionalBoolean,
+    collectWiktextract: optionalBoolean,
   })
   .partial();
 
@@ -1331,7 +1331,7 @@ export function registerRoutes(app: Express): void {
         collectSynonyms: parsed.data.collectSynonyms,
         collectExamples: parsed.data.collectExamples,
         collectTranslations: parsed.data.collectTranslations,
-        collectWiktionary: parsed.data.collectWiktionary,
+        collectWiktextract: parsed.data.collectWiktextract,
         delayMs: 0,
         apply: false,
         dryRun: true,
@@ -1390,7 +1390,7 @@ export function registerRoutes(app: Express): void {
         collectSynonyms: parsed.data.collectSynonyms,
         collectExamples: parsed.data.collectExamples,
         collectTranslations: parsed.data.collectTranslations,
-        collectWiktionary: parsed.data.collectWiktionary,
+        collectWiktextract: parsed.data.collectWiktextract,
         delayMs: 0,
         apply: false,
         dryRun: true,
@@ -1420,7 +1420,6 @@ export function registerRoutes(app: Express): void {
           examples: computation.suggestions.examples,
           synonyms: computation.suggestions.synonyms,
           englishHints: computation.suggestions.englishHints,
-          wiktionarySummary: computation.suggestions.wiktionarySummary,
           verbForms: computation.suggestions.verbForms,
           providerDiagnostics: computation.suggestions.diagnostics,
         },

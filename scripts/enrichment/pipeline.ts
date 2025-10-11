@@ -23,11 +23,9 @@ import {
   lookupOpenThesaurusSynonyms,
   lookupTranslation,
   lookupWiktextract,
-  lookupWiktionarySummary,
   type ExampleLookup,
   type SynonymLookup,
   type TranslationLookup,
-  type WiktionaryLookup,
 } from "./providers";
 
 export type WordRecord = typeof words.$inferSelect;
@@ -52,7 +50,6 @@ type SuggestionBundle = {
   translations: EnrichmentTranslationCandidate[];
   synonyms: string[];
   englishHints: string[];
-  wiktionarySummary?: string;
   examples: EnrichmentExampleCandidate[];
   errors: string[];
   sources: string[];
@@ -89,7 +86,6 @@ export interface PipelineConfig {
   collectSynonyms: boolean;
   collectExamples: boolean;
   collectTranslations: boolean;
-  collectWiktionary: boolean;
   collectWiktextract: boolean;
 }
 
@@ -123,7 +119,6 @@ export function resolveConfigFromEnv(overrides: Partial<PipelineConfig> = {}): P
   const envCollectSynonyms = parseBoolean(process.env.COLLECT_SYNONYMS, true);
   const envCollectExamples = parseBoolean(process.env.COLLECT_EXAMPLES, true);
   const envCollectTranslations = parseBoolean(process.env.COLLECT_TRANSLATIONS, true);
-  const envCollectWiktionary = parseBoolean(process.env.COLLECT_WIKTIONARY, true);
   const envCollectWiktextract = parseBoolean(process.env.COLLECT_WIKTEXTRACT, true);
 
   const apply = overrides.apply ?? envApply;
@@ -155,7 +150,6 @@ export function resolveConfigFromEnv(overrides: Partial<PipelineConfig> = {}): P
     collectSynonyms: overrides.collectSynonyms ?? envCollectSynonyms,
     collectExamples: overrides.collectExamples ?? envCollectExamples,
     collectTranslations: overrides.collectTranslations ?? envCollectTranslations,
-    collectWiktionary: overrides.collectWiktionary ?? envCollectWiktionary,
     collectWiktextract: overrides.collectWiktextract ?? envCollectWiktextract,
   } satisfies PipelineConfig;
 }
@@ -279,7 +273,6 @@ export async function computeWordEnrichment(
     translation: translationCandidate,
     englishHints: suggestions.englishHints.length ? suggestions.englishHints : undefined,
     synonyms: suggestions.synonyms,
-    wiktionarySummary: suggestions.wiktionarySummary,
     example: exampleCandidate,
     verbForms: verbFormCandidate,
     updates,
@@ -374,7 +367,6 @@ async function collectSuggestions(
   const verbForms: EnrichmentVerbFormSuggestion[] = [];
   let synonyms: string[] = [];
   let englishHints: string[] = [];
-  let wiktionarySummary: string | undefined;
   const diagnostics: EnrichmentProviderDiagnostic[] = [];
 
   const addTranslationCandidate = (
@@ -420,46 +412,6 @@ async function collectSuggestions(
     }
     synonyms.push(trimmed);
   };
-
-  if (config.collectWiktionary) {
-    try {
-      const value = await lookupWiktionarySummary(word.lemma);
-      wiktionarySummary = value?.summary;
-      englishHints = value?.englishHints ?? [];
-      if (value?.forms) {
-        const { praeteritum, partizipIi, perfekt, aux } = value.forms;
-        if (praeteritum || partizipIi || perfekt || aux) {
-          verbForms.push({
-            source: "de.wiktionary.org",
-            praeteritum,
-            partizipIi,
-            perfekt,
-            aux,
-          });
-        }
-      }
-      if (value && (value.summary || value.englishHints.length || verbForms.length)) {
-        sources.add("de.wiktionary.org");
-      }
-      diagnostics.push({
-        id: "wiktionary",
-        label: "Wiktionary",
-        status: "success",
-        payload: value ?? null,
-      });
-    } catch (error) {
-      const message = formatError("Wiktionary", error);
-      errors.push(message);
-      diagnostics.push({
-        id: "wiktionary",
-        label: "Wiktionary",
-        status: "error",
-        error: message,
-      });
-    }
-  } else {
-    diagnostics.push({ id: "wiktionary", label: "Wiktionary", status: "skipped" });
-  }
 
   if (config.collectSynonyms) {
     try {
@@ -553,6 +505,15 @@ async function collectSuggestions(
     try {
       const value = await lookupWiktextract(word.lemma);
       if (value) {
+        if (value.englishHints.length) {
+          const mergedHints = new Set<string>(englishHints);
+          for (const hint of value.englishHints) {
+            if (hint.trim()) {
+              mergedHints.add(hint.trim());
+            }
+          }
+          englishHints = Array.from(mergedHints);
+        }
         for (const translation of value.translations) {
           addTranslationCandidate(translation, "kaikki.org");
         }
@@ -569,6 +530,29 @@ async function collectSuggestions(
             exampleEn: value.example.exampleEn,
             source: "kaikki.org",
           });
+        }
+        if (value.verbForms) {
+          const { praeteritum, partizipIi, perfekt, auxiliaries, perfektOptions } = value.verbForms;
+          if (praeteritum || partizipIi || perfekt || auxiliaries.length) {
+            verbForms.push({
+              source: "kaikki.org",
+              praeteritum,
+              partizipIi,
+              perfekt,
+              aux: auxiliaries.length === 1 ? auxiliaries[0] : undefined,
+              auxiliaries: auxiliaries.length ? auxiliaries : undefined,
+              perfektOptions: perfektOptions.length ? perfektOptions : undefined,
+            });
+          }
+        }
+        if (
+          value.translations.length
+          || value.synonyms.length
+          || value.example
+          || value.verbForms
+          || value.englishHints.length
+        ) {
+          sources.add("kaikki.org");
         }
       }
       diagnostics.push({
@@ -639,7 +623,6 @@ async function collectSuggestions(
     translations,
     synonyms,
     englishHints,
-    wiktionarySummary,
     examples,
     errors,
     sources: Array.from(sources).sort(),
@@ -723,6 +706,13 @@ function determineUpdates(
         value: string | undefined,
       ) => {
         if (!value) return;
+        if (
+          field === "perfekt"
+          && verbFormCandidate?.perfektOptions
+          && verbFormCandidate.perfektOptions.length > 1
+        ) {
+          return;
+        }
         const cleaned = value.trim();
         if (!cleaned) return;
         const previous = word[field];
