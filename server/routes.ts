@@ -181,6 +181,14 @@ const optionalText = (max: number) =>
     }, z.union([z.string().max(max), z.null()]))
     .optional();
 
+const trimmedString = (max: number) =>
+  z.preprocess((value) => {
+    if (value === undefined || value === null) return value;
+    if (typeof value !== "string") return value;
+    const trimmed = value.trim();
+    return trimmed.length ? trimmed : undefined;
+  }, z.string().min(1).max(max));
+
 const optionalBoolean = z
   .preprocess((value) => {
     if (value === undefined) return undefined;
@@ -294,6 +302,24 @@ const optionalLevel = z
   }, z.union([z.string().max(10), z.null()]))
   .optional();
 
+const prepositionAttributesSchema = z
+  .object({
+    cases: z.array(trimmedString(60)).optional(),
+    notes: z.array(trimmedString(200)).optional(),
+  })
+  .strict()
+  .partial();
+
+const posAttributesSchema = z
+  .object({
+    pos: optionalText(20),
+    preposition: prepositionAttributesSchema.nullable().optional(),
+    tags: z.array(trimmedString(100)).optional(),
+    notes: z.array(trimmedString(200)).optional(),
+  })
+  .strict()
+  .partial();
+
 const wordUpdateSchema = z
   .object({
     level: optionalLevel,
@@ -316,6 +342,7 @@ const wordUpdateSchema = z
     sourceNotes: optionalText(500),
     translations: translationRecordSchema.array().nullable().optional(),
     examples: exampleRecordSchema.array().nullable().optional(),
+    posAttributes: posAttributesSchema.nullable().optional(),
     enrichmentAppliedAt: optionalTimestamp,
     enrichmentMethod: enrichmentMethodSchema.nullable().optional(),
   })
@@ -361,6 +388,7 @@ const enrichmentPatchSchema = z
     aux: optionalAuxiliary,
     translations: translationRecordSchema.array().nullable().optional(),
     examples: exampleRecordSchema.array().nullable().optional(),
+    posAttributes: posAttributesSchema.nullable().optional(),
     enrichmentAppliedAt: optionalTimestamp,
     enrichmentMethod: enrichmentMethodSchema.nullable().optional(),
   })
@@ -493,6 +521,20 @@ function setLegacyDeprecation(res: Response): void {
 }
 
 function computeWordCompleteness(word: Pick<Word, "pos"> & Partial<Word>): boolean {
+  const english = word.english;
+  const exampleDe = word.exampleDe;
+  const exampleEn = word.exampleEn;
+  const examples = word.examples ?? [];
+  const hasExamplePair = Boolean(
+    exampleDe?.trim() && exampleEn?.trim()
+    || examples.some((entry) => entry?.exampleDe?.trim() && entry?.exampleEn?.trim()),
+  );
+  if (!english || !english.trim()) {
+    return false;
+  }
+  if (!hasExamplePair) {
+    return false;
+  }
   switch (word.pos) {
     case "V":
       return Boolean(word.praeteritum && word.partizipIi && word.perfekt);
@@ -501,7 +543,7 @@ function computeWordCompleteness(word: Pick<Word, "pos"> & Partial<Word>): boole
     case "Adj":
       return Boolean(word.comparative && word.superlative);
     default:
-      return Boolean(word.english || word.exampleDe);
+      return true;
   }
 }
 
@@ -1345,6 +1387,7 @@ export function registerRoutes(app: Express): void {
       assign("sourceNotes", "sourceNotes");
       assign("translations", "translations");
       assign("examples", "examples");
+      assign("posAttributes", "posAttributes");
       assign("enrichmentAppliedAt", "enrichmentAppliedAt");
       assign("enrichmentMethod", "enrichmentMethod");
 
@@ -1505,6 +1548,7 @@ export function registerRoutes(app: Express): void {
           verbForms: computation.suggestions.verbForms,
           nounForms: computation.suggestions.nounForms,
           adjectiveForms: computation.suggestions.adjectiveForms,
+          prepositionAttributes: computation.suggestions.prepositionAttributes,
           providerDiagnostics: computation.suggestions.diagnostics,
           snapshots: computation.suggestions.snapshots,
         },

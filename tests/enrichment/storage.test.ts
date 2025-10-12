@@ -57,6 +57,13 @@ describe('enrichment storage', () => {
         },
       ],
       adjectiveForms: null,
+      prepositionAttributes: [
+        {
+          source: 'kaikki.org',
+          cases: ['Akkusativ'],
+          notes: ['directional'],
+        },
+      ],
       rawPayload: { foo: 'bar' },
       collectedAt: now,
       createdAt: now,
@@ -73,12 +80,14 @@ describe('enrichment storage', () => {
     expect(Object.keys(entries)).toContain('apfel');
     expect(entries.apfel.translations).toHaveLength(2);
     expect(entries.apfel.examples).toHaveLength(2);
+    expect(entries.apfel.prepositionAttributes).toHaveLength(1);
 
     const persisted = await loadPersistedWordData(tempDir);
     expect(persisted).toHaveLength(1);
     expect(persisted[0]).toMatchObject({ lemma: 'Apfel', pos: 'N' });
     expect(persisted[0].providers[0].translations).toHaveLength(2);
     expect(persisted[0].providers[0].examples).toHaveLength(2);
+    expect(persisted[0].providers[0].prepositionAttributes).toHaveLength(1);
   });
 
   it('records schema version history when upgrading legacy files', async () => {

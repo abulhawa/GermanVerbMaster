@@ -153,6 +153,7 @@ function buildPersistedEntry(snapshot: EnrichmentProviderSnapshot): PersistedPro
     verbForms: snapshot.verbForms ?? null,
     nounForms: snapshot.nounForms ?? null,
     adjectiveForms: snapshot.adjectiveForms ?? null,
+    prepositionAttributes: snapshot.prepositionAttributes ?? null,
     rawPayload: snapshot.rawPayload,
     wordId: snapshot.wordId,
     metadata,

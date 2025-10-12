@@ -19,7 +19,7 @@ import {
   upsertGoldenBundles,
   writeGoldenBundlesToDisk,
 } from './etl/golden';
-import type { EnrichmentMethod, WordExample, WordTranslation } from '@shared/types';
+import type { EnrichmentMethod, WordExample, WordPosAttributes, WordTranslation } from '@shared/types';
 import type { PersistedProviderEntry, PersistedWordData } from '@shared/enrichment';
 import { loadPersistedWordData } from './enrichment/storage';
 
@@ -89,6 +89,7 @@ interface RawWordRow {
   sourceNotes?: string | null;
   translations?: WordTranslation[] | null;
   examples?: WordExample[] | null;
+  posAttributes?: WordPosAttributes | null;
   enrichmentAppliedAt?: string | null;
   enrichmentMethod?: EnrichmentMethod | null;
 }
@@ -159,6 +160,20 @@ function normaliseLevel(level: unknown): string | null {
 }
 
 function computeCompleteness(word: RawWordRow & { pos: ExternalPartOfSpeech }): boolean {
+  const english = word.english ?? null;
+  const exampleDe = word.exampleDe ?? null;
+  const exampleEn = word.exampleEn ?? null;
+  const examples = word.examples ?? [];
+  const hasExamplePair = Boolean(
+    exampleDe?.trim() && exampleEn?.trim()
+    || examples.some((entry) => entry?.exampleDe?.trim() && entry?.exampleEn?.trim()),
+  );
+  if (!english || !english.trim()) {
+    return false;
+  }
+  if (!hasExamplePair) {
+    return false;
+  }
   switch (word.pos) {
     case 'V':
       return Boolean(word.praeteritum && word.partizipIi && word.perfekt);
@@ -167,7 +182,7 @@ function computeCompleteness(word: RawWordRow & { pos: ExternalPartOfSpeech }): 
     case 'Adj':
       return Boolean(word.comparative && word.superlative);
     default:
-      return Boolean(word.english || word.exampleDe);
+      return true;
   }
 }
 
@@ -227,6 +242,7 @@ function mergeWord(existing: RawWordRow | null, incoming: RawWordRow): RawWordRo
   merged.sourceNotes = dedupeSources(existing.sourceNotes, incoming.sourceNotes);
   merged.translations = mergeTranslations(existing.translations, incoming.translations);
   merged.examples = mergeExamples(existing.examples, incoming.examples);
+  merged.posAttributes = mergeWordPosAttributes(existing.posAttributes, incoming.posAttributes);
   merged.enrichmentAppliedAt = pickLatestTimestamp(
     existing.enrichmentAppliedAt ?? null,
     incoming.enrichmentAppliedAt ?? null,
@@ -323,6 +339,84 @@ function mergeExamples(
   return deduped.length ? deduped : null;
 }
 
+function normalizeStringArray(values: Array<string | null | undefined>): string[] {
+  const seen = new Set<string>();
+  const result: string[] = [];
+  for (const value of values) {
+    const trimmed = value?.trim();
+    if (!trimmed) {
+      continue;
+    }
+    const key = trimmed.toLowerCase();
+    if (!seen.has(key)) {
+      seen.add(key);
+      result.push(trimmed);
+    }
+  }
+  return result;
+}
+
+function mergeWordPosAttributes(
+  existing: WordPosAttributes | null | undefined,
+  incoming: WordPosAttributes | null | undefined,
+): WordPosAttributes | null {
+  const next: WordPosAttributes = {};
+  const existingPos = existing?.pos ?? null;
+  const incomingPos = incoming?.pos ?? null;
+  if (existingPos?.trim()) {
+    next.pos = existingPos.trim();
+  } else if (incomingPos?.trim()) {
+    next.pos = incomingPos.trim();
+  }
+
+  const collectPrepositionValues = (
+    source: WordPosAttributes | null | undefined,
+    targetCases: Set<string>,
+    targetNotes: Set<string>,
+  ) => {
+    if (!source?.preposition) return;
+    for (const value of source.preposition.cases ?? []) {
+      const trimmed = value?.trim();
+      if (trimmed) {
+        targetCases.add(trimmed);
+      }
+    }
+    for (const value of source.preposition.notes ?? []) {
+      const trimmed = value?.trim();
+      if (trimmed) {
+        targetNotes.add(trimmed);
+      }
+    }
+  };
+
+  const caseValues = new Set<string>();
+  const noteValues = new Set<string>();
+  collectPrepositionValues(existing, caseValues, noteValues);
+  collectPrepositionValues(incoming, caseValues, noteValues);
+
+  if (caseValues.size || noteValues.size) {
+    const preposition: NonNullable<WordPosAttributes["preposition"]> = {};
+    if (caseValues.size) {
+      preposition.cases = Array.from(caseValues.values()).sort((a, b) => a.localeCompare(b));
+    }
+    if (noteValues.size) {
+      preposition.notes = Array.from(noteValues.values()).sort((a, b) => a.localeCompare(b));
+    }
+    next.preposition = preposition;
+  }
+
+  const mergedTags = normalizeStringArray([...(existing?.tags ?? []), ...(incoming?.tags ?? [])]);
+  if (mergedTags.length) {
+    next.tags = mergedTags.sort((a, b) => a.localeCompare(b));
+  }
+  const mergedNotes = normalizeStringArray([...(existing?.notes ?? []), ...(incoming?.notes ?? [])]);
+  if (mergedNotes.length) {
+    next.notes = mergedNotes.sort((a, b) => a.localeCompare(b));
+  }
+
+  return Object.keys(next).length ? next : null;
+}
+
 function pickLatestTimestamp(a: string | null, b: string | null): string | null {
   const candidates = [a, b]
     .filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
@@ -402,6 +496,7 @@ function buildRowFromPersistedWordData(data: PersistedWordData): RawWordRow | nu
   let enrichmentMethod: EnrichmentMethod | null = null;
   let separable: boolean | null = null;
   let sourcesCsv: string | null = null;
+  let posAttributes: WordPosAttributes | null = null;
 
   for (const provider of data.providers) {
     sourcesCsv = dedupeSources(sourcesCsv, provider.providerLabel ?? provider.providerId ?? null);
@@ -423,6 +518,19 @@ function buildRowFromPersistedWordData(data: PersistedWordData): RawWordRow | nu
         exampleDe = exampleDe ?? candidate.exampleDe?.trim() ?? null;
         exampleEn = exampleEn ?? candidate.exampleEn?.trim() ?? null;
       }
+    }
+
+    if (provider.prepositionAttributes?.length) {
+      const cases = provider.prepositionAttributes.flatMap((entry) => entry.cases ?? []);
+      const notes = provider.prepositionAttributes.flatMap((entry) => entry.notes ?? []);
+      const incoming: WordPosAttributes = {
+        pos,
+        preposition: {
+          cases: cases.length ? normalizeStringArray(cases) : undefined,
+          notes: notes.length ? normalizeStringArray(notes) : undefined,
+        },
+      };
+      posAttributes = mergeWordPosAttributes(posAttributes, incoming);
     }
 
     if (provider.verbForms) {
@@ -521,6 +629,7 @@ function buildRowFromPersistedWordData(data: PersistedWordData): RawWordRow | nu
     sourceNotes: null,
     translations,
     examples,
+    posAttributes,
     enrichmentAppliedAt,
     enrichmentMethod,
   } satisfies RawWordRow;

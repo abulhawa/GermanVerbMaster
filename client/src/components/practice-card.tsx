@@ -299,10 +299,10 @@ function renderStatusBadge(
 }
 
 function renderExamples(example?: { de?: string; en?: string } | null): string | null {
-  if (!example) {
+  if (!example?.de || !example?.en) {
     return null;
   }
-  return [example.de, example.en].filter((value): value is string => Boolean(value)).join(' · ');
+  return `${example.de} · ${example.en}`;
 }
 
 function renderHintText(

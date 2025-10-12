@@ -92,6 +92,8 @@ interface KaikkiSenseEntry {
   glosses?: string[];
   raw_glosses?: string[];
   synonyms?: KaikkiSynonymEntry[];
+  tags?: string[];
+  categories?: string[];
 }
 
 interface KaikkiHeadTemplate {
@@ -107,6 +109,7 @@ interface KaikkiEntry {
   senses?: KaikkiSenseEntry[];
   head_templates?: KaikkiHeadTemplate[];
   synonyms?: KaikkiSynonymEntry[];
+  categories?: string[];
 }
 
 interface WiktextractVerbForms {
@@ -129,6 +132,11 @@ interface WiktextractAdjectiveForms {
   forms: Array<{ form: string; tags: string[] }>;
 }
 
+interface WiktextractPrepositionAttributes {
+  cases: string[];
+  notes: string[];
+}
+
 export interface WiktextractTranslation {
   value: string;
   language?: string;
@@ -147,6 +155,7 @@ export interface WiktextractLookup {
   verbForms?: WiktextractVerbForms;
   nounForms?: WiktextractNounForms;
   adjectiveForms?: WiktextractAdjectiveForms;
+  prepositionAttributes?: WiktextractPrepositionAttributes;
   sourceDe: string;
   pivotUsed: boolean;
 }
@@ -181,7 +190,48 @@ const POS_MAP: Record<string, string[]> = {
   adjective: ["adjective"],
   adv: ["adverb"],
   adverb: ["adverb"],
+  prep: ["preposition"],
+  preposition: ["preposition"],
+  präp: ["preposition"],
+  präposition: ["preposition"],
+  praep: ["preposition"],
+  prap: ["preposition"],
+  pron: ["pronoun"],
+  pronoun: ["pronoun"],
+  det: ["determiner", "article"],
+  determiner: ["determiner", "article"],
+  artikel: ["article", "determiner"],
+  konj: ["conjunction"],
+  conjunction: ["conjunction"],
+  konjunktion: ["conjunction"],
+  num: ["numeral"],
+  numeral: ["numeral"],
+  part: ["particle"],
+  particle: ["particle"],
+  partikel: ["particle"],
+  interj: ["interjection"],
+  interjection: ["interjection"],
 };
+
+const CASE_PATTERNS: Array<{ matcher: RegExp; values: string[] }> = [
+  { matcher: /\bakkusativ\b|\baccusative\b/i, values: ["Akkusativ"] },
+  { matcher: /\bdativ\b|\bdative\b/i, values: ["Dativ"] },
+  { matcher: /\bgenitiv\b|\bgenitive\b/i, values: ["Genitiv"] },
+  {
+    matcher: /\bwechselpr[aä]position\b|\btwo[-\s]?way\b|\bzweifach(?:e|en)?\b/i,
+    values: ["Akkusativ", "Dativ"],
+  },
+];
+
+const CASE_CATEGORY_MATCHERS: Array<{ matcher: RegExp; values: string[] }> = [
+  { matcher: /accusative/i, values: ["Akkusativ"] },
+  { matcher: /dative/i, values: ["Dativ"] },
+  { matcher: /genitive/i, values: ["Genitiv"] },
+  { matcher: /two[-\s]?way/i, values: ["Akkusativ", "Dativ"] },
+  { matcher: /wechselpr[aä]position/i, values: ["Akkusativ", "Dativ"] },
+];
+
+const NOTE_BLACKLIST = new Set(["table-tags", "inflection-template", "error-unrecognized-form"]);
 
 function buildKaikkiEntryUrl(base: string, lemma: string): string {
   const normalised = lemma.trim().toLowerCase();
@@ -344,6 +394,74 @@ function collectSynonyms(entry: KaikkiEntry): string[] {
     }
   }
   return Array.from(synonyms);
+}
+
+function extractPrepositionAttributes(entry: KaikkiEntry): WiktextractPrepositionAttributes | undefined {
+  if (!entry) return undefined;
+  const cases = new Set<string>();
+  const notes = new Set<string>();
+
+  const inspect = (value: string | undefined | null) => {
+    if (!value) return;
+    const trimmed = value.trim();
+    if (!trimmed) return;
+    const lower = trimmed.toLowerCase();
+    for (const { matcher, values } of CASE_PATTERNS) {
+      if (matcher.test(lower)) {
+        values.forEach((item) => cases.add(item));
+      }
+    }
+  };
+
+  const inspectCategory = (value: string | undefined | null) => {
+    if (!value) return;
+    const trimmed = value.trim();
+    if (!trimmed) return;
+    const lower = trimmed.toLowerCase();
+    for (const { matcher, values } of CASE_CATEGORY_MATCHERS) {
+      if (matcher.test(lower)) {
+        values.forEach((item) => cases.add(item));
+      }
+    }
+  };
+
+  const addNote = (value: string | undefined | null) => {
+    if (!value) return;
+    const trimmed = value.trim();
+    if (!trimmed) return;
+    if (NOTE_BLACKLIST.has(trimmed.toLowerCase())) {
+      return;
+    }
+    notes.add(trimmed);
+  };
+
+  for (const category of toArray<string>(entry.categories)) {
+    inspectCategory(category);
+  }
+
+  for (const sense of toArray<KaikkiSenseEntry>(entry.senses)) {
+    for (const gloss of toArray<string>(sense.glosses)) {
+      inspect(gloss);
+    }
+    for (const raw of toArray<string>(sense.raw_glosses)) {
+      inspect(raw);
+    }
+    for (const tag of toArray<string>(sense.tags)) {
+      addNote(tag);
+    }
+    for (const category of toArray<string>(sense.categories)) {
+      inspectCategory(category);
+    }
+  }
+
+  if (!cases.size && !notes.size) {
+    return undefined;
+  }
+
+  return {
+    cases: Array.from(cases.values()).sort(),
+    notes: Array.from(notes.values()).sort(),
+  } satisfies WiktextractPrepositionAttributes;
 }
 
 function collectGlosses(entry: KaikkiEntry): string[] {
@@ -554,6 +672,9 @@ export async function lookupWiktextract(
   const adjectiveForms = selectedEntry.pos?.toLowerCase().includes("adjective")
     ? extractAdjectiveForms(selectedEntry)
     : undefined;
+  const prepositionAttributes = selectedEntry.pos?.toLowerCase().includes("prep")
+    ? extractPrepositionAttributes(selectedEntry)
+    : undefined;
 
   let pivotUsed = false;
   const collectedTranslations = new Map<string, WiktextractTranslation>();
@@ -570,19 +691,15 @@ export async function lookupWiktextract(
   for (const translation of translations) {
     addTranslation(translation.value, translation.language);
   }
+  const hadDirectTranslations = collectedTranslations.size > 0;
 
-  if (!collectedTranslations.size && englishHints.length) {
-    for (const hint of englishHints) {
-      addTranslation(hint, "en");
-    }
-  }
+  const isVerbEntry = selectedEntry.pos?.toLowerCase().includes("verb") ?? false;
 
-  if (!collectedTranslations.size && englishHints.length) {
+  if (!collectedTranslations.size && englishHints.length && isVerbEntry) {
     const headword = englishHints[0];
     const englishUrl = buildKaikkiEntryUrl(KAIKKI_ENGLISH_BASE, headword);
     const englishEntries = await fetchJsonLines<KaikkiEntry>(englishUrl);
     if (englishEntries.length) {
-      pivotUsed = true;
       for (const entry of englishEntries) {
         if (entry.lang !== "English") continue;
         for (const sense of toArray<KaikkiSenseEntry>(entry.senses)) {
@@ -591,6 +708,13 @@ export async function lookupWiktextract(
           }
         }
       }
+      pivotUsed = true;
+    }
+  }
+
+  if (!hadDirectTranslations && englishHints.length) {
+    for (const hint of englishHints) {
+      addTranslation(hint, "en");
     }
   }
 
@@ -602,6 +726,7 @@ export async function lookupWiktextract(
     verbForms,
     nounForms,
     adjectiveForms,
+    prepositionAttributes,
     sourceDe: germanUrl,
     pivotUsed,
   };

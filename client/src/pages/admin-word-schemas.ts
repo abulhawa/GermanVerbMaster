@@ -1,5 +1,21 @@
 import { z } from 'zod';
 
+const prepositionAttributesSchema = z
+  .object({
+    cases: z.array(z.string()).optional(),
+    notes: z.array(z.string()).optional(),
+  })
+  .partial();
+
+const posAttributesSchema = z
+  .object({
+    pos: z.string().nullable().optional(),
+    preposition: prepositionAttributesSchema.nullable().optional(),
+    tags: z.array(z.string()).optional(),
+    notes: z.array(z.string()).optional(),
+  })
+  .partial();
+
 export const wordSchema = z.object({
   id: z.number(),
   lemma: z.string(),
@@ -42,6 +58,7 @@ export const wordSchema = z.object({
       }),
     )
     .nullable(),
+  posAttributes: posAttributesSchema.nullable(),
   enrichmentAppliedAt: z.coerce.date().nullable(),
   enrichmentMethod: z.enum(['bulk', 'manual_api', 'manual_entry', 'preexisting']).nullable(),
   createdAt: z.coerce.date(),

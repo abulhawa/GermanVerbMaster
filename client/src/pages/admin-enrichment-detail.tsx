@@ -1042,6 +1042,27 @@ const WordEnrichmentDetailView = ({
                   </div>
                 </div>
               ) : null}
+              {(() => {
+                const prepositionData =
+                  previewData.summary.posAttributes?.preposition
+                  ?? previewData.summary.prepositionAttributes;
+                if (!prepositionData) {
+                  return null;
+                }
+                return (
+                  <div className="space-y-1">
+                    <span className="font-medium">Preposition details:</span>
+                    <div className="text-muted-foreground">
+                      {prepositionData.cases?.length ? (
+                        <div>Cases: {prepositionData.cases.join(', ')}</div>
+                      ) : null}
+                      {prepositionData.notes?.length ? (
+                        <div className="text-sm">Notes: {prepositionData.notes.join(', ')}</div>
+                      ) : null}
+                    </div>
+                  </div>
+                );
+              })()}
               {previewData.summary.adjectiveForms ? (
                 <div className="space-y-1">
                   <span className="font-medium">Adjective forms:</span>

@@ -32,6 +32,18 @@ export interface WordExample {
   source?: string | null;
 }
 
+export interface WordPrepositionAttributes {
+  cases?: string[] | null;
+  notes?: string[] | null;
+}
+
+export interface WordPosAttributes {
+  pos?: PartOfSpeech | string | null;
+  preposition?: WordPrepositionAttributes | null;
+  tags?: string[] | null;
+  notes?: string[] | null;
+}
+
 export type EnrichmentMethod = 'bulk' | 'manual_api' | 'manual_entry' | 'preexisting';
 
 export interface Word {
@@ -59,6 +71,7 @@ export interface Word {
   sourceNotes: string | null;
   translations: WordTranslation[] | null;
   examples: WordExample[] | null;
+  posAttributes: WordPosAttributes | null;
   enrichmentAppliedAt: Date | null;
   enrichmentMethod: EnrichmentMethod | null;
   createdAt: Date;

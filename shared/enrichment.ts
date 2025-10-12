@@ -2,6 +2,7 @@ import type {
   EnrichmentMethod,
   PartOfSpeech,
   WordExample,
+  WordPosAttributes,
   WordTranslation,
 } from "./types.js";
 
@@ -14,6 +15,7 @@ export type EnrichmentField =
   | "exampleDe"
   | "exampleEn"
   | "sourcesCsv"
+  | "posAttributes"
   | "complete"
   | "praeteritum"
   | "partizipIi"
@@ -46,6 +48,12 @@ export interface EnrichmentExampleCandidate {
   exampleDe?: string;
   exampleEn?: string;
   source: string;
+}
+
+export interface EnrichmentPrepositionSuggestion {
+  source: string;
+  cases?: string[];
+  notes?: string[];
 }
 
 export interface EnrichmentVerbFormSuggestion {
@@ -113,6 +121,7 @@ export interface EnrichmentProviderSnapshot {
   verbForms?: EnrichmentVerbFormSuggestion[] | null;
   nounForms?: EnrichmentNounFormSuggestion[] | null;
   adjectiveForms?: EnrichmentAdjectiveFormSuggestion[] | null;
+  prepositionAttributes?: EnrichmentPrepositionSuggestion[] | null;
   rawPayload?: unknown;
   collectedAt: string;
   createdAt: string;
@@ -141,6 +150,7 @@ export interface PersistedProviderEntry {
   verbForms?: EnrichmentVerbFormSuggestion[] | null;
   nounForms?: EnrichmentNounFormSuggestion[] | null;
   adjectiveForms?: EnrichmentAdjectiveFormSuggestion[] | null;
+  prepositionAttributes?: EnrichmentPrepositionSuggestion[] | null;
   rawPayload?: unknown;
   wordId?: number | null;
   metadata?: Record<string, unknown> | null;
@@ -177,6 +187,7 @@ export interface WordEnrichmentSuggestions {
   verbForms: EnrichmentVerbFormSuggestion[];
   nounForms: EnrichmentNounFormSuggestion[];
   adjectiveForms: EnrichmentAdjectiveFormSuggestion[];
+  prepositionAttributes: EnrichmentPrepositionSuggestion[];
   providerDiagnostics: EnrichmentProviderDiagnostic[];
   snapshots: EnrichmentProviderSnapshotComparison[];
 }
@@ -195,6 +206,8 @@ export interface EnrichmentWordSummary {
   verbForms?: EnrichmentVerbFormSuggestion;
   nounForms?: EnrichmentNounFormSuggestion;
   adjectiveForms?: EnrichmentAdjectiveFormSuggestion;
+  prepositionAttributes?: EnrichmentPrepositionSuggestion;
+  posAttributes?: WordPosAttributes | null;
   updates: EnrichmentFieldUpdate[];
   applied: boolean;
   sources: string[];
@@ -218,9 +231,10 @@ export type EnrichmentPatch = Partial<{
   superlative: string | null;
   translations: WordTranslation[] | null;
   examples: WordExample[] | null;
+  posAttributes: WordPosAttributes | null;
   enrichmentAppliedAt: string | null;
   enrichmentMethod: EnrichmentMethod | null;
-}>;
+}>; 
 
 export interface WordEnrichmentPreview {
   summary: EnrichmentWordSummary;

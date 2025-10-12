@@ -154,4 +154,26 @@ describe('lookupWiktextract', () => {
       expect.arrayContaining([expect.objectContaining({ form: 'am schnellsten' })]),
     );
   });
+
+  it('extracts governed cases and notes for prepositions', async () => {
+    const germanEntry = {
+      lang: 'German',
+      pos: 'prep',
+      word: 'auf',
+      categories: ['German two-way prepositions'],
+      senses: [
+        {
+          glosses: ['(with accusative) onto; on'],
+          tags: ['directional'],
+        },
+      ],
+    };
+
+    mockedFetch.mockResolvedValueOnce(createResponse(`${JSON.stringify(germanEntry)}\n`));
+
+    const result = await lookupWiktextract('auf', 'Präp');
+
+    expect(result?.prepositionAttributes?.cases).toEqual(['Akkusativ', 'Dativ']);
+    expect(result?.prepositionAttributes?.notes).toEqual(['directional']);
+  });
 });

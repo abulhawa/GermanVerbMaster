@@ -20,10 +20,11 @@ import type {
   EnrichmentSnapshotTrigger,
   EnrichmentTranslationCandidate,
   EnrichmentVerbFormSuggestion,
+  EnrichmentPrepositionSuggestion,
   EnrichmentWordSummary,
   WordEnrichmentSuggestions,
 } from "@shared/enrichment";
-import type { WordExample, WordTranslation } from "@shared/types";
+import type { WordExample, WordPosAttributes, WordTranslation } from "@shared/types";
 
 import {
   delay,
@@ -60,6 +61,7 @@ type WordPatch = Partial<
     | "superlative"
     | "translations"
     | "examples"
+    | "posAttributes"
     | "enrichmentAppliedAt"
     | "enrichmentMethod"
   >
@@ -77,6 +79,7 @@ type SuggestionBundle = {
   verbForms: EnrichmentVerbFormSuggestion[];
   nounForms: EnrichmentNounFormSuggestion[];
   adjectiveForms: EnrichmentAdjectiveFormSuggestion[];
+  prepositionAttributes: EnrichmentPrepositionSuggestion[];
   snapshots: EnrichmentProviderSnapshotComparison[];
 };
 
@@ -92,11 +95,13 @@ type ProviderSnapshotDraft = {
   verbForms: EnrichmentVerbFormSuggestion[];
   nounForms: EnrichmentNounFormSuggestion[];
   adjectiveForms: EnrichmentAdjectiveFormSuggestion[];
+  prepositionAttributes: EnrichmentPrepositionSuggestion[];
   rawPayload?: unknown;
 };
 
 type FieldUpdate = EnrichmentFieldUpdate;
 type ExampleCandidate = EnrichmentExampleCandidate;
+type PrepositionAttributes = NonNullable<WordPosAttributes["preposition"]>;
 
 export interface WordEnrichmentComputation {
   summary: EnrichmentWordSummary;
@@ -105,6 +110,7 @@ export interface WordEnrichmentComputation {
   suggestions: SuggestionBundle;
   storedTranslations: WordRecord["translations"] | null;
   storedExamples: WordRecord["examples"] | null;
+  storedPosAttributes: WordRecord["posAttributes"] | null;
 }
 
 export interface PipelineConfig {
@@ -322,8 +328,10 @@ export async function computeWordEnrichment(
     verbFormCandidate,
     nounFormCandidate,
     adjectiveFormCandidate,
+    prepositionCandidate,
     storedTranslations,
     storedExamples,
+    storedPosAttributes,
   } = determineUpdates(
     word,
     suggestions,
@@ -344,6 +352,8 @@ export async function computeWordEnrichment(
     verbForms: verbFormCandidate,
     nounForms: nounFormCandidate,
     adjectiveForms: adjectiveFormCandidate,
+    prepositionAttributes: prepositionCandidate,
+    posAttributes: storedPosAttributes ?? null,
     updates,
     applied: false,
     sources: suggestions.sources,
@@ -358,6 +368,7 @@ export async function computeWordEnrichment(
     suggestions,
     storedTranslations,
     storedExamples,
+    storedPosAttributes,
   } satisfies WordEnrichmentComputation;
 }
 
@@ -464,6 +475,7 @@ async function collectSuggestions(
   const verbForms: EnrichmentVerbFormSuggestion[] = [];
   const nounForms: EnrichmentNounFormSuggestion[] = [];
   const adjectiveForms: EnrichmentAdjectiveFormSuggestion[] = [];
+  const prepositionAttributes: EnrichmentPrepositionSuggestion[] = [];
   let synonyms: string[] = [];
   let englishHints: string[] = [];
   const diagnostics: EnrichmentProviderDiagnostic[] = [];
@@ -491,6 +503,7 @@ async function collectSuggestions(
       verbForms: [],
       nounForms: [],
       adjectiveForms: [],
+      prepositionAttributes: [],
     };
     snapshotDrafts.set(id, draft);
     return draft;
@@ -742,6 +755,15 @@ async function collectSuggestions(
           adjectiveForms.push(suggestion);
           snapshot.adjectiveForms.push(suggestion);
         }
+        if (value.prepositionAttributes) {
+          const suggestion: EnrichmentPrepositionSuggestion = {
+            source: "kaikki.org",
+            cases: value.prepositionAttributes.cases.length ? value.prepositionAttributes.cases : undefined,
+            notes: value.prepositionAttributes.notes.length ? value.prepositionAttributes.notes : undefined,
+          };
+          prepositionAttributes.push(suggestion);
+          snapshot.prepositionAttributes.push(suggestion);
+        }
         if (
           value.translations.length
           || value.synonyms.length
@@ -749,6 +771,7 @@ async function collectSuggestions(
           || value.verbForms
           || value.nounForms
           || value.adjectiveForms
+          || value.prepositionAttributes
           || value.englishHints.length
         ) {
           sources.add("kaikki.org");
@@ -847,6 +870,7 @@ async function collectSuggestions(
     verbForms,
     nounForms,
     adjectiveForms,
+    prepositionAttributes,
     snapshots: snapshotComparisons,
   };
 }
@@ -897,6 +921,8 @@ async function persistProviderSnapshotsForWord(
         verbForms: draft.status === "success" && draft.verbForms.length ? draft.verbForms : null,
         nounForms: draft.status === "success" && draft.nounForms.length ? draft.nounForms : null,
         adjectiveForms: draft.status === "success" && draft.adjectiveForms.length ? draft.adjectiveForms : null,
+        prepositionAttributes:
+          draft.status === "success" && draft.prepositionAttributes.length ? draft.prepositionAttributes : null,
         rawPayload: draft.rawPayload ?? null,
       })
       .returning();
@@ -996,6 +1022,7 @@ function buildProviderSnapshotFromRecord(record: ProviderSnapshotRecord): Enrich
     verbForms: (record.verbForms as EnrichmentVerbFormSuggestion[] | null) ?? null,
     nounForms: (record.nounForms as EnrichmentNounFormSuggestion[] | null) ?? null,
     adjectiveForms: (record.adjectiveForms as EnrichmentAdjectiveFormSuggestion[] | null) ?? null,
+    prepositionAttributes: (record.prepositionAttributes as EnrichmentPrepositionSuggestion[] | null) ?? null,
     rawPayload: record.rawPayload ?? undefined,
     collectedAt: serialiseDate(record.collectedAt),
     createdAt: serialiseDate(record.createdAt),
@@ -1037,6 +1064,7 @@ function buildSnapshotComparisonPayload(snapshot: EnrichmentProviderSnapshot) {
     verbForms: sortVerbForms(snapshot.verbForms ?? []),
     nounForms: sortNounForms(snapshot.nounForms ?? []),
     adjectiveForms: sortAdjectiveForms(snapshot.adjectiveForms ?? []),
+    prepositionAttributes: sortPrepositionAttributes(snapshot.prepositionAttributes ?? []),
   };
 }
 
@@ -1165,6 +1193,22 @@ function sortAdjectiveForms(values: EnrichmentAdjectiveFormSuggestion[]): Enrich
     });
 }
 
+function sortPrepositionAttributes(values: EnrichmentPrepositionSuggestion[]): EnrichmentPrepositionSuggestion[] {
+  return [...values]
+    .map((entry) => ({
+      source: entry.source,
+      cases: entry.cases ? sortStrings(entry.cases) : [],
+      notes: entry.notes ? sortStrings(entry.notes) : [],
+    }))
+    .sort((a, b) => {
+      const sourceCompare = a.source.localeCompare(b.source);
+      if (sourceCompare !== 0) return sourceCompare;
+      const caseCompare = a.cases.join("||").localeCompare(b.cases.join("||"));
+      if (caseCompare !== 0) return caseCompare;
+      return a.notes.join("||").localeCompare(b.notes.join("||"));
+    });
+}
+
 function sortStrings(values: string[]): string[] {
   return normalizeStringList(values).sort((a, b) => a.localeCompare(b));
 }
@@ -1223,8 +1267,10 @@ function determineUpdates(
   verbFormCandidate?: EnrichmentVerbFormSuggestion;
   nounFormCandidate?: EnrichmentNounFormSuggestion;
   adjectiveFormCandidate?: EnrichmentAdjectiveFormSuggestion;
+  prepositionCandidate?: EnrichmentPrepositionSuggestion;
   storedTranslations: WordRecord["translations"] | null;
   storedExamples: WordRecord["examples"] | null;
+  storedPosAttributes: WordRecord["posAttributes"] | null;
 } {
   const patch: WordPatch = {};
   const updates: FieldUpdate[] = [];
@@ -1257,6 +1303,9 @@ function determineUpdates(
 
   const mergedExamples = mergeExampleRecords(word.examples, suggestions.examples);
   const exampleCandidate = pickExampleCandidate(suggestions.examples);
+  const exampleDeCandidate = exampleCandidate?.exampleDe?.trim();
+  const exampleEnCandidate = exampleCandidate?.exampleEn?.trim();
+  const hasExamplePair = Boolean(exampleDeCandidate && exampleEnCandidate);
   if (!areExampleRecordsEqual(word.examples, mergedExamples)) {
     patch.examples = mergedExamples;
     updates.push({
@@ -1266,37 +1315,32 @@ function determineUpdates(
       source: exampleCandidate?.source,
     });
   }
-  if (
-    exampleCandidate?.exampleDe &&
-    (config.allowOverwrite || isBlank(word.exampleDe)) &&
-    !isBlank(exampleCandidate.exampleDe)
-  ) {
-    patch.exampleDe = exampleCandidate.exampleDe;
-    updates.push({
-      field: "exampleDe",
-      previous: word.exampleDe,
-      next: exampleCandidate.exampleDe,
-      source: exampleCandidate.source,
-    });
-  }
-  if (
-    exampleCandidate?.exampleEn &&
-    (config.allowOverwrite || isBlank(word.exampleEn)) &&
-    !isBlank(exampleCandidate.exampleEn)
-  ) {
-    patch.exampleEn = exampleCandidate.exampleEn;
-    updates.push({
-      field: "exampleEn",
-      previous: word.exampleEn,
-      next: exampleCandidate.exampleEn,
-      source: exampleCandidate.source,
-    });
+  if (hasExamplePair && exampleCandidate) {
+    if ((config.allowOverwrite || isBlank(word.exampleDe)) && exampleDeCandidate) {
+      patch.exampleDe = exampleCandidate.exampleDe;
+      updates.push({
+        field: "exampleDe",
+        previous: word.exampleDe,
+        next: exampleCandidate.exampleDe,
+        source: exampleCandidate.source,
+      });
+    }
+    if ((config.allowOverwrite || isBlank(word.exampleEn)) && exampleEnCandidate) {
+      patch.exampleEn = exampleCandidate.exampleEn;
+      updates.push({
+        field: "exampleEn",
+        previous: word.exampleEn,
+        next: exampleCandidate.exampleEn,
+        source: exampleCandidate.source,
+      });
+    }
   }
 
   let nounFormCandidate: EnrichmentNounFormSuggestion | undefined;
   let adjectiveFormCandidate: EnrichmentAdjectiveFormSuggestion | undefined;
   let verbFormCandidate: EnrichmentVerbFormSuggestion | undefined;
   let candidateAux: WordPatch["aux"] | undefined;
+  let prepositionCandidate: EnrichmentPrepositionSuggestion | undefined;
 
   if (word.pos === "N") {
     const genderCandidate = pickPreferredGenderCandidate(suggestions.nounForms);
@@ -1471,6 +1515,18 @@ function determineUpdates(
     }
   }
 
+  prepositionCandidate = pickPrepositionCandidate(suggestions.prepositionAttributes);
+  const mergedPosAttributes = mergePosAttributes(word.pos, word.posAttributes, suggestions.prepositionAttributes);
+  if (!arePosAttributesEqual(word.posAttributes, mergedPosAttributes)) {
+    patch.posAttributes = mergedPosAttributes;
+    updates.push({
+      field: "posAttributes",
+      previous: word.posAttributes,
+      next: mergedPosAttributes,
+      source: prepositionCandidate?.source,
+    });
+  }
+
   const mergedSources = mergeSourcesCsv(word.sourcesCsv, suggestions.sources);
   if (mergedSources !== word.sourcesCsv) {
     patch.sourcesCsv = mergedSources;
@@ -1503,8 +1559,10 @@ function determineUpdates(
     verbFormCandidate,
     nounFormCandidate,
     adjectiveFormCandidate,
+    prepositionCandidate,
     storedTranslations: mergedTranslations,
     storedExamples: mergedExamples,
+    storedPosAttributes: mergedPosAttributes ?? null,
   };
 }
 
@@ -1519,6 +1577,20 @@ function pickExampleCandidate(examples: ExampleCandidate[]): ExampleCandidate | 
     ?? fallback.find((example) => example.exampleDe)
     ?? fallback.find((example) => example.exampleEn)
   );
+}
+
+function pickPrepositionCandidate(
+  candidates: EnrichmentPrepositionSuggestion[],
+): EnrichmentPrepositionSuggestion | undefined {
+  const hasData = (candidate: EnrichmentPrepositionSuggestion | undefined): candidate is EnrichmentPrepositionSuggestion =>
+    Boolean(
+      candidate
+      && ((candidate.cases?.some((value) => value && value.trim()))
+        || (candidate.notes?.some((value) => value && value.trim()))),
+    );
+
+  return candidates.find((candidate) => candidate.source === "kaikki.org" && hasData(candidate))
+    ?? candidates.find((candidate) => hasData(candidate));
 }
 
 function pickPreferredTranslationCandidate(
@@ -1544,6 +1616,190 @@ function pickPreferredEnglishTranslationCandidate(
       (candidate) => candidate.value.trim() && isEnglishTranslationCandidate(candidate.language),
     )
   );
+}
+
+function mergePosAttributes(
+  pos: WordRecord["pos"],
+  existing: WordRecord["posAttributes"],
+  suggestions: EnrichmentPrepositionSuggestion[],
+): WordPosAttributes | null {
+  const normalisedExisting = normalisePosAttributes(existing);
+  const caseValues = new Set<string>();
+  const noteValues = new Set<string>();
+
+  if (normalisedExisting?.preposition?.cases) {
+    for (const entry of normalisedExisting.preposition.cases) {
+      if (entry) {
+        caseValues.add(entry);
+      }
+    }
+  }
+  if (normalisedExisting?.preposition?.notes) {
+    for (const entry of normalisedExisting.preposition.notes) {
+      if (entry) {
+        noteValues.add(entry);
+      }
+    }
+  }
+
+  for (const suggestion of suggestions) {
+    for (const entry of suggestion.cases ?? []) {
+      const trimmed = entry?.trim();
+      if (trimmed) {
+        caseValues.add(trimmed);
+      }
+    }
+    for (const note of suggestion.notes ?? []) {
+      const trimmed = note?.trim();
+      if (trimmed) {
+        noteValues.add(trimmed);
+      }
+    }
+  }
+
+  const resolvedCases = caseValues.size ? Array.from(caseValues.values()).sort((a, b) => a.localeCompare(b)) : undefined;
+  const resolvedNotes = noteValues.size ? Array.from(noteValues.values()).sort((a, b) => a.localeCompare(b)) : undefined;
+
+  const result: WordPosAttributes = {};
+  const resolvedPos = typeof pos === "string" && pos.trim() ? pos : normalisedExisting?.pos;
+  if (resolvedPos) {
+    result.pos = resolvedPos;
+  }
+
+  const existingTags = normalisedExisting?.tags ?? null;
+  const existingNotes = normalisedExisting?.notes ?? null;
+
+  if (resolvedCases || resolvedNotes || normalisedExisting?.preposition) {
+    const mergedPreposition: PrepositionAttributes | undefined = (() => {
+      if (!resolvedCases && !resolvedNotes) {
+        return normalisedExisting?.preposition ?? undefined;
+      }
+      const payload: PrepositionAttributes = {};
+      if (resolvedCases) {
+        payload.cases = resolvedCases;
+      }
+      if (resolvedNotes) {
+        payload.notes = resolvedNotes;
+      }
+      return payload;
+    })();
+    if (mergedPreposition) {
+      result.preposition = mergedPreposition;
+    }
+  }
+
+  if (existingTags?.length) {
+    result.tags = existingTags;
+  }
+  if (existingNotes?.length) {
+    result.notes = existingNotes;
+  }
+
+  return Object.keys(result).length ? result : null;
+}
+
+function normalisePosAttributes(
+  value: WordPosAttributes | WordRecord["posAttributes"] | null | undefined,
+): WordPosAttributes | null {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+  const normalised: WordPosAttributes = {};
+  if (typeof value.pos === "string" && value.pos.trim()) {
+    normalised.pos = value.pos.trim();
+  }
+  const preposition = normalisePrepositionAttributes(value.preposition ?? null);
+  if (preposition) {
+    normalised.preposition = preposition;
+  }
+  const tags = Array.isArray(value.tags) ? normalizeStringList(value.tags) : [];
+  if (tags.length) {
+    normalised.tags = tags;
+  }
+  const notes = Array.isArray(value.notes) ? normalizeStringList(value.notes) : [];
+  if (notes.length) {
+    normalised.notes = notes;
+  }
+
+  return Object.keys(normalised).length ? normalised : null;
+}
+
+function normalisePrepositionAttributes(
+  value: WordPosAttributes["preposition"] | null,
+): PrepositionAttributes | null {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+  const cases = Array.isArray(value.cases) ? normalizeStringList(value.cases) : [];
+  const notes = Array.isArray(value.notes) ? normalizeStringList(value.notes) : [];
+  if (!cases.length && !notes.length) {
+    return null;
+  }
+  const result: PrepositionAttributes = {};
+  if (cases.length) {
+    result.cases = cases;
+  }
+  if (notes.length) {
+    result.notes = notes;
+  }
+  return result;
+}
+
+function arePosAttributesEqual(
+  a: WordRecord["posAttributes"],
+  b: WordPosAttributes | null,
+): boolean {
+  const normalisedA = normalisePosAttributes(a);
+  const normalisedB = normalisePosAttributes(b);
+  if (!normalisedA && !normalisedB) {
+    return true;
+  }
+  if (!normalisedA || !normalisedB) {
+    return false;
+  }
+  if ((normalisedA.pos ?? null) !== (normalisedB.pos ?? null)) {
+    return false;
+  }
+  if (!arePrepositionAttributesEqual(normalisedA.preposition ?? null, normalisedB.preposition ?? null)) {
+    return false;
+  }
+  if (!areStringListsEqual(normalisedA.tags ?? null, normalisedB.tags ?? null)) {
+    return false;
+  }
+  if (!areStringListsEqual(normalisedA.notes ?? null, normalisedB.notes ?? null)) {
+    return false;
+  }
+  return true;
+}
+
+function arePrepositionAttributesEqual(
+  a: PrepositionAttributes | null,
+  b: PrepositionAttributes | null,
+): boolean {
+  const normalisedA = normalisePrepositionAttributes(a);
+  const normalisedB = normalisePrepositionAttributes(b);
+  if (!normalisedA && !normalisedB) {
+    return true;
+  }
+  if (!normalisedA || !normalisedB) {
+    return false;
+  }
+  if (!areStringListsEqual(normalisedA.cases ?? null, normalisedB.cases ?? null)) {
+    return false;
+  }
+  if (!areStringListsEqual(normalisedA.notes ?? null, normalisedB.notes ?? null)) {
+    return false;
+  }
+  return true;
+}
+
+function areStringListsEqual(a: string[] | null | undefined, b: string[] | null | undefined): boolean {
+  const normalisedA = normalizeStringList(a ?? []);
+  const normalisedB = normalizeStringList(b ?? []);
+  if (normalisedA.length !== normalisedB.length) {
+    return false;
+  }
+  return normalisedA.every((value, index) => value === normalisedB[index]);
 }
 
 type GenderSelection = {
@@ -1861,6 +2117,18 @@ function buildPerfektFromForms(aux: string, partizip: string): string | null {
 function computeCompleteness(word: WordRecord, patch: WordPatch): boolean {
   const english = patch.english ?? word.english;
   const exampleDe = patch.exampleDe ?? word.exampleDe;
+  const exampleEn = patch.exampleEn ?? word.exampleEn;
+  const mergedExamples = patch.examples ?? word.examples ?? [];
+  const hasExamplePair = Boolean(
+    exampleDe?.trim() && exampleEn?.trim()
+    || mergedExamples.some((entry) => entry?.exampleDe?.trim() && entry?.exampleEn?.trim()),
+  );
+  if (isBlank(english)) {
+    return false;
+  }
+  if (!hasExamplePair) {
+    return false;
+  }
   const gender = patch.gender ?? word.gender;
   const plural = patch.plural ?? word.plural;
   const praeteritum = patch.praeteritum ?? word.praeteritum;

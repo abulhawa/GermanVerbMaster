@@ -3,11 +3,13 @@ import type {
   GermanVerb,
   PracticeResult,
   WordExample,
+  WordPosAttributes,
   WordTranslation,
 } from "@shared";
 import type {
   EnrichmentAdjectiveFormSuggestion,
   EnrichmentNounFormSuggestion,
+  EnrichmentPrepositionSuggestion,
   EnrichmentVerbFormSuggestion,
 } from "@shared/enrichment";
 import { sql } from "drizzle-orm";
@@ -217,6 +219,7 @@ export const words = pgTable(
         }>
       | null
     >(),
+    posAttributes: jsonb("pos_attributes").$type<WordPosAttributes | null>(),
     enrichmentAppliedAt: timestamp("enrichment_applied_at", { withTimezone: true }),
     enrichmentMethod: enrichmentMethodEnum("enrichment_method"),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
@@ -249,6 +252,7 @@ export const enrichmentProviderSnapshots = pgTable(
     verbForms: jsonb("verb_forms").$type<EnrichmentVerbFormSuggestion[] | null>(),
     nounForms: jsonb("noun_forms").$type<EnrichmentNounFormSuggestion[] | null>(),
     adjectiveForms: jsonb("adjective_forms").$type<EnrichmentAdjectiveFormSuggestion[] | null>(),
+    prepositionAttributes: jsonb("preposition_attributes").$type<EnrichmentPrepositionSuggestion[] | null>(),
     rawPayload: jsonb("raw_payload"),
     collectedAt: timestamp("collected_at", { withTimezone: true }).defaultNow().notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
