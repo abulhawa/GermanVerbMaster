@@ -99,6 +99,35 @@ Follow these steps to configure a lightweight S3 backup target:
 These steps keep you within the Free Tier for low-volume backups. Standard S3 pricing applies once
 you exceed the Free Tier allowances or store large amounts of enrichment data.
 
+### Switching to Supabase Storage
+
+Supabase offers an [S3-compatible Storage API](https://supabase.com/docs/guides/storage/s3) that the
+enrichment uploader can target without code changes. You only need to swap out the credentials and
+endpoint in the environment:
+
+1. **Create a storage bucket** in the Supabase dashboard (under **Storage → Buckets**). Buckets are
+   private by default; keep them that way for backup data.
+2. **Generate S3 credentials** from **Project Settings → Storage → S3 access keys**. Create a new
+   key pair and note the access key and secret.
+3. **Populate the enrichment environment variables**:
+
+   ```bash
+   export ENRICHMENT_S3_BUCKET=<your-supabase-bucket>
+   export ENRICHMENT_S3_ENDPOINT=https://<project-ref>.supabase.co/storage/v1/s3
+   export ENRICHMENT_S3_REGION=us-east-1        # Supabase accepts any region label
+   export ENRICHMENT_S3_FORCE_PATH_STYLE=true   # required for Supabase's path-style API
+   export AWS_ACCESS_KEY_ID=<supabase-access-key>
+   export AWS_SECRET_ACCESS_KEY=<supabase-secret>
+   ```
+
+4. **Run the same verification/upload steps** as with AWS (`aws s3 ls` against the Supabase
+   endpoint and `npm run enrichment:export -- --clean`).
+
+Switching vendors is therefore a matter of provisioning Supabase credentials and pointing the
+existing uploader at the Supabase endpoint. Because the integration continues to use the S3 API,
+you can switch back to AWS (or any other S3-compatible provider) by restoring the original
+environment values.
+
 ## Why the server still persists locally
 
 The server continues to write JSON snapshots as part of the apply flow so that local development or
