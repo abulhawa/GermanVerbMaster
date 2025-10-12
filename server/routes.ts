@@ -12,6 +12,7 @@ import {
   packLexemeMap,
   schedulingState,
   practiceHistory,
+  enrichmentProviderSnapshots,
   type IntegrationPartner,
   type Word,
 } from "@db";
@@ -31,13 +32,16 @@ import {
   resolveConfigFromEnv as resolveEnrichmentConfigFromEnv,
   runEnrichment,
   toEnrichmentPatch,
+  buildProviderSnapshotFromRecord,
   type PipelineConfig,
 } from "../scripts/enrichment/pipeline.js";
 import {
   listSupabaseBucketObjects,
   SupabaseStorageNotConfiguredError,
   syncEnrichmentDirectoryToSupabase,
+  persistProviderSnapshotToFile,
 } from "../scripts/enrichment/storage.js";
+import { writeWordsBackupToDisk } from "../scripts/enrichment/backup.js";
 import type {
   BulkEnrichmentResponse,
   EnrichmentPatch,
@@ -1763,6 +1767,66 @@ export function registerRoutes(app: Express): void {
         return sendError(res, 500, "Failed to apply enrichment", "ENRICHMENT_APPLY_FAILED");
       }
 
+      const manualPayload = {
+        source: "manual_apply",
+        method: (updates.enrichmentMethod as string | undefined) ?? refreshed.enrichmentMethod ?? "manual_api",
+        appliedAt: refreshed.enrichmentAppliedAt ? toIsoString(refreshed.enrichmentAppliedAt) : new Date().toISOString(),
+        appliedFields,
+        patch,
+        word: {
+          id: refreshed.id,
+          lemma: refreshed.lemma,
+          pos: refreshed.pos,
+          english: refreshed.english ?? null,
+          exampleDe: refreshed.exampleDe ?? null,
+          exampleEn: refreshed.exampleEn ?? null,
+          translations: refreshed.translations ?? null,
+          examples: refreshed.examples ?? null,
+          sourcesCsv: refreshed.sourcesCsv ?? null,
+          gender: refreshed.gender ?? null,
+          plural: refreshed.plural ?? null,
+          praeteritum: refreshed.praeteritum ?? null,
+          partizipIi: refreshed.partizipIi ?? null,
+          perfekt: refreshed.perfekt ?? null,
+          aux: refreshed.aux ?? null,
+          comparative: refreshed.comparative ?? null,
+          superlative: refreshed.superlative ?? null,
+          posAttributes: refreshed.posAttributes ?? null,
+          enrichmentAppliedAt: refreshed.enrichmentAppliedAt
+            ? toIsoString(refreshed.enrichmentAppliedAt)
+            : null,
+          enrichmentMethod: refreshed.enrichmentMethod ?? null,
+        },
+      };
+
+      const [manualSnapshotRecord] = await db
+        .insert(enrichmentProviderSnapshots)
+        .values({
+          wordId: refreshed.id,
+          lemma: refreshed.lemma,
+          pos: refreshed.pos,
+          providerId: "manual",
+          providerLabel: "Manual Apply",
+          status: "success",
+          trigger: "apply",
+          mode: "all",
+          translations: refreshed.translations ?? null,
+          examples: refreshed.examples ?? null,
+          synonyms: null,
+          englishHints: null,
+          verbForms: null,
+          nounForms: null,
+          adjectiveForms: null,
+          prepositionAttributes: null,
+          rawPayload: manualPayload,
+        })
+        .returning();
+
+      if (manualSnapshotRecord) {
+        const manualSnapshot = buildProviderSnapshotFromRecord(manualSnapshotRecord);
+        await persistProviderSnapshotToFile(manualSnapshot);
+      }
+
       res.setHeader("Cache-Control", "no-store");
       res.json({ word: refreshed, appliedFields });
     } catch (error) {
@@ -1815,7 +1879,19 @@ export function registerRoutes(app: Express): void {
 
   app.post("/api/enrichment/storage/export", requireAdminAccess, async (req, res) => {
     try {
+      const backupResult = await writeWordsBackupToDisk();
       const result = await syncEnrichmentDirectoryToSupabase();
+      let wordsBackup = backupResult.summary;
+      if (wordsBackup) {
+        const prefix = result.config.pathPrefix?.replace(/^\/+|\/+$/g, "") ?? null;
+        const buildPath = (relative: string) =>
+          prefix && prefix.length ? `${prefix}/${relative}` : relative;
+        wordsBackup = {
+          ...wordsBackup,
+          objectPath: buildPath(wordsBackup.relativePath),
+          latestObjectPath: buildPath(wordsBackup.latestRelativePath),
+        };
+      }
       const response: SupabaseStorageExportResponse = {
         bucket: result.config.bucket,
         prefix: result.config.pathPrefix,
@@ -1823,6 +1899,7 @@ export function registerRoutes(app: Express): void {
         uploaded: result.uploaded,
         failed: result.failed,
         timestamp: new Date().toISOString(),
+        wordsBackup,
       };
 
       res.setHeader("Cache-Control", "no-store");

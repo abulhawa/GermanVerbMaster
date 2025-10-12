@@ -1005,7 +1005,9 @@ function toWordExamples(candidates: ExampleCandidate[]): WordExample[] | null {
   return records.length ? records : null;
 }
 
-function buildProviderSnapshotFromRecord(record: ProviderSnapshotRecord): EnrichmentProviderSnapshot {
+export function buildProviderSnapshotFromRecord(
+  record: ProviderSnapshotRecord,
+): EnrichmentProviderSnapshot {
   return {
     id: record.id,
     wordId: record.wordId,

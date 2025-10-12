@@ -24,7 +24,11 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useAuthSession } from '@/auth/session';
-import type { SupabaseStorageListResponse, SupabaseStorageObjectSummary } from '@shared/enrichment';
+import type {
+  SupabaseStorageListResponse,
+  SupabaseStorageObjectSummary,
+  WordsBackupSummary,
+} from '@shared/enrichment';
 import { exportEnrichmentStorage, fetchEnrichmentStorage } from '@/lib/admin-storage';
 
 const PAGE_SIZE_OPTIONS = [25, 50, 100] as const;
@@ -92,6 +96,7 @@ const AdminStoragePage = () => {
   const [currentPath, setCurrentPath] = useState('');
   const [limit, setLimit] = useState<(typeof PAGE_SIZE_OPTIONS)[number]>(PAGE_SIZE_OPTIONS[0]);
   const [offset, setOffset] = useState(0);
+  const [latestBackup, setLatestBackup] = useState<WordsBackupSummary | null>(null);
 
   const {
     data: storageData,
@@ -112,9 +117,14 @@ const AdminStoragePage = () => {
   const exportMutation = useMutation({
     mutationFn: () => exportEnrichmentStorage(normalizedAdminToken),
     onSuccess: (result) => {
+      setLatestBackup(result.wordsBackup ?? null);
+      const baseDescription = `Uploaded ${result.uploaded.toLocaleString()} of ${result.totalFiles.toLocaleString()} files to ${result.bucket}.`;
+      const description = result.wordsBackup
+        ? `${baseDescription} Latest words backup: ${result.wordsBackup.latestObjectPath}.`
+        : baseDescription;
       toast({
         title: 'Export complete',
-        description: `Uploaded ${result.uploaded.toLocaleString()} of ${result.totalFiles.toLocaleString()} files to ${result.bucket}.`,
+        description,
       });
       refetchStorage();
     },
@@ -242,6 +252,49 @@ const AdminStoragePage = () => {
                 <p className="mt-1 font-medium text-foreground">
                   {storageData?.prefix ?? '—'}
                 </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="gap-2">
+            <CardTitle className="text-lg font-semibold text-foreground">Words backup &amp; restore</CardTitle>
+            <CardDescription>
+              Each export writes a complete snapshot of the <code>words</code> table to Supabase Storage so you can
+              recover the dataset if the database or repository files are lost.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {latestBackup ? (
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="rounded-xl border border-border/60 bg-muted/40 p-3">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Generated</p>
+                  <p className="mt-1 font-medium text-foreground">{formatTimestamp(latestBackup.generatedAt)}</p>
+                </div>
+                <div className="rounded-xl border border-border/60 bg-muted/40 p-3">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Total words</p>
+                  <p className="mt-1 font-medium text-foreground">{latestBackup.totalWords.toLocaleString()}</p>
+                </div>
+                <div className="rounded-xl border border-border/60 bg-muted/40 p-3 sm:col-span-2">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Storage object</p>
+                  <p className="mt-1 font-mono text-sm text-foreground">{latestBackup.latestObjectPath}</p>
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Run an export to generate the latest <code>words</code> backup and surface restore details here.
+              </p>
+            )}
+            <div className="space-y-3 text-sm text-muted-foreground">
+              <p>
+                Restore the dataset by running the CLI script below. The command truncates the <code>words</code> table
+                before importing the JSON backup from Supabase Storage, so ensure you are targeting the correct
+                environment.
+              </p>
+              <div className="rounded-md bg-muted px-3 py-2 font-mono text-xs text-foreground">
+                npm run enrichment:restore -- --object{' '}
+                {latestBackup?.latestObjectPath ?? 'backups/words-latest.json'} --force
               </div>
             </div>
           </CardContent>

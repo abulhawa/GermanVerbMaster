@@ -8,6 +8,7 @@ import { enrichmentProviderSnapshots, words } from "@db/schema";
 import type { EnrichmentProviderSnapshot } from "@shared/enrichment";
 
 import { persistProviderSnapshotToFile } from "./storage";
+import { writeWordsBackupToDisk } from "./backup";
 
 function parseArgs(argv: string[]): { clean: boolean } {
   return {
@@ -99,28 +100,32 @@ async function main(): Promise<void> {
     }
 
     const snapshots = await loadAppliedSnapshots();
-    if (!snapshots.length) {
+    if (snapshots.length) {
+      snapshots.sort((a, b) => {
+        if (a.pos !== b.pos) {
+          return a.pos.localeCompare(b.pos);
+        }
+        if (a.providerId !== b.providerId) {
+          return a.providerId.localeCompare(b.providerId);
+        }
+        return a.lemma.localeCompare(b.lemma);
+      });
+
+      let successCount = 0;
+      for (const snapshot of snapshots) {
+        await persistProviderSnapshotToFile(snapshot);
+        successCount += 1;
+      }
+
+      console.log(`Persisted ${successCount} provider snapshots to data/enrichment`);
+    } else {
       console.log("No applied enrichment snapshots found.");
-      return;
     }
 
-    snapshots.sort((a, b) => {
-      if (a.pos !== b.pos) {
-        return a.pos.localeCompare(b.pos);
-      }
-      if (a.providerId !== b.providerId) {
-        return a.providerId.localeCompare(b.providerId);
-      }
-      return a.lemma.localeCompare(b.lemma);
-    });
-
-    let successCount = 0;
-    for (const snapshot of snapshots) {
-      await persistProviderSnapshotToFile(snapshot);
-      successCount += 1;
-    }
-
-    console.log(`Persisted ${successCount} provider snapshots to data/enrichment`);
+    const backupResult = await writeWordsBackupToDisk({ rootDir });
+    console.log(
+      `Wrote words backup to ${backupResult.summary.relativePath} (latest alias: ${backupResult.summary.latestRelativePath})`,
+    );
   } finally {
     await pool.end().catch((error) => {
       console.warn("Failed to close database pool cleanly", error);

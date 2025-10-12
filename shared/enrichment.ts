@@ -179,6 +179,55 @@ export interface PersistedWordData {
   updatedAt: string;
 }
 
+export interface WordsBackupEntry {
+  id: number;
+  lemma: string;
+  pos: PartOfSpeech | string;
+  level?: string | null;
+  english?: string | null;
+  exampleDe?: string | null;
+  exampleEn?: string | null;
+  gender?: string | null;
+  plural?: string | null;
+  separable?: boolean | null;
+  aux?: string | null;
+  praesensIch?: string | null;
+  praesensEr?: string | null;
+  praeteritum?: string | null;
+  partizipIi?: string | null;
+  perfekt?: string | null;
+  comparative?: string | null;
+  superlative?: string | null;
+  canonical: boolean;
+  complete: boolean;
+  sourcesCsv?: string | null;
+  sourceNotes?: string | null;
+  translations?: WordTranslation[] | null;
+  examples?: WordExample[] | null;
+  posAttributes?: WordPosAttributes | null;
+  enrichmentAppliedAt?: string | null;
+  enrichmentMethod?: EnrichmentMethod | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+}
+
+export interface WordsBackupFile {
+  schemaVersion: number;
+  generatedAt: string;
+  total: number;
+  words: WordsBackupEntry[];
+}
+
+export interface WordsBackupSummary {
+  schemaVersion: number;
+  generatedAt: string;
+  totalWords: number;
+  relativePath: string;
+  latestRelativePath: string;
+  objectPath: string;
+  latestObjectPath: string;
+}
+
 export interface WordEnrichmentSuggestions {
   translations: EnrichmentTranslationCandidate[];
   examples: EnrichmentExampleCandidate[];
@@ -289,4 +338,5 @@ export interface SupabaseStorageExportResponse {
   uploaded: number;
   failed: SupabaseStorageSyncFailure[];
   timestamp: string;
+  wordsBackup?: WordsBackupSummary;
 }

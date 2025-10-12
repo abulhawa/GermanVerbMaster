@@ -63,6 +63,32 @@ variables are present:
 Uploads happen automatically both when the admin applies enrichment data and when the export script
 regenerates local files.
 
+### Manual applies and words backups
+
+Single-word applies made through the admin UI now record a `manual` provider snapshot so the
+changes show up in the JSON exports and Supabase backups. The export script also writes a
+`data/enrichment/backups/words-*.json` file that captures the full contents of the `words` table.
+Each run refreshes a `words-latest.json` alias so storage syncing can overwrite the canonical copy in
+Supabase.
+
+Run the Supabase sync endpoint (or the "Export enrichment" button in the storage admin page) to push
+both the provider snapshots and the `words` backup into the configured bucket. The API response (and
+UI) reports where the latest backup was uploaded.
+
+### Restoring from Supabase
+
+Use the restore helper to pull the JSON backup from Supabase and repopulate the `words` table. The
+script truncates the table before importing the backup and resets the sequence, so ensure you are
+targeting an environment that should be replaced.
+
+```bash
+npm run enrichment:restore -- --object backups/words-latest.json --force
+```
+
+Omit `--object` to fall back to `backups/words-latest.json`. The script requires the Supabase
+environment variables (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and
+`ENRICHMENT_SUPABASE_BUCKET`) so it can download the JSON payload directly from Storage.
+
 ## Why the server still persists locally
 
 The server continues to write JSON snapshots as part of the apply flow so that local development or

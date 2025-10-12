@@ -241,9 +241,29 @@ function buildPersistedEntry(snapshot: EnrichmentProviderSnapshot): PersistedPro
     createdAt: snapshot.createdAt,
   };
 
+  if (snapshot.rawPayload && typeof snapshot.rawPayload === "object") {
+    const payload = snapshot.rawPayload as Record<string, unknown>;
+    const method = payload.method;
+    const appliedAt = payload.appliedAt;
+    const source = payload.source;
+    if (typeof method === "string" && method.trim().length) {
+      metadata.enrichmentMethod = method;
+    }
+    if (typeof appliedAt === "string" && appliedAt.trim().length) {
+      metadata.appliedAt = appliedAt;
+    }
+    if (typeof source === "string" && source.trim().length) {
+      metadata.source = source;
+    }
+  }
+
   if (snapshot.trigger === "apply") {
-    metadata.enrichmentMethod = "bulk";
-    metadata.appliedAt = snapshot.collectedAt;
+    if (!metadata.enrichmentMethod) {
+      metadata.enrichmentMethod = "bulk";
+    }
+    if (!metadata.appliedAt) {
+      metadata.appliedAt = snapshot.collectedAt;
+    }
   }
 
   return {
