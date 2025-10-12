@@ -8,6 +8,7 @@ import {
   RefreshCcw,
   ArrowLeft,
   Loader2,
+  Sparkles,
 } from 'lucide-react';
 
 import { AppShell } from '@/components/layout/app-shell';
@@ -29,7 +30,11 @@ import type {
   SupabaseStorageObjectSummary,
   WordsBackupSummary,
 } from '@shared/enrichment';
-import { exportEnrichmentStorage, fetchEnrichmentStorage } from '@/lib/admin-storage';
+import {
+  cleanAndExportEnrichmentStorage,
+  exportEnrichmentStorage,
+  fetchEnrichmentStorage,
+} from '@/lib/admin-storage';
 
 const PAGE_SIZE_OPTIONS = [25, 50, 100] as const;
 
@@ -134,6 +139,27 @@ const AdminStoragePage = () => {
     },
   });
 
+  const cleanExportMutation = useMutation({
+    mutationFn: () => cleanAndExportEnrichmentStorage(normalizedAdminToken),
+    onSuccess: (result) => {
+      setLatestBackup(result.export.wordsBackup ?? null);
+      const description = `Removed ${result.clean.deleted.toLocaleString()} of ${result.clean.total.toLocaleString()} objects, uploaded ${result.export.uploaded.toLocaleString()} file${
+        result.export.uploaded === 1 ? '' : 's'
+      } to ${result.export.bucket}.`;
+      toast({
+        title: 'Clean & export complete',
+        description,
+      });
+      refetchStorage();
+    },
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : 'Failed to clean and export data.';
+      toast({ title: 'Clean & export failed', description: message, variant: 'destructive' });
+    },
+  });
+
+  const exportInProgress = exportMutation.isPending || cleanExportMutation.isPending;
+
   const pagination = storageData?.pagination;
 
   const sortedItems: SupabaseStorageObjectSummary[] = useMemo(() => {
@@ -200,14 +226,14 @@ const AdminStoragePage = () => {
               variant="secondary"
               size="sm"
               onClick={() => refetchStorage()}
-              disabled={isFetching}
+              disabled={isFetching || cleanExportMutation.isPending}
             >
               {isFetching ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCcw className="h-4 w-4" />}
               Refresh
             </Button>
             <Button
               onClick={() => exportMutation.mutate()}
-              disabled={exportMutation.isPending}
+              disabled={exportInProgress}
             >
               {exportMutation.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -215,6 +241,18 @@ const AdminStoragePage = () => {
                 <UploadCloud className="h-4 w-4" />
               )}
               Export enrichment
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => cleanExportMutation.mutate()}
+              disabled={exportInProgress}
+            >
+              {cleanExportMutation.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Sparkles className="h-4 w-4" />
+              )}
+              Clean &amp; export latest
             </Button>
           </div>
         </div>

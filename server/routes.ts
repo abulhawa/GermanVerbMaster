@@ -37,6 +37,7 @@ import {
 } from "../scripts/enrichment/pipeline.js";
 import {
   listSupabaseBucketObjects,
+  clearSupabaseBucketPrefix,
   SupabaseStorageNotConfiguredError,
   syncEnrichmentDirectoryToSupabase,
   persistProviderSnapshotToFile,
@@ -46,6 +47,8 @@ import type {
   BulkEnrichmentResponse,
   EnrichmentPatch,
   WordEnrichmentPreview,
+  SupabaseStorageCleanExportResponse,
+  SupabaseStorageCleanResponse,
   SupabaseStorageExportResponse,
   SupabaseStorageListResponse,
 } from "@shared/enrichment";
@@ -1910,6 +1913,66 @@ export function registerRoutes(app: Express): void {
       }
       console.error("Failed to export enrichment data to Supabase storage", error);
       sendError(res, 500, "Failed to export storage snapshot", "SUPABASE_EXPORT_FAILED");
+    }
+  });
+
+  app.post("/api/enrichment/storage/clean-export", requireAdminAccess, async (req, res) => {
+    try {
+      const cleanResult = await clearSupabaseBucketPrefix();
+      const backupResult = await writeWordsBackupToDisk();
+      const latestRelativePath =
+        backupResult.summary?.latestRelativePath ?? "backups/words-latest.json";
+      const syncResult = await syncEnrichmentDirectoryToSupabase(undefined, {
+        includeRelativePaths: [latestRelativePath],
+      });
+
+      const prefix = syncResult.config.pathPrefix?.replace(/^\/+|\/+$/g, "") ?? null;
+      const buildPath = (relative: string) =>
+        prefix && prefix.length ? `${prefix}/${relative}` : relative;
+
+      let wordsBackup = backupResult.summary;
+      if (wordsBackup) {
+        wordsBackup = {
+          ...wordsBackup,
+          objectPath: buildPath(latestRelativePath),
+          latestObjectPath: buildPath(latestRelativePath),
+        };
+      }
+
+      const timestamp = new Date().toISOString();
+
+      const cleanResponse: SupabaseStorageCleanResponse = {
+        bucket: cleanResult.config.bucket,
+        prefix: cleanResult.config.pathPrefix,
+        total: cleanResult.total,
+        deleted: cleanResult.deleted,
+        failed: cleanResult.failed,
+        timestamp,
+      };
+
+      const exportResponse: SupabaseStorageExportResponse = {
+        bucket: syncResult.config.bucket,
+        prefix: syncResult.config.pathPrefix,
+        totalFiles: syncResult.totalFiles,
+        uploaded: syncResult.uploaded,
+        failed: syncResult.failed,
+        timestamp,
+        wordsBackup,
+      };
+
+      const response: SupabaseStorageCleanExportResponse = {
+        clean: cleanResponse,
+        export: exportResponse,
+      };
+
+      res.setHeader("Cache-Control", "no-store");
+      res.json(response);
+    } catch (error) {
+      if (error instanceof SupabaseStorageNotConfiguredError) {
+        return sendError(res, 400, error.message, "SUPABASE_NOT_CONFIGURED");
+      }
+      console.error("Failed to clean and export enrichment data", error);
+      sendError(res, 500, "Failed to clean storage snapshot", "SUPABASE_CLEAN_EXPORT_FAILED");
     }
   });
 

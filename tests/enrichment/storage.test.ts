@@ -10,6 +10,9 @@ const supabaseUploadMock = vi.hoisted(() => vi.fn(async () => ({ data: null, err
 const supabaseListMock = vi.hoisted(() =>
   vi.fn(async () => ({ data: [] as any[], error: null as { message: string } | null })),
 );
+const supabaseRemoveMock = vi.hoisted(() =>
+  vi.fn(async () => ({ data: [] as any[], error: null as { message: string } | null })),
+);
 
 vi.mock('@supabase/supabase-js', () => ({
   createClient: vi.fn((url: string, key: string, options: Record<string, unknown>) => {
@@ -21,6 +24,7 @@ vi.mock('@supabase/supabase-js', () => ({
           return {
             upload: supabaseUploadMock,
             list: supabaseListMock,
+            remove: supabaseRemoveMock,
           };
         },
       },
@@ -34,6 +38,7 @@ import {
   persistProviderSnapshotToFile,
   listSupabaseBucketObjects,
   syncEnrichmentDirectoryToSupabase,
+  clearSupabaseBucketPrefix,
   SupabaseStorageNotConfiguredError,
 } from '../../scripts/enrichment/storage';
 
@@ -59,6 +64,7 @@ describe('enrichment storage', () => {
     supabaseFromMock.mockReset();
     supabaseUploadMock.mockReset();
     supabaseListMock.mockReset();
+    supabaseRemoveMock.mockReset();
   });
 
   it('persists snapshots under POS-specific files and retains translations/examples', async () => {
@@ -305,12 +311,76 @@ describe('enrichment storage', () => {
     });
   });
 
+  it('cleans the Supabase storage prefix before exports', async () => {
+    process.env.SUPABASE_URL = 'https://example.supabase.co';
+    process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role-key';
+    process.env.ENRICHMENT_SUPABASE_BUCKET = 'enrichment-backups';
+    process.env.ENRICHMENT_SUPABASE_PATH_PREFIX = 'snapshots';
+
+    const listResponses = [
+      {
+        data: [
+          {
+            id: null,
+            name: 'backups',
+            created_at: null,
+            updated_at: null,
+            last_accessed_at: null,
+            metadata: null,
+          },
+        ],
+        error: null,
+      },
+      {
+        data: [
+          {
+            id: 'file-1',
+            name: 'words-latest.json',
+            created_at: null,
+            updated_at: null,
+            last_accessed_at: null,
+            metadata: { size: 2048 },
+          },
+        ],
+        error: null,
+      },
+      { data: [], error: null },
+    ];
+
+    supabaseListMock.mockImplementation(async () => listResponses.shift() ?? { data: [], error: null });
+    supabaseRemoveMock.mockResolvedValueOnce({
+      data: [{ name: 'snapshots/backups/words-latest.json' }],
+      error: null,
+    });
+
+    const result = await clearSupabaseBucketPrefix();
+
+    expect(supabaseListMock).toHaveBeenCalledWith('snapshots', {
+      limit: 1000,
+      offset: 0,
+      sortBy: { column: 'name', order: 'asc' },
+    });
+    expect(supabaseListMock).toHaveBeenCalledWith('snapshots/backups', {
+      limit: 1000,
+      offset: 0,
+      sortBy: { column: 'name', order: 'asc' },
+    });
+    expect(supabaseRemoveMock).toHaveBeenCalledWith(['snapshots/backups/words-latest.json']);
+    expect(result.total).toBe(1);
+    expect(result.deleted).toBe(1);
+    expect(result.failed).toHaveLength(0);
+  });
+
   it('throws a descriptive error when Supabase storage is not configured', async () => {
     await expect(listSupabaseBucketObjects()).rejects.toBeInstanceOf(
       SupabaseStorageNotConfiguredError,
     );
 
     await expect(syncEnrichmentDirectoryToSupabase()).rejects.toBeInstanceOf(
+      SupabaseStorageNotConfiguredError,
+    );
+
+    await expect(clearSupabaseBucketPrefix()).rejects.toBeInstanceOf(
       SupabaseStorageNotConfiguredError,
     );
   });
@@ -325,6 +395,28 @@ describe('enrichment storage', () => {
     await writeFile(path.join(dir, 'wiktextract.json'), JSON.stringify({ foo: 'bar' }), 'utf8');
 
     const result = await syncEnrichmentDirectoryToSupabase(tempDir);
+
+    expect(result.totalFiles).toBe(1);
+    expect(result.uploaded).toBe(1);
+    expect(result.failed).toHaveLength(0);
+    expect(supabaseUploadMock).toHaveBeenCalledTimes(1);
+    expect(supabaseUploadMock.mock.calls[0][0]).toBe('v/wiktextract.json');
+  });
+
+  it('syncs only explicit files when includeRelativePaths are provided', async () => {
+    process.env.SUPABASE_URL = 'https://example.supabase.co';
+    process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role-key';
+    process.env.ENRICHMENT_SUPABASE_BUCKET = 'enrichment-backups';
+
+    const dataDir = path.join(tempDir, 'data', 'enrichment');
+    await mkdir(path.join(dataDir, 'v'), { recursive: true });
+    await mkdir(path.join(dataDir, 'n'), { recursive: true });
+    await writeFile(path.join(dataDir, 'v', 'wiktextract.json'), JSON.stringify({ foo: 'bar' }), 'utf8');
+    await writeFile(path.join(dataDir, 'n', 'wiktextract.json'), JSON.stringify({ foo: 'baz' }), 'utf8');
+
+    const result = await syncEnrichmentDirectoryToSupabase(tempDir, {
+      includeRelativePaths: ['v/wiktextract.json'],
+    });
 
     expect(result.totalFiles).toBe(1);
     expect(result.uploaded).toBe(1);

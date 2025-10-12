@@ -340,3 +340,17 @@ export interface SupabaseStorageExportResponse {
   timestamp: string;
   wordsBackup?: WordsBackupSummary;
 }
+
+export interface SupabaseStorageCleanResponse {
+  bucket: string;
+  prefix: string | null;
+  total: number;
+  deleted: number;
+  failed: SupabaseStorageSyncFailure[];
+  timestamp: string;
+}
+
+export interface SupabaseStorageCleanExportResponse {
+  clean: SupabaseStorageCleanResponse;
+  export: SupabaseStorageExportResponse;
+}

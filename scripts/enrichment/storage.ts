@@ -25,6 +25,7 @@ type SupabaseStorageListEntry = {
 };
 
 const STORAGE_SCHEMA_VERSION = 1;
+const SUPABASE_REMOVE_BATCH_SIZE = 100;
 const PROVIDER_PRIORITY: readonly string[] = [
   "wiktextract",
   "kaikki",
@@ -84,6 +85,17 @@ export interface SupabaseStorageSyncResult {
   config: SupabaseStorageConfig;
   totalFiles: number;
   uploaded: number;
+  failed: SupabaseStorageSyncFailure[];
+}
+
+export interface SupabaseStorageSyncOptions {
+  includeRelativePaths?: string[];
+}
+
+export interface SupabaseStorageCleanResult {
+  config: SupabaseStorageConfig;
+  total: number;
+  deleted: number;
   failed: SupabaseStorageSyncFailure[];
 }
 
@@ -566,8 +578,112 @@ async function collectProviderFiles(rootDir: string): Promise<string[]> {
   return results.sort();
 }
 
+async function collectSupabaseObjectPaths(
+  client: SupabaseClient,
+  config: SupabaseStorageConfig,
+  initialPath: string,
+): Promise<string[]> {
+  const limit = 1000;
+  const directories: string[] = [];
+  const visited = new Set<string>();
+  const files: string[] = [];
+
+  const normalisedInitial = initialPath.replace(/^\/+|\/+$/g, "");
+  directories.push(normalisedInitial);
+  visited.add(normalisedInitial);
+
+  while (directories.length > 0) {
+    const current = directories.pop() ?? "";
+    let offset = 0;
+
+    // Continue paginating until Supabase indicates there are no further entries.
+    while (true) {
+      const { data, error } = await client.storage.from(config.bucket).list(current || undefined, {
+        limit,
+        offset,
+        sortBy: { column: "name", order: "asc" },
+      });
+
+      if (error) {
+        throw new Error(`Failed to list Supabase Storage bucket: ${error.message}`);
+      }
+
+      const entries = data ?? [];
+      for (const entry of entries) {
+        const name = entry.name;
+        if (!name || typeof name !== "string") {
+          continue;
+        }
+        const childPath = current ? `${current}/${name}` : name;
+        const size = entry.metadata?.size;
+        if (typeof size === "number") {
+          files.push(childPath);
+        } else if (!visited.has(childPath)) {
+          directories.push(childPath);
+          visited.add(childPath);
+        }
+      }
+
+      if (entries.length < limit) {
+        break;
+      }
+
+      offset += limit;
+    }
+  }
+
+  return files.sort();
+}
+
+export async function clearSupabaseBucketPrefix(): Promise<SupabaseStorageCleanResult> {
+  const config = getSupabaseStorageConfigFromEnv();
+  if (!config) {
+    throw new SupabaseStorageNotConfiguredError();
+  }
+
+  const client = createSupabaseStorageClient(config);
+  const rootPath = normaliseListPath(config, undefined);
+  const targetRoot = rootPath.length ? rootPath : "";
+  const objectPaths = await collectSupabaseObjectPaths(client, config, targetRoot);
+
+  if (!objectPaths.length) {
+    return {
+      config,
+      total: 0,
+      deleted: 0,
+      failed: [],
+    } satisfies SupabaseStorageCleanResult;
+  }
+
+  const failures: SupabaseStorageSyncFailure[] = [];
+  let deleted = 0;
+
+  for (let index = 0; index < objectPaths.length; index += SUPABASE_REMOVE_BATCH_SIZE) {
+    const chunk = objectPaths.slice(index, index + SUPABASE_REMOVE_BATCH_SIZE);
+    const { data, error } = await client.storage.from(config.bucket).remove(chunk);
+    if (error) {
+      const label = chunk.length === 1 ? chunk[0] : `${chunk[0]}…`;
+      failures.push({ path: label, error: error.message });
+      continue;
+    }
+    if (Array.isArray(data) && data.length > 0) {
+      deleted += data.length;
+    } else {
+      deleted += chunk.length;
+    }
+  }
+
+  return {
+    config,
+    total: objectPaths.length,
+    deleted: Math.min(deleted, objectPaths.length),
+    failed: failures,
+  } satisfies SupabaseStorageCleanResult;
+}
+
 export async function syncEnrichmentDirectoryToSupabase(
   rootDir: string = process.cwd(),
+  options: SupabaseStorageSyncOptions = {},
 ): Promise<SupabaseStorageSyncResult> {
   const config = getSupabaseStorageConfigFromEnv();
   if (!config) {
@@ -575,8 +691,38 @@ export async function syncEnrichmentDirectoryToSupabase(
   }
 
   const dataDir = path.resolve(rootDir, "data", "enrichment");
-  const files = await collectProviderFiles(dataDir);
-  if (!files.length) {
+  const includeRelativePaths = Array.isArray(options.includeRelativePaths)
+    ? Array.from(
+        new Set(
+          options.includeRelativePaths
+            .map((value) => (typeof value === "string" ? value.trim() : ""))
+            .filter((value) => value.length > 0),
+        ),
+      )
+    : [];
+
+  const targets: Array<{ absolute: string; relative: string }> = [];
+
+  if (includeRelativePaths.length > 0) {
+    for (const relative of includeRelativePaths) {
+      const normalised = relative.replace(/^[\\/]+/, "").replace(/\\/g, "/");
+      targets.push({
+        absolute: path.join(dataDir, normalised),
+        relative: normalised,
+      });
+    }
+  } else {
+    const files = await collectProviderFiles(dataDir);
+    for (const filePath of files) {
+      const relative = path.relative(dataDir, filePath) || path.basename(filePath);
+      targets.push({
+        absolute: filePath,
+        relative: relative.replace(/\\/g, "/"),
+      });
+    }
+  }
+
+  if (!targets.length) {
     return {
       config,
       totalFiles: 0,
@@ -589,15 +735,15 @@ export async function syncEnrichmentDirectoryToSupabase(
   const failures: SupabaseStorageSyncFailure[] = [];
   let uploaded = 0;
 
-  for (const filePath of files) {
+  for (const target of targets) {
     try {
-      const contents = await readFile(filePath, "utf8");
-      await uploadProviderFileToSupabase(filePath, contents, client, config);
+      const contents = await readFile(target.absolute, "utf8");
+      await uploadProviderFileToSupabase(target.absolute, contents, client, config);
       uploaded += 1;
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       failures.push({
-        path: path.relative(dataDir, filePath) || path.basename(filePath),
+        path: target.relative,
         error: message,
       });
     }
@@ -605,7 +751,7 @@ export async function syncEnrichmentDirectoryToSupabase(
 
   return {
     config,
-    totalFiles: files.length,
+    totalFiles: targets.length,
     uploaded,
     failed: failures,
   } satisfies SupabaseStorageSyncResult;
