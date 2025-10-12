@@ -1,8 +1,4 @@
-import type {
-  SupabaseStorageExportResponse,
-  SupabaseStorageListResponse,
-  SupabaseStorageCleanExportResponse,
-} from '@shared/enrichment';
+import type { SupabaseStorageListResponse, SupabaseStorageCleanExportResponse } from '@shared/enrichment';
 
 interface FetchStorageOptions {
   limit?: number;
@@ -51,18 +47,6 @@ export async function fetchEnrichmentStorage(
   });
 
   return handleResponse<SupabaseStorageListResponse>(response);
-}
-
-export async function exportEnrichmentStorage(
-  adminToken?: string,
-): Promise<SupabaseStorageExportResponse> {
-  const response = await fetch('/api/enrichment/storage/export', {
-    method: 'POST',
-    headers: buildHeaders(adminToken, true),
-    body: JSON.stringify({}),
-  });
-
-  return handleResponse<SupabaseStorageExportResponse>(response);
 }
 
 export async function cleanAndExportEnrichmentStorage(

@@ -1,15 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import {
-  Cloud,
-  Folder,
-  FileText,
-  UploadCloud,
-  RefreshCcw,
-  ArrowLeft,
-  Loader2,
-  Sparkles,
-} from 'lucide-react';
+import { Cloud, Folder, FileText, UploadCloud, RefreshCcw, ArrowLeft, Loader2 } from 'lucide-react';
 
 import { AppShell } from '@/components/layout/app-shell';
 import { SidebarNavButton } from '@/components/layout/sidebar-nav-button';
@@ -30,11 +21,7 @@ import type {
   SupabaseStorageObjectSummary,
   WordsBackupSummary,
 } from '@shared/enrichment';
-import {
-  cleanAndExportEnrichmentStorage,
-  exportEnrichmentStorage,
-  fetchEnrichmentStorage,
-} from '@/lib/admin-storage';
+import { cleanAndExportEnrichmentStorage, fetchEnrichmentStorage } from '@/lib/admin-storage';
 
 const PAGE_SIZE_OPTIONS = [25, 50, 100] as const;
 
@@ -119,26 +106,6 @@ const AdminStoragePage = () => {
       }),
   });
 
-  const exportMutation = useMutation({
-    mutationFn: () => exportEnrichmentStorage(normalizedAdminToken),
-    onSuccess: (result) => {
-      setLatestBackup(result.wordsBackup ?? null);
-      const baseDescription = `Uploaded ${result.uploaded.toLocaleString()} of ${result.totalFiles.toLocaleString()} files to ${result.bucket}.`;
-      const description = result.wordsBackup
-        ? `${baseDescription} Latest words backup: ${result.wordsBackup.latestObjectPath}.`
-        : baseDescription;
-      toast({
-        title: 'Export complete',
-        description,
-      });
-      refetchStorage();
-    },
-    onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'Failed to export data.';
-      toast({ title: 'Export failed', description: message, variant: 'destructive' });
-    },
-  });
-
   const cleanExportMutation = useMutation({
     mutationFn: () => cleanAndExportEnrichmentStorage(normalizedAdminToken),
     onSuccess: (result) => {
@@ -147,18 +114,18 @@ const AdminStoragePage = () => {
         result.export.uploaded === 1 ? '' : 's'
       } to ${result.export.bucket}.`;
       toast({
-        title: 'Clean & export complete',
+        title: 'Export complete',
         description,
       });
       refetchStorage();
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'Failed to clean and export data.';
-      toast({ title: 'Clean & export failed', description: message, variant: 'destructive' });
+      toast({ title: 'Export failed', description: message, variant: 'destructive' });
     },
   });
 
-  const exportInProgress = exportMutation.isPending || cleanExportMutation.isPending;
+  const exportInProgress = cleanExportMutation.isPending;
 
   const pagination = storageData?.pagination;
 
@@ -231,28 +198,13 @@ const AdminStoragePage = () => {
               {isFetching ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCcw className="h-4 w-4" />}
               Refresh
             </Button>
-            <Button
-              onClick={() => exportMutation.mutate()}
-              disabled={exportInProgress}
-            >
-              {exportMutation.isPending ? (
+            <Button onClick={() => cleanExportMutation.mutate()} disabled={exportInProgress}>
+              {cleanExportMutation.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 <UploadCloud className="h-4 w-4" />
               )}
               Export enrichment
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={() => cleanExportMutation.mutate()}
-              disabled={exportInProgress}
-            >
-              {cleanExportMutation.isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Sparkles className="h-4 w-4" />
-              )}
-              Clean &amp; export latest
             </Button>
           </div>
         </div>

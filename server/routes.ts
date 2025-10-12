@@ -1888,42 +1888,6 @@ export function registerRoutes(app: Express): void {
     }
   });
 
-  app.post("/api/enrichment/storage/export", requireAdminAccess, async (req, res) => {
-    try {
-      const backupResult = await writeWordsBackupToDisk();
-      const result = await syncEnrichmentDirectoryToSupabase();
-      let wordsBackup = backupResult.summary;
-      if (wordsBackup) {
-        const prefix = result.config.pathPrefix?.replace(/^\/+|\/+$/g, "") ?? null;
-        const buildPath = (relative: string) =>
-          prefix && prefix.length ? `${prefix}/${relative}` : relative;
-        wordsBackup = {
-          ...wordsBackup,
-          objectPath: buildPath(wordsBackup.relativePath),
-          latestObjectPath: buildPath(wordsBackup.latestRelativePath),
-        };
-      }
-      const response: SupabaseStorageExportResponse = {
-        bucket: result.config.bucket,
-        prefix: result.config.pathPrefix,
-        totalFiles: result.totalFiles,
-        uploaded: result.uploaded,
-        failed: result.failed,
-        timestamp: new Date().toISOString(),
-        wordsBackup,
-      };
-
-      res.setHeader("Cache-Control", "no-store");
-      res.json(response);
-    } catch (error) {
-      if (error instanceof SupabaseStorageNotConfiguredError) {
-        return sendError(res, 400, error.message, "SUPABASE_NOT_CONFIGURED");
-      }
-      console.error("Failed to export enrichment data to Supabase storage", error);
-      sendError(res, 500, "Failed to export storage snapshot", "SUPABASE_EXPORT_FAILED");
-    }
-  });
-
   app.post("/api/enrichment/storage/clean-export", requireAdminAccess, async (req, res) => {
     try {
       const cleanResult = await clearSupabaseBucketPrefix();
