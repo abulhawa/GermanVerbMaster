@@ -930,7 +930,9 @@ async function persistProviderSnapshotsForWord(
     const currentSnapshot = buildProviderSnapshotFromRecord(insertedRecord);
     const previousSnapshot = previousRecord ? buildProviderSnapshotFromRecord(previousRecord) : null;
 
-    await persistProviderSnapshotToFile(currentSnapshot);
+    if (trigger === "apply") {
+      await persistProviderSnapshotToFile(currentSnapshot);
+    }
     const hasChanges = previousSnapshot ? !areProviderSnapshotsEqual(previousSnapshot, currentSnapshot) : true;
 
     comparisons.push({

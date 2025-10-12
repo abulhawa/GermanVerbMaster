@@ -497,6 +497,27 @@ function determineAuxFromSet(auxiliaries: Set<'haben' | 'sein'>): string | null 
   return value ?? null;
 }
 
+function metadataTriggerFor(provider: PersistedProviderEntry): string | null {
+  const metadata = provider.metadata;
+  if (!metadata || typeof metadata !== 'object') {
+    return null;
+  }
+  const trigger = (metadata as Record<string, unknown>).trigger;
+  if (typeof trigger !== 'string') {
+    return null;
+  }
+  const normalised = trigger.trim().toLowerCase();
+  return normalised.length ? normalised : null;
+}
+
+function shouldIncludePersistedProvider(provider: PersistedProviderEntry): boolean {
+  const trigger = metadataTriggerFor(provider);
+  if (!trigger) {
+    return true;
+  }
+  return trigger === 'apply';
+}
+
 function buildRowFromPersistedWordData(data: PersistedWordData): RawWordRow | null {
   const pos = normalisePos(data.pos);
   if (!pos) {
@@ -518,7 +539,14 @@ function buildRowFromPersistedWordData(data: PersistedWordData): RawWordRow | nu
   let sourcesCsv: string | null = null;
   let posAttributes: WordPosAttributes | null = null;
 
+  let hasAppliedData = false;
+
   for (const provider of data.providers) {
+    if (!shouldIncludePersistedProvider(provider)) {
+      continue;
+    }
+
+    hasAppliedData = true;
     sourcesCsv = dedupeSources(sourcesCsv, provider.providerLabel ?? provider.providerId ?? null);
 
     translations = mergeTranslations(translations, provider.translations);
@@ -598,6 +626,10 @@ function buildRowFromPersistedWordData(data: PersistedWordData): RawWordRow | nu
     if (provider.collectedAt) {
       enrichmentAppliedAt = pickLatestTimestamp(enrichmentAppliedAt, provider.collectedAt);
     }
+  }
+
+  if (!hasAppliedData) {
+    return null;
   }
 
   if (!english && translations) {
@@ -687,25 +719,31 @@ async function aggregateWords(rootDir: string): Promise<AggregatedWordWithKey[]>
   );
 
   const aggregated = new Map<string, RawWordRow>();
-  const combinedRows: RawWordRow[] = [];
+
+  const upsertAggregatedRow = (row: RawWordRow | null | undefined) => {
+    if (!row) {
+      return;
+    }
+    const key = keyFor(row.lemma, row.pos);
+    const existing = aggregated.get(key) ?? null;
+    const merged = mergeWord(existing, row);
+    aggregated.set(key, merged);
+  };
 
   for (const row of manualRows) {
-    const mapped = mapRow(row);
-    if (mapped) combinedRows.push(mapped);
+    upsertAggregatedRow(mapRow(row));
   }
 
   for (const row of externalRows) {
-    const mapped = mapRow(row as unknown as Record<string, unknown>);
-    if (mapped) combinedRows.push(mapped);
+    upsertAggregatedRow(mapRow(row as unknown as Record<string, unknown>));
   }
 
   const persistedWordData = await loadPersistedWordData(rootDir);
   for (const entry of persistedWordData) {
-    const mapped = buildRowFromPersistedWordData(entry);
-    if (mapped) combinedRows.push(mapped);
+    upsertAggregatedRow(buildRowFromPersistedWordData(entry));
   }
 
-  const snapshotRows: ExternalWordRow[] = combinedRows.map((row) => ({
+  const snapshotRows: ExternalWordRow[] = Array.from(aggregated.values()).map((row) => ({
     lemma: row.lemma,
     pos: row.pos,
     level: row.level ?? undefined,
@@ -728,12 +766,6 @@ async function aggregateWords(rootDir: string): Promise<AggregatedWordWithKey[]>
   }));
 
   await snapshotExternalSources(snapshotPath, snapshotRows);
-
-  for (const row of combinedRows) {
-    const key = keyFor(row.lemma, row.pos);
-    const merged = mergeWord(aggregated.get(key) ?? null, row);
-    aggregated.set(key, merged);
-  }
 
   const wordsWithMetadata: AggregatedWordWithKey[] = [];
   for (const [key, value] of aggregated.entries()) {
