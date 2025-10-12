@@ -119,6 +119,9 @@ const AdminEnrichmentPage = () => {
 
   const [bulkConfig, setBulkConfig] = useState<BulkConfigState>(DEFAULT_BULK_CONFIG);
   const [bulkResult, setBulkResult] = useState<BulkEnrichmentResponse | null>(null);
+  const [bulkReportDownload, setBulkReportDownload] = useState<
+    { url: string; filename: string } | null
+  >(null);
   const [isBulkOpen, setIsBulkOpen] = useState(true);
   const [isReviewOpen, setIsReviewOpen] = useState(true);
   const [isMissingOpen, setIsMissingOpen] = useState(true);
@@ -131,6 +134,26 @@ const AdminEnrichmentPage = () => {
   const [applyResult, setApplyResult] = useState<ApplyEnrichmentResponse | null>(null);
   const [missingPage, setMissingPage] = useState(1);
   const [missingPerPage, setMissingPerPage] = useState(DEFAULT_MISSING_PER_PAGE);
+
+  useEffect(() => () => {
+    if (bulkReportDownload?.url) {
+      URL.revokeObjectURL(bulkReportDownload.url);
+    }
+  }, [bulkReportDownload]);
+
+  const prepareBulkReportDownload = useCallback((data: BulkEnrichmentResponse) => {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const timestamp = new Date().toISOString().replace(/[:]/g, '-');
+    const filename = `bulk-enrichment-${timestamp}.json`;
+
+    setBulkReportDownload((previous) => {
+      if (previous?.url) {
+        URL.revokeObjectURL(previous.url);
+      }
+      const url = URL.createObjectURL(blob);
+      return { url, filename };
+    });
+  }, []);
 
   const bulkMutation = useMutation({
     mutationFn: async () => {
@@ -148,6 +171,7 @@ const AdminEnrichmentPage = () => {
     },
     onSuccess: (data) => {
       setBulkResult(data);
+      prepareBulkReportDownload(data);
       toast({
         title: 'Enrichment complete',
         description: `Proposed updates for ${data.updated} of ${data.scanned} scanned words`,
@@ -501,9 +525,22 @@ const AdminEnrichmentPage = () => {
           {bulkResult && (
             <div className="space-y-4">
               <Separator />
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Sparkles className="h-4 w-4" />
-                Suggested updates for {bulkResult.updated} of {bulkResult.scanned} scanned words
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Sparkles className="h-4 w-4" />
+                  Suggested updates for {bulkResult.updated} of {bulkResult.scanned} scanned words
+                </div>
+                {bulkReportDownload ? (
+                  <Button variant="outline" size="sm" asChild>
+                    <a
+                      href={bulkReportDownload.url}
+                      download={bulkReportDownload.filename}
+                      aria-label="Download bulk enrichment results as JSON"
+                    >
+                      Download JSON report
+                    </a>
+                  </Button>
+                ) : null}
               </div>
               <Table>
                 <TableHeader>
@@ -512,6 +549,7 @@ const AdminEnrichmentPage = () => {
                     <TableHead>Missing fields</TableHead>
                     <TableHead>Proposed updates</TableHead>
                     <TableHead>Sources</TableHead>
+                    <TableHead className="text-right">Review</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -556,6 +594,11 @@ const AdminEnrichmentPage = () => {
                           ) : null}
                           {summary.aiUsed ? <div>Used AI assistance</div> : null}
                         </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button variant="ghost" size="sm" onClick={() => openWordDetails(summary.id)}>
+                          Review details
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
