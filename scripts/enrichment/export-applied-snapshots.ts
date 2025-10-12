@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { and, eq, isNotNull } from "drizzle-orm";
 
-import { db } from "@db";
+import { db, getPool } from "@db";
 import { enrichmentProviderSnapshots, words } from "@db/schema";
 import type { EnrichmentProviderSnapshot } from "@shared/enrichment";
 
@@ -89,36 +89,43 @@ async function cleanOutputDir(rootDir: string): Promise<void> {
 }
 
 async function main(): Promise<void> {
+  const pool = getPool();
   const { clean } = parseArgs(process.argv.slice(2));
   const rootDir = process.cwd();
 
-  if (clean) {
-    await cleanOutputDir(rootDir);
-  }
-
-  const snapshots = await loadAppliedSnapshots();
-  if (!snapshots.length) {
-    console.log("No applied enrichment snapshots found.");
-    return;
-  }
-
-  snapshots.sort((a, b) => {
-    if (a.pos !== b.pos) {
-      return a.pos.localeCompare(b.pos);
+  try {
+    if (clean) {
+      await cleanOutputDir(rootDir);
     }
-    if (a.providerId !== b.providerId) {
-      return a.providerId.localeCompare(b.providerId);
+
+    const snapshots = await loadAppliedSnapshots();
+    if (!snapshots.length) {
+      console.log("No applied enrichment snapshots found.");
+      return;
     }
-    return a.lemma.localeCompare(b.lemma);
-  });
 
-  let successCount = 0;
-  for (const snapshot of snapshots) {
-    await persistProviderSnapshotToFile(snapshot);
-    successCount += 1;
+    snapshots.sort((a, b) => {
+      if (a.pos !== b.pos) {
+        return a.pos.localeCompare(b.pos);
+      }
+      if (a.providerId !== b.providerId) {
+        return a.providerId.localeCompare(b.providerId);
+      }
+      return a.lemma.localeCompare(b.lemma);
+    });
+
+    let successCount = 0;
+    for (const snapshot of snapshots) {
+      await persistProviderSnapshotToFile(snapshot);
+      successCount += 1;
+    }
+
+    console.log(`Persisted ${successCount} provider snapshots to data/enrichment`);
+  } finally {
+    await pool.end().catch((error) => {
+      console.warn("Failed to close database pool cleanly", error);
+    });
   }
-
-  console.log(`Persisted ${successCount} provider snapshots to data/enrichment`);
 }
 
 main().catch((error) => {
