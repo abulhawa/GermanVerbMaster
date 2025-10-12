@@ -248,3 +248,45 @@ export interface BulkEnrichmentResponse {
   updated: number;
   words: EnrichmentWordSummary[];
 }
+
+export interface SupabaseStorageSyncFailure {
+  path: string;
+  error: string;
+}
+
+export interface SupabaseStorageObjectSummary {
+  id: string | null;
+  name: string;
+  path: string;
+  type: "file" | "folder";
+  size: number | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+  lastAccessedAt: string | null;
+}
+
+export interface SupabaseStoragePaginationInfo {
+  limit: number;
+  offset: number;
+  hasMore: boolean;
+  nextOffset: number | null;
+}
+
+export interface SupabaseStorageListResponse {
+  available: boolean;
+  bucket?: string;
+  prefix?: string | null;
+  path?: string;
+  items?: SupabaseStorageObjectSummary[];
+  pagination?: SupabaseStoragePaginationInfo;
+  message?: string;
+}
+
+export interface SupabaseStorageExportResponse {
+  bucket: string;
+  prefix: string | null;
+  totalFiles: number;
+  uploaded: number;
+  failed: SupabaseStorageSyncFailure[];
+  timestamp: string;
+}

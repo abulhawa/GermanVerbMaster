@@ -14,6 +14,7 @@ const AnswerHistoryPage = lazy(() => import("@/pages/answer-history"));
 const AnalyticsPage = lazy(() => import("@/pages/analytics"));
 const AdminPage = lazy(() => import("@/pages/admin"));
 const AdminEnrichmentPage = lazy(() => import("@/pages/admin-enrichment"));
+const AdminStoragePage = lazy(() => import("@/pages/admin-storage"));
 const UITestbedPage = lazy(() => import("@/pages/ui-testbed"));
 const NotFoundPage = lazy(() => import("@/pages/not-found"));
 
@@ -24,6 +25,7 @@ function Router() {
         <Route path="/" component={HomePage} />
         <Route path="/answers" component={AnswerHistoryPage} />
         <Route path="/analytics" component={AnalyticsPage} />
+        <Route path="/admin/storage" component={AdminStoragePage} />
         <Route path="/admin/enrichment" component={AdminEnrichmentPage} />
         <Route path="/admin" component={AdminPage} />
         <Route path="/ui-testbed" component={UITestbedPage} />

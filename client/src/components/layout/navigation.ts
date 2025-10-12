@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Sparkles, History, Compass, Settings2, Wand2 } from "lucide-react";
+import { Sparkles, History, Compass, Settings2, Wand2, Cloud } from "lucide-react";
 
 export interface AppNavigationItem {
   href: string;
@@ -32,6 +32,12 @@ const BASE_PRIMARY_NAVIGATION_ITEMS: AppNavigationItem[] = [
     icon: Settings2,
     requiresAdmin: true,
     exact: true,
+  },
+  {
+    href: "/admin/storage",
+    label: "Storage",
+    icon: Cloud,
+    requiresAdmin: true,
   },
   {
     href: "/admin/enrichment",

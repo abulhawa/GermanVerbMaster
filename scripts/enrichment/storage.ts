@@ -9,7 +9,20 @@ import type {
   PersistedProviderFile,
   PersistedProviderFileMeta,
   PersistedWordData,
+  SupabaseStorageObjectSummary,
+  SupabaseStorageSyncFailure,
 } from "@shared/enrichment";
+
+type SupabaseClient = ReturnType<typeof createClient>;
+
+type SupabaseStorageListEntry = {
+  id: string | null;
+  name: string;
+  created_at: string | null;
+  updated_at: string | null;
+  last_accessed_at: string | null;
+  metadata: { size?: number } | null;
+};
 
 const STORAGE_SCHEMA_VERSION = 1;
 const PROVIDER_PRIORITY: readonly string[] = [
@@ -38,14 +51,43 @@ function providerFilePath(providerId: string | number, pos: string | number | nu
   return path.join(resolveEnrichmentDataDir(), posSegment, `${providerSegment}.json`);
 }
 
-type SupabaseStorageConfig = {
+export class SupabaseStorageNotConfiguredError extends Error {
+  constructor() {
+    super("Supabase Storage is not configured");
+    this.name = "SupabaseStorageNotConfiguredError";
+  }
+}
+
+export interface SupabaseStorageConfig {
   url: string;
   serviceRoleKey: string;
   bucket: string;
   pathPrefix: string | null;
-};
+}
 
-function getSupabaseStorageConfigFromEnv(): SupabaseStorageConfig | null {
+export interface SupabaseStorageListOptions {
+  path?: string;
+  limit?: number;
+  offset?: number;
+}
+
+export interface SupabaseStorageListResult {
+  config: SupabaseStorageConfig;
+  path: string;
+  limit: number;
+  offset: number;
+  items: SupabaseStorageObjectSummary[];
+  hasMore: boolean;
+}
+
+export interface SupabaseStorageSyncResult {
+  config: SupabaseStorageConfig;
+  totalFiles: number;
+  uploaded: number;
+  failed: SupabaseStorageSyncFailure[];
+}
+
+export function getSupabaseStorageConfigFromEnv(): SupabaseStorageConfig | null {
   const url = process.env.SUPABASE_URL?.trim();
   const serviceRoleKey =
     process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() || process.env.SUPABASE_SECRET_KEY?.trim();
@@ -60,11 +102,27 @@ function getSupabaseStorageConfigFromEnv(): SupabaseStorageConfig | null {
   return { url, serviceRoleKey, bucket, pathPrefix } satisfies SupabaseStorageConfig;
 }
 
-async function uploadProviderFileToSupabase(filePath: string, fileContents: string): Promise<void> {
-  const config = getSupabaseStorageConfigFromEnv();
+function createSupabaseStorageClient(config: SupabaseStorageConfig): SupabaseClient {
+  return createClient(config.url, config.serviceRoleKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
+}
+
+async function uploadProviderFileToSupabase(
+  filePath: string,
+  fileContents: string,
+  clientOverride?: SupabaseClient,
+  configOverride?: SupabaseStorageConfig | null,
+): Promise<void> {
+  const config = configOverride ?? getSupabaseStorageConfigFromEnv();
   if (!config) {
     return;
   }
+
+  const client = clientOverride ?? createSupabaseStorageClient(config);
 
   const relativePath = path
     .relative(resolveEnrichmentDataDir(), filePath)
@@ -73,13 +131,6 @@ async function uploadProviderFileToSupabase(filePath: string, fileContents: stri
     .join("/");
 
   const objectPath = config.pathPrefix ? `${config.pathPrefix}/${relativePath}` : relativePath;
-
-  const client = createClient(config.url, config.serviceRoleKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  });
 
   const { error } = await client.storage
     .from(config.bucket)
@@ -387,4 +438,155 @@ function mostRecentTimestamp(...timestamps: Array<string | null | undefined>): s
   }
   const max = Math.max(...valid);
   return new Date(max).toISOString();
+}
+
+function normaliseListPath(config: SupabaseStorageConfig, rawPath?: string): string {
+  const segments = [config.pathPrefix, rawPath]
+    .filter((segment): segment is string => Boolean(segment && segment.trim().length))
+    .map((segment) => segment.trim().replace(/^\/+|\/+$/g, ""))
+    .filter((segment) => segment.length > 0);
+  return segments.join("/");
+}
+
+function normaliseOffset(value: number | undefined): number {
+  if (!Number.isFinite(value) || (value ?? 0) < 0) {
+    return 0;
+  }
+  return Math.floor(value ?? 0);
+}
+
+function normaliseLimit(value: number | undefined, fallback: number): number {
+  if (!Number.isFinite(value) || (value ?? 0) <= 0) {
+    return fallback;
+  }
+  return Math.min(Math.floor(value ?? fallback), 1000);
+}
+
+export async function listSupabaseBucketObjects(
+  options: SupabaseStorageListOptions = {},
+): Promise<SupabaseStorageListResult> {
+  const config = getSupabaseStorageConfigFromEnv();
+  if (!config) {
+    throw new SupabaseStorageNotConfiguredError();
+  }
+
+  const limit = normaliseLimit(options.limit, 50);
+  const offset = normaliseOffset(options.offset);
+  const listPath = normaliseListPath(config, options.path);
+  const client = createSupabaseStorageClient(config);
+
+  const { data, error } = await client.storage
+    .from(config.bucket)
+    .list(listPath || undefined, {
+      limit,
+      offset,
+      sortBy: { column: "name", order: "asc" },
+    });
+
+  if (error) {
+    throw new Error(`Failed to list Supabase Storage bucket: ${error.message}`);
+  }
+
+  const items = (data ?? []).map((item: SupabaseStorageListEntry) => {
+    const metadata = item.metadata;
+    const size = typeof metadata?.size === "number" ? metadata.size : null;
+    const type: "file" | "folder" = size === null ? "folder" : "file";
+    const pathSuffix = listPath ? `${listPath}/${item.name}` : item.name;
+    return {
+      id: item.id ?? null,
+      name: item.name,
+      path: pathSuffix,
+      type,
+      size,
+      createdAt: item.created_at ?? null,
+      updatedAt: item.updated_at ?? null,
+      lastAccessedAt: item.last_accessed_at ?? null,
+    } satisfies SupabaseStorageObjectSummary;
+  });
+
+  const hasMore = items.length === limit;
+
+  return {
+    config,
+    path: listPath,
+    limit,
+    offset,
+    items,
+    hasMore,
+  } satisfies SupabaseStorageListResult;
+}
+
+async function collectProviderFiles(rootDir: string): Promise<string[]> {
+  const results: string[] = [];
+  const stack = [rootDir];
+
+  while (stack.length > 0) {
+    const current = stack.pop();
+    if (!current) continue;
+    let entries: Array<{ name: string; isFile(): boolean; isDirectory(): boolean }> = [];
+    try {
+      entries = await readdir(current, { withFileTypes: true });
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+        continue;
+      }
+      throw error;
+    }
+
+    for (const entry of entries) {
+      const entryPath = path.join(current, entry.name);
+      if (entry.isDirectory()) {
+        stack.push(entryPath);
+      } else if (entry.isFile() && entry.name.endsWith(".json")) {
+        results.push(entryPath);
+      }
+    }
+  }
+
+  return results.sort();
+}
+
+export async function syncEnrichmentDirectoryToSupabase(
+  rootDir: string = process.cwd(),
+): Promise<SupabaseStorageSyncResult> {
+  const config = getSupabaseStorageConfigFromEnv();
+  if (!config) {
+    throw new SupabaseStorageNotConfiguredError();
+  }
+
+  const dataDir = path.resolve(rootDir, "data", "enrichment");
+  const files = await collectProviderFiles(dataDir);
+  if (!files.length) {
+    return {
+      config,
+      totalFiles: 0,
+      uploaded: 0,
+      failed: [],
+    } satisfies SupabaseStorageSyncResult;
+  }
+
+  const client = createSupabaseStorageClient(config);
+  const failures: SupabaseStorageSyncFailure[] = [];
+  let uploaded = 0;
+
+  for (const filePath of files) {
+    try {
+      const contents = await readFile(filePath, "utf8");
+      await uploadProviderFileToSupabase(filePath, contents, client, config);
+      uploaded += 1;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      failures.push({
+        path: path.relative(dataDir, filePath) || path.basename(filePath),
+        error: message,
+      });
+    }
+  }
+
+  return {
+    config,
+    totalFiles: files.length,
+    uploaded,
+    failed: failures,
+  } satisfies SupabaseStorageSyncResult;
 }

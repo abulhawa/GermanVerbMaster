@@ -33,7 +33,18 @@ import {
   toEnrichmentPatch,
   type PipelineConfig,
 } from "../scripts/enrichment/pipeline.js";
-import type { BulkEnrichmentResponse, EnrichmentPatch, WordEnrichmentPreview } from "@shared/enrichment";
+import {
+  listSupabaseBucketObjects,
+  SupabaseStorageNotConfiguredError,
+  syncEnrichmentDirectoryToSupabase,
+} from "../scripts/enrichment/storage.js";
+import type {
+  BulkEnrichmentResponse,
+  EnrichmentPatch,
+  WordEnrichmentPreview,
+  SupabaseStorageExportResponse,
+  SupabaseStorageListResponse,
+} from "@shared/enrichment";
 import {
   asLexemePos,
   ensurePosFeatureEnabled,
@@ -432,6 +443,15 @@ function parseLimitParam(value: unknown, fallback: number): number {
   if (value === undefined) return fallback;
   const parsed = Number.parseInt(String(value), 10);
   if (!Number.isFinite(parsed) || parsed <= 0) {
+    return fallback;
+  }
+  return parsed;
+}
+
+function parseOffsetParam(value: unknown, fallback: number): number {
+  if (value === undefined) return fallback;
+  const parsed = Number.parseInt(String(value), 10);
+  if (!Number.isFinite(parsed) || parsed < 0) {
     return fallback;
   }
   return parsed;
@@ -1748,6 +1768,71 @@ export function registerRoutes(app: Express): void {
     } catch (error) {
       console.error("Failed to apply enrichment updates", error);
       sendError(res, 500, "Failed to apply enrichment", "ENRICHMENT_APPLY_FAILED");
+    }
+  });
+
+  app.get("/api/enrichment/storage", requireAdminAccess, async (req, res) => {
+    try {
+      const limit = Math.min(parseLimitParam(req.query.limit, 50), 200);
+      const offset = parseOffsetParam(req.query.offset, 0);
+      const rawPath = normalizeStringParam(req.query.path)?.trim();
+      const result = await listSupabaseBucketObjects({
+        limit,
+        offset,
+        path: rawPath,
+      });
+
+      const response: SupabaseStorageListResponse = {
+        available: true,
+        bucket: result.config.bucket,
+        prefix: result.config.pathPrefix,
+        path: result.path,
+        items: result.items,
+        pagination: {
+          limit: result.limit,
+          offset: result.offset,
+          hasMore: result.hasMore,
+          nextOffset: result.hasMore ? result.offset + result.items.length : null,
+        },
+      };
+
+      res.setHeader("Cache-Control", "no-store");
+      res.json(response);
+    } catch (error) {
+      if (error instanceof SupabaseStorageNotConfiguredError) {
+        const response: SupabaseStorageListResponse = {
+          available: false,
+          message: error.message,
+        };
+        res.setHeader("Cache-Control", "no-store");
+        res.json(response);
+        return;
+      }
+      console.error("Failed to list Supabase storage objects", error);
+      sendError(res, 500, "Failed to list storage objects", "SUPABASE_LIST_FAILED");
+    }
+  });
+
+  app.post("/api/enrichment/storage/export", requireAdminAccess, async (req, res) => {
+    try {
+      const result = await syncEnrichmentDirectoryToSupabase();
+      const response: SupabaseStorageExportResponse = {
+        bucket: result.config.bucket,
+        prefix: result.config.pathPrefix,
+        totalFiles: result.totalFiles,
+        uploaded: result.uploaded,
+        failed: result.failed,
+        timestamp: new Date().toISOString(),
+      };
+
+      res.setHeader("Cache-Control", "no-store");
+      res.json(response);
+    } catch (error) {
+      if (error instanceof SupabaseStorageNotConfiguredError) {
+        return sendError(res, 400, error.message, "SUPABASE_NOT_CONFIGURED");
+      }
+      console.error("Failed to export enrichment data to Supabase storage", error);
+      sendError(res, 500, "Failed to export storage snapshot", "SUPABASE_EXPORT_FAILED");
     }
   });
 
