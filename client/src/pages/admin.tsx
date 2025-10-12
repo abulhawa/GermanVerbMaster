@@ -24,6 +24,7 @@ import { wordSchema, wordsResponseSchema } from './admin-word-schemas';
 
 type CanonicalFilter = 'all' | 'only' | 'non';
 type CompleteFilter = 'all' | 'complete' | 'incomplete';
+type EnrichmentFilter = 'all' | 'enriched' | 'unenriched';
 
 const PER_PAGE_OPTIONS = [25, 50, 100, 200] as const;
 
@@ -48,6 +49,12 @@ const completeOptions: Array<{ label: string; value: CompleteFilter }> = [
   { label: 'All', value: 'all' },
   { label: 'Complete', value: 'complete' },
   { label: 'Incomplete', value: 'incomplete' },
+];
+
+const enrichmentOptions: Array<{ label: string; value: EnrichmentFilter }> = [
+  { label: 'All', value: 'all' },
+  { label: 'Enriched', value: 'enriched' },
+  { label: 'Needs enrichment', value: 'unenriched' },
 ];
 
 interface EditFieldConfig {
@@ -210,6 +217,14 @@ function preparePayload(form: WordFormState, pos: Word['pos']) {
   return payload;
 }
 
+function humanizeEnrichmentMethod(method: Word['enrichmentMethod'] | null | undefined) {
+  if (!method) return null;
+  return method
+    .split('_')
+    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+    .join(' ');
+}
+
 const AdminWordsPage = () => {
   const [adminToken, setAdminToken] = useState(() => localStorage.getItem('gvm-admin-token') ?? '');
   const [search, setSearch] = useState('');
@@ -217,6 +232,7 @@ const AdminWordsPage = () => {
   const [level, setLevel] = useState<string>('All');
   const [canonicalFilter, setCanonicalFilter] = useState<CanonicalFilter>('all');
   const [completeFilter, setCompleteFilter] = useState<CompleteFilter>('all');
+  const [enrichmentFilter, setEnrichmentFilter] = useState<EnrichmentFilter>('all');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState<number>(50);
   const [selectedWord, setSelectedWord] = useState<Word | null>(null);
@@ -235,11 +251,20 @@ const AdminWordsPage = () => {
 
   useEffect(() => {
     setPage(1);
-  }, [search, pos, level, canonicalFilter, completeFilter]);
+  }, [search, pos, level, canonicalFilter, completeFilter, enrichmentFilter]);
 
   const filters = useMemo(
-    () => ({ search, pos, level, canonicalFilter, completeFilter, page, perPage }),
-    [search, pos, level, canonicalFilter, completeFilter, page, perPage],
+    () => ({
+      search,
+      pos,
+      level,
+      canonicalFilter,
+      completeFilter,
+      enrichmentFilter,
+      page,
+      perPage,
+    }),
+    [search, pos, level, canonicalFilter, completeFilter, enrichmentFilter, page, perPage],
   );
 
   const queryKey = useMemo(
@@ -258,6 +283,8 @@ const AdminWordsPage = () => {
       if (filters.canonicalFilter === 'non') params.set('canonical', 'non');
       if (filters.completeFilter === 'complete') params.set('complete', 'only');
       if (filters.completeFilter === 'incomplete') params.set('complete', 'non');
+      if (filters.enrichmentFilter === 'enriched') params.set('enriched', 'only');
+      if (filters.enrichmentFilter === 'unenriched') params.set('enriched', 'non');
 
       const headers: Record<string, string> = {};
       if (normalizedAdminToken) {
@@ -383,10 +410,20 @@ const AdminWordsPage = () => {
 
     base.push({ key: 'canonical', label: 'Canonical' });
     base.push({ key: 'complete', label: 'Complete' });
+    base.push({ key: 'enrichmentAppliedAt', label: 'Enriched' });
     base.push({ key: 'actions', label: 'Actions' });
 
     return base;
   }, [activePos]);
+
+  const enrichmentDateFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat(undefined, {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      }),
+    [],
+  );
 
   const { data: authSession } = useAuthSession();
   const navigationItems = useMemo(
@@ -476,7 +513,7 @@ const AdminWordsPage = () => {
               </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-4">
+            <div className="grid gap-4 md:grid-cols-5">
               <div className="space-y-2">
                 <Label>Part of speech</Label>
                 <Select value={pos} onValueChange={(value) => setPos(value as Word['pos'] | 'ALL')}>
@@ -545,14 +582,32 @@ const AdminWordsPage = () => {
                   <SelectTrigger>
                     <SelectValue placeholder="Completeness" />
                   </SelectTrigger>
-                <SelectContent>
-                  {completeOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                  <SelectContent>
+                    {completeOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Enrichment</Label>
+                <Select
+                  value={enrichmentFilter}
+                  onValueChange={(value: EnrichmentFilter) => setEnrichmentFilter(value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Enrichment" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {enrichmentOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </CardContent>
@@ -609,51 +664,67 @@ const AdminWordsPage = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-              {words.map((word) => (
-                <TableRow key={word.id}>
-                  <TableCell className="font-medium">{word.lemma}</TableCell>
-                  <TableCell>{word.pos}</TableCell>
-                  <TableCell>{word.level ?? '—'}</TableCell>
-                  <TableCell>{word.english ?? '—'}</TableCell>
-                  {activePos === 'V' && (
-                    <>
-                      <TableCell>{word.praeteritum ?? '—'}</TableCell>
-                      <TableCell>{word.partizipIi ?? '—'}</TableCell>
-                      <TableCell>{word.perfekt ?? '—'}</TableCell>
-                      <TableCell>{word.aux ?? '—'}</TableCell>
-                    </>
-                  )}
-                  {activePos === 'N' && (
-                    <>
-                      <TableCell>{word.gender ?? '—'}</TableCell>
-                      <TableCell>{word.plural ?? '—'}</TableCell>
-                    </>
-                  )}
-                  {activePos === 'Adj' && (
-                    <>
-                      <TableCell>{word.comparative ?? '—'}</TableCell>
-                      <TableCell>{word.superlative ?? '—'}</TableCell>
-                    </>
-                  )}
-                  {activePos === 'ALL' && (
-                    <>
-                      <TableCell>{word.exampleDe ?? '—'}</TableCell>
-                      <TableCell>{word.exampleEn ?? '—'}</TableCell>
-                    </>
-                  )}
-                  <TableCell>
-                    <Badge variant={word.canonical ? 'default' : 'secondary'}>
-                      {word.canonical ? 'Canonical' : 'Shadow'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={word.complete ? 'default' : 'outline'}>
-                      {word.complete ? 'Complete' : 'Incomplete'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="flex items-center gap-2">
-                    <Button
-                      size="icon"
+              {words.map((word) => {
+                const enrichmentLabel = humanizeEnrichmentMethod(word.enrichmentMethod);
+                return (
+                  <TableRow key={word.id}>
+                    <TableCell className="font-medium">{word.lemma}</TableCell>
+                    <TableCell>{word.pos}</TableCell>
+                    <TableCell>{word.level ?? '—'}</TableCell>
+                    <TableCell>{word.english ?? '—'}</TableCell>
+                    {activePos === 'V' && (
+                      <>
+                        <TableCell>{word.praeteritum ?? '—'}</TableCell>
+                        <TableCell>{word.partizipIi ?? '—'}</TableCell>
+                        <TableCell>{word.perfekt ?? '—'}</TableCell>
+                        <TableCell>{word.aux ?? '—'}</TableCell>
+                      </>
+                    )}
+                    {activePos === 'N' && (
+                      <>
+                        <TableCell>{word.gender ?? '—'}</TableCell>
+                        <TableCell>{word.plural ?? '—'}</TableCell>
+                      </>
+                    )}
+                    {activePos === 'Adj' && (
+                      <>
+                        <TableCell>{word.comparative ?? '—'}</TableCell>
+                        <TableCell>{word.superlative ?? '—'}</TableCell>
+                      </>
+                    )}
+                    {activePos === 'ALL' && (
+                      <>
+                        <TableCell>{word.exampleDe ?? '—'}</TableCell>
+                        <TableCell>{word.exampleEn ?? '—'}</TableCell>
+                      </>
+                    )}
+                    <TableCell>
+                      <Badge variant={word.canonical ? 'default' : 'secondary'}>
+                        {word.canonical ? 'Canonical' : 'Shadow'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={word.complete ? 'default' : 'outline'}>
+                        {word.complete ? 'Complete' : 'Incomplete'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {word.enrichmentAppliedAt ? (
+                        <div className="flex flex-col">
+                          <span>{enrichmentDateFormatter.format(word.enrichmentAppliedAt)}</span>
+                          {enrichmentLabel ? (
+                            <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                              {enrichmentLabel}
+                            </span>
+                          ) : null}
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="flex items-center gap-2">
+                      <Button
+                        size="icon"
                       variant={word.canonical ? 'destructive' : 'secondary'}
                       className="rounded-xl"
                       title={word.canonical ? 'Remove canonical flag' : 'Mark as canonical'}
@@ -770,8 +841,9 @@ const AdminWordsPage = () => {
                       </DrawerContent>
                     </Drawer>
                   </TableCell>
-                </TableRow>
-              ))}
+                  </TableRow>
+                );
+              })}
               {isUnauthorized && (
                 <TableRow>
                   <TableCell colSpan={columns.length} className="text-center text-muted-foreground">

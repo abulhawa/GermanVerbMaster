@@ -156,6 +156,11 @@ describe('Admin words API', () => {
         complete: true,
         sourcesCsv: 'test-source',
         sourceNotes: null,
+        translations: null,
+        examples: null,
+        posAttributes: null,
+        enrichmentAppliedAt: new Date(),
+        enrichmentMethod: 'bulk',
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -195,6 +200,74 @@ describe('Admin words API', () => {
     expect(offsetMock).toHaveBeenCalledWith(0);
   });
 
+  it('applies the enriched filter when requested', async () => {
+    const countRows = [{ value: 0 }];
+    const countPromise = Promise.resolve(countRows);
+
+    countWhereMock.mockReturnValueOnce(countPromise);
+    countFromMock.mockReturnValueOnce({
+      where: countWhereMock,
+      then: (onFulfilled: any, onRejected: any) => countPromise.then(onFulfilled, onRejected),
+    });
+
+    offsetMock.mockResolvedValueOnce([]);
+
+    const invokeApi = await createTestInvoker();
+
+    const response = await invokeApi('/api/words?enriched=only', {
+      headers: {
+        'x-admin-token': 'secret',
+      },
+    });
+
+    expect(response.status).toBe(200);
+    expect(whereMock).toHaveBeenCalledTimes(1);
+
+    const whereArg = whereMock.mock.calls[0]?.[0] as { queryChunks?: unknown[] } | undefined;
+    const whereSerialised = JSON.stringify(whereArg?.queryChunks ?? []);
+    expect(whereSerialised).toContain('enrichment_applied_at');
+    expect(whereSerialised.toLowerCase()).toContain('not null');
+
+    const countWhereArg = countWhereMock.mock.calls[0]?.[0] as { queryChunks?: unknown[] } | undefined;
+    const countSerialised = JSON.stringify(countWhereArg?.queryChunks ?? []);
+    expect(countSerialised).toContain('enrichment_applied_at');
+    expect(countSerialised.toLowerCase()).toContain('not null');
+  });
+
+  it('applies the unenriched filter when requested', async () => {
+    const countRows = [{ value: 0 }];
+    const countPromise = Promise.resolve(countRows);
+
+    countWhereMock.mockReturnValueOnce(countPromise);
+    countFromMock.mockReturnValueOnce({
+      where: countWhereMock,
+      then: (onFulfilled: any, onRejected: any) => countPromise.then(onFulfilled, onRejected),
+    });
+
+    offsetMock.mockResolvedValueOnce([]);
+
+    const invokeApi = await createTestInvoker();
+
+    const response = await invokeApi('/api/words?enriched=non', {
+      headers: {
+        'x-admin-token': 'secret',
+      },
+    });
+
+    expect(response.status).toBe(200);
+    expect(whereMock).toHaveBeenCalledTimes(1);
+
+    const whereArg = whereMock.mock.calls[0]?.[0] as { queryChunks?: unknown[] } | undefined;
+    const whereSerialised = JSON.stringify(whereArg?.queryChunks ?? []);
+    expect(whereSerialised).toContain('enrichment_applied_at');
+    expect(whereSerialised.toLowerCase()).toContain('is null');
+
+    const countWhereArg = countWhereMock.mock.calls[0]?.[0] as { queryChunks?: unknown[] } | undefined;
+    const countSerialised = JSON.stringify(countWhereArg?.queryChunks ?? []);
+    expect(countSerialised).toContain('enrichment_applied_at');
+    expect(countSerialised.toLowerCase()).toContain('is null');
+  });
+
   it('recomputes completeness when updating a verb', async () => {
     const existing = {
       id: 3,
@@ -219,6 +292,11 @@ describe('Admin words API', () => {
       complete: false,
       sourcesCsv: null,
       sourceNotes: null,
+      translations: null,
+      examples: null,
+      posAttributes: null,
+      enrichmentAppliedAt: null,
+      enrichmentMethod: null,
       createdAt: new Date(),
       updatedAt: new Date(),
     } satisfies Word;

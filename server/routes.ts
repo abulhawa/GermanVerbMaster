@@ -1289,6 +1289,7 @@ export function registerRoutes(app: Express): void {
       const level = normalizeStringParam(req.query.level)?.trim();
       const canonicalFilter = parseTriState(req.query.canonical);
       const completeFilter = parseTriState(req.query.complete);
+      const enrichedFilter = parseTriState(req.query.enriched);
       const search = normalizeStringParam(req.query.search)?.trim().toLowerCase();
       const page = parsePageParam(req.query.page, 1);
       const perPage = Math.min(parseLimitParam(req.query.perPage, 50), 200);
@@ -1310,6 +1311,13 @@ export function registerRoutes(app: Express): void {
         const term = `%${search}%`;
         conditions.push(
           sql`(lower(${words.lemma}) LIKE ${term} OR lower(${words.english}) LIKE ${term})`
+        );
+      }
+      if (typeof enrichedFilter === "boolean") {
+        conditions.push(
+          enrichedFilter
+            ? sql`${words.enrichmentAppliedAt} IS NOT NULL`
+            : sql`${words.enrichmentAppliedAt} IS NULL`,
         );
       }
 
