@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
-import { Sparkles, Settings2, PenSquare, Trash2 } from 'lucide-react';
+import { Sparkles, Settings2, PenSquare, Trash2, Wand2 } from 'lucide-react';
 import { Link } from 'wouter';
 
 import { AppShell } from '@/components/layout/app-shell';
@@ -15,12 +15,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useAuthSession } from '@/auth/session';
 import type { Word } from '@shared';
 import { wordSchema, wordsResponseSchema } from './admin-word-schemas';
+import WordEnrichmentDetailView, {
+  DEFAULT_WORD_CONFIG,
+  type WordConfigState,
+} from './admin-enrichment-detail';
 
 type CanonicalFilter = 'all' | 'only' | 'non';
 type CompleteFilter = 'all' | 'complete' | 'incomplete';
@@ -237,6 +243,8 @@ const AdminWordsPage = () => {
   const [perPage, setPerPage] = useState<number>(50);
   const [selectedWord, setSelectedWord] = useState<Word | null>(null);
   const [formState, setFormState] = useState<WordFormState | null>(null);
+  const [wordConfig, setWordConfig] = useState<WordConfigState>(DEFAULT_WORD_CONFIG);
+  const [enrichmentWordId, setEnrichmentWordId] = useState<number | null>(null);
 
   const pageDebugId = 'admin-words';
 
@@ -271,6 +279,8 @@ const AdminWordsPage = () => {
     () => ['words', filters, normalizedAdminToken],
     [filters, normalizedAdminToken],
   );
+
+  const enrichmentDialogOpen = enrichmentWordId !== null;
 
   const wordsQuery = useQuery({
     queryKey,
@@ -344,6 +354,14 @@ const AdminWordsPage = () => {
   const closeEditor = () => {
     setSelectedWord(null);
     setFormState(null);
+  };
+
+  const openEnrichmentDialog = (word: Word) => {
+    setEnrichmentWordId(word.id);
+  };
+
+  const closeEnrichmentDialog = () => {
+    setEnrichmentWordId(null);
   };
 
   const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
@@ -654,12 +672,17 @@ const AdminWordsPage = () => {
               </Select>
             </div>
           </div>
-          <div className="max-h-[520px] overflow-auto rounded-3xl border border-border/60">
-            <Table>
+          <div className="max-h-[520px] overflow-hidden rounded-3xl border border-border/60">
+            <Table className="text-xs">
               <TableHeader className="sticky top-0 z-20 bg-card/95 backdrop-blur">
                 <TableRow>
                   {columns.map((column) => (
-                    <TableHead key={column.key}>{column.label}</TableHead>
+                    <TableHead
+                      key={column.key}
+                      className="px-2 py-2 text-xs font-semibold uppercase tracking-wide"
+                    >
+                      {column.label}
+                    </TableHead>
                   ))}
                 </TableRow>
               </TableHeader>
@@ -668,47 +691,47 @@ const AdminWordsPage = () => {
                 const enrichmentLabel = humanizeEnrichmentMethod(word.enrichmentMethod);
                 return (
                   <TableRow key={word.id}>
-                    <TableCell className="font-medium">{word.lemma}</TableCell>
-                    <TableCell>{word.pos}</TableCell>
-                    <TableCell>{word.level ?? '—'}</TableCell>
-                    <TableCell>{word.english ?? '—'}</TableCell>
+                    <TableCell className="px-2 py-2 font-medium">{word.lemma}</TableCell>
+                    <TableCell className="px-2 py-2">{word.pos}</TableCell>
+                    <TableCell className="px-2 py-2">{word.level ?? '—'}</TableCell>
+                    <TableCell className="px-2 py-2">{word.english ?? '—'}</TableCell>
                     {activePos === 'V' && (
                       <>
-                        <TableCell>{word.praeteritum ?? '—'}</TableCell>
-                        <TableCell>{word.partizipIi ?? '—'}</TableCell>
-                        <TableCell>{word.perfekt ?? '—'}</TableCell>
-                        <TableCell>{word.aux ?? '—'}</TableCell>
+                        <TableCell className="px-2 py-2">{word.praeteritum ?? '—'}</TableCell>
+                        <TableCell className="px-2 py-2">{word.partizipIi ?? '—'}</TableCell>
+                        <TableCell className="px-2 py-2">{word.perfekt ?? '—'}</TableCell>
+                        <TableCell className="px-2 py-2">{word.aux ?? '—'}</TableCell>
                       </>
                     )}
                     {activePos === 'N' && (
                       <>
-                        <TableCell>{word.gender ?? '—'}</TableCell>
-                        <TableCell>{word.plural ?? '—'}</TableCell>
+                        <TableCell className="px-2 py-2">{word.gender ?? '—'}</TableCell>
+                        <TableCell className="px-2 py-2">{word.plural ?? '—'}</TableCell>
                       </>
                     )}
                     {activePos === 'Adj' && (
                       <>
-                        <TableCell>{word.comparative ?? '—'}</TableCell>
-                        <TableCell>{word.superlative ?? '—'}</TableCell>
+                        <TableCell className="px-2 py-2">{word.comparative ?? '—'}</TableCell>
+                        <TableCell className="px-2 py-2">{word.superlative ?? '—'}</TableCell>
                       </>
                     )}
                     {activePos === 'ALL' && (
                       <>
-                        <TableCell>{word.exampleDe ?? '—'}</TableCell>
-                        <TableCell>{word.exampleEn ?? '—'}</TableCell>
+                        <TableCell className="px-2 py-2">{word.exampleDe ?? '—'}</TableCell>
+                        <TableCell className="px-2 py-2">{word.exampleEn ?? '—'}</TableCell>
                       </>
                     )}
-                    <TableCell>
+                    <TableCell className="px-2 py-2">
                       <Badge variant={word.canonical ? 'default' : 'secondary'}>
                         {word.canonical ? 'Canonical' : 'Shadow'}
                       </Badge>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="px-2 py-2">
                       <Badge variant={word.complete ? 'default' : 'outline'}>
                         {word.complete ? 'Complete' : 'Incomplete'}
                       </Badge>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="px-2 py-2">
                       {word.enrichmentAppliedAt ? (
                         <div className="flex flex-col">
                           <span>{enrichmentDateFormatter.format(word.enrichmentAppliedAt)}</span>
@@ -722,47 +745,47 @@ const AdminWordsPage = () => {
                         <span className="text-muted-foreground">—</span>
                       )}
                     </TableCell>
-                    <TableCell className="flex items-center gap-2">
+                    <TableCell className="flex items-center gap-2 px-2 py-2">
                       <Button
                         size="icon"
-                      variant={word.canonical ? 'destructive' : 'secondary'}
-                      className="rounded-xl"
-                      title={word.canonical ? 'Remove canonical flag' : 'Mark as canonical'}
-                      aria-label={word.canonical ? 'Remove canonical flag' : 'Mark as canonical'}
-                      onClick={() => toggleCanonical(word)}
-                      debugId={`${pageDebugId}-word-${word.id}-toggle-canonical-button`}
-                    >
-                      {word.canonical ? (
-                        <Trash2 className="h-4 w-4" aria-hidden />
-                      ) : (
-                        <Sparkles className="h-4 w-4" aria-hidden />
-                      )}
-                    </Button>
-                    <Drawer open={selectedWord?.id === word.id} onOpenChange={(open) => {
-                      if (open) {
-                        openEditor(word);
-                      } else {
-                        closeEditor();
-                      }
-                    }}>
-                      <DrawerTrigger asChild>
-                        <Button
-                          size="icon"
-                          variant="secondary"
-                          className="rounded-xl"
-                          onClick={() => openEditor(word)}
-                          title="Edit entry"
-                          aria-label="Edit entry"
-                          debugId={`${pageDebugId}-word-${word.id}-edit-button`}
-                        >
-                          <PenSquare className="h-4 w-4" aria-hidden />
-                        </Button>
-                      </DrawerTrigger>
-                      <DrawerContent>
-                        <DrawerHeader>
-                          <DrawerTitle>Edit {word.lemma}</DrawerTitle>
-                        </DrawerHeader>
-                        <form onSubmit={submitForm} className="space-y-4 p-4">
+                        variant={word.canonical ? 'destructive' : 'secondary'}
+                        className="rounded-xl"
+                        title={word.canonical ? 'Remove canonical flag' : 'Mark as canonical'}
+                        aria-label={word.canonical ? 'Remove canonical flag' : 'Mark as canonical'}
+                        onClick={() => toggleCanonical(word)}
+                        debugId={`${pageDebugId}-word-${word.id}-toggle-canonical-button`}
+                      >
+                        {word.canonical ? (
+                          <Trash2 className="h-4 w-4" aria-hidden />
+                        ) : (
+                          <Sparkles className="h-4 w-4" aria-hidden />
+                        )}
+                      </Button>
+                      <Drawer open={selectedWord?.id === word.id} onOpenChange={(open) => {
+                        if (open) {
+                          openEditor(word);
+                        } else {
+                          closeEditor();
+                        }
+                      }}>
+                        <DrawerTrigger asChild>
+                          <Button
+                            size="icon"
+                            variant="secondary"
+                            className="rounded-xl"
+                            onClick={() => openEditor(word)}
+                            title="Edit entry"
+                            aria-label="Edit entry"
+                            debugId={`${pageDebugId}-word-${word.id}-edit-button`}
+                          >
+                            <PenSquare className="h-4 w-4" aria-hidden />
+                          </Button>
+                        </DrawerTrigger>
+                        <DrawerContent className="max-h-[85vh] overflow-y-auto">
+                          <DrawerHeader>
+                            <DrawerTitle>Edit {word.lemma}</DrawerTitle>
+                          </DrawerHeader>
+                          <form onSubmit={submitForm} className="space-y-4 p-4">
                           {[...commonFields,
                             ...(word.pos === 'V' ? verbFields : []),
                             ...(word.pos === 'N' ? nounFields : []),
@@ -840,6 +863,17 @@ const AdminWordsPage = () => {
                         </form>
                       </DrawerContent>
                     </Drawer>
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        className="rounded-xl"
+                        onClick={() => openEnrichmentDialog(word)}
+                        title="Open enrichment"
+                        aria-label="Open enrichment"
+                        debugId={`${pageDebugId}-word-${word.id}-enrich-button`}
+                      >
+                        <Wand2 className="h-4 w-4" aria-hidden />
+                      </Button>
                   </TableCell>
                   </TableRow>
                 );
@@ -897,6 +931,35 @@ const AdminWordsPage = () => {
         </CardContent>
       </Card>
     </div>
+      <Dialog
+        open={enrichmentDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            closeEnrichmentDialog();
+          }
+        }}
+      >
+        <DialogContent className="w-full max-w-6xl overflow-hidden border border-border/60 bg-card/95 p-0">
+          <ScrollArea className="max-h-[80vh] w-full">
+            {enrichmentWordId ? (
+              <div className="space-y-6 px-6 py-6">
+                <WordEnrichmentDetailView
+                  key={enrichmentWordId}
+                  wordId={enrichmentWordId}
+                  adminToken={adminToken}
+                  normalizedAdminToken={normalizedAdminToken}
+                  onAdminTokenChange={setAdminToken}
+                  toast={toast}
+                  onClose={closeEnrichmentDialog}
+                  wordConfig={wordConfig}
+                  setWordConfig={setWordConfig}
+                  autoPreview
+                />
+              </div>
+            ) : null}
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
     </AppShell>
   );
 };

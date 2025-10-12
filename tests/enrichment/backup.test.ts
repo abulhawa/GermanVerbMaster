@@ -62,7 +62,7 @@ describe('words backup utilities', () => {
 
     expect(result.summary.totalWords).toBe(1);
     expect(result.summary.relativePath.startsWith('backups/words-')).toBe(true);
-    expect(result.summary.latestRelativePath).toBe('backups/words-latest.json');
+    expect(result.summary.latestRelativePath).toBe('words-latest.json');
 
     const latestPath = path.join(tempDir, 'data', 'enrichment', result.summary.latestRelativePath);
     const contents = JSON.parse(await readFile(latestPath, 'utf8')) as {

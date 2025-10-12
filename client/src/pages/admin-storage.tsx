@@ -284,7 +284,7 @@ const AdminStoragePage = () => {
               </p>
               <div className="rounded-md bg-muted px-3 py-2 font-mono text-xs text-foreground">
                 npm run enrichment:restore -- --object{' '}
-                {latestBackup?.latestObjectPath ?? 'backups/words-latest.json'} --force
+                {latestBackup?.latestObjectPath ?? 'words-latest.json'} --force
               </div>
             </div>
           </CardContent>

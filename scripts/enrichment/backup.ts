@@ -42,7 +42,7 @@ export interface WordsRestoreResult {
 
 const WORDS_BACKUP_SCHEMA_VERSION = 1;
 
-const DEFAULT_LATEST_PATH = "backups/words-latest.json";
+const DEFAULT_LATEST_PATH = "words-latest.json";
 
 function serialiseDate(value: Date | string | null | undefined): string | null {
   if (!value) {
@@ -144,7 +144,7 @@ export async function writeWordsBackupToDisk(
   const timestamp = payload.generatedAt.replace(/[:.]/g, "-");
   const fileName = `words-${timestamp}.json`;
   const filePath = path.join(backupsDir, fileName);
-  const latestFilePath = path.join(backupsDir, "words-latest.json");
+  const latestFilePath = path.join(dataDir, "words-latest.json");
 
   const serialised = JSON.stringify(payload, null, 2);
   await writeFile(filePath, serialised, "utf8");

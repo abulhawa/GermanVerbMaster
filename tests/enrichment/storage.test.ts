@@ -321,19 +321,6 @@ describe('enrichment storage', () => {
       {
         data: [
           {
-            id: null,
-            name: 'backups',
-            created_at: null,
-            updated_at: null,
-            last_accessed_at: null,
-            metadata: null,
-          },
-        ],
-        error: null,
-      },
-      {
-        data: [
-          {
             id: 'file-1',
             name: 'words-latest.json',
             created_at: null,
@@ -349,7 +336,7 @@ describe('enrichment storage', () => {
 
     supabaseListMock.mockImplementation(async () => listResponses.shift() ?? { data: [], error: null });
     supabaseRemoveMock.mockResolvedValueOnce({
-      data: [{ name: 'snapshots/backups/words-latest.json' }],
+      data: [{ name: 'snapshots/words-latest.json' }],
       error: null,
     });
 
@@ -360,12 +347,8 @@ describe('enrichment storage', () => {
       offset: 0,
       sortBy: { column: 'name', order: 'asc' },
     });
-    expect(supabaseListMock).toHaveBeenCalledWith('snapshots/backups', {
-      limit: 1000,
-      offset: 0,
-      sortBy: { column: 'name', order: 'asc' },
-    });
-    expect(supabaseRemoveMock).toHaveBeenCalledWith(['snapshots/backups/words-latest.json']);
+    expect(supabaseListMock).not.toHaveBeenCalledWith('snapshots/backups', expect.anything());
+    expect(supabaseRemoveMock).toHaveBeenCalledWith(['snapshots/words-latest.json']);
     expect(result.total).toBe(1);
     expect(result.deleted).toBe(1);
     expect(result.failed).toHaveLength(0);

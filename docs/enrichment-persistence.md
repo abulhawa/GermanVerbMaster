@@ -82,10 +82,10 @@ script truncates the table before importing the backup and resets the sequence, 
 targeting an environment that should be replaced.
 
 ```bash
-npm run enrichment:restore -- --object backups/words-latest.json --force
+npm run enrichment:restore -- --object words-latest.json --force
 ```
 
-Omit `--object` to fall back to `backups/words-latest.json`. The script requires the Supabase
+Omit `--object` to fall back to `words-latest.json`. The script requires the Supabase
 environment variables (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and
 `ENRICHMENT_SUPABASE_BUCKET`) so it can download the JSON payload directly from Storage.
 

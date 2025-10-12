@@ -1893,7 +1893,7 @@ export function registerRoutes(app: Express): void {
       const cleanResult = await clearSupabaseBucketPrefix();
       const backupResult = await writeWordsBackupToDisk();
       const latestRelativePath =
-        backupResult.summary?.latestRelativePath ?? "backups/words-latest.json";
+        backupResult.summary?.latestRelativePath ?? "words-latest.json";
       const syncResult = await syncEnrichmentDirectoryToSupabase(undefined, {
         includeRelativePaths: [latestRelativePath],
       });

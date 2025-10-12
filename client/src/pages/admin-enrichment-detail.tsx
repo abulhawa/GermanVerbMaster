@@ -74,6 +74,7 @@ interface WordEnrichmentDetailViewProps {
   onClose: () => void;
   wordConfig: WordConfigState;
   setWordConfig: React.Dispatch<React.SetStateAction<WordConfigState>>;
+  autoPreview?: boolean;
 }
 
 const MANUAL_OPTION = 'manual';
@@ -138,6 +139,14 @@ function extractPluralValues(candidate: EnrichmentNounFormSuggestion): Array<{ v
   return Array.from(results.entries()).map(([value, descriptor]) => ({ value, descriptor }));
 }
 
+export const DEFAULT_WORD_CONFIG: WordConfigState = {
+  enableAi: false,
+  allowOverwrite: false,
+  collectSynonyms: true,
+  collectExamples: true,
+  collectTranslations: true,
+};
+
 function extractAdjectiveValues(
   candidate: EnrichmentAdjectiveFormSuggestion,
   field: 'comparatives' | 'superlatives',
@@ -176,6 +185,7 @@ const WordEnrichmentDetailView = ({
   onClose,
   wordConfig,
   setWordConfig,
+  autoPreview = false,
 }: WordEnrichmentDetailViewProps) => {
   const [drafts, setDrafts] = useState<FieldDrafts>({
     english: '',
@@ -544,6 +554,14 @@ const WordEnrichmentDetailView = ({
       });
     },
   });
+
+  useEffect(() => {
+    if (!autoPreview) return;
+    if (!word) return;
+    if (previewMutation.isPending) return;
+    if (previewData) return;
+    previewMutation.mutate();
+  }, [autoPreview, word?.id, previewMutation.isPending, previewMutation.mutate, previewData]);
 
   const applyMutation = useMutation({
     mutationFn: async () => {

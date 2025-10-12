@@ -34,6 +34,7 @@ import {
   type WordEnrichmentOptions,
 } from '@/lib/admin-enrichment';
 import WordEnrichmentDetailView, {
+  DEFAULT_WORD_CONFIG,
   formatDisplayDate,
   type WordConfigState,
 } from './admin-enrichment-detail';
@@ -63,14 +64,6 @@ const DEFAULT_BULK_CONFIG: BulkConfigState = {
   limit: 25,
   mode: 'non-canonical',
   onlyIncomplete: true,
-  enableAi: false,
-  allowOverwrite: false,
-  collectSynonyms: true,
-  collectExamples: true,
-  collectTranslations: true,
-};
-
-const DEFAULT_WORD_CONFIG: WordConfigState = {
   enableAi: false,
   allowOverwrite: false,
   collectSynonyms: true,
