@@ -1,6 +1,8 @@
 import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+
 import type {
   EnrichmentProviderSnapshot,
   PersistedProviderEntry,
@@ -34,6 +36,65 @@ function providerFilePath(providerId: string | number, pos: string | number | nu
   const posSegment = toPosSegment(pos);
   const providerSegment = String(providerId).toLowerCase();
   return path.join(resolveEnrichmentDataDir(), posSegment, `${providerSegment}.json`);
+}
+
+type EnrichmentS3Config = {
+  bucket: string;
+  prefix: string | null;
+  region: string | undefined;
+  endpoint: string | undefined;
+  forcePathStyle: boolean;
+};
+
+function parseBoolean(value: string | undefined): boolean {
+  if (!value) return false;
+  return ["1", "true", "yes", "on"].includes(value.trim().toLowerCase());
+}
+
+function getS3ConfigFromEnv(): EnrichmentS3Config | null {
+  const bucket = process.env.ENRICHMENT_S3_BUCKET?.trim();
+  if (!bucket) {
+    return null;
+  }
+
+  const rawPrefix = process.env.ENRICHMENT_S3_PREFIX?.trim();
+  const prefix = rawPrefix ? rawPrefix.replace(/^\/+|\/+$/g, "") : null;
+
+  const region = process.env.ENRICHMENT_S3_REGION?.trim() || process.env.AWS_REGION?.trim();
+  const endpoint = process.env.ENRICHMENT_S3_ENDPOINT?.trim() || undefined;
+  const forcePathStyle = parseBoolean(process.env.ENRICHMENT_S3_FORCE_PATH_STYLE);
+
+  return { bucket, prefix, region: region || undefined, endpoint, forcePathStyle } satisfies EnrichmentS3Config;
+}
+
+async function uploadProviderFileToS3(filePath: string, fileContents: string): Promise<void> {
+  const config = getS3ConfigFromEnv();
+  if (!config) {
+    return;
+  }
+
+  const relativePath = path
+    .relative(resolveEnrichmentDataDir(), filePath)
+    .split(path.sep)
+    .filter((segment) => segment.length)
+    .join("/");
+
+  const key = config.prefix ? `${config.prefix}/${relativePath}` : relativePath;
+
+  const client = new S3Client({
+    region: config.region,
+    endpoint: config.endpoint,
+    forcePathStyle: config.forcePathStyle,
+  });
+
+  await client.send(
+    new PutObjectCommand({
+      Bucket: config.bucket,
+      Key: key,
+      Body: fileContents,
+      ContentType: "application/json",
+    }),
+  );
 }
 
 async function readJsonFile<T>(filePath: string): Promise<T | null> {
@@ -175,7 +236,10 @@ export async function persistProviderSnapshotToFile(
   payload.providerLabel = snapshot.providerLabel ?? payload.providerLabel ?? null;
   payload.updatedAt = new Date().toISOString();
 
-  await writeFile(filePath, JSON.stringify(payload, null, 2), "utf8");
+  const fileContents = JSON.stringify(payload, null, 2);
+
+  await writeFile(filePath, fileContents, "utf8");
+  await uploadProviderFileToS3(filePath, fileContents);
 }
 
 async function safeReaddir(dirPath: string): Promise<string[]> {

@@ -2,7 +2,24 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+const s3SendMock = vi.hoisted(() => vi.fn());
+const s3ClientCtorMock = vi.hoisted(() => vi.fn());
+const putObjectCtorMock = vi.hoisted(() => vi.fn());
+
+vi.mock('@aws-sdk/client-s3', () => {
+  return {
+    S3Client: vi.fn((config) => {
+      s3ClientCtorMock(config);
+      return { send: s3SendMock };
+    }),
+    PutObjectCommand: vi.fn((input) => {
+      putObjectCtorMock(input);
+      return { input };
+    }),
+  };
+});
 
 import type { EnrichmentProviderSnapshot } from '../../shared/enrichment';
 import {
@@ -23,6 +40,14 @@ describe('enrichment storage', () => {
   afterEach(async () => {
     process.chdir(ORIGINAL_CWD);
     await rm(tempDir, { recursive: true, force: true });
+    delete process.env.ENRICHMENT_S3_BUCKET;
+    delete process.env.ENRICHMENT_S3_PREFIX;
+    delete process.env.ENRICHMENT_S3_REGION;
+    delete process.env.ENRICHMENT_S3_ENDPOINT;
+    delete process.env.ENRICHMENT_S3_FORCE_PATH_STYLE;
+    s3SendMock.mockReset();
+    s3ClientCtorMock.mockReset();
+    putObjectCtorMock.mockReset();
   });
 
   it('persists snapshots under POS-specific files and retains translations/examples', async () => {
@@ -158,6 +183,57 @@ describe('enrichment storage', () => {
     expect(updated.meta?.previousSchemaVersions).toContain(0);
     expect(typeof updated.meta?.lastUpgradedAt).toBe('string');
     expect(updated.entries.laufen.verbForms[0].praeteritum).toBe('lief');
+  });
+
+  it('uploads provider files to S3 when configuration is provided', async () => {
+    const now = new Date().toISOString();
+    const snapshot: EnrichmentProviderSnapshot = {
+      id: 5,
+      wordId: 505,
+      lemma: 'Birne',
+      pos: 'N',
+      providerId: 'wiktextract',
+      providerLabel: 'Kaikki',
+      status: 'success',
+      trigger: 'apply',
+      mode: 'non-canonical',
+      translations: [{ value: 'pear', language: 'English', source: 'kaikki.org' }],
+      examples: null,
+      synonyms: [],
+      englishHints: ['pear'],
+      verbForms: null,
+      nounForms: null,
+      adjectiveForms: null,
+      prepositionAttributes: null,
+      rawPayload: null,
+      collectedAt: now,
+      createdAt: now,
+    };
+
+    process.env.ENRICHMENT_S3_BUCKET = 'test-bucket';
+    process.env.ENRICHMENT_S3_PREFIX = 'snapshots';
+    process.env.ENRICHMENT_S3_REGION = 'eu-central-1';
+
+    await persistProviderSnapshotToFile(snapshot);
+
+    expect(s3ClientCtorMock).toHaveBeenCalledWith({
+      region: 'eu-central-1',
+      endpoint: undefined,
+      forcePathStyle: false,
+    });
+
+    expect(s3SendMock).toHaveBeenCalledTimes(1);
+    const putCommandArg = putObjectCtorMock.mock.calls[0][0] as {
+      Bucket: string;
+      Key: string;
+      Body: string;
+      ContentType: string;
+    };
+
+    expect(putCommandArg.Bucket).toBe('test-bucket');
+    expect(putCommandArg.Key).toBe('snapshots/n/wiktextract.json');
+    expect(putCommandArg.ContentType).toBe('application/json');
+    expect(putCommandArg.Body).toContain('"lemma": "Birne"');
   });
 });
 

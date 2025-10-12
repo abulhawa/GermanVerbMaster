@@ -19,6 +19,9 @@ repository we can export it directly from the database.
 Run the export script with `tsx` (or through the `npm` alias) from the repository root. The script
 connects to the configured `DATABASE_URL`, fetches the latest applied snapshot for every
 `(lemma, pos, provider)` combination, and rewrites the JSON files under `data/enrichment`.
+If the command exits with `No applied enrichment snapshots found.` double-check that you have
+applied the enrichment changes (the admin UI apply flow or the pipeline with `--apply`) and that
+the updated words have a non-null `enrichment_method` in the database.
 
 ```bash
 npm run enrichment:export -- --clean
@@ -28,7 +31,26 @@ Passing `--clean` (or `-c`) removes the existing `data/enrichment` directory bef
 stale entries are cleared. Omit the flag to merge with whatever is already on disk.
 
 After running the command, review the changes under `data/enrichment` and commit them to persist the
-new enrichment data in git.
+new enrichment data in git. The local filesystem continues to be the canonical source for
+bootstrap/seed data, so expect to find the snapshots under `data/enrichment/<pos>/<provider>.json`.
+
+## Publishing snapshots to S3
+
+Production deployments can back up the filesystem artefacts to an object store. The enrichment
+storage helper automatically uploads the provider JSON files to S3 whenever the following
+environment variables are present:
+
+| Variable | Description |
+| --- | --- |
+| `ENRICHMENT_S3_BUCKET` | **Required.** Bucket name that should receive the provider JSON files. |
+| `ENRICHMENT_S3_PREFIX` | Optional key prefix (for example `backups/enrichment`). Trailing slashes are ignored. |
+| `ENRICHMENT_S3_REGION` | AWS region for the bucket. Falls back to `AWS_REGION` when omitted. |
+| `ENRICHMENT_S3_ENDPOINT` | Optional custom endpoint (useful for S3-compatible storage). |
+| `ENRICHMENT_S3_FORCE_PATH_STYLE` | Set to `true`/`1` to force path-style URLs for S3-compatible storage. |
+
+The AWS SDK picks up credentials from the standard environment variables (`AWS_ACCESS_KEY_ID`,
+`AWS_SECRET_ACCESS_KEY`, etc.) or from the runtime IAM role. Uploads happen automatically both when
+the admin applies enrichment data and when the export script regenerates local files.
 
 ## Why the server still persists locally
 
