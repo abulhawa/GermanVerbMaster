@@ -52,6 +52,53 @@ The AWS SDK picks up credentials from the standard environment variables (`AWS_A
 `AWS_SECRET_ACCESS_KEY`, etc.) or from the runtime IAM role. Uploads happen automatically both when
 the admin applies enrichment data and when the export script regenerates local files.
 
+### Step-by-step setup on AWS (Free Tier friendly)
+
+Follow these steps to configure a lightweight S3 backup target:
+
+1. **Create the bucket**
+   - Open the AWS console and go to **S3 → Create bucket**.
+   - Choose a globally unique bucket name (for example `gvm-enrichment-backups`).
+   - Pick a region close to your deployment (the Free Tier covers standard S3 storage in most
+     regions). Disable "Block all public access" only if you explicitly need public reads—backups
+     should stay private by default.
+
+2. **Prepare credentials**
+   - (Recommended) Create an IAM user dedicated to enrichment backups with `AmazonS3FullAccess` or a
+     custom policy scoped to the new bucket.
+   - Generate an access key pair for that user and record the `Access key ID` and `Secret access key`.
+   - Alternatively, if you are deploying on AWS infrastructure that supports IAM roles (e.g. ECS,
+     Lambda), attach a role with the same permissions instead of long-lived access keys.
+
+3. **Populate environment variables**
+   - Set `ENRICHMENT_S3_BUCKET` to the bucket name.
+   - Set `ENRICHMENT_S3_REGION` to the bucket region (e.g. `us-east-1`). This ensures the SDK bypasses
+     cross-region redirects.
+   - Optionally set `ENRICHMENT_S3_PREFIX` to group snapshots under a prefix like
+     `backups/enrichment`. Leave it empty to write objects at the root of the bucket.
+   - Provide credentials via the standard AWS variables:
+
+     ```bash
+     export AWS_ACCESS_KEY_ID=...      # from the IAM user (skip when using an IAM role)
+     export AWS_SECRET_ACCESS_KEY=...
+     export AWS_REGION=us-east-1       # matches the bucket region
+     ```
+
+4. **Verify connectivity (optional but recommended)**
+   - Install the AWS CLI and run `aws s3 ls s3://$ENRICHMENT_S3_BUCKET/` to confirm that the
+     credentials can list the bucket.
+   - If you are using a custom endpoint or an S3-compatible service (e.g. MinIO), set
+     `ENRICHMENT_S3_ENDPOINT` and `ENRICHMENT_S3_FORCE_PATH_STYLE=true` before verifying.
+
+5. **Trigger an upload**
+   - Run `npm run enrichment:export -- --clean` to regenerate local snapshots, or apply enrichment
+     data through the admin UI.
+   - Confirm that new objects appear in the bucket under the expected prefix. You should see files
+     such as `backups/enrichment/noun/provider.json` shortly after the export or apply finishes.
+
+These steps keep you within the Free Tier for low-volume backups. Standard S3 pricing applies once
+you exceed the Free Tier allowances or store large amounts of enrichment data.
+
 ## Why the server still persists locally
 
 The server continues to write JSON snapshots as part of the apply flow so that local development or
