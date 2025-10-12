@@ -1,6 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { newDb } from 'pg-mem';
-import { types } from 'pg';
+import { createMockPool } from './helpers/mock-pg';
 
 const ORIGINAL_DATABASE_URL = process.env.DATABASE_URL;
 let applyMigrations: typeof import('../scripts/db-push').applyMigrations;
@@ -24,53 +23,7 @@ afterAll(() => {
 
 describe('applyMigrations', () => {
   it('creates the expected tables and indexes in a fresh database', async () => {
-    const mem = newDb({ autoCreateForeignKeyIndices: true });
-    const { Pool } = mem.adapters.createPg();
-    const pool = new Pool({ types });
-
-    const originalQuery = pool.query.bind(pool);
-    pool.query = ((configOrText: any, values?: any, callback?: any) => {
-      if (configOrText && typeof configOrText === 'object') {
-        const { types: _types, rowMode, ...rest } = configOrText;
-        if (rowMode === 'array' || _types !== undefined) {
-          let resolvedValues = values;
-          let resolvedCallback = callback;
-
-          if (typeof resolvedValues === 'function') {
-            resolvedCallback = resolvedValues;
-            resolvedValues = undefined;
-          }
-
-          const mapResult = (result: any) => {
-            if (rowMode === 'array' && Array.isArray(result.rows)) {
-              const fieldNames = Array.isArray(result.fields) && result.fields.length > 0
-                ? result.fields.map((field: any) => field.name)
-                : Object.keys(result.rows[0] ?? {});
-
-              result.rows = result.rows.map((row: Record<string, unknown>) =>
-                fieldNames.map((field) => row[field]),
-              );
-            }
-
-            return result;
-          };
-
-          const promise = originalQuery(rest, resolvedValues as any).then(mapResult);
-
-          if (typeof resolvedCallback === 'function') {
-            promise.then(
-              (result) => resolvedCallback!(null, result),
-              (error) => resolvedCallback!(error),
-            );
-            return undefined as unknown as ReturnType<typeof pool.query>;
-          }
-
-          return promise;
-        }
-      }
-
-      return originalQuery(configOrText, values, callback);
-    }) as typeof pool.query;
+    const pool = createMockPool();
 
     await applyMigrations(pool);
 

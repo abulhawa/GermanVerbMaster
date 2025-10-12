@@ -3,11 +3,11 @@ import { fileURLToPath } from 'node:url';
 
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { drizzle, type NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { newDb } from 'pg-mem';
 import { Pool, type PoolConfig, types } from 'pg';
 import { vi } from 'vitest';
 
 import * as schema from '../../db/schema.js';
+import { createMockPool } from './mock-pg';
 
 export interface TestDatabaseContext {
   db: NodePgDatabase<typeof schema>;
@@ -64,56 +64,7 @@ export async function setupTestDatabase(): Promise<TestDatabaseContext> {
     usingExternal = true;
     await resetExternalDatabase(pool);
   } else {
-    const mem = newDb({ autoCreateForeignKeyIndices: true });
-    mem.public.none('create schema if not exists drizzle');
-
-    const { Pool: MemPool } = mem.adapters.createPg();
-    pool = new MemPool({ types }) as Pool;
-
-    const originalQuery = pool.query.bind(pool);
-    pool.query = ((configOrText: any, values?: any, callback?: any) => {
-      if (configOrText && typeof configOrText === 'object') {
-        const { types: _types, rowMode, ...rest } = configOrText;
-
-        if (rowMode === 'array' || _types !== undefined) {
-          let resolvedValues = values;
-          let resolvedCallback = callback;
-
-          if (typeof resolvedValues === 'function') {
-            resolvedCallback = resolvedValues;
-            resolvedValues = undefined;
-          }
-
-          const mapResult = (result: any) => {
-            if (rowMode === 'array' && Array.isArray(result.rows)) {
-              const fieldNames = Array.isArray(result.fields) && result.fields.length > 0
-                ? result.fields.map((field: any) => field.name)
-                : Object.keys(result.rows[0] ?? {});
-
-              result.rows = result.rows.map((row: Record<string, unknown>) =>
-                fieldNames.map((field) => row[field]),
-              );
-            }
-
-            return result;
-          };
-
-          const promise = originalQuery(rest, resolvedValues as any).then(mapResult);
-
-          if (typeof resolvedCallback === 'function') {
-            promise.then(
-              (result) => resolvedCallback!(null, result),
-              (error) => resolvedCallback!(error),
-            );
-            return undefined as unknown as ReturnType<Pool['query']>;
-          }
-
-          return promise;
-        }
-      }
-
-      return originalQuery(configOrText, values, callback);
-    }) as Pool['query'];
+    pool = createMockPool();
   }
 
   const db = drizzle(pool, { schema });
