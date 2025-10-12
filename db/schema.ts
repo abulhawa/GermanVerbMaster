@@ -61,10 +61,13 @@ export const rateLimitCounters = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
-  (table) => ({
-    primaryKey: primaryKey({ columns: [table.key, table.windowStart], name: "rate_limit_counters_key_window_start_pk" }),
-    expiresIndex: index("rate_limit_counters_expires_idx").on(table.expiresAt),
-  }),
+  (table) => [
+    primaryKey({
+      columns: [table.key, table.windowStart],
+      name: "rate_limit_counters_key_window_start_pk",
+    }),
+    index("rate_limit_counters_expires_idx").on(table.expiresAt),
+  ],
 );
 
 export const integrationUsage = pgTable("integration_usage", {
@@ -102,9 +105,7 @@ export const authUsers = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
-  (table) => ({
-    emailIndex: uniqueIndex("auth_users_email_idx").on(table.email),
-  }),
+  (table) => [uniqueIndex("auth_users_email_idx").on(table.email)],
 );
 
 export const authAccounts = pgTable(
@@ -128,13 +129,10 @@ export const authAccounts = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
-  (table) => ({
-    providerAccountIndex: uniqueIndex("auth_accounts_provider_account_idx").on(
-      table.providerId,
-      table.accountId,
-    ),
-    userIdIndex: index("auth_accounts_user_id_idx").on(table.userId),
-  }),
+  (table) => [
+    uniqueIndex("auth_accounts_provider_account_idx").on(table.providerId, table.accountId),
+    index("auth_accounts_user_id_idx").on(table.userId),
+  ],
 );
 
 export const authSessions = pgTable(
@@ -153,10 +151,10 @@ export const authSessions = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
-  (table) => ({
-    tokenIndex: uniqueIndex("auth_sessions_token_idx").on(table.token),
-    userIdIndex: index("auth_sessions_user_id_idx").on(table.userId),
-  }),
+  (table) => [
+    uniqueIndex("auth_sessions_token_idx").on(table.token),
+    index("auth_sessions_user_id_idx").on(table.userId),
+  ],
 );
 
 export const authVerifications = pgTable(
@@ -171,10 +169,10 @@ export const authVerifications = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
-  (table) => ({
-    identifierIndex: index("auth_verifications_identifier_idx").on(table.identifier),
-    valueIndex: index("auth_verifications_value_idx").on(table.value),
-  }),
+  (table) => [
+    index("auth_verifications_identifier_idx").on(table.identifier),
+    index("auth_verifications_value_idx").on(table.value),
+  ],
 );
 
 export const words = pgTable(
@@ -225,9 +223,7 @@ export const words = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
-  (table) => ({
-    lemmaPosIndex: uniqueIndex("words_lemma_pos_idx").on(table.lemma, table.pos),
-  }),
+  (table) => [uniqueIndex("words_lemma_pos_idx").on(table.lemma, table.pos)],
 );
 
 export const enrichmentProviderSnapshots = pgTable(
@@ -257,10 +253,10 @@ export const enrichmentProviderSnapshots = pgTable(
     collectedAt: timestamp("collected_at", { withTimezone: true }).defaultNow().notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
-  (table) => ({
-    wordProviderIndex: index("enrichment_snapshots_word_provider_idx").on(table.wordId, table.providerId),
-    providerCollectedIndex: index("enrichment_snapshots_provider_collected_idx").on(table.providerId, table.collectedAt),
-  }),
+  (table) => [
+    index("enrichment_snapshots_word_provider_idx").on(table.wordId, table.providerId),
+    index("enrichment_snapshots_provider_collected_idx").on(table.providerId, table.collectedAt),
+  ],
 );
 
 export const lexemes = pgTable(
@@ -283,9 +279,7 @@ export const lexemes = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
-  (table) => ({
-    lemmaPosIndex: uniqueIndex("lexemes_lemma_pos_idx").on(table.lemma, table.pos),
-  }),
+  (table) => [uniqueIndex("lexemes_lemma_pos_idx").on(table.lemma, table.pos)],
 );
 
 export const inflections = pgTable(
@@ -305,13 +299,13 @@ export const inflections = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
-  (table) => ({
-    lexemeFormFeaturesIndex: uniqueIndex("inflections_lexeme_form_features_idx").on(
+  (table) => [
+    uniqueIndex("inflections_lexeme_form_features_idx").on(
       table.lexemeId,
       table.form,
       table.features,
     ),
-  }),
+  ],
 );
 
 export const taskSpecs = pgTable(
@@ -333,14 +327,14 @@ export const taskSpecs = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
-  (table) => ({
-    lexemeTypeRevisionIndex: uniqueIndex("task_specs_lexeme_type_revision_idx").on(
+  (table) => [
+    uniqueIndex("task_specs_lexeme_type_revision_idx").on(
       table.lexemeId,
       table.taskType,
       table.revision,
     ),
-    posIndex: index("task_specs_pos_idx").on(table.pos),
-  }),
+    index("task_specs_pos_idx").on(table.pos),
+  ],
 );
 
 export const schedulingState = pgTable(
@@ -366,14 +360,11 @@ export const schedulingState = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
-  (table) => ({
-    deviceTaskIndex: uniqueIndex("scheduling_state_device_task_idx").on(
-      table.deviceId,
-      table.taskId,
-    ),
-    taskIndex: index("scheduling_state_task_idx").on(table.taskId),
-    userIndex: index("scheduling_state_user_idx").on(table.userId),
-  }),
+  (table) => [
+    uniqueIndex("scheduling_state_device_task_idx").on(table.deviceId, table.taskId),
+    index("scheduling_state_task_idx").on(table.taskId),
+    index("scheduling_state_user_idx").on(table.userId),
+  ],
 );
 
 export const contentPacks = pgTable(
@@ -393,9 +384,7 @@ export const contentPacks = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
-  (table) => ({
-    slugIndex: uniqueIndex("content_packs_slug_unique").on(table.slug),
-  }),
+  (table) => [uniqueIndex("content_packs_slug_unique").on(table.slug)],
 );
 
 export const packLexemeMap = pgTable(
@@ -413,10 +402,13 @@ export const packLexemeMap = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
-  (table) => ({
-    pk: primaryKey({ columns: [table.packId, table.lexemeId], name: "pack_lexeme_map_pack_id_lexeme_id_pk" }),
-    lexemeIndex: index("pack_lexeme_map_lexeme_idx").on(table.lexemeId),
-  }),
+  (table) => [
+    primaryKey({
+      columns: [table.packId, table.lexemeId],
+      name: "pack_lexeme_map_pack_id_lexeme_id_pk",
+    }),
+    index("pack_lexeme_map_lexeme_idx").on(table.lexemeId),
+  ],
 );
 
 export const telemetryPriorities = pgTable(
@@ -435,10 +427,10 @@ export const telemetryPriorities = pgTable(
     metadata: jsonb("metadata").$type<Record<string, unknown>>(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
-  (table) => ({
-    taskIndex: index("telemetry_priorities_task_idx").on(table.taskId),
-    sampledIndex: index("telemetry_priorities_sampled_idx").on(table.sampledAt),
-  }),
+  (table) => [
+    index("telemetry_priorities_task_idx").on(table.taskId),
+    index("telemetry_priorities_sampled_idx").on(table.sampledAt),
+  ],
 );
 
 export const practiceHistory = pgTable(
@@ -470,13 +462,13 @@ export const practiceHistory = pgTable(
     metadata: jsonb("metadata").$type<Record<string, unknown>>(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
-  (table) => ({
-    taskIndex: index("practice_history_task_idx").on(table.taskId),
-    posIndex: index("practice_history_pos_idx").on(table.pos),
-    submittedIndex: index("practice_history_submitted_idx").on(table.submittedAt),
-    deviceIndex: index("practice_history_device_idx").on(table.deviceId),
-    packIndex: index("practice_history_pack_idx").on(table.packId),
-  }),
+  (table) => [
+    index("practice_history_task_idx").on(table.taskId),
+    index("practice_history_pos_idx").on(table.pos),
+    index("practice_history_submitted_idx").on(table.submittedAt),
+    index("practice_history_device_idx").on(table.deviceId),
+    index("practice_history_pack_idx").on(table.packId),
+  ],
 );
 
 export const verbs = pgTable(
@@ -496,9 +488,7 @@ export const verbs = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
-  (table) => ({
-    infinitiveIndex: uniqueIndex("verbs_infinitive_idx").on(table.infinitive),
-  }),
+  (table) => [uniqueIndex("verbs_infinitive_idx").on(table.infinitive)],
 );
 
 export const verbPracticeHistory = pgTable("verb_practice_history", {
@@ -546,9 +536,7 @@ export const verbSchedulingState = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
-  (table) => ({
-    deviceVerbIndex: uniqueIndex("verb_srs_device_verb_idx").on(table.deviceId, table.verb),
-  }),
+  (table) => [uniqueIndex("verb_srs_device_verb_idx").on(table.deviceId, table.verb)],
 );
 
 export const verbReviewQueues = pgTable(
@@ -566,9 +554,7 @@ export const verbReviewQueues = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
-  (table) => ({
-    deviceIndex: uniqueIndex("verb_queue_device_idx").on(table.deviceId),
-  }),
+  (table) => [uniqueIndex("verb_queue_device_idx").on(table.deviceId)],
 );
 
 export const insertUserSchema = createInsertSchema(users);

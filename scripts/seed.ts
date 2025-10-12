@@ -36,6 +36,13 @@ function ensureDatabase(): DatabaseClient {
   return cachedDb;
 }
 
+async function ensureLegacySchema(db: DatabaseClient): Promise<void> {
+  await db.execute(sql`ALTER TABLE words ADD COLUMN IF NOT EXISTS pos_attributes JSONB`);
+  await db.execute(
+    sql`ALTER TABLE enrichment_provider_snapshots ADD COLUMN IF NOT EXISTS preposition_attributes JSONB`,
+  );
+}
+
 const LEVEL_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
 const POS_MAP = new Map<string, ExternalPartOfSpeech>([
   ['verb', 'V'],
@@ -856,6 +863,8 @@ export async function seedDatabase(
   taskCount: number;
   bundleCount: number;
 }> {
+  await ensureLegacySchema(db);
+
   const aggregated = await aggregateWords(rootDir);
   await seedLegacyWords(db, aggregated);
 
