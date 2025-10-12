@@ -4,22 +4,25 @@ import path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const s3SendMock = vi.hoisted(() => vi.fn());
-const s3ClientCtorMock = vi.hoisted(() => vi.fn());
-const putObjectCtorMock = vi.hoisted(() => vi.fn());
+const supabaseCreateClientMock = vi.hoisted(() => vi.fn());
+const supabaseFromMock = vi.hoisted(() => vi.fn());
+const supabaseUploadMock = vi.hoisted(() => vi.fn(async () => ({ data: null, error: null })));
 
-vi.mock('@aws-sdk/client-s3', () => {
-  return {
-    S3Client: vi.fn((config) => {
-      s3ClientCtorMock(config);
-      return { send: s3SendMock };
-    }),
-    PutObjectCommand: vi.fn((input) => {
-      putObjectCtorMock(input);
-      return { input };
-    }),
-  };
-});
+vi.mock('@supabase/supabase-js', () => ({
+  createClient: vi.fn((url: string, key: string, options: Record<string, unknown>) => {
+    supabaseCreateClientMock({ url, key, options });
+    return {
+      storage: {
+        from(bucket: string) {
+          supabaseFromMock(bucket);
+          return {
+            upload: supabaseUploadMock,
+          };
+        },
+      },
+    };
+  }),
+}));
 
 import type { EnrichmentProviderSnapshot } from '../../shared/enrichment';
 import {
@@ -40,14 +43,14 @@ describe('enrichment storage', () => {
   afterEach(async () => {
     process.chdir(ORIGINAL_CWD);
     await rm(tempDir, { recursive: true, force: true });
-    delete process.env.ENRICHMENT_S3_BUCKET;
-    delete process.env.ENRICHMENT_S3_PREFIX;
-    delete process.env.ENRICHMENT_S3_REGION;
-    delete process.env.ENRICHMENT_S3_ENDPOINT;
-    delete process.env.ENRICHMENT_S3_FORCE_PATH_STYLE;
-    s3SendMock.mockReset();
-    s3ClientCtorMock.mockReset();
-    putObjectCtorMock.mockReset();
+    delete process.env.SUPABASE_URL;
+    delete process.env.SUPABASE_SERVICE_ROLE_KEY;
+    delete process.env.SUPABASE_SECRET_KEY;
+    delete process.env.ENRICHMENT_SUPABASE_BUCKET;
+    delete process.env.ENRICHMENT_SUPABASE_PATH_PREFIX;
+    supabaseCreateClientMock.mockReset();
+    supabaseFromMock.mockReset();
+    supabaseUploadMock.mockReset();
   });
 
   it('persists snapshots under POS-specific files and retains translations/examples', async () => {
@@ -185,7 +188,7 @@ describe('enrichment storage', () => {
     expect(updated.entries.laufen.verbForms[0].praeteritum).toBe('lief');
   });
 
-  it('uploads provider files to S3 when configuration is provided', async () => {
+  it('uploads provider files to Supabase storage when configuration is provided', async () => {
     const now = new Date().toISOString();
     const snapshot: EnrichmentProviderSnapshot = {
       id: 5,
@@ -210,30 +213,35 @@ describe('enrichment storage', () => {
       createdAt: now,
     };
 
-    process.env.ENRICHMENT_S3_BUCKET = 'test-bucket';
-    process.env.ENRICHMENT_S3_PREFIX = 'snapshots';
-    process.env.ENRICHMENT_S3_REGION = 'eu-central-1';
+    process.env.SUPABASE_URL = 'https://example.supabase.co';
+    process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-service-role';
+    process.env.ENRICHMENT_SUPABASE_BUCKET = 'enrichment-backups';
+    process.env.ENRICHMENT_SUPABASE_PATH_PREFIX = 'snapshots';
 
     await persistProviderSnapshotToFile(snapshot);
 
-    expect(s3ClientCtorMock).toHaveBeenCalledWith({
-      region: 'eu-central-1',
-      endpoint: undefined,
-      forcePathStyle: false,
+    expect(supabaseCreateClientMock).toHaveBeenCalledWith({
+      url: 'https://example.supabase.co',
+      key: 'test-service-role',
+      options: {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+        },
+      },
     });
 
-    expect(s3SendMock).toHaveBeenCalledTimes(1);
-    const putCommandArg = putObjectCtorMock.mock.calls[0][0] as {
-      Bucket: string;
-      Key: string;
-      Body: string;
-      ContentType: string;
-    };
+    expect(supabaseFromMock).toHaveBeenCalledWith('enrichment-backups');
+    expect(supabaseUploadMock).toHaveBeenCalledTimes(1);
+    const [objectPath, body, options] = supabaseUploadMock.mock.calls[0] as [
+      string,
+      Buffer,
+      { contentType: string; upsert: boolean },
+    ];
 
-    expect(putCommandArg.Bucket).toBe('test-bucket');
-    expect(putCommandArg.Key).toBe('snapshots/n/wiktextract.json');
-    expect(putCommandArg.ContentType).toBe('application/json');
-    expect(putCommandArg.Body).toContain('"lemma": "Birne"');
+    expect(objectPath).toBe('snapshots/n/wiktextract.json');
+    expect(body.toString('utf8')).toContain('"lemma": "Birne"');
+    expect(options).toMatchObject({ contentType: 'application/json', upsert: true });
   });
 });
 

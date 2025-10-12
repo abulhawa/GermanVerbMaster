@@ -1,7 +1,7 @@
 import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { createClient } from "@supabase/supabase-js";
 
 import type {
   EnrichmentProviderSnapshot,
@@ -38,37 +38,30 @@ function providerFilePath(providerId: string | number, pos: string | number | nu
   return path.join(resolveEnrichmentDataDir(), posSegment, `${providerSegment}.json`);
 }
 
-type EnrichmentS3Config = {
+type SupabaseStorageConfig = {
+  url: string;
+  serviceRoleKey: string;
   bucket: string;
-  prefix: string | null;
-  region: string | undefined;
-  endpoint: string | undefined;
-  forcePathStyle: boolean;
+  pathPrefix: string | null;
 };
 
-function parseBoolean(value: string | undefined): boolean {
-  if (!value) return false;
-  return ["1", "true", "yes", "on"].includes(value.trim().toLowerCase());
-}
-
-function getS3ConfigFromEnv(): EnrichmentS3Config | null {
-  const bucket = process.env.ENRICHMENT_S3_BUCKET?.trim();
-  if (!bucket) {
+function getSupabaseStorageConfigFromEnv(): SupabaseStorageConfig | null {
+  const url = process.env.SUPABASE_URL?.trim();
+  const serviceRoleKey =
+    process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() || process.env.SUPABASE_SECRET_KEY?.trim();
+  const bucket = process.env.ENRICHMENT_SUPABASE_BUCKET?.trim();
+  if (!url || !serviceRoleKey || !bucket) {
     return null;
   }
 
-  const rawPrefix = process.env.ENRICHMENT_S3_PREFIX?.trim();
-  const prefix = rawPrefix ? rawPrefix.replace(/^\/+|\/+$/g, "") : null;
+  const rawPrefix = process.env.ENRICHMENT_SUPABASE_PATH_PREFIX?.trim();
+  const pathPrefix = rawPrefix ? rawPrefix.replace(/^\/+|\/+$/g, "") : null;
 
-  const region = process.env.ENRICHMENT_S3_REGION?.trim() || process.env.AWS_REGION?.trim();
-  const endpoint = process.env.ENRICHMENT_S3_ENDPOINT?.trim() || undefined;
-  const forcePathStyle = parseBoolean(process.env.ENRICHMENT_S3_FORCE_PATH_STYLE);
-
-  return { bucket, prefix, region: region || undefined, endpoint, forcePathStyle } satisfies EnrichmentS3Config;
+  return { url, serviceRoleKey, bucket, pathPrefix } satisfies SupabaseStorageConfig;
 }
 
-async function uploadProviderFileToS3(filePath: string, fileContents: string): Promise<void> {
-  const config = getS3ConfigFromEnv();
+async function uploadProviderFileToSupabase(filePath: string, fileContents: string): Promise<void> {
+  const config = getSupabaseStorageConfigFromEnv();
   if (!config) {
     return;
   }
@@ -79,22 +72,25 @@ async function uploadProviderFileToS3(filePath: string, fileContents: string): P
     .filter((segment) => segment.length)
     .join("/");
 
-  const key = config.prefix ? `${config.prefix}/${relativePath}` : relativePath;
+  const objectPath = config.pathPrefix ? `${config.pathPrefix}/${relativePath}` : relativePath;
 
-  const client = new S3Client({
-    region: config.region,
-    endpoint: config.endpoint,
-    forcePathStyle: config.forcePathStyle,
+  const client = createClient(config.url, config.serviceRoleKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
   });
 
-  await client.send(
-    new PutObjectCommand({
-      Bucket: config.bucket,
-      Key: key,
-      Body: fileContents,
-      ContentType: "application/json",
-    }),
-  );
+  const { error } = await client.storage
+    .from(config.bucket)
+    .upload(objectPath, Buffer.from(fileContents, "utf8"), {
+      contentType: "application/json",
+      upsert: true,
+    });
+
+  if (error) {
+    throw new Error(`Failed to upload provider file to Supabase Storage: ${error.message}`);
+  }
 }
 
 async function readJsonFile<T>(filePath: string): Promise<T | null> {
@@ -239,7 +235,7 @@ export async function persistProviderSnapshotToFile(
   const fileContents = JSON.stringify(payload, null, 2);
 
   await writeFile(filePath, fileContents, "utf8");
-  await uploadProviderFileToS3(filePath, fileContents);
+  await uploadProviderFileToSupabase(filePath, fileContents);
 }
 
 async function safeReaddir(dirPath: string): Promise<string[]> {

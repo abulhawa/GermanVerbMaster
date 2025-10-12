@@ -34,23 +34,34 @@ After running the command, review the changes under `data/enrichment` and commit
 new enrichment data in git. The local filesystem continues to be the canonical source for
 bootstrap/seed data, so expect to find the snapshots under `data/enrichment/<pos>/<provider>.json`.
 
-## Publishing snapshots to S3
+## Publishing snapshots to Supabase Storage
 
-Production deployments can back up the filesystem artefacts to an object store. The enrichment
-storage helper automatically uploads the provider JSON files to S3 whenever the following
-environment variables are present:
+Production deployments can back up the filesystem artefacts to Supabase Storage. The enrichment
+storage helper automatically uploads the provider JSON files whenever the following environment
+variables are present:
 
 | Variable | Description |
 | --- | --- |
-| `ENRICHMENT_S3_BUCKET` | **Required.** Bucket name that should receive the provider JSON files. |
-| `ENRICHMENT_S3_PREFIX` | Optional key prefix (for example `backups/enrichment`). Trailing slashes are ignored. |
-| `ENRICHMENT_S3_REGION` | AWS region for the bucket. Falls back to `AWS_REGION` when omitted. |
-| `ENRICHMENT_S3_ENDPOINT` | Optional custom endpoint (useful for S3-compatible storage). |
-| `ENRICHMENT_S3_FORCE_PATH_STYLE` | Set to `true`/`1` to force path-style URLs for S3-compatible storage. |
+| `SUPABASE_URL` | **Required.** Base URL of the Supabase project (for example `https://xyzcompany.supabase.co`). |
+| `SUPABASE_SERVICE_ROLE_KEY` | **Required.** Service-role API key with access to Storage. Use the project settings → API page in Supabase. |
+| `ENRICHMENT_SUPABASE_BUCKET` | **Required.** Storage bucket that should receive the provider JSON files. |
+| `ENRICHMENT_SUPABASE_PATH_PREFIX` | Optional folder prefix within the bucket (for example `backups/enrichment`). Trailing slashes are ignored. |
 
-The AWS SDK picks up credentials from the standard environment variables (`AWS_ACCESS_KEY_ID`,
-`AWS_SECRET_ACCESS_KEY`, etc.) or from the runtime IAM role. Uploads happen automatically both when
-the admin applies enrichment data and when the export script regenerates local files.
+### Supabase setup checklist
+
+1. In the Supabase dashboard open **Storage → Buckets** and create (or reuse) a bucket dedicated to
+   enrichment backups. The bucket can be public or private—uploads use the service role key so
+   policies are bypassed.
+2. Navigate to **Project Settings → API** and copy the project URL plus the **service role** key.
+   Store them as `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` in your deployment environment.
+3. Define `ENRICHMENT_SUPABASE_BUCKET` with the bucket name you created and optionally set
+   `ENRICHMENT_SUPABASE_PATH_PREFIX` to group the JSON files under a folder.
+4. Restart the server or redeploy so the new environment variables take effect. Subsequent
+   enrichment applies and `npm run enrichment:export` executions will synchronise JSON snapshots to
+   the configured bucket using `upsert` semantics.
+
+Uploads happen automatically both when the admin applies enrichment data and when the export script
+regenerates local files.
 
 ## Why the server still persists locally
 
