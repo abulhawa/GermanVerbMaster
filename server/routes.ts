@@ -1686,6 +1686,18 @@ export function registerRoutes(app: Express): void {
           contentApplied = true;
         }
       }
+      if (
+        Object.prototype.hasOwnProperty.call(patch, "posAttributes")
+        && patch.posAttributes !== undefined
+      ) {
+        const nextPosAttributes = patch.posAttributes ?? null;
+        const existingPosAttributes = existing.posAttributes ?? null;
+        if (JSON.stringify(existingPosAttributes) !== JSON.stringify(nextPosAttributes)) {
+          updates.posAttributes = nextPosAttributes;
+          appliedFields.push("posAttributes");
+          contentApplied = true;
+        }
+      }
 
       const merged: Word = {
         ...existing,

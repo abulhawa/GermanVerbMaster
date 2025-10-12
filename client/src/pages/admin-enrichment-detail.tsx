@@ -406,9 +406,9 @@ const WordEnrichmentDetailView = ({
 
   const hasPendingChanges = useMemo(() => {
     if (!word) return false;
-    const patch = buildPatchFromDrafts(word, drafts);
+    const patch = buildPatchFromDrafts(word, drafts, previewData);
     return hasPatchChanges(patch);
-  }, [word, drafts]);
+  }, [word, drafts, previewData]);
 
   const previewMutation = useMutation({
     mutationFn: async () => {
@@ -1731,6 +1731,9 @@ function buildPatchFromDrafts(
   }
   if (preview?.patch.examples !== undefined) {
     patch.examples = preview.patch.examples ?? null;
+  }
+  if (preview?.patch.posAttributes !== undefined) {
+    patch.posAttributes = preview.patch.posAttributes ?? null;
   }
 
   return patch;
