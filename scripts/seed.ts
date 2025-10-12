@@ -22,6 +22,7 @@ import {
 import type { EnrichmentMethod, WordExample, WordPosAttributes, WordTranslation } from '@shared/types';
 import type { PersistedProviderEntry, PersistedWordData } from '@shared/enrichment';
 import { loadPersistedWordData } from './enrichment/storage';
+import { applyMigrations } from './db-push';
 
 const LEVEL_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
 const POS_MAP = new Map<string, ExternalPartOfSpeech>([
@@ -861,6 +862,9 @@ export async function seedDatabase(rootDir: string): Promise<{
 async function main(): Promise<void> {
   const __filename = fileURLToPath(import.meta.url);
   const root = path.resolve(path.dirname(__filename), '..');
+
+  console.log('Applying database migrations before seeding…');
+  await applyMigrations();
 
   const { aggregatedCount, lexemeCount, taskCount, bundleCount } = await seedDatabase(root);
 
