@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { parse } from 'csv-parse/sync';
 import { and, eq, sql } from 'drizzle-orm';
 
-import { db } from '@db';
+import { getDb, getPool } from '@db';
 import { words } from '@db/schema';
 import {
   loadExternalWordRows,
@@ -23,6 +23,18 @@ import type { EnrichmentMethod, WordExample, WordPosAttributes, WordTranslation 
 import type { PersistedProviderEntry, PersistedWordData } from '@shared/enrichment';
 import { loadPersistedWordData } from './enrichment/storage';
 import { applyMigrations } from './db-push';
+
+type DatabaseClient = ReturnType<typeof getDb>;
+
+let cachedDb: DatabaseClient | null = null;
+
+function ensureDatabase(): DatabaseClient {
+  if (!cachedDb) {
+    cachedDb = getDb();
+  }
+
+  return cachedDb;
+}
 
 const LEVEL_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
 const POS_MAP = new Map<string, ExternalPartOfSpeech>([
@@ -762,7 +774,7 @@ async function loadCanonicalRows(filePath: string): Promise<Array<Record<string,
   }) as Array<Record<string, string>>;
 }
 
-async function seedLegacyWords(wordsToUpsert: AggregatedWordWithKey[]): Promise<void> {
+async function seedLegacyWords(db: DatabaseClient, wordsToUpsert: AggregatedWordWithKey[]): Promise<void> {
   const existing = await db.select({ lemma: words.lemma, pos: words.pos }).from(words);
   const desiredKeys = new Set(wordsToUpsert.map((word) => word.key));
 
@@ -835,14 +847,17 @@ async function seedLegacyWords(wordsToUpsert: AggregatedWordWithKey[]): Promise<
   }
 }
 
-export async function seedDatabase(rootDir: string): Promise<{
+export async function seedDatabase(
+  rootDir: string,
+  db: DatabaseClient = ensureDatabase(),
+): Promise<{
   aggregatedCount: number;
   lexemeCount: number;
   taskCount: number;
   bundleCount: number;
 }> {
   const aggregated = await aggregateWords(rootDir);
-  await seedLegacyWords(aggregated);
+  await seedLegacyWords(db, aggregated);
 
   const bundles = buildGoldenBundles(aggregated);
   await upsertGoldenBundles(db, bundles);
@@ -864,9 +879,11 @@ async function main(): Promise<void> {
   const root = path.resolve(path.dirname(__filename), '..');
 
   console.log('Applying database migrations before seeding…');
-  await applyMigrations();
+  const pool = getPool();
+  await applyMigrations(pool);
 
-  const { aggregatedCount, lexemeCount, taskCount, bundleCount } = await seedDatabase(root);
+  const database = ensureDatabase();
+  const { aggregatedCount, lexemeCount, taskCount, bundleCount } = await seedDatabase(root, database);
 
   console.log(`Seeded ${aggregatedCount} words into legacy table.`);
   console.log(`Upserted ${lexemeCount} lexemes and ${taskCount} task specs across ${bundleCount} packs.`);
