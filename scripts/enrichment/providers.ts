@@ -354,6 +354,9 @@ async function fetchKaikkiEntries(base: string, lemma: string): Promise<{
 
 async function fetchJsonLines<T>(url: string): Promise<T[]> {
   const response = await fetch(url, { headers: REQUEST_HEADERS });
+  if (!response) {
+    return [];
+  }
   if (response.status === 404) {
     return [];
   }
@@ -902,24 +905,36 @@ export async function lookupWiktextract(
   }
   const hadDirectTranslations = collectedTranslations.size > 0;
 
-  const isVerbEntry = selectedEntry.pos?.toLowerCase().includes("verb") ?? false;
+  if (!collectedTranslations.size && englishHints.length) {
+    for (const headword of englishHints) {
+      if (!headword) continue;
+      const { entries: englishEntries } = await fetchKaikkiEntries(
+        KAIKKI_ENGLISH_BASE,
+        headword,
+      );
 
-  if (!collectedTranslations.size && englishHints.length && isVerbEntry) {
-    const headword = englishHints[0];
-    const { entries: englishEntries } = await fetchKaikkiEntries(
-      KAIKKI_ENGLISH_BASE,
-      headword,
-    );
-    if (englishEntries.length) {
+      let hasGermanTranslations = false;
+
       for (const entry of englishEntries) {
         if (entry.lang !== "English") continue;
         for (const sense of toArray<KaikkiSenseEntry>(entry.senses)) {
           for (const translation of toArray<KaikkiTranslationEntry>(sense.translations)) {
-            addTranslation(translation.word, translation.lang ?? translation.lang_code);
+            const language = translation.lang ?? translation.lang_code;
+            if (language && language.toLowerCase() === "german") {
+              hasGermanTranslations = true;
+              break;
+            }
           }
+          if (hasGermanTranslations) break;
         }
+        if (hasGermanTranslations) break;
       }
-      pivotUsed = true;
+
+      if (hasGermanTranslations) {
+        addTranslation(headword, "en");
+        pivotUsed = true;
+        break;
+      }
     }
   }
 

@@ -50,6 +50,7 @@ describe('lookupWiktextract', () => {
       ],
     };
 
+    mockedFetch.mockImplementation(async () => createResponse('', 404));
     mockedFetch.mockResolvedValueOnce(createResponse(`${JSON.stringify(germanEntry)}\n`));
 
     const result = await lookupWiktextract('abbiegen');
@@ -123,9 +124,8 @@ describe('lookupWiktextract', () => {
     const result = await lookupWiktextract('abbiegen');
 
     expect(result).not.toBeNull();
-    expect(result?.translations.map((entry) => entry.value)).toEqual(
-      expect.arrayContaining(['to turn', 'abbiegen']),
-    );
+    expect(result?.translations.map((entry) => entry.value)).toEqual(['to turn']);
+    expect(result?.translations.map((entry) => entry.language)).toEqual(['en']);
     expect(result?.pivotUsed).toBe(true);
   });
 
