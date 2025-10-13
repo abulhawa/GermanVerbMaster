@@ -6,6 +6,7 @@ import type { AggregatedWord } from '../scripts/etl/types';
 import { buildGoldenBundles, upsertGoldenBundles } from '../scripts/etl/golden';
 import { setupTestDatabase, type TestDatabaseContext } from './helpers/pg';
 import { createApiInvoker } from './helpers/vercel';
+import { seedLexemeInventoryForWords } from './helpers/task-fixtures';
 
 vi.mock('../server/srs/index.js', () => ({
   srsEngine: {
@@ -117,6 +118,7 @@ describe('feature flags', () => {
       },
     ];
 
+    await seedLexemeInventoryForWords(drizzleDb, sampleWords);
     const bundles = buildGoldenBundles(sampleWords);
     await upsertGoldenBundles(drizzleDb, bundles);
 
