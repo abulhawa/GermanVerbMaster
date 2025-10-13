@@ -672,7 +672,7 @@ const AdminWordsPage = () => {
               </Select>
             </div>
           </div>
-          <div className="max-h-[520px] overflow-hidden rounded-3xl border border-border/60">
+          <div className="max-h-[520px] overflow-auto rounded-3xl border border-border/60">
             <Table className="text-xs">
               <TableHeader className="sticky top-0 z-20 bg-card/95 backdrop-blur">
                 <TableRow>
