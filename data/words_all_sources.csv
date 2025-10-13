@@ -67,7 +67,7 @@ Alter,N,A1,,,,das,,,,,,,,,,,dwds-goethe-A1.csv,https://www.dwds.de/wb/Alter
 an,Präp,A1,,,,,,,,,,,,,,,dwds-goethe-A1.csv,https://www.dwds.de/wb/an#1
 an,Adv,A1,,,,,,,,,,,,,,,dwds-goethe-A1.csv,https://www.dwds.de/wb/an#2
 anbieten,V,A1,,,,,,,,,,,,,,,dwds-goethe-A1.csv,https://www.dwds.de/wb/anbieten
-Anfang,N,A1,,,,der,,,,,,,,,,,dwds-goethe-A1.csv,https://www.dwds.de/wb/Anfang
+Anfang,N,A1,"start, beginning, origin (spatially or temporally)","1545, Martin Luther, Biblia: das ist: Die gantze Heilige Schrifft: Deudsch Auffs new zugericht, Moses I (Genesis) 1:1","In the beginning, God created heaven and earth.",der,,,,,,,,,,,dwds-goethe-A1.csv; Manual Apply,https://www.dwds.de/wb/Anfang
 anfangen,V,A1,,,,,,,,,,,,,,,dwds-goethe-A1.csv,https://www.dwds.de/wb/anfangen
 Angebot,N,A1,,,,das,,,,,,,,,,,dwds-goethe-A1.csv,https://www.dwds.de/wb/Angebot
 anklicken,V,A1,,,,,,,,,,,,,,,dwds-goethe-A1.csv,https://www.dwds.de/wb/anklicken
