@@ -56,6 +56,16 @@ export async function setupTestDatabase(): Promise<TestDatabaseContext> {
   vi.resetModules();
 
   const externalConnection = process.env.TEST_DATABASE_URL;
+  const hadDatabaseUrl = Object.prototype.hasOwnProperty.call(process.env, 'DATABASE_URL');
+  const originalDatabaseUrl = process.env.DATABASE_URL;
+
+  if (externalConnection && originalDatabaseUrl && externalConnection === originalDatabaseUrl) {
+    throw new Error(
+      'Refusing to run tests against the production database: TEST_DATABASE_URL matches DATABASE_URL.',
+    );
+  }
+
+  process.env.DATABASE_URL = 'postgres://test.invalid/german-verb-master';
 
   let pool: Pool;
   let usingExternal = false;
@@ -98,6 +108,11 @@ export async function setupTestDatabase(): Promise<TestDatabaseContext> {
     }
 
     cleaned = true;
+    if (hadDatabaseUrl) {
+      process.env.DATABASE_URL = originalDatabaseUrl;
+    } else {
+      delete process.env.DATABASE_URL;
+    }
     if (usingExternal) {
       await resetExternalDatabase(pool);
     }
