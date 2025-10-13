@@ -34,6 +34,7 @@ This guide helps new contributors ramp onto the lexeme-based architecture that n
 - Confirm `/api/tasks?pos=noun` and `/api/tasks?pos=adjective` return items when their feature flags are enabled.
 
 ## 5. Additional resources
-- [`docs/parts-of-speech-schema-rfc.md`](./parts-of-speech-schema-rfc.md) — canonical schema and migration background.
-- [`docs/parts-of-speech-task-policies.md`](./parts-of-speech-task-policies.md) — queue caps and renderer requirements.
+- [`docs/parts-of-speech-system.md`](./parts-of-speech-system.md) — end-to-end architecture, feature flags, and queue behaviour.
+- [`docs/parts-of-speech-content-training.md`](./parts-of-speech-content-training.md) — onboarding slide deck for content editors.
+- [`docs/parts-of-speech-content-sources.md`](./parts-of-speech-content-sources.md) — vetted datasets and licensing notes per POS.
 - [`docs/content-admin-guide.md`](./content-admin-guide.md) — workflow details for content editors.

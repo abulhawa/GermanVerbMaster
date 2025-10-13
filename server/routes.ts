@@ -773,6 +773,82 @@ const recordPracticeSchema = z.object({
   queuedAt: z.string().datetime({ offset: true }).optional(),
 });
 
+type RecordPracticePayload = z.infer<typeof recordPracticeSchema>;
+type PracticeAttemptData = Omit<RecordPracticePayload, "queuedAt">;
+
+function normalizePracticePayload(payload: RecordPracticePayload): {
+  attempt: PracticeAttemptData;
+  practicedAt: Date;
+} {
+  const { queuedAt, ...attempt } = payload;
+  const practicedAt = queuedAt ? new Date(queuedAt) : new Date();
+  if (Number.isNaN(practicedAt.getTime())) {
+    return { attempt, practicedAt: new Date() };
+  }
+  return { attempt, practicedAt };
+}
+
+async function insertPracticeHistoryEntry(
+  attempt: PracticeAttemptData,
+  userId: string | null,
+): Promise<void> {
+  await db.insert(verbPracticeHistory).values({
+    ...attempt,
+    userId,
+  });
+}
+
+async function updateVerbAnalyticsWithAttempt(attempt: PracticeAttemptData): Promise<void> {
+  const analytics = await db.query.verbAnalytics.findFirst({
+    where: eq(verbAnalytics.verb, attempt.verb),
+  });
+
+  if (analytics) {
+    await db
+      .update(verbAnalytics)
+      .set({
+        totalAttempts: sql`${verbAnalytics.totalAttempts} + 1`,
+        correctAttempts:
+          attempt.result === "correct"
+            ? sql`${verbAnalytics.correctAttempts} + 1`
+            : verbAnalytics.correctAttempts,
+        averageTimeSpent: sql`(${verbAnalytics.averageTimeSpent} * ${verbAnalytics.totalAttempts} + ${attempt.timeSpent}) / (${verbAnalytics.totalAttempts} + 1)`,
+        lastPracticedAt: new Date(),
+      })
+      .where(eq(verbAnalytics.verb, attempt.verb));
+    return;
+  }
+
+  await db.insert(verbAnalytics).values({
+    verb: attempt.verb,
+    totalAttempts: 1,
+    correctAttempts: attempt.result === "correct" ? 1 : 0,
+    averageTimeSpent: attempt.timeSpent,
+    lastPracticedAt: new Date(),
+    level: attempt.level,
+  });
+}
+
+async function recordAdaptiveSchedulingAttempt(
+  attempt: PracticeAttemptData,
+  practicedAt: Date,
+  userId: string | null,
+): Promise<void> {
+  try {
+    await srsEngine.recordPracticeAttempt({
+      deviceId: attempt.deviceId,
+      verb: attempt.verb,
+      level: attempt.level,
+      result: attempt.result,
+      timeSpent: attempt.timeSpent,
+      userId,
+      practicedAt,
+    });
+  } catch (error) {
+    console.error("Failed to update adaptive scheduling state:", error);
+  }
+}
+
 function sendError(res: Response, status: number, message: string, code?: string) {
   if (code) {
     return res.status(status).json({ error: message, code });
@@ -2298,10 +2374,9 @@ export function registerRoutes(app: Express): void {
       if (!parsed.success) {
         return sendError(res, 400, "Invalid practice data", "INVALID_INPUT");
       }
-      const { queuedAt, ...data } = parsed.data;
-      const practicedAt = queuedAt ? new Date(queuedAt) : new Date();
+      const { attempt, practicedAt } = normalizePracticePayload(parsed.data);
 
-      const limiterKey = hashKey(`practice-history:${data.deviceId}`);
+      const limiterKey = hashKey(`practice-history:${attempt.deviceId}`);
       const limitCheck = await enforceRateLimit({
         key: limiterKey,
         limit: 30,
@@ -2312,52 +2387,11 @@ export function registerRoutes(app: Express): void {
         return res.status(429).json({ error: "Too many practice submissions", code: "RATE_LIMITED" });
       }
 
-      await db.insert(verbPracticeHistory).values({
-        ...data,
-        userId: getSessionUserId(req.authSession),
-      });
+      const sessionUserId = getSessionUserId(req.authSession);
 
-      const analytics = await db.query.verbAnalytics.findFirst({
-        where: eq(verbAnalytics.verb, data.verb),
-      });
-
-      if (analytics) {
-        await db
-          .update(verbAnalytics)
-          .set({
-            totalAttempts: sql`${verbAnalytics.totalAttempts} + 1`,
-            correctAttempts:
-              data.result === "correct"
-                ? sql`${verbAnalytics.correctAttempts} + 1`
-                : verbAnalytics.correctAttempts,
-            averageTimeSpent: sql`(${verbAnalytics.averageTimeSpent} * ${verbAnalytics.totalAttempts} + ${data.timeSpent}) / (${verbAnalytics.totalAttempts} + 1)`,
-            lastPracticedAt: new Date(),
-          })
-          .where(eq(verbAnalytics.verb, data.verb));
-      } else {
-        await db.insert(verbAnalytics).values({
-          verb: data.verb,
-          totalAttempts: 1,
-          correctAttempts: data.result === "correct" ? 1 : 0,
-          averageTimeSpent: data.timeSpent,
-          lastPracticedAt: new Date(),
-          level: data.level,
-        });
-      }
-
-      try {
-        await srsEngine.recordPracticeAttempt({
-          deviceId: data.deviceId,
-          verb: data.verb,
-          level: data.level,
-          result: data.result,
-          timeSpent: data.timeSpent,
-          userId: getSessionUserId(req.authSession),
-          practicedAt,
-        });
-      } catch (error) {
-        console.error("Failed to update adaptive scheduling state:", error);
-      }
+      await insertPracticeHistoryEntry(attempt, sessionUserId);
+      await updateVerbAnalyticsWithAttempt(attempt);
+      await recordAdaptiveSchedulingAttempt(attempt, practicedAt, sessionUserId);
 
       res.json({ success: true });
     } catch (error) {
@@ -2412,7 +2446,18 @@ export function registerRoutes(app: Express): void {
         return sendError(res, 400, "deviceId is required", "INVALID_DEVICE");
       }
 
-      const levelHint = normalizeStringParam(req.query.level)?.trim() ?? null;
+      const rawLevel = normalizeStringParam(req.query.level);
+      let levelHint: (typeof LEVEL_ORDER)[number] | null = null;
+      if (rawLevel !== undefined) {
+        const trimmedLevel = rawLevel.trim();
+        if (trimmedLevel) {
+          const parsedLevel = levelSchema.safeParse(trimmedLevel);
+          if (!parsedLevel.success) {
+            return sendError(res, 400, "Invalid level parameter", "INVALID_LEVEL");
+          }
+          levelHint = parsedLevel.data;
+        }
+      }
 
       let queue = await srsEngine.fetchQueueForDevice(deviceId);
       if (!queue || srsEngine.isQueueStale(queue)) {

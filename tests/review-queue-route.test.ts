@@ -74,6 +74,17 @@ describe('GET /api/review-queue', () => {
     expect(shadowModeMock.runVerbQueueShadowComparison).not.toHaveBeenCalled();
   });
 
+  it('rejects invalid level hints', async () => {
+    srsEngineMock.isEnabled.mockReturnValue(true);
+
+    const response = await invokeApi('/api/review-queue?deviceId=device-123&level=B3');
+
+    expect(response.status).toBe(400);
+    expect(response.bodyJson).toMatchObject({ code: 'INVALID_LEVEL' });
+    expect(srsEngineMock.fetchQueueForDevice).not.toHaveBeenCalled();
+    expect(srsEngineMock.generateQueueForDevice).not.toHaveBeenCalled();
+  });
+
   it('returns 404 when feature flag disabled', async () => {
     srsEngineMock.isEnabled.mockReturnValue(false);
 

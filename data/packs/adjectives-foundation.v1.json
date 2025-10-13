@@ -9,7 +9,7 @@
     "license": "CC-BY-SA-4.0",
     "licenseNotes": null,
     "version": 1,
-    "checksum": "7c0ad65060526db8d26c863fb5c2f21caee4a784",
+    "checksum": "549973a57aa1512e683f8c01fe4682f601125fa2",
     "metadata": {
       "taskTypes": [
         "adj_ending"
@@ -18,6 +18,47 @@
       "cefrLevels": [
         "A1",
         "A2"
+      ],
+      "attribution": [
+        {
+          "id": "Duden",
+          "count": 1,
+          "pos": [
+            "Adj"
+          ],
+          "label": "Duden",
+          "license": "unspecified – pending review"
+        },
+        {
+          "id": "dwds-goethe-A1.csv",
+          "count": 1,
+          "pos": [
+            "Adj"
+          ],
+          "label": "DWDS Goethe-Zertifikat A1 export",
+          "license": "CC BY-SA 4.0",
+          "url": "https://www.dwds.de/"
+        },
+        {
+          "id": "dwds-goethe-A2.csv",
+          "count": 1,
+          "pos": [
+            "Adj"
+          ],
+          "label": "DWDS Goethe-Zertifikat A2 export",
+          "license": "CC BY-SA 4.0",
+          "url": "https://www.dwds.de/"
+        },
+        {
+          "id": "Goethe-Institut",
+          "count": 1,
+          "pos": [
+            "Adj"
+          ],
+          "label": "Goethe-Institut curated list",
+          "license": "CC BY-SA 4.0 (DWDS export)",
+          "url": "https://www.goethe.de/"
+        }
       ]
     },
     "createdAt": 1735689600,
@@ -37,7 +78,7 @@
           "de": "Eine freundliche Person.",
           "en": "A friendly person."
         },
-        "notes": "https://www.dwds.de/wb/freundlich"
+        "sourceNotes": "https://www.dwds.de/wb/freundlich"
       },
       "frequencyRank": null,
       "sourceIds": [
@@ -60,12 +101,12 @@
           "de": "Ein schneller Zug.",
           "en": "A fast train."
         },
-        "notes": "https://www.dwds.de/wb/schnell"
+        "sourceNotes": "https://www.dwds.de/wb/schnell"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
-        "dwds-goethe-A1.csv"
+        "dwds-goethe-A1.csv",
+        "Goethe-Institut"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -80,7 +121,7 @@
         "degree": "positive"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:01d6ea843a",
       "checksum": "ebe8bb370e0e5f4d",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -93,7 +134,7 @@
         "degree": "comparative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:01d6ea843a",
       "checksum": "a6e4506607917fcc",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -106,7 +147,7 @@
         "degree": "superlative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:01d6ea843a",
       "checksum": "33dc86cba2a69454",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -119,7 +160,7 @@
         "degree": "positive"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:7cfb141e46",
       "checksum": "6047e55b2718a67b",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -132,7 +173,7 @@
         "degree": "comparative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:7cfb141e46",
       "checksum": "0b32a10f00a96cbc",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -145,7 +186,7 @@
         "degree": "superlative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:7cfb141e46",
       "checksum": "64f9ffc0ca3542c3",
       "createdAt": 1735689600,
       "updatedAt": 1735689600

@@ -9,7 +9,7 @@
     "license": "CC-BY-SA-4.0",
     "licenseNotes": null,
     "version": 1,
-    "checksum": "4e83c77e73eff8563b1f1618583169647253f73f",
+    "checksum": "0ccefb3b96a436a64fb45399166dd09f25ba77d8",
     "metadata": {
       "taskTypes": [
         "conjugate_form"
@@ -22,6 +22,77 @@
         "B2",
         "C1",
         "C2"
+      ],
+      "attribution": [
+        {
+          "id": "Duden",
+          "count": 13,
+          "pos": [
+            "V"
+          ],
+          "label": "Duden",
+          "license": "unspecified – pending review"
+        },
+        {
+          "id": "dwds-goethe-A1.csv",
+          "count": 30,
+          "pos": [
+            "V"
+          ],
+          "label": "DWDS Goethe-Zertifikat A1 export",
+          "license": "CC BY-SA 4.0",
+          "url": "https://www.dwds.de/"
+        },
+        {
+          "id": "dwds-goethe-A2.csv",
+          "count": 1,
+          "pos": [
+            "V"
+          ],
+          "label": "DWDS Goethe-Zertifikat A2 export",
+          "license": "CC BY-SA 4.0",
+          "url": "https://www.dwds.de/"
+        },
+        {
+          "id": "dwds-goethe-B1.csv",
+          "count": 3,
+          "pos": [
+            "V"
+          ],
+          "label": "DWDS Goethe-Zertifikat B1 export",
+          "license": "CC BY-SA 4.0",
+          "url": "https://www.dwds.de/"
+        },
+        {
+          "id": "Goethe-Institut",
+          "count": 30,
+          "pos": [
+            "V"
+          ],
+          "label": "Goethe-Institut curated list",
+          "license": "CC BY-SA 4.0 (DWDS export)",
+          "url": "https://www.goethe.de/"
+        },
+        {
+          "id": "learn-deutsch-data:modal",
+          "count": 4,
+          "pos": [
+            "V"
+          ],
+          "label": "Learn Deutsch community modal verbs",
+          "license": "CC BY-SA 4.0 (community dataset)",
+          "url": "https://github.com/savaged/learn-deutsch-data"
+        },
+        {
+          "id": "learn-deutsch-data:verbs",
+          "count": 4,
+          "pos": [
+            "V"
+          ],
+          "label": "Learn Deutsch community verbs",
+          "license": "CC BY-SA 4.0 (community dataset)",
+          "url": "https://github.com/savaged/learn-deutsch-data"
+        }
       ]
     },
     "createdAt": 1735689600,
@@ -43,12 +114,12 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat gearbeitet",
-        "notes": "A1 Essential Verbs; https://www.dwds.de/wb/arbeiten"
+        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/arbeiten"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
-        "dwds-goethe-A1.csv"
+        "dwds-goethe-A1.csv",
+        "Goethe-Institut"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -68,7 +139,7 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat beinhaltet",
-        "notes": "C1 Professional Verbs"
+        "sourceNotes": "C1 Professional Verbs"
       },
       "frequencyRank": null,
       "sourceIds": [
@@ -92,7 +163,7 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat beschlossen",
-        "notes": "B1 Intermediate Verbs; https://www.dwds.de/wb/beschlie%C3%9Fen"
+        "sourceNotes": "B1 Intermediate Verbs; https://www.dwds.de/wb/beschlie%C3%9Fen"
       },
       "frequencyRank": null,
       "sourceIds": [
@@ -117,7 +188,7 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat bewertet",
-        "notes": "B2 Advanced Verbs"
+        "sourceNotes": "B2 Advanced Verbs"
       },
       "frequencyRank": null,
       "sourceIds": [
@@ -141,7 +212,7 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat differenziert",
-        "notes": "C2 Academic Verbs"
+        "sourceNotes": "C2 Academic Verbs"
       },
       "frequencyRank": null,
       "sourceIds": [
@@ -165,7 +236,7 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat durchgeführt",
-        "notes": "B2 Advanced Verbs"
+        "sourceNotes": "B2 Advanced Verbs"
       },
       "frequencyRank": null,
       "sourceIds": [
@@ -189,7 +260,7 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat entsprochen",
-        "notes": "C1 Professional Verbs"
+        "sourceNotes": "C1 Professional Verbs"
       },
       "frequencyRank": null,
       "sourceIds": [
@@ -213,7 +284,7 @@
         },
         "auxiliary": "sein",
         "perfekt": "ist entstanden",
-        "notes": "B1 Intermediate Verbs; https://www.dwds.de/wb/entstehen"
+        "sourceNotes": "B1 Intermediate Verbs; https://www.dwds.de/wb/entstehen"
       },
       "frequencyRank": null,
       "sourceIds": [
@@ -238,7 +309,7 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat erörtert",
-        "notes": "C1 Professional Verbs"
+        "sourceNotes": "C1 Professional Verbs"
       },
       "frequencyRank": null,
       "sourceIds": [
@@ -262,7 +333,7 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat erreicht",
-        "notes": "B1 Intermediate Verbs; https://www.dwds.de/wb/erreichen"
+        "sourceNotes": "B1 Intermediate Verbs; https://www.dwds.de/wb/erreichen"
       },
       "frequencyRank": null,
       "sourceIds": [
@@ -287,12 +358,12 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat gegessen",
-        "notes": "A1 Essential Verbs; https://www.dwds.de/wb/essen"
+        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/essen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
-        "dwds-goethe-A1.csv"
+        "dwds-goethe-A1.csv",
+        "Goethe-Institut"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -312,12 +383,12 @@
         },
         "auxiliary": "sein",
         "perfekt": "ist gefahren",
-        "notes": "A2 Common Verbs; https://www.dwds.de/wb/fahren"
+        "sourceNotes": "A2 Common Verbs; https://www.dwds.de/wb/fahren"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
-        "dwds-goethe-A1.csv"
+        "dwds-goethe-A1.csv",
+        "Goethe-Institut"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -337,12 +408,12 @@
         },
         "auxiliary": "sein",
         "perfekt": "ist geflogen",
-        "notes": "A2 Common Verbs; https://www.dwds.de/wb/fliegen"
+        "sourceNotes": "A2 Common Verbs; https://www.dwds.de/wb/fliegen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
-        "dwds-goethe-A1.csv"
+        "dwds-goethe-A1.csv",
+        "Goethe-Institut"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -362,7 +433,7 @@
         },
         "auxiliary": "sein",
         "perfekt": "ist gediehen",
-        "notes": "C2 Academic Verbs"
+        "sourceNotes": "C2 Academic Verbs"
       },
       "frequencyRank": null,
       "sourceIds": [
@@ -387,12 +458,12 @@
         "separable": false,
         "auxiliary": "sein",
         "perfekt": "ist gegangen",
-        "notes": "A1 Essential Verbs; https://www.dwds.de/wb/gehen; \"gehen\" follows the standard pattern for regular verbs in the present tense."
+        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/gehen; \"gehen\" follows the standard pattern for regular verbs in the present tense."
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
         "dwds-goethe-A1.csv",
+        "Goethe-Institut",
         "learn-deutsch-data:verbs"
       ],
       "createdAt": 1735689600,
@@ -414,12 +485,12 @@
         "separable": false,
         "auxiliary": "haben",
         "perfekt": "hat gehabt",
-        "notes": "A1 Essential Verbs; https://www.dwds.de/wb/haben; \"haben\" is an irregular verb. Note the change from \"b\" to \"s\" and \"t\" in the du and er/sie/es forms."
+        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/haben; \"haben\" is an irregular verb. Note the change from \"b\" to \"s\" and \"t\" in the du and er/sie/es forms."
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
         "dwds-goethe-A1.csv",
+        "Goethe-Institut",
         "learn-deutsch-data:verbs"
       ],
       "createdAt": 1735689600,
@@ -440,12 +511,12 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat geheißen",
-        "notes": "A1 Essential Verbs; https://www.dwds.de/wb/hei%C3%9Fen#1"
+        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/hei%C3%9Fen#1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
-        "dwds-goethe-A1.csv"
+        "dwds-goethe-A1.csv",
+        "Goethe-Institut"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -465,12 +536,12 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat gehört",
-        "notes": "A1 Essential Verbs; https://www.dwds.de/wb/h%C3%B6ren"
+        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/h%C3%B6ren"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
-        "dwds-goethe-A1.csv"
+        "dwds-goethe-A1.csv",
+        "Goethe-Institut"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -490,12 +561,12 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat gekauft",
-        "notes": "A1 Essential Verbs; https://www.dwds.de/wb/kaufen"
+        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/kaufen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
-        "dwds-goethe-A1.csv"
+        "dwds-goethe-A1.csv",
+        "Goethe-Institut"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -515,12 +586,12 @@
         },
         "auxiliary": "sein",
         "perfekt": "ist gekommen",
-        "notes": "A1 Essential Verbs; https://www.dwds.de/wb/kommen"
+        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/kommen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
-        "dwds-goethe-A1.csv"
+        "dwds-goethe-A1.csv",
+        "Goethe-Institut"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -540,12 +611,12 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat gekonnt",
-        "notes": "A1 Essential Verbs; https://www.dwds.de/wb/k%C3%B6nnen; KÖN-nen"
+        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/k%C3%B6nnen; KÖN-nen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
         "dwds-goethe-A1.csv",
+        "Goethe-Institut",
         "learn-deutsch-data:modal"
       ],
       "createdAt": 1735689600,
@@ -566,12 +637,12 @@
         },
         "auxiliary": "sein",
         "perfekt": "ist gelaufen",
-        "notes": "A2 Common Verbs; https://www.dwds.de/wb/laufen"
+        "sourceNotes": "A2 Common Verbs; https://www.dwds.de/wb/laufen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
-        "dwds-goethe-A1.csv"
+        "dwds-goethe-A1.csv",
+        "Goethe-Institut"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -591,12 +662,12 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat gelebt",
-        "notes": "A1 Essential Verbs; https://www.dwds.de/wb/leben"
+        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/leben"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
-        "dwds-goethe-A1.csv"
+        "dwds-goethe-A1.csv",
+        "Goethe-Institut"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -616,12 +687,12 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat gelernt",
-        "notes": "A1 Essential Verbs; https://www.dwds.de/wb/lernen"
+        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/lernen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
-        "dwds-goethe-A1.csv"
+        "dwds-goethe-A1.csv",
+        "Goethe-Institut"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -641,12 +712,12 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat gelesen",
-        "notes": "A1 Essential Verbs; https://www.dwds.de/wb/lesen#1"
+        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/lesen#1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
-        "dwds-goethe-A1.csv"
+        "dwds-goethe-A1.csv",
+        "Goethe-Institut"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -666,12 +737,12 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat gemacht",
-        "notes": "A1 Essential Verbs; https://www.dwds.de/wb/machen"
+        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/machen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
-        "dwds-goethe-A1.csv"
+        "dwds-goethe-A1.csv",
+        "Goethe-Institut"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -691,12 +762,12 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat gemusst",
-        "notes": "A1 Essential Verbs; https://www.dwds.de/wb/m%C3%BCssen; MÜS-sen"
+        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/m%C3%BCssen; MÜS-sen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
         "dwds-goethe-A1.csv",
+        "Goethe-Institut",
         "learn-deutsch-data:modal"
       ],
       "createdAt": 1735689600,
@@ -717,12 +788,12 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat geschlafen",
-        "notes": "A1 Essential Verbs; https://www.dwds.de/wb/schlafen"
+        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/schlafen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
-        "dwds-goethe-A1.csv"
+        "dwds-goethe-A1.csv",
+        "Goethe-Institut"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -742,12 +813,12 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat geschrieben",
-        "notes": "A1 Essential Verbs; https://www.dwds.de/wb/schreiben"
+        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/schreiben"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
-        "dwds-goethe-A1.csv"
+        "dwds-goethe-A1.csv",
+        "Goethe-Institut"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -767,12 +838,12 @@
         },
         "auxiliary": "sein",
         "perfekt": "ist geschwommen",
-        "notes": "A2 Common Verbs; https://www.dwds.de/wb/schwimmen"
+        "sourceNotes": "A2 Common Verbs; https://www.dwds.de/wb/schwimmen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
-        "dwds-goethe-A1.csv"
+        "dwds-goethe-A1.csv",
+        "Goethe-Institut"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -792,12 +863,12 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat gesehen",
-        "notes": "A1 Essential Verbs; https://www.dwds.de/wb/sehen"
+        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/sehen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
-        "dwds-goethe-A1.csv"
+        "dwds-goethe-A1.csv",
+        "Goethe-Institut"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -818,12 +889,12 @@
         "separable": false,
         "auxiliary": "sein",
         "perfekt": "ist gewesen",
-        "notes": "A1 Essential Verbs; https://www.dwds.de/wb/sein#3; \"sein\" is a highly irregular verb. Its conjugation must be memorized."
+        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/sein#3; \"sein\" is a highly irregular verb. Its conjugation must be memorized."
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
         "dwds-goethe-A1.csv",
+        "Goethe-Institut",
         "learn-deutsch-data:verbs"
       ],
       "createdAt": 1735689600,
@@ -844,12 +915,12 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat gesollt",
-        "notes": "A1 Essential Verbs; https://www.dwds.de/wb/sollen; SOL-len"
+        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/sollen; SOL-len"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
         "dwds-goethe-A1.csv",
+        "Goethe-Institut",
         "learn-deutsch-data:modal"
       ],
       "createdAt": 1735689600,
@@ -870,12 +941,12 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat gespielt",
-        "notes": "A1 Essential Verbs; https://www.dwds.de/wb/spielen"
+        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/spielen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
-        "dwds-goethe-A1.csv"
+        "dwds-goethe-A1.csv",
+        "Goethe-Institut"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -896,12 +967,12 @@
         "separable": false,
         "auxiliary": "haben",
         "perfekt": "hat gesprochen",
-        "notes": "A1 Essential Verbs; https://www.dwds.de/wb/sprechen; This is a stem-changing irregular verb. The vowel \"e\" changes to \"i\" in the du and er/sie/es forms."
+        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/sprechen; This is a stem-changing irregular verb. The vowel \"e\" changes to \"i\" in the du and er/sie/es forms."
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
         "dwds-goethe-A1.csv",
+        "Goethe-Institut",
         "learn-deutsch-data:verbs"
       ],
       "createdAt": 1735689600,
@@ -922,7 +993,7 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat suggeriert",
-        "notes": "C2 Academic Verbs"
+        "sourceNotes": "C2 Academic Verbs"
       },
       "frequencyRank": null,
       "sourceIds": [
@@ -946,12 +1017,12 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat getanzt",
-        "notes": "A2 Common Verbs; https://www.dwds.de/wb/tanzen"
+        "sourceNotes": "A2 Common Verbs; https://www.dwds.de/wb/tanzen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
-        "dwds-goethe-A1.csv"
+        "dwds-goethe-A1.csv",
+        "Goethe-Institut"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -971,12 +1042,12 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat getrunken",
-        "notes": "A1 Essential Verbs; https://www.dwds.de/wb/trinken"
+        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/trinken"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
-        "dwds-goethe-A1.csv"
+        "dwds-goethe-A1.csv",
+        "Goethe-Institut"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -996,7 +1067,7 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat übertragen",
-        "notes": "B2 Advanced Verbs"
+        "sourceNotes": "B2 Advanced Verbs"
       },
       "frequencyRank": null,
       "sourceIds": [
@@ -1020,7 +1091,7 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat verbunden",
-        "notes": "B1 Intermediate Verbs; https://www.dwds.de/wb/verbinden"
+        "sourceNotes": "B1 Intermediate Verbs; https://www.dwds.de/wb/verbinden"
       },
       "frequencyRank": null,
       "sourceIds": [
@@ -1045,12 +1116,12 @@
         },
         "auxiliary": "sein",
         "perfekt": "ist geworden",
-        "notes": "A1 Essential Verbs; https://www.dwds.de/wb/werden"
+        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/werden"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
-        "dwds-goethe-A1.csv"
+        "dwds-goethe-A1.csv",
+        "Goethe-Institut"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1070,12 +1141,12 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat gewohnt",
-        "notes": "A1 Essential Verbs; https://www.dwds.de/wb/wohnen"
+        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/wohnen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
-        "dwds-goethe-A1.csv"
+        "dwds-goethe-A1.csv",
+        "Goethe-Institut"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1095,12 +1166,12 @@
         },
         "auxiliary": "haben",
         "perfekt": "hat gewollt",
-        "notes": "A1 Essential Verbs; https://www.dwds.de/wb/wollen#2; WOL-len"
+        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/wollen#2; WOL-len"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Goethe-Institut",
         "dwds-goethe-A1.csv",
+        "Goethe-Institut",
         "learn-deutsch-data:modal"
       ],
       "createdAt": 1735689600,
@@ -1117,7 +1188,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:bafb85ee31",
       "checksum": "59df55afeb6848b2",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1133,7 +1204,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:bafb85ee31",
       "checksum": "309f1c556c3ea0e5",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1147,7 +1218,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:bafb85ee31",
       "checksum": "aa88676c3345f1f4",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1161,7 +1232,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:bafb85ee31",
       "checksum": "dc1cd735d144fd06",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1175,7 +1246,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:844db77fa4",
       "checksum": "a4350dbcb986bf04",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1191,7 +1262,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:844db77fa4",
       "checksum": "ce8c488dbca169e3",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1205,7 +1276,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:844db77fa4",
       "checksum": "da2b3789ebcd8ee9",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1219,7 +1290,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:844db77fa4",
       "checksum": "16b4899ca796c8be",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1233,7 +1304,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:6db1a5c7ae",
       "checksum": "b8fcae87b3b483a3",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1249,7 +1320,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:6db1a5c7ae",
       "checksum": "150f6f4880911a5a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1263,7 +1334,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:6db1a5c7ae",
       "checksum": "3ec02faadbb61126",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1277,7 +1348,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:6db1a5c7ae",
       "checksum": "3b3382db570c8708",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1291,7 +1362,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:f6f40861d8",
       "checksum": "7cb28a64591e1d8b",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1307,7 +1378,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:f6f40861d8",
       "checksum": "9e4d32725a9eb324",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1321,7 +1392,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:f6f40861d8",
       "checksum": "4dc389f919373440",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1335,7 +1406,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:f6f40861d8",
       "checksum": "7056e97e56f41d3c",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1349,7 +1420,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:86a10b40fb",
       "checksum": "f98502c64dabd356",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1365,7 +1436,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:86a10b40fb",
       "checksum": "5d44c1ab269b224f",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1379,7 +1450,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:86a10b40fb",
       "checksum": "5cece1d588217862",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1393,7 +1464,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:86a10b40fb",
       "checksum": "eb2cf2c41b144333",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1407,7 +1478,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:f6f40861d8",
       "checksum": "5f5eba679a936c52",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1423,7 +1494,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:f6f40861d8",
       "checksum": "a097140619135cd6",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1437,7 +1508,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:f6f40861d8",
       "checksum": "1f56a75804ea975f",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1451,7 +1522,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:f6f40861d8",
       "checksum": "6298828a2b62f236",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1465,7 +1536,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:844db77fa4",
       "checksum": "45d960383f969fc5",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1481,7 +1552,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:844db77fa4",
       "checksum": "2f5ba1fd09896d02",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1495,7 +1566,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:844db77fa4",
       "checksum": "828f4d889ae6f51d",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1509,7 +1580,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:844db77fa4",
       "checksum": "2e15474cde566040",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1523,7 +1594,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:82ea987c20",
       "checksum": "d08f63b2fe299f5e",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1539,7 +1610,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:82ea987c20",
       "checksum": "4bb01ee29254121e",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1553,7 +1624,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:82ea987c20",
       "checksum": "38a8fce2ac4060d4",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1567,7 +1638,7 @@
         "auxiliary": "sein"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:82ea987c20",
       "checksum": "07bee43998b9b994",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1581,7 +1652,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:844db77fa4",
       "checksum": "cde95fb1c7ebaf95",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1597,7 +1668,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:844db77fa4",
       "checksum": "343da2e2cfb60f23",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1611,7 +1682,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:844db77fa4",
       "checksum": "ff5c0f6338c4249d",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1625,7 +1696,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:844db77fa4",
       "checksum": "ca5189ce1171aff8",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1639,7 +1710,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:db800cae63",
       "checksum": "44e61a3b22f23b9a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1655,7 +1726,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:db800cae63",
       "checksum": "cdfde2b166955f3a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1669,7 +1740,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:db800cae63",
       "checksum": "8f85287936a16a0d",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1683,7 +1754,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:db800cae63",
       "checksum": "5972bff8ac4ae589",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1697,7 +1768,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:44f5eb9ddc",
       "checksum": "727891512666e614",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1713,7 +1784,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:44f5eb9ddc",
       "checksum": "37118d67a0da816a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1727,7 +1798,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:44f5eb9ddc",
       "checksum": "3267d50d9f6314f8",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1741,7 +1812,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:44f5eb9ddc",
       "checksum": "4f29cd7fa710388e",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1755,7 +1826,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:4f9a05272b",
       "checksum": "efb100f343e4f93a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1771,7 +1842,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:4f9a05272b",
       "checksum": "e9605d6859331c94",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1785,7 +1856,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:4f9a05272b",
       "checksum": "050e4cddd40535f2",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1799,7 +1870,7 @@
         "auxiliary": "sein"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:4f9a05272b",
       "checksum": "45eb92c9ae5b03cf",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1813,7 +1884,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:b9a89b0fde",
       "checksum": "e3a5eb546a57fce3",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1829,7 +1900,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:b9a89b0fde",
       "checksum": "46cb7e0ba9dab331",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1843,7 +1914,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:b9a89b0fde",
       "checksum": "54b09ade3dd2917a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1857,7 +1928,7 @@
         "auxiliary": "sein"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:b9a89b0fde",
       "checksum": "173e5ffb3d30777f",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1871,7 +1942,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:86a10b40fb",
       "checksum": "eee09ecdfc2543d9",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1887,7 +1958,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:86a10b40fb",
       "checksum": "413219676a3e91cf",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1901,7 +1972,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:86a10b40fb",
       "checksum": "e9894668677269fa",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1915,7 +1986,7 @@
         "auxiliary": "sein"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:86a10b40fb",
       "checksum": "0141fbe036d8ab80",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1929,7 +2000,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:8d6e522ec6",
       "checksum": "bd8cfd2c57bd9e3e",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1945,7 +2016,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:8d6e522ec6",
       "checksum": "047a5334160c6e12",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1961,7 +2032,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:8d6e522ec6",
       "checksum": "295aca8c571ef143",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1977,7 +2048,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:8d6e522ec6",
       "checksum": "3d7df642e38f771b",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1991,7 +2062,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:8d6e522ec6",
       "checksum": "b8f7fdcb72be77c2",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2005,7 +2076,7 @@
         "auxiliary": "sein"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:8d6e522ec6",
       "checksum": "1fc8ee6fb0e9579c",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2019,7 +2090,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:42c7de1c97",
       "checksum": "42ec019a80eff876",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2035,7 +2106,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:42c7de1c97",
       "checksum": "a7dbdc4f4e484ec0",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2051,7 +2122,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:42c7de1c97",
       "checksum": "1f1a10166cfef86b",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2067,7 +2138,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:42c7de1c97",
       "checksum": "b25ea7e007c4277a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2081,7 +2152,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:42c7de1c97",
       "checksum": "3256ad8d3933223a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2095,7 +2166,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:42c7de1c97",
       "checksum": "e804d90fb8f5a4f9",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2109,7 +2180,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:18b3c3ab4a",
       "checksum": "67c645b46eb6438d",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2125,7 +2196,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:18b3c3ab4a",
       "checksum": "3a373caf401c2ad0",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2139,7 +2210,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:18b3c3ab4a",
       "checksum": "092a98aaf8d08502",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2153,7 +2224,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:18b3c3ab4a",
       "checksum": "c746fb3c8c2d83e1",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2167,7 +2238,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:dd264d996e",
       "checksum": "453ec5582c1fb4ca",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2183,7 +2254,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:dd264d996e",
       "checksum": "62e01b07f10bcd01",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2197,7 +2268,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:dd264d996e",
       "checksum": "8b7914f675c31f02",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2211,7 +2282,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:dd264d996e",
       "checksum": "39dce2891abdb825",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2225,7 +2296,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:e8f9860eba",
       "checksum": "c5af53c572d6c469",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2241,7 +2312,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:e8f9860eba",
       "checksum": "367e7f8321ca5f3d",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2255,7 +2326,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:e8f9860eba",
       "checksum": "d1e8271bb320046e",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2269,7 +2340,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:e8f9860eba",
       "checksum": "06223b8f0ba75255",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2283,7 +2354,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:f2b4098889",
       "checksum": "131bf1ffe110113d",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2299,7 +2370,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:f2b4098889",
       "checksum": "8433e1af2795736d",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2313,7 +2384,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:f2b4098889",
       "checksum": "d33fdce864734588",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2327,7 +2398,7 @@
         "auxiliary": "sein"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:f2b4098889",
       "checksum": "4cac3e1c37cb7fc4",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2341,7 +2412,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:ce3437b0b0",
       "checksum": "96f0e4b2d5e98650",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2357,7 +2428,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:ce3437b0b0",
       "checksum": "75d0db804503a44a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2373,7 +2444,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:ce3437b0b0",
       "checksum": "332f5713ab6aa405",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2389,7 +2460,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:ce3437b0b0",
       "checksum": "931f86444deee30a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2403,7 +2474,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:ce3437b0b0",
       "checksum": "705bd3ddbe26e402",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2417,7 +2488,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:ce3437b0b0",
       "checksum": "0b78af5bb57b71ee",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2431,7 +2502,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:a663c9b914",
       "checksum": "0eb12f0e2183e909",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2447,7 +2518,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:a663c9b914",
       "checksum": "10ae1154fd411dd6",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2461,7 +2532,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:a663c9b914",
       "checksum": "edd294b19e73ab8e",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2475,7 +2546,7 @@
         "auxiliary": "sein"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:a663c9b914",
       "checksum": "61cecdfc658871be",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2489,7 +2560,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:162a084e27",
       "checksum": "5157b63d3e4687cb",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2505,7 +2576,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:162a084e27",
       "checksum": "914ec579646f5637",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2519,7 +2590,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:162a084e27",
       "checksum": "2b4a5faed75683c4",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2533,7 +2604,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:162a084e27",
       "checksum": "5c509e5f0cfe4182",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2547,7 +2618,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:4258b28b48",
       "checksum": "c00d79b30edf4701",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2563,7 +2634,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:4258b28b48",
       "checksum": "ac1db51c1c6bd543",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2577,7 +2648,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:4258b28b48",
       "checksum": "49ccfa2795819131",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2591,7 +2662,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:4258b28b48",
       "checksum": "c89e10c18a82b6e0",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2605,7 +2676,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:612910f095",
       "checksum": "7a67419865f7baf8",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2621,7 +2692,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:612910f095",
       "checksum": "1f123b5e8f5790c9",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2635,7 +2706,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:612910f095",
       "checksum": "ce5de8861d3cd72a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2649,7 +2720,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:612910f095",
       "checksum": "5330ff2d12a83620",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2663,7 +2734,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:fe7eb7dd1c",
       "checksum": "a7b7a983d84225af",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2679,7 +2750,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:fe7eb7dd1c",
       "checksum": "a66a513e64684c1d",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2693,7 +2764,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:fe7eb7dd1c",
       "checksum": "e0aa90d88baa2609",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2707,7 +2778,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:fe7eb7dd1c",
       "checksum": "adf799cd2f064653",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2721,7 +2792,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:435a7eafbf",
       "checksum": "ce573bc54432e707",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2737,7 +2808,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:435a7eafbf",
       "checksum": "5e6222ea31c55867",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2753,7 +2824,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:435a7eafbf",
       "checksum": "ac99b97e41cf92f0",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2769,7 +2840,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:435a7eafbf",
       "checksum": "a939a85016760745",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2783,7 +2854,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:435a7eafbf",
       "checksum": "2b668a7889b2cc1a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2797,7 +2868,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:435a7eafbf",
       "checksum": "863e0baaa2cd45b1",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2811,7 +2882,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:4935e9f7e5",
       "checksum": "86225f1f58fddddd",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2827,7 +2898,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:4935e9f7e5",
       "checksum": "b1d7fd3eb7fa6d4a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2841,7 +2912,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:4935e9f7e5",
       "checksum": "60f75d7bf3930a9e",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2855,7 +2926,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:4935e9f7e5",
       "checksum": "a8189a424d24c045",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2869,7 +2940,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:02caa1d5c4",
       "checksum": "bb35fc02b0cf4ff5",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2885,7 +2956,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:02caa1d5c4",
       "checksum": "7b3d1bc48f6c359b",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2899,7 +2970,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:02caa1d5c4",
       "checksum": "3152f130747bf30d",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2913,7 +2984,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:02caa1d5c4",
       "checksum": "314697ffb39864ef",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2927,7 +2998,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:e55cdaf1b3",
       "checksum": "6e5d5d1a9925c94a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2943,7 +3014,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:e55cdaf1b3",
       "checksum": "cb40267b1a69a68c",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2957,7 +3028,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:e55cdaf1b3",
       "checksum": "ed117c477d65c564",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2971,7 +3042,7 @@
         "auxiliary": "sein"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:e55cdaf1b3",
       "checksum": "e1304d5685202362",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -2985,7 +3056,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:fd1db0b553",
       "checksum": "ac6368ded4cf80be",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3001,7 +3072,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:fd1db0b553",
       "checksum": "b67c25de15e1a133",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3015,7 +3086,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:fd1db0b553",
       "checksum": "80c529fc9e0c3fa3",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3029,7 +3100,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:fd1db0b553",
       "checksum": "643ebc4968d743d8",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3043,7 +3114,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:4dababad85",
       "checksum": "1a6baedf498d10b2",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3059,7 +3130,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:4dababad85",
       "checksum": "dad430b79f926297",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3075,7 +3146,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:4dababad85",
       "checksum": "4b08263807ca37f5",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3091,7 +3162,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:4dababad85",
       "checksum": "ac027520f0aad8ae",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3105,7 +3176,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:4dababad85",
       "checksum": "5597c4035f0c3768",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3119,7 +3190,7 @@
         "auxiliary": "sein"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:4dababad85",
       "checksum": "fcb0b5f96d763d2e",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3133,7 +3204,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:1206628043",
       "checksum": "264c57a3a7949f0a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3149,7 +3220,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:1206628043",
       "checksum": "31f6cd7590c44330",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3165,7 +3236,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:1206628043",
       "checksum": "c729c3f76be0ed14",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3181,7 +3252,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:1206628043",
       "checksum": "fe2b420ed96758a9",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3195,7 +3266,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:1206628043",
       "checksum": "af71a96b7ac55bf7",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3209,7 +3280,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:1206628043",
       "checksum": "91aaacb85db2537e",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3223,7 +3294,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:754b899c4f",
       "checksum": "8ecb35d22ea1d423",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3239,7 +3310,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:754b899c4f",
       "checksum": "4c6bc213343ac3a5",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3253,7 +3324,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:754b899c4f",
       "checksum": "1c28c1faa70884af",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3267,7 +3338,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:754b899c4f",
       "checksum": "081518bc075f31a6",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3281,7 +3352,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:60c0395bc1",
       "checksum": "842adcfe2a054b07",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3297,7 +3368,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:60c0395bc1",
       "checksum": "59b5244d77974748",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3313,7 +3384,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:60c0395bc1",
       "checksum": "9322f5f5864c6436",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3329,7 +3400,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:60c0395bc1",
       "checksum": "a62ee12f9e0fff8d",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3343,7 +3414,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:60c0395bc1",
       "checksum": "1938ba3ee57819ee",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3357,7 +3428,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:60c0395bc1",
       "checksum": "53dc81d35de5899a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3371,7 +3442,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:86a10b40fb",
       "checksum": "32e13cd2dadb295e",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3387,7 +3458,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:86a10b40fb",
       "checksum": "1ab7f9671e000348",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3401,7 +3472,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:86a10b40fb",
       "checksum": "03fd655482678e9d",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3415,7 +3486,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:86a10b40fb",
       "checksum": "b75c5de4269063e6",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3429,7 +3500,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:5923f0ad99",
       "checksum": "ba99df19b03adcdd",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3445,7 +3516,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:5923f0ad99",
       "checksum": "1faed6741f262f04",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3459,7 +3530,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:5923f0ad99",
       "checksum": "f64c9c56b0e3ab26",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3473,7 +3544,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:5923f0ad99",
       "checksum": "320b6f2feeec1887",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3487,7 +3558,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:b8f63a6eb4",
       "checksum": "1049db39275f3bfe",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3503,7 +3574,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:b8f63a6eb4",
       "checksum": "34ca377506589eb5",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3517,7 +3588,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:b8f63a6eb4",
       "checksum": "dabfeb8ba72eacb8",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3531,7 +3602,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:b8f63a6eb4",
       "checksum": "06bca7d1b026fdde",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3545,7 +3616,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:f6f40861d8",
       "checksum": "da491ea8f2376236",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3561,7 +3632,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:f6f40861d8",
       "checksum": "9c1c46f248fb3088",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3575,7 +3646,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:f6f40861d8",
       "checksum": "382142e296e8ea64",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3589,7 +3660,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:f6f40861d8",
       "checksum": "7346c8406f16e2b1",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3603,7 +3674,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:925b0738ba",
       "checksum": "12e01eccf0f2385f",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3619,7 +3690,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:925b0738ba",
       "checksum": "3f2a6883200888ad",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3633,7 +3704,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:925b0738ba",
       "checksum": "80bd31a7d709e1be",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3647,7 +3718,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Duden:925b0738ba",
       "checksum": "be92a174ec72b03b",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3661,7 +3732,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:81c54b2b18",
       "checksum": "9fd75e2835ec88b3",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3677,7 +3748,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:81c54b2b18",
       "checksum": "389f79d23065a405",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3691,7 +3762,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:81c54b2b18",
       "checksum": "3d879ce19e927929",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3705,7 +3776,7 @@
         "auxiliary": "sein"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:81c54b2b18",
       "checksum": "7c37cf1496532cd4",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3719,7 +3790,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:c6dec431ee",
       "checksum": "137de53d96a22b93",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3735,7 +3806,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:c6dec431ee",
       "checksum": "df9eb3059312c08e",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3749,7 +3820,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:c6dec431ee",
       "checksum": "c9a572bd1725990d",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3763,7 +3834,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:c6dec431ee",
       "checksum": "9f5e0b85fb5eb5fc",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3777,7 +3848,7 @@
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:0c64eae4da",
       "checksum": "cccca09be72bf7ba",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3793,7 +3864,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:0c64eae4da",
       "checksum": "3055be51a87e98e5",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3809,7 +3880,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:0c64eae4da",
       "checksum": "55ee2553b3fb0bb8",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3825,7 +3896,7 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:0c64eae4da",
       "checksum": "dec5158a607b06f6",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3839,7 +3910,7 @@
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:0c64eae4da",
       "checksum": "33eeadbca9556f8a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3853,7 +3924,7 @@
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": null,
+      "sourceRevision": "Goethe-Institut:0c64eae4da",
       "checksum": "c792d57653eea5f8",
       "createdAt": 1735689600,
       "updatedAt": 1735689600

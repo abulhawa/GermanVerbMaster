@@ -1,0 +1,238 @@
+{
+  "schemaVersion": 1,
+  "providerId": "manual",
+  "providerLabel": "Manual Apply",
+  "pos": "N",
+  "updatedAt": "2025-10-13T20:55:44.478Z",
+  "entries": {
+    "anfang": {
+      "lemma": "Anfang",
+      "pos": "N",
+      "providerId": "manual",
+      "providerLabel": "Manual Apply",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-13T20:55:46.741Z",
+      "translations": [
+        {
+          "value": "start, beginning, origin (spatially or temporally)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": [
+        {
+          "source": "kaikki.org",
+          "exampleDe": "1545, Martin Luther, Biblia: das ist: Die gantze Heilige Schrifft: Deudsch Auffs new zugericht, Moses I (Genesis) 1:1",
+          "exampleEn": "In the beginning, God created heaven and earth."
+        },
+        {
+          "source": "kaikki.org",
+          "exampleDe": "Clemens Alexandrinus, ein sehr gelehrter heydnischer Philosophus, lebte zu End Seculi II. und Anfangs des IIIten [...]",
+          "exampleEn": null
+        },
+        {
+          "source": "kaikki.org",
+          "exampleDe": "Aber erst auf dem 1532 zu Homberg gehaltenen Landtage scheint die Schenkung des Klosters Kaufungen, welches Kunigunde, Kaiser Heinrichs II. Gemahlin, Anfangs des 11. Jahrhunderts gestiftet hatte, und die des Stifts zu Wetter zu Stande gekommen zu seyn.",
+          "exampleEn": null
+        },
+        {
+          "source": "kaikki.org",
+          "exampleDe": "Es ist ein guter Anfang.",
+          "exampleEn": "It's a good place to start. (spatially)"
+        },
+        {
+          "source": "kaikki.org",
+          "exampleDe": "Es war ein guter Anfang.",
+          "exampleEn": "It was a good start. (temporally)"
+        },
+        {
+          "source": "kaikki.org",
+          "exampleDe": "Aus bescheidenen Anfängen.",
+          "exampleEn": "From humble beginnings."
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "word": {
+          "id": 69,
+          "aux": null,
+          "pos": "N",
+          "lemma": "Anfang",
+          "gender": "der",
+          "plural": null,
+          "english": "start, beginning, origin (spatially or temporally)",
+          "perfekt": null,
+          "examples": [
+            {
+              "source": "kaikki.org",
+              "exampleDe": "1545, Martin Luther, Biblia: das ist: Die gantze Heilige Schrifft: Deudsch Auffs new zugericht, Moses I (Genesis) 1:1",
+              "exampleEn": "In the beginning, God created heaven and earth."
+            },
+            {
+              "source": "kaikki.org",
+              "exampleDe": "Clemens Alexandrinus, ein sehr gelehrter heydnischer Philosophus, lebte zu End Seculi II. und Anfangs des IIIten [...]",
+              "exampleEn": null
+            },
+            {
+              "source": "kaikki.org",
+              "exampleDe": "Aber erst auf dem 1532 zu Homberg gehaltenen Landtage scheint die Schenkung des Klosters Kaufungen, welches Kunigunde, Kaiser Heinrichs II. Gemahlin, Anfangs des 11. Jahrhunderts gestiftet hatte, und die des Stifts zu Wetter zu Stande gekommen zu seyn.",
+              "exampleEn": null
+            },
+            {
+              "source": "kaikki.org",
+              "exampleDe": "Es ist ein guter Anfang.",
+              "exampleEn": "It's a good place to start. (spatially)"
+            },
+            {
+              "source": "kaikki.org",
+              "exampleDe": "Es war ein guter Anfang.",
+              "exampleEn": "It was a good start. (temporally)"
+            },
+            {
+              "source": "kaikki.org",
+              "exampleDe": "Aus bescheidenen Anfängen.",
+              "exampleEn": "From humble beginnings."
+            }
+          ],
+          "exampleDe": "Es war ein guter Anfang.",
+          "exampleEn": "It was a good start. (temporally)",
+          "partizipIi": null,
+          "sourcesCsv": "dwds-goethe-A1.csv,kaikki.org",
+          "comparative": null,
+          "praeteritum": null,
+          "superlative": null,
+          "translations": [
+            {
+              "value": "start, beginning, origin (spatially or temporally)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            }
+          ],
+          "posAttributes": {
+            "pos": "noun",
+            "tags": [
+              "strong"
+            ],
+            "notes": [
+              "de:Narratology",
+              "masculine nouns",
+              "nouns",
+              "Pages with 1 entry",
+              "Pages with entries",
+              "Requests for translations of German quotations",
+              "terms inherited from Middle High German",
+              "terms inherited from Old High German",
+              "terms inherited from Proto-West Germanic",
+              "terms with quotations",
+              "terms with usage examples"
+            ]
+          },
+          "enrichmentMethod": "manual_api",
+          "enrichmentAppliedAt": "2025-10-13T20:55:44.348Z"
+        },
+        "patch": {
+          "english": "start, beginning, origin (spatially or temporally)",
+          "complete": true,
+          "examples": [
+            {
+              "source": "kaikki.org",
+              "exampleDe": "1545, Martin Luther, Biblia: das ist: Die gantze Heilige Schrifft: Deudsch Auffs new zugericht, Moses I (Genesis) 1:1",
+              "exampleEn": "In the beginning, God created heaven and earth."
+            },
+            {
+              "source": "kaikki.org",
+              "exampleDe": "Clemens Alexandrinus, ein sehr gelehrter heydnischer Philosophus, lebte zu End Seculi II. und Anfangs des IIIten [...]",
+              "exampleEn": null
+            },
+            {
+              "source": "kaikki.org",
+              "exampleDe": "Aber erst auf dem 1532 zu Homberg gehaltenen Landtage scheint die Schenkung des Klosters Kaufungen, welches Kunigunde, Kaiser Heinrichs II. Gemahlin, Anfangs des 11. Jahrhunderts gestiftet hatte, und die des Stifts zu Wetter zu Stande gekommen zu seyn.",
+              "exampleEn": null
+            },
+            {
+              "source": "kaikki.org",
+              "exampleDe": "Es ist ein guter Anfang.",
+              "exampleEn": "It's a good place to start. (spatially)"
+            },
+            {
+              "source": "kaikki.org",
+              "exampleDe": "Es war ein guter Anfang.",
+              "exampleEn": "It was a good start. (temporally)"
+            },
+            {
+              "source": "kaikki.org",
+              "exampleDe": "Aus bescheidenen Anfängen.",
+              "exampleEn": "From humble beginnings."
+            }
+          ],
+          "exampleDe": "Es war ein guter Anfang.",
+          "exampleEn": "It was a good start. (temporally)",
+          "sourcesCsv": "dwds-goethe-A1.csv,kaikki.org",
+          "translations": [
+            {
+              "value": "start, beginning, origin (spatially or temporally)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            }
+          ],
+          "posAttributes": {
+            "pos": "noun",
+            "tags": [
+              "strong"
+            ],
+            "notes": [
+              "de:Narratology",
+              "masculine nouns",
+              "nouns",
+              "Pages with 1 entry",
+              "Pages with entries",
+              "Requests for translations of German quotations",
+              "terms inherited from Middle High German",
+              "terms inherited from Old High German",
+              "terms inherited from Proto-West Germanic",
+              "terms with quotations",
+              "terms with usage examples"
+            ]
+          }
+        },
+        "method": "manual_api",
+        "source": "manual_apply",
+        "appliedAt": "2025-10-13T20:55:44.348Z",
+        "appliedFields": [
+          "english",
+          "exampleDe",
+          "exampleEn",
+          "sourcesCsv",
+          "translations",
+          "examples",
+          "posAttributes",
+          "enrichmentAppliedAt",
+          "enrichmentMethod"
+        ]
+      },
+      "wordId": 69,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "all",
+        "snapshotId": 190,
+        "wordId": 69,
+        "createdAt": "2025-10-13T20:55:46.741Z",
+        "enrichmentMethod": "manual_api",
+        "appliedAt": "2025-10-13T20:55:44.348Z",
+        "source": "manual_apply"
+      }
+    }
+  },
+  "meta": {
+    "createdAt": "2025-10-13T20:55:44.478Z"
+  }
+}
