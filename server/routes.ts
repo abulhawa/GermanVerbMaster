@@ -153,11 +153,32 @@ type TaskRow = {
 };
 
 function getRowValue<T>(row: Record<string, any>, ...keys: string[]): T | undefined {
+  const candidates: string[] = [];
+
   for (const key of keys) {
-    if (key in row && row[key] !== undefined) {
-      return row[key] as T;
+    candidates.push(key);
+
+    if (!key.includes("_")) {
+      const snakeCase = key
+        .replace(/([a-z0-9])([A-Z])/g, "$1_$2")
+        .toLowerCase();
+      if (snakeCase !== key) {
+        candidates.push(snakeCase);
+      }
+    } else {
+      const camelCase = key.replace(/_([a-z0-9])/g, (_, char: string) => char.toUpperCase());
+      if (camelCase !== key) {
+        candidates.push(camelCase);
+      }
     }
   }
+
+  for (const candidate of candidates) {
+    if (candidate in row && row[candidate] !== undefined) {
+      return row[candidate] as T;
+    }
+  }
+
   return undefined;
 }
 
