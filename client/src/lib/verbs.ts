@@ -8,7 +8,7 @@ const verbSchema = z.object({
   english: z.string(),
   präteritum: z.string(),
   partizipII: z.string(),
-  auxiliary: z.enum(['haben', 'sein']),
+  auxiliary: z.enum(['haben', 'sein', 'haben / sein']),
   level: z.enum(['A1', 'A2', 'B1', 'B2', 'C1', 'C2']),
   präteritumExample: z.string(),
   partizipIIExample: z.string(),

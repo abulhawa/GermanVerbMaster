@@ -12,6 +12,7 @@ import {
   packLexemeMap,
   schedulingState,
   practiceHistory,
+  enrichmentProviderSnapshots,
   type IntegrationPartner,
   type Word,
 } from "@db";
@@ -26,6 +27,31 @@ import { processTaskSubmission } from "./tasks/scheduler.js";
 import { runVerbQueueShadowComparison } from "./tasks/shadow-mode.js";
 import { isLexemeSchemaEnabled } from "./config.js";
 import { enforceRateLimit, hashKey } from "./api/rate-limit.js";
+import {
+  computeWordEnrichment,
+  resolveConfigFromEnv as resolveEnrichmentConfigFromEnv,
+  runEnrichment,
+  toEnrichmentPatch,
+  buildProviderSnapshotFromRecord,
+  type PipelineConfig,
+} from "../scripts/enrichment/pipeline.js";
+import {
+  listSupabaseBucketObjects,
+  clearSupabaseBucketPrefix,
+  SupabaseStorageNotConfiguredError,
+  syncEnrichmentDirectoryToSupabase,
+  persistProviderSnapshotToFile,
+} from "../scripts/enrichment/storage.js";
+import { writeWordsBackupToDisk } from "../scripts/enrichment/backup.js";
+import type {
+  BulkEnrichmentResponse,
+  EnrichmentPatch,
+  WordEnrichmentPreview,
+  SupabaseStorageCleanExportResponse,
+  SupabaseStorageCleanResponse,
+  SupabaseStorageExportResponse,
+  SupabaseStorageListResponse,
+} from "@shared/enrichment";
 import {
   asLexemePos,
   ensurePosFeatureEnabled,
@@ -173,6 +199,14 @@ const optionalText = (max: number) =>
     }, z.union([z.string().max(max), z.null()]))
     .optional();
 
+const trimmedString = (max: number) =>
+  z.preprocess((value) => {
+    if (value === undefined || value === null) return value;
+    if (typeof value !== "string") return value;
+    const trimmed = value.trim();
+    return trimmed.length ? trimmed : undefined;
+  }, z.string().min(1).max(max));
+
 const optionalBoolean = z
   .preprocess((value) => {
     if (value === undefined) return undefined;
@@ -201,6 +235,24 @@ const optionalNullableBoolean = z
   }, z.union([z.boolean(), z.null()]))
   .optional();
 
+const optionalAuxiliary = z
+  .preprocess((value) => {
+    if (value === undefined) return undefined;
+    if (value === null) return null;
+    if (typeof value === "string") {
+      const normalized = value.trim().toLowerCase();
+      if (!normalized) return null;
+      if (["haben", "sein"].includes(normalized)) {
+        return normalized;
+      }
+      if (normalized.replace(/\s+/g, "") === "haben/sein") {
+        return "haben / sein";
+      }
+    }
+    return value;
+  }, z.union([z.enum(["haben", "sein", "haben / sein"]), z.null()]))
+  .optional();
+
 const optionalAux = z
   .preprocess((value) => {
     if (value === undefined) return undefined;
@@ -209,10 +261,47 @@ const optionalAux = z
       const normalized = value.trim().toLowerCase();
       if (!normalized) return null;
       if (normalized === "haben" || normalized === "sein") return normalized;
+      if (normalized.replace(/\s+/g, "") === "haben/sein") return "haben / sein";
     }
     return value;
-  }, z.union([z.literal("haben"), z.literal("sein"), z.null()]))
+  }, z.union([z.literal("haben"), z.literal("sein"), z.literal("haben / sein"), z.null()]))
   .optional();
+
+const optionalConfidence = z
+  .preprocess((value) => {
+    if (value === undefined) return undefined;
+    if (value === null) return null;
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }, z.union([z.number(), z.null()]))
+  .optional();
+
+const translationRecordSchema = z.object({
+  value: z.string().min(1).max(400),
+  source: optionalText(200),
+  language: optionalText(50),
+  confidence: optionalConfidence,
+});
+
+const exampleRecordSchema = z.object({
+  exampleDe: optionalText(800),
+  exampleEn: optionalText(800),
+  source: optionalText(200),
+});
+
+const optionalTimestamp = z
+  .preprocess((value) => {
+    if (value === undefined) return undefined;
+    if (value === null) return null;
+    if (value instanceof Date) {
+      return value;
+    }
+    const date = new Date(String(value));
+    return Number.isNaN(date.getTime()) ? null : date;
+  }, z.union([z.date(), z.null()]))
+  .optional();
+
+const enrichmentMethodSchema = z.enum(["bulk", "manual_api", "manual_entry", "preexisting"]);
 
 const optionalLevel = z
   .preprocess((value) => {
@@ -230,6 +319,24 @@ const optionalLevel = z
     return value;
   }, z.union([z.string().max(10), z.null()]))
   .optional();
+
+const prepositionAttributesSchema = z
+  .object({
+    cases: z.array(trimmedString(60)).optional(),
+    notes: z.array(trimmedString(200)).optional(),
+  })
+  .strict()
+  .partial();
+
+const posAttributesSchema = z
+  .object({
+    pos: optionalText(20),
+    preposition: prepositionAttributesSchema.nullable().optional(),
+    tags: z.array(trimmedString(100)).optional(),
+    notes: z.array(trimmedString(200)).optional(),
+  })
+  .strict()
+  .partial();
 
 const wordUpdateSchema = z
   .object({
@@ -251,6 +358,63 @@ const wordUpdateSchema = z
     canonical: optionalBoolean,
     sourcesCsv: optionalText(500),
     sourceNotes: optionalText(500),
+    translations: translationRecordSchema.array().nullable().optional(),
+    examples: exampleRecordSchema.array().nullable().optional(),
+    posAttributes: posAttributesSchema.nullable().optional(),
+    enrichmentAppliedAt: optionalTimestamp,
+    enrichmentMethod: enrichmentMethodSchema.nullable().optional(),
+  })
+  .strict();
+
+const enrichmentModeSchema = z.enum(["non-canonical", "canonical", "all"]);
+
+const enrichmentRunSchema = z
+  .object({
+    limit: z.coerce.number().int().min(1).max(200).optional(),
+    mode: enrichmentModeSchema.optional(),
+    onlyIncomplete: optionalBoolean,
+    enableAi: optionalBoolean,
+    allowOverwrite: optionalBoolean,
+    collectSynonyms: optionalBoolean,
+    collectExamples: optionalBoolean,
+    collectTranslations: optionalBoolean,
+    collectWiktextract: optionalBoolean,
+  })
+  .partial();
+
+const enrichmentPreviewSchema = z
+  .object({
+    enableAi: optionalBoolean,
+    allowOverwrite: optionalBoolean,
+    collectSynonyms: optionalBoolean,
+    collectExamples: optionalBoolean,
+    collectTranslations: optionalBoolean,
+    collectWiktextract: optionalBoolean,
+  })
+  .partial();
+
+const enrichmentPatchSchema = z
+  .object({
+    english: optionalText(400),
+    exampleDe: optionalText(800),
+    exampleEn: optionalText(800),
+    sourcesCsv: optionalText(800),
+    complete: optionalBoolean,
+    praeteritum: optionalText(200),
+    partizipIi: optionalText(200),
+    perfekt: optionalText(200),
+    aux: optionalAuxiliary,
+    translations: translationRecordSchema.array().nullable().optional(),
+    examples: exampleRecordSchema.array().nullable().optional(),
+    posAttributes: posAttributesSchema.nullable().optional(),
+    enrichmentAppliedAt: optionalTimestamp,
+    enrichmentMethod: enrichmentMethodSchema.nullable().optional(),
+  })
+  .partial();
+
+const enrichmentApplySchema = z
+  .object({
+    patch: enrichmentPatchSchema,
   })
   .strict();
 
@@ -286,6 +450,15 @@ function parseLimitParam(value: unknown, fallback: number): number {
   if (value === undefined) return fallback;
   const parsed = Number.parseInt(String(value), 10);
   if (!Number.isFinite(parsed) || parsed <= 0) {
+    return fallback;
+  }
+  return parsed;
+}
+
+function parseOffsetParam(value: unknown, fallback: number): number {
+  if (value === undefined) return fallback;
+  const parsed = Number.parseInt(String(value), 10);
+  if (!Number.isFinite(parsed) || parsed < 0) {
     return fallback;
   }
   return parsed;
@@ -375,6 +548,20 @@ function setLegacyDeprecation(res: Response): void {
 }
 
 function computeWordCompleteness(word: Pick<Word, "pos"> & Partial<Word>): boolean {
+  const english = word.english;
+  const exampleDe = word.exampleDe;
+  const exampleEn = word.exampleEn;
+  const examples = word.examples ?? [];
+  const hasExamplePair = Boolean(
+    exampleDe?.trim() && exampleEn?.trim()
+    || examples.some((entry) => entry?.exampleDe?.trim() && entry?.exampleEn?.trim()),
+  );
+  if (!english || !english.trim()) {
+    return false;
+  }
+  if (!hasExamplePair) {
+    return false;
+  }
   switch (word.pos) {
     case "V":
       return Boolean(word.praeteritum && word.partizipIi && word.perfekt);
@@ -383,15 +570,29 @@ function computeWordCompleteness(word: Pick<Word, "pos"> & Partial<Word>): boole
     case "Adj":
       return Boolean(word.comparative && word.superlative);
     default:
-      return Boolean(word.english || word.exampleDe);
+      return true;
   }
+}
+
+function normaliseAuxiliaryValue(aux: string | null | undefined): 'haben' | 'sein' | 'haben / sein' {
+  if (!aux) {
+    return 'haben';
+  }
+  const trimmed = aux.trim().toLowerCase();
+  if (trimmed === 'sein') {
+    return 'sein';
+  }
+  if (trimmed.replace(/\s+/g, '') === 'haben/sein') {
+    return 'haben / sein';
+  }
+  return 'haben';
 }
 
 function toGermanVerb(word: Word): GermanVerb {
   const english = word.english ?? "";
   const prateritum = word.praeteritum ?? "";
   const partizip = word.partizipIi ?? "";
-  const auxiliary = word.aux === "sein" ? "sein" : "haben";
+  const auxiliary = normaliseAuxiliaryValue(word.aux);
   const level = LEVEL_ORDER.includes((word.level ?? "A1") as typeof LEVEL_ORDER[number])
     ? (word.level as GermanVerb["level"])
     : "A1";
@@ -1088,6 +1289,7 @@ export function registerRoutes(app: Express): void {
       const level = normalizeStringParam(req.query.level)?.trim();
       const canonicalFilter = parseTriState(req.query.canonical);
       const completeFilter = parseTriState(req.query.complete);
+      const enrichedFilter = parseTriState(req.query.enriched);
       const search = normalizeStringParam(req.query.search)?.trim().toLowerCase();
       const page = parsePageParam(req.query.page, 1);
       const perPage = Math.min(parseLimitParam(req.query.perPage, 50), 200);
@@ -1109,6 +1311,13 @@ export function registerRoutes(app: Express): void {
         const term = `%${search}%`;
         conditions.push(
           sql`(lower(${words.lemma}) LIKE ${term} OR lower(${words.english}) LIKE ${term})`
+        );
+      }
+      if (typeof enrichedFilter === "boolean") {
+        conditions.push(
+          enrichedFilter
+            ? sql`${words.enrichmentAppliedAt} IS NOT NULL`
+            : sql`${words.enrichmentAppliedAt} IS NULL`,
         );
       }
 
@@ -1142,6 +1351,26 @@ export function registerRoutes(app: Express): void {
     } catch (error) {
       console.error("Error fetching words:", error);
       sendError(res, 500, "Failed to fetch words", "WORDS_FETCH_FAILED");
+    }
+  });
+
+  app.get("/api/words/:id", requireAdminAccess, async (req, res) => {
+    try {
+      const id = Number.parseInt(req.params.id, 10);
+      if (!Number.isFinite(id) || id <= 0) {
+        return sendError(res, 400, "Invalid word id", "INVALID_WORD_ID");
+      }
+
+      const word = await db.query.words.findFirst({ where: eq(words.id, id) });
+      if (!word) {
+        return sendError(res, 404, "Word not found", "WORD_NOT_FOUND");
+      }
+
+      res.setHeader("Cache-Control", "no-store");
+      res.json(word);
+    } catch (error) {
+      console.error("Error fetching word", error);
+      sendError(res, 500, "Failed to fetch word", "WORD_FETCH_FAILED");
     }
   });
 
@@ -1191,6 +1420,11 @@ export function registerRoutes(app: Express): void {
       assign("superlative", "superlative");
       assign("sourcesCsv", "sourcesCsv");
       assign("sourceNotes", "sourceNotes");
+      assign("translations", "translations");
+      assign("examples", "examples");
+      assign("posAttributes", "posAttributes");
+      assign("enrichmentAppliedAt", "enrichmentAppliedAt");
+      assign("enrichmentMethod", "enrichmentMethod");
 
       const canonical = data.canonical ?? existing.canonical;
       const merged: Pick<Word, "pos"> & Partial<Word> = {
@@ -1203,6 +1437,22 @@ export function registerRoutes(app: Express): void {
 
       updates.canonical = canonical;
       updates.complete = complete;
+      const hasContentUpdates = Object.keys(updates).some((key) =>
+        ![
+          "canonical",
+          "complete",
+          "updatedAt",
+          "enrichmentAppliedAt",
+          "enrichmentMethod",
+        ].includes(key),
+      );
+
+      if (hasContentUpdates && !Object.prototype.hasOwnProperty.call(updates, "enrichmentAppliedAt")) {
+        updates.enrichmentAppliedAt = sql`now()`;
+      }
+      if (hasContentUpdates && !Object.prototype.hasOwnProperty.call(updates, "enrichmentMethod")) {
+        updates.enrichmentMethod = "manual_entry";
+      }
       updates.updatedAt = sql`now()`;
 
       await db.update(words).set(updates).where(eq(words.id, id));
@@ -1222,6 +1472,479 @@ export function registerRoutes(app: Express): void {
         return sendError(res, 400, "Invalid word payload", "INVALID_WORD_INPUT");
       }
       sendError(res, 500, "Failed to update word", "WORD_UPDATE_FAILED");
+    }
+  });
+
+  app.post("/api/enrichment/run", requireAdminAccess, async (req, res) => {
+    try {
+      const parsed = enrichmentRunSchema.safeParse(req.body ?? {});
+      if (!parsed.success) {
+        return sendError(res, 400, "Invalid enrichment configuration", "INVALID_ENRICHMENT_CONFIG");
+      }
+
+      const overrides: Partial<PipelineConfig> = {
+        limit: parsed.data.limit,
+        mode: parsed.data.mode,
+        onlyIncomplete: parsed.data.onlyIncomplete,
+        enableAi: parsed.data.enableAi,
+        allowOverwrite: parsed.data.allowOverwrite,
+        collectSynonyms: parsed.data.collectSynonyms,
+        collectExamples: parsed.data.collectExamples,
+        collectTranslations: parsed.data.collectTranslations,
+        collectWiktextract: parsed.data.collectWiktextract,
+        delayMs: 0,
+        apply: false,
+        dryRun: true,
+        emitReport: false,
+        backup: false,
+      };
+
+      const baseConfig = resolveEnrichmentConfigFromEnv(overrides);
+      const config: PipelineConfig = {
+        ...baseConfig,
+        apply: false,
+        dryRun: true,
+        emitReport: false,
+        backup: false,
+        delayMs: 0,
+      };
+
+      const result = await runEnrichment(config);
+      const response: BulkEnrichmentResponse = {
+        scanned: result.scanned,
+        updated: result.updated,
+        words: result.words.map((word) => ({ ...word, applied: false })),
+      };
+
+      res.setHeader("Cache-Control", "no-store");
+      res.json(response);
+    } catch (error) {
+      console.error("Failed to run enrichment pipeline", error);
+      sendError(res, 500, "Failed to run enrichment", "ENRICHMENT_FAILED");
+    }
+  });
+
+  app.post("/api/enrichment/words/:id/preview", requireAdminAccess, async (req, res) => {
+    try {
+      const id = Number.parseInt(req.params.id, 10);
+      if (!Number.isFinite(id) || id <= 0) {
+        return sendError(res, 400, "Invalid word id", "INVALID_WORD_ID");
+      }
+
+      const parsed = enrichmentPreviewSchema.safeParse(req.body ?? {});
+      if (!parsed.success) {
+        return sendError(res, 400, "Invalid enrichment configuration", "INVALID_ENRICHMENT_CONFIG");
+      }
+
+      const existing = await db.query.words.findFirst({ where: eq(words.id, id) });
+      if (!existing) {
+        return sendError(res, 404, "Word not found", "WORD_NOT_FOUND");
+      }
+
+      const overrides: Partial<PipelineConfig> = {
+        limit: 1,
+        mode: "all",
+        onlyIncomplete: false,
+        enableAi: parsed.data.enableAi,
+        allowOverwrite: parsed.data.allowOverwrite,
+        collectSynonyms: parsed.data.collectSynonyms,
+        collectExamples: parsed.data.collectExamples,
+        collectTranslations: parsed.data.collectTranslations,
+        collectWiktextract: parsed.data.collectWiktextract,
+        delayMs: 0,
+        apply: false,
+        dryRun: true,
+        emitReport: false,
+        backup: false,
+      };
+
+      const baseConfig = resolveEnrichmentConfigFromEnv(overrides);
+      const config: PipelineConfig = {
+        ...baseConfig,
+        apply: false,
+        dryRun: true,
+        emitReport: false,
+        backup: false,
+        delayMs: 0,
+      };
+
+      const openAiKey = config.enableAi ? process.env.OPENAI_API_KEY?.trim() || undefined : undefined;
+      const computation = await computeWordEnrichment(existing, config, openAiKey);
+      const summary = { ...computation.summary, applied: false };
+      const preview: WordEnrichmentPreview = {
+        summary,
+        patch: toEnrichmentPatch(computation.patch),
+        hasUpdates: computation.hasUpdates,
+        suggestions: {
+          translations: computation.suggestions.translations,
+          examples: computation.suggestions.examples,
+          synonyms: computation.suggestions.synonyms,
+          englishHints: computation.suggestions.englishHints,
+          verbForms: computation.suggestions.verbForms,
+          nounForms: computation.suggestions.nounForms,
+          adjectiveForms: computation.suggestions.adjectiveForms,
+          prepositionAttributes: computation.suggestions.prepositionAttributes,
+          providerDiagnostics: computation.suggestions.diagnostics,
+          snapshots: computation.suggestions.snapshots,
+        },
+      };
+
+      res.setHeader("Cache-Control", "no-store");
+      res.json(preview);
+    } catch (error) {
+      console.error("Failed to preview word enrichment", error);
+      sendError(res, 500, "Failed to preview enrichment", "ENRICHMENT_PREVIEW_FAILED");
+    }
+  });
+
+  app.post("/api/enrichment/words/:id/apply", requireAdminAccess, async (req, res) => {
+    try {
+      const id = Number.parseInt(req.params.id, 10);
+      if (!Number.isFinite(id) || id <= 0) {
+        return sendError(res, 400, "Invalid word id", "INVALID_WORD_ID");
+      }
+
+      const parsed = enrichmentApplySchema.safeParse(req.body ?? {});
+      if (!parsed.success) {
+        return sendError(res, 400, "Invalid enrichment payload", "INVALID_ENRICHMENT_INPUT");
+      }
+
+      const existing = await db.query.words.findFirst({ where: eq(words.id, id) });
+      if (!existing) {
+        return sendError(res, 404, "Word not found", "WORD_NOT_FOUND");
+      }
+
+      const patch = parsed.data.patch as EnrichmentPatch;
+      const updates: Record<string, unknown> = {};
+      const appliedFields: string[] = [];
+      let contentApplied = false;
+
+      if (Object.prototype.hasOwnProperty.call(patch, "english") && patch.english !== undefined) {
+        if (patch.english !== existing.english) {
+          updates.english = patch.english;
+          appliedFields.push("english");
+          contentApplied = true;
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(patch, "exampleDe") && patch.exampleDe !== undefined) {
+        if (patch.exampleDe !== existing.exampleDe) {
+          updates.exampleDe = patch.exampleDe;
+          appliedFields.push("exampleDe");
+          contentApplied = true;
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(patch, "exampleEn") && patch.exampleEn !== undefined) {
+        if (patch.exampleEn !== existing.exampleEn) {
+          updates.exampleEn = patch.exampleEn;
+          appliedFields.push("exampleEn");
+          contentApplied = true;
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(patch, "sourcesCsv") && patch.sourcesCsv !== undefined) {
+        if (patch.sourcesCsv !== existing.sourcesCsv) {
+          updates.sourcesCsv = patch.sourcesCsv;
+          appliedFields.push("sourcesCsv");
+          contentApplied = true;
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(patch, "gender") && patch.gender !== undefined) {
+        if (patch.gender !== existing.gender) {
+          updates.gender = patch.gender;
+          appliedFields.push("gender");
+          contentApplied = true;
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(patch, "plural") && patch.plural !== undefined) {
+        if (patch.plural !== existing.plural) {
+          updates.plural = patch.plural;
+          appliedFields.push("plural");
+          contentApplied = true;
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(patch, "praeteritum") && patch.praeteritum !== undefined) {
+        if (patch.praeteritum !== existing.praeteritum) {
+          updates.praeteritum = patch.praeteritum;
+          appliedFields.push("praeteritum");
+          contentApplied = true;
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(patch, "partizipIi") && patch.partizipIi !== undefined) {
+        if (patch.partizipIi !== existing.partizipIi) {
+          updates.partizipIi = patch.partizipIi;
+          appliedFields.push("partizipIi");
+          contentApplied = true;
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(patch, "comparative") && patch.comparative !== undefined) {
+        if (patch.comparative !== existing.comparative) {
+          updates.comparative = patch.comparative;
+          appliedFields.push("comparative");
+          contentApplied = true;
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(patch, "superlative") && patch.superlative !== undefined) {
+        if (patch.superlative !== existing.superlative) {
+          updates.superlative = patch.superlative;
+          appliedFields.push("superlative");
+          contentApplied = true;
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(patch, "perfekt") && patch.perfekt !== undefined) {
+        if (patch.perfekt !== existing.perfekt) {
+          updates.perfekt = patch.perfekt;
+          appliedFields.push("perfekt");
+          contentApplied = true;
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(patch, "aux") && patch.aux !== undefined) {
+        if (patch.aux !== existing.aux) {
+          updates.aux = patch.aux;
+          appliedFields.push("aux");
+          contentApplied = true;
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(patch, "translations") && patch.translations !== undefined) {
+        const nextTranslations = patch.translations ?? null;
+        const existingTranslations = existing.translations ?? null;
+        if (JSON.stringify(existingTranslations) !== JSON.stringify(nextTranslations)) {
+          updates.translations = nextTranslations;
+          appliedFields.push("translations");
+          contentApplied = true;
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(patch, "examples") && patch.examples !== undefined) {
+        const nextExamples = patch.examples ?? null;
+        const existingExamples = existing.examples ?? null;
+        if (JSON.stringify(existingExamples) !== JSON.stringify(nextExamples)) {
+          updates.examples = nextExamples;
+          appliedFields.push("examples");
+          contentApplied = true;
+        }
+      }
+      if (
+        Object.prototype.hasOwnProperty.call(patch, "posAttributes")
+        && patch.posAttributes !== undefined
+      ) {
+        const nextPosAttributes = patch.posAttributes ?? null;
+        const existingPosAttributes = existing.posAttributes ?? null;
+        if (JSON.stringify(existingPosAttributes) !== JSON.stringify(nextPosAttributes)) {
+          updates.posAttributes = nextPosAttributes;
+          appliedFields.push("posAttributes");
+          contentApplied = true;
+        }
+      }
+
+      const merged: Word = {
+        ...existing,
+        ...updates,
+      };
+
+      const nextComplete = computeWordCompleteness(merged);
+      if (nextComplete !== existing.complete) {
+        updates.complete = nextComplete;
+        appliedFields.push("complete");
+      }
+
+      if (!contentApplied) {
+        return sendError(res, 400, "No enrichment updates to apply", "ENRICHMENT_NO_CHANGES");
+      }
+
+      if (Object.prototype.hasOwnProperty.call(patch, "enrichmentAppliedAt") && patch.enrichmentAppliedAt !== undefined) {
+        if (patch.enrichmentAppliedAt !== existing.enrichmentAppliedAt) {
+          updates.enrichmentAppliedAt = patch.enrichmentAppliedAt;
+          appliedFields.push("enrichmentAppliedAt");
+        }
+      } else {
+        updates.enrichmentAppliedAt = new Date();
+        appliedFields.push("enrichmentAppliedAt");
+      }
+
+      if (Object.prototype.hasOwnProperty.call(patch, "enrichmentMethod") && patch.enrichmentMethod !== undefined) {
+        if (patch.enrichmentMethod !== existing.enrichmentMethod) {
+          updates.enrichmentMethod = patch.enrichmentMethod;
+          appliedFields.push("enrichmentMethod");
+        }
+      } else {
+        updates.enrichmentMethod = "manual_api";
+        appliedFields.push("enrichmentMethod");
+      }
+
+      updates.updatedAt = sql`now()`;
+
+      await db.update(words).set(updates).where(eq(words.id, id));
+
+      const refreshed = await db.query.words.findFirst({ where: eq(words.id, id) });
+      if (!refreshed) {
+        return sendError(res, 500, "Failed to apply enrichment", "ENRICHMENT_APPLY_FAILED");
+      }
+
+      const manualPayload = {
+        source: "manual_apply",
+        method: (updates.enrichmentMethod as string | undefined) ?? refreshed.enrichmentMethod ?? "manual_api",
+        appliedAt: refreshed.enrichmentAppliedAt ? toIsoString(refreshed.enrichmentAppliedAt) : new Date().toISOString(),
+        appliedFields,
+        patch,
+        word: {
+          id: refreshed.id,
+          lemma: refreshed.lemma,
+          pos: refreshed.pos,
+          english: refreshed.english ?? null,
+          exampleDe: refreshed.exampleDe ?? null,
+          exampleEn: refreshed.exampleEn ?? null,
+          translations: refreshed.translations ?? null,
+          examples: refreshed.examples ?? null,
+          sourcesCsv: refreshed.sourcesCsv ?? null,
+          gender: refreshed.gender ?? null,
+          plural: refreshed.plural ?? null,
+          praeteritum: refreshed.praeteritum ?? null,
+          partizipIi: refreshed.partizipIi ?? null,
+          perfekt: refreshed.perfekt ?? null,
+          aux: refreshed.aux ?? null,
+          comparative: refreshed.comparative ?? null,
+          superlative: refreshed.superlative ?? null,
+          posAttributes: refreshed.posAttributes ?? null,
+          enrichmentAppliedAt: refreshed.enrichmentAppliedAt
+            ? toIsoString(refreshed.enrichmentAppliedAt)
+            : null,
+          enrichmentMethod: refreshed.enrichmentMethod ?? null,
+        },
+      };
+
+      const [manualSnapshotRecord] = await db
+        .insert(enrichmentProviderSnapshots)
+        .values({
+          wordId: refreshed.id,
+          lemma: refreshed.lemma,
+          pos: refreshed.pos,
+          providerId: "manual",
+          providerLabel: "Manual Apply",
+          status: "success",
+          trigger: "apply",
+          mode: "all",
+          translations: refreshed.translations ?? null,
+          examples: refreshed.examples ?? null,
+          synonyms: null,
+          englishHints: null,
+          verbForms: null,
+          nounForms: null,
+          adjectiveForms: null,
+          prepositionAttributes: null,
+          rawPayload: manualPayload,
+        })
+        .returning();
+
+      if (manualSnapshotRecord) {
+        const manualSnapshot = buildProviderSnapshotFromRecord(manualSnapshotRecord);
+        await persistProviderSnapshotToFile(manualSnapshot);
+      }
+
+      res.setHeader("Cache-Control", "no-store");
+      res.json({ word: refreshed, appliedFields });
+    } catch (error) {
+      console.error("Failed to apply enrichment updates", error);
+      sendError(res, 500, "Failed to apply enrichment", "ENRICHMENT_APPLY_FAILED");
+    }
+  });
+
+  app.get("/api/enrichment/storage", requireAdminAccess, async (req, res) => {
+    try {
+      const limit = Math.min(parseLimitParam(req.query.limit, 50), 200);
+      const offset = parseOffsetParam(req.query.offset, 0);
+      const rawPath = normalizeStringParam(req.query.path)?.trim();
+      const result = await listSupabaseBucketObjects({
+        limit,
+        offset,
+        path: rawPath,
+      });
+
+      const response: SupabaseStorageListResponse = {
+        available: true,
+        bucket: result.config.bucket,
+        prefix: result.config.pathPrefix,
+        path: result.path,
+        items: result.items,
+        pagination: {
+          limit: result.limit,
+          offset: result.offset,
+          hasMore: result.hasMore,
+          nextOffset: result.hasMore ? result.offset + result.items.length : null,
+        },
+      };
+
+      res.setHeader("Cache-Control", "no-store");
+      res.json(response);
+    } catch (error) {
+      if (error instanceof SupabaseStorageNotConfiguredError) {
+        const response: SupabaseStorageListResponse = {
+          available: false,
+          message: error.message,
+        };
+        res.setHeader("Cache-Control", "no-store");
+        res.json(response);
+        return;
+      }
+      console.error("Failed to list Supabase storage objects", error);
+      sendError(res, 500, "Failed to list storage objects", "SUPABASE_LIST_FAILED");
+    }
+  });
+
+  app.post("/api/enrichment/storage/clean-export", requireAdminAccess, async (req, res) => {
+    try {
+      const cleanResult = await clearSupabaseBucketPrefix();
+      const backupResult = await writeWordsBackupToDisk();
+      const latestRelativePath =
+        backupResult.summary?.latestRelativePath ?? "words-latest.json";
+      const syncResult = await syncEnrichmentDirectoryToSupabase(undefined, {
+        includeRelativePaths: [latestRelativePath],
+      });
+
+      const prefix = syncResult.config.pathPrefix?.replace(/^\/+|\/+$/g, "") ?? null;
+      const buildPath = (relative: string) =>
+        prefix && prefix.length ? `${prefix}/${relative}` : relative;
+
+      let wordsBackup = backupResult.summary;
+      if (wordsBackup) {
+        wordsBackup = {
+          ...wordsBackup,
+          objectPath: buildPath(latestRelativePath),
+          latestObjectPath: buildPath(latestRelativePath),
+        };
+      }
+
+      const timestamp = new Date().toISOString();
+
+      const cleanResponse: SupabaseStorageCleanResponse = {
+        bucket: cleanResult.config.bucket,
+        prefix: cleanResult.config.pathPrefix,
+        total: cleanResult.total,
+        deleted: cleanResult.deleted,
+        failed: cleanResult.failed,
+        timestamp,
+      };
+
+      const exportResponse: SupabaseStorageExportResponse = {
+        bucket: syncResult.config.bucket,
+        prefix: syncResult.config.pathPrefix,
+        totalFiles: syncResult.totalFiles,
+        uploaded: syncResult.uploaded,
+        failed: syncResult.failed,
+        timestamp,
+        wordsBackup,
+      };
+
+      const response: SupabaseStorageCleanExportResponse = {
+        clean: cleanResponse,
+        export: exportResponse,
+      };
+
+      res.setHeader("Cache-Control", "no-store");
+      res.json(response);
+    } catch (error) {
+      if (error instanceof SupabaseStorageNotConfiguredError) {
+        return sendError(res, 400, error.message, "SUPABASE_NOT_CONFIGURED");
+      }
+      console.error("Failed to clean and export enrichment data", error);
+      sendError(res, 500, "Failed to clean storage snapshot", "SUPABASE_CLEAN_EXPORT_FAILED");
     }
   });
 
@@ -1457,7 +2180,7 @@ export function registerRoutes(app: Express): void {
       const drills = wordRows.map((word) => ({
         infinitive: word.lemma,
         english: word.english ?? "",
-        auxiliary: word.aux === "sein" ? "sein" : "haben",
+        auxiliary: normaliseAuxiliaryValue(word.aux),
         level: word.level ?? null,
         patternGroup: null,
         prompts: {
@@ -1473,7 +2196,7 @@ export function registerRoutes(app: Express): void {
           },
           auxiliary: {
             question: `Welches Hilfsverb wird mit “${word.lemma}” verwendet?`,
-            answer: word.aux === "sein" ? "sein" : "haben",
+            answer: normaliseAuxiliaryValue(word.aux),
             example: null,
           },
           english: {

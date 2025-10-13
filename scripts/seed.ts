@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { parse } from 'csv-parse/sync';
 import { and, eq, sql } from 'drizzle-orm';
 
-import { db } from '@db';
+import { getDb, getPool } from '@db';
 import { words } from '@db/schema';
 import {
   loadExternalWordRows,
@@ -19,6 +19,29 @@ import {
   upsertGoldenBundles,
   writeGoldenBundlesToDisk,
 } from './etl/golden';
+import type { EnrichmentMethod, WordExample, WordPosAttributes, WordTranslation } from '@shared/types';
+import type { PersistedProviderEntry, PersistedWordData } from '@shared/enrichment';
+import { loadPersistedWordData } from './enrichment/storage';
+import { applyMigrations } from './db-push';
+
+type DatabaseClient = ReturnType<typeof getDb>;
+
+let cachedDb: DatabaseClient | null = null;
+
+function ensureDatabase(): DatabaseClient {
+  if (!cachedDb) {
+    cachedDb = getDb();
+  }
+
+  return cachedDb;
+}
+
+async function ensureLegacySchema(db: DatabaseClient): Promise<void> {
+  await db.execute(sql`ALTER TABLE words ADD COLUMN IF NOT EXISTS pos_attributes JSONB`);
+  await db.execute(
+    sql`ALTER TABLE enrichment_provider_snapshots ADD COLUMN IF NOT EXISTS preposition_attributes JSONB`,
+  );
+}
 
 const LEVEL_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
 const POS_MAP = new Map<string, ExternalPartOfSpeech>([
@@ -84,6 +107,11 @@ interface RawWordRow {
   superlative?: string | null;
   sourcesCsv?: string | null;
   sourceNotes?: string | null;
+  translations?: WordTranslation[] | null;
+  examples?: WordExample[] | null;
+  posAttributes?: WordPosAttributes | null;
+  enrichmentAppliedAt?: string | null;
+  enrichmentMethod?: EnrichmentMethod | null;
 }
 
 interface AggregatedWordWithKey extends AggregatedWord {
@@ -152,6 +180,20 @@ function normaliseLevel(level: unknown): string | null {
 }
 
 function computeCompleteness(word: RawWordRow & { pos: ExternalPartOfSpeech }): boolean {
+  const english = word.english ?? null;
+  const exampleDe = word.exampleDe ?? null;
+  const exampleEn = word.exampleEn ?? null;
+  const examples = word.examples ?? [];
+  const hasExamplePair = Boolean(
+    exampleDe?.trim() && exampleEn?.trim()
+    || examples.some((entry) => entry?.exampleDe?.trim() && entry?.exampleEn?.trim()),
+  );
+  if (!english || !english.trim()) {
+    return false;
+  }
+  if (!hasExamplePair) {
+    return false;
+  }
   switch (word.pos) {
     case 'V':
       return Boolean(word.praeteritum && word.partizipIi && word.perfekt);
@@ -160,7 +202,7 @@ function computeCompleteness(word: RawWordRow & { pos: ExternalPartOfSpeech }): 
     case 'Adj':
       return Boolean(word.comparative && word.superlative);
     default:
-      return Boolean(word.english || word.exampleDe);
+      return true;
   }
 }
 
@@ -218,6 +260,14 @@ function mergeWord(existing: RawWordRow | null, incoming: RawWordRow): RawWordRo
   merged.superlative = existing.superlative ?? incoming.superlative ?? null;
   merged.sourcesCsv = dedupeSources(existing.sourcesCsv, incoming.sourcesCsv);
   merged.sourceNotes = dedupeSources(existing.sourceNotes, incoming.sourceNotes);
+  merged.translations = mergeTranslations(existing.translations, incoming.translations);
+  merged.examples = mergeExamples(existing.examples, incoming.examples);
+  merged.posAttributes = mergeWordPosAttributes(existing.posAttributes, incoming.posAttributes);
+  merged.enrichmentAppliedAt = pickLatestTimestamp(
+    existing.enrichmentAppliedAt ?? null,
+    incoming.enrichmentAppliedAt ?? null,
+  );
+  merged.enrichmentMethod = existing.enrichmentMethod ?? incoming.enrichmentMethod ?? null;
 
   return merged;
 }
@@ -248,6 +298,403 @@ function dedupeSources(existing: string | null | undefined, incoming: string | n
   return values.size ? Array.from(values).join('; ') : null;
 }
 
+function mergeTranslations(
+  existing: WordTranslation[] | null | undefined,
+  incoming: WordTranslation[] | null | undefined,
+): WordTranslation[] | null {
+  const combined = [...(existing ?? []), ...(incoming ?? [])];
+  if (!combined.length) {
+    return null;
+  }
+  const seen = new Set<string>();
+  const deduped: WordTranslation[] = [];
+  for (const entry of combined) {
+    if (!entry || typeof entry.value !== 'string') {
+      continue;
+    }
+    const value = entry.value.trim();
+    if (!value) {
+      continue;
+    }
+    const source = entry.source?.trim() ?? null;
+    const language = entry.language?.trim() ?? null;
+    const confidence = typeof entry.confidence === 'number' ? entry.confidence : null;
+    const key = `${value.toLowerCase()}::${source ?? ''}::${language ?? ''}::${confidence ?? ''}`;
+    if (seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+    deduped.push({ value, source, language, confidence });
+  }
+  return deduped.length ? deduped : null;
+}
+
+function mergeExamples(
+  existing: WordExample[] | null | undefined,
+  incoming: WordExample[] | null | undefined,
+): WordExample[] | null {
+  const combined = [...(existing ?? []), ...(incoming ?? [])];
+  if (!combined.length) {
+    return null;
+  }
+  const seen = new Set<string>();
+  const deduped: WordExample[] = [];
+  for (const entry of combined) {
+    if (!entry) {
+      continue;
+    }
+    const exampleDe = entry.exampleDe?.trim() ?? null;
+    const exampleEn = entry.exampleEn?.trim() ?? null;
+    const source = entry.source?.trim() ?? null;
+    if (!exampleDe && !exampleEn) {
+      continue;
+    }
+    const key = `${exampleDe ?? ''}::${exampleEn ?? ''}::${source ?? ''}`.toLowerCase();
+    if (seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+    deduped.push({ exampleDe, exampleEn, source });
+  }
+  return deduped.length ? deduped : null;
+}
+
+function normalizeStringArray(values: Array<string | null | undefined>): string[] {
+  const seen = new Set<string>();
+  const result: string[] = [];
+  for (const value of values) {
+    const trimmed = value?.trim();
+    if (!trimmed) {
+      continue;
+    }
+    const key = trimmed.toLowerCase();
+    if (!seen.has(key)) {
+      seen.add(key);
+      result.push(trimmed);
+    }
+  }
+  return result;
+}
+
+function mergeWordPosAttributes(
+  existing: WordPosAttributes | null | undefined,
+  incoming: WordPosAttributes | null | undefined,
+): WordPosAttributes | null {
+  const next: WordPosAttributes = {};
+  const existingPos = existing?.pos ?? null;
+  const incomingPos = incoming?.pos ?? null;
+  if (existingPos?.trim()) {
+    next.pos = existingPos.trim();
+  } else if (incomingPos?.trim()) {
+    next.pos = incomingPos.trim();
+  }
+
+  const collectPrepositionValues = (
+    source: WordPosAttributes | null | undefined,
+    targetCases: Set<string>,
+    targetNotes: Set<string>,
+  ) => {
+    if (!source?.preposition) return;
+    for (const value of source.preposition.cases ?? []) {
+      const trimmed = value?.trim();
+      if (trimmed) {
+        targetCases.add(trimmed);
+      }
+    }
+    for (const value of source.preposition.notes ?? []) {
+      const trimmed = value?.trim();
+      if (trimmed) {
+        targetNotes.add(trimmed);
+      }
+    }
+  };
+
+  const caseValues = new Set<string>();
+  const noteValues = new Set<string>();
+  collectPrepositionValues(existing, caseValues, noteValues);
+  collectPrepositionValues(incoming, caseValues, noteValues);
+
+  if (caseValues.size || noteValues.size) {
+    const preposition: NonNullable<WordPosAttributes["preposition"]> = {};
+    if (caseValues.size) {
+      preposition.cases = Array.from(caseValues.values()).sort((a, b) => a.localeCompare(b));
+    }
+    if (noteValues.size) {
+      preposition.notes = Array.from(noteValues.values()).sort((a, b) => a.localeCompare(b));
+    }
+    next.preposition = preposition;
+  }
+
+  const mergedTags = normalizeStringArray([...(existing?.tags ?? []), ...(incoming?.tags ?? [])]);
+  if (mergedTags.length) {
+    next.tags = mergedTags.sort((a, b) => a.localeCompare(b));
+  }
+  const mergedNotes = normalizeStringArray([...(existing?.notes ?? []), ...(incoming?.notes ?? [])]);
+  if (mergedNotes.length) {
+    next.notes = mergedNotes.sort((a, b) => a.localeCompare(b));
+  }
+
+  return Object.keys(next).length ? next : null;
+}
+
+function pickLatestTimestamp(a: string | null, b: string | null): string | null {
+  const candidates = [a, b]
+    .filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
+    .map((value) => new Date(value).getTime())
+    .filter((value) => Number.isFinite(value));
+  if (!candidates.length) {
+    return a ?? b ?? null;
+  }
+  const max = Math.max(...candidates);
+  return new Date(max).toISOString();
+}
+
+function isEnglishLanguage(language?: string | null): boolean {
+  if (!language) {
+    return true;
+  }
+  const normalised = language.trim().toLowerCase();
+  if (!normalised) {
+    return true;
+  }
+  if (normalised === 'en' || normalised === 'eng' || normalised === 'english') {
+    return true;
+  }
+  const sanitized = normalised.replace(/[_\s]/g, '-');
+  return sanitized.startsWith('en-') || normalised.startsWith('english');
+}
+
+function addAuxCandidate(target: Set<'haben' | 'sein'>, value: string | null | undefined): void {
+  if (!value) {
+    return;
+  }
+  const normalised = value.trim().toLowerCase();
+  if (!normalised) {
+    return;
+  }
+  if (normalised.includes('haben') && normalised.includes('sein')) {
+    target.add('haben');
+    target.add('sein');
+    return;
+  }
+  if (normalised.startsWith('hab')) {
+    target.add('haben');
+    return;
+  }
+  if (normalised.startsWith('sein') || normalised.startsWith('ist')) {
+    target.add('sein');
+  }
+}
+
+function determineAuxFromSet(auxiliaries: Set<'haben' | 'sein'>): string | null {
+  if (!auxiliaries.size) {
+    return null;
+  }
+  if (auxiliaries.size > 1) {
+    return 'haben / sein';
+  }
+  const [value] = auxiliaries;
+  return value ?? null;
+}
+
+function metadataTriggerFor(provider: PersistedProviderEntry): string | null {
+  const metadata = provider.metadata;
+  if (!metadata || typeof metadata !== 'object') {
+    return null;
+  }
+  const trigger = (metadata as Record<string, unknown>).trigger;
+  if (typeof trigger !== 'string') {
+    return null;
+  }
+  const normalised = trigger.trim().toLowerCase();
+  return normalised.length ? normalised : null;
+}
+
+function shouldIncludePersistedProvider(provider: PersistedProviderEntry): boolean {
+  const trigger = metadataTriggerFor(provider);
+  if (!trigger) {
+    return true;
+  }
+  return trigger === 'apply';
+}
+
+function buildRowFromPersistedWordData(data: PersistedWordData): RawWordRow | null {
+  const pos = normalisePos(data.pos);
+  if (!pos) {
+    return null;
+  }
+
+  let english: string | null = null;
+  let exampleDe: string | null = null;
+  let exampleEn: string | null = null;
+  let translations: WordTranslation[] | null = null;
+  let examples: WordExample[] | null = null;
+  const auxiliaries = new Set<'haben' | 'sein'>();
+  const perfektValues = new Set<string>();
+  let praeteritum: string | null = null;
+  let partizipIi: string | null = null;
+  let enrichmentAppliedAt: string | null = data.updatedAt ?? null;
+  let enrichmentMethod: EnrichmentMethod | null = null;
+  let separable: boolean | null = null;
+  let sourcesCsv: string | null = null;
+  let posAttributes: WordPosAttributes | null = null;
+
+  let hasAppliedData = false;
+
+  for (const provider of data.providers) {
+    if (!shouldIncludePersistedProvider(provider)) {
+      continue;
+    }
+
+    hasAppliedData = true;
+    sourcesCsv = dedupeSources(sourcesCsv, provider.providerLabel ?? provider.providerId ?? null);
+
+    translations = mergeTranslations(translations, provider.translations);
+    if (!english && provider.translations) {
+      const candidate = provider.translations.find((entry) => isEnglishLanguage(entry.language));
+      if (candidate?.value?.trim()) {
+        english = candidate.value.trim();
+      }
+    }
+
+    examples = mergeExamples(examples, provider.examples);
+    if ((!exampleDe || !exampleEn) && provider.examples) {
+      const candidate = provider.examples.find(
+        (entry) => Boolean(entry.exampleDe?.trim() || entry.exampleEn?.trim()),
+      );
+      if (candidate) {
+        exampleDe = exampleDe ?? candidate.exampleDe?.trim() ?? null;
+        exampleEn = exampleEn ?? candidate.exampleEn?.trim() ?? null;
+      }
+    }
+
+    if (provider.prepositionAttributes?.length) {
+      const cases = provider.prepositionAttributes.flatMap((entry) => entry.cases ?? []);
+      const notes = provider.prepositionAttributes.flatMap((entry) => entry.notes ?? []);
+      const incoming: WordPosAttributes = {
+        pos,
+        preposition: {
+          cases: cases.length ? normalizeStringArray(cases) : undefined,
+          notes: notes.length ? normalizeStringArray(notes) : undefined,
+        },
+      };
+      posAttributes = mergeWordPosAttributes(posAttributes, incoming);
+    }
+
+    if (provider.verbForms) {
+      for (const suggestion of provider.verbForms) {
+        if (!praeteritum && suggestion.praeteritum?.trim()) {
+          praeteritum = suggestion.praeteritum.trim();
+        }
+        if (!partizipIi && suggestion.partizipIi?.trim()) {
+          partizipIi = suggestion.partizipIi.trim();
+        }
+        if (suggestion.perfekt?.trim()) {
+          perfektValues.add(suggestion.perfekt.trim());
+        }
+        if (Array.isArray(suggestion.perfektOptions)) {
+          for (const option of suggestion.perfektOptions) {
+            const trimmed = option?.trim();
+            if (trimmed) {
+              perfektValues.add(trimmed);
+            }
+          }
+        }
+        addAuxCandidate(auxiliaries, suggestion.aux);
+        if (Array.isArray(suggestion.auxiliaries)) {
+          for (const aux of suggestion.auxiliaries) {
+            addAuxCandidate(auxiliaries, aux);
+          }
+        }
+      }
+    }
+
+    if (provider.metadata && typeof provider.metadata === 'object') {
+      const method = provider.metadata.enrichmentMethod;
+      if (!enrichmentMethod && typeof method === 'string') {
+        enrichmentMethod = method as EnrichmentMethod;
+      }
+      const appliedAt = provider.metadata.appliedAt ?? provider.metadata.collectedAt;
+      if (typeof appliedAt === 'string') {
+        enrichmentAppliedAt = pickLatestTimestamp(enrichmentAppliedAt, appliedAt);
+      }
+      if (typeof provider.metadata.separable === 'boolean' && separable === null) {
+        separable = provider.metadata.separable;
+      }
+    }
+
+    if (provider.collectedAt) {
+      enrichmentAppliedAt = pickLatestTimestamp(enrichmentAppliedAt, provider.collectedAt);
+    }
+  }
+
+  if (!hasAppliedData) {
+    return null;
+  }
+
+  if (!english && translations) {
+    const candidate = translations.find((entry) => isEnglishLanguage(entry.language));
+    if (candidate?.value?.trim()) {
+      english = candidate.value.trim();
+    }
+  }
+
+  if ((!exampleDe || !exampleEn) && examples) {
+    const candidate = examples.find((entry) => Boolean(entry.exampleDe || entry.exampleEn));
+    if (candidate) {
+      exampleDe = exampleDe ?? candidate.exampleDe ?? null;
+      exampleEn = exampleEn ?? candidate.exampleEn ?? null;
+    }
+  }
+
+  const aux = determineAuxFromSet(auxiliaries);
+  let perfekt = perfektValues.size ? Array.from(perfektValues).join('; ') : null;
+
+  if (!perfekt && partizipIi && auxiliaries.size) {
+    const auxList = Array.from(auxiliaries);
+    if (auxList.length === 1) {
+      perfekt = `${auxList[0]} ${partizipIi}`;
+    } else {
+      perfekt = auxList.map((value) => `${value} ${partizipIi}`).join('; ');
+    }
+  }
+
+  return {
+    lemma: data.lemma,
+    pos,
+    level: null,
+    english,
+    exampleDe,
+    exampleEn,
+    gender: null,
+    plural: null,
+    separable,
+    aux,
+    praesensIch: null,
+    praesensEr: null,
+    praeteritum,
+    partizipIi,
+    perfekt,
+    comparative: null,
+    superlative: null,
+    sourcesCsv,
+    sourceNotes: null,
+    translations,
+    examples,
+    posAttributes,
+    enrichmentAppliedAt,
+    enrichmentMethod,
+  } satisfies RawWordRow;
+}
+
+function toDateOrNull(value: string | null | undefined): Date | null {
+  if (!value) {
+    return null;
+  }
+  const date = new Date(value);
+  return Number.isFinite(date.getTime()) ? date : null;
+}
+
 async function aggregateWords(rootDir: string): Promise<AggregatedWordWithKey[]> {
   const manualPath = path.join(rootDir, 'data', 'words_manual.csv');
   const canonicalPath = path.join(rootDir, 'data', 'words_canonical.csv');
@@ -272,19 +719,31 @@ async function aggregateWords(rootDir: string): Promise<AggregatedWordWithKey[]>
   );
 
   const aggregated = new Map<string, RawWordRow>();
-  const combinedRows: RawWordRow[] = [];
+
+  const upsertAggregatedRow = (row: RawWordRow | null | undefined) => {
+    if (!row) {
+      return;
+    }
+    const key = keyFor(row.lemma, row.pos);
+    const existing = aggregated.get(key) ?? null;
+    const merged = mergeWord(existing, row);
+    aggregated.set(key, merged);
+  };
 
   for (const row of manualRows) {
-    const mapped = mapRow(row);
-    if (mapped) combinedRows.push(mapped);
+    upsertAggregatedRow(mapRow(row));
   }
 
   for (const row of externalRows) {
-    const mapped = mapRow(row as unknown as Record<string, unknown>);
-    if (mapped) combinedRows.push(mapped);
+    upsertAggregatedRow(mapRow(row as unknown as Record<string, unknown>));
   }
 
-  const snapshotRows: ExternalWordRow[] = combinedRows.map((row) => ({
+  const persistedWordData = await loadPersistedWordData(rootDir);
+  for (const entry of persistedWordData) {
+    upsertAggregatedRow(buildRowFromPersistedWordData(entry));
+  }
+
+  const snapshotRows: ExternalWordRow[] = Array.from(aggregated.values()).map((row) => ({
     lemma: row.lemma,
     pos: row.pos,
     level: row.level ?? undefined,
@@ -307,12 +766,6 @@ async function aggregateWords(rootDir: string): Promise<AggregatedWordWithKey[]>
   }));
 
   await snapshotExternalSources(snapshotPath, snapshotRows);
-
-  for (const row of combinedRows) {
-    const key = keyFor(row.lemma, row.pos);
-    const merged = mergeWord(aggregated.get(key) ?? null, row);
-    aggregated.set(key, merged);
-  }
 
   const wordsWithMetadata: AggregatedWordWithKey[] = [];
   for (const [key, value] of aggregated.entries()) {
@@ -341,6 +794,10 @@ async function aggregateWords(rootDir: string): Promise<AggregatedWordWithKey[]>
       complete,
       sourcesCsv: value.sourcesCsv ?? null,
       sourceNotes: value.sourceNotes ?? null,
+      translations: value.translations ?? null,
+      examples: value.examples ?? null,
+      enrichmentAppliedAt: value.enrichmentAppliedAt ?? null,
+      enrichmentMethod: value.enrichmentMethod ?? null,
     });
   }
 
@@ -356,7 +813,7 @@ async function loadCanonicalRows(filePath: string): Promise<Array<Record<string,
   }) as Array<Record<string, string>>;
 }
 
-async function seedLegacyWords(wordsToUpsert: AggregatedWordWithKey[]): Promise<void> {
+async function seedLegacyWords(db: DatabaseClient, wordsToUpsert: AggregatedWordWithKey[]): Promise<void> {
   const existing = await db.select({ lemma: words.lemma, pos: words.pos }).from(words);
   const desiredKeys = new Set(wordsToUpsert.map((word) => word.key));
 
@@ -392,6 +849,10 @@ async function seedLegacyWords(wordsToUpsert: AggregatedWordWithKey[]): Promise<
         complete: word.complete,
         sourcesCsv: word.sourcesCsv,
         sourceNotes: word.sourceNotes,
+        translations: word.translations ?? null,
+        examples: word.examples ?? null,
+        enrichmentAppliedAt: toDateOrNull(word.enrichmentAppliedAt),
+        enrichmentMethod: word.enrichmentMethod ?? null,
       })
       .onConflictDoUpdate({
         target: [words.lemma, words.pos],
@@ -415,20 +876,29 @@ async function seedLegacyWords(wordsToUpsert: AggregatedWordWithKey[]): Promise<
           complete: sql`excluded.complete`,
           sourcesCsv: sql`excluded.sources_csv`,
           sourceNotes: sql`excluded.source_notes`,
+          translations: sql`excluded.translations`,
+          examples: sql`excluded.examples`,
+          enrichmentAppliedAt: sql`excluded.enrichment_applied_at`,
+          enrichmentMethod: sql`excluded.enrichment_method`,
           updatedAt: sql`now()`,
         },
       });
   }
 }
 
-export async function seedDatabase(rootDir: string): Promise<{
+export async function seedDatabase(
+  rootDir: string,
+  db: DatabaseClient = ensureDatabase(),
+): Promise<{
   aggregatedCount: number;
   lexemeCount: number;
   taskCount: number;
   bundleCount: number;
 }> {
+  await ensureLegacySchema(db);
+
   const aggregated = await aggregateWords(rootDir);
-  await seedLegacyWords(aggregated);
+  await seedLegacyWords(db, aggregated);
 
   const bundles = buildGoldenBundles(aggregated);
   await upsertGoldenBundles(db, bundles);
@@ -449,7 +919,12 @@ async function main(): Promise<void> {
   const __filename = fileURLToPath(import.meta.url);
   const root = path.resolve(path.dirname(__filename), '..');
 
-  const { aggregatedCount, lexemeCount, taskCount, bundleCount } = await seedDatabase(root);
+  console.log('Applying database migrations before seeding…');
+  const pool = getPool();
+  await applyMigrations(pool);
+
+  const database = ensureDatabase();
+  const { aggregatedCount, lexemeCount, taskCount, bundleCount } = await seedDatabase(root, database);
 
   console.log(`Seeded ${aggregatedCount} words into legacy table.`);
   console.log(`Upserted ${lexemeCount} lexemes and ${taskCount} task specs across ${bundleCount} packs.`);

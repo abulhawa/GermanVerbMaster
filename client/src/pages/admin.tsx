@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
-import { Sparkles, Settings2, PenSquare, Trash2 } from 'lucide-react';
+import { Sparkles, Settings2, PenSquare, Trash2, Wand2 } from 'lucide-react';
 import { Link } from 'wouter';
 
 import { AppShell } from '@/components/layout/app-shell';
@@ -15,51 +15,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useAuthSession } from '@/auth/session';
 import type { Word } from '@shared';
-
-const wordSchema = z.object({
-  id: z.number(),
-  lemma: z.string(),
-  pos: z.enum(['V', 'N', 'Adj', 'Adv', 'Pron', 'Det', 'Präp', 'Konj', 'Num', 'Part', 'Interj']),
-  level: z.string().nullable(),
-  english: z.string().nullable(),
-  exampleDe: z.string().nullable(),
-  exampleEn: z.string().nullable(),
-  gender: z.string().nullable(),
-  plural: z.string().nullable(),
-  separable: z.boolean().nullable(),
-  aux: z.enum(['haben', 'sein']).nullable(),
-  praesensIch: z.string().nullable(),
-  praesensEr: z.string().nullable(),
-  praeteritum: z.string().nullable(),
-  partizipIi: z.string().nullable(),
-  perfekt: z.string().nullable(),
-  comparative: z.string().nullable(),
-  superlative: z.string().nullable(),
-  canonical: z.boolean(),
-  complete: z.boolean(),
-  sourcesCsv: z.string().nullable(),
-  sourceNotes: z.string().nullable(),
-  createdAt: z.coerce.date(),
-  updatedAt: z.coerce.date(),
-});
-
-const wordsResponseSchema = z.object({
-  data: z.array(wordSchema),
-  pagination: z.object({
-    page: z.number().int().min(1),
-    perPage: z.number().int().min(1),
-    total: z.number().int().min(0),
-    totalPages: z.number().int().min(0),
-  }),
-});
+import { wordSchema, wordsResponseSchema } from './admin-word-schemas';
+import WordEnrichmentDetailView, {
+  DEFAULT_WORD_CONFIG,
+  type WordConfigState,
+} from './admin-enrichment-detail';
 
 type CanonicalFilter = 'all' | 'only' | 'non';
 type CompleteFilter = 'all' | 'complete' | 'incomplete';
+type EnrichmentFilter = 'all' | 'enriched' | 'unenriched';
 
 const PER_PAGE_OPTIONS = [25, 50, 100, 200] as const;
 
@@ -84,6 +55,12 @@ const completeOptions: Array<{ label: string; value: CompleteFilter }> = [
   { label: 'All', value: 'all' },
   { label: 'Complete', value: 'complete' },
   { label: 'Incomplete', value: 'incomplete' },
+];
+
+const enrichmentOptions: Array<{ label: string; value: EnrichmentFilter }> = [
+  { label: 'All', value: 'all' },
+  { label: 'Enriched', value: 'enriched' },
+  { label: 'Needs enrichment', value: 'unenriched' },
 ];
 
 interface EditFieldConfig {
@@ -124,6 +101,7 @@ const verbFields: EditFieldConfig[] = [
     { label: 'Unset', value: 'unset' },
     { label: 'haben', value: 'haben' },
     { label: 'sein', value: 'sein' },
+    { label: 'haben / sein', value: 'haben / sein' },
   ] },
   { key: 'separable', label: 'Separable', type: 'select', options: [
     { label: 'Unset', value: 'unset' },
@@ -209,7 +187,11 @@ function preparePayload(form: WordFormState, pos: Word['pos']) {
   if (pos === 'V') {
     if (form.aux === 'unset') {
       payload.aux = null;
-    } else if (form.aux === 'haben' || form.aux === 'sein') {
+    } else if (
+      form.aux === 'haben'
+      || form.aux === 'sein'
+      || form.aux === 'haben / sein'
+    ) {
       payload.aux = form.aux;
     }
 
@@ -241,6 +223,14 @@ function preparePayload(form: WordFormState, pos: Word['pos']) {
   return payload;
 }
 
+function humanizeEnrichmentMethod(method: Word['enrichmentMethod'] | null | undefined) {
+  if (!method) return null;
+  return method
+    .split('_')
+    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+    .join(' ');
+}
+
 const AdminWordsPage = () => {
   const [adminToken, setAdminToken] = useState(() => localStorage.getItem('gvm-admin-token') ?? '');
   const [search, setSearch] = useState('');
@@ -248,10 +238,13 @@ const AdminWordsPage = () => {
   const [level, setLevel] = useState<string>('All');
   const [canonicalFilter, setCanonicalFilter] = useState<CanonicalFilter>('all');
   const [completeFilter, setCompleteFilter] = useState<CompleteFilter>('all');
+  const [enrichmentFilter, setEnrichmentFilter] = useState<EnrichmentFilter>('all');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState<number>(50);
   const [selectedWord, setSelectedWord] = useState<Word | null>(null);
   const [formState, setFormState] = useState<WordFormState | null>(null);
+  const [wordConfig, setWordConfig] = useState<WordConfigState>(DEFAULT_WORD_CONFIG);
+  const [enrichmentWordId, setEnrichmentWordId] = useState<number | null>(null);
 
   const pageDebugId = 'admin-words';
 
@@ -266,17 +259,28 @@ const AdminWordsPage = () => {
 
   useEffect(() => {
     setPage(1);
-  }, [search, pos, level, canonicalFilter, completeFilter]);
+  }, [search, pos, level, canonicalFilter, completeFilter, enrichmentFilter]);
 
   const filters = useMemo(
-    () => ({ search, pos, level, canonicalFilter, completeFilter, page, perPage }),
-    [search, pos, level, canonicalFilter, completeFilter, page, perPage],
+    () => ({
+      search,
+      pos,
+      level,
+      canonicalFilter,
+      completeFilter,
+      enrichmentFilter,
+      page,
+      perPage,
+    }),
+    [search, pos, level, canonicalFilter, completeFilter, enrichmentFilter, page, perPage],
   );
 
   const queryKey = useMemo(
     () => ['words', filters, normalizedAdminToken],
     [filters, normalizedAdminToken],
   );
+
+  const enrichmentDialogOpen = enrichmentWordId !== null;
 
   const wordsQuery = useQuery({
     queryKey,
@@ -289,6 +293,8 @@ const AdminWordsPage = () => {
       if (filters.canonicalFilter === 'non') params.set('canonical', 'non');
       if (filters.completeFilter === 'complete') params.set('complete', 'only');
       if (filters.completeFilter === 'incomplete') params.set('complete', 'non');
+      if (filters.enrichmentFilter === 'enriched') params.set('enriched', 'only');
+      if (filters.enrichmentFilter === 'unenriched') params.set('enriched', 'non');
 
       const headers: Record<string, string> = {};
       if (normalizedAdminToken) {
@@ -348,6 +354,14 @@ const AdminWordsPage = () => {
   const closeEditor = () => {
     setSelectedWord(null);
     setFormState(null);
+  };
+
+  const openEnrichmentDialog = (word: Word) => {
+    setEnrichmentWordId(word.id);
+  };
+
+  const closeEnrichmentDialog = () => {
+    setEnrichmentWordId(null);
   };
 
   const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
@@ -414,10 +428,20 @@ const AdminWordsPage = () => {
 
     base.push({ key: 'canonical', label: 'Canonical' });
     base.push({ key: 'complete', label: 'Complete' });
+    base.push({ key: 'enrichmentAppliedAt', label: 'Enriched' });
     base.push({ key: 'actions', label: 'Actions' });
 
     return base;
   }, [activePos]);
+
+  const enrichmentDateFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat(undefined, {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      }),
+    [],
+  );
 
   const { data: authSession } = useAuthSession();
   const navigationItems = useMemo(
@@ -507,7 +531,7 @@ const AdminWordsPage = () => {
               </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-4">
+            <div className="grid gap-4 md:grid-cols-5">
               <div className="space-y-2">
                 <Label>Part of speech</Label>
                 <Select value={pos} onValueChange={(value) => setPos(value as Word['pos'] | 'ALL')}>
@@ -576,14 +600,32 @@ const AdminWordsPage = () => {
                   <SelectTrigger>
                     <SelectValue placeholder="Completeness" />
                   </SelectTrigger>
-                <SelectContent>
-                  {completeOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                  <SelectContent>
+                    {completeOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Enrichment</Label>
+                <Select
+                  value={enrichmentFilter}
+                  onValueChange={(value: EnrichmentFilter) => setEnrichmentFilter(value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Enrichment" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {enrichmentOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </CardContent>
@@ -630,99 +672,120 @@ const AdminWordsPage = () => {
               </Select>
             </div>
           </div>
-          <div className="max-h-[520px] overflow-auto rounded-3xl border border-border/60">
-            <Table>
+          <div className="max-h-[520px] overflow-hidden rounded-3xl border border-border/60">
+            <Table className="text-xs">
               <TableHeader className="sticky top-0 z-20 bg-card/95 backdrop-blur">
                 <TableRow>
                   {columns.map((column) => (
-                    <TableHead key={column.key}>{column.label}</TableHead>
+                    <TableHead
+                      key={column.key}
+                      className="px-2 py-2 text-xs font-semibold uppercase tracking-wide"
+                    >
+                      {column.label}
+                    </TableHead>
                   ))}
                 </TableRow>
               </TableHeader>
               <TableBody>
-              {words.map((word) => (
-                <TableRow key={word.id}>
-                  <TableCell className="font-medium">{word.lemma}</TableCell>
-                  <TableCell>{word.pos}</TableCell>
-                  <TableCell>{word.level ?? '—'}</TableCell>
-                  <TableCell>{word.english ?? '—'}</TableCell>
-                  {activePos === 'V' && (
-                    <>
-                      <TableCell>{word.praeteritum ?? '—'}</TableCell>
-                      <TableCell>{word.partizipIi ?? '—'}</TableCell>
-                      <TableCell>{word.perfekt ?? '—'}</TableCell>
-                      <TableCell>{word.aux ?? '—'}</TableCell>
-                    </>
-                  )}
-                  {activePos === 'N' && (
-                    <>
-                      <TableCell>{word.gender ?? '—'}</TableCell>
-                      <TableCell>{word.plural ?? '—'}</TableCell>
-                    </>
-                  )}
-                  {activePos === 'Adj' && (
-                    <>
-                      <TableCell>{word.comparative ?? '—'}</TableCell>
-                      <TableCell>{word.superlative ?? '—'}</TableCell>
-                    </>
-                  )}
-                  {activePos === 'ALL' && (
-                    <>
-                      <TableCell>{word.exampleDe ?? '—'}</TableCell>
-                      <TableCell>{word.exampleEn ?? '—'}</TableCell>
-                    </>
-                  )}
-                  <TableCell>
-                    <Badge variant={word.canonical ? 'default' : 'secondary'}>
-                      {word.canonical ? 'Canonical' : 'Shadow'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={word.complete ? 'default' : 'outline'}>
-                      {word.complete ? 'Complete' : 'Incomplete'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="flex items-center gap-2">
-                    <Button
-                      size="icon"
-                      variant={word.canonical ? 'destructive' : 'secondary'}
-                      className="rounded-xl"
-                      title={word.canonical ? 'Remove canonical flag' : 'Mark as canonical'}
-                      aria-label={word.canonical ? 'Remove canonical flag' : 'Mark as canonical'}
-                      onClick={() => toggleCanonical(word)}
-                      debugId={`${pageDebugId}-word-${word.id}-toggle-canonical-button`}
-                    >
-                      {word.canonical ? (
-                        <Trash2 className="h-4 w-4" aria-hidden />
+              {words.map((word) => {
+                const enrichmentLabel = humanizeEnrichmentMethod(word.enrichmentMethod);
+                return (
+                  <TableRow key={word.id}>
+                    <TableCell className="px-2 py-2 font-medium">{word.lemma}</TableCell>
+                    <TableCell className="px-2 py-2">{word.pos}</TableCell>
+                    <TableCell className="px-2 py-2">{word.level ?? '—'}</TableCell>
+                    <TableCell className="px-2 py-2">{word.english ?? '—'}</TableCell>
+                    {activePos === 'V' && (
+                      <>
+                        <TableCell className="px-2 py-2">{word.praeteritum ?? '—'}</TableCell>
+                        <TableCell className="px-2 py-2">{word.partizipIi ?? '—'}</TableCell>
+                        <TableCell className="px-2 py-2">{word.perfekt ?? '—'}</TableCell>
+                        <TableCell className="px-2 py-2">{word.aux ?? '—'}</TableCell>
+                      </>
+                    )}
+                    {activePos === 'N' && (
+                      <>
+                        <TableCell className="px-2 py-2">{word.gender ?? '—'}</TableCell>
+                        <TableCell className="px-2 py-2">{word.plural ?? '—'}</TableCell>
+                      </>
+                    )}
+                    {activePos === 'Adj' && (
+                      <>
+                        <TableCell className="px-2 py-2">{word.comparative ?? '—'}</TableCell>
+                        <TableCell className="px-2 py-2">{word.superlative ?? '—'}</TableCell>
+                      </>
+                    )}
+                    {activePos === 'ALL' && (
+                      <>
+                        <TableCell className="px-2 py-2">{word.exampleDe ?? '—'}</TableCell>
+                        <TableCell className="px-2 py-2">{word.exampleEn ?? '—'}</TableCell>
+                      </>
+                    )}
+                    <TableCell className="px-2 py-2">
+                      <Badge variant={word.canonical ? 'default' : 'secondary'}>
+                        {word.canonical ? 'Canonical' : 'Shadow'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="px-2 py-2">
+                      <Badge variant={word.complete ? 'default' : 'outline'}>
+                        {word.complete ? 'Complete' : 'Incomplete'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="px-2 py-2">
+                      {word.enrichmentAppliedAt ? (
+                        <div className="flex flex-col">
+                          <span>{enrichmentDateFormatter.format(word.enrichmentAppliedAt)}</span>
+                          {enrichmentLabel ? (
+                            <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                              {enrichmentLabel}
+                            </span>
+                          ) : null}
+                        </div>
                       ) : (
-                        <Sparkles className="h-4 w-4" aria-hidden />
+                        <span className="text-muted-foreground">—</span>
                       )}
-                    </Button>
-                    <Drawer open={selectedWord?.id === word.id} onOpenChange={(open) => {
-                      if (open) {
-                        openEditor(word);
-                      } else {
-                        closeEditor();
-                      }
-                    }}>
-                      <DrawerTrigger asChild>
-                        <Button
-                          size="icon"
-                          variant="secondary"
-                          className="rounded-xl"
-                          onClick={() => openEditor(word)}
-                          title="Edit entry"
-                          aria-label="Edit entry"
-                          debugId={`${pageDebugId}-word-${word.id}-edit-button`}
-                        >
-                          <PenSquare className="h-4 w-4" aria-hidden />
-                        </Button>
-                      </DrawerTrigger>
-                      <DrawerContent>
-                        <DrawerHeader>
-                          <DrawerTitle>Edit {word.lemma}</DrawerTitle>
-                        </DrawerHeader>
-                        <form onSubmit={submitForm} className="space-y-4 p-4">
+                    </TableCell>
+                    <TableCell className="flex items-center gap-2 px-2 py-2">
+                      <Button
+                        size="icon"
+                        variant={word.canonical ? 'destructive' : 'secondary'}
+                        className="rounded-xl"
+                        title={word.canonical ? 'Remove canonical flag' : 'Mark as canonical'}
+                        aria-label={word.canonical ? 'Remove canonical flag' : 'Mark as canonical'}
+                        onClick={() => toggleCanonical(word)}
+                        debugId={`${pageDebugId}-word-${word.id}-toggle-canonical-button`}
+                      >
+                        {word.canonical ? (
+                          <Trash2 className="h-4 w-4" aria-hidden />
+                        ) : (
+                          <Sparkles className="h-4 w-4" aria-hidden />
+                        )}
+                      </Button>
+                      <Drawer open={selectedWord?.id === word.id} onOpenChange={(open) => {
+                        if (open) {
+                          openEditor(word);
+                        } else {
+                          closeEditor();
+                        }
+                      }}>
+                        <DrawerTrigger asChild>
+                          <Button
+                            size="icon"
+                            variant="secondary"
+                            className="rounded-xl"
+                            onClick={() => openEditor(word)}
+                            title="Edit entry"
+                            aria-label="Edit entry"
+                            debugId={`${pageDebugId}-word-${word.id}-edit-button`}
+                          >
+                            <PenSquare className="h-4 w-4" aria-hidden />
+                          </Button>
+                        </DrawerTrigger>
+                        <DrawerContent className="max-h-[85vh] overflow-y-auto">
+                          <DrawerHeader>
+                            <DrawerTitle>Edit {word.lemma}</DrawerTitle>
+                          </DrawerHeader>
+                          <form onSubmit={submitForm} className="space-y-4 p-4">
                           {[...commonFields,
                             ...(word.pos === 'V' ? verbFields : []),
                             ...(word.pos === 'N' ? nounFields : []),
@@ -800,9 +863,21 @@ const AdminWordsPage = () => {
                         </form>
                       </DrawerContent>
                     </Drawer>
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        className="rounded-xl"
+                        onClick={() => openEnrichmentDialog(word)}
+                        title="Open enrichment"
+                        aria-label="Open enrichment"
+                        debugId={`${pageDebugId}-word-${word.id}-enrich-button`}
+                      >
+                        <Wand2 className="h-4 w-4" aria-hidden />
+                      </Button>
                   </TableCell>
-                </TableRow>
-              ))}
+                  </TableRow>
+                );
+              })}
               {isUnauthorized && (
                 <TableRow>
                   <TableCell colSpan={columns.length} className="text-center text-muted-foreground">
@@ -856,6 +931,34 @@ const AdminWordsPage = () => {
         </CardContent>
       </Card>
     </div>
+      <Dialog
+        open={enrichmentDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            closeEnrichmentDialog();
+          }
+        }}
+      >
+        <DialogContent className="w-full max-w-6xl overflow-hidden border border-border/60 bg-background p-0">
+          <ScrollArea className="max-h-[80vh] w-full">
+            {enrichmentWordId ? (
+              <div className="space-y-6 px-6 py-6">
+                <WordEnrichmentDetailView
+                  key={enrichmentWordId}
+                  wordId={enrichmentWordId}
+                  adminToken={adminToken}
+                  normalizedAdminToken={normalizedAdminToken}
+                  onAdminTokenChange={setAdminToken}
+                  toast={toast}
+                  onClose={closeEnrichmentDialog}
+                  wordConfig={wordConfig}
+                  setWordConfig={setWordConfig}
+                />
+              </div>
+            ) : null}
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
     </AppShell>
   );
 };
