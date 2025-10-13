@@ -1037,10 +1037,18 @@ export function registerRoutes(app: Express): void {
               "priorityScore",
               "priority_score",
             );
+            const dueAtRaw = getRowValue<string | Date | null>(row, "dueAt", "due_at") ?? null;
+            const dueAt = (() => {
+              if (dueAtRaw == null) {
+                return null;
+              }
+              const parsed = dueAtRaw instanceof Date ? dueAtRaw : new Date(dueAtRaw);
+              return Number.isNaN(parsed.getTime()) ? null : parsed;
+            })();
             return {
               taskId: getRowValue<string>(row, "taskId", "task_id")!,
               priorityScore: priorityScore == null ? null : Number(priorityScore),
-              dueAt: (getRowValue<Date | null>(row, "dueAt", "due_at") ?? null) as Date | null,
+              dueAt,
               lastResult: getRowValue<PracticeResult | null>(row, "lastResult", "last_result") ?? null,
               totalAttempts: Number(
                 getRowValue<number>(row, "totalAttempts", "total_attempts") ?? 0,
