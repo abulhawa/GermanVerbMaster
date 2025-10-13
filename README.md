@@ -32,6 +32,9 @@ Requires Node.js 22.0.0 or newer and npm 10+ (see `package.json` engines field).
    npm run dev
    npm run dev:client # start only the Vite dev server on port 5000 for UI smoke tests
    ```
+   When `DATABASE_URL` is unset the `npm run dev` script now enables an in-memory Postgres mock. The server applies the latest
+   Drizzle migrations and seeds a small enrichment fixture so admin screens and task APIs are reachable without provisioning a
+   real database. Set `USE_DEV_DB_MOCK=0` to opt out when you want to exercise a live Postgres instance locally.
 6. Additional scripts:
    ```bash
    npm run check      # type-check the project
