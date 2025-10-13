@@ -60,6 +60,9 @@ interface FieldDrafts {
 export interface WordConfigState {
   enableAi: boolean;
   allowOverwrite: boolean;
+  collectSynonyms: boolean;
+  collectExamples: boolean;
+  collectTranslations: boolean;
   collectWiktextract: boolean;
 }
 
@@ -140,6 +143,9 @@ function extractPluralValues(candidate: EnrichmentNounFormSuggestion): Array<{ v
 export const DEFAULT_WORD_CONFIG: WordConfigState = {
   enableAi: false,
   allowOverwrite: false,
+  collectSynonyms: false,
+  collectExamples: false,
+  collectTranslations: false,
   collectWiktextract: true,
 };
 
@@ -424,6 +430,9 @@ const WordEnrichmentDetailView = ({
       const options: WordEnrichmentOptions = {
         enableAi: wordConfig.enableAi,
         allowOverwrite: wordConfig.allowOverwrite,
+        collectSynonyms: wordConfig.collectSynonyms,
+        collectExamples: wordConfig.collectExamples,
+        collectTranslations: wordConfig.collectTranslations,
         collectWiktextract: wordConfig.collectWiktextract,
       };
       const result = await previewWordEnrichment(word.id, options, normalizedAdminToken);
@@ -949,6 +958,33 @@ const WordEnrichmentDetailView = ({
               checked={wordConfig.collectWiktextract}
               onCheckedChange={(checked) => {
                 setWordConfig((current) => ({ ...current, collectWiktextract: checked }));
+                setApplyResult(null);
+              }}
+            />
+            <BooleanToggle
+              label="Consult OpenThesaurus (synonyms)"
+              description="Fetch additional synonym candidates from openthesaurus.de"
+              checked={wordConfig.collectSynonyms}
+              onCheckedChange={(checked) => {
+                setWordConfig((current) => ({ ...current, collectSynonyms: checked }));
+                setApplyResult(null);
+              }}
+            />
+            <BooleanToggle
+              label="Consult Tatoeba (examples)"
+              description="Fetch extra example sentences from tatoeba.org"
+              checked={wordConfig.collectExamples}
+              onCheckedChange={(checked) => {
+                setWordConfig((current) => ({ ...current, collectExamples: checked }));
+                setApplyResult(null);
+              }}
+            />
+            <BooleanToggle
+              label="Consult MyMemory (translations)"
+              description="Fetch additional translation suggestions from mymemory.translated.net"
+              checked={wordConfig.collectTranslations}
+              onCheckedChange={(checked) => {
+                setWordConfig((current) => ({ ...current, collectTranslations: checked }));
                 setApplyResult(null);
               }}
             />

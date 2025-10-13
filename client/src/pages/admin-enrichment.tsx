@@ -55,6 +55,9 @@ interface BulkConfigState extends RunEnrichmentPayload {
   onlyIncomplete: boolean;
   enableAi: boolean;
   allowOverwrite: boolean;
+  collectSynonyms: boolean;
+  collectExamples: boolean;
+  collectTranslations: boolean;
   collectWiktextract: boolean;
 }
 
@@ -64,6 +67,9 @@ const DEFAULT_BULK_CONFIG: BulkConfigState = {
   onlyIncomplete: true,
   enableAi: false,
   allowOverwrite: false,
+  collectSynonyms: false,
+  collectExamples: false,
+  collectTranslations: false,
   collectWiktextract: true,
 };
 
@@ -152,6 +158,9 @@ const AdminEnrichmentPage = () => {
         onlyIncomplete: bulkConfig.onlyIncomplete,
         enableAi: bulkConfig.enableAi,
         allowOverwrite: bulkConfig.allowOverwrite,
+        collectSynonyms: bulkConfig.collectSynonyms,
+        collectExamples: bulkConfig.collectExamples,
+        collectTranslations: bulkConfig.collectTranslations,
         collectWiktextract: bulkConfig.collectWiktextract,
       };
       return runBulkEnrichment(payload, normalizedAdminToken);
@@ -477,6 +486,30 @@ const AdminEnrichmentPage = () => {
               checked={bulkConfig.collectWiktextract}
               onCheckedChange={(checked) =>
                 setBulkConfig((config) => ({ ...config, collectWiktextract: checked }))
+              }
+            />
+            <BooleanToggle
+              label="Consult OpenThesaurus (synonyms)"
+              description="Fetch additional synonym candidates from openthesaurus.de"
+              checked={bulkConfig.collectSynonyms}
+              onCheckedChange={(checked) =>
+                setBulkConfig((config) => ({ ...config, collectSynonyms: checked }))
+              }
+            />
+            <BooleanToggle
+              label="Consult Tatoeba (examples)"
+              description="Fetch extra example sentences from tatoeba.org"
+              checked={bulkConfig.collectExamples}
+              onCheckedChange={(checked) =>
+                setBulkConfig((config) => ({ ...config, collectExamples: checked }))
+              }
+            />
+            <BooleanToggle
+              label="Consult MyMemory (translations)"
+              description="Fetch additional translation suggestions from mymemory.translated.net"
+              checked={bulkConfig.collectTranslations}
+              onCheckedChange={(checked) =>
+                setBulkConfig((config) => ({ ...config, collectTranslations: checked }))
               }
             />
             <BooleanToggle
