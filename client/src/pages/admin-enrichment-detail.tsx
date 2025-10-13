@@ -57,12 +57,10 @@ interface FieldDrafts {
   superlative: string;
 }
 
-export interface WordConfigState extends WordEnrichmentOptions {
+export interface WordConfigState {
   enableAi: boolean;
   allowOverwrite: boolean;
-  collectSynonyms: boolean;
-  collectExamples: boolean;
-  collectTranslations: boolean;
+  collectWiktextract: boolean;
 }
 
 interface WordEnrichmentDetailViewProps {
@@ -142,9 +140,7 @@ function extractPluralValues(candidate: EnrichmentNounFormSuggestion): Array<{ v
 export const DEFAULT_WORD_CONFIG: WordConfigState = {
   enableAi: false,
   allowOverwrite: false,
-  collectSynonyms: true,
-  collectExamples: true,
-  collectTranslations: true,
+  collectWiktextract: true,
 };
 
 function extractAdjectiveValues(
@@ -428,9 +424,7 @@ const WordEnrichmentDetailView = ({
       const options: WordEnrichmentOptions = {
         enableAi: wordConfig.enableAi,
         allowOverwrite: wordConfig.allowOverwrite,
-        collectSynonyms: wordConfig.collectSynonyms,
-        collectExamples: wordConfig.collectExamples,
-        collectTranslations: wordConfig.collectTranslations,
+        collectWiktextract: wordConfig.collectWiktextract,
       };
       const result = await previewWordEnrichment(word.id, options, normalizedAdminToken);
       return result;
@@ -950,26 +944,11 @@ const WordEnrichmentDetailView = ({
               }}
             />
             <BooleanToggle
-              label="Collect synonyms"
-              checked={wordConfig.collectSynonyms}
+              label="Consult Kaikki (Wiktextract)"
+              description="Use Kaikki for translations, examples, synonyms, and forms"
+              checked={wordConfig.collectWiktextract}
               onCheckedChange={(checked) => {
-                setWordConfig((current) => ({ ...current, collectSynonyms: checked }));
-                setApplyResult(null);
-              }}
-            />
-            <BooleanToggle
-              label="Collect example sentences"
-              checked={wordConfig.collectExamples}
-              onCheckedChange={(checked) => {
-                setWordConfig((current) => ({ ...current, collectExamples: checked }));
-                setApplyResult(null);
-              }}
-            />
-            <BooleanToggle
-              label="Collect translations"
-              checked={wordConfig.collectTranslations}
-              onCheckedChange={(checked) => {
-                setWordConfig((current) => ({ ...current, collectTranslations: checked }));
+                setWordConfig((current) => ({ ...current, collectWiktextract: checked }));
                 setApplyResult(null);
               }}
             />

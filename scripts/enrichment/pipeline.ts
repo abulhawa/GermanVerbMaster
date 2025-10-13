@@ -26,17 +26,7 @@ import type {
 } from "@shared/enrichment";
 import type { WordExample, WordPosAttributes, WordTranslation } from "@shared/types";
 
-import {
-  delay,
-  lookupAiAssistance,
-  lookupExampleSentence,
-  lookupOpenThesaurusSynonyms,
-  lookupTranslation,
-  lookupWiktextract,
-  type ExampleLookup,
-  type SynonymLookup,
-  type TranslationLookup,
-} from "./providers";
+import { delay, lookupAiAssistance, lookupWiktextract } from "./providers";
 import { persistProviderSnapshotToFile } from "./storage";
 
 export type WordRecord = typeof words.$inferSelect;
@@ -131,9 +121,6 @@ export interface PipelineConfig {
   enableAi: boolean;
   openAiModel: string;
   allowOverwrite: boolean;
-  collectSynonyms: boolean;
-  collectExamples: boolean;
-  collectTranslations: boolean;
   collectWiktextract: boolean;
   posFilters: string[];
 }
@@ -165,9 +152,6 @@ export function resolveConfigFromEnv(overrides: Partial<PipelineConfig> = {}): P
   const envEmitReport = parseBoolean(process.env.EMIT_REPORT, true);
   const envEnableAi = parseBoolean(process.env.ENABLE_AI, false);
   const envAllowOverwrite = parseBoolean(process.env.OVERWRITE_EXISTING, false);
-  const envCollectSynonyms = parseBoolean(process.env.COLLECT_SYNONYMS, true);
-  const envCollectExamples = parseBoolean(process.env.COLLECT_EXAMPLES, true);
-  const envCollectTranslations = parseBoolean(process.env.COLLECT_TRANSLATIONS, true);
   const envCollectWiktextract = parseBoolean(process.env.COLLECT_WIKTEXTRACT, true);
   const envPosFilters = parsePosFilters(process.env.POS_FILTERS);
 
@@ -200,9 +184,6 @@ export function resolveConfigFromEnv(overrides: Partial<PipelineConfig> = {}): P
     enableAi: overrides.enableAi ?? envEnableAi,
     openAiModel,
     allowOverwrite: overrides.allowOverwrite ?? envAllowOverwrite,
-    collectSynonyms: overrides.collectSynonyms ?? envCollectSynonyms,
-    collectExamples: overrides.collectExamples ?? envCollectExamples,
-    collectTranslations: overrides.collectTranslations ?? envCollectTranslations,
     collectWiktextract: overrides.collectWiktextract ?? envCollectWiktextract,
     posFilters: overridePosFilters ?? envPosFilters,
   } satisfies PipelineConfig;
@@ -728,110 +709,6 @@ async function collectSuggestions(
       posNoteMap.set(key, normalised);
     }
   };
-
-  if (config.collectSynonyms) {
-    try {
-      const value = await lookupOpenThesaurusSynonyms(word.lemma);
-      const snapshot = ensureSnapshotDraft("openthesaurus", "OpenThesaurus");
-      snapshot.rawPayload = value ?? null;
-      if (value?.synonyms?.length) {
-        const cleaned = normalizeStringList(value.synonyms);
-        snapshot.synonyms = cleaned;
-        for (const synonym of cleaned) {
-          addSynonym(synonym);
-        }
-        if (cleaned.length) {
-          sources.add("openthesaurus.de");
-        }
-      }
-      registerDiagnostic({
-        id: "openthesaurus",
-        label: "OpenThesaurus",
-        status: "success",
-        payload: value ?? null,
-      });
-    } catch (error) {
-      const message = formatError("OpenThesaurus", error);
-      errors.push(message);
-      markSnapshotError("openthesaurus", "OpenThesaurus", message);
-      registerDiagnostic({
-        id: "openthesaurus",
-        label: "OpenThesaurus",
-        status: "error",
-        error: message,
-      });
-    }
-  } else {
-    registerDiagnostic({ id: "openthesaurus", label: "OpenThesaurus", status: "skipped" });
-  }
-
-  if (config.collectTranslations) {
-    try {
-      const value = await lookupTranslation(word.lemma);
-      const snapshot = ensureSnapshotDraft("mymemory", "MyMemory");
-      snapshot.rawPayload = value ?? null;
-      if (value?.translation) {
-        const candidate = addTranslationCandidate(value.translation, value.source, value.confidence, value.language);
-        if (candidate) {
-          snapshot.translations.push(candidate);
-        }
-      }
-      registerDiagnostic({
-        id: "mymemory",
-        label: "MyMemory",
-        status: "success",
-        payload: value ?? null,
-      });
-    } catch (error) {
-      const message = formatError("MyMemory", error);
-      errors.push(message);
-      markSnapshotError("mymemory", "MyMemory", message);
-      registerDiagnostic({
-        id: "mymemory",
-        label: "MyMemory",
-        status: "error",
-        error: message,
-      });
-    }
-  } else {
-    registerDiagnostic({ id: "mymemory", label: "MyMemory", status: "skipped" });
-  }
-
-  if (config.collectExamples) {
-    try {
-      const value = await lookupExampleSentence(word.lemma);
-      const snapshot = ensureSnapshotDraft("tatoeba", "Tatoeba");
-      snapshot.rawPayload = value ?? null;
-      if (value && (value.exampleDe || value.exampleEn)) {
-        const candidate = addExampleCandidate({
-          exampleDe: value.exampleDe,
-          exampleEn: value.exampleEn,
-          source: value.source,
-        });
-        if (candidate) {
-          snapshot.examples.push(candidate);
-        }
-      }
-      registerDiagnostic({
-        id: "tatoeba",
-        label: "Tatoeba",
-        status: "success",
-        payload: value ?? null,
-      });
-    } catch (error) {
-      const message = formatError("Tatoeba", error);
-      errors.push(message);
-      markSnapshotError("tatoeba", "Tatoeba", message);
-      registerDiagnostic({
-        id: "tatoeba",
-        label: "Tatoeba",
-        status: "error",
-        error: message,
-      });
-    }
-  } else {
-    registerDiagnostic({ id: "tatoeba", label: "Tatoeba", status: "skipped" });
-  }
 
   if (config.collectWiktextract) {
     try {

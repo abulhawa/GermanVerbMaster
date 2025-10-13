@@ -375,9 +375,6 @@ const enrichmentRunSchema = z
     onlyIncomplete: optionalBoolean,
     enableAi: optionalBoolean,
     allowOverwrite: optionalBoolean,
-    collectSynonyms: optionalBoolean,
-    collectExamples: optionalBoolean,
-    collectTranslations: optionalBoolean,
     collectWiktextract: optionalBoolean,
     posFilters: z.array(z.string().min(1).max(20)).max(20).optional(),
   })
@@ -387,9 +384,6 @@ const enrichmentPreviewSchema = z
   .object({
     enableAi: optionalBoolean,
     allowOverwrite: optionalBoolean,
-    collectSynonyms: optionalBoolean,
-    collectExamples: optionalBoolean,
-    collectTranslations: optionalBoolean,
     collectWiktextract: optionalBoolean,
   })
   .partial();
@@ -1488,9 +1482,6 @@ export function registerRoutes(app: Express): void {
         onlyIncomplete: parsed.data.onlyIncomplete,
         enableAi: parsed.data.enableAi,
         allowOverwrite: parsed.data.allowOverwrite,
-        collectSynonyms: parsed.data.collectSynonyms,
-        collectExamples: parsed.data.collectExamples,
-        collectTranslations: parsed.data.collectTranslations,
         collectWiktextract: parsed.data.collectWiktextract,
         posFilters: parsed.data.posFilters,
         delayMs: 0,
@@ -1548,9 +1539,6 @@ export function registerRoutes(app: Express): void {
         onlyIncomplete: false,
         enableAi: parsed.data.enableAi,
         allowOverwrite: parsed.data.allowOverwrite,
-        collectSynonyms: parsed.data.collectSynonyms,
-        collectExamples: parsed.data.collectExamples,
-        collectTranslations: parsed.data.collectTranslations,
         collectWiktextract: parsed.data.collectWiktextract,
         delayMs: 0,
         apply: false,

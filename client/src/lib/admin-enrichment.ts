@@ -10,17 +10,13 @@ export interface RunEnrichmentPayload {
   onlyIncomplete?: boolean;
   enableAi?: boolean;
   allowOverwrite?: boolean;
-  collectSynonyms?: boolean;
-  collectExamples?: boolean;
-  collectTranslations?: boolean;
+  collectWiktextract?: boolean;
 }
 
 export interface WordEnrichmentOptions {
   enableAi?: boolean;
   allowOverwrite?: boolean;
-  collectSynonyms?: boolean;
-  collectExamples?: boolean;
-  collectTranslations?: boolean;
+  collectWiktextract?: boolean;
 }
 
 async function handleResponse<T>(response: Response): Promise<T> {
