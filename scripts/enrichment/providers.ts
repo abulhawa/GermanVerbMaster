@@ -294,12 +294,62 @@ const POS_NOTE_FILTERS: RegExp[] = [
   /\bentries with\b/i,
 ];
 
+function normaliseLemma(lemma: string): string {
+  return lemma.normalize("NFC").trim();
+}
+
 function buildKaikkiEntryUrl(base: string, lemma: string): string {
-  const normalised = lemma.trim().toLowerCase();
+  const normalised = normaliseLemma(lemma);
   const first = normalised[0] ?? "_";
   const firstTwo = normalised.slice(0, 2) || first;
   const encoded = encodeURIComponent(normalised);
   return `${base}/${first}/${firstTwo}/${encoded}.jsonl`;
+}
+
+function buildKaikkiEntryUrlCandidates(base: string, lemma: string): string[] {
+  const trimmed = normaliseLemma(lemma);
+  if (!trimmed) {
+    return [];
+  }
+
+  const variants: string[] = [];
+  const seen = new Set<string>();
+  const pushVariant = (value: string | undefined | null) => {
+    if (!value) return;
+    const candidate = normaliseLemma(value);
+    if (!candidate || seen.has(candidate)) return;
+    seen.add(candidate);
+    variants.push(candidate);
+  };
+
+  pushVariant(trimmed);
+  pushVariant(trimmed[0]?.toLocaleUpperCase("de-DE") + trimmed.slice(1));
+  pushVariant(trimmed.toLocaleLowerCase("de-DE"));
+  pushVariant(trimmed.toLowerCase());
+
+  return variants.map((variant) => buildKaikkiEntryUrl(base, variant));
+}
+
+async function fetchKaikkiEntries(base: string, lemma: string): Promise<{
+  url: string | null;
+  entries: KaikkiEntry[];
+}> {
+  const candidates = buildKaikkiEntryUrlCandidates(base, lemma);
+  if (!candidates.length) {
+    return { url: null, entries: [] };
+  }
+
+  let lastUrl: string | null = null;
+
+  for (const url of candidates) {
+    lastUrl = url;
+    const entries = await fetchJsonLines<KaikkiEntry>(url);
+    if (entries.length) {
+      return { url, entries };
+    }
+  }
+
+  return { url: lastUrl, entries: [] };
 }
 
 async function fetchJsonLines<T>(url: string): Promise<T[]> {
@@ -788,8 +838,14 @@ export async function lookupWiktextract(
     return null;
   }
 
-  const germanUrl = buildKaikkiEntryUrl(KAIKKI_GERMAN_BASE, trimmed);
-  const germanEntries = await fetchJsonLines<KaikkiEntry>(germanUrl);
+  const { url: germanUrl, entries: germanEntries } = await fetchKaikkiEntries(
+    KAIKKI_GERMAN_BASE,
+    trimmed,
+  );
+  if (!germanEntries.length) {
+    return null;
+  }
+  const resolvedGermanUrl = germanUrl ?? buildKaikkiEntryUrl(KAIKKI_GERMAN_BASE, trimmed);
   const targets = resolveTargetPos(pos);
   const germanCandidates = germanEntries.filter((entry) => entry.lang === "German");
   const match = germanCandidates.find((entry) => {
@@ -850,8 +906,10 @@ export async function lookupWiktextract(
 
   if (!collectedTranslations.size && englishHints.length && isVerbEntry) {
     const headword = englishHints[0];
-    const englishUrl = buildKaikkiEntryUrl(KAIKKI_ENGLISH_BASE, headword);
-    const englishEntries = await fetchJsonLines<KaikkiEntry>(englishUrl);
+    const { entries: englishEntries } = await fetchKaikkiEntries(
+      KAIKKI_ENGLISH_BASE,
+      headword,
+    );
     if (englishEntries.length) {
       for (const entry of englishEntries) {
         if (entry.lang !== "English") continue;
@@ -883,7 +941,7 @@ export async function lookupWiktextract(
     posLabel,
     posTags,
     posNotes,
-    sourceDe: germanUrl,
+    sourceDe: resolvedGermanUrl,
     pivotUsed,
   };
 }

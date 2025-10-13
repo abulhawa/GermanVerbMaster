@@ -68,6 +68,32 @@ describe('lookupWiktextract', () => {
     expect(result?.verbForms?.auxiliaries).toEqual(expect.arrayContaining(['haben', 'sein']));
   });
 
+  it('falls back to alternate Kaikki paths when the initial case does not exist', async () => {
+    const germanEntry = {
+      lang: 'German',
+      pos: 'verb',
+      word: 'abbiegen',
+      forms: [
+        { form: 'bog ab', tags: ['past'] },
+      ],
+    };
+
+    mockedFetch
+      .mockResolvedValueOnce(createResponse('', 404))
+      .mockResolvedValueOnce(createResponse(`${JSON.stringify(germanEntry)}\n`));
+
+    const result = await lookupWiktextract('Abbiegen');
+
+    expect(mockedFetch).toHaveBeenCalledTimes(2);
+    expect(mockedFetch.mock.calls[0]?.[0]).toBe(
+      'https://kaikki.org/dictionary/German/meaning/A/Ab/Abbiegen.jsonl',
+    );
+    expect(mockedFetch.mock.calls[1]?.[0]).toBe(
+      'https://kaikki.org/dictionary/German/meaning/a/ab/abbiegen.jsonl',
+    );
+    expect(result?.verbForms?.praeteritum).toBe('bog ab');
+  });
+
   it('falls back to glosses and pivot translations when the German entry lacks direct translations', async () => {
     const germanEntry = {
       lang: 'German',
@@ -130,6 +156,10 @@ describe('lookupWiktextract', () => {
       expect.arrayContaining([
         expect.objectContaining({ form: 'Äpfel', tags: expect.arrayContaining(['plural', 'nominative']) }),
       ]),
+    );
+    expect(mockedFetch).toHaveBeenCalledTimes(1);
+    expect(mockedFetch.mock.calls[0]?.[0]).toBe(
+      'https://kaikki.org/dictionary/German/meaning/A/Ap/Apfel.jsonl',
     );
   });
 
