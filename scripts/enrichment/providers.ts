@@ -86,6 +86,10 @@ interface KaikkiSynonymEntry {
   word?: string;
 }
 
+interface KaikkiSenseFormOfEntry {
+  word?: string;
+}
+
 interface KaikkiSenseEntry {
   examples?: KaikkiExampleEntry[];
   translations?: KaikkiTranslationEntry[];
@@ -94,10 +98,13 @@ interface KaikkiSenseEntry {
   synonyms?: KaikkiSynonymEntry[];
   tags?: string[];
   categories?: string[];
+  form_of?: KaikkiSenseFormOfEntry[];
 }
 
 interface KaikkiHeadTemplate {
   expansion?: string;
+  name?: string;
+  args?: Record<string, string>;
 }
 
 interface KaikkiEntry {
@@ -189,32 +196,46 @@ const POS_MAP: Record<string, string[]> = {
   verb: ["verb"],
   n: ["noun", "proper noun"],
   noun: ["noun", "proper noun"],
-  adj: ["adjective"],
-  adjective: ["adjective"],
-  adv: ["adverb"],
-  adverb: ["adverb"],
-  prep: ["preposition"],
-  preposition: ["preposition"],
-  präp: ["preposition"],
-  präposition: ["preposition"],
-  praep: ["preposition"],
-  prap: ["preposition"],
-  pron: ["pronoun"],
-  pronoun: ["pronoun"],
-  det: ["determiner", "article"],
-  determiner: ["determiner", "article"],
-  artikel: ["article", "determiner"],
-  konj: ["conjunction"],
-  conjunction: ["conjunction"],
-  konjunktion: ["conjunction"],
-  num: ["numeral"],
-  numeral: ["numeral"],
-  part: ["particle"],
-  particle: ["particle"],
-  partikel: ["particle"],
-  interj: ["interjection"],
-  interjection: ["interjection"],
+  "proper noun": ["proper noun", "noun"],
+  adj: ["adjective", "adj"],
+  adjective: ["adjective", "adj"],
+  adv: ["adverb", "adv"],
+  adverb: ["adverb", "adv"],
+  prep: ["preposition", "prep"],
+  preposition: ["preposition", "prep"],
+  präp: ["preposition", "prep"],
+  präposition: ["preposition", "prep"],
+  praep: ["preposition", "prep"],
+  prap: ["preposition", "prep"],
+  pron: ["pronoun", "pron"],
+  pronoun: ["pronoun", "pron"],
+  det: ["determiner", "article", "det"],
+  determiner: ["determiner", "article", "det"],
+  artikel: ["article", "determiner", "det"],
+  konj: ["conjunction", "konj"],
+  conjunction: ["conjunction", "konj"],
+  konjunktion: ["conjunction", "konj"],
+  num: ["numeral", "num"],
+  numeral: ["numeral", "num"],
+  part: ["particle", "part", "interjection", "intj", "adverb", "adv"],
+  particle: ["particle", "part", "interjection", "intj", "adverb", "adv"],
+  partikel: ["particle", "part", "interjection", "intj", "adverb", "adv"],
+  intj: ["interjection", "intj"],
+  interj: ["interjection", "intj"],
+  interjection: ["interjection", "intj"],
 };
+
+function resolvePosAliases(value: string | undefined): string[] {
+  if (!value) {
+    return [];
+  }
+  const normalised = value.trim().toLowerCase();
+  if (!normalised) {
+    return [];
+  }
+  const direct = POS_MAP[normalised] ?? [];
+  return Array.from(new Set([normalised, ...direct]));
+}
 
 const CASE_PATTERNS: Array<{ matcher: RegExp; values: string[] }> = [
   { matcher: /\bakkusativ\b|\baccusative\b/i, values: ["Akkusativ"] },
@@ -383,6 +404,36 @@ function normaliseTags(tags: string[] | undefined): string[] {
   return tags
     .map((tag) => tag.trim().toLowerCase())
     .filter((tag, index, array) => tag && array.indexOf(tag) === index);
+}
+
+function isInflectionEntry(entry: KaikkiEntry): boolean {
+  const senses = toArray<KaikkiSenseEntry>(entry.senses);
+  const templates = toArray<KaikkiHeadTemplate>(entry.head_templates);
+
+  const templateIndicatesForm = templates.some((template) => {
+    const values = Object.values(template.args ?? {});
+    return values.some((value) => typeof value === "string" && value.trim().toLowerCase().includes("form"));
+  });
+
+  if (!senses.length) {
+    return templateIndicatesForm;
+  }
+
+  const sensesAreInflections = senses.every((sense) => {
+    const tags = normaliseTags(sense.tags);
+    const hasFormOf = toArray<KaikkiSenseFormOfEntry>(sense.form_of).length > 0;
+    const glosses = toArray<string>(sense.glosses).map((gloss) => gloss.toLowerCase());
+    const rawGlosses = toArray<string>(sense.raw_glosses).map((gloss) => gloss.toLowerCase());
+    const glossMentionsInflection = [...glosses, ...rawGlosses].some((gloss) => gloss.includes("inflection of"));
+    const hasInflectionTag =
+      tags.includes("form-of") ||
+      tags.includes("inflection") ||
+      tags.includes("inflected") ||
+      tags.includes("inflection-of");
+    return hasFormOf || hasInflectionTag || glossMentionsInflection;
+  });
+
+  return sensesAreInflections || templateIndicatesForm;
 }
 
 function collectAuxiliaries(entry: KaikkiEntry): string[] {
@@ -822,14 +873,11 @@ function extractAdjectiveForms(entry: KaikkiEntry): WiktextractAdjectiveForms | 
 }
 
 function resolveTargetPos(pos?: PartOfSpeech | string): string[] | undefined {
-  if (!pos) return undefined;
-  const normalised = String(pos).trim().toLowerCase();
-  if (!normalised) return undefined;
-  const direct = POS_MAP[normalised];
-  if (direct?.length) {
-    return direct;
+  if (pos === undefined || pos === null) {
+    return undefined;
   }
-  return [normalised];
+  const resolved = resolvePosAliases(String(pos));
+  return resolved.length ? resolved : undefined;
 }
 
 export async function lookupWiktextract(
@@ -850,20 +898,44 @@ export async function lookupWiktextract(
   }
   const resolvedGermanUrl = germanUrl ?? buildKaikkiEntryUrl(KAIKKI_GERMAN_BASE, trimmed);
   const targets = resolveTargetPos(pos);
-  const germanCandidates = germanEntries.filter((entry) => entry.lang === "German");
-  const match = germanCandidates.find((entry) => {
-    if (!entry.pos) {
-      return false;
-    }
-    if (!targets?.length) {
-      return entry.pos?.toLowerCase() === "verb";
-    }
-    const entryPos = entry.pos.trim().toLowerCase();
-    return targets.some((target) => entryPos === target || entryPos.includes(target));
-  });
+  const germanCandidates = germanEntries
+    .filter((entry) => entry.lang === "German")
+    .filter((entry) => !isInflectionEntry(entry));
 
-  const fallback = germanCandidates.find((entry) => entry.pos?.toLowerCase() === "verb");
-  const selectedEntry = match ?? fallback ?? germanCandidates[0];
+  if (!germanCandidates.length) {
+    return null;
+  }
+
+  let selectedEntry: KaikkiEntry | undefined;
+
+  if (targets?.length) {
+    let bestMatchIndex = Number.POSITIVE_INFINITY;
+
+    for (const entry of germanCandidates) {
+      const entryPoses = resolvePosAliases(entry.pos);
+      if (!entryPoses.length) {
+        continue;
+      }
+      for (let index = 0; index < targets.length; index += 1) {
+        const target = targets[index];
+        if (entryPoses.includes(target)) {
+          if (!selectedEntry || index < bestMatchIndex) {
+            selectedEntry = entry;
+            bestMatchIndex = index;
+          }
+          break;
+        }
+      }
+    }
+
+    if (!selectedEntry) {
+      return null;
+    }
+  } else {
+    selectedEntry =
+      germanCandidates.find((entry) => resolvePosAliases(entry.pos).includes("verb")) ??
+      germanCandidates[0];
+  }
 
   if (!selectedEntry) {
     return null;

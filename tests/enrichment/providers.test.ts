@@ -129,6 +129,56 @@ describe('lookupWiktextract', () => {
     expect(result?.pivotUsed).toBe(true);
   });
 
+  it('skips inflection entries and honours particle POS mapping when choosing Kaikki entries', async () => {
+    const adverbEntry = {
+      lang: 'German',
+      pos: 'adv',
+      word: 'bitte',
+      senses: [
+        {
+          translations: [{ word: 'please', lang: 'English' }],
+        },
+      ],
+    };
+    const interjectionEntry = {
+      lang: 'German',
+      pos: 'intj',
+      word: 'bitte',
+      senses: [
+        {
+          translations: [{ word: "you're welcome", lang: 'English' }],
+        },
+      ],
+    };
+    const inflectionEntry = {
+      lang: 'German',
+      pos: 'verb',
+      word: 'bitte',
+      head_templates: [{ args: { '1': 'de', '2': 'verb form' } }],
+      senses: [
+        {
+          form_of: [{ word: 'bitten' }],
+          glosses: ['inflection of bitten'],
+          tags: ['form-of'],
+        },
+      ],
+    };
+
+    mockedFetch.mockResolvedValueOnce(
+      createResponse(
+        [adverbEntry, interjectionEntry, inflectionEntry]
+          .map((entry) => `${JSON.stringify(entry)}`)
+          .join('\n'),
+      ),
+    );
+
+    const result = await lookupWiktextract('bitte', 'Part');
+
+    expect(result).not.toBeNull();
+    expect(result?.posLabel).toBe('intj');
+    expect(result?.translations.map((entry) => entry.value)).toEqual(["you're welcome"]);
+  });
+
   it('extracts noun genders and plural forms when requested for nouns', async () => {
     const germanEntry = {
       lang: 'German',
