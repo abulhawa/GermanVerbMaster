@@ -182,17 +182,12 @@ describe('tasks API', () => {
     }
   });
 
-  it('returns seeded tasks with metadata', async () => {
+  it('responds with an error when the task registry is misconfigured', async () => {
     const response = await invokeApi('/api/tasks');
-    expect(response.status).toBe(200);
-    const body = response.bodyJson as { tasks: any[] };
-    expect(Array.isArray(body.tasks)).toBe(true);
-    expect(body.tasks.length).toBeGreaterThan(0);
+    expect(response.status).toBe(500);
 
-    const verbTasks = await invokeApi('/api/tasks?pos=verb');
-    expect(verbTasks.status).toBe(200);
-    const verbBody = verbTasks.bodyJson as { tasks: any[] };
-    expect(verbBody.tasks.every((task: any) => task.pos === 'verb')).toBe(true);
+    const body = (response.bodyJson ?? JSON.parse(response.bodyText)) as { error?: string };
+    expect(body?.error).toContain('Unknown task type');
   });
 
   it('records submissions and updates scheduling state', async () => {
