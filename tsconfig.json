@@ -26,7 +26,6 @@
       "@assets/*": ["./attached_assets/*"],
       "@verbs-data": ["./data/generated"],
       "@verbs-data/*": ["./data/generated/*"],
-      "@supabase/supabase-js": ["./types/stubs/supabase-client.ts"],
       "next-themes": ["./client/src/types/next-themes.d.ts"]
     }
   }

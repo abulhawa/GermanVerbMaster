@@ -63,7 +63,6 @@ export default defineConfig({
       "@shared": path.resolve(__dirname, "shared"),
       "@assets": path.resolve(__dirname, "attached_assets"),
       "@verbs-data": path.resolve(__dirname, "data", "generated"),
-      "@supabase/supabase-js": path.resolve(__dirname, "types", "stubs", "supabase-client.ts"),
     },
   },
   root: path.resolve(__dirname, "client"),
