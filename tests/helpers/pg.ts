@@ -6,11 +6,12 @@ import { drizzle, type NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { Pool, type PoolConfig, types } from 'pg';
 import { vi } from 'vitest';
 
-import * as schema from '../../db/schema.js';
 import { createMockPool } from './mock-pg';
 
+type Schema = typeof import('../../db/schema.js');
+
 export interface TestDatabaseContext {
-  db: NodePgDatabase<typeof schema>;
+  db: NodePgDatabase<Schema>;
   pool: Pool;
   mock: () => void;
   cleanup: () => Promise<void>;
@@ -67,6 +68,8 @@ export async function setupTestDatabase(): Promise<TestDatabaseContext> {
     pool = createMockPool();
   }
 
+  const schema = await import('../../db/schema.js');
+
   const db = drizzle(pool, { schema });
 
   const migrationsFolder = resolve(dirname(fileURLToPath(import.meta.url)), '../../migrations');
@@ -84,6 +87,8 @@ export async function setupTestDatabase(): Promise<TestDatabaseContext> {
   const mock = () => {
     vi.doMock('@db', () => moduleExports);
     vi.doMock('@db/client', () => moduleExports);
+    vi.doMock('@db/schema', () => schema);
+    vi.doMock('@db/schema.js', () => schema);
   };
 
   let cleaned = false;

@@ -1,5 +1,5 @@
 import type { Express, NextFunction, Request, RequestHandler, Response } from "express";
-import { db } from "@db";
+import { db, getPool } from "@db";
 import {
   verbPracticeHistory,
   verbAnalytics,
@@ -136,6 +136,44 @@ const taskQuerySchema = z.object({
 });
 
 type SubmissionFeatureFlagSummary = Record<string, { enabled: boolean; stage?: string; defaultValue?: boolean }>;
+
+type TaskRow = {
+  id: string;
+  taskType: string;
+  renderer: string;
+  pos: string;
+  prompt: unknown;
+  solution: unknown;
+  lexemeId: string;
+  lexemeLemma: string | null;
+  lexemeMetadata: Record<string, unknown> | null;
+  packId: string | null;
+  packSlug: string | null;
+  packName: string | null;
+};
+
+function mapTaskRow(row: Record<string, any>): TaskRow {
+  return {
+    id: row.id,
+    taskType: row.task_type,
+    renderer: row.renderer,
+    pos: row.pos,
+    prompt: row.prompt,
+    solution: row.solution,
+    lexemeId: row.lexeme_id,
+    lexemeLemma: row.lexeme_lemma ?? row.lemma ?? null,
+    lexemeMetadata: row.lexeme_metadata ?? row.metadata ?? null,
+    packId: row.pack_id ?? row.id1 ?? null,
+    packSlug: row.pack_slug ?? row.slug ?? null,
+    packName: row.pack_name ?? row.name ?? null,
+  };
+}
+
+async function executeSelectRaw<T>(builder: { toSQL: () => { sql: string; params: unknown[] } }): Promise<T[]> {
+  const compiled = builder.toSQL();
+  const result = await getPool().query(compiled.sql, compiled.params);
+  return result.rows as T[];
+}
 
 const submissionSchema = z
   .object({
@@ -785,7 +823,7 @@ export function registerRoutes(app: Express): void {
     }
   });
 
-  app.get("/api/tasks", async (req, res) => {
+  app.get("/api/tasks", async (req, res, next) => {
     const parsed = taskQuerySchema.safeParse(req.query ?? {});
     if (!parsed.success) {
       return res.status(400).json({
@@ -795,312 +833,342 @@ export function registerRoutes(app: Express): void {
       });
     }
 
-    const { pos, taskType, pack, limit, deviceId, level } = parsed.data;
-    const filters: Array<ReturnType<typeof eq>> = [];
-    let normalisedPos: LexemePos | null = null;
+    try {
+      const { pos, taskType, pack, limit, deviceId, level } = parsed.data;
+      const filters: Array<ReturnType<typeof eq>> = [];
+      let normalisedPos: LexemePos | null = null;
 
-    const snapshot = getFeatureFlagSnapshot();
-    res.setHeader("Cache-Control", "no-store");
-    res.setHeader("X-Feature-Flags", formatFeatureFlagHeader(snapshot));
+      const snapshot = getFeatureFlagSnapshot();
+      res.setHeader("Cache-Control", "no-store");
+      res.setHeader("X-Feature-Flags", formatFeatureFlagHeader(snapshot));
 
-    if (pos) {
-      normalisedPos = normaliseTaskPosFilter(pos);
-      if (!normalisedPos) {
-        return res.status(400).json({
-          error: `Unsupported part-of-speech filter: ${pos}`,
-          code: "INVALID_POS_FILTER",
-        });
-      }
-      try {
-        ensurePosFeatureEnabled(normalisedPos, "tasks:list:filter", snapshot, {
-          filter: pos,
-        });
-      } catch (error) {
-        if (error instanceof PosFeatureDisabledError) {
-          return res.status(403).json({
-            error: error.message,
-            code: "POS_FEATURE_DISABLED",
-            pos: normalisedPos,
+      if (pos) {
+        normalisedPos = normaliseTaskPosFilter(pos);
+        if (!normalisedPos) {
+          return res.status(400).json({
+            error: `Unsupported part-of-speech filter: ${pos}`,
+            code: "INVALID_POS_FILTER",
           });
         }
-        throw error;
-      }
-      filters.push(eq(taskSpecs.pos, normalisedPos));
-    }
-
-    let resolvedTaskType: TaskType | null = null;
-    if (taskType) {
-      resolvedTaskType = parseTaskTypeFilter(taskType);
-      if (!resolvedTaskType) {
-        return res.status(400).json({
-          error: `Unsupported task type filter: ${taskType}`,
-          code: "INVALID_TASK_TYPE",
-        });
-      }
-      filters.push(eq(taskSpecs.taskType, resolvedTaskType));
-    }
-
-    if (pack) {
-      filters.push(eq(contentPacks.slug, pack));
-    }
-
-    const baseQuery = db
-      .select({
-        id: taskSpecs.id,
-        taskType: taskSpecs.taskType,
-        renderer: taskSpecs.renderer,
-        pos: taskSpecs.pos,
-        prompt: taskSpecs.prompt,
-        solution: taskSpecs.solution,
-        lexemeId: taskSpecs.lexemeId,
-        lexemeLemma: lexemes.lemma,
-        lexemeMetadata: lexemes.metadata,
-        packId: contentPacks.id,
-        packSlug: contentPacks.slug,
-        packName: contentPacks.name,
-      })
-      .from(taskSpecs)
-      .innerJoin(lexemes, eq(taskSpecs.lexemeId, lexemes.id))
-      .leftJoin(packLexemeMap, eq(packLexemeMap.primaryTaskId, taskSpecs.id))
-      .leftJoin(contentPacks, eq(packLexemeMap.packId, contentPacks.id));
-
-    const filteredQuery = filters.length ? baseQuery.where(and(...filters)) : baseQuery;
-
-    const prioritizedLemmas: string[] = [];
-    const canUseAdaptiveQueue =
-      Boolean(deviceId)
-      && !pack
-      && (!pos || pos === "verb")
-      && (!taskType || taskType === "conjugate_form")
-      && srsEngine.isEnabled();
-
-    if (canUseAdaptiveQueue && deviceId) {
-      try {
-        let queue = await srsEngine.fetchQueueForDevice(deviceId);
-        if (!queue || srsEngine.isQueueStale(queue)) {
-          queue = await srsEngine.generateQueueForDevice(deviceId, level ?? null);
+        try {
+          ensurePosFeatureEnabled(normalisedPos, "tasks:list:filter", snapshot, {
+            filter: pos,
+          });
+        } catch (error) {
+          if (error instanceof PosFeatureDisabledError) {
+            return res.status(403).json({
+              error: error.message,
+              code: "POS_FEATURE_DISABLED",
+              pos: normalisedPos,
+            });
+          }
+          throw error;
         }
+        filters.push(eq(taskSpecs.pos, normalisedPos));
+      }
 
-        if (queue?.items?.length) {
-          const seen = new Set<string>();
-          const maxQueueSamples = Math.max(limit * 2, limit + 5);
-          for (const item of queue.items) {
-            const normalized = item.verb?.trim();
-            if (!normalized) {
-              continue;
-            }
-            const key = normalized.toLowerCase();
-            if (seen.has(key)) {
-              continue;
-            }
-            seen.add(key);
-            prioritizedLemmas.push(normalized);
-            if (prioritizedLemmas.length >= maxQueueSamples) {
-              break;
+      let resolvedTaskType: TaskType | null = null;
+      if (taskType) {
+        resolvedTaskType = parseTaskTypeFilter(taskType);
+        if (!resolvedTaskType) {
+          return res.status(400).json({
+            error: `Unsupported task type filter: ${taskType}`,
+            code: "INVALID_TASK_TYPE",
+          });
+        }
+        filters.push(eq(taskSpecs.taskType, resolvedTaskType));
+      }
+
+      if (pack) {
+        filters.push(eq(contentPacks.slug, pack));
+      }
+
+      const baseQuery = db
+        .select({
+          id: taskSpecs.id,
+          taskType: taskSpecs.taskType,
+          renderer: taskSpecs.renderer,
+          pos: taskSpecs.pos,
+          prompt: taskSpecs.prompt,
+          solution: taskSpecs.solution,
+          lexemeId: taskSpecs.lexemeId,
+          lexemeLemma: lexemes.lemma,
+          lexemeMetadata: lexemes.metadata,
+          packId: contentPacks.id,
+          packSlug: contentPacks.slug,
+          packName: contentPacks.name,
+        })
+        .from(taskSpecs)
+        .innerJoin(lexemes, eq(taskSpecs.lexemeId, lexemes.id))
+        .leftJoin(packLexemeMap, eq(packLexemeMap.primaryTaskId, taskSpecs.id))
+        .leftJoin(contentPacks, eq(packLexemeMap.packId, contentPacks.id));
+
+      const filteredQuery = filters.length ? baseQuery.where(and(...filters)) : baseQuery;
+
+      const prioritizedLemmas: string[] = [];
+      const canUseAdaptiveQueue =
+        Boolean(deviceId)
+        && !pack
+        && (!pos || pos === "verb")
+        && (!taskType || taskType === "conjugate_form")
+        && srsEngine.isEnabled();
+
+      if (canUseAdaptiveQueue && deviceId) {
+        try {
+          let queue = await srsEngine.fetchQueueForDevice(deviceId);
+          if (!queue || srsEngine.isQueueStale(queue)) {
+            queue = await srsEngine.generateQueueForDevice(deviceId, level ?? null);
+          }
+
+          if (queue?.items?.length) {
+            const seen = new Set<string>();
+            const maxQueueSamples = Math.max(limit * 2, limit + 5);
+            for (const item of queue.items) {
+              const normalized = item.verb?.trim();
+              if (!normalized) {
+                continue;
+              }
+              const key = normalized.toLowerCase();
+              if (seen.has(key)) {
+                continue;
+              }
+              seen.add(key);
+              prioritizedLemmas.push(normalized);
+              if (prioritizedLemmas.length >= maxQueueSamples) {
+                break;
+              }
             }
           }
+        } catch (error) {
+          console.error("Failed to resolve adaptive queue for /api/tasks", {
+            deviceId,
+            error,
+          });
         }
-      } catch (error) {
-        console.error("Failed to resolve adaptive queue for /api/tasks", {
-          deviceId,
-          error,
+      }
+
+      const fallbackFetchLimit = prioritizedLemmas.length
+        ? Math.min(100, Math.max(limit, limit + prioritizedLemmas.length))
+        : limit;
+
+      const fallbackQuery = filteredQuery.orderBy(desc(taskSpecs.updatedAt)).limit(fallbackFetchLimit);
+      const fallbackRowsRaw = await executeSelectRaw<Record<string, unknown>>(fallbackQuery);
+      const fallbackRows = fallbackRowsRaw.map((row) => mapTaskRow(row as Record<string, any>));
+
+      const prioritizedRows = prioritizedLemmas.length
+        ? await executeSelectRaw<Record<string, unknown>>(
+            (filters.length
+              ? baseQuery.where(and(...filters, inArray(lexemes.lemma, prioritizedLemmas)))
+              : baseQuery.where(inArray(lexemes.lemma, prioritizedLemmas)))
+              .orderBy(desc(taskSpecs.updatedAt))
+              .limit(Math.min(fallbackFetchLimit, prioritizedLemmas.length * 2)),
+          ).then((rows) => rows.map((row) => mapTaskRow(row as Record<string, any>)))
+        : ([] as TaskRow[]);
+
+      let schedulingStateRows: SchedulingStateSnapshot[] = [];
+      if (deviceId) {
+        try {
+          const schedulingFilters = [eq(schedulingState.deviceId, deviceId)];
+          if (normalisedPos) {
+            schedulingFilters.push(eq(taskSpecs.pos, normalisedPos));
+          }
+          if (resolvedTaskType) {
+            schedulingFilters.push(eq(taskSpecs.taskType, resolvedTaskType));
+          }
+          const whereCondition = schedulingFilters.length === 1
+            ? schedulingFilters[0]!
+            : and(...schedulingFilters);
+
+          const schedulingQuery = db
+            .select({
+              taskId: schedulingState.taskId,
+              priorityScore: schedulingState.priorityScore,
+              dueAt: schedulingState.dueAt,
+              lastResult: schedulingState.lastResult,
+              totalAttempts: schedulingState.totalAttempts,
+              correctAttempts: schedulingState.correctAttempts,
+            })
+            .from(schedulingState)
+            .innerJoin(taskSpecs, eq(schedulingState.taskId, taskSpecs.id))
+            .where(whereCondition);
+
+        const schedulingRowsRaw = await executeSelectRaw<Record<string, unknown>>(schedulingQuery);
+
+        schedulingStateRows = schedulingRowsRaw.map((row) => ({
+          taskId: row.task_id as string,
+          priorityScore: Number(row.priority_score ?? 0),
+          dueAt: (row.due_at as Date | null) ?? null,
+          lastResult: row.last_result as PracticeResult,
+          totalAttempts: Number(row.total_attempts ?? 0),
+          correctAttempts: Number(row.correct_attempts ?? 0),
+        }));
+        } catch (error) {
+          console.error("Failed to resolve scheduling state for /api/tasks", {
+            deviceId,
+            error,
+          });
+        }
+      }
+
+      const schedulingStateMap = new Map<string, SchedulingStateSnapshot>();
+      for (const row of schedulingStateRows) {
+        schedulingStateMap.set(row.taskId, row);
+      }
+
+      const queueOrder = new Map<string, number>();
+      if (prioritizedLemmas.length) {
+        prioritizedLemmas.forEach((lemma, index) => {
+          queueOrder.set(lemma.toLowerCase(), index);
         });
       }
-    }
 
-    const fallbackFetchLimit = prioritizedLemmas.length
-      ? Math.min(100, Math.max(limit, limit + prioritizedLemmas.length))
-      : limit;
-
-    const fallbackRows = await filteredQuery.orderBy(desc(taskSpecs.updatedAt)).limit(fallbackFetchLimit);
-
-    const prioritizedRows = prioritizedLemmas.length
-      ? await (
-          (filters.length
-            ? baseQuery.where(and(...filters, inArray(lexemes.lemma, prioritizedLemmas)))
-            : baseQuery.where(inArray(lexemes.lemma, prioritizedLemmas)))
-        )
-          .orderBy(desc(taskSpecs.updatedAt))
-          .limit(Math.min(fallbackFetchLimit, prioritizedLemmas.length * 2))
-      : ([] as typeof fallbackRows);
-
-    let schedulingStateRows: SchedulingStateSnapshot[] = [];
-    if (deviceId) {
-      try {
-        const schedulingFilters = [eq(schedulingState.deviceId, deviceId)];
-        if (normalisedPos) {
-          schedulingFilters.push(eq(taskSpecs.pos, normalisedPos));
-        }
-        if (resolvedTaskType) {
-          schedulingFilters.push(eq(taskSpecs.taskType, resolvedTaskType));
-        }
-        const whereCondition = schedulingFilters.length === 1
-          ? schedulingFilters[0]!
-          : and(...schedulingFilters);
-
-        const rows = await db
-          .select({
-            taskId: schedulingState.taskId,
-            priorityScore: schedulingState.priorityScore,
-            dueAt: schedulingState.dueAt,
-            lastResult: schedulingState.lastResult,
-            totalAttempts: schedulingState.totalAttempts,
-            correctAttempts: schedulingState.correctAttempts,
-          })
-          .from(schedulingState)
-          .innerJoin(taskSpecs, eq(taskSpecs.id, schedulingState.taskId))
-          .where(whereCondition)
-          .orderBy(
-            desc(sql`coalesce(${schedulingState.priorityScore}, 0)`),
-            sql`coalesce(${schedulingState.dueAt}, now())`,
-          )
-          .limit(Math.min(limit * 3, 150));
-
-        schedulingStateRows = rows as SchedulingStateSnapshot[];
-      } catch (error) {
-        console.error("Failed to load scheduling state for tasks list", {
-          deviceId,
-          error,
+      const schedulingSorted = [...schedulingStateRows]
+        .filter((row) => row.dueAt && row.dueAt <= new Date())
+        .sort((a, b) => {
+          if (a.priorityScore !== b.priorityScore) {
+            return b.priorityScore - a.priorityScore;
+          }
+          if (a.dueAt && b.dueAt) {
+            return a.dueAt.getTime() - b.dueAt.getTime();
+          }
+          return 0;
         });
-        schedulingStateRows = [];
+
+      const combinedRows: typeof fallbackRows = [];
+      const seenTaskIds = new Set<string>();
+      const taskRowById = new Map<string, TaskRow>();
+      const registerRow = (row: TaskRow) => {
+        if (!taskRowById.has(row.id)) {
+          taskRowById.set(row.id, row);
+        }
+      };
+      fallbackRows.forEach(registerRow);
+      prioritizedRows.forEach(registerRow);
+
+      const pushRow = (row: TaskRow | undefined) => {
+        if (!row) {
+          return;
+        }
+        if (seenTaskIds.has(row.id)) {
+          return;
+        }
+        seenTaskIds.add(row.id);
+        combinedRows.push(row);
+      };
+
+      if (schedulingSorted.length) {
+        const missingTaskIds = schedulingSorted
+          .map((row) => row.taskId)
+          .filter((taskId) => !taskRowById.has(taskId));
+
+        if (missingTaskIds.length) {
+          const schedulingTaskRowsRaw = await executeSelectRaw<Record<string, unknown>>(
+            baseQuery.where(inArray(taskSpecs.id, missingTaskIds)),
+          );
+          for (const rawRow of schedulingTaskRowsRaw) {
+            const mapped = mapTaskRow(rawRow as Record<string, any>);
+            registerRow(mapped);
+          }
+        }
       }
-    }
 
-    const schedulingStateMap = new Map<string, SchedulingStateSnapshot>();
-    const schedulingOrder = new Map<string, number>();
-    schedulingStateRows.forEach((row, index) => {
-      schedulingStateMap.set(row.taskId, row);
-      schedulingOrder.set(row.taskId, index);
-    });
-
-    let schedulingRows: typeof fallbackRows = [];
-    if (deviceId && schedulingStateRows.length) {
-      const schedulingTaskIds = schedulingStateRows.map((row) => row.taskId);
-      schedulingRows = await (
-        filters.length
-          ? baseQuery.where(and(...filters, inArray(taskSpecs.id, schedulingTaskIds)))
-          : baseQuery.where(inArray(taskSpecs.id, schedulingTaskIds))
-      )
-        .orderBy(desc(taskSpecs.updatedAt))
-        .limit(Math.min(100, Math.max(limit, schedulingTaskIds.length)));
-    }
-
-    const schedulingSorted = schedulingRows.length
-      ? [...schedulingRows].sort((a, b) => {
-          const indexA = schedulingOrder.get(a.id) ?? Number.MAX_SAFE_INTEGER;
-          const indexB = schedulingOrder.get(b.id) ?? Number.MAX_SAFE_INTEGER;
+      if (queueOrder.size) {
+        const prioritizedSorted = [...prioritizedRows].sort((a, b) => {
+          const indexA = queueOrder.get((a.lexemeLemma ?? "").toLowerCase()) ?? Number.MAX_SAFE_INTEGER;
+          const indexB = queueOrder.get((b.lexemeLemma ?? "").toLowerCase()) ?? Number.MAX_SAFE_INTEGER;
           if (indexA !== indexB) {
             return indexA - indexB;
           }
           return 0;
-        })
-      : [];
-
-    const queueOrder = new Map<string, number>();
-    prioritizedLemmas.forEach((lemma, index) => {
-      queueOrder.set(lemma.toLowerCase(), index);
-    });
-
-    const combinedRows: typeof fallbackRows = [];
-    const seenTaskIds = new Set<string>();
-    const pushRow = (row: (typeof fallbackRows)[number]) => {
-      if (!row || seenTaskIds.has(row.id)) {
-        return;
+        });
+        prioritizedSorted.forEach(pushRow);
       }
-      seenTaskIds.add(row.id);
-      combinedRows.push(row);
-    };
 
-    if (queueOrder.size) {
-      const prioritizedSorted = [...prioritizedRows].sort((a, b) => {
-        const indexA = queueOrder.get((a.lexemeLemma ?? "").toLowerCase()) ?? Number.MAX_SAFE_INTEGER;
-        const indexB = queueOrder.get((b.lexemeLemma ?? "").toLowerCase()) ?? Number.MAX_SAFE_INTEGER;
-        if (indexA !== indexB) {
-          return indexA - indexB;
-        }
-        return 0;
-      });
-      prioritizedSorted.forEach(pushRow);
-    }
-
-    if (schedulingSorted.length) {
-      schedulingSorted.forEach(pushRow);
-    }
-
-    fallbackRows.forEach(pushRow);
-
-    let orderedRows = combinedRows;
-    if (!queueOrder.size && deviceId) {
-      const nowMs = Date.now();
-      orderedRows = [...combinedRows]
-        .map((row) => ({
-          row,
-          score: computeFallbackPriorityScore(schedulingStateMap.get(row.id), row.id, nowMs),
-        }))
-        .sort((a, b) => {
-          if (a.score === b.score) {
-            return a.row.id.localeCompare(b.row.id);
-          }
-          return b.score - a.score;
-        })
-        .map((entry) => entry.row);
-    }
-
-    const rows = orderedRows.slice(0, limit);
-
-    const allowedRows: typeof rows = [];
-    const blockedCounts = new Map<LexemePos, number>();
-
-    for (const row of rows) {
-      const rowPos = asLexemePos(row.pos);
-      if (!rowPos) {
-        allowedRows.push(row);
-        continue;
-      }
-      if (!isPosFeatureEnabled(rowPos, snapshot)) {
-        blockedCounts.set(rowPos, (blockedCounts.get(rowPos) ?? 0) + 1);
-        continue;
-      }
-      allowedRows.push(row);
-    }
-
-    if (blockedCounts.size) {
-      for (const [blockedPos, count] of blockedCounts) {
-        notifyPosFeatureBlocked(blockedPos, "tasks:list:response-filter", snapshot, {
-          filteredTasks: count,
-          totalFetched: rows.length,
-          hasExplicitPosFilter: Boolean(pos),
-          taskType: resolvedTaskType,
+      if (schedulingSorted.length) {
+        schedulingSorted.forEach((row) => {
+          pushRow(taskRowById.get(row.taskId));
         });
       }
-    }
 
-    const payload = allowedRows.map((row) => {
-      const registryEntry = getTaskRegistryEntry(row.taskType as TaskType);
-      return {
-        id: row.id,
-        taskType: row.taskType,
-        renderer: row.renderer,
-        pos: row.pos,
-        prompt: row.prompt,
-        solution: row.solution,
-        queueCap: registryEntry.queueCap,
-        lexeme: {
-          id: row.lexemeId,
-          lemma: row.lexemeLemma,
-          metadata: row.lexemeMetadata,
-        },
-        pack: row.packId
-          ? {
-              id: row.packId,
-              slug: row.packSlug,
-              name: row.packName,
+      fallbackRows.forEach((row) => {
+        pushRow(taskRowById.get(row.id));
+      });
+
+      let orderedRows = combinedRows;
+      if (!queueOrder.size && deviceId) {
+        const nowMs = Date.now();
+        orderedRows = [...combinedRows]
+          .map((row) => ({
+            row,
+            score: computeFallbackPriorityScore(schedulingStateMap.get(row.id), row.id, nowMs),
+          }))
+          .sort((a, b) => {
+            if (a.score === b.score) {
+              return a.row.id.localeCompare(b.row.id);
             }
-          : null,
-      };
-    });
+            return b.score - a.score;
+          })
+          .map((entry) => entry.row);
+      }
 
-    res.json({ tasks: payload });
+      const rows = orderedRows.slice(0, limit);
+
+      const allowedRows: typeof rows = [];
+      const blockedCounts = new Map<LexemePos, number>();
+
+      for (const row of rows) {
+        const rowPos = asLexemePos(row.pos);
+        if (!rowPos) {
+          allowedRows.push(row);
+          continue;
+        }
+        if (!isPosFeatureEnabled(rowPos, snapshot)) {
+          blockedCounts.set(rowPos, (blockedCounts.get(rowPos) ?? 0) + 1);
+          continue;
+        }
+        allowedRows.push(row);
+      }
+
+      if (blockedCounts.size) {
+        for (const [blockedPos, count] of blockedCounts) {
+          notifyPosFeatureBlocked(blockedPos, "tasks:list:response-filter", snapshot, {
+            filteredTasks: count,
+            totalFetched: rows.length,
+            hasExplicitPosFilter: Boolean(pos),
+            taskType: resolvedTaskType,
+          });
+        }
+      }
+
+      const payload = allowedRows.map((row) => {
+        const registryEntry = getTaskRegistryEntry(row.taskType as TaskType);
+        return {
+          id: row.id,
+          taskType: row.taskType,
+          renderer: row.renderer,
+          pos: row.pos,
+          prompt: row.prompt,
+          solution: row.solution,
+          queueCap: registryEntry.queueCap,
+          lexeme: {
+            id: row.lexemeId,
+            lemma: row.lexemeLemma,
+            metadata: row.lexemeMetadata,
+          },
+          pack: row.packId
+            ? {
+                id: row.packId,
+                slug: row.packSlug,
+                name: row.packName,
+              }
+            : null,
+        };
+      });
+
+      res.json({ tasks: payload });
+    } catch (error) {
+      next(error);
+    }
   });
 
   app.get("/api/feature-flags", (_req, res) => {
@@ -1142,29 +1210,40 @@ export function registerRoutes(app: Express): void {
     res.setHeader("Cache-Control", "no-store");
     res.setHeader("X-Feature-Flags", formatFeatureFlagHeader(snapshot));
 
-    const taskRow = await db
-      .select({
-        id: taskSpecs.id,
-        taskType: taskSpecs.taskType,
-        pos: taskSpecs.pos,
-        renderer: taskSpecs.renderer,
-        lexemeId: taskSpecs.lexemeId,
-        frequencyRank: lexemes.frequencyRank,
-      })
-      .from(taskSpecs)
-      .innerJoin(lexemes, eq(taskSpecs.lexemeId, lexemes.id))
-      .where(eq(taskSpecs.id, payload.taskId))
-      .limit(1);
+    const taskRowsRaw = await executeSelectRaw<Record<string, unknown>>(
+      db
+        .select({
+          id: taskSpecs.id,
+          taskType: taskSpecs.taskType,
+          pos: taskSpecs.pos,
+          renderer: taskSpecs.renderer,
+          lexemeId: taskSpecs.lexemeId,
+          frequencyRank: lexemes.frequencyRank,
+        })
+        .from(taskSpecs)
+        .innerJoin(lexemes, eq(taskSpecs.lexemeId, lexemes.id))
+        .where(eq(taskSpecs.id, payload.taskId))
+        .limit(1),
+    );
 
-    if (taskRow.length === 0) {
+    if (taskRowsRaw.length === 0) {
       return sendError(res, 404, "Task not found", "TASK_NOT_FOUND");
     }
 
-    const taskPos = asLexemePos(taskRow[0].pos);
+    const taskRow = {
+      id: taskRowsRaw[0]!.id as string,
+      taskType: taskRowsRaw[0]!.task_type as string | undefined,
+      pos: taskRowsRaw[0]!.pos as string | undefined,
+      renderer: taskRowsRaw[0]!.renderer as string | undefined,
+      lexemeId: taskRowsRaw[0]!.lexeme_id as string | undefined,
+      frequencyRank: taskRowsRaw[0]!.frequency_rank as number | null | undefined,
+    };
+
+    const taskPos = asLexemePos(taskRow.pos);
     if (!taskPos) {
       console.error("Task has unsupported part of speech", {
         taskId: payload.taskId,
-        pos: taskRow[0].pos,
+        pos: taskRow.pos,
       });
       return sendError(res, 500, "Task configuration invalid", "TASK_INVALID_POS");
     }
@@ -1185,7 +1264,7 @@ export function registerRoutes(app: Express): void {
       throw error;
     }
 
-    const registryEntry = getTaskRegistryEntry(taskRow[0].taskType as TaskType);
+    const registryEntry = getTaskRegistryEntry(taskRow.taskType as TaskType);
 
     const submittedAt = payload.submittedAt ? new Date(payload.submittedAt) : undefined;
     const answeredAt = payload.answeredAt ? new Date(payload.answeredAt) : undefined;
@@ -1227,21 +1306,21 @@ export function registerRoutes(app: Express): void {
       const submissionResult = await processTaskSubmission({
         deviceId: payload.deviceId,
         taskId: payload.taskId,
-        taskType: taskRow[0].taskType as TaskType,
+        taskType: taskRow.taskType as TaskType,
         pos: taskPos,
         queueCap: registryEntry.queueCap,
         result: payload.result,
         responseMs,
         submittedAt,
-        frequencyRank: taskRow[0].frequencyRank ?? null,
+        frequencyRank: taskRow.frequencyRank ?? null,
       });
 
       await db.insert(practiceHistory).values({
         taskId: payload.taskId,
-        lexemeId: taskRow[0].lexemeId,
-        pos: taskRow[0].pos,
-        taskType: taskRow[0].taskType,
-        renderer: taskRow[0].renderer,
+        lexemeId: taskRow.lexemeId!,
+        pos: taskRow.pos!,
+        taskType: taskRow.taskType!,
+        renderer: taskRow.renderer!,
         deviceId: payload.deviceId,
         userId: getSessionUserId(req.authSession),
         result: payload.result,
@@ -1262,7 +1341,7 @@ export function registerRoutes(app: Express): void {
           leitnerBox: submissionResult.leitnerBox,
           totalAttempts: submissionResult.totalAttempts,
           correctAttempts: submissionResult.correctAttempts,
-          frequencyRank: taskRow[0].frequencyRank ?? null,
+          frequencyRank: taskRow.frequencyRank ?? null,
         },
       });
 

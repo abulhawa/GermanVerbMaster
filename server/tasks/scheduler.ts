@@ -201,8 +201,18 @@ export async function processTaskSubmission(params: TaskSubmissionParams): Promi
     )
     .limit(1);
 
-  const currentAssignments = Number(coverageRows[0]?.value ?? 0);
-  const predictedAssignments = snapshot ? currentAssignments : currentAssignments + 1;
+  const rawAssignments = coverageRows[0]?.value;
+  let currentAssignments = Number(rawAssignments);
+  if (!Number.isFinite(currentAssignments)) {
+    currentAssignments = 0;
+  }
+  let predictedAssignments = snapshot ? currentAssignments : currentAssignments + 1;
+  if (!Number.isFinite(predictedAssignments)) {
+    predictedAssignments = snapshot ? currentAssignments : currentAssignments + 1;
+    if (!Number.isFinite(predictedAssignments)) {
+      predictedAssignments = snapshot ? 0 : 1;
+    }
+  }
 
   const metrics = calculateSubmissionMetrics(snapshot, {
     result: params.result,

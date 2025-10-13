@@ -3,10 +3,8 @@ import { eq } from 'drizzle-orm';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { AggregatedWord } from '../scripts/etl/types';
-import { buildGoldenBundles, upsertGoldenBundles } from '../scripts/etl/golden';
 import { setupTestDatabase, type TestDatabaseContext } from './helpers/pg';
 import { createApiInvoker } from './helpers/vercel';
-import { seedLexemeInventoryForWords } from './helpers/task-fixtures';
 
 vi.mock('../server/srs/index.js', () => ({
   srsEngine: {
@@ -20,6 +18,9 @@ vi.mock('../server/srs/index.js', () => ({
 }));
 
 describe('tasks API', () => {
+  let buildGoldenBundles: typeof import('../scripts/etl/golden').buildGoldenBundles;
+  let upsertGoldenBundles: typeof import('../scripts/etl/golden').upsertGoldenBundles;
+  let seedLexemeInventoryForWords: typeof import('./helpers/task-fixtures').seedLexemeInventoryForWords;
   let invokeApi: ReturnType<typeof createApiInvoker>;
   let createVercelApiHandler: typeof import('../server/api/vercel-handler.js').createVercelApiHandler;
   let schedulingStateTable: typeof import('../db/schema.js').schedulingState;
@@ -151,6 +152,9 @@ describe('tasks API', () => {
     },
   ];
 
+    ({ buildGoldenBundles, upsertGoldenBundles } = await import('../scripts/etl/golden'));
+    ({ seedLexemeInventoryForWords } = await import('./helpers/task-fixtures'));
+
     await seedLexemeInventoryForWords(drizzleDb, sampleWords);
     const bundles = buildGoldenBundles(sampleWords);
     await upsertGoldenBundles(drizzleDb, bundles);
@@ -183,6 +187,21 @@ describe('tasks API', () => {
   });
 
   it('responds with an error when the task registry is misconfigured', async () => {
+    if (!dbContext) {
+      throw new Error('test database not initialised');
+    }
+
+    const taskLookup = await dbContext.pool.query(
+      'select id from task_specs order by updated_at desc limit 1',
+    );
+    const taskId = taskLookup.rows[0]?.id;
+    expect(taskId).toBeDefined();
+
+    await dbContext.pool.query(
+      'update task_specs set task_type = $1 where id = $2',
+      ['unsupported_task_type', taskId],
+    );
+
     const response = await invokeApi('/api/tasks');
     expect(response.status).toBe(500);
 
@@ -218,54 +237,39 @@ describe('tasks API', () => {
     expect(submissionBody.queueCap).toBeGreaterThan(0);
     expect(submissionBody.coverageScore).toBeGreaterThanOrEqual(0);
 
-    const rows = await drizzleDb
-      .select({
-        totalAttempts: schedulingStateTable.totalAttempts,
-        correctAttempts: schedulingStateTable.correctAttempts,
-      })
-      .from(schedulingStateTable)
-      .where(eq(schedulingStateTable.taskId, task.id));
+    const schedulingResult = await dbContext.pool.query(
+      'select total_attempts, correct_attempts from scheduling_state where task_id = $1',
+      [task.id],
+    );
 
-    expect(rows[0]?.totalAttempts).toBeGreaterThan(0);
-    expect(rows[0]?.correctAttempts).toBeGreaterThan(0);
+    expect(schedulingResult.rows[0]?.total_attempts).toBeGreaterThan(0);
+    expect(schedulingResult.rows[0]?.correct_attempts).toBeGreaterThan(0);
 
-    const telemetryRows = await drizzleDb
-      .select({
-        priorityScore: telemetryTable.priorityScore,
-        metadata: telemetryTable.metadata,
-      })
-      .from(telemetryTable)
-      .where(eq(telemetryTable.taskId, task.id));
+    const telemetryResult = await dbContext.pool.query(
+      'select priority_score, metadata from telemetry_priorities where task_id = $1',
+      [task.id],
+    );
 
-    expect(telemetryRows.length).toBe(1);
-    expect(telemetryRows[0]?.priorityScore).toBeCloseTo(submissionBody.priorityScore, 5);
-    expect(telemetryRows[0]?.metadata).toMatchObject({
+    expect(telemetryResult.rowCount).toBe(1);
+    expect(telemetryResult.rows[0]?.priority_score).toBeCloseTo(submissionBody.priorityScore, 5);
+    expect(telemetryResult.rows[0]?.metadata).toMatchObject({
       posAssignments: 1,
       queueCap: submissionBody.queueCap,
     });
 
-    const historyRows = await drizzleDb
-      .select({
-        taskId: practiceHistoryTable.taskId,
-        deviceId: practiceHistoryTable.deviceId,
-        result: practiceHistoryTable.result,
-        pos: practiceHistoryTable.pos,
-        taskType: practiceHistoryTable.taskType,
-        hintsUsed: practiceHistoryTable.hintsUsed,
-        featureFlags: practiceHistoryTable.featureFlags,
-        metadata: practiceHistoryTable.metadata,
-      })
-      .from(practiceHistoryTable)
-      .where(eq(practiceHistoryTable.taskId, task.id));
+    const historyResult = await dbContext.pool.query(
+      'select task_id, device_id, result, pos, task_type, hints_used, feature_flags, metadata from practice_history where task_id = $1',
+      [task.id],
+    );
 
-    expect(historyRows[0]).toBeDefined();
-    expect(historyRows[0]!.deviceId).toBe('device-123');
-    expect(historyRows[0]!.result).toBe('correct');
-    expect(historyRows[0]!.pos).toBe(task.pos);
-    expect(historyRows[0]!.taskType).toBe(task.taskType);
-    expect(historyRows[0]!.hintsUsed).toBe(false);
-    expect(historyRows[0]!.featureFlags).toBeDefined();
-    expect(historyRows[0]!.metadata).toMatchObject({
+    expect(historyResult.rows[0]).toBeDefined();
+    expect(historyResult.rows[0]!.device_id).toBe('device-123');
+    expect(historyResult.rows[0]!.result).toBe('correct');
+    expect(historyResult.rows[0]!.pos).toBe(task.pos);
+    expect(historyResult.rows[0]!.task_type).toBe(task.taskType);
+    expect(historyResult.rows[0]!.hints_used).toBe(false);
+    expect(historyResult.rows[0]!.feature_flags).toBeDefined();
+    expect(historyResult.rows[0]!.metadata).toMatchObject({
       queueCap: submissionBody.queueCap,
       leitnerBox: submissionBody.leitnerBox,
     });
