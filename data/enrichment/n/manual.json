@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "providerId": "manual",
+  "providerLabel": "Manual Apply",
+  "pos": "N",
+  "updatedAt": "2025-10-13T21:14:55.812Z",
+  "entries": {
+    "abbildung": {
+      "lemma": "Abbildung",
+      "pos": "N",
+      "providerId": "manual",
+      "providerLabel": "Manual Apply",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-13T21:14:58.066Z",
+      "translations": [
+        {
+          "value": "depiction, image, figure, picture, illustration",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "mapping",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "word": {
+          "id": 1320,
+          "aux": null,
+          "pos": "N",
+          "lemma": "Abbildung",
+          "gender": "die",
+          "plural": null,
+          "english": "depiction, image, figure, picture, illustration",
+          "perfekt": null,
+          "examples": null,
+          "exampleDe": null,
+          "exampleEn": null,
+          "partizipIi": null,
+          "sourcesCsv": "dwds-goethe-B1.csv,kaikki.org",
+          "comparative": null,
+          "praeteritum": null,
+          "superlative": null,
+          "translations": [
+            {
+              "value": "depiction, image, figure, picture, illustration",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "mapping",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            }
+          ],
+          "posAttributes": {
+            "pos": "noun",
+            "notes": [
+              "feminine nouns",
+              "nouns",
+              "Pages with 2 entries",
+              "Pages with entries"
+            ]
+          },
+          "enrichmentMethod": "manual_api",
+          "enrichmentAppliedAt": "2025-10-13T21:14:55.716Z"
+        },
+        "patch": {
+          "english": "depiction, image, figure, picture, illustration",
+          "sourcesCsv": "dwds-goethe-B1.csv,kaikki.org",
+          "translations": [
+            {
+              "value": "depiction, image, figure, picture, illustration",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "mapping",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            }
+          ],
+          "posAttributes": {
+            "pos": "noun",
+            "notes": [
+              "feminine nouns",
+              "nouns",
+              "Pages with 2 entries",
+              "Pages with entries"
+            ]
+          }
+        },
+        "method": "manual_api",
+        "source": "manual_apply",
+        "appliedAt": "2025-10-13T21:14:55.716Z",
+        "appliedFields": [
+          "english",
+          "sourcesCsv",
+          "translations",
+          "posAttributes",
+          "enrichmentAppliedAt",
+          "enrichmentMethod"
+        ]
+      },
+      "wordId": 1320,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "all",
+        "snapshotId": 203,
+        "wordId": 1320,
+        "createdAt": "2025-10-13T21:14:58.066Z",
+        "enrichmentMethod": "manual_api",
+        "appliedAt": "2025-10-13T21:14:55.716Z",
+        "source": "manual_apply"
+      }
+    }
+  },
+  "meta": {
+    "createdAt": "2025-10-13T21:14:55.812Z"
+  }
+}
