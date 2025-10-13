@@ -144,7 +144,7 @@ Shut down the container with `docker stop gvm-postgres` when you are done.
 - The `useSyncQueue` hook listens to `online` and `visibilitychange` events and flushes queued attempts back to `POST /api/submission`.
 - Each device receives a persistent `deviceId` stored in `localStorage`; it is sent with every practice submission and stored in `scheduling_state` for priority calculations.
 - `data/words_manual.csv` stores handcrafted rows that supplement the scraped sources.
-- `data/words_all_sources.csv` is regenerated on each `npm run seed` by combining `docs/external/**` with the manual rows, and `data/words_canonical.csv` marks the curated canonical subset. Running `npm run seed` normalises, merges, and upserts that data into SQLite while regenerating `data/packs/*.json` bundles.
+- `data/words_all_sources.csv` is regenerated on each `npm run seed` by combining `docs/external/**` with the manual rows, and `data/words_canonical.csv` marks the curated canonical subset. Running `npm run seed` normalises, merges, and upserts that data into Postgres while regenerating `data/packs/*.json` bundles.
 
 ## Database utilities
 - The schema is managed with Drizzle + Postgres. After editing `db/schema.ts`, run `npm run db:push` to apply migrations using the configured `DATABASE_URL`.

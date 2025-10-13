@@ -1,6 +1,6 @@
 # Baseline KPI Snapshot (Sept 2025)
 
-This baseline captures current engagement metrics ahead of Phase 1 work. Data was pulled on 26 Sep 2025 using `npx tsx scripts/baseline-kpis.ts`, which queries the production-like SQLite snapshot (`db/data.sqlite`).
+This baseline captures current engagement metrics ahead of Phase 1 work. Data was pulled on 26 Sep 2025 using `npx tsx scripts/baseline-kpis.ts`, which queries the production-like Postgres snapshot backing the Drizzle client.
 
 ## Headline Metrics
 | Metric | Value | Notes |
@@ -26,6 +26,6 @@ Higher levels currently have no recorded activity; this will inform the seeding 
 4. Output a JSON summary to prevent Excel drift; paste the results above.
 
 ## Follow-Up Actions
-- Create synthetic exercise data for levels A2–C1 to stress-test analytics before Phase 1 launch.
+- Create synthetic exercise data for levels A2â€“C1 to stress-test analytics before Phase 1 launch.
 - Define MAU targets once account infrastructure (Phase 3) is scoped; until then track device-level actives.
 - Pipe the script output into a scheduled report (GitHub Actions candidate) so the board receives automatic updates.

@@ -4,13 +4,13 @@ GermanVerbMaster now exposes a lightweight REST surface that learning platforms 
 
 ## Authentication
 
-All partner endpoints require an API key passed via the `X-Partner-Key` header. Keys are stored hashed in SQLite. Generate a sandbox key locally with:
+All partner endpoints require an API key passed via the `X-Partner-Key` header. Keys are stored hashed in Postgres (`integration_partners.api_key_hash`). Generate a sandbox key locally with:
 
 ```bash
 npm run integration:create-key -- --name "Acme LMS" --contact "partners@acme.test" --origins "https://sandbox.acme.test,https://lms.acme.test"
 ```
 
-The script prints the plain key for distribution plus an `INSERT` statement for `integration_partners`. Apply the statement to your development database with `sqlite3 db/data.sqlite` or through the Drizzle console. Re-run the command whenever you need to rotate credentials.
+The script prints the plain key for distribution plus an `INSERT` statement for `integration_partners`. Apply the statement to your development database with `psql "$DATABASE_URL" -c "<statement>"` or via the Drizzle console. Re-run the command whenever you need to rotate credentials.
 
 ## Available Endpoints
 
@@ -83,11 +83,11 @@ Returns request analytics for the authenticated partner. Use `windowHours` to co
 ## Sandbox Workflow
 
 1. **Create a partner record** using the script above and apply the SQL snippet.
-2. **Run the stack locally** with `npm run dev`. The Express API listens on `http://localhost:5173` when Vite is active.
+2. **Run the stack locally** with `npm run dev`. The Express API listens on `http://localhost:5000` when Vite is active.
 3. **Call the API** using `curl` or an HTTP client:
    ```bash
    curl -H "X-Partner-Key: <plain-key-from-script>" \
-        "http://localhost:5173/api/partner/drills?level=B1&limit=5"
+        "http://localhost:5000/api/partner/drills?level=B1&limit=5"
    ```
 4. **Inspect analytics** by requesting `/api/partner/usage-summary`. The endpoint reports aggregated totals and the latest 25 requests, which downstream dashboards can ingest.
 5. **Validate embed flows** by wiring the drill payload into your LMS widget. Each prompt already includes localized questions and sample answers for rapid prototyping.
