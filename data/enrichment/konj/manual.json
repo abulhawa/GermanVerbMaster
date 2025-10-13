@@ -1,0 +1,167 @@
+{
+  "schemaVersion": 1,
+  "providerId": "manual",
+  "providerLabel": "Manual Apply",
+  "pos": "Konj",
+  "updatedAt": "2025-10-13T12:04:28.907Z",
+  "entries": {
+    "aber": {
+      "lemma": "aber",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Manual Apply",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-13T12:04:30.890Z",
+      "translations": [
+        {
+          "value": "but",
+          "source": "mymemory.translated.net",
+          "language": "en",
+          "confidence": 100
+        },
+        {
+          "value": "but; however; though",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": [
+        {
+          "source": "tatoeba.org",
+          "exampleDe": "Aber natürlich!",
+          "exampleEn": null
+        },
+        {
+          "source": "kaikki.org",
+          "exampleDe": "Ich mag keine Orangen, aber ich mag Äpfel.",
+          "exampleEn": "I don't like oranges, but I like apples."
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "word": {
+          "id": 51,
+          "aux": null,
+          "pos": "Konj",
+          "lemma": "aber",
+          "gender": null,
+          "plural": null,
+          "english": "but; however; though",
+          "perfekt": null,
+          "examples": [
+            {
+              "source": "tatoeba.org",
+              "exampleDe": "Aber natürlich!",
+              "exampleEn": null
+            },
+            {
+              "source": "kaikki.org",
+              "exampleDe": "Ich mag keine Orangen, aber ich mag Äpfel.",
+              "exampleEn": "I don't like oranges, but I like apples."
+            }
+          ],
+          "exampleDe": "Ich mag keine Orangen, aber ich mag Äpfel.",
+          "exampleEn": "I don't like oranges, but I like apples.",
+          "partizipIi": null,
+          "sourcesCsv": "Manual Apply,dwds-goethe-A1.csv,kaikki.org",
+          "comparative": null,
+          "praeteritum": null,
+          "superlative": null,
+          "translations": [
+            {
+              "value": "but",
+              "source": "mymemory.translated.net",
+              "language": "en",
+              "confidence": 100
+            },
+            {
+              "value": "but; however; though",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            }
+          ],
+          "posAttributes": {
+            "pos": "conj",
+            "tags": [
+              "coordinating"
+            ],
+            "notes": [
+              "adverbs",
+              "conjunctions",
+              "conjunctive adverbs",
+              "coordinating conjunctions",
+              "modal particles",
+              "Pages with 17 entries",
+              "Pages with entries",
+              "terms inherited from Middle High German",
+              "terms inherited from Old High German",
+              "terms inherited from Proto-Germanic",
+              "terms with usage examples"
+            ]
+          },
+          "enrichmentMethod": "manual_api",
+          "enrichmentAppliedAt": "2025-10-13T12:04:28.813Z"
+        },
+        "patch": {
+          "english": "but; however; though",
+          "exampleDe": "Ich mag keine Orangen, aber ich mag Äpfel.",
+          "exampleEn": "I don't like oranges, but I like apples.",
+          "sourcesCsv": "Manual Apply,dwds-goethe-A1.csv,kaikki.org",
+          "posAttributes": {
+            "pos": "conj",
+            "tags": [
+              "coordinating"
+            ],
+            "notes": [
+              "adverbs",
+              "conjunctions",
+              "conjunctive adverbs",
+              "coordinating conjunctions",
+              "modal particles",
+              "Pages with 17 entries",
+              "Pages with entries",
+              "terms inherited from Middle High German",
+              "terms inherited from Old High German",
+              "terms inherited from Proto-Germanic",
+              "terms with usage examples"
+            ]
+          }
+        },
+        "method": "manual_api",
+        "source": "manual_apply",
+        "appliedAt": "2025-10-13T12:04:28.813Z",
+        "appliedFields": [
+          "english",
+          "exampleDe",
+          "exampleEn",
+          "sourcesCsv",
+          "posAttributes",
+          "enrichmentAppliedAt",
+          "enrichmentMethod"
+        ]
+      },
+      "wordId": 51,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "all",
+        "snapshotId": 169,
+        "wordId": 51,
+        "createdAt": "2025-10-13T12:04:30.890Z",
+        "enrichmentMethod": "manual_api",
+        "appliedAt": "2025-10-13T12:04:28.813Z",
+        "source": "manual_apply"
+      }
+    }
+  },
+  "meta": {
+    "createdAt": "2025-10-13T06:04:36.804Z"
+  }
+}
