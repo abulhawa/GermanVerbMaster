@@ -152,20 +152,36 @@ type TaskRow = {
   packName: string | null;
 };
 
+function getRowValue<T>(row: Record<string, any>, ...keys: string[]): T | undefined {
+  for (const key of keys) {
+    if (key in row && row[key] !== undefined) {
+      return row[key] as T;
+    }
+  }
+  return undefined;
+}
+
 function mapTaskRow(row: Record<string, any>): TaskRow {
   return {
-    id: row.id,
-    taskType: row.task_type,
-    renderer: row.renderer,
-    pos: row.pos,
-    prompt: row.prompt,
-    solution: row.solution,
-    lexemeId: row.lexeme_id,
-    lexemeLemma: row.lexeme_lemma ?? row.lemma ?? null,
-    lexemeMetadata: row.lexeme_metadata ?? row.metadata ?? null,
-    packId: row.pack_id ?? row.id1 ?? null,
-    packSlug: row.pack_slug ?? row.slug ?? null,
-    packName: row.pack_name ?? row.name ?? null,
+    id: getRowValue<string>(row, "id")!,
+    taskType: getRowValue<string>(row, "taskType", "task_type")!,
+    renderer: getRowValue<string>(row, "renderer")!,
+    pos: getRowValue<string>(row, "pos")!,
+    prompt: getRowValue<unknown>(row, "prompt"),
+    solution: getRowValue<unknown>(row, "solution"),
+    lexemeId: getRowValue<string>(row, "lexemeId", "lexeme_id")!,
+    lexemeLemma:
+      getRowValue<string | null>(row, "lexemeLemma", "lexeme_lemma", "lemma") ?? null,
+    lexemeMetadata:
+      getRowValue<Record<string, unknown> | null>(
+        row,
+        "lexemeMetadata",
+        "lexeme_metadata",
+        "metadata",
+      ) ?? null,
+    packId: getRowValue<string | null>(row, "packId", "pack_id", "id1") ?? null,
+    packSlug: getRowValue<string | null>(row, "packSlug", "pack_slug", "slug") ?? null,
+    packName: getRowValue<string | null>(row, "packName", "pack_name", "name") ?? null,
   };
 }
 
@@ -992,16 +1008,27 @@ export function registerRoutes(app: Express): void {
             .innerJoin(taskSpecs, eq(schedulingState.taskId, taskSpecs.id))
             .where(whereCondition);
 
-        const schedulingRowsRaw = await executeSelectRaw<Record<string, unknown>>(schedulingQuery);
+          const schedulingRowsRaw = await executeSelectRaw<Record<string, unknown>>(schedulingQuery);
 
-        schedulingStateRows = schedulingRowsRaw.map((row) => ({
-          taskId: row.task_id as string,
-          priorityScore: Number(row.priority_score ?? 0),
-          dueAt: (row.due_at as Date | null) ?? null,
-          lastResult: row.last_result as PracticeResult,
-          totalAttempts: Number(row.total_attempts ?? 0),
-          correctAttempts: Number(row.correct_attempts ?? 0),
-        }));
+          schedulingStateRows = schedulingRowsRaw.map((row) => {
+            const priorityScore = getRowValue<number | null>(
+              row,
+              "priorityScore",
+              "priority_score",
+            );
+            return {
+              taskId: getRowValue<string>(row, "taskId", "task_id")!,
+              priorityScore: priorityScore == null ? null : Number(priorityScore),
+              dueAt: (getRowValue<Date | null>(row, "dueAt", "due_at") ?? null) as Date | null,
+              lastResult: getRowValue<PracticeResult | null>(row, "lastResult", "last_result") ?? null,
+              totalAttempts: Number(
+                getRowValue<number>(row, "totalAttempts", "total_attempts") ?? 0,
+              ),
+              correctAttempts: Number(
+                getRowValue<number>(row, "correctAttempts", "correct_attempts") ?? 0,
+              ),
+            } satisfies SchedulingStateSnapshot;
+          });
         } catch (error) {
           console.error("Failed to resolve scheduling state for /api/tasks", {
             deviceId,
@@ -1025,8 +1052,10 @@ export function registerRoutes(app: Express): void {
       const schedulingSorted = [...schedulingStateRows]
         .filter((row) => row.dueAt && row.dueAt <= new Date())
         .sort((a, b) => {
-          if (a.priorityScore !== b.priorityScore) {
-            return b.priorityScore - a.priorityScore;
+          const aPriority = a.priorityScore ?? 0;
+          const bPriority = b.priorityScore ?? 0;
+          if (aPriority !== bPriority) {
+            return bPriority - aPriority;
           }
           if (a.dueAt && b.dueAt) {
             return a.dueAt.getTime() - b.dueAt.getTime();
@@ -1230,14 +1259,26 @@ export function registerRoutes(app: Express): void {
       return sendError(res, 404, "Task not found", "TASK_NOT_FOUND");
     }
 
+    const rawTaskRow = taskRowsRaw[0]!;
     const taskRow = {
-      id: taskRowsRaw[0]!.id as string,
-      taskType: taskRowsRaw[0]!.task_type as string | undefined,
-      pos: taskRowsRaw[0]!.pos as string | undefined,
-      renderer: taskRowsRaw[0]!.renderer as string | undefined,
-      lexemeId: taskRowsRaw[0]!.lexeme_id as string | undefined,
-      frequencyRank: taskRowsRaw[0]!.frequency_rank as number | null | undefined,
+      id: getRowValue<string>(rawTaskRow, "id")!,
+      taskType: getRowValue<string | undefined>(rawTaskRow, "taskType", "task_type"),
+      pos: getRowValue<string | undefined>(rawTaskRow, "pos"),
+      renderer: getRowValue<string | undefined>(rawTaskRow, "renderer"),
+      lexemeId: getRowValue<string | undefined>(rawTaskRow, "lexemeId", "lexeme_id"),
+      frequencyRank: getRowValue<number | null | undefined>(
+        rawTaskRow,
+        "frequencyRank",
+        "frequency_rank",
+      ),
     };
+
+    if (!taskRow.pos) {
+      console.error("Task is missing part of speech", {
+        taskId: payload.taskId,
+      });
+      return sendError(res, 500, "Task configuration invalid", "TASK_INVALID_POS");
+    }
 
     const taskPos = asLexemePos(taskRow.pos);
     if (!taskPos) {
