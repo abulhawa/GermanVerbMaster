@@ -11,6 +11,16 @@ describe('seedDatabase', () => {
         context.mock();
 
         try {
+          vi.doMock('../scripts/source-loaders', async () => {
+            const actual = await vi.importActual<typeof import('../scripts/source-loaders')>(
+              '../scripts/source-loaders',
+            );
+            return {
+              ...actual,
+              snapshotExternalSources: vi.fn(),
+            };
+          });
+
           vi.doMock('../scripts/etl/golden', async () => {
             const actual = await vi.importActual<typeof import('../scripts/etl/golden')>(
               '../scripts/etl/golden',
