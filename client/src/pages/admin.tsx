@@ -939,7 +939,7 @@ const AdminWordsPage = () => {
           }
         }}
       >
-        <DialogContent className="w-full max-w-6xl overflow-hidden border border-border/60 bg-card/95 p-0">
+        <DialogContent className="w-full max-w-6xl overflow-hidden border border-border/60 bg-background p-0">
           <ScrollArea className="max-h-[80vh] w-full">
             {enrichmentWordId ? (
               <div className="space-y-6 px-6 py-6">
@@ -953,7 +953,6 @@ const AdminWordsPage = () => {
                   onClose={closeEnrichmentDialog}
                   wordConfig={wordConfig}
                   setWordConfig={setWordConfig}
-                  autoPreview
                 />
               </div>
             ) : null}
