@@ -379,6 +379,7 @@ const enrichmentRunSchema = z
     collectExamples: optionalBoolean,
     collectTranslations: optionalBoolean,
     collectWiktextract: optionalBoolean,
+    posFilters: z.array(z.string().min(1).max(20)).max(20).optional(),
   })
   .partial();
 
@@ -1492,6 +1493,7 @@ export function registerRoutes(app: Express): void {
         collectExamples: parsed.data.collectExamples,
         collectTranslations: parsed.data.collectTranslations,
         collectWiktextract: parsed.data.collectWiktextract,
+        posFilters: parsed.data.posFilters,
         delayMs: 0,
         apply: false,
         dryRun: true,

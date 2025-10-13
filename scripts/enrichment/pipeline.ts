@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { db } from "@db";
 import { enrichmentProviderSnapshots, words } from "@db/schema";
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 
 import type {
   EnrichmentAdjectiveFormSuggestion,
@@ -132,6 +132,7 @@ export interface PipelineConfig {
   collectExamples: boolean;
   collectTranslations: boolean;
   collectWiktextract: boolean;
+  posFilters: string[];
 }
 
 export interface PipelineRun {
@@ -165,6 +166,7 @@ export function resolveConfigFromEnv(overrides: Partial<PipelineConfig> = {}): P
   const envCollectExamples = parseBoolean(process.env.COLLECT_EXAMPLES, true);
   const envCollectTranslations = parseBoolean(process.env.COLLECT_TRANSLATIONS, true);
   const envCollectWiktextract = parseBoolean(process.env.COLLECT_WIKTEXTRACT, true);
+  const envPosFilters = parsePosFilters(process.env.POS_FILTERS);
 
   const apply = overrides.apply ?? envApply;
   const dryRunEnv = overrides.dryRun ?? envDryRun;
@@ -176,6 +178,9 @@ export function resolveConfigFromEnv(overrides: Partial<PipelineConfig> = {}): P
     ?? (process.env.BACKUP_DIR ? path.resolve(process.env.BACKUP_DIR) : DEFAULT_BACKUP_DIR);
   const openAiModel = overrides.openAiModel ?? process.env.OPENAI_MODEL?.trim() ?? DEFAULT_OPENAI_MODEL;
   const emitReport = overrides.emitReport ?? envEmitReport;
+  const overridePosFilters = overrides.posFilters !== undefined
+    ? normalisePosFilters(overrides.posFilters)
+    : undefined;
 
   return {
     limit: overrides.limit ?? envLimit,
@@ -196,6 +201,7 @@ export function resolveConfigFromEnv(overrides: Partial<PipelineConfig> = {}): P
     collectExamples: overrides.collectExamples ?? envCollectExamples,
     collectTranslations: overrides.collectTranslations ?? envCollectTranslations,
     collectWiktextract: overrides.collectWiktextract ?? envCollectWiktextract,
+    posFilters: overridePosFilters ?? envPosFilters,
   } satisfies PipelineConfig;
 }
 
@@ -413,20 +419,137 @@ function normaliseMode(value: string | undefined): PipelineConfig["mode"] {
   }
 }
 
-function buildWhereClause(config: PipelineConfig) {
-  const canonicalClause =
-    config.mode === "canonical"
-      ? eq(words.canonical, true)
-      : config.mode === "non-canonical"
-        ? eq(words.canonical, false)
-        : undefined;
+const POS_FILTER_ALIASES: Record<string, string> = {
+  v: "V",
+  verb: "V",
+  verbs: "V",
+  n: "N",
+  noun: "N",
+  nouns: "N",
+  adj: "Adj",
+  adjective: "Adj",
+  adjectives: "Adj",
+  adv: "Adv",
+  adverb: "Adv",
+  adverbs: "Adv",
+  pron: "Pron",
+  pronoun: "Pron",
+  pronouns: "Pron",
+  det: "Det",
+  determiner: "Det",
+  determiners: "Det",
+  article: "Det",
+  articles: "Det",
+  präp: "Präp",
+  präposition: "Präp",
+  präpositionen: "Präp",
+  praep: "Präp",
+  prap: "Präp",
+  prep: "Präp",
+  preposition: "Präp",
+  prepositions: "Präp",
+  konj: "Konj",
+  conjunction: "Konj",
+  conjunctions: "Konj",
+  konjunktion: "Konj",
+  konjunktionen: "Konj",
+  num: "Num",
+  numeral: "Num",
+  numerals: "Num",
+  part: "Part",
+  particle: "Part",
+  particles: "Part",
+  interj: "Interj",
+  interjection: "Interj",
+  interjections: "Interj",
+};
 
-  const completenessClause = config.onlyIncomplete ? eq(words.complete, false) : undefined;
+function stripDiacritics(value: string): string {
+  return value.normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
+}
 
-  if (canonicalClause && completenessClause) {
-    return and(canonicalClause, completenessClause);
+function normalisePosFilters(values: string[] | undefined): string[] {
+  if (!Array.isArray(values)) {
+    return [];
   }
-  return canonicalClause ?? completenessClause;
+  const seen = new Set<string>();
+  const result: string[] = [];
+  for (const value of values) {
+    const resolved = normalisePosFilterValue(value);
+    if (!resolved) {
+      continue;
+    }
+    if (!seen.has(resolved)) {
+      seen.add(resolved);
+      result.push(resolved);
+    }
+  }
+  return result;
+}
+
+function normalisePosFilterValue(value: string | undefined): string | null {
+  if (!value) {
+    return null;
+  }
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return null;
+  }
+  const lower = trimmed.toLowerCase();
+  if (lower === "all" || lower === "*") {
+    return null;
+  }
+  const alias = POS_FILTER_ALIASES[lower] ?? POS_FILTER_ALIASES[stripDiacritics(lower)];
+  if (alias) {
+    return alias;
+  }
+  if (trimmed.length === 1) {
+    return trimmed.toUpperCase();
+  }
+  if (trimmed.length <= 4) {
+    return `${trimmed[0]?.toUpperCase() ?? ""}${trimmed.slice(1)}`;
+  }
+  return trimmed;
+}
+
+function parsePosFilters(value: string | undefined): string[] {
+  if (!value) {
+    return [];
+  }
+  const parts = value
+    .split(/[\s,;|]+/)
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+  return normalisePosFilters(parts);
+}
+
+export function buildWhereClause(config: PipelineConfig) {
+  const clauses: Array<ReturnType<typeof eq>> = [];
+
+  if (config.mode === "canonical") {
+    clauses.push(eq(words.canonical, true));
+  } else if (config.mode === "non-canonical") {
+    clauses.push(eq(words.canonical, false));
+  }
+
+  if (config.onlyIncomplete) {
+    clauses.push(eq(words.complete, false));
+  }
+
+  if (config.posFilters.length) {
+    clauses.push(inArray(words.pos, config.posFilters));
+  }
+
+  if (!clauses.length) {
+    return undefined;
+  }
+
+  let combined = clauses[0]!;
+  for (let index = 1; index < clauses.length; index += 1) {
+    const next = and(combined, clauses[index]!);
+    combined = next ?? combined;
+  }
+  return combined;
 }
 
 function detectMissingFields(word: WordRecord): string[] {

@@ -662,8 +662,9 @@ export async function clearSupabaseBucketPrefix(): Promise<SupabaseStorageCleanR
     const chunk = objectPaths.slice(index, index + SUPABASE_REMOVE_BATCH_SIZE);
     const { data, error } = await client.storage.from(config.bucket).remove(chunk);
     if (error) {
-      const label = chunk.length === 1 ? chunk[0] : `${chunk[0]}…`;
-      failures.push({ path: label, error: error.message });
+      const head = chunk[0] ?? "";
+      const label = head ? (chunk.length === 1 ? head : `${head}…`) : "unknown";
+      failures.push({ path: label, error: error.message ?? "Unknown error" });
       continue;
     }
     if (Array.isArray(data) && data.length > 0) {

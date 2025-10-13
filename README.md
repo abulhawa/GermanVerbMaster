@@ -152,6 +152,7 @@ Shut down the container with `docker stop gvm-postgres` when you are done.
 - Every provider snapshot is also persisted under `data/enrichment/<pos>/<provider>.json` so Kaikki/Wiktextract, MyMemory, Tatoeba, OpenThesaurus, and OpenAI responses remain source-of-truth across schema changes. The seeding script loads these files and replays their translations, examples, verb forms, and enrichment metadata back into Postgres to keep canonical words intact. When `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and `ENRICHMENT_SUPABASE_BUCKET` are configured the same payloads are uploaded to Supabase Storage for off-site backups.
 - See [docs/enrichment-persistence.md](docs/enrichment-persistence.md) for details on where enrichment data lives and how to export the latest applied provider snapshots with `npm run enrichment:export`.
 - `LIMIT=<n>`, `CANONICAL_MODE=<non-canonical|canonical|all>`, `DELAY_MS=<ms>`, and `OVERWRITE_EXISTING=true` fine-tune batch size, target scope, rate limiting, and whether existing translations/examples may be replaced.
+- `POS_FILTERS=N,Adj` (comma/space separated) narrows the run to specific parts of speech so noun/adjective backfills can be validated without touching the verb catalog.
 - The legacy `tsx scripts/enrich-non-canonical-words.ts` wrapper remains for quick exports to `data/generated/non-canonical-enrichment.json` without mutating the database.
 
 ## Lexeme & content admin tools
