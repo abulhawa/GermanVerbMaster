@@ -41,6 +41,7 @@ Extend GermanVerbMaster from a verb-only trainer into a comprehensive German voc
    - Refactor ETL scripts to emit lexeme + inflection + task bundles for each POS; generate inflections from paradigms where possible (e.g., adjective endings).
    - Define POS-specific validators that enforce required fields (noun gender/plural, adjective degrees, governed case for prepositions, etc.).
    - Use the enrichment pipeline `POS_FILTERS` toggle to validate Kaikki-driven noun and adjective payloads before wiring full ETL loops.
+   - Fold the new `words.pos_attributes` enrichment output (Kaikki tags, governed cases, usage notes) into lexeme metadata so separability/reflexivity requirements are already staged when the lexeme schema lands.
    - Export deterministic “packs” per POS (e.g., `packs/nouns.de.json`) with checksums to guarantee idempotent updates and offline parity.
    - Attach pack metadata (`pack_id`, `pack_version`, `source`, `license`, `checksum`) to each pack header and persist installations in a `content_packs` table plus a `pack_lexeme_map` join table for safe rollbacks and provenance tracking.
    - Ship a `packs:lint` command that validates POS-required fields, flags unreachable or duplicate tasks, checks license presence, and verifies pack metadata before publishing.

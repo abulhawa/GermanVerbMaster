@@ -175,5 +175,32 @@ describe('lookupWiktextract', () => {
 
     expect(result?.prepositionAttributes?.cases).toEqual(['Akkusativ', 'Dativ']);
     expect(result?.prepositionAttributes?.notes).toEqual(['directional']);
+    expect(result?.posLabel).toBe('prep');
+    expect(result?.posTags).toEqual(expect.arrayContaining(['directional']));
+    expect(result?.posNotes).toEqual(expect.arrayContaining(['two-way prepositions']));
+  });
+
+  it('collects POS tags and usage notes for verbs when available', async () => {
+    const germanEntry = {
+      lang: 'German',
+      pos: 'verb',
+      word: 'abholen',
+      senses: [
+        {
+          glosses: ['to pick up'],
+          tags: ['transitive', 'separable'],
+          categories: ['German separable verbs'],
+          translations: [{ word: 'pick up', lang: 'English' }],
+        },
+      ],
+    };
+
+    mockedFetch.mockResolvedValueOnce(createResponse(`${JSON.stringify(germanEntry)}\n`));
+
+    const result = await lookupWiktextract('abholen', 'V');
+
+    expect(result?.posLabel).toBe('verb');
+    expect(result?.posTags).toEqual(expect.arrayContaining(['transitive', 'separable']));
+    expect(result?.posNotes).toEqual(expect.arrayContaining(['separable verbs']));
   });
 });

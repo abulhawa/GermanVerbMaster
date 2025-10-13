@@ -80,6 +80,9 @@ type SuggestionBundle = {
   nounForms: EnrichmentNounFormSuggestion[];
   adjectiveForms: EnrichmentAdjectiveFormSuggestion[];
   prepositionAttributes: EnrichmentPrepositionSuggestion[];
+  posLabel?: string;
+  posTags: string[];
+  posNotes: string[];
   snapshots: EnrichmentProviderSnapshotComparison[];
 };
 
@@ -601,6 +604,9 @@ async function collectSuggestions(
   const prepositionAttributes: EnrichmentPrepositionSuggestion[] = [];
   let synonyms: string[] = [];
   let englishHints: string[] = [];
+  let posLabel: string | undefined;
+  const posTagMap = new Map<string, string>();
+  const posNoteMap = new Map<string, string>();
   const diagnostics: EnrichmentProviderDiagnostic[] = [];
   const diagnosticMap = new Map<EnrichmentProviderId, EnrichmentProviderDiagnostic>();
   const snapshotDrafts = new Map<string, ProviderSnapshotDraft>();
@@ -698,6 +704,28 @@ async function collectSuggestions(
       synonyms.push(trimmed);
     }
     return trimmed;
+  };
+
+  const addPosTag = (value: string | undefined | null): void => {
+    const trimmed = value?.trim();
+    if (!trimmed) return;
+    const normalised = trimmed.replace(/\s+/g, " ");
+    if (!normalised) return;
+    const key = normalised.toLowerCase();
+    if (!posTagMap.has(key)) {
+      posTagMap.set(key, normalised);
+    }
+  };
+
+  const addPosNote = (value: string | undefined | null): void => {
+    const trimmed = value?.trim();
+    if (!trimmed) return;
+    const normalised = trimmed.replace(/\s+/g, " ");
+    if (!normalised) return;
+    const key = normalised.toLowerCase();
+    if (!posNoteMap.has(key)) {
+      posNoteMap.set(key, normalised);
+    }
   };
 
   if (config.collectSynonyms) {
@@ -887,6 +915,19 @@ async function collectSuggestions(
           prepositionAttributes.push(suggestion);
           snapshot.prepositionAttributes.push(suggestion);
         }
+        if (value.posLabel) {
+          posLabel = value.posLabel;
+        }
+        if (value.posTags.length) {
+          for (const tag of value.posTags) {
+            addPosTag(tag);
+          }
+        }
+        if (value.posNotes.length) {
+          for (const note of value.posNotes) {
+            addPosNote(note);
+          }
+        }
         if (
           value.translations.length
           || value.synonyms.length
@@ -981,6 +1022,10 @@ async function collectSuggestions(
     diagnosticMap,
   );
 
+  const resolvedPosLabel = posLabel?.trim() ? posLabel.trim().replace(/\s+/g, " ") : undefined;
+  const resolvedPosTags = Array.from(posTagMap.values()).sort((a, b) => a.localeCompare(b));
+  const resolvedPosNotes = Array.from(posNoteMap.values()).sort((a, b) => a.localeCompare(b));
+
   return {
     translations,
     synonyms,
@@ -994,6 +1039,9 @@ async function collectSuggestions(
     nounForms,
     adjectiveForms,
     prepositionAttributes,
+    posLabel: resolvedPosLabel,
+    posTags: resolvedPosTags,
+    posNotes: resolvedPosNotes,
     snapshots: snapshotComparisons,
   };
 }
@@ -1643,7 +1691,14 @@ function determineUpdates(
   }
 
   prepositionCandidate = pickPrepositionCandidate(suggestions.prepositionAttributes);
-  const mergedPosAttributes = mergePosAttributes(word.pos, word.posAttributes, suggestions.prepositionAttributes);
+  const mergedPosAttributes = mergePosAttributes(
+    word.pos,
+    word.posAttributes,
+    suggestions.prepositionAttributes,
+    suggestions.posLabel,
+    suggestions.posTags,
+    suggestions.posNotes,
+  );
   if (!arePosAttributesEqual(word.posAttributes, mergedPosAttributes)) {
     patch.posAttributes = mergedPosAttributes;
     updates.push({
@@ -1745,10 +1800,13 @@ function pickPreferredEnglishTranslationCandidate(
   );
 }
 
-function mergePosAttributes(
+export function mergePosAttributes(
   pos: WordRecord["pos"],
   existing: WordRecord["posAttributes"],
   suggestions: EnrichmentPrepositionSuggestion[],
+  suggestedPosLabel?: string,
+  suggestedTags: string[] = [],
+  suggestedNotes: string[] = [],
 ): WordPosAttributes | null {
   const normalisedExisting = normalisePosAttributes(existing);
   const caseValues = new Set<string>();
@@ -1788,13 +1846,16 @@ function mergePosAttributes(
   const resolvedNotes = noteValues.size ? Array.from(noteValues.values()).sort((a, b) => a.localeCompare(b)) : undefined;
 
   const result: WordPosAttributes = {};
-  const resolvedPos = typeof pos === "string" && pos.trim() ? pos : normalisedExisting?.pos;
+  const candidatePos = suggestedPosLabel?.trim().replace(/\s+/g, " ");
+  const resolvedPos = candidatePos && candidatePos.length
+    ? candidatePos
+    : normalisedExisting?.pos ?? (typeof pos === "string" && pos.trim() ? pos : undefined);
   if (resolvedPos) {
     result.pos = resolvedPos;
   }
 
-  const existingTags = normalisedExisting?.tags ?? null;
-  const existingNotes = normalisedExisting?.notes ?? null;
+  const mergedTags = sortStrings([...(normalisedExisting?.tags ?? []), ...suggestedTags]);
+  const mergedNotes = sortStrings([...(normalisedExisting?.notes ?? []), ...suggestedNotes]);
 
   if (resolvedCases || resolvedNotes || normalisedExisting?.preposition) {
     const mergedPreposition: PrepositionAttributes | undefined = (() => {
@@ -1815,11 +1876,11 @@ function mergePosAttributes(
     }
   }
 
-  if (existingTags?.length) {
-    result.tags = existingTags;
+  if (mergedTags.length) {
+    result.tags = mergedTags;
   }
-  if (existingNotes?.length) {
-    result.notes = existingNotes;
+  if (mergedNotes.length) {
+    result.notes = mergedNotes;
   }
 
   return Object.keys(result).length ? result : null;

@@ -237,6 +237,9 @@ export interface WordEnrichmentSuggestions {
   nounForms: EnrichmentNounFormSuggestion[];
   adjectiveForms: EnrichmentAdjectiveFormSuggestion[];
   prepositionAttributes: EnrichmentPrepositionSuggestion[];
+  posLabel?: string;
+  posTags: string[];
+  posNotes: string[];
   providerDiagnostics: EnrichmentProviderDiagnostic[];
   snapshots: EnrichmentProviderSnapshotComparison[];
 }

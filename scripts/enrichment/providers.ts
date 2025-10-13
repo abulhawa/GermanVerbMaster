@@ -156,6 +156,9 @@ export interface WiktextractLookup {
   nounForms?: WiktextractNounForms;
   adjectiveForms?: WiktextractAdjectiveForms;
   prepositionAttributes?: WiktextractPrepositionAttributes;
+  posLabel?: string;
+  posTags: string[];
+  posNotes: string[];
   sourceDe: string;
   pivotUsed: boolean;
 }
@@ -232,6 +235,64 @@ const CASE_CATEGORY_MATCHERS: Array<{ matcher: RegExp; values: string[] }> = [
 ];
 
 const NOTE_BLACKLIST = new Set(["table-tags", "inflection-template", "error-unrecognized-form"]);
+
+const POS_TAG_BLACKLIST = new Set([
+  "noun",
+  "proper noun",
+  "verb",
+  "adjective",
+  "adverb",
+  "preposition",
+  "pronoun",
+  "determiner",
+  "article",
+  "numeral",
+  "particle",
+  "interjection",
+  "case",
+  "tense",
+  "person",
+  "plural",
+  "singular",
+  "masculine",
+  "feminine",
+  "neuter",
+  "past",
+  "present",
+  "future",
+  "imperative",
+  "indicative",
+  "subjunctive",
+  "comparative",
+  "superlative",
+  "positive",
+  "qualifier",
+  "table-tags",
+  "head",
+]);
+
+const POS_TAG_PATTERNS: Array<{
+  matcher: RegExp;
+  transform?: (value: string) => string;
+}> = [
+  { matcher: /^class-\d+$/i, transform: (value) => value.replace(/-/g, " ") },
+  { matcher: /^(?:transitive|intransitive|reflexive|impersonal|pronominal)$/i },
+  { matcher: /^(?:separable|inseparable|nonseparable|non-separable)$/i },
+  { matcher: /^(?:auxiliary|modal)$/i },
+  { matcher: /^(?:strong|weak|irregular|regular)$/i },
+  { matcher: /^(?:colloquial|slang|formal|informal|obsolete|archaic|dated|poetic|figurative|idiomatic|rare|vulgar|derogatory|diminutive|pejorative)$/i },
+  { matcher: /^(?:countable|uncountable|usually countable|invariable)$/i },
+];
+
+const POS_NOTE_FILTERS: RegExp[] = [
+  /\blemmas?\b/i,
+  /\bterms? derived from\b/i,
+  /\bterms? borrowed from\b/i,
+  /\bterms? prefixed with\b/i,
+  /\bterms? suffixed with\b/i,
+  /\bterms? spelled with\b/i,
+  /\bentries with\b/i,
+];
 
 function buildKaikkiEntryUrl(base: string, lemma: string): string {
   const normalised = lemma.trim().toLowerCase();
@@ -464,6 +525,96 @@ function extractPrepositionAttributes(entry: KaikkiEntry): WiktextractPrepositio
   } satisfies WiktextractPrepositionAttributes;
 }
 
+function normalisePosDescriptor(value: string): string {
+  return value.trim().replace(/\s+/g, " ");
+}
+
+function resolvePosTag(value: string | undefined | null): { tag?: string; note?: string } | null {
+  if (!value) return null;
+  const trimmed = normalisePosDescriptor(value);
+  if (!trimmed) return null;
+  const lower = trimmed.toLowerCase();
+  if (NOTE_BLACKLIST.has(lower) || POS_TAG_BLACKLIST.has(lower)) {
+    return null;
+  }
+
+  for (const { matcher, transform } of POS_TAG_PATTERNS) {
+    if (matcher.test(lower)) {
+      const resolved = transform ? transform(trimmed) : trimmed;
+      return { tag: normalisePosDescriptor(resolved) };
+    }
+  }
+
+  if (/^(?:[a-z][a-z\s'-]{1,32})$/i.test(trimmed) && !POS_TAG_BLACKLIST.has(lower)) {
+    return { tag: trimmed.toLowerCase() };
+  }
+
+  return { note: trimmed };
+}
+
+function normalisePosNote(value: string | undefined | null): string | null {
+  if (!value) return null;
+  const trimmed = normalisePosDescriptor(value);
+  if (!trimmed) return null;
+  const lower = trimmed.toLowerCase();
+  if (NOTE_BLACKLIST.has(lower)) {
+    return null;
+  }
+  if (POS_NOTE_FILTERS.some((pattern) => pattern.test(lower))) {
+    return null;
+  }
+  const withoutPrefix = trimmed.replace(/^German\s+/i, "").trim();
+  return withoutPrefix || null;
+}
+
+function collectPosMetadata(entry: KaikkiEntry): { tags: string[]; notes: string[] } {
+  const tagMap = new Map<string, string>();
+  const noteMap = new Map<string, string>();
+
+  const addTag = (value: string | undefined | null) => {
+    if (!value) return;
+    const normalised = normalisePosDescriptor(value);
+    if (!normalised) return;
+    const key = normalised.toLowerCase();
+    if (!tagMap.has(key)) {
+      tagMap.set(key, normalised);
+    }
+  };
+
+  const addNote = (value: string | undefined | null) => {
+    const normalised = normalisePosNote(value);
+    if (!normalised) return;
+    const key = normalised.toLowerCase();
+    if (!noteMap.has(key)) {
+      noteMap.set(key, normalised);
+    }
+  };
+
+  for (const category of toArray<string>(entry.categories)) {
+    addNote(category);
+  }
+
+  for (const sense of toArray<KaikkiSenseEntry>(entry.senses)) {
+    for (const tag of toArray<string>(sense.tags)) {
+      const resolved = resolvePosTag(tag);
+      if (!resolved) continue;
+      if (resolved.tag) {
+        addTag(resolved.tag);
+      }
+      if (resolved.note) {
+        addNote(resolved.note);
+      }
+    }
+    for (const category of toArray<string>(sense.categories)) {
+      addNote(category);
+    }
+  }
+
+  const tags = Array.from(tagMap.values()).sort((a, b) => a.localeCompare(b));
+  const notes = Array.from(noteMap.values()).sort((a, b) => a.localeCompare(b));
+  return { tags, notes };
+}
+
 function collectGlosses(entry: KaikkiEntry): string[] {
   const glosses: string[] = [];
   for (const sense of toArray<KaikkiSenseEntry>(entry.senses)) {
@@ -675,6 +826,8 @@ export async function lookupWiktextract(
   const prepositionAttributes = selectedEntry.pos?.toLowerCase().includes("prep")
     ? extractPrepositionAttributes(selectedEntry)
     : undefined;
+  const posLabel = selectedEntry.pos?.trim();
+  const { tags: posTags, notes: posNotes } = collectPosMetadata(selectedEntry);
 
   let pivotUsed = false;
   const collectedTranslations = new Map<string, WiktextractTranslation>();
@@ -727,6 +880,9 @@ export async function lookupWiktextract(
     nounForms,
     adjectiveForms,
     prepositionAttributes,
+    posLabel,
+    posTags,
+    posNotes,
     sourceDe: germanUrl,
     pivotUsed,
   };
