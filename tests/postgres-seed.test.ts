@@ -1,3 +1,7 @@
+import path from 'node:path';
+import { tmpdir } from 'node:os';
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+
 import { describe, expect, it, vi } from 'vitest';
 import { count } from 'drizzle-orm';
 
@@ -10,7 +14,52 @@ describe('seedDatabase', () => {
         const context: TestDatabaseContext = await setupTestDatabase();
         context.mock();
 
+        const seedRoot = await mkdtemp(path.join(tmpdir(), 'gvm-seed-'));
+
         try {
+          await mkdir(path.join(seedRoot, 'data'), { recursive: true });
+          await mkdir(path.join(seedRoot, 'docs', 'external'), { recursive: true });
+
+          await writeFile(
+            path.join(seedRoot, 'data', 'words_canonical.csv'),
+            'lemma,pos\ngehen,V\n',
+            'utf8',
+          );
+
+          vi.doMock('../scripts/source-loaders', async () => {
+            const actual = await vi.importActual<typeof import('../scripts/source-loaders')>(
+              '../scripts/source-loaders',
+            );
+            return {
+              ...actual,
+              loadManualWordRows: vi.fn(async () => [
+                {
+                  lemma: 'gehen',
+                  pos: 'V',
+                  level: 'A1',
+                  english: 'to go',
+                  example_de: 'Ich gehe.',
+                  example_en: 'I go.',
+                  praeteritum: 'ging',
+                  partizip_ii: 'gegangen',
+                  perfekt: 'ist gegangen',
+                },
+              ]),
+              loadExternalWordRows: vi.fn(async () => [
+                {
+                  lemma: 'gehen',
+                  pos: 'V',
+                  level: 'A1',
+                  english: 'to walk',
+                  example_de: 'Wir gehen nach Hause.',
+                  example_en: 'We walk home.',
+                  sources_csv: 'external',
+                },
+              ]),
+              snapshotExternalSources: vi.fn(),
+            };
+          });
+
           vi.doMock('../scripts/etl/golden', async () => {
             const actual = await vi.importActual<typeof import('../scripts/etl/golden')>(
               '../scripts/etl/golden',
@@ -24,7 +73,7 @@ describe('seedDatabase', () => {
           const { seedDatabase } = await import('../scripts/seed');
           const { words, lexemes, inflections, taskSpecs, packLexemeMap } = await import('../db/schema.js');
 
-          const result = await seedDatabase(process.cwd());
+          const result = await seedDatabase(seedRoot);
 
           expect(result.aggregatedCount).toBeGreaterThan(0);
           expect(result.lexemeCount).toBeGreaterThan(0);
@@ -47,6 +96,7 @@ describe('seedDatabase', () => {
           expect(Number(packMapRows[0]?.value ?? 0)).toBeGreaterThan(0);
         } finally {
           await context.cleanup();
+          await rm(seedRoot, { recursive: true, force: true });
         }
     },
     60000,

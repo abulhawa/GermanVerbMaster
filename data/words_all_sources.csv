@@ -1318,7 +1318,7 @@ zurücklaufen,V,A2,,,,,,,,,,,,,,,dwds-goethe-A2.csv,https://www.dwds.de/wb/zur%C
 übersetzen,V,A2,,,,,,,,,,,,,,,dwds-goethe-A2.csv,https://www.dwds.de/wb/%C3%BCbersetzen
 Übersetzung,N,A2,,,,die,,,,,,,,,,,dwds-goethe-A2.csv,https://www.dwds.de/wb/%C3%9Cbersetzung
 abbiegen,V,B1,"to turn, to turn off",Biegen Sie jetzt links ab.,Now turn left.,,,,,,,,,,,,dwds-goethe-B1.csv; Manual Apply,https://www.dwds.de/wb/abbiegen
-Abbildung,N,B1,,,,die,,,,,,,,,,,dwds-goethe-B1.csv,https://www.dwds.de/wb/Abbildung
+Abbildung,N,B1,"depiction, image, figure, picture, illustration",,,die,,,,,,,,,,,dwds-goethe-B1.csv; Manual Apply,https://www.dwds.de/wb/Abbildung
 Abenteuer,N,B1,,,,das,,,,,,,,,,,dwds-goethe-B1.csv,https://www.dwds.de/wb/Abenteuer
 Abfall,N,B1,,,,der,,,,,,,,,,,dwds-goethe-B1.csv,https://www.dwds.de/wb/Abfall
 Abfalleimer,N,B1,,,,der,,,,,,,,,,,dwds-goethe-B1.csv,https://www.dwds.de/wb/Abfalleimer

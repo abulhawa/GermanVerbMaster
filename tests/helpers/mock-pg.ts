@@ -6,6 +6,7 @@ type QueryConfig = { text: string } & Record<string, any>;
 type NormalizedQuery = {
   text?: string;
   config?: QueryConfig;
+  rowMode?: string;
 };
 
 const userRoleDoPattern = /\s*DO\s+\$\$[\s\S]*?CREATE\s+TYPE\s+"public"\."user_role"\s+AS\s+ENUM[\s\S]*?\$\$\s*;?/gi;
@@ -21,8 +22,8 @@ function extractQueryConfig(configOrText: any): NormalizedQuery {
   }
 
   if (configOrText && typeof configOrText.text === 'string') {
-    const { text, types: _types, rowMode, ...rest } = configOrText;
-    return { text, config: rest };
+    const { text, rowMode, types: _types, ...rest } = configOrText;
+    return { text, config: rest, rowMode };
   }
 
   return { config: configOrText };
@@ -86,7 +87,7 @@ function wrapQuery(original: Pool['query'], mem: IMemoryDb): Pool['query'] {
       values = undefined;
     }
 
-    const { text, config } = extractQueryConfig(configOrText);
+    const { text, config, rowMode } = extractQueryConfig(configOrText);
 
     if (!text) {
       if (typeof callback === 'function') {
@@ -103,17 +104,41 @@ function wrapQuery(original: Pool['query'], mem: IMemoryDb): Pool['query'] {
         return createEmptyResult();
       }
 
-      const execute = (statement: string) => {
+      const applyRowMode = (result: QueryResult<any>): QueryResult<any> => {
+        if (!result || rowMode !== 'array' || !result.rows || result.rows.length === 0) {
+          return result;
+        }
+
+        if (Array.isArray(result.rows[0])) {
+          return result;
+        }
+
+        const fieldMetadata = (result as unknown as { fields?: Array<{ name: string }> }).fields;
+        const columnNames =
+          Array.isArray(fieldMetadata) && fieldMetadata.length > 0
+            ? fieldMetadata.map((field) => field.name)
+            : Object.keys(result.rows[0]!);
+
+        result.rows = result.rows.map((row) => columnNames.map((column) => row?.[column]));
+        return result;
+      };
+
+      const execute = async (statement: string): Promise<QueryResult<any>> => {
         const customResult = handleCustomStatements(statement, mem);
         if (customResult) {
-          return Promise.resolve(customResult);
+          return applyRowMode(customResult);
         }
 
+        let queryResult: QueryResult<any>;
         if (config) {
-          return original({ ...config, text: statement }, values);
+          const queryConfig = { ...config, text: statement };
+          delete (queryConfig as Record<string, unknown>).rowMode;
+          queryResult = await original(queryConfig, values);
+        } else {
+          queryResult = await original(statement, values);
         }
 
-        return original(statement, values);
+        return applyRowMode(queryResult);
       };
 
       if (statements.length === 1) {

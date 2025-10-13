@@ -6,11 +6,12 @@ import { drizzle, type NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { Pool, type PoolConfig, types } from 'pg';
 import { vi } from 'vitest';
 
-import * as schema from '../../db/schema.js';
 import { createMockPool } from './mock-pg';
 
+type Schema = typeof import('../../db/schema.js');
+
 export interface TestDatabaseContext {
-  db: NodePgDatabase<typeof schema>;
+  db: NodePgDatabase<Schema>;
   pool: Pool;
   mock: () => void;
   cleanup: () => Promise<void>;
@@ -55,6 +56,16 @@ export async function setupTestDatabase(): Promise<TestDatabaseContext> {
   vi.resetModules();
 
   const externalConnection = process.env.TEST_DATABASE_URL;
+  const hadDatabaseUrl = Object.prototype.hasOwnProperty.call(process.env, 'DATABASE_URL');
+  const originalDatabaseUrl = process.env.DATABASE_URL;
+
+  if (externalConnection && originalDatabaseUrl && externalConnection === originalDatabaseUrl) {
+    throw new Error(
+      'Refusing to run tests against the production database: TEST_DATABASE_URL matches DATABASE_URL.',
+    );
+  }
+
+  process.env.DATABASE_URL = 'postgres://test.invalid/german-verb-master';
 
   let pool: Pool;
   let usingExternal = false;
@@ -66,6 +77,8 @@ export async function setupTestDatabase(): Promise<TestDatabaseContext> {
   } else {
     pool = createMockPool();
   }
+
+  const schema = await import('../../db/schema.js');
 
   const db = drizzle(pool, { schema });
 
@@ -84,6 +97,8 @@ export async function setupTestDatabase(): Promise<TestDatabaseContext> {
   const mock = () => {
     vi.doMock('@db', () => moduleExports);
     vi.doMock('@db/client', () => moduleExports);
+    vi.doMock('@db/schema', () => schema);
+    vi.doMock('@db/schema.js', () => schema);
   };
 
   let cleaned = false;
@@ -93,6 +108,11 @@ export async function setupTestDatabase(): Promise<TestDatabaseContext> {
     }
 
     cleaned = true;
+    if (hadDatabaseUrl) {
+      process.env.DATABASE_URL = originalDatabaseUrl;
+    } else {
+      delete process.env.DATABASE_URL;
+    }
     if (usingExternal) {
       await resetExternalDatabase(pool);
     }
