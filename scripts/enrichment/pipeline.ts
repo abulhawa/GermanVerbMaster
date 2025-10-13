@@ -1,9 +1,9 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { db } from "@db";
+import { getDb } from "@db";
 import { enrichmentProviderSnapshots, words } from "@db/schema";
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 
 import type {
   EnrichmentAdjectiveFormSuggestion,
@@ -33,9 +33,6 @@ import {
   lookupOpenThesaurusSynonyms,
   lookupTranslation,
   lookupWiktextract,
-  type ExampleLookup,
-  type SynonymLookup,
-  type TranslationLookup,
 } from "./providers";
 import { persistProviderSnapshotToFile } from "./storage";
 
@@ -80,6 +77,9 @@ type SuggestionBundle = {
   nounForms: EnrichmentNounFormSuggestion[];
   adjectiveForms: EnrichmentAdjectiveFormSuggestion[];
   prepositionAttributes: EnrichmentPrepositionSuggestion[];
+  posLabel?: string;
+  posTags: string[];
+  posNotes: string[];
   snapshots: EnrichmentProviderSnapshotComparison[];
 };
 
@@ -132,6 +132,7 @@ export interface PipelineConfig {
   collectExamples: boolean;
   collectTranslations: boolean;
   collectWiktextract: boolean;
+  posFilters: string[];
 }
 
 export interface PipelineRun {
@@ -161,10 +162,11 @@ export function resolveConfigFromEnv(overrides: Partial<PipelineConfig> = {}): P
   const envEmitReport = parseBoolean(process.env.EMIT_REPORT, true);
   const envEnableAi = parseBoolean(process.env.ENABLE_AI, false);
   const envAllowOverwrite = parseBoolean(process.env.OVERWRITE_EXISTING, false);
-  const envCollectSynonyms = parseBoolean(process.env.COLLECT_SYNONYMS, true);
-  const envCollectExamples = parseBoolean(process.env.COLLECT_EXAMPLES, true);
-  const envCollectTranslations = parseBoolean(process.env.COLLECT_TRANSLATIONS, true);
+  const envCollectSynonyms = parseBoolean(process.env.COLLECT_SYNONYMS, false);
+  const envCollectExamples = parseBoolean(process.env.COLLECT_EXAMPLES, false);
+  const envCollectTranslations = parseBoolean(process.env.COLLECT_TRANSLATIONS, false);
   const envCollectWiktextract = parseBoolean(process.env.COLLECT_WIKTEXTRACT, true);
+  const envPosFilters = parsePosFilters(process.env.POS_FILTERS);
 
   const apply = overrides.apply ?? envApply;
   const dryRunEnv = overrides.dryRun ?? envDryRun;
@@ -176,6 +178,9 @@ export function resolveConfigFromEnv(overrides: Partial<PipelineConfig> = {}): P
     ?? (process.env.BACKUP_DIR ? path.resolve(process.env.BACKUP_DIR) : DEFAULT_BACKUP_DIR);
   const openAiModel = overrides.openAiModel ?? process.env.OPENAI_MODEL?.trim() ?? DEFAULT_OPENAI_MODEL;
   const emitReport = overrides.emitReport ?? envEmitReport;
+  const overridePosFilters = overrides.posFilters !== undefined
+    ? normalisePosFilters(overrides.posFilters)
+    : undefined;
 
   return {
     limit: overrides.limit ?? envLimit,
@@ -196,6 +201,7 @@ export function resolveConfigFromEnv(overrides: Partial<PipelineConfig> = {}): P
     collectExamples: overrides.collectExamples ?? envCollectExamples,
     collectTranslations: overrides.collectTranslations ?? envCollectTranslations,
     collectWiktextract: overrides.collectWiktextract ?? envCollectWiktextract,
+    posFilters: overridePosFilters ?? envPosFilters,
   } satisfies PipelineConfig;
 }
 
@@ -203,7 +209,8 @@ export async function runEnrichment(config: PipelineConfig): Promise<PipelineRun
   const shouldApply = config.apply && !config.dryRun;
   const whereClause = buildWhereClause(config);
 
-  const baseQuery = db.select().from(words);
+  const database = getDb();
+  const baseQuery = database.select().from(words);
   const filteredQuery = whereClause ? baseQuery.where(whereClause) : baseQuery;
   const finalQuery = config.limit > 0 ? filteredQuery.limit(config.limit) : filteredQuery;
 
@@ -269,7 +276,7 @@ export async function runEnrichment(config: PipelineConfig): Promise<PipelineRun
 
   let appliedCount = 0;
   if (shouldApply && updatesToApply.length) {
-    await db.transaction(async (tx) => {
+    await database.transaction(async (tx) => {
       for (const entry of updatesToApply) {
         await tx.update(words).set(entry.patch).where(eq(words.id, entry.word.id));
         appliedCount += 1;
@@ -413,20 +420,137 @@ function normaliseMode(value: string | undefined): PipelineConfig["mode"] {
   }
 }
 
-function buildWhereClause(config: PipelineConfig) {
-  const canonicalClause =
-    config.mode === "canonical"
-      ? eq(words.canonical, true)
-      : config.mode === "non-canonical"
-        ? eq(words.canonical, false)
-        : undefined;
+const POS_FILTER_ALIASES: Record<string, string> = {
+  v: "V",
+  verb: "V",
+  verbs: "V",
+  n: "N",
+  noun: "N",
+  nouns: "N",
+  adj: "Adj",
+  adjective: "Adj",
+  adjectives: "Adj",
+  adv: "Adv",
+  adverb: "Adv",
+  adverbs: "Adv",
+  pron: "Pron",
+  pronoun: "Pron",
+  pronouns: "Pron",
+  det: "Det",
+  determiner: "Det",
+  determiners: "Det",
+  article: "Det",
+  articles: "Det",
+  präp: "Präp",
+  präposition: "Präp",
+  präpositionen: "Präp",
+  praep: "Präp",
+  prap: "Präp",
+  prep: "Präp",
+  preposition: "Präp",
+  prepositions: "Präp",
+  konj: "Konj",
+  conjunction: "Konj",
+  conjunctions: "Konj",
+  konjunktion: "Konj",
+  konjunktionen: "Konj",
+  num: "Num",
+  numeral: "Num",
+  numerals: "Num",
+  part: "Part",
+  particle: "Part",
+  particles: "Part",
+  interj: "Interj",
+  interjection: "Interj",
+  interjections: "Interj",
+};
 
-  const completenessClause = config.onlyIncomplete ? eq(words.complete, false) : undefined;
+function stripDiacritics(value: string): string {
+  return value.normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
+}
 
-  if (canonicalClause && completenessClause) {
-    return and(canonicalClause, completenessClause);
+function normalisePosFilters(values: string[] | undefined): string[] {
+  if (!Array.isArray(values)) {
+    return [];
   }
-  return canonicalClause ?? completenessClause;
+  const seen = new Set<string>();
+  const result: string[] = [];
+  for (const value of values) {
+    const resolved = normalisePosFilterValue(value);
+    if (!resolved) {
+      continue;
+    }
+    if (!seen.has(resolved)) {
+      seen.add(resolved);
+      result.push(resolved);
+    }
+  }
+  return result;
+}
+
+function normalisePosFilterValue(value: string | undefined): string | null {
+  if (!value) {
+    return null;
+  }
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return null;
+  }
+  const lower = trimmed.toLowerCase();
+  if (lower === "all" || lower === "*") {
+    return null;
+  }
+  const alias = POS_FILTER_ALIASES[lower] ?? POS_FILTER_ALIASES[stripDiacritics(lower)];
+  if (alias) {
+    return alias;
+  }
+  if (trimmed.length === 1) {
+    return trimmed.toUpperCase();
+  }
+  if (trimmed.length <= 4) {
+    return `${trimmed[0]?.toUpperCase() ?? ""}${trimmed.slice(1)}`;
+  }
+  return trimmed;
+}
+
+function parsePosFilters(value: string | undefined): string[] {
+  if (!value) {
+    return [];
+  }
+  const parts = value
+    .split(/[\s,;|]+/)
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+  return normalisePosFilters(parts);
+}
+
+export function buildWhereClause(config: PipelineConfig) {
+  const clauses: Array<ReturnType<typeof eq>> = [];
+
+  if (config.mode === "canonical") {
+    clauses.push(eq(words.canonical, true));
+  } else if (config.mode === "non-canonical") {
+    clauses.push(eq(words.canonical, false));
+  }
+
+  if (config.onlyIncomplete) {
+    clauses.push(eq(words.complete, false));
+  }
+
+  if (config.posFilters.length) {
+    clauses.push(inArray(words.pos, config.posFilters));
+  }
+
+  if (!clauses.length) {
+    return undefined;
+  }
+
+  let combined = clauses[0]!;
+  for (let index = 1; index < clauses.length; index += 1) {
+    const next = and(combined, clauses[index]!);
+    combined = next ?? combined;
+  }
+  return combined;
 }
 
 function detectMissingFields(word: WordRecord): string[] {
@@ -478,6 +602,9 @@ async function collectSuggestions(
   const prepositionAttributes: EnrichmentPrepositionSuggestion[] = [];
   let synonyms: string[] = [];
   let englishHints: string[] = [];
+  let posLabel: string | undefined;
+  const posTagMap = new Map<string, string>();
+  const posNoteMap = new Map<string, string>();
   const diagnostics: EnrichmentProviderDiagnostic[] = [];
   const diagnosticMap = new Map<EnrichmentProviderId, EnrichmentProviderDiagnostic>();
   const snapshotDrafts = new Map<string, ProviderSnapshotDraft>();
@@ -575,6 +702,28 @@ async function collectSuggestions(
       synonyms.push(trimmed);
     }
     return trimmed;
+  };
+
+  const addPosTag = (value: string | undefined | null): void => {
+    const trimmed = value?.trim();
+    if (!trimmed) return;
+    const normalised = trimmed.replace(/\s+/g, " ");
+    if (!normalised) return;
+    const key = normalised.toLowerCase();
+    if (!posTagMap.has(key)) {
+      posTagMap.set(key, normalised);
+    }
+  };
+
+  const addPosNote = (value: string | undefined | null): void => {
+    const trimmed = value?.trim();
+    if (!trimmed) return;
+    const normalised = trimmed.replace(/\s+/g, " ");
+    if (!normalised) return;
+    const key = normalised.toLowerCase();
+    if (!posNoteMap.has(key)) {
+      posNoteMap.set(key, normalised);
+    }
   };
 
   if (config.collectSynonyms) {
@@ -764,6 +913,19 @@ async function collectSuggestions(
           prepositionAttributes.push(suggestion);
           snapshot.prepositionAttributes.push(suggestion);
         }
+        if (value.posLabel) {
+          posLabel = value.posLabel;
+        }
+        if (value.posTags.length) {
+          for (const tag of value.posTags) {
+            addPosTag(tag);
+          }
+        }
+        if (value.posNotes.length) {
+          for (const note of value.posNotes) {
+            addPosNote(note);
+          }
+        }
         if (
           value.translations.length
           || value.synonyms.length
@@ -858,6 +1020,10 @@ async function collectSuggestions(
     diagnosticMap,
   );
 
+  const resolvedPosLabel = posLabel?.trim() ? posLabel.trim().replace(/\s+/g, " ") : undefined;
+  const resolvedPosTags = Array.from(posTagMap.values()).sort((a, b) => a.localeCompare(b));
+  const resolvedPosNotes = Array.from(posNoteMap.values()).sort((a, b) => a.localeCompare(b));
+
   return {
     translations,
     synonyms,
@@ -871,6 +1037,9 @@ async function collectSuggestions(
     nounForms,
     adjectiveForms,
     prepositionAttributes,
+    posLabel: resolvedPosLabel,
+    posTags: resolvedPosTags,
+    posNotes: resolvedPosNotes,
     snapshots: snapshotComparisons,
   };
 }
@@ -885,12 +1054,13 @@ async function persistProviderSnapshotsForWord(
     return [];
   }
 
+  const database = getDb();
   const trigger: EnrichmentSnapshotTrigger = config.apply && !config.dryRun ? "apply" : "preview";
   const mode: EnrichmentRunMode = config.mode;
   const comparisons: EnrichmentProviderSnapshotComparison[] = [];
 
   for (const draft of snapshotDrafts.values()) {
-    const [previousRecord] = await db
+    const [previousRecord] = await database
       .select()
       .from(enrichmentProviderSnapshots)
       .where(
@@ -902,7 +1072,7 @@ async function persistProviderSnapshotsForWord(
       .orderBy(desc(enrichmentProviderSnapshots.collectedAt))
       .limit(1);
 
-    const [insertedRecord] = await db
+    const [insertedRecord] = await database
       .insert(enrichmentProviderSnapshots)
       .values({
         wordId: word.id,
@@ -1520,7 +1690,14 @@ function determineUpdates(
   }
 
   prepositionCandidate = pickPrepositionCandidate(suggestions.prepositionAttributes);
-  const mergedPosAttributes = mergePosAttributes(word.pos, word.posAttributes, suggestions.prepositionAttributes);
+  const mergedPosAttributes = mergePosAttributes(
+    word.pos,
+    word.posAttributes,
+    suggestions.prepositionAttributes,
+    suggestions.posLabel,
+    suggestions.posTags,
+    suggestions.posNotes,
+  );
   if (!arePosAttributesEqual(word.posAttributes, mergedPosAttributes)) {
     patch.posAttributes = mergedPosAttributes;
     updates.push({
@@ -1622,10 +1799,13 @@ function pickPreferredEnglishTranslationCandidate(
   );
 }
 
-function mergePosAttributes(
+export function mergePosAttributes(
   pos: WordRecord["pos"],
   existing: WordRecord["posAttributes"],
   suggestions: EnrichmentPrepositionSuggestion[],
+  suggestedPosLabel?: string,
+  suggestedTags: string[] = [],
+  suggestedNotes: string[] = [],
 ): WordPosAttributes | null {
   const normalisedExisting = normalisePosAttributes(existing);
   const caseValues = new Set<string>();
@@ -1665,13 +1845,16 @@ function mergePosAttributes(
   const resolvedNotes = noteValues.size ? Array.from(noteValues.values()).sort((a, b) => a.localeCompare(b)) : undefined;
 
   const result: WordPosAttributes = {};
-  const resolvedPos = typeof pos === "string" && pos.trim() ? pos : normalisedExisting?.pos;
+  const candidatePos = suggestedPosLabel?.trim().replace(/\s+/g, " ");
+  const resolvedPos = candidatePos && candidatePos.length
+    ? candidatePos
+    : normalisedExisting?.pos ?? (typeof pos === "string" && pos.trim() ? pos : undefined);
   if (resolvedPos) {
     result.pos = resolvedPos;
   }
 
-  const existingTags = normalisedExisting?.tags ?? null;
-  const existingNotes = normalisedExisting?.notes ?? null;
+  const mergedTags = sortStrings([...(normalisedExisting?.tags ?? []), ...suggestedTags]);
+  const mergedNotes = sortStrings([...(normalisedExisting?.notes ?? []), ...suggestedNotes]);
 
   if (resolvedCases || resolvedNotes || normalisedExisting?.preposition) {
     const mergedPreposition: PrepositionAttributes | undefined = (() => {
@@ -1692,11 +1875,11 @@ function mergePosAttributes(
     }
   }
 
-  if (existingTags?.length) {
-    result.tags = existingTags;
+  if (mergedTags.length) {
+    result.tags = mergedTags;
   }
-  if (existingNotes?.length) {
-    result.notes = existingNotes;
+  if (mergedNotes.length) {
+    result.notes = mergedNotes;
   }
 
   return Object.keys(result).length ? result : null;

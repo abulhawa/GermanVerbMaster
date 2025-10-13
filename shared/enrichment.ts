@@ -237,8 +237,20 @@ export interface WordEnrichmentSuggestions {
   nounForms: EnrichmentNounFormSuggestion[];
   adjectiveForms: EnrichmentAdjectiveFormSuggestion[];
   prepositionAttributes: EnrichmentPrepositionSuggestion[];
+  posLabel?: string;
+  posTags: string[];
+  posNotes: string[];
   providerDiagnostics: EnrichmentProviderDiagnostic[];
   snapshots: EnrichmentProviderSnapshotComparison[];
+}
+
+export interface WordEnrichmentHistory {
+  wordId: number;
+  lemma: string;
+  pos: PartOfSpeech | string;
+  snapshots: EnrichmentProviderSnapshot[];
+  translations: WordTranslation[];
+  examples: WordExample[];
 }
 
 export interface EnrichmentWordSummary {

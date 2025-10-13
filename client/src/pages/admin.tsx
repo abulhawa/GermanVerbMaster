@@ -672,7 +672,7 @@ const AdminWordsPage = () => {
               </Select>
             </div>
           </div>
-          <div className="max-h-[520px] overflow-hidden rounded-3xl border border-border/60">
+          <div className="max-h-[520px] overflow-auto rounded-3xl border border-border/60">
             <Table className="text-xs">
               <TableHeader className="sticky top-0 z-20 bg-card/95 backdrop-blur">
                 <TableRow>
@@ -843,6 +843,57 @@ const AdminWordsPage = () => {
                               )}
                             </div>
                           ))}
+                          {(word.translations?.length ?? 0) || (word.examples?.length ?? 0) ? (
+                            <div className="space-y-3 rounded-2xl border border-border/60 bg-muted/40 p-4">
+                              {word.translations?.length ? (
+                                <div>
+                                  <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                                    Stored translations
+                                  </div>
+                                  <ul className="mt-1 space-y-1 text-sm">
+                                    {word.translations.map((translation, index) => (
+                                      <li key={`${translation.value}-${translation.source ?? 'unknown'}-${index}`}>
+                                        <span className="font-medium">{translation.value}</span>
+                                        {translation.language ? (
+                                          <span className="text-muted-foreground"> ({translation.language})</span>
+                                        ) : null}
+                                        {translation.source ? (
+                                          <span className="text-muted-foreground"> · {translation.source}</span>
+                                        ) : null}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              ) : null}
+                              {word.examples?.length ? (
+                                <div>
+                                  <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                                    Stored examples
+                                  </div>
+                                  <ul className="mt-1 space-y-2 text-sm">
+                                    {word.examples.map((example, index) => (
+                                      <li
+                                        key={`${example.exampleDe ?? '—'}-${example.exampleEn ?? '—'}-${example.source ?? 'unknown'}-${index}`}
+                                        className="leading-snug"
+                                      >
+                                        <span className="font-medium text-foreground">{example.exampleDe ?? '—'}</span>
+                                        {example.exampleEn ? (
+                                          <span className="text-muted-foreground"> · {example.exampleEn}</span>
+                                        ) : null}
+                                        {example.source ? (
+                                          <span className="text-muted-foreground"> · {example.source}</span>
+                                        ) : null}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              ) : null}
+                            </div>
+                          ) : word.enrichmentAppliedAt ? (
+                            <p className="text-sm text-muted-foreground">
+                              No stored translations or examples recorded yet.
+                            </p>
+                          ) : null}
                           <DrawerFooter>
                             <Button
                               type="submit"

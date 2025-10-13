@@ -19,7 +19,7 @@ import {
 import { z } from "zod";
 import { and, count, desc, eq, inArray, sql } from "drizzle-orm";
 import { createHash, randomUUID } from "node:crypto";
-import type { GermanVerb, PracticeResult } from "@shared";
+import type { GermanVerb, PracticeResult, WordExample, WordTranslation } from "@shared";
 import type { LexemePos, TaskType } from "@shared";
 import { srsEngine } from "./srs/index.js";
 import { getTaskRegistryEntry, taskRegistry } from "./tasks/registry.js";
@@ -46,6 +46,7 @@ import { writeWordsBackupToDisk } from "../scripts/enrichment/backup.js";
 import type {
   BulkEnrichmentResponse,
   EnrichmentPatch,
+  WordEnrichmentHistory,
   WordEnrichmentPreview,
   SupabaseStorageCleanExportResponse,
   SupabaseStorageCleanResponse,
@@ -379,6 +380,7 @@ const enrichmentRunSchema = z
     collectExamples: optionalBoolean,
     collectTranslations: optionalBoolean,
     collectWiktextract: optionalBoolean,
+    posFilters: z.array(z.string().min(1).max(20)).max(20).optional(),
   })
   .partial();
 
@@ -1314,11 +1316,10 @@ export function registerRoutes(app: Express): void {
         );
       }
       if (typeof enrichedFilter === "boolean") {
-        conditions.push(
-          enrichedFilter
-            ? sql`${words.enrichmentAppliedAt} IS NOT NULL`
-            : sql`${words.enrichmentAppliedAt} IS NULL`,
-        );
+        const enrichedCondition = enrichedFilter
+          ? sql.raw('"words"."enrichment_applied_at" IS NOT NULL')
+          : sql.raw('"words"."enrichment_applied_at" IS NULL');
+        conditions.push(enrichedCondition);
       }
 
       const baseQuery = conditions.length
@@ -1371,6 +1372,160 @@ export function registerRoutes(app: Express): void {
     } catch (error) {
       console.error("Error fetching word", error);
       sendError(res, 500, "Failed to fetch word", "WORD_FETCH_FAILED");
+    }
+  });
+
+  app.get("/api/enrichment/words/:id/history", requireAdminAccess, async (req, res) => {
+    try {
+      const id = Number.parseInt(req.params.id, 10);
+      if (!Number.isFinite(id) || id <= 0) {
+        return sendError(res, 400, "Invalid word id", "INVALID_WORD_ID");
+      }
+
+      const word = await db.query.words.findFirst({ where: eq(words.id, id) });
+      if (!word) {
+        return sendError(res, 404, "Word not found", "WORD_NOT_FOUND");
+      }
+
+      const snapshotRecords = await db
+        .select()
+        .from(enrichmentProviderSnapshots)
+        .where(eq(enrichmentProviderSnapshots.wordId, id))
+        .orderBy(desc(enrichmentProviderSnapshots.collectedAt));
+
+      const snapshots = snapshotRecords.map((record) => buildProviderSnapshotFromRecord(record));
+
+      const normalizeString = (value: string | null | undefined): string | null => {
+        if (!value) {
+          return null;
+        }
+        const trimmed = value.trim();
+        return trimmed.length ? trimmed : null;
+      };
+
+      const translations = (() => {
+        const map = new Map<string, WordTranslation>();
+        const upsert = (entry: WordTranslation | null | undefined) => {
+          if (!entry) {
+            return;
+          }
+          const value = normalizeString(entry.value);
+          if (!value) {
+            return;
+          }
+          const source = normalizeString(entry.source ?? null);
+          const language = normalizeString(entry.language ?? null);
+          const confidence =
+            typeof entry.confidence === "number" && Number.isFinite(entry.confidence)
+              ? entry.confidence
+              : null;
+          const key = `${value.toLowerCase()}::${(source ?? "").toLowerCase()}::${(language ?? "").toLowerCase()}`;
+          const existing = map.get(key);
+          if (!existing) {
+            map.set(key, {
+              value,
+              source,
+              language,
+              confidence,
+            });
+            return;
+          }
+          if (language && !existing.language) {
+            existing.language = language;
+          }
+          if (
+            typeof confidence === "number"
+            && (existing.confidence === null || (typeof existing.confidence === "number" && confidence > existing.confidence))
+          ) {
+            existing.confidence = confidence;
+          }
+        };
+
+        for (const entry of word.translations ?? []) {
+          upsert(entry);
+        }
+        for (const snapshot of snapshots) {
+          for (const entry of snapshot.translations ?? []) {
+            upsert(entry);
+          }
+        }
+
+        return Array.from(map.values()).sort((a, b) => {
+          const valueCompare = a.value.localeCompare(b.value, undefined, { sensitivity: "base" });
+          if (valueCompare !== 0) {
+            return valueCompare;
+          }
+          return (a.source ?? "").localeCompare(b.source ?? "", undefined, { sensitivity: "base" });
+        });
+      })();
+
+      const examples = (() => {
+        const map = new Map<string, WordExample>();
+        const upsert = (entry: WordExample | null | undefined) => {
+          if (!entry) {
+            return;
+          }
+          const exampleDe = normalizeString(entry.exampleDe ?? null);
+          const exampleEn = normalizeString(entry.exampleEn ?? null);
+          if (!exampleDe && !exampleEn) {
+            return;
+          }
+          const source = normalizeString(entry.source ?? null);
+          const key = `${(exampleDe ?? "").toLowerCase()}::${(exampleEn ?? "").toLowerCase()}::${(source ?? "").toLowerCase()}`;
+          const existing = map.get(key);
+          if (!existing) {
+            map.set(key, {
+              exampleDe,
+              exampleEn,
+              source,
+            });
+            return;
+          }
+          if (!existing.exampleDe && exampleDe) {
+            existing.exampleDe = exampleDe;
+          }
+          if (!existing.exampleEn && exampleEn) {
+            existing.exampleEn = exampleEn;
+          }
+          if (!existing.source && source) {
+            existing.source = source;
+          }
+        };
+
+        for (const entry of word.examples ?? []) {
+          upsert(entry);
+        }
+        for (const snapshot of snapshots) {
+          for (const entry of snapshot.examples ?? []) {
+            upsert(entry);
+          }
+        }
+
+        return Array.from(map.values()).sort((a, b) => {
+          const aLabel = a.exampleDe ?? a.exampleEn ?? "";
+          const bLabel = b.exampleDe ?? b.exampleEn ?? "";
+          const valueCompare = aLabel.localeCompare(bLabel, undefined, { sensitivity: "base" });
+          if (valueCompare !== 0) {
+            return valueCompare;
+          }
+          return (a.source ?? "").localeCompare(b.source ?? "", undefined, { sensitivity: "base" });
+        });
+      })();
+
+      const history: WordEnrichmentHistory = {
+        wordId: word.id,
+        lemma: word.lemma,
+        pos: word.pos,
+        snapshots,
+        translations,
+        examples,
+      };
+
+      res.setHeader("Cache-Control", "no-store");
+      res.json(history);
+    } catch (error) {
+      console.error("Failed to load enrichment history", error);
+      sendError(res, 500, "Failed to load enrichment history", "ENRICHMENT_HISTORY_FAILED");
     }
   });
 
@@ -1492,6 +1647,7 @@ export function registerRoutes(app: Express): void {
         collectExamples: parsed.data.collectExamples,
         collectTranslations: parsed.data.collectTranslations,
         collectWiktextract: parsed.data.collectWiktextract,
+        posFilters: parsed.data.posFilters,
         delayMs: 0,
         apply: false,
         dryRun: true,
@@ -1584,6 +1740,9 @@ export function registerRoutes(app: Express): void {
           nounForms: computation.suggestions.nounForms,
           adjectiveForms: computation.suggestions.adjectiveForms,
           prepositionAttributes: computation.suggestions.prepositionAttributes,
+          posLabel: computation.suggestions.posLabel,
+          posTags: computation.suggestions.posTags,
+          posNotes: computation.suggestions.posNotes,
           providerDiagnostics: computation.suggestions.diagnostics,
           snapshots: computation.suggestions.snapshots,
         },

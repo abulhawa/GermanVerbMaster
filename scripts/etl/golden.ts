@@ -1,10 +1,9 @@
-import { createHash } from 'node:crypto';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { inArray, sql } from 'drizzle-orm';
+import { eq, inArray, sql } from 'drizzle-orm';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import type { EnrichmentMethod, PartOfSpeech, WordExample, WordTranslation } from '@shared';
+import type { PartOfSpeech } from '@shared';
 import {
   type LexemePos,
   taskTypeRegistry,
@@ -19,6 +18,13 @@ import {
   packLexemeMap as packLexemeMapTable,
   taskSpecs as taskSpecsTable,
 } from '@db/schema';
+
+import type { AggregatedWord } from './types';
+import { buildAttributionSummary } from './attribution';
+import type { AttributionEntry } from './attribution';
+import { collectSources, deriveSourceRevision, primarySourceId } from './sources';
+import { validateWord } from './validators';
+import { stableStringify, sha1 } from './utils';
 
 const STABLE_TIMESTAMP = Math.floor(new Date('2025-01-01T00:00:00Z').getTime() / 1000);
 
@@ -36,34 +42,6 @@ function withDateColumns<T extends TimestampSeed>(
     createdAt: toDate(row.createdAt),
     updatedAt: toDate(row.updatedAt),
   }));
-}
-
-export interface AggregatedWord {
-  lemma: string;
-  pos: PartOfSpeech;
-  level: string | null;
-  english: string | null;
-  exampleDe: string | null;
-  exampleEn: string | null;
-  gender: string | null;
-  plural: string | null;
-  separable: boolean | null;
-  aux: string | null;
-  praesensIch: string | null;
-  praesensEr: string | null;
-  praeteritum: string | null;
-  partizipIi: string | null;
-  perfekt: string | null;
-  comparative: string | null;
-  superlative: string | null;
-  canonical: boolean;
-  complete: boolean;
-  sourcesCsv: string | null;
-  sourceNotes: string | null;
-  translations: WordTranslation[] | null;
-  examples: WordExample[] | null;
-  enrichmentAppliedAt: string | null;
-  enrichmentMethod: EnrichmentMethod | null;
 }
 
 export interface LexemeSeed {
@@ -141,6 +119,12 @@ export interface PackBundle {
   packLexemes: PackLexemeSeed[];
 }
 
+export interface LexemeInventory {
+  lexemes: LexemeSeed[];
+  inflections: InflectionSeed[];
+  attribution: AttributionEntry[];
+}
+
 type DrizzleDatabase = NodePgDatabase<typeof import('@db/schema')>;
 
 export function buildGoldenBundles(words: AggregatedWord[]): PackBundle[] {
@@ -183,12 +167,111 @@ export function buildGoldenBundles(words: AggregatedWord[]): PackBundle[] {
   );
 }
 
+export function buildLexemeInventory(words: AggregatedWord[]): LexemeInventory {
+  const lexemeMap = new Map<string, LexemeSeed>();
+  const allInflections: InflectionSeed[] = [];
+
+  for (const word of words) {
+    const validation = validateWord(word);
+    if (validation.errors.length > 0) {
+      console.warn(
+        `[etl] lexeme ${word.lemma} (${word.pos}) has validation issues: ${validation.errors.join(', ')}`,
+      );
+    }
+    const lexeme = createLexemeSeed(word);
+    if (!lexemeMap.has(lexeme.id)) {
+      lexemeMap.set(lexeme.id, lexeme);
+    }
+    const lexemeInflections = createInflectionsForWord(word, lexeme.id);
+    allInflections.push(...lexemeInflections);
+  }
+
+  const lexemes = Array.from(lexemeMap.values()).sort((a, b) => {
+    const lemmaCompare = a.lemma.localeCompare(b.lemma, 'de');
+    if (lemmaCompare !== 0) return lemmaCompare;
+    return a.id.localeCompare(b.id);
+  });
+
+  const inflections = dedupeInflections(allInflections).sort((a, b) => {
+    const lexemeCompare = a.lexemeId.localeCompare(b.lexemeId);
+    if (lexemeCompare !== 0) return lexemeCompare;
+    return a.form.localeCompare(b.form, 'de');
+  });
+
+  return {
+    lexemes,
+    inflections,
+    attribution: buildAttributionSummary(words),
+  };
+}
+
+export async function upsertLexemeInventory(
+  db: DrizzleDatabase,
+  inventory: LexemeInventory,
+): Promise<void> {
+  if (inventory.lexemes.length > 0) {
+    await db
+      .insert(lexemesTable)
+      .values(withDateColumns(inventory.lexemes))
+      .onConflictDoUpdate({
+        target: lexemesTable.id,
+        set: {
+          lemma: sql`excluded.lemma`,
+          pos: sql`excluded.pos`,
+          gender: sql`excluded.gender`,
+          metadata: sql`excluded.metadata`,
+          frequencyRank: sql`excluded.frequency_rank`,
+          sourceIds: sql`excluded.source_ids`,
+          updatedAt: sql`now()`,
+        },
+      });
+  }
+
+  const inflectionsByLexeme = new Map<string, string[]>();
+  for (const inflection of inventory.inflections) {
+    const ids = inflectionsByLexeme.get(inflection.lexemeId) ?? [];
+    ids.push(inflection.id);
+    inflectionsByLexeme.set(inflection.lexemeId, ids);
+  }
+
+  for (const [lexemeId, ids] of inflectionsByLexeme) {
+    const existing = await db
+      .select({ id: inflectionsTable.id })
+      .from(inflectionsTable)
+      .where(eq(inflectionsTable.lexemeId, lexemeId));
+    const existingIds = new Set(existing.map((row) => row.id));
+    for (const id of ids) {
+      existingIds.delete(id);
+    }
+    const staleIds = Array.from(existingIds);
+    if (staleIds.length > 0) {
+      await db.delete(inflectionsTable).where(inArray(inflectionsTable.id, staleIds));
+    }
+  }
+
+  if (inventory.inflections.length > 0) {
+    await db
+      .insert(inflectionsTable)
+      .values(withDateColumns(inventory.inflections))
+      .onConflictDoUpdate({
+        target: inflectionsTable.id,
+        set: {
+          form: sql`excluded.form`,
+          features: sql`excluded.features`,
+          audioAsset: sql`excluded.audio_asset`,
+          sourceRevision: sql`excluded.source_revision`,
+          checksum: sql`excluded.checksum`,
+          updatedAt: sql`now()`,
+        },
+      });
+  }
+}
+
 export async function upsertGoldenBundles(
   db: DrizzleDatabase,
   bundles: PackBundle[],
 ): Promise<void> {
   if (bundles.length === 0) return;
-  const allLexemeIds = bundles.flatMap((bundle) => bundle.lexemes.map((lexeme) => lexeme.id));
   const allTaskIds = bundles.flatMap((bundle) => bundle.tasks.map((task) => task.id));
   const allPackIds = bundles.map((bundle) => bundle.pack.id);
 
@@ -199,44 +282,8 @@ export async function upsertGoldenBundles(
   if (allTaskIds.length) {
     await db.delete(taskSpecsTable).where(inArray(taskSpecsTable.id, allTaskIds));
   }
-  if (allLexemeIds.length) {
-    await db.delete(inflectionsTable).where(inArray(inflectionsTable.lexemeId, allLexemeIds));
-    await db.delete(lexemesTable).where(inArray(lexemesTable.id, allLexemeIds));
-  }
 
   for (const bundle of bundles) {
-    if (bundle.lexemes.length > 0) {
-      await db
-        .insert(lexemesTable)
-        .values(withDateColumns(bundle.lexemes))
-        .onConflictDoUpdate({
-          target: lexemesTable.id,
-          set: {
-            lemma: sql`excluded.lemma`,
-            pos: sql`excluded.pos`,
-            gender: sql`excluded.gender`,
-            metadata: sql`excluded.metadata`,
-            sourceIds: sql`excluded.source_ids`,
-            updatedAt: sql`now()`,
-          },
-        });
-    }
-
-    if (bundle.inflections.length > 0) {
-      await db
-        .insert(inflectionsTable)
-        .values(withDateColumns(bundle.inflections))
-        .onConflictDoUpdate({
-          target: inflectionsTable.id,
-          set: {
-            form: sql`excluded.form`,
-            features: sql`excluded.features`,
-            checksum: sql`excluded.checksum`,
-            updatedAt: sql`now()`,
-          },
-        });
-    }
-
     if (bundle.tasks.length > 0) {
       await db
         .insert(taskSpecsTable)
@@ -344,6 +391,7 @@ function createPackBundle(config: PackBundleConfig): PackBundle {
     });
   });
 
+  const attribution = buildAttributionSummary(words);
   const packMetadata: Record<string, unknown> = {
     taskTypes: Array.from(new Set(tasks.map((task) => task.taskType))).sort(),
     size: lexemes.length,
@@ -354,6 +402,7 @@ function createPackBundle(config: PackBundleConfig): PackBundle {
           .filter((level): level is string => Boolean(level)),
       ),
     ).sort(),
+    attribution,
   };
 
   const checksumPayload = stableStringify({ lexemes, inflections, tasks });
@@ -403,21 +452,24 @@ function createEmptyPack(
 }
 function selectVerbs(words: AggregatedWord[]): AggregatedWord[] {
   return words
-    .filter((word) => word.pos === 'V' && Boolean(word.praeteritum) && Boolean(word.partizipIi))
+    .filter((word) => word.pos === 'V')
+    .filter((word) => validateWord(word).errors.length === 0)
     .sort((a, b) => a.lemma.localeCompare(b.lemma, 'de'))
     .slice(0, 50);
 }
 
 function selectNouns(words: AggregatedWord[]): AggregatedWord[] {
   return words
-    .filter((word) => word.pos === 'N' && Boolean(word.plural) && Boolean(word.gender))
+    .filter((word) => word.pos === 'N')
+    .filter((word) => validateWord(word).errors.length === 0)
     .sort((a, b) => a.lemma.localeCompare(b.lemma, 'de'))
     .slice(0, 50);
 }
 
 function selectAdjectives(words: AggregatedWord[]): AggregatedWord[] {
   return words
-    .filter((word) => word.pos === 'Adj' && Boolean(word.comparative) && Boolean(word.superlative))
+    .filter((word) => word.pos === 'Adj')
+    .filter((word) => validateWord(word).errors.length === 0)
     .sort((a, b) => a.lemma.localeCompare(b.lemma, 'de'))
     .slice(0, 40);
 }
@@ -436,8 +488,32 @@ function createLexemeSeed(word: AggregatedWord): LexemeSeed {
     separable: word.separable ?? undefined,
     auxiliary: word.aux ?? undefined,
     perfekt: word.perfekt ?? undefined,
-    notes: word.sourceNotes ?? undefined,
+    sourceNotes: word.sourceNotes ?? undefined,
   };
+
+  const tags = word.posAttributes?.tags ?? null;
+  if (Array.isArray(tags) && tags.length > 0) {
+    metadata.tags = Array.from(new Set(tags)).sort();
+  }
+
+  const posNotes = word.posAttributes?.notes ?? null;
+  if (Array.isArray(posNotes) && posNotes.length > 0) {
+    metadata.posNotes = [...posNotes];
+  }
+
+  const prepositionAttributes = word.posAttributes?.preposition ?? null;
+  if (prepositionAttributes) {
+    const payload: Record<string, unknown> = {};
+    if (Array.isArray(prepositionAttributes.cases) && prepositionAttributes.cases.length > 0) {
+      payload.cases = [...prepositionAttributes.cases];
+    }
+    if (Array.isArray(prepositionAttributes.notes) && prepositionAttributes.notes.length > 0) {
+      payload.notes = [...prepositionAttributes.notes];
+    }
+    if (Object.keys(payload).length > 0) {
+      metadata.preposition = payload;
+    }
+  }
 
   if (!metadata.example) {
     delete metadata.example;
@@ -464,81 +540,149 @@ function createLexemeSeed(word: AggregatedWord): LexemeSeed {
 function createInflectionsForWord(word: AggregatedWord, lexemeId: string): InflectionSeed[] {
   const pos = mapPos(word.pos);
   const base: InflectionSeed[] = [];
+  const sourceRevision = deriveSourceRevision(word);
 
   if (pos === 'verb') {
     base.push(
-      ...createInflectionEntries(lexemeId, [
-        {
-          form: word.lemma,
-          features: { tense: 'infinitive', mood: 'indicative' },
-        },
-        word.praesensIch
-          ? {
-              form: word.praesensIch,
-              features: { tense: 'present', mood: 'indicative', person: 1, number: 'singular' },
-            }
-          : undefined,
-        word.praesensEr
-          ? {
-              form: word.praesensEr,
-              features: { tense: 'present', mood: 'indicative', person: 3, number: 'singular' },
-            }
-          : undefined,
-        word.praeteritum
-          ? {
-              form: word.praeteritum,
-              features: { tense: 'past', mood: 'indicative', person: 3, number: 'singular' },
-            }
-          : undefined,
-        word.partizipIi
-          ? {
-              form: word.partizipIi,
-              features: { tense: 'participle', aspect: 'perfect' },
-            }
-          : undefined,
-        word.perfekt
-          ? {
-              form: word.perfekt,
-              features: { tense: 'perfect', auxiliary: word.aux ?? undefined },
-            }
-          : undefined,
-      ]),
+      ...createInflectionEntries(
+        lexemeId,
+        [
+          {
+            form: word.lemma,
+            features: { tense: 'infinitive', mood: 'indicative' },
+          },
+          word.praesensIch
+            ? {
+                form: word.praesensIch,
+                features: { tense: 'present', mood: 'indicative', person: 1, number: 'singular' },
+              }
+            : undefined,
+          word.praesensEr
+            ? {
+                form: word.praesensEr,
+                features: { tense: 'present', mood: 'indicative', person: 3, number: 'singular' },
+              }
+            : undefined,
+          word.praeteritum
+            ? {
+                form: word.praeteritum,
+                features: { tense: 'past', mood: 'indicative', person: 3, number: 'singular' },
+              }
+            : undefined,
+          word.partizipIi
+            ? {
+                form: word.partizipIi,
+                features: { tense: 'participle', aspect: 'perfect' },
+              }
+            : undefined,
+          word.perfekt
+            ? {
+                form: word.perfekt,
+                features: { tense: 'perfect', auxiliary: word.aux ?? undefined },
+              }
+            : undefined,
+        ],
+        sourceRevision,
+      ),
     );
   } else if (pos === 'noun') {
     base.push(
-      ...createInflectionEntries(lexemeId, [
-        {
-          form: word.lemma,
-          features: { case: 'nominative', number: 'singular', gender: word.gender ?? undefined },
-        },
-        word.plural
-          ? {
-              form: word.plural,
-              features: { case: 'nominative', number: 'plural' },
-            }
-          : undefined,
-      ]),
+      ...createInflectionEntries(
+        lexemeId,
+        [
+          {
+            form: word.lemma,
+            features: { case: 'nominative', number: 'singular', gender: word.gender ?? undefined },
+          },
+          word.plural
+            ? {
+                form: word.plural,
+                features: { case: 'nominative', number: 'plural' },
+              }
+            : undefined,
+        ],
+        sourceRevision,
+      ),
     );
   } else if (pos === 'adjective') {
     base.push(
-      ...createInflectionEntries(lexemeId, [
-        {
-          form: word.lemma,
-          features: { degree: 'positive' },
-        },
-        word.comparative
-          ? {
-              form: word.comparative,
-              features: { degree: 'comparative' },
-            }
-          : undefined,
-        word.superlative
-          ? {
-              form: word.superlative,
-              features: { degree: 'superlative' },
-            }
-          : undefined,
-      ]),
+      ...createInflectionEntries(
+        lexemeId,
+        [
+          {
+            form: word.lemma,
+            features: { degree: 'positive' },
+          },
+          word.comparative
+            ? {
+                form: word.comparative,
+                features: { degree: 'comparative' },
+              }
+            : undefined,
+          word.superlative
+            ? {
+                form: word.superlative,
+                features: { degree: 'superlative' },
+              }
+            : undefined,
+        ],
+        sourceRevision,
+      ),
+    );
+  } else if (pos === 'adverb') {
+    base.push(
+      ...createInflectionEntries(
+        lexemeId,
+        [
+          {
+            form: word.lemma,
+            features: { degree: 'positive' },
+          },
+          word.comparative
+            ? {
+                form: word.comparative,
+                features: { degree: 'comparative' },
+              }
+            : undefined,
+          word.superlative
+            ? {
+                form: word.superlative,
+                features: { degree: 'superlative' },
+              }
+            : undefined,
+        ],
+        sourceRevision,
+      ),
+    );
+  } else if (pos === 'preposition') {
+    const governedCases = word.posAttributes?.preposition?.cases ?? null;
+    base.push(
+      ...createInflectionEntries(
+        lexemeId,
+        [
+          {
+            form: word.lemma,
+            features: {
+              slot: 'lemma',
+              governedCases: Array.isArray(governedCases) && governedCases.length > 0 ? governedCases : undefined,
+            },
+          },
+        ],
+        sourceRevision,
+      ),
+    );
+  } else {
+    base.push(
+      ...createInflectionEntries(
+        lexemeId,
+        [
+          {
+            form: word.lemma,
+            features: { slot: 'lemma' },
+          },
+        ],
+        sourceRevision,
+      ),
     );
   }
 
@@ -692,6 +836,7 @@ function createTasksForWord(
 function createInflectionEntries(
   lexemeId: string,
   entries: Array<{ form: string | null; features: Record<string, unknown> } | undefined>,
+  sourceRevision: string,
 ): InflectionSeed[] {
   const seeds: InflectionSeed[] = [];
   for (const entry of entries) {
@@ -704,7 +849,7 @@ function createInflectionEntries(
       form: entry.form,
       features: featurePayload,
       audioAsset: null,
-      sourceRevision: null,
+      sourceRevision,
       checksum: checksum.slice(0, 16),
       createdAt: STABLE_TIMESTAMP,
       updatedAt: STABLE_TIMESTAMP,
@@ -750,19 +895,6 @@ function normaliseLemma(lemma: string): string {
     .toLowerCase();
 }
 
-function primarySourceId(word: AggregatedWord): string {
-  const sources = collectSources(word);
-  return sources[0] ?? 'words_all_sources';
-}
-
-function collectSources(word: AggregatedWord): string[] {
-  if (!word.sourcesCsv) return ['words_all_sources'];
-  return word.sourcesCsv
-    .split(';')
-    .map((entry) => entry.trim())
-    .filter(Boolean);
-}
-
 function buildHints(word: AggregatedWord): unknown[] {
   const hints: unknown[] = [];
   if (word.exampleDe) {
@@ -798,25 +930,6 @@ function packIdForSlug(slug: string, version: number): string {
   return `pack:${slug}:${version}`;
 }
 
-function stableStringify(value: unknown): string {
-  if (value === null || typeof value !== 'object') {
-    return JSON.stringify(value);
-  }
-  if (Array.isArray(value)) {
-    return `[${value.map((item) => stableStringify(item)).join(',')}]`;
-  }
-  const entries = Object.entries(value as Record<string, unknown>)
-    .filter(([, v]) => v !== undefined)
-    .sort(([a], [b]) => a.localeCompare(b));
-  return `{${entries
-    .map(([key, val]) => `${JSON.stringify(key)}:${stableStringify(val)}`)
-    .join(',')}}`;
-}
-
-function sha1(payload: string): string {
-  return createHash('sha1').update(payload).digest('hex');
-}
-
 function mapPos(pos: PartOfSpeech): LexemePos {
   switch (pos) {
     case 'V':
@@ -825,6 +938,22 @@ function mapPos(pos: PartOfSpeech): LexemePos {
       return 'noun';
     case 'Adj':
       return 'adjective';
+    case 'Adv':
+      return 'adverb';
+    case 'Pron':
+      return 'pronoun';
+    case 'Det':
+      return 'determiner';
+    case 'Präp':
+      return 'preposition';
+    case 'Konj':
+      return 'conjunction';
+    case 'Num':
+      return 'numeral';
+    case 'Part':
+      return 'particle';
+    case 'Interj':
+      return 'interjection';
     default:
       throw new Error(`Unsupported part of speech for golden pack: ${pos}`);
   }

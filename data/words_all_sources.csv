@@ -47,9 +47,9 @@ schnell,Adj,A1,fast,Ein schneller Zug.,A fast train.,,,,,,,,,,schneller,am schne
 freundlich,Adj,A2,friendly,Eine freundliche Person.,A friendly person.,,,,,,,,,,freundlicher,am freundlichsten,Duden; dwds-goethe-A2.csv,https://www.dwds.de/wb/freundlich
 gern,Adv,A1,gladly,Ich lese gern.,I like to read.,,,,,,,,,,,,Goethe-Institut; dwds-goethe-A1.csv,https://www.dwds.de/wb/gern
 ich,Pron,A1,I,Ich bin hier.,I am here.,,,,,,,,,,,,Goethe-Institut,
-ab,Präp,A1,,,,,,,,,,,,,,,dwds-goethe-A1.csv,https://www.dwds.de/wb/ab#1
+ab,Präp,A1,beginning at that time or location; from,Ab heute verfügbar.,Available from today.,,,,,,,,,,,,dwds-goethe-A1.csv; Manual Apply,https://www.dwds.de/wb/ab#1
 Abend,N,A1,,,,der,,,,,,,,,,,dwds-goethe-A1.csv,https://www.dwds.de/wb/Abend
-aber,Konj,A1,,,,,,,,,,,,,,,dwds-goethe-A1.csv,https://www.dwds.de/wb/aber#1
+aber,Konj,A1,but,Aber natürlich!,,,,,,,,,,,,,dwds-goethe-A1.csv; Manual Apply,https://www.dwds.de/wb/aber#1
 abfahren,V,A1,,,,,,,,,,,,,,,dwds-goethe-A1.csv,https://www.dwds.de/wb/abfahren
 Abfahrt,N,A1,,,,die,,,,,,,,,,,dwds-goethe-A1.csv,https://www.dwds.de/wb/Abfahrt
 abfliegen,V,A1,,,,,,,,,,,,,,,dwds-goethe-A1.csv,https://www.dwds.de/wb/abfliegen
@@ -1317,13 +1317,12 @@ zurücklaufen,V,A2,,,,,,,,,,,,,,,dwds-goethe-A2.csv,https://www.dwds.de/wb/zur%C
 übermorgen,Adv,A2,,,,,,,,,,,,,,,dwds-goethe-A2.csv,https://www.dwds.de/wb/%C3%BCbermorgen
 übersetzen,V,A2,,,,,,,,,,,,,,,dwds-goethe-A2.csv,https://www.dwds.de/wb/%C3%BCbersetzen
 Übersetzung,N,A2,,,,die,,,,,,,,,,,dwds-goethe-A2.csv,https://www.dwds.de/wb/%C3%9Cbersetzung
-abbiegen,V,B1,,,,,,,,,,,,,,,dwds-goethe-B1.csv,https://www.dwds.de/wb/abbiegen
+abbiegen,V,B1,"to turn, to turn off",Biegen Sie jetzt links ab.,Now turn left.,,,,,,,,,,,,dwds-goethe-B1.csv; Manual Apply,https://www.dwds.de/wb/abbiegen
 Abbildung,N,B1,,,,die,,,,,,,,,,,dwds-goethe-B1.csv,https://www.dwds.de/wb/Abbildung
 Abenteuer,N,B1,,,,das,,,,,,,,,,,dwds-goethe-B1.csv,https://www.dwds.de/wb/Abenteuer
 Abfall,N,B1,,,,der,,,,,,,,,,,dwds-goethe-B1.csv,https://www.dwds.de/wb/Abfall
 Abfalleimer,N,B1,,,,der,,,,,,,,,,,dwds-goethe-B1.csv,https://www.dwds.de/wb/Abfalleimer
 Abgas,N,B1,,,,das,,,,,,,,,,,dwds-goethe-B1.csv,https://www.dwds.de/wb/Abgas
-abhangen,V,B1,,,,,,,,,,,,,,,dwds-goethe-B1.csv,https://www.dwds.de/wb/abhangen
 abheben,V,B1,,,,,,,,,,,,,,,dwds-goethe-B1.csv,https://www.dwds.de/wb/abheben
 abhängen,V,B1,,,,,,,,,,,,,,,dwds-goethe-B1.csv,https://www.dwds.de/wb/abh%C3%A4ngen#1
 abhängig,Adj,B1,,,,,,,,,,,,,,,dwds-goethe-B1.csv,https://www.dwds.de/wb/abh%C3%A4ngig

@@ -65,7 +65,18 @@ export const adjectiveEndingSolutionSchema = z.object({
   form: z.string().min(1),
 });
 
-export type LexemePos = 'verb' | 'noun' | 'adjective';
+export type LexemePos =
+  | 'verb'
+  | 'noun'
+  | 'adjective'
+  | 'adverb'
+  | 'pronoun'
+  | 'determiner'
+  | 'preposition'
+  | 'conjunction'
+  | 'numeral'
+  | 'particle'
+  | 'interjection';
 
 interface TaskRegistryEntryBase {
   readonly taskType: string;

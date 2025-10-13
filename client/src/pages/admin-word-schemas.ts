@@ -1,5 +1,18 @@
 import { z } from 'zod';
 
+export const translationSchema = z.object({
+  value: z.string(),
+  source: z.string().nullable().optional(),
+  language: z.string().nullable().optional(),
+  confidence: z.number().nullable().optional(),
+});
+
+export const exampleSchema = z.object({
+  exampleDe: z.string().nullable().optional(),
+  exampleEn: z.string().nullable().optional(),
+  source: z.string().nullable().optional(),
+});
+
 const prepositionAttributesSchema = z
   .object({
     cases: z.array(z.string()).optional(),
@@ -39,25 +52,8 @@ export const wordSchema = z.object({
   complete: z.boolean(),
   sourcesCsv: z.string().nullable(),
   sourceNotes: z.string().nullable(),
-  translations: z
-    .array(
-      z.object({
-        value: z.string(),
-        source: z.string().nullable().optional(),
-        language: z.string().nullable().optional(),
-        confidence: z.number().nullable().optional(),
-      }),
-    )
-    .nullable(),
-  examples: z
-    .array(
-      z.object({
-        exampleDe: z.string().nullable().optional(),
-        exampleEn: z.string().nullable().optional(),
-        source: z.string().nullable().optional(),
-      }),
-    )
-    .nullable(),
+  translations: z.array(translationSchema).nullable(),
+  examples: z.array(exampleSchema).nullable(),
   posAttributes: posAttributesSchema.nullable(),
   enrichmentAppliedAt: z.coerce.date().nullable(),
   enrichmentMethod: z.enum(['bulk', 'manual_api', 'manual_entry', 'preexisting']).nullable(),

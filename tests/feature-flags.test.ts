@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm';
 import './helpers/mock-auth';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { AggregatedWord } from '../scripts/etl/golden';
+import type { AggregatedWord } from '../scripts/etl/types';
 import { buildGoldenBundles, upsertGoldenBundles } from '../scripts/etl/golden';
 import { setupTestDatabase, type TestDatabaseContext } from './helpers/pg';
 import { createApiInvoker } from './helpers/vercel';
@@ -53,6 +53,11 @@ describe('feature flags', () => {
         complete: true,
         sourcesCsv: 'test-source',
         sourceNotes: null,
+        translations: null,
+        examples: null,
+        posAttributes: null,
+        enrichmentAppliedAt: null,
+        enrichmentMethod: null,
       },
       {
         lemma: 'Haus',
@@ -76,6 +81,11 @@ describe('feature flags', () => {
         complete: true,
         sourcesCsv: 'test-source',
         sourceNotes: null,
+        translations: null,
+        examples: null,
+        posAttributes: null,
+        enrichmentAppliedAt: null,
+        enrichmentMethod: null,
       },
       {
         lemma: 'schnell',
@@ -99,6 +109,11 @@ describe('feature flags', () => {
         complete: true,
         sourcesCsv: 'test-source',
         sourceNotes: null,
+        translations: null,
+        examples: null,
+        posAttributes: null,
+        enrichmentAppliedAt: null,
+        enrichmentMethod: null,
       },
     ];
 

@@ -32,6 +32,9 @@ Requires Node.js 22.0.0 or newer and npm 10+ (see `package.json` engines field).
    npm run dev
    npm run dev:client # start only the Vite dev server on port 5000 for UI smoke tests
    ```
+   When `DATABASE_URL` is unset the `npm run dev` script now enables an in-memory Postgres mock. The server applies the latest
+   Drizzle migrations and seeds a small enrichment fixture so admin screens and task APIs are reachable without provisioning a
+   real database. Set `USE_DEV_DB_MOCK=0` to opt out when you want to exercise a live Postgres instance locally.
 6. Additional scripts:
    ```bash
    npm run check      # type-check the project
@@ -146,12 +149,15 @@ Shut down the container with `docker stop gvm-postgres` when you are done.
 ## Database utilities
 - The schema is managed with Drizzle + Postgres. After editing `db/schema.ts`, run `npm run db:push` to apply migrations using the configured `DATABASE_URL`.
 - `npm run seed` recomputes completeness, writes deterministic content packs to `data/packs/`, and idempotently upserts source material into Postgres. Copy updated pack JSON into `client/public/packs/` before building so offline clients can fetch the refreshed bundles. Run the seed after editing `data/words_manual.csv`, adding sources under `docs/external`, or changing `data/words_canonical.csv`.
+- The seeding pipeline synchronises the shared `lexemes`/`inflections` tables for every part of speech and records aggregated attribution metadata in each pack so CC BY-SA contributors are always credited.
 
 ## Vocabulary enrichment helpers
 - Run `npm run enrich` to execute the enrichment pipeline. By default it inspects incomplete entries (`ONLY_INCOMPLETE=true`), queries Kaikki's Wiktextract dataset, OpenThesaurus, MyMemory, Tatoeba, and optionally OpenAI (`ENABLE_AI=true`) for missing metadata, and writes a structured report under `data/generated/enrichment/`. Set `APPLY_UPDATES=true` to upsert the suggested `english`/example values back into Postgres after taking a JSON backup (`data/generated/backups/words-backup-*.json`). Use `COLLECT_WIKTEXTRACT=false` to disable the Wiktextract integration when debugging network behaviour.
+- Wiktextract responses now flow into `words.pos_attributes`: governed cases, Kaikki usage notes, and POS-level tags (e.g. _separable_, _transitive_, _two-way preposition_) are merged with any existing metadata so noun/adjective/preposition cohorts accumulate the descriptors needed for the multi-POS rollout.
 - Every provider snapshot is also persisted under `data/enrichment/<pos>/<provider>.json` so Kaikki/Wiktextract, MyMemory, Tatoeba, OpenThesaurus, and OpenAI responses remain source-of-truth across schema changes. The seeding script loads these files and replays their translations, examples, verb forms, and enrichment metadata back into Postgres to keep canonical words intact. When `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and `ENRICHMENT_SUPABASE_BUCKET` are configured the same payloads are uploaded to Supabase Storage for off-site backups.
 - See [docs/enrichment-persistence.md](docs/enrichment-persistence.md) for details on where enrichment data lives and how to export the latest applied provider snapshots with `npm run enrichment:export`.
 - `LIMIT=<n>`, `CANONICAL_MODE=<non-canonical|canonical|all>`, `DELAY_MS=<ms>`, and `OVERWRITE_EXISTING=true` fine-tune batch size, target scope, rate limiting, and whether existing translations/examples may be replaced.
+- `POS_FILTERS=N,Adj` (comma/space separated) narrows the run to specific parts of speech so noun/adjective backfills can be validated without touching the verb catalog.
 - The legacy `tsx scripts/enrich-non-canonical-words.ts` wrapper remains for quick exports to `data/generated/non-canonical-enrichment.json` without mutating the database.
 
 ## Lexeme & content admin tools

@@ -13,6 +13,7 @@ export interface RunEnrichmentPayload {
   collectSynonyms?: boolean;
   collectExamples?: boolean;
   collectTranslations?: boolean;
+  collectWiktextract?: boolean;
 }
 
 export interface WordEnrichmentOptions {
@@ -21,6 +22,7 @@ export interface WordEnrichmentOptions {
   collectSynonyms?: boolean;
   collectExamples?: boolean;
   collectTranslations?: boolean;
+  collectWiktextract?: boolean;
 }
 
 async function handleResponse<T>(response: Response): Promise<T> {

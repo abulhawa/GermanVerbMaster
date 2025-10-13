@@ -86,6 +86,10 @@ interface KaikkiSynonymEntry {
   word?: string;
 }
 
+interface KaikkiSenseFormOfEntry {
+  word?: string;
+}
+
 interface KaikkiSenseEntry {
   examples?: KaikkiExampleEntry[];
   translations?: KaikkiTranslationEntry[];
@@ -94,10 +98,13 @@ interface KaikkiSenseEntry {
   synonyms?: KaikkiSynonymEntry[];
   tags?: string[];
   categories?: string[];
+  form_of?: KaikkiSenseFormOfEntry[];
 }
 
 interface KaikkiHeadTemplate {
   expansion?: string;
+  name?: string;
+  args?: Record<string, string>;
 }
 
 interface KaikkiEntry {
@@ -156,6 +163,9 @@ export interface WiktextractLookup {
   nounForms?: WiktextractNounForms;
   adjectiveForms?: WiktextractAdjectiveForms;
   prepositionAttributes?: WiktextractPrepositionAttributes;
+  posLabel?: string;
+  posTags: string[];
+  posNotes: string[];
   sourceDe: string;
   pivotUsed: boolean;
 }
@@ -186,32 +196,46 @@ const POS_MAP: Record<string, string[]> = {
   verb: ["verb"],
   n: ["noun", "proper noun"],
   noun: ["noun", "proper noun"],
-  adj: ["adjective"],
-  adjective: ["adjective"],
-  adv: ["adverb"],
-  adverb: ["adverb"],
-  prep: ["preposition"],
-  preposition: ["preposition"],
-  präp: ["preposition"],
-  präposition: ["preposition"],
-  praep: ["preposition"],
-  prap: ["preposition"],
-  pron: ["pronoun"],
-  pronoun: ["pronoun"],
-  det: ["determiner", "article"],
-  determiner: ["determiner", "article"],
-  artikel: ["article", "determiner"],
-  konj: ["conjunction"],
-  conjunction: ["conjunction"],
-  konjunktion: ["conjunction"],
-  num: ["numeral"],
-  numeral: ["numeral"],
-  part: ["particle"],
-  particle: ["particle"],
-  partikel: ["particle"],
-  interj: ["interjection"],
-  interjection: ["interjection"],
+  "proper noun": ["proper noun", "noun"],
+  adj: ["adjective", "adj"],
+  adjective: ["adjective", "adj"],
+  adv: ["adverb", "adv"],
+  adverb: ["adverb", "adv"],
+  prep: ["preposition", "prep"],
+  preposition: ["preposition", "prep"],
+  präp: ["preposition", "prep"],
+  präposition: ["preposition", "prep"],
+  praep: ["preposition", "prep"],
+  prap: ["preposition", "prep"],
+  pron: ["pronoun", "pron"],
+  pronoun: ["pronoun", "pron"],
+  det: ["determiner", "article", "det"],
+  determiner: ["determiner", "article", "det"],
+  artikel: ["article", "determiner", "det"],
+  konj: ["conjunction", "konj"],
+  conjunction: ["conjunction", "konj"],
+  konjunktion: ["conjunction", "konj"],
+  num: ["numeral", "num"],
+  numeral: ["numeral", "num"],
+  part: ["particle", "part", "interjection", "intj", "adverb", "adv"],
+  particle: ["particle", "part", "interjection", "intj", "adverb", "adv"],
+  partikel: ["particle", "part", "interjection", "intj", "adverb", "adv"],
+  intj: ["interjection", "intj"],
+  interj: ["interjection", "intj"],
+  interjection: ["interjection", "intj"],
 };
+
+function resolvePosAliases(value: string | undefined): string[] {
+  if (!value) {
+    return [];
+  }
+  const normalised = value.trim().toLowerCase();
+  if (!normalised) {
+    return [];
+  }
+  const direct = POS_MAP[normalised] ?? [];
+  return Array.from(new Set([normalised, ...direct]));
+}
 
 const CASE_PATTERNS: Array<{ matcher: RegExp; values: string[] }> = [
   { matcher: /\bakkusativ\b|\baccusative\b/i, values: ["Akkusativ"] },
@@ -233,16 +257,127 @@ const CASE_CATEGORY_MATCHERS: Array<{ matcher: RegExp; values: string[] }> = [
 
 const NOTE_BLACKLIST = new Set(["table-tags", "inflection-template", "error-unrecognized-form"]);
 
+const POS_TAG_BLACKLIST = new Set([
+  "noun",
+  "proper noun",
+  "verb",
+  "adjective",
+  "adverb",
+  "preposition",
+  "pronoun",
+  "determiner",
+  "article",
+  "numeral",
+  "particle",
+  "interjection",
+  "case",
+  "tense",
+  "person",
+  "plural",
+  "singular",
+  "masculine",
+  "feminine",
+  "neuter",
+  "past",
+  "present",
+  "future",
+  "imperative",
+  "indicative",
+  "subjunctive",
+  "comparative",
+  "superlative",
+  "positive",
+  "qualifier",
+  "table-tags",
+  "head",
+]);
+
+const POS_TAG_PATTERNS: Array<{
+  matcher: RegExp;
+  transform?: (value: string) => string;
+}> = [
+  { matcher: /^class-\d+$/i, transform: (value) => value.replace(/-/g, " ") },
+  { matcher: /^(?:transitive|intransitive|reflexive|impersonal|pronominal)$/i },
+  { matcher: /^(?:separable|inseparable|nonseparable|non-separable)$/i },
+  { matcher: /^(?:auxiliary|modal)$/i },
+  { matcher: /^(?:strong|weak|irregular|regular)$/i },
+  { matcher: /^(?:colloquial|slang|formal|informal|obsolete|archaic|dated|poetic|figurative|idiomatic|rare|vulgar|derogatory|diminutive|pejorative)$/i },
+  { matcher: /^(?:countable|uncountable|usually countable|invariable)$/i },
+];
+
+const POS_NOTE_FILTERS: RegExp[] = [
+  /\blemmas?\b/i,
+  /\bterms? derived from\b/i,
+  /\bterms? borrowed from\b/i,
+  /\bterms? prefixed with\b/i,
+  /\bterms? suffixed with\b/i,
+  /\bterms? spelled with\b/i,
+  /\bentries with\b/i,
+];
+
+function normaliseLemma(lemma: string): string {
+  return lemma.normalize("NFC").trim();
+}
+
 function buildKaikkiEntryUrl(base: string, lemma: string): string {
-  const normalised = lemma.trim().toLowerCase();
+  const normalised = normaliseLemma(lemma);
   const first = normalised[0] ?? "_";
   const firstTwo = normalised.slice(0, 2) || first;
   const encoded = encodeURIComponent(normalised);
   return `${base}/${first}/${firstTwo}/${encoded}.jsonl`;
 }
 
+function buildKaikkiEntryUrlCandidates(base: string, lemma: string): string[] {
+  const trimmed = normaliseLemma(lemma);
+  if (!trimmed) {
+    return [];
+  }
+
+  const variants: string[] = [];
+  const seen = new Set<string>();
+  const pushVariant = (value: string | undefined | null) => {
+    if (!value) return;
+    const candidate = normaliseLemma(value);
+    if (!candidate || seen.has(candidate)) return;
+    seen.add(candidate);
+    variants.push(candidate);
+  };
+
+  pushVariant(trimmed);
+  pushVariant(trimmed[0]?.toLocaleUpperCase("de-DE") + trimmed.slice(1));
+  pushVariant(trimmed.toLocaleLowerCase("de-DE"));
+  pushVariant(trimmed.toLowerCase());
+
+  return variants.map((variant) => buildKaikkiEntryUrl(base, variant));
+}
+
+async function fetchKaikkiEntries(base: string, lemma: string): Promise<{
+  url: string | null;
+  entries: KaikkiEntry[];
+}> {
+  const candidates = buildKaikkiEntryUrlCandidates(base, lemma);
+  if (!candidates.length) {
+    return { url: null, entries: [] };
+  }
+
+  let lastUrl: string | null = null;
+
+  for (const url of candidates) {
+    lastUrl = url;
+    const entries = await fetchJsonLines<KaikkiEntry>(url);
+    if (entries.length) {
+      return { url, entries };
+    }
+  }
+
+  return { url: lastUrl, entries: [] };
+}
+
 async function fetchJsonLines<T>(url: string): Promise<T[]> {
   const response = await fetch(url, { headers: REQUEST_HEADERS });
+  if (!response) {
+    return [];
+  }
   if (response.status === 404) {
     return [];
   }
@@ -269,6 +404,36 @@ function normaliseTags(tags: string[] | undefined): string[] {
   return tags
     .map((tag) => tag.trim().toLowerCase())
     .filter((tag, index, array) => tag && array.indexOf(tag) === index);
+}
+
+function isInflectionEntry(entry: KaikkiEntry): boolean {
+  const senses = toArray<KaikkiSenseEntry>(entry.senses);
+  const templates = toArray<KaikkiHeadTemplate>(entry.head_templates);
+
+  const templateIndicatesForm = templates.some((template) => {
+    const values = Object.values(template.args ?? {});
+    return values.some((value) => typeof value === "string" && value.trim().toLowerCase().includes("form"));
+  });
+
+  if (!senses.length) {
+    return templateIndicatesForm;
+  }
+
+  const sensesAreInflections = senses.every((sense) => {
+    const tags = normaliseTags(sense.tags);
+    const hasFormOf = toArray<KaikkiSenseFormOfEntry>(sense.form_of).length > 0;
+    const glosses = toArray<string>(sense.glosses).map((gloss) => gloss.toLowerCase());
+    const rawGlosses = toArray<string>(sense.raw_glosses).map((gloss) => gloss.toLowerCase());
+    const glossMentionsInflection = [...glosses, ...rawGlosses].some((gloss) => gloss.includes("inflection of"));
+    const hasInflectionTag =
+      tags.includes("form-of") ||
+      tags.includes("inflection") ||
+      tags.includes("inflected") ||
+      tags.includes("inflection-of");
+    return hasFormOf || hasInflectionTag || glossMentionsInflection;
+  });
+
+  return sensesAreInflections || templateIndicatesForm;
 }
 
 function collectAuxiliaries(entry: KaikkiEntry): string[] {
@@ -464,6 +629,96 @@ function extractPrepositionAttributes(entry: KaikkiEntry): WiktextractPrepositio
   } satisfies WiktextractPrepositionAttributes;
 }
 
+function normalisePosDescriptor(value: string): string {
+  return value.trim().replace(/\s+/g, " ");
+}
+
+function resolvePosTag(value: string | undefined | null): { tag?: string; note?: string } | null {
+  if (!value) return null;
+  const trimmed = normalisePosDescriptor(value);
+  if (!trimmed) return null;
+  const lower = trimmed.toLowerCase();
+  if (NOTE_BLACKLIST.has(lower) || POS_TAG_BLACKLIST.has(lower)) {
+    return null;
+  }
+
+  for (const { matcher, transform } of POS_TAG_PATTERNS) {
+    if (matcher.test(lower)) {
+      const resolved = transform ? transform(trimmed) : trimmed;
+      return { tag: normalisePosDescriptor(resolved) };
+    }
+  }
+
+  if (/^(?:[a-z][a-z\s'-]{1,32})$/i.test(trimmed) && !POS_TAG_BLACKLIST.has(lower)) {
+    return { tag: trimmed.toLowerCase() };
+  }
+
+  return { note: trimmed };
+}
+
+function normalisePosNote(value: string | undefined | null): string | null {
+  if (!value) return null;
+  const trimmed = normalisePosDescriptor(value);
+  if (!trimmed) return null;
+  const lower = trimmed.toLowerCase();
+  if (NOTE_BLACKLIST.has(lower)) {
+    return null;
+  }
+  if (POS_NOTE_FILTERS.some((pattern) => pattern.test(lower))) {
+    return null;
+  }
+  const withoutPrefix = trimmed.replace(/^German\s+/i, "").trim();
+  return withoutPrefix || null;
+}
+
+function collectPosMetadata(entry: KaikkiEntry): { tags: string[]; notes: string[] } {
+  const tagMap = new Map<string, string>();
+  const noteMap = new Map<string, string>();
+
+  const addTag = (value: string | undefined | null) => {
+    if (!value) return;
+    const normalised = normalisePosDescriptor(value);
+    if (!normalised) return;
+    const key = normalised.toLowerCase();
+    if (!tagMap.has(key)) {
+      tagMap.set(key, normalised);
+    }
+  };
+
+  const addNote = (value: string | undefined | null) => {
+    const normalised = normalisePosNote(value);
+    if (!normalised) return;
+    const key = normalised.toLowerCase();
+    if (!noteMap.has(key)) {
+      noteMap.set(key, normalised);
+    }
+  };
+
+  for (const category of toArray<string>(entry.categories)) {
+    addNote(category);
+  }
+
+  for (const sense of toArray<KaikkiSenseEntry>(entry.senses)) {
+    for (const tag of toArray<string>(sense.tags)) {
+      const resolved = resolvePosTag(tag);
+      if (!resolved) continue;
+      if (resolved.tag) {
+        addTag(resolved.tag);
+      }
+      if (resolved.note) {
+        addNote(resolved.note);
+      }
+    }
+    for (const category of toArray<string>(sense.categories)) {
+      addNote(category);
+    }
+  }
+
+  const tags = Array.from(tagMap.values()).sort((a, b) => a.localeCompare(b));
+  const notes = Array.from(noteMap.values()).sort((a, b) => a.localeCompare(b));
+  return { tags, notes };
+}
+
 function collectGlosses(entry: KaikkiEntry): string[] {
   const glosses: string[] = [];
   for (const sense of toArray<KaikkiSenseEntry>(entry.senses)) {
@@ -618,14 +873,11 @@ function extractAdjectiveForms(entry: KaikkiEntry): WiktextractAdjectiveForms | 
 }
 
 function resolveTargetPos(pos?: PartOfSpeech | string): string[] | undefined {
-  if (!pos) return undefined;
-  const normalised = String(pos).trim().toLowerCase();
-  if (!normalised) return undefined;
-  const direct = POS_MAP[normalised];
-  if (direct?.length) {
-    return direct;
+  if (pos === undefined || pos === null) {
+    return undefined;
   }
-  return [normalised];
+  const resolved = resolvePosAliases(String(pos));
+  return resolved.length ? resolved : undefined;
 }
 
 export async function lookupWiktextract(
@@ -637,23 +889,53 @@ export async function lookupWiktextract(
     return null;
   }
 
-  const germanUrl = buildKaikkiEntryUrl(KAIKKI_GERMAN_BASE, trimmed);
-  const germanEntries = await fetchJsonLines<KaikkiEntry>(germanUrl);
+  const { url: germanUrl, entries: germanEntries } = await fetchKaikkiEntries(
+    KAIKKI_GERMAN_BASE,
+    trimmed,
+  );
+  if (!germanEntries.length) {
+    return null;
+  }
+  const resolvedGermanUrl = germanUrl ?? buildKaikkiEntryUrl(KAIKKI_GERMAN_BASE, trimmed);
   const targets = resolveTargetPos(pos);
-  const germanCandidates = germanEntries.filter((entry) => entry.lang === "German");
-  const match = germanCandidates.find((entry) => {
-    if (!entry.pos) {
-      return false;
-    }
-    if (!targets?.length) {
-      return entry.pos?.toLowerCase() === "verb";
-    }
-    const entryPos = entry.pos.trim().toLowerCase();
-    return targets.some((target) => entryPos === target || entryPos.includes(target));
-  });
+  const germanCandidates = germanEntries
+    .filter((entry) => entry.lang === "German")
+    .filter((entry) => !isInflectionEntry(entry));
 
-  const fallback = germanCandidates.find((entry) => entry.pos?.toLowerCase() === "verb");
-  const selectedEntry = match ?? fallback ?? germanCandidates[0];
+  if (!germanCandidates.length) {
+    return null;
+  }
+
+  let selectedEntry: KaikkiEntry | undefined;
+
+  if (targets?.length) {
+    let bestMatchIndex = Number.POSITIVE_INFINITY;
+
+    for (const entry of germanCandidates) {
+      const entryPoses = resolvePosAliases(entry.pos);
+      if (!entryPoses.length) {
+        continue;
+      }
+      for (let index = 0; index < targets.length; index += 1) {
+        const target = targets[index];
+        if (entryPoses.includes(target)) {
+          if (!selectedEntry || index < bestMatchIndex) {
+            selectedEntry = entry;
+            bestMatchIndex = index;
+          }
+          break;
+        }
+      }
+    }
+
+    if (!selectedEntry) {
+      return null;
+    }
+  } else {
+    selectedEntry =
+      germanCandidates.find((entry) => resolvePosAliases(entry.pos).includes("verb")) ??
+      germanCandidates[0];
+  }
 
   if (!selectedEntry) {
     return null;
@@ -675,6 +957,8 @@ export async function lookupWiktextract(
   const prepositionAttributes = selectedEntry.pos?.toLowerCase().includes("prep")
     ? extractPrepositionAttributes(selectedEntry)
     : undefined;
+  const posLabel = selectedEntry.pos?.trim();
+  const { tags: posTags, notes: posNotes } = collectPosMetadata(selectedEntry);
 
   let pivotUsed = false;
   const collectedTranslations = new Map<string, WiktextractTranslation>();
@@ -693,22 +977,36 @@ export async function lookupWiktextract(
   }
   const hadDirectTranslations = collectedTranslations.size > 0;
 
-  const isVerbEntry = selectedEntry.pos?.toLowerCase().includes("verb") ?? false;
+  if (!collectedTranslations.size && englishHints.length) {
+    for (const headword of englishHints) {
+      if (!headword) continue;
+      const { entries: englishEntries } = await fetchKaikkiEntries(
+        KAIKKI_ENGLISH_BASE,
+        headword,
+      );
 
-  if (!collectedTranslations.size && englishHints.length && isVerbEntry) {
-    const headword = englishHints[0];
-    const englishUrl = buildKaikkiEntryUrl(KAIKKI_ENGLISH_BASE, headword);
-    const englishEntries = await fetchJsonLines<KaikkiEntry>(englishUrl);
-    if (englishEntries.length) {
+      let hasGermanTranslations = false;
+
       for (const entry of englishEntries) {
         if (entry.lang !== "English") continue;
         for (const sense of toArray<KaikkiSenseEntry>(entry.senses)) {
           for (const translation of toArray<KaikkiTranslationEntry>(sense.translations)) {
-            addTranslation(translation.word, translation.lang ?? translation.lang_code);
+            const language = translation.lang ?? translation.lang_code;
+            if (language && language.toLowerCase() === "german") {
+              hasGermanTranslations = true;
+              break;
+            }
           }
+          if (hasGermanTranslations) break;
         }
+        if (hasGermanTranslations) break;
       }
-      pivotUsed = true;
+
+      if (hasGermanTranslations) {
+        addTranslation(headword, "en");
+        pivotUsed = true;
+        break;
+      }
     }
   }
 
@@ -727,7 +1025,10 @@ export async function lookupWiktextract(
     nounForms,
     adjectiveForms,
     prepositionAttributes,
-    sourceDe: germanUrl,
+    posLabel,
+    posTags,
+    posNotes,
+    sourceDe: resolvedGermanUrl,
     pivotUsed,
   };
 }

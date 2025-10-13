@@ -50,6 +50,7 @@ describe('lookupWiktextract', () => {
       ],
     };
 
+    mockedFetch.mockImplementation(async () => createResponse('', 404));
     mockedFetch.mockResolvedValueOnce(createResponse(`${JSON.stringify(germanEntry)}\n`));
 
     const result = await lookupWiktextract('abbiegen');
@@ -66,6 +67,32 @@ describe('lookupWiktextract', () => {
     expect(result?.verbForms?.partizipIi).toBe('abgebogen');
     expect(result?.verbForms?.perfektOptions).toEqual(['hat abgebogen', 'ist abgebogen']);
     expect(result?.verbForms?.auxiliaries).toEqual(expect.arrayContaining(['haben', 'sein']));
+  });
+
+  it('falls back to alternate Kaikki paths when the initial case does not exist', async () => {
+    const germanEntry = {
+      lang: 'German',
+      pos: 'verb',
+      word: 'abbiegen',
+      forms: [
+        { form: 'bog ab', tags: ['past'] },
+      ],
+    };
+
+    mockedFetch
+      .mockResolvedValueOnce(createResponse('', 404))
+      .mockResolvedValueOnce(createResponse(`${JSON.stringify(germanEntry)}\n`));
+
+    const result = await lookupWiktextract('Abbiegen');
+
+    expect(mockedFetch).toHaveBeenCalledTimes(2);
+    expect(mockedFetch.mock.calls[0]?.[0]).toBe(
+      'https://kaikki.org/dictionary/German/meaning/A/Ab/Abbiegen.jsonl',
+    );
+    expect(mockedFetch.mock.calls[1]?.[0]).toBe(
+      'https://kaikki.org/dictionary/German/meaning/a/ab/abbiegen.jsonl',
+    );
+    expect(result?.verbForms?.praeteritum).toBe('bog ab');
   });
 
   it('falls back to glosses and pivot translations when the German entry lacks direct translations', async () => {
@@ -97,10 +124,59 @@ describe('lookupWiktextract', () => {
     const result = await lookupWiktextract('abbiegen');
 
     expect(result).not.toBeNull();
-    expect(result?.translations.map((entry) => entry.value)).toEqual(
-      expect.arrayContaining(['to turn', 'abbiegen']),
-    );
+    expect(result?.translations.map((entry) => entry.value)).toEqual(['to turn']);
+    expect(result?.translations.map((entry) => entry.language)).toEqual(['en']);
     expect(result?.pivotUsed).toBe(true);
+  });
+
+  it('skips inflection entries and honours particle POS mapping when choosing Kaikki entries', async () => {
+    const adverbEntry = {
+      lang: 'German',
+      pos: 'adv',
+      word: 'bitte',
+      senses: [
+        {
+          translations: [{ word: 'please', lang: 'English' }],
+        },
+      ],
+    };
+    const interjectionEntry = {
+      lang: 'German',
+      pos: 'intj',
+      word: 'bitte',
+      senses: [
+        {
+          translations: [{ word: "you're welcome", lang: 'English' }],
+        },
+      ],
+    };
+    const inflectionEntry = {
+      lang: 'German',
+      pos: 'verb',
+      word: 'bitte',
+      head_templates: [{ args: { '1': 'de', '2': 'verb form' } }],
+      senses: [
+        {
+          form_of: [{ word: 'bitten' }],
+          glosses: ['inflection of bitten'],
+          tags: ['form-of'],
+        },
+      ],
+    };
+
+    mockedFetch.mockResolvedValueOnce(
+      createResponse(
+        [adverbEntry, interjectionEntry, inflectionEntry]
+          .map((entry) => `${JSON.stringify(entry)}`)
+          .join('\n'),
+      ),
+    );
+
+    const result = await lookupWiktextract('bitte', 'Part');
+
+    expect(result).not.toBeNull();
+    expect(result?.posLabel).toBe('intj');
+    expect(result?.translations.map((entry) => entry.value)).toEqual(["you're welcome"]);
   });
 
   it('extracts noun genders and plural forms when requested for nouns', async () => {
@@ -130,6 +206,10 @@ describe('lookupWiktextract', () => {
       expect.arrayContaining([
         expect.objectContaining({ form: 'Äpfel', tags: expect.arrayContaining(['plural', 'nominative']) }),
       ]),
+    );
+    expect(mockedFetch).toHaveBeenCalledTimes(1);
+    expect(mockedFetch.mock.calls[0]?.[0]).toBe(
+      'https://kaikki.org/dictionary/German/meaning/A/Ap/Apfel.jsonl',
     );
   });
 
@@ -175,5 +255,32 @@ describe('lookupWiktextract', () => {
 
     expect(result?.prepositionAttributes?.cases).toEqual(['Akkusativ', 'Dativ']);
     expect(result?.prepositionAttributes?.notes).toEqual(['directional']);
+    expect(result?.posLabel).toBe('prep');
+    expect(result?.posTags).toEqual(expect.arrayContaining(['directional']));
+    expect(result?.posNotes).toEqual(expect.arrayContaining(['two-way prepositions']));
+  });
+
+  it('collects POS tags and usage notes for verbs when available', async () => {
+    const germanEntry = {
+      lang: 'German',
+      pos: 'verb',
+      word: 'abholen',
+      senses: [
+        {
+          glosses: ['to pick up'],
+          tags: ['transitive', 'separable'],
+          categories: ['German separable verbs'],
+          translations: [{ word: 'pick up', lang: 'English' }],
+        },
+      ],
+    };
+
+    mockedFetch.mockResolvedValueOnce(createResponse(`${JSON.stringify(germanEntry)}\n`));
+
+    const result = await lookupWiktextract('abholen', 'V');
+
+    expect(result?.posLabel).toBe('verb');
+    expect(result?.posTags).toEqual(expect.arrayContaining(['transitive', 'separable']));
+    expect(result?.posNotes).toEqual(expect.arrayContaining(['separable verbs']));
   });
 });

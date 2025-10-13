@@ -58,6 +58,7 @@ interface BulkConfigState extends RunEnrichmentPayload {
   collectSynonyms: boolean;
   collectExamples: boolean;
   collectTranslations: boolean;
+  collectWiktextract: boolean;
 }
 
 const DEFAULT_BULK_CONFIG: BulkConfigState = {
@@ -66,9 +67,10 @@ const DEFAULT_BULK_CONFIG: BulkConfigState = {
   onlyIncomplete: true,
   enableAi: false,
   allowOverwrite: false,
-  collectSynonyms: true,
-  collectExamples: true,
-  collectTranslations: true,
+  collectSynonyms: false,
+  collectExamples: false,
+  collectTranslations: false,
+  collectWiktextract: true,
 };
 
 const AdminEnrichmentPage = () => {
@@ -159,6 +161,7 @@ const AdminEnrichmentPage = () => {
         collectSynonyms: bulkConfig.collectSynonyms,
         collectExamples: bulkConfig.collectExamples,
         collectTranslations: bulkConfig.collectTranslations,
+        collectWiktextract: bulkConfig.collectWiktextract,
       };
       return runBulkEnrichment(payload, normalizedAdminToken);
     },
@@ -269,9 +272,7 @@ const AdminEnrichmentPage = () => {
       const options: WordEnrichmentOptions = {
         enableAi: wordConfig.enableAi,
         allowOverwrite: wordConfig.allowOverwrite,
-        collectSynonyms: wordConfig.collectSynonyms,
-        collectExamples: wordConfig.collectExamples,
-        collectTranslations: wordConfig.collectTranslations,
+        collectWiktextract: wordConfig.collectWiktextract,
       };
       const result = await previewWordEnrichment(word.id, options, normalizedAdminToken);
       setPreviewData(result);
@@ -480,21 +481,32 @@ const AdminEnrichmentPage = () => {
               }
             />
             <BooleanToggle
-              label="Collect synonyms"
+              label="Consult Kaikki (Wiktextract)"
+              description="Use Kaikki for translations, examples, synonyms, and forms"
+              checked={bulkConfig.collectWiktextract}
+              onCheckedChange={(checked) =>
+                setBulkConfig((config) => ({ ...config, collectWiktextract: checked }))
+              }
+            />
+            <BooleanToggle
+              label="Consult OpenThesaurus (synonyms)"
+              description="Fetch additional synonym candidates from openthesaurus.de"
               checked={bulkConfig.collectSynonyms}
               onCheckedChange={(checked) =>
                 setBulkConfig((config) => ({ ...config, collectSynonyms: checked }))
               }
             />
             <BooleanToggle
-              label="Collect example sentences"
+              label="Consult Tatoeba (examples)"
+              description="Fetch extra example sentences from tatoeba.org"
               checked={bulkConfig.collectExamples}
               onCheckedChange={(checked) =>
                 setBulkConfig((config) => ({ ...config, collectExamples: checked }))
               }
             />
             <BooleanToggle
-              label="Collect translations"
+              label="Consult MyMemory (translations)"
+              description="Fetch additional translation suggestions from mymemory.translated.net"
               checked={bulkConfig.collectTranslations}
               onCheckedChange={(checked) =>
                 setBulkConfig((config) => ({ ...config, collectTranslations: checked }))
@@ -625,24 +637,11 @@ const AdminEnrichmentPage = () => {
               }
             />
             <BooleanToggle
-              label="Collect synonyms"
-              checked={wordConfig.collectSynonyms}
+              label="Consult Kaikki (Wiktextract)"
+              description="Use Kaikki for translations, examples, synonyms, and forms"
+              checked={wordConfig.collectWiktextract}
               onCheckedChange={(checked) =>
-                setWordConfig((config) => ({ ...config, collectSynonyms: checked }))
-              }
-            />
-            <BooleanToggle
-              label="Collect example sentences"
-              checked={wordConfig.collectExamples}
-              onCheckedChange={(checked) =>
-                setWordConfig((config) => ({ ...config, collectExamples: checked }))
-              }
-            />
-            <BooleanToggle
-              label="Collect translations"
-              checked={wordConfig.collectTranslations}
-              onCheckedChange={(checked) =>
-                setWordConfig((config) => ({ ...config, collectTranslations: checked }))
+                setWordConfig((config) => ({ ...config, collectWiktextract: checked }))
               }
             />
           </div>

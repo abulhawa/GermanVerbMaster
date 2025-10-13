@@ -2,6 +2,7 @@ import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Pool, type PoolConfig } from "pg";
 
 import * as schema from "./schema.js";
+import { createMockPool } from "./mock-pool.js";
 
 export interface DatabasePoolOptions {
   connectionString?: string;
@@ -10,6 +11,22 @@ export interface DatabasePoolOptions {
 
 let poolInstance: Pool | undefined;
 let dbInstance: NodePgDatabase<typeof schema> | undefined;
+let mockDatabaseWarningLogged = false;
+
+function shouldUseMockDatabase(): boolean {
+  const preference = (process.env.USE_DEV_DB_MOCK ?? "").toLowerCase();
+  const explicitOptIn = ["1", "true", "yes", "on"].includes(preference);
+  if (!explicitOptIn) {
+    return false;
+  }
+
+  const nodeEnv = (process.env.NODE_ENV ?? "development").toLowerCase();
+  if (nodeEnv === "production" || nodeEnv === "test") {
+    return false;
+  }
+
+  return true;
+}
 
 function resolveSslOption(options: DatabasePoolOptions = {}): PoolConfig["ssl"] | undefined {
   if (options.ssl === false) {
@@ -36,6 +53,19 @@ export function createPool(options: DatabasePoolOptions = {}): Pool {
   const connectionString = options.connectionString ?? process.env.DATABASE_URL;
 
   if (!connectionString) {
+    if (shouldUseMockDatabase()) {
+      if (!mockDatabaseWarningLogged) {
+        console.warn(
+          "DATABASE_URL is not configured. Falling back to the in-memory mock database for local development.",
+        );
+        mockDatabaseWarningLogged = true;
+      }
+
+      const pool = createMockPool();
+      process.env.ADMIN_API_TOKEN = process.env.ADMIN_API_TOKEN ?? "dev-admin";
+      return pool;
+    }
+
     throw new Error(
       "DATABASE_URL is not configured. Set a connection string before using the database client.",
     );
