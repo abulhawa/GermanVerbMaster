@@ -21,6 +21,7 @@ import {
 } from '@/lib/admin-enrichment';
 import type { useToast as UseToastHook } from '@/hooks/use-toast';
 import { wordSchema, type AdminWord } from './admin-word-schemas';
+import { wordEnrichmentHistorySchema } from './admin-enrichment-history-schema';
 import {
   BooleanToggle,
   DetailField,
@@ -37,6 +38,7 @@ import type {
   EnrichmentVerbFormSuggestion,
   EnrichmentNounFormSuggestion,
   EnrichmentAdjectiveFormSuggestion,
+  WordEnrichmentHistory,
   WordEnrichmentPreview,
 } from '@shared/enrichment';
 
@@ -55,6 +57,18 @@ interface FieldDrafts {
   plural: string;
   comparative: string;
   superlative: string;
+}
+
+interface TranslationOptionEntry {
+  id: string;
+  candidate: EnrichmentTranslationCandidate;
+  origin: 'history' | 'preview';
+}
+
+interface ExampleOptionEntry {
+  id: string;
+  candidate: EnrichmentExampleCandidate;
+  origin: 'history' | 'preview';
 }
 
 export interface WordConfigState {
@@ -238,6 +252,37 @@ const WordEnrichmentDetailView = ({
 
   const word = wordQuery.data;
 
+  const historyQuery = useQuery<WordEnrichmentHistory>({
+    queryKey: ['admin-enrichment', 'word-history', wordId, normalizedAdminToken],
+    queryFn: async () => {
+      const headers: Record<string, string> = {};
+      if (normalizedAdminToken) {
+        headers['x-admin-token'] = normalizedAdminToken;
+      }
+      const response = await fetch(`/api/enrichment/words/${wordId}/history`, { headers });
+      if (!response.ok) {
+        throw new Error(`Failed to load enrichment history (${response.status})`);
+      }
+      const payload = await response.json();
+      const parsed = wordEnrichmentHistorySchema.parse(payload);
+      return {
+        wordId: parsed.wordId,
+        lemma: parsed.lemma,
+        pos: parsed.pos,
+        snapshots: parsed.snapshots as unknown as EnrichmentProviderSnapshot[],
+        translations: parsed.translations,
+        examples: parsed.examples,
+      } satisfies WordEnrichmentHistory;
+    },
+    enabled: Number.isFinite(wordId) && wordId > 0,
+  });
+
+  const history: WordEnrichmentHistory | null = historyQuery.data ?? null;
+  const historyErrorMessage =
+    historyQuery.error instanceof Error
+      ? historyQuery.error.message
+      : 'Failed to load stored enrichment data.';
+
   useEffect(() => {
     if (word) {
       setDrafts({
@@ -272,21 +317,15 @@ const WordEnrichmentDetailView = ({
     }
   }, [word?.id]);
 
-  const translationOptions = useMemo(() => {
-    if (!previewData) return [] as Array<{ id: string; candidate: EnrichmentTranslationCandidate }>;
-    return previewData.suggestions.translations.map((candidate, index) => ({
-      id: `translation-${index}`,
-      candidate,
-    }));
-  }, [previewData]);
+  const translationOptions = useMemo(
+    () => buildTranslationOptions(history, previewData),
+    [history, previewData],
+  );
 
-  const exampleOptions = useMemo(() => {
-    if (!previewData) return [] as Array<{ id: string; candidate: EnrichmentExampleCandidate }>;
-    return previewData.suggestions.examples.map((candidate, index) => ({
-      id: `example-${index}`,
-      candidate,
-    }));
-  }, [previewData]);
+  const exampleOptions = useMemo(
+    () => buildExampleOptions(history, previewData),
+    [history, previewData],
+  );
 
   const exampleDeOptions = useMemo(
     () => exampleOptions.filter((option) => option.candidate.exampleDe),
@@ -296,6 +335,43 @@ const WordEnrichmentDetailView = ({
     () => exampleOptions.filter((option) => option.candidate.exampleEn),
     [exampleOptions],
   );
+
+  useEffect(() => {
+    if (!word) return;
+    if (!history) return;
+    if (previewData) return;
+
+    setSelectedOptions((current) => {
+      let changed = false;
+      const next = { ...current };
+
+      if (word.english && (!current.english || current.english === MANUAL_OPTION)) {
+        const match = findMatchingTranslationOptionId(word.english, translationOptions);
+        if (match && match !== MANUAL_OPTION) {
+          next.english = match;
+          changed = true;
+        }
+      }
+
+      if (word.exampleDe && (!current.exampleDe || current.exampleDe === MANUAL_OPTION)) {
+        const match = findMatchingExampleOptionId(word.exampleDe, exampleOptions, 'exampleDe');
+        if (match && match !== MANUAL_OPTION) {
+          next.exampleDe = match;
+          changed = true;
+        }
+      }
+
+      if (word.exampleEn && (!current.exampleEn || current.exampleEn === MANUAL_OPTION)) {
+        const match = findMatchingExampleOptionId(word.exampleEn, exampleOptions, 'exampleEn');
+        if (match && match !== MANUAL_OPTION) {
+          next.exampleEn = match;
+          changed = true;
+        }
+      }
+
+      return changed ? next : current;
+    });
+  }, [word, history, previewData, translationOptions, exampleOptions]);
 
   const verbFormOptions = useMemo(() => {
     if (!previewData) return [] as Array<{ id: string; candidate: EnrichmentVerbFormSuggestion }>;
@@ -441,21 +517,23 @@ const WordEnrichmentDetailView = ({
     onSuccess: (data) => {
       setPreviewData(data);
       setApplyResult(null);
+      const nextTranslationOptions = buildTranslationOptions(history, data);
+      const nextExampleOptions = buildExampleOptions(history, data);
       setSelectedOptions((current) => ({
         english:
-          findMatchingTranslationOptionId(data.patch.english, data.suggestions.translations) ??
+          findMatchingTranslationOptionId(data.patch.english, nextTranslationOptions) ??
           current.english ??
           (data.patch.english !== undefined || (word?.english ?? '').length
             ? MANUAL_OPTION
             : undefined),
         exampleDe:
-          findMatchingExampleOptionId(data.patch.exampleDe, data.suggestions.examples, 'exampleDe') ??
+          findMatchingExampleOptionId(data.patch.exampleDe, nextExampleOptions, 'exampleDe') ??
           current.exampleDe ??
           (data.patch.exampleDe !== undefined || (word?.exampleDe ?? '').length
             ? MANUAL_OPTION
             : undefined),
         exampleEn:
-          findMatchingExampleOptionId(data.patch.exampleEn, data.suggestions.examples, 'exampleEn') ??
+          findMatchingExampleOptionId(data.patch.exampleEn, nextExampleOptions, 'exampleEn') ??
           current.exampleEn ??
           (data.patch.exampleEn !== undefined || (word?.exampleEn ?? '').length
             ? MANUAL_OPTION
@@ -911,14 +989,68 @@ const WordEnrichmentDetailView = ({
               After your edits: {missingAfter.length ? missingAfter.map(formatMissingField).join(', ') : 'all required fields present.'}
             </div>
           </div>
-        </CardContent>
-      </Card>
+      </CardContent>
+    </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Enrichment configuration</CardTitle>
-          <CardDescription>Control which sources run when generating suggestions for this word.</CardDescription>
+          <CardTitle>Stored enrichment data</CardTitle>
+          <CardDescription>Review previously applied translations and examples for this word.</CardDescription>
         </CardHeader>
+        <CardContent className="space-y-4">
+          {historyQuery.isLoading ? (
+            <p className="text-sm text-muted-foreground">Loading stored enrichment data…</p>
+          ) : historyQuery.isError ? (
+            <p className="text-sm text-destructive">Failed to load stored enrichment data: {historyErrorMessage}</p>
+          ) : history && (history.translations.length || history.examples.length) ? (
+            <>
+              {history.translations.length ? (
+                <div>
+                  <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Translations</div>
+                  <ul className="mt-1 space-y-1 text-sm">
+                    {history.translations.map((entry, index) => (
+                      <li key={`${entry.value}-${entry.source ?? 'unknown'}-${index}`}>
+                        <span className="font-medium">{entry.value}</span>
+                        {entry.language ? <span className="text-muted-foreground"> ({entry.language})</span> : null}
+                        {entry.source ? <span className="text-muted-foreground"> · {entry.source}</span> : null}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+              {history.examples.length ? (
+                <div>
+                  <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Examples</div>
+                  <ul className="mt-1 space-y-2 text-sm">
+                    {history.examples.map((example, index) => (
+                      <li
+                        key={`${example.exampleDe ?? '—'}-${example.exampleEn ?? '—'}-${example.source ?? 'unknown'}-${index}`}
+                        className="leading-snug"
+                      >
+                        <span className="font-medium text-foreground">{example.exampleDe ?? '—'}</span>
+                        {example.exampleEn ? <span className="text-muted-foreground"> · {example.exampleEn}</span> : null}
+                        {example.source ? <span className="text-muted-foreground"> · {example.source}</span> : null}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+              <p className="text-xs text-muted-foreground">
+                Pulled from {history.snapshots.length.toLocaleString()} stored snapshot
+                {history.snapshots.length === 1 ? '' : 's'}.
+              </p>
+            </>
+          ) : (
+            <p className="text-sm text-muted-foreground">No stored enrichment data yet.</p>
+          )}
+        </CardContent>
+      </Card>
+
+    <Card>
+      <CardHeader>
+        <CardTitle>Enrichment configuration</CardTitle>
+        <CardDescription>Control which sources run when generating suggestions for this word.</CardDescription>
+      </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <Label htmlFor="detail-admin-token" className="text-sm text-muted-foreground">
@@ -1136,7 +1268,7 @@ const WordEnrichmentDetailView = ({
                     <SelectItem value={MANUAL_OPTION}>Manual entry</SelectItem>
                     {translationOptions.map((option) => (
                       <SelectItem key={option.id} value={option.id}>
-                        {option.candidate.value} · {option.candidate.source}
+                        {option.candidate.value} · {formatTranslationSource(option)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -1159,7 +1291,7 @@ const WordEnrichmentDetailView = ({
                       <SelectItem value={MANUAL_OPTION}>Manual entry</SelectItem>
                       {exampleDeOptions.map((option) => (
                         <SelectItem key={option.id} value={option.id}>
-                          {option.candidate.exampleDe} · {option.candidate.source}
+                          {option.candidate.exampleDe} · {formatExampleSource(option)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -1180,7 +1312,7 @@ const WordEnrichmentDetailView = ({
                       <SelectItem value={MANUAL_OPTION}>Manual entry</SelectItem>
                       {exampleEnOptions.map((option) => (
                         <SelectItem key={option.id} value={option.id}>
-                          {option.candidate.exampleEn ?? option.candidate.exampleDe ?? 'Example'} · {option.candidate.source}
+                          {option.candidate.exampleEn ?? option.candidate.exampleDe ?? 'Example'} · {formatExampleSource(option)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -1776,22 +1908,167 @@ function hasPatchChanges(patch: EnrichmentPatch): boolean {
   return Object.values(patch).some((value) => value !== undefined);
 }
 
+function buildTranslationOptions(
+  history: WordEnrichmentHistory | null,
+  preview: WordEnrichmentPreview | null,
+): TranslationOptionEntry[] {
+  const options: TranslationOptionEntry[] = [];
+  const seen = new Set<string>();
+
+  const addCandidate = (candidate: EnrichmentTranslationCandidate, origin: TranslationOptionEntry['origin']) => {
+    const value = candidate.value?.trim();
+    if (!value) {
+      return;
+    }
+    const source = candidate.source?.trim();
+    const resolvedSource = source ?? (origin === 'history' ? 'stored' : 'suggestion');
+    const language = candidate.language?.trim();
+    const confidence =
+      typeof candidate.confidence === 'number' && Number.isFinite(candidate.confidence)
+        ? candidate.confidence
+        : undefined;
+    const key = `${value.toLowerCase()}::${(source ?? '').toLowerCase()}::${(language ?? '').toLowerCase()}`;
+    if (seen.has(key)) {
+      return;
+    }
+    seen.add(key);
+    const id = `${origin}-translation-${encodeURIComponent(value.toLowerCase())}-${encodeURIComponent(
+      source?.toLowerCase() ?? 'unknown',
+    )}-${encodeURIComponent(language?.toLowerCase() ?? 'any')}`;
+    options.push({
+      id,
+      candidate: {
+        value,
+        source: resolvedSource,
+        language: language ?? undefined,
+        confidence,
+      },
+      origin,
+    });
+  };
+
+  if (history) {
+    for (const record of history.translations) {
+      addCandidate(
+        {
+          value: record.value,
+          source: record.source?.trim() ?? 'stored',
+          language: record.language ?? undefined,
+          confidence:
+            typeof record.confidence === 'number' && Number.isFinite(record.confidence)
+              ? record.confidence
+              : undefined,
+        },
+        'history',
+      );
+    }
+  }
+
+  if (preview) {
+    preview.suggestions.translations.forEach((candidate) => addCandidate(candidate, 'preview'));
+  }
+
+  return options;
+}
+
+function buildExampleOptions(
+  history: WordEnrichmentHistory | null,
+  preview: WordEnrichmentPreview | null,
+): ExampleOptionEntry[] {
+  const options: ExampleOptionEntry[] = [];
+  const seen = new Set<string>();
+
+  const addCandidate = (candidate: EnrichmentExampleCandidate, origin: ExampleOptionEntry['origin']) => {
+    const exampleDe = candidate.exampleDe?.trim();
+    const exampleEn = candidate.exampleEn?.trim();
+    if (!exampleDe && !exampleEn) {
+      return;
+    }
+    const source = candidate.source?.trim();
+    const resolvedSource = source ?? (origin === 'history' ? 'stored' : 'suggestion');
+    const key = `${(exampleDe ?? '').toLowerCase()}::${(exampleEn ?? '').toLowerCase()}::${(source ?? '').toLowerCase()}`;
+    if (seen.has(key)) {
+      return;
+    }
+    seen.add(key);
+    const id = `${origin}-example-${encodeURIComponent(exampleDe?.toLowerCase() ?? 'none')}-${encodeURIComponent(
+      exampleEn?.toLowerCase() ?? 'none',
+    )}-${encodeURIComponent(source?.toLowerCase() ?? 'unknown')}`;
+    options.push({
+      id,
+      candidate: {
+        source: resolvedSource,
+        exampleDe: exampleDe ?? undefined,
+        exampleEn: exampleEn ?? undefined,
+      },
+      origin,
+    });
+  };
+
+  if (history) {
+    for (const record of history.examples) {
+      addCandidate(
+        {
+          source: record.source?.trim() ?? 'stored',
+          exampleDe: record.exampleDe ?? undefined,
+          exampleEn: record.exampleEn ?? undefined,
+        },
+        'history',
+      );
+    }
+  }
+
+  if (preview) {
+    preview.suggestions.examples.forEach((candidate) => addCandidate(candidate, 'preview'));
+  }
+
+  return options;
+}
+
+function formatTranslationSource(option: TranslationOptionEntry): string {
+  const source = option.candidate.source?.trim();
+  if (source === 'stored') {
+    return 'Stored entry';
+  }
+  if (source === 'suggestion') {
+    return 'Suggestion';
+  }
+  if (source) {
+    return source;
+  }
+  return option.origin === 'history' ? 'Stored entry' : 'Suggestion';
+}
+
+function formatExampleSource(option: ExampleOptionEntry): string {
+  const source = option.candidate.source?.trim();
+  if (source === 'stored') {
+    return 'Stored entry';
+  }
+  if (source === 'suggestion') {
+    return 'Suggestion';
+  }
+  if (source) {
+    return source;
+  }
+  return option.origin === 'history' ? 'Stored entry' : 'Suggestion';
+}
+
 function findMatchingTranslationOptionId(
   value: EnrichmentPatch['english'],
-  options: EnrichmentTranslationCandidate[],
+  options: TranslationOptionEntry[],
 ): string | undefined {
   if (value === undefined || value === null) {
     return value === null ? MANUAL_OPTION : undefined;
   }
 
   const trimmed = value.trim();
-  const matchIndex = options.findIndex((candidate) => candidate.value.trim() === trimmed);
-  return matchIndex >= 0 ? `translation-${matchIndex}` : MANUAL_OPTION;
+  const match = options.find((option) => option.candidate.value.trim() === trimmed);
+  return match ? match.id : MANUAL_OPTION;
 }
 
 function findMatchingExampleOptionId(
   value: EnrichmentPatch['exampleDe'] | EnrichmentPatch['exampleEn'],
-  options: EnrichmentExampleCandidate[],
+  options: ExampleOptionEntry[],
   field: 'exampleDe' | 'exampleEn',
 ): string | undefined {
   if (value === undefined || value === null) {
@@ -1799,14 +2076,11 @@ function findMatchingExampleOptionId(
   }
 
   const trimmed = value.trim();
-  const matchIndex = options.findIndex((candidate) => {
-    const candidateValue = candidate[field];
+  const match = options.find((option) => {
+    const candidateValue = option.candidate[field];
     return candidateValue ? candidateValue.trim() === trimmed : false;
   });
-  if (matchIndex >= 0) {
-    return `example-${matchIndex}`;
-  }
-  return MANUAL_OPTION;
+  return match ? match.id : MANUAL_OPTION;
 }
 
 function findMatchingVerbFormOptionId(

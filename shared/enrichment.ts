@@ -244,6 +244,15 @@ export interface WordEnrichmentSuggestions {
   snapshots: EnrichmentProviderSnapshotComparison[];
 }
 
+export interface WordEnrichmentHistory {
+  wordId: number;
+  lemma: string;
+  pos: PartOfSpeech | string;
+  snapshots: EnrichmentProviderSnapshot[];
+  translations: WordTranslation[];
+  examples: WordExample[];
+}
+
 export interface EnrichmentWordSummary {
   id: number;
   lemma: string;
