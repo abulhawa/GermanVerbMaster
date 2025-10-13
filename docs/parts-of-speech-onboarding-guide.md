@@ -14,7 +14,7 @@ This guide helps new contributors ramp onto the lexeme-based architecture that n
    npm run seed
    npm run dev
    ```
-4. Visit `http://localhost:5173` and confirm the practice mode switcher exposes Verbs, Nouns, and Adjectives when their feature flags are enabled.
+4. Visit `http://localhost:5000` and confirm the practice mode switcher exposes Verbs, Nouns, and Adjectives when their feature flags are enabled.
 
 ## 2. Understanding the task registry
 - `shared/task-registry.ts` defines the prompt and solution schema for each `taskType` along with default queue caps.

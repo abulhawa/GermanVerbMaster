@@ -19,7 +19,7 @@ Tasks 1–18 introduced the lexeme-centric data model, scheduler, feature flags,
 | Documentation & onboarding assets | Task policies (Task 7), training update (Task 18) | Provide context for operators reviewing dashboards and triaging backlog items.
 
 ## Dashboard Suite
-Three complementary dashboards will be published in Looker (or Metabase equivalent). Each dashboard consumes the shared SQLite snapshot exported to the analytics warehouse nightly via the existing ETL job.
+Three complementary dashboards will be published in Looker (or Metabase equivalent). Each dashboard consumes the shared Postgres snapshot exported to the analytics warehouse nightly via the existing ETL job.
 
 ### 1. POS Adoption & Engagement
 - **Audience:** Product, Content Ops, Executive stakeholders.
