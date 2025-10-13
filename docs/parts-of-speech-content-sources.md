@@ -40,3 +40,4 @@ This matrix extends the verb-only audit by identifying candidate datasets for no
 2. Prototype Wiktextract ingestion to confirm inflection JSON schema (align with RFC in Task 4) and run noun/adjective spot checks using the enrichment `POS_FILTERS` flag to validate coverage.
 3. Draft attribution template for packs bundling CC BY-SA and CC BY sources.
 4. Align with analytics team on storing restricted datasets (frequency corpora) in non-exported tables.
+5. Keep `scripts/etl/attribution.ts` updated as new sources are onboarded so pack metadata lists every CC BY/SA contributor.

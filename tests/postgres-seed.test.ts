@@ -22,12 +22,13 @@ describe('seedDatabase', () => {
           });
 
           const { seedDatabase } = await import('../scripts/seed');
-          const { words, lexemes, taskSpecs, packLexemeMap } = await import('../db/schema.js');
+          const { words, lexemes, inflections, taskSpecs, packLexemeMap } = await import('../db/schema.js');
 
           const result = await seedDatabase(process.cwd());
 
           expect(result.aggregatedCount).toBeGreaterThan(0);
           expect(result.lexemeCount).toBeGreaterThan(0);
+          expect(result.inflectionCount).toBeGreaterThan(0);
           expect(result.taskCount).toBeGreaterThan(0);
 
           const wordRows = await context.db.select({ value: count() }).from(words);
@@ -35,6 +36,9 @@ describe('seedDatabase', () => {
 
           const lexemeRows = await context.db.select({ value: count() }).from(lexemes);
           expect(Number(lexemeRows[0]?.value ?? 0)).toBeGreaterThan(0);
+
+          const inflectionRows = await context.db.select({ value: count() }).from(inflections);
+          expect(Number(inflectionRows[0]?.value ?? 0)).toBeGreaterThan(0);
 
           const taskRows = await context.db.select({ value: count() }).from(taskSpecs);
           expect(Number(taskRows[0]?.value ?? 0)).toBeGreaterThan(0);

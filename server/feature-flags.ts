@@ -38,6 +38,46 @@ const POS_FLAG_DEFINITIONS: Record<LexemePos, PosFlagDefinition> = {
     defaultValue: false,
     description: 'Gates adjective ending tasks behind a beta flag.',
   },
+  adverb: {
+    stage: 'beta',
+    defaultValue: false,
+    description: 'Adverb drills remain disabled until queue templates land.',
+  },
+  pronoun: {
+    stage: 'beta',
+    defaultValue: false,
+    description: 'Pronoun drills remain disabled until queue templates land.',
+  },
+  determiner: {
+    stage: 'beta',
+    defaultValue: false,
+    description: 'Determiner drills remain disabled until queue templates land.',
+  },
+  preposition: {
+    stage: 'beta',
+    defaultValue: false,
+    description: 'Preposition drills remain disabled until governed-case tasks ship.',
+  },
+  conjunction: {
+    stage: 'beta',
+    defaultValue: false,
+    description: 'Conjunction drills remain disabled pending task definitions.',
+  },
+  numeral: {
+    stage: 'beta',
+    defaultValue: false,
+    description: 'Numeral drills remain disabled pending task definitions.',
+  },
+  particle: {
+    stage: 'beta',
+    defaultValue: false,
+    description: 'Particle drills remain disabled pending task definitions.',
+  },
+  interjection: {
+    stage: 'beta',
+    defaultValue: false,
+    description: 'Interjection drills remain disabled pending task definitions.',
+  },
 };
 
 export interface PosFeatureFlagState {
@@ -58,14 +98,8 @@ type FeatureFlagListener = (event: FeatureFlagEvent) => void;
 const listeners = new Set<FeatureFlagListener>();
 
 export function asLexemePos(value: string): LexemePos | null {
-  switch (value) {
-    case 'verb':
-    case 'noun':
-    case 'adjective':
-      return value;
-    default:
-      return null;
-  }
+  const candidate = value as LexemePos;
+  return candidate in POS_FLAG_DEFINITIONS ? candidate : null;
 }
 
 function computePosFlagState(pos: LexemePos): PosFeatureFlagState {
@@ -92,11 +126,11 @@ function computePosFlagState(pos: LexemePos): PosFeatureFlagState {
 
 export function getFeatureFlagSnapshot(): FeatureFlagSnapshot {
   const fetchedAt = new Date();
-  const pos = {
-    verb: computePosFlagState('verb'),
-    noun: computePosFlagState('noun'),
-    adjective: computePosFlagState('adjective'),
-  } as const satisfies Record<LexemePos, PosFeatureFlagState>;
+  const posEntries = Object.keys(POS_FLAG_DEFINITIONS).map((key) => {
+    const lexemePos = key as LexemePos;
+    return [lexemePos, computePosFlagState(lexemePos)];
+  });
+  const pos = Object.fromEntries(posEntries) as Record<LexemePos, PosFeatureFlagState>;
 
   return { fetchedAt, pos } satisfies FeatureFlagSnapshot;
 }

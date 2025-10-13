@@ -1315,11 +1315,10 @@ export function registerRoutes(app: Express): void {
         );
       }
       if (typeof enrichedFilter === "boolean") {
-        conditions.push(
-          enrichedFilter
-            ? sql`${words.enrichmentAppliedAt} IS NOT NULL`
-            : sql`${words.enrichmentAppliedAt} IS NULL`,
-        );
+        const enrichedCondition = enrichedFilter
+          ? sql.raw('"words"."enrichment_applied_at" IS NOT NULL')
+          : sql.raw('"words"."enrichment_applied_at" IS NULL');
+        conditions.push(enrichedCondition);
       }
 
       const baseQuery = conditions.length
@@ -1586,6 +1585,9 @@ export function registerRoutes(app: Express): void {
           nounForms: computation.suggestions.nounForms,
           adjectiveForms: computation.suggestions.adjectiveForms,
           prepositionAttributes: computation.suggestions.prepositionAttributes,
+          posLabel: computation.suggestions.posLabel,
+          posTags: computation.suggestions.posTags,
+          posNotes: computation.suggestions.posNotes,
           providerDiagnostics: computation.suggestions.diagnostics,
           snapshots: computation.suggestions.snapshots,
         },

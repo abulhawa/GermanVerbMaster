@@ -2,7 +2,7 @@ import './helpers/mock-auth';
 import { eq } from 'drizzle-orm';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { AggregatedWord } from '../scripts/etl/golden';
+import type { AggregatedWord } from '../scripts/etl/types';
 import { buildGoldenBundles, upsertGoldenBundles } from '../scripts/etl/golden';
 import { setupTestDatabase, type TestDatabaseContext } from './helpers/pg';
 import { createApiInvoker } from './helpers/vercel';
@@ -40,11 +40,11 @@ describe('tasks API', () => {
     const dbModule = await import('@db');
     drizzleDb = dbModule.db;
 
-    const sampleWords: AggregatedWord[] = [
-      {
-        lemma: 'gehen',
-        pos: 'V',
-        level: 'A1',
+  const sampleWords: AggregatedWord[] = [
+    {
+      lemma: 'gehen',
+      pos: 'V',
+      level: 'A1',
         english: 'to go',
         exampleDe: 'Wir gehen nach Hause.',
         exampleEn: 'We go home.',
@@ -81,15 +81,20 @@ describe('tasks API', () => {
         partizipIi: 'gekommen',
         perfekt: 'ist gekommen',
         comparative: null,
-        superlative: null,
-        canonical: true,
-        complete: true,
-        sourcesCsv: 'test-source',
-        sourceNotes: null,
-      },
-      {
-        lemma: 'Haus',
-        pos: 'N',
+      superlative: null,
+      canonical: true,
+      complete: true,
+      sourcesCsv: 'test-source',
+      sourceNotes: null,
+      translations: null,
+      examples: null,
+      posAttributes: null,
+      enrichmentAppliedAt: null,
+      enrichmentMethod: null,
+    },
+    {
+      lemma: 'Haus',
+      pos: 'N',
         level: 'A1',
         english: 'house',
         exampleDe: 'Das Haus ist groß.',
@@ -104,15 +109,20 @@ describe('tasks API', () => {
         partizipIi: null,
         perfekt: null,
         comparative: null,
-        superlative: null,
-        canonical: true,
-        complete: true,
-        sourcesCsv: 'test-source',
-        sourceNotes: null,
-      },
-      {
-        lemma: 'schnell',
-        pos: 'Adj',
+      superlative: null,
+      canonical: true,
+      complete: true,
+      sourcesCsv: 'test-source',
+      sourceNotes: null,
+      translations: null,
+      examples: null,
+      posAttributes: null,
+      enrichmentAppliedAt: null,
+      enrichmentMethod: null,
+    },
+    {
+      lemma: 'schnell',
+      pos: 'Adj',
         level: 'A1',
         english: 'fast',
         exampleDe: 'Ein schneller Zug.',
@@ -127,13 +137,18 @@ describe('tasks API', () => {
         partizipIi: null,
         perfekt: null,
         comparative: 'schneller',
-        superlative: 'am schnellsten',
-        canonical: true,
-        complete: true,
-        sourcesCsv: 'test-source',
-        sourceNotes: null,
-      },
-    ];
+      superlative: 'am schnellsten',
+      canonical: true,
+      complete: true,
+      sourcesCsv: 'test-source',
+      sourceNotes: null,
+      translations: null,
+      examples: null,
+      posAttributes: null,
+      enrichmentAppliedAt: null,
+      enrichmentMethod: null,
+    },
+  ];
 
     const bundles = buildGoldenBundles(sampleWords);
     await upsertGoldenBundles(drizzleDb, bundles);

@@ -38,8 +38,9 @@ Extend GermanVerbMaster from a verb-only trainer into a comprehensive German voc
    - Persist per-task priority telemetry in a dedicated `telemetry_priorities` table capturing `{snapshot_id, task_id, pos, due_score, weakness_score, coverage_score, total_priority, created_at}` to enable evidence-based tuning.
 
 6. **Seeder and ETL Enhancements**
-   - Refactor ETL scripts to emit lexeme + inflection + task bundles for each POS; generate inflections from paradigms where possible (e.g., adjective endings).
-   - Define POS-specific validators that enforce required fields (noun gender/plural, adjective degrees, governed case for prepositions, etc.).
+   - ✅ Refactored ETL scripts to emit lexeme + inflection + task bundles for each POS, generating paradigms for verbs, nouns, adjectives, adverbs, and governed prepositions inside `scripts/etl/golden.ts`.
+   - ✅ POS-specific validators now enforce required fields (noun gender/plural, verb principal parts, adjective degrees, governed case for prepositions) and surface warnings for incomplete enrichment payloads.
+   - ✅ Attribution bundler collates `sources_csv` entries into deterministic pack metadata so CC BY-SA obligations follow each export.
    - Use the enrichment pipeline `POS_FILTERS` toggle to validate Kaikki-driven noun and adjective payloads before wiring full ETL loops.
    - Fold the new `words.pos_attributes` enrichment output (Kaikki tags, governed cases, usage notes) into lexeme metadata so separability/reflexivity requirements are already staged when the lexeme schema lands.
    - Export deterministic “packs” per POS (e.g., `packs/nouns.de.json`) with checksums to guarantee idempotent updates and offline parity.

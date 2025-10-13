@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { db } from "@db";
+import { getDb } from "@db";
 import { enrichmentProviderSnapshots, words } from "@db/schema";
 import { and, desc, eq, inArray } from "drizzle-orm";
 
@@ -212,7 +212,8 @@ export async function runEnrichment(config: PipelineConfig): Promise<PipelineRun
   const shouldApply = config.apply && !config.dryRun;
   const whereClause = buildWhereClause(config);
 
-  const baseQuery = db.select().from(words);
+  const database = getDb();
+  const baseQuery = database.select().from(words);
   const filteredQuery = whereClause ? baseQuery.where(whereClause) : baseQuery;
   const finalQuery = config.limit > 0 ? filteredQuery.limit(config.limit) : filteredQuery;
 
@@ -278,7 +279,7 @@ export async function runEnrichment(config: PipelineConfig): Promise<PipelineRun
 
   let appliedCount = 0;
   if (shouldApply && updatesToApply.length) {
-    await db.transaction(async (tx) => {
+    await database.transaction(async (tx) => {
       for (const entry of updatesToApply) {
         await tx.update(words).set(entry.patch).where(eq(words.id, entry.word.id));
         appliedCount += 1;
@@ -1056,12 +1057,13 @@ async function persistProviderSnapshotsForWord(
     return [];
   }
 
+  const database = getDb();
   const trigger: EnrichmentSnapshotTrigger = config.apply && !config.dryRun ? "apply" : "preview";
   const mode: EnrichmentRunMode = config.mode;
   const comparisons: EnrichmentProviderSnapshotComparison[] = [];
 
   for (const draft of snapshotDrafts.values()) {
-    const [previousRecord] = await db
+    const [previousRecord] = await database
       .select()
       .from(enrichmentProviderSnapshots)
       .where(
@@ -1073,7 +1075,7 @@ async function persistProviderSnapshotsForWord(
       .orderBy(desc(enrichmentProviderSnapshots.collectedAt))
       .limit(1);
 
-    const [insertedRecord] = await db
+    const [insertedRecord] = await database
       .insert(enrichmentProviderSnapshots)
       .values({
         wordId: word.id,

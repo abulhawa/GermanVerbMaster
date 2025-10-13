@@ -14,11 +14,13 @@ import {
   type ExternalWordRow,
 } from './source-loaders';
 import {
-  type AggregatedWord,
   buildGoldenBundles,
+  buildLexemeInventory,
   upsertGoldenBundles,
+  upsertLexemeInventory,
   writeGoldenBundlesToDisk,
 } from './etl/golden';
+import type { AggregatedWord } from './etl/types';
 import type { EnrichmentMethod, WordExample, WordPosAttributes, WordTranslation } from '@shared/types';
 import type { PersistedProviderEntry, PersistedWordData } from '@shared/enrichment';
 import { loadPersistedWordData } from './enrichment/storage';
@@ -892,6 +894,7 @@ export async function seedDatabase(
 ): Promise<{
   aggregatedCount: number;
   lexemeCount: number;
+  inflectionCount: number;
   taskCount: number;
   bundleCount: number;
 }> {
@@ -900,16 +903,21 @@ export async function seedDatabase(
   const aggregated = await aggregateWords(rootDir);
   await seedLegacyWords(db, aggregated);
 
+  const inventory = buildLexemeInventory(aggregated);
+  await upsertLexemeInventory(db, inventory);
+
   const bundles = buildGoldenBundles(aggregated);
   await upsertGoldenBundles(db, bundles);
   await writeGoldenBundlesToDisk(rootDir, bundles);
 
-  const lexemeCount = bundles.reduce((sum, bundle) => sum + bundle.lexemes.length, 0);
+  const lexemeCount = inventory.lexemes.length;
+  const inflectionCount = inventory.inflections.length;
   const taskCount = bundles.reduce((sum, bundle) => sum + bundle.tasks.length, 0);
 
   return {
     aggregatedCount: aggregated.length,
     lexemeCount,
+    inflectionCount,
     taskCount,
     bundleCount: bundles.length,
   };
@@ -924,10 +932,15 @@ async function main(): Promise<void> {
   await applyMigrations(pool);
 
   const database = ensureDatabase();
-  const { aggregatedCount, lexemeCount, taskCount, bundleCount } = await seedDatabase(root, database);
+  const { aggregatedCount, lexemeCount, inflectionCount, taskCount, bundleCount } = await seedDatabase(
+    root,
+    database,
+  );
 
   console.log(`Seeded ${aggregatedCount} words into legacy table.`);
-  console.log(`Upserted ${lexemeCount} lexemes and ${taskCount} task specs across ${bundleCount} packs.`);
+  console.log(
+    `Upserted ${lexemeCount} lexemes, ${inflectionCount} inflections, and ${taskCount} task specs across ${bundleCount} packs.`,
+  );
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {

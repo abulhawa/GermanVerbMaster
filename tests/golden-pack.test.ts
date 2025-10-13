@@ -26,6 +26,11 @@ const sampleWords = [
     complete: true,
     sourcesCsv: 'test-source',
     sourceNotes: null,
+    translations: null,
+    examples: null,
+    posAttributes: null,
+    enrichmentAppliedAt: null,
+    enrichmentMethod: null,
   },
   {
     lemma: 'Haus',
@@ -49,6 +54,11 @@ const sampleWords = [
     complete: true,
     sourcesCsv: 'test-source',
     sourceNotes: null,
+    translations: null,
+    examples: null,
+    posAttributes: null,
+    enrichmentAppliedAt: null,
+    enrichmentMethod: null,
   },
   {
     lemma: 'schnell',
@@ -72,6 +82,11 @@ const sampleWords = [
     complete: true,
     sourcesCsv: 'test-source',
     sourceNotes: null,
+    translations: null,
+    examples: null,
+    posAttributes: null,
+    enrichmentAppliedAt: null,
+    enrichmentMethod: null,
   },
 ];
 
@@ -101,6 +116,8 @@ describe('buildGoldenBundles', () => {
       }
       expect(bundle.packLexemes.every((entry, index) => entry.position === index + 1)).toBe(true);
       expect(bundle.pack.checksum).toBeTruthy();
+      const metadata = bundle.pack.metadata as { attribution?: unknown } | null;
+      expect(Array.isArray(metadata?.attribution)).toBe(true);
     }
   });
 });
