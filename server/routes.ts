@@ -1120,8 +1120,12 @@ export function registerRoutes(app: Express): void {
           .filter((taskId) => !taskRowById.has(taskId));
 
         if (missingTaskIds.length) {
+          const missingTaskQuery = filters.length
+            ? baseQuery.where(and(...filters, inArray(taskSpecs.id, missingTaskIds)))
+            : baseQuery.where(inArray(taskSpecs.id, missingTaskIds));
+
           const schedulingTaskRowsRaw = await executeSelectRaw<Record<string, unknown>>(
-            baseQuery.where(inArray(taskSpecs.id, missingTaskIds)),
+            missingTaskQuery,
           );
           for (const rawRow of schedulingTaskRowsRaw) {
             const mapped = mapTaskRow(rawRow as Record<string, any>);
