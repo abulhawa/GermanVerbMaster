@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, CheckCircle2, AlertTriangle, MinusCircle, ChevronDown } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -203,6 +203,7 @@ const WordEnrichmentDetailView = ({
   setWordConfig,
   autoPreview = false,
 }: WordEnrichmentDetailViewProps) => {
+  const queryClient = useQueryClient();
   const [drafts, setDrafts] = useState<FieldDrafts>({
     english: '',
     exampleDe: '',
@@ -664,6 +665,7 @@ const WordEnrichmentDetailView = ({
           ? `Updated ${result.appliedFields.join(', ')}`
           : 'No fields changed',
       });
+      queryClient.invalidateQueries({ queryKey: ['admin-enrichment'] });
       wordQuery.refetch();
     },
     onError: (error) => {
