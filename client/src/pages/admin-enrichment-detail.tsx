@@ -48,7 +48,6 @@ interface FieldDrafts {
   english: string;
   exampleDe: string;
   exampleEn: string;
-  sourcesCsv: string;
   praeteritum: string;
   partizipIi: string;
   perfekt: string;
@@ -208,7 +207,6 @@ const WordEnrichmentDetailView = ({
     english: '',
     exampleDe: '',
     exampleEn: '',
-    sourcesCsv: '',
     praeteritum: '',
     partizipIi: '',
     perfekt: '',
@@ -290,7 +288,6 @@ const WordEnrichmentDetailView = ({
         english: word.english ?? '',
         exampleDe: word.exampleDe ?? '',
         exampleEn: word.exampleEn ?? '',
-        sourcesCsv: word.sourcesCsv ?? '',
         praeteritum: word.praeteritum ?? '',
         partizipIi: word.partizipIi ?? '',
         perfekt: word.perfekt ?? '',
@@ -606,7 +603,6 @@ const WordEnrichmentDetailView = ({
         english: data.patch.english !== undefined ? data.patch.english ?? '' : previous.english,
         exampleDe: data.patch.exampleDe !== undefined ? data.patch.exampleDe ?? '' : previous.exampleDe,
         exampleEn: data.patch.exampleEn !== undefined ? data.patch.exampleEn ?? '' : previous.exampleEn,
-        sourcesCsv: data.patch.sourcesCsv !== undefined ? data.patch.sourcesCsv ?? '' : previous.sourcesCsv,
         praeteritum: data.patch.praeteritum !== undefined ? data.patch.praeteritum ?? '' : previous.praeteritum,
         partizipIi: data.patch.partizipIi !== undefined ? data.patch.partizipIi ?? '' : previous.partizipIi,
         perfekt: data.patch.perfekt !== undefined ? data.patch.perfekt ?? '' : previous.perfekt,
@@ -971,7 +967,6 @@ const WordEnrichmentDetailView = ({
             <DetailField label="English" value={word.english} />
             <DetailField label="German example" value={word.exampleDe} />
             <DetailField label="English example" value={word.exampleEn} />
-            <DetailField label="Sources" value={word.sourcesCsv} />
           </div>
           <Separator />
           <div className="space-y-2">
@@ -1325,16 +1320,6 @@ const WordEnrichmentDetailView = ({
                     onChange={(event) => handleDraftChange('exampleEn', event.target.value, 'exampleEn')}
                   />
                 </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="sources-input">Sources</Label>
-                <Textarea
-                  id="sources-input"
-                  value={drafts.sourcesCsv}
-                  placeholder="Comma-separated list of sources"
-                  onChange={(event) => handleDraftChange('sourcesCsv', event.target.value)}
-                />
               </div>
 
               {word.pos === 'N' ? (
@@ -1804,7 +1789,6 @@ function mergeWordWithDrafts(word: AdminWord, drafts: FieldDrafts): AdminWord {
     english: drafts.english.trim().length ? drafts.english.trim() : null,
     exampleDe: drafts.exampleDe.trim().length ? drafts.exampleDe.trim() : null,
     exampleEn: drafts.exampleEn.trim().length ? drafts.exampleEn.trim() : null,
-    sourcesCsv: drafts.sourcesCsv.trim().length ? drafts.sourcesCsv.trim() : null,
     praeteritum: drafts.praeteritum.trim().length ? drafts.praeteritum.trim() : null,
     partizipIi: drafts.partizipIi.trim().length ? drafts.partizipIi.trim() : null,
     perfekt: drafts.perfekt.trim().length ? drafts.perfekt.trim() : null,
@@ -1835,7 +1819,6 @@ function buildPatchFromDrafts(
     | 'english'
     | 'exampleDe'
     | 'exampleEn'
-    | 'sourcesCsv'
     | 'praeteritum'
     | 'partizipIi'
     | 'perfekt'
@@ -1863,7 +1846,6 @@ function buildPatchFromDrafts(
   applyField('english');
   applyField('exampleDe');
   applyField('exampleEn');
-  applyField('sourcesCsv');
   applyField('praeteritum');
   applyField('partizipIi');
   applyField('perfekt');

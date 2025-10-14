@@ -25,8 +25,6 @@ function createVerb(): AggregatedWord {
     superlative: null,
     approved: true,
     complete: true,
-    sourcesCsv: 'test-source',
-    sourceNotes: null,
     translations: null,
     examples: null,
     posAttributes: null,
@@ -56,8 +54,6 @@ function createNoun(): AggregatedWord {
     superlative: null,
     approved: true,
     complete: true,
-    sourcesCsv: 'test-source',
-    sourceNotes: null,
     translations: null,
     examples: null,
     posAttributes: null,
@@ -87,8 +83,6 @@ function createAdjective(): AggregatedWord {
     superlative: 'am schnellsten',
     approved: true,
     complete: true,
-    sourcesCsv: 'test-source',
-    sourceNotes: null,
     translations: null,
     examples: null,
     posAttributes: null,
@@ -118,8 +112,6 @@ function createAdverb(): AggregatedWord {
     superlative: 'am häufigsten',
     approved: true,
     complete: true,
-    sourcesCsv: 'test-source',
-    sourceNotes: null,
     translations: null,
     examples: null,
     posAttributes: null,
@@ -149,8 +141,6 @@ function createPreposition(): AggregatedWord {
     superlative: null,
     approved: true,
     complete: true,
-    sourcesCsv: 'test-source',
-    sourceNotes: null,
     translations: null,
     examples: null,
     posAttributes: {
@@ -186,7 +176,7 @@ describe('buildLexemeInventory', () => {
       (inflection) => inflection.lexemeId === prepositionLexeme?.id,
     );
     expect(prepositionInflections[0]?.features.governedCases).toEqual(['Akkusativ']);
-    expect(prepositionInflections[0]?.sourceRevision).toContain('test-source');
+    expect(prepositionInflections[0]?.sourceRevision).toMatch(/^words_all_sources:/);
   });
 });
 

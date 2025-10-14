@@ -1,0 +1,39 @@
+{"lemma": "aber", "approved": true, "level": "A1", "english": "but", "examples": [{"de": "Aber natürlich!"}]}
+{"lemma": "also", "approved": false, "level": "A1"}
+{"lemma": "auch", "approved": false, "level": "A1"}
+{"lemma": "da", "approved": false, "level": "A1"}
+{"lemma": "denn", "approved": false, "level": "A1"}
+{"lemma": "oder", "approved": false, "level": "A1"}
+{"lemma": "und", "approved": false, "level": "A1"}
+{"lemma": "als", "approved": false, "level": "A2"}
+{"lemma": "dass", "approved": false, "level": "A2"}
+{"lemma": "deshalb", "approved": false, "level": "A2"}
+{"lemma": "weil", "approved": false, "level": "A2"}
+{"lemma": "wenn", "approved": false, "level": "A2"}
+{"lemma": "bevor", "approved": false, "level": "B1"}
+{"lemma": "damit", "approved": false, "level": "B1"}
+{"lemma": "desto", "approved": false, "level": "B1"}
+{"lemma": "deswegen", "approved": false, "level": "B1"}
+{"lemma": "ebenfalls", "approved": false, "level": "B1"}
+{"lemma": "entweder", "approved": false, "level": "B1"}
+{"lemma": "falls", "approved": false, "level": "B1"}
+{"lemma": "gleichfalls", "approved": false, "level": "B1"}
+{"lemma": "indem", "approved": false, "level": "B1"}
+{"lemma": "je", "approved": false, "level": "B1"}
+{"lemma": "jedoch", "approved": false, "level": "B1"}
+{"lemma": "nachdem", "approved": false, "level": "B1"}
+{"lemma": "nämlich", "approved": false, "level": "B1"}
+{"lemma": "ob", "approved": false, "level": "B1"}
+{"lemma": "obwohl", "approved": false, "level": "B1"}
+{"lemma": "so dass", "approved": false, "level": "B1"}
+{"lemma": "so viel", "approved": false, "level": "B1"}
+{"lemma": "sobald", "approved": false, "level": "B1"}
+{"lemma": "sodass", "approved": false, "level": "B1"}
+{"lemma": "solange", "approved": false, "level": "B1"}
+{"lemma": "sondern", "approved": false, "level": "B1"}
+{"lemma": "soviel", "approved": false, "level": "B1"}
+{"lemma": "sowohl", "approved": false, "level": "B1"}
+{"lemma": "trotzdem", "approved": false, "level": "B1"}
+{"lemma": "umso", "approved": false, "level": "B1"}
+{"lemma": "weder", "approved": false, "level": "B1"}
+{"lemma": "zwar", "approved": false, "level": "B1"}

@@ -154,8 +154,6 @@ describe('Admin words API', () => {
         superlative: null,
         approved: true,
         complete: true,
-        sourcesCsv: 'test-source',
-        sourceNotes: null,
         translations: null,
         examples: null,
         posAttributes: null,
@@ -290,8 +288,6 @@ describe('Admin words API', () => {
       superlative: null,
       approved: true,
       complete: false,
-      sourcesCsv: null,
-      sourceNotes: null,
       translations: null,
       examples: [
         {

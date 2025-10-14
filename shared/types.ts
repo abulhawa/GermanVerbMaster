@@ -67,8 +67,6 @@ export interface Word {
   superlative: string | null;
   approved: boolean;
   complete: boolean;
-  sourcesCsv: string | null;
-  sourceNotes: string | null;
   translations: WordTranslation[] | null;
   examples: WordExample[] | null;
   posAttributes: WordPosAttributes | null;

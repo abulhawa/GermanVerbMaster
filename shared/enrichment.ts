@@ -14,7 +14,6 @@ export type EnrichmentField =
   | "english"
   | "exampleDe"
   | "exampleEn"
-  | "sourcesCsv"
   | "posAttributes"
   | "complete"
   | "praeteritum"
@@ -200,8 +199,6 @@ export interface WordsBackupEntry {
   superlative?: string | null;
   approved: boolean;
   complete: boolean;
-  sourcesCsv?: string | null;
-  sourceNotes?: string | null;
   translations?: WordTranslation[] | null;
   examples?: WordExample[] | null;
   posAttributes?: WordPosAttributes | null;
@@ -280,7 +277,6 @@ export type EnrichmentPatch = Partial<{
   english: string | null;
   exampleDe: string | null;
   exampleEn: string | null;
-  sourcesCsv: string | null;
   complete: boolean;
   praeteritum: string | null;
   partizipIi: string | null;
