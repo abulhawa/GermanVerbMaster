@@ -126,6 +126,12 @@ function buildConjugateInstruction(copy: PracticeCardMessages, task: PracticeTas
   const suffix = copy.conjugate.subjectSuffix
     ? formatInstructionTemplate(copy.conjugate.subjectSuffix, { subjectLabel })
     : ` ${subjectLabel}`;
+  const punctuationMatch = base.match(/[.!?]$/);
+  if (punctuationMatch) {
+    const trimmedBase = base.slice(0, -punctuationMatch[0].length);
+    return ensureSentence(`${trimmedBase}${suffix}${punctuationMatch[0]}`);
+  }
+
   return ensureSentence(`${base}${suffix}`);
 }
 

@@ -353,30 +353,30 @@ const MESSAGES: Record<Locale, AppMessages> = {
         completedLabel: 'Completed {count}',
       },
       caseLabels: {
-        nominative: 'Nominative',
-        accusative: 'Accusative',
-        dative: 'Dative',
-        genitive: 'Genitive',
+        nominative: 'Nominativ',
+        accusative: 'Akkusativ',
+        dative: 'Dativ',
+        genitive: 'Genitiv',
       },
       numberLabels: {
         singular: 'Singular',
         plural: 'Plural',
       },
       degreeLabels: {
-        positive: 'Positive',
-        comparative: 'Comparative',
-        superlative: 'Superlative',
+        positive: 'Positiv',
+        comparative: 'Komparativ',
+        superlative: 'Superlativ',
       },
       conjugate: {
         placeholder: 'Enter your answer',
         ariaLabel: 'Enter answer',
-        instruction: 'Conjugate "{lemma}" in the {tenseLabel} tense',
-        subjectSuffix: ' ({subjectLabel})',
+        instruction: 'What is the {tenseLabel} form of "{lemma}"?',
+        subjectSuffix: ' (for {subjectLabel})',
         tenseLabels: {
-          participle: 'Past participle',
-          past: 'Simple past',
-          present: 'Present',
-          fallback: 'form',
+          participle: 'Partizip II',
+          past: 'Präteritum',
+          present: 'Präsens',
+          fallback: 'Form',
         },
         subjectLabels: {
           singular: {

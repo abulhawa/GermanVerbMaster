@@ -153,7 +153,9 @@ describe('PracticeCard', () => {
 
     renderWithLocale(<PracticeCard task={task} settings={settings} onResult={onResult} />);
 
-    expect(screen.getByText('Conjugate "gehen" in the Past participle tense.')).toBeInTheDocument();
+    expect(
+      screen.getByText('What is the Partizip II form of "gehen" (for he/she/it)?'),
+    ).toBeInTheDocument();
 
     const input = screen.getByLabelText(/enter answer/i);
     await userEvent.type(input, 'gegangen');
@@ -220,8 +222,8 @@ describe('PracticeCard', () => {
 
     renderWithLocale(<PracticeCard task={task} settings={settings} onResult={onResult} />);
 
-    expect(screen.getByText('Give the Accusative Plural form of "Haus".')).toBeInTheDocument();
-    expect(screen.getByText(/Accusative/i)).toBeInTheDocument();
+    expect(screen.getByText('Give the Akkusativ Plural form of "Haus".')).toBeInTheDocument();
+    expect(screen.getByText(/Akkusativ/i)).toBeInTheDocument();
 
     const input = screen.getByLabelText(/enter plural form/i);
     await userEvent.type(input, 'Häuser');
@@ -246,7 +248,7 @@ describe('PracticeCard', () => {
 
     renderWithLocale(<PracticeCard task={task} settings={settings} onResult={onResult} />);
 
-    expect(screen.getByText('Give the Dative Plural form of "Kind".')).toBeInTheDocument();
+    expect(screen.getByText('Give the Dativ Plural form of "Kind".')).toBeInTheDocument();
 
     const input = screen.getByLabelText(/enter plural form/i);
     await userEvent.type(input, 'den Kindern');
@@ -274,7 +276,7 @@ describe('PracticeCard', () => {
 
     renderWithLocale(<PracticeCard task={task} settings={settings} onResult={onResult} />);
 
-    expect(screen.getByText('Give the Comparative form of "schnell".')).toBeInTheDocument();
+    expect(screen.getByText('Give the Komparativ form of "schnell".')).toBeInTheDocument();
 
     const input = screen.getByLabelText(/enter adjective form/i);
     await userEvent.type(input, 'schneller');
