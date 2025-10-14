@@ -41,7 +41,7 @@ export interface WordsRestoreResult {
   sequenceValue: number | null;
 }
 
-const WORDS_BACKUP_SCHEMA_VERSION = 1;
+const WORDS_BACKUP_SCHEMA_VERSION = 2;
 
 const DEFAULT_LATEST_PATH = "words-latest.json";
 
@@ -213,6 +213,11 @@ function parseBackupFile(contents: string): WordsBackupFile {
     words,
   } satisfies WordsBackupFile;
 }
+
+export const __internal = {
+  parseBackupFile,
+  normaliseBackupEntry,
+};
 
 function toWordInsert(entry: WordsBackupEntry): typeof words.$inferInsert {
   const convertDate = (value: string | null | undefined): Date | null => {
