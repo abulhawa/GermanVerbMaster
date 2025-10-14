@@ -20,19 +20,40 @@ describe('seedDatabase', () => {
           await mkdir(path.join(seedRoot, 'data', 'pos'), { recursive: true });
 
           await writeFile(
-            path.join(seedRoot, 'data', 'pos', 'verbs.csv'),
+            path.join(seedRoot, 'data', 'pos', 'verbs.jsonl'),
             [
-              'lemma,level,english,example_de,example_en,separable,aux,praesens_ich,praesens_er,praeteritum,partizip_ii,perfekt,approved,sources_csv,source_notes',
-              'gehen,A1,to go,Ich gehe.,I go.,false,sein,gehe,geht,ging,gegangen,ist gegangen,true,test-source,',
+              JSON.stringify({
+                lemma: 'gehen',
+                level: 'A1',
+                english: 'to go',
+                approved: true,
+                examples: [{ de: 'Ich gehe.', en: 'I go.' }],
+                verb: {
+                  separable: false,
+                  aux: 'sein',
+                  praesens: { ich: 'gehe', er: 'geht' },
+                  praeteritum: 'ging',
+                  partizipIi: 'gegangen',
+                  perfekt: 'ist gegangen',
+                },
+                sources: { csv: 'test-source' },
+              }),
             ].join('\n'),
             'utf8',
           );
 
           await writeFile(
-            path.join(seedRoot, 'data', 'pos', 'nouns.csv'),
+            path.join(seedRoot, 'data', 'pos', 'nouns.jsonl'),
             [
-              'lemma,level,english,example_de,example_en,gender,plural,approved,sources_csv,source_notes',
-              'das Haus,A1,house,Das Haus ist groß.,The house is big.,das,Häuser,true,test-source,',
+              JSON.stringify({
+                lemma: 'das Haus',
+                level: 'A1',
+                english: 'house',
+                approved: true,
+                examples: [{ de: 'Das Haus ist groß.', en: 'The house is big.' }],
+                noun: { gender: 'das', plural: 'Häuser' },
+                sources: { csv: 'test-source' },
+              }),
             ].join('\n'),
             'utf8',
           );
