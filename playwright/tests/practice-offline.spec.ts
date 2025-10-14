@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 const nounTaskPayload = {
-  id: 'task:de:noun:kind:dative',
+  taskId: 'task:de:noun:kind:dative',
   taskType: 'noun_case_declension',
   renderer: 'noun_case_declension',
   pos: 'noun',

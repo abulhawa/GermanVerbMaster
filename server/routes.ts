@@ -351,7 +351,7 @@ const clearPracticeHistorySchema = z.object({
 });
 
 type TaskRow = {
-  id: string;
+  taskId: string;
   taskType: string;
   renderer: string;
   pos: string;
@@ -397,7 +397,7 @@ function getRowValue<T>(row: Record<string, any>, ...keys: string[]): T | undefi
 
 function mapTaskRow(row: Record<string, any>): TaskRow {
   return {
-    id: getRowValue<string>(row, "id")!,
+    taskId: getRowValue<string>(row, "taskId", "id")!,
     taskType: getRowValue<string>(row, "taskType", "task_type")!,
     renderer: getRowValue<string>(row, "renderer")!,
     pos: getRowValue<string>(row, "pos")!,
@@ -1133,7 +1133,7 @@ export function registerRoutes(app: Express): void {
 
       const baseQuery = db
         .select({
-          id: taskSpecs.id,
+          taskId: taskSpecs.id,
           taskType: taskSpecs.taskType,
           renderer: taskSpecs.renderer,
           pos: taskSpecs.pos,
@@ -1307,8 +1307,8 @@ export function registerRoutes(app: Express): void {
       const seenTaskIds = new Set<string>();
       const taskRowById = new Map<string, TaskRow>();
       const registerRow = (row: TaskRow) => {
-        if (!taskRowById.has(row.id)) {
-          taskRowById.set(row.id, row);
+        if (!taskRowById.has(row.taskId)) {
+          taskRowById.set(row.taskId, row);
         }
       };
       fallbackRows.forEach(registerRow);
@@ -1318,10 +1318,10 @@ export function registerRoutes(app: Express): void {
         if (!row) {
           return;
         }
-        if (seenTaskIds.has(row.id)) {
+        if (seenTaskIds.has(row.taskId)) {
           return;
         }
-        seenTaskIds.add(row.id);
+        seenTaskIds.add(row.taskId);
         combinedRows.push(row);
       };
 
@@ -1364,7 +1364,7 @@ export function registerRoutes(app: Express): void {
       }
 
       fallbackRows.forEach((row) => {
-        pushRow(taskRowById.get(row.id));
+        pushRow(taskRowById.get(row.taskId));
       });
 
       let orderedRows = combinedRows;
@@ -1373,11 +1373,15 @@ export function registerRoutes(app: Express): void {
         orderedRows = [...combinedRows]
           .map((row) => ({
             row,
-            score: computeFallbackPriorityScore(schedulingStateMap.get(row.id), row.id, nowMs),
+            score: computeFallbackPriorityScore(
+              schedulingStateMap.get(row.taskId),
+              row.taskId,
+              nowMs,
+            ),
           }))
           .sort((a, b) => {
             if (a.score === b.score) {
-              return a.row.id.localeCompare(b.row.id);
+              return a.row.taskId.localeCompare(b.row.taskId);
             }
             return b.score - a.score;
           })
@@ -1419,7 +1423,7 @@ export function registerRoutes(app: Express): void {
           continue;
         }
 
-        const normalisedId = normaliseString(row.id);
+        const normalisedId = normaliseString(row.taskId);
         if (!normalisedId) {
           continue;
         }
@@ -1455,7 +1459,7 @@ export function registerRoutes(app: Express): void {
       }
 
       const payload: Array<{
-        id: string;
+        taskId: string;
         taskType: string;
         renderer: string;
         pos: string;
@@ -1467,7 +1471,7 @@ export function registerRoutes(app: Express): void {
       }> = [];
 
       for (const row of allowedRows) {
-        const taskId = normaliseString(row.id);
+        const taskId = normaliseString(row.taskId);
         const taskTypeValue = normaliseString(row.taskType);
         const rendererValue = normaliseString(row.renderer);
         const posValue = normaliseString(row.pos);
@@ -1514,7 +1518,7 @@ export function registerRoutes(app: Express): void {
         })();
 
         payload.push({
-          id: taskId,
+          taskId,
           taskType: taskTypeValue,
           renderer: rendererValue ?? registryEntry.renderer,
           pos: posValue,
@@ -1702,7 +1706,7 @@ export function registerRoutes(app: Express): void {
     const taskRowsRaw = await executeSelectRaw<Record<string, unknown>>(
       db
         .select({
-          id: taskSpecs.id,
+          taskId: taskSpecs.id,
           taskType: taskSpecs.taskType,
           pos: taskSpecs.pos,
           renderer: taskSpecs.renderer,
@@ -1721,7 +1725,7 @@ export function registerRoutes(app: Express): void {
 
     const rawTaskRow = taskRowsRaw[0]!;
     const taskRow = {
-      id: getRowValue<string>(rawTaskRow, "id")!,
+      taskId: getRowValue<string>(rawTaskRow, "taskId", "id")!,
       taskType: getRowValue<string | undefined>(rawTaskRow, "taskType", "task_type"),
       pos: getRowValue<string | undefined>(rawTaskRow, "pos"),
       renderer: getRowValue<string | undefined>(rawTaskRow, "renderer"),

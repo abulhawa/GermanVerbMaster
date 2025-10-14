@@ -218,7 +218,7 @@ describe('tasks API', () => {
     const submission = await invokeApi('/api/submission', {
       method: 'POST',
       body: {
-        taskId: task.id,
+        taskId: task.taskId,
         lexemeId: task.lexeme.id,
         taskType: task.taskType,
         pos: task.pos,
@@ -239,7 +239,7 @@ describe('tasks API', () => {
 
     const schedulingResult = await dbContext.pool.query(
       'select total_attempts, correct_attempts from scheduling_state where task_id = $1',
-      [task.id],
+      [task.taskId],
     );
 
     expect(schedulingResult.rows[0]?.total_attempts).toBeGreaterThan(0);
@@ -247,7 +247,7 @@ describe('tasks API', () => {
 
     const telemetryResult = await dbContext.pool.query(
       'select priority_score, metadata from telemetry_priorities where task_id = $1',
-      [task.id],
+      [task.taskId],
     );
 
     expect(telemetryResult.rowCount).toBe(1);
@@ -259,7 +259,7 @@ describe('tasks API', () => {
 
     const historyResult = await dbContext.pool.query(
       'select task_id, device_id, result, pos, task_type, hints_used, feature_flags, metadata from practice_history where task_id = $1',
-      [task.id],
+      [task.taskId],
     );
 
     expect(historyResult.rows[0]).toBeDefined();
@@ -326,7 +326,7 @@ describe('tasks API', () => {
     const deviceId = 'device-priority';
     const initialResponse = await invokeApi(`/api/tasks?pos=verb&limit=2&deviceId=${deviceId}`);
     expect(initialResponse.status).toBe(200);
-    const initialTasks = (initialResponse.bodyJson as any).tasks as Array<{ id: string }>;
+    const initialTasks = (initialResponse.bodyJson as any).tasks as Array<{ taskId: string }>;
     expect(initialTasks.length).toBeGreaterThanOrEqual(2);
 
     const [firstTask, secondTask] = initialTasks;
@@ -342,7 +342,7 @@ describe('tasks API', () => {
     await drizzleDb.insert(schedulingStateTable).values([
       {
         deviceId,
-        taskId: firstTask.id,
+        taskId: firstTask.taskId,
         leitnerBox: 3,
         totalAttempts: 4,
         correctAttempts: 4,
@@ -359,7 +359,7 @@ describe('tasks API', () => {
       },
       {
         deviceId,
-        taskId: secondTask.id,
+        taskId: secondTask.taskId,
         leitnerBox: 1,
         totalAttempts: 3,
         correctAttempts: 1,
@@ -378,9 +378,9 @@ describe('tasks API', () => {
 
     const prioritizedResponse = await invokeApi(`/api/tasks?pos=verb&limit=2&deviceId=${deviceId}`);
     expect(prioritizedResponse.status).toBe(200);
-    const prioritizedTasks = (prioritizedResponse.bodyJson as any).tasks as Array<{ id: string }>;
+    const prioritizedTasks = (prioritizedResponse.bodyJson as any).tasks as Array<{ taskId: string }>;
     expect(prioritizedTasks).toHaveLength(2);
-    expect(prioritizedTasks[0]?.id).toBe(secondTask.id);
-    expect(prioritizedTasks[0]?.id).not.toBe(firstTask.id);
+    expect(prioritizedTasks[0]?.taskId).toBe(secondTask.taskId);
+    expect(prioritizedTasks[0]?.taskId).not.toBe(firstTask.taskId);
   });
 });

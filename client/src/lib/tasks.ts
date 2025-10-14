@@ -46,7 +46,7 @@ export interface TaskFetchOptions {
 }
 
 const rawTaskSchema = z.object({
-  id: z.string().min(1),
+  taskId: z.string().min(1),
   taskType: z.string().min(1),
   renderer: z.string().min(1),
   pos: z.string().min(1),
@@ -84,7 +84,7 @@ function mapTaskPayload(task: RawTaskPayload): PracticeTask {
       : registryEntry.solutionSchema.parse(task.solution);
 
   return {
-    taskId: task.id,
+    taskId: task.taskId,
     lexemeId: task.lexeme.id,
     taskType: validation.taskType,
     pos: validation.pos,

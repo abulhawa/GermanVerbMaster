@@ -37,7 +37,7 @@ describe('fetchPracticeTasks', () => {
     const payload = {
       tasks: [
         {
-          id: 'task-1',
+          taskId: 'task-1',
           taskType: 'conjugate_form',
           renderer: 'conjugate_form',
           pos: 'verb',
