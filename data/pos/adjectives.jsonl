@@ -1,410 +1,410 @@
-{"lemma": "schnell", "level": "A1", "english": "fast", "approved": true, "examples": [{"de": "Ein schneller Zug.", "en": "A fast train."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/schnell"}, "adjective": {"comparative": "schneller", "superlative": "am schnellsten"}}
-{"lemma": "freundlich", "level": "A2", "english": "friendly", "approved": true, "examples": [{"de": "Eine freundliche Person.", "en": "A friendly person."}], "sources": {"csv": "Duden; dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/freundlich"}, "adjective": {"comparative": "freundlicher", "superlative": "am freundlichsten"}}
-{"lemma": "alt", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/alt"}}
-{"lemma": "arbeitslos", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/arbeitslos"}}
-{"lemma": "ausländisch", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/ausl%C3%A4ndisch"}}
-{"lemma": "automatisch", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/automatisch"}}
-{"lemma": "bar", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/bar#1"}}
-{"lemma": "billig", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/billig"}}
-{"lemma": "bitter", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/bitter"}}
-{"lemma": "blau", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/blau"}}
-{"lemma": "braun", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/braun"}}
-{"lemma": "breit", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/breit"}}
-{"lemma": "bös", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/b%C3%B6s"}}
-{"lemma": "böse", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/b%C3%B6se"}}
-{"lemma": "deutsch", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/deutsch"}}
-{"lemma": "eilig", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/eilig"}}
-{"lemma": "einfach", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/einfach"}}
-{"lemma": "europäisch", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/europ%C3%A4isch"}}
-{"lemma": "falsch", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/falsch"}}
-{"lemma": "fertig", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/fertig"}}
-{"lemma": "frei", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/frei"}}
-{"lemma": "fremd", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/fremd"}}
-{"lemma": "früher", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/fr%C3%BCher"}}
-{"lemma": "gelb", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/gelb"}}
-{"lemma": "gleich", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/gleich#1"}}
-{"lemma": "glücklich", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/gl%C3%BCcklich"}}
-{"lemma": "grau", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/grau"}}
-{"lemma": "groß", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/gro%C3%9F"}}
-{"lemma": "grün", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/gr%C3%BCn"}}
-{"lemma": "gut", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/gut"}}
-{"lemma": "gültig", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/g%C3%BCltig"}}
-{"lemma": "günstig", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/g%C3%BCnstig"}}
-{"lemma": "halb", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/halb"}}
-{"lemma": "hell", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/hell"}}
-{"lemma": "herzlich", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/herzlich"}}
-{"lemma": "hoch", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/hoch"}}
-{"lemma": "international", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/international"}}
-{"lemma": "jung", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/jung"}}
-{"lemma": "kaputt", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/kaputt"}}
-{"lemma": "klar", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/klar"}}
-{"lemma": "klein", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/klein"}}
-{"lemma": "krank", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/krank"}}
-{"lemma": "kulturell", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/kulturell"}}
-{"lemma": "kurz", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/kurz"}}
-{"lemma": "lang", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/lang#1"}}
-{"lemma": "langsam", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/langsam"}}
-{"lemma": "laut", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/laut#1"}}
-{"lemma": "ledig", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/ledig"}}
-{"lemma": "leicht", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/leicht"}}
-{"lemma": "leise", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/leise"}}
-{"lemma": "letzt", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/letzt"}}
-{"lemma": "lieb", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/lieb"}}
-{"lemma": "lustig", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/lustig"}}
-{"lemma": "männlich", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/m%C3%A4nnlich"}}
-{"lemma": "möglich", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/m%C3%B6glich"}}
-{"lemma": "müde", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/m%C3%BCde"}}
-{"lemma": "neu", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/neu"}}
-{"lemma": "normal", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/normal"}}
-{"lemma": "pünktlich", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/p%C3%BCnktlich"}}
-{"lemma": "richtig", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/richtig"}}
-{"lemma": "rot", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/rot"}}
-{"lemma": "ruhig", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/ruhig"}}
-{"lemma": "schlecht", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/schlecht"}}
-{"lemma": "schwarz", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/schwarz"}}
-{"lemma": "schwer", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/schwer"}}
-{"lemma": "schön", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/sch%C3%B6n"}}
-{"lemma": "selbstständig", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/selbstst%C3%A4ndig"}}
-{"lemma": "selbständig", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/selbst%C3%A4ndig"}}
-{"lemma": "spät", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/sp%C3%A4t"}}
-{"lemma": "später", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/sp%C3%A4ter"}}
-{"lemma": "teuer", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/teuer"}}
-{"lemma": "tot", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/tot"}}
-{"lemma": "viel", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/viel"}}
-{"lemma": "weiblich", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/weiblich"}}
-{"lemma": "weit", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/weit"}}
-{"lemma": "weiter", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/weiter"}}
-{"lemma": "weiß", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/wei%C3%9F"}}
-{"lemma": "wenig", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/wenig"}}
-{"lemma": "wichtig", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/wichtig"}}
-{"lemma": "willkommen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/willkommen"}}
-{"lemma": "wunderbar", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/wunderbar"}}
-{"lemma": "zufrieden", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/zufrieden"}}
-{"lemma": "aktiv", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/aktiv"}}
-{"lemma": "aktuell", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/aktuell"}}
-{"lemma": "arm", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/arm"}}
-{"lemma": "bequem", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/bequem"}}
-{"lemma": "blond", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/blond"}}
-{"lemma": "blöd", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/bl%C3%B6d"}}
-{"lemma": "blöde", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/bl%C3%B6de"}}
-{"lemma": "bunt", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/bunt"}}
-{"lemma": "deutlich", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/deutlich"}}
-{"lemma": "dick", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/dick"}}
-{"lemma": "direkt", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/direkt"}}
-{"lemma": "dumm", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/dumm"}}
-{"lemma": "dunkel", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/dunkel"}}
-{"lemma": "dünn", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/d%C3%BCnn"}}
-{"lemma": "echt", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/echt"}}
-{"lemma": "egal", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/egal#1"}}
-{"lemma": "eigen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/eigen"}}
-{"lemma": "eigentlich", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/eigentlich"}}
-{"lemma": "einzeln", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/einzeln"}}
-{"lemma": "eng", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/eng"}}
-{"lemma": "fantastisch", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/fantastisch"}}
-{"lemma": "faul", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/faul"}}
-{"lemma": "fett", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/fett"}}
-{"lemma": "fit", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/fit"}}
-{"lemma": "fleißig", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/flei%C3%9Fig"}}
-{"lemma": "freiwillig", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/freiwillig"}}
-{"lemma": "frisch", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/frisch"}}
-{"lemma": "froh", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/froh"}}
-{"lemma": "früh", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/fr%C3%BCh"}}
-{"lemma": "furchtbar", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/furchtbar"}}
-{"lemma": "ganz", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/ganz"}}
-{"lemma": "gefährlich", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/gef%C3%A4hrlich"}}
-{"lemma": "genau", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/genau"}}
-{"lemma": "gesund", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/gesund"}}
-{"lemma": "hart", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/hart#1"}}
-{"lemma": "heiß", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/hei%C3%9F"}}
-{"lemma": "hässlich", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/h%C3%A4sslich"}}
-{"lemma": "intelligent", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/intelligent"}}
-{"lemma": "kalt", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/kalt"}}
-{"lemma": "klug", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/klug"}}
-{"lemma": "komisch", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/komisch"}}
-{"lemma": "kostenlos", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/kostenlos"}}
-{"lemma": "kühl", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/k%C3%BChl"}}
-{"lemma": "langweilig", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/langweilig"}}
-{"lemma": "leer", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/leer"}}
-{"lemma": "modern", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/modern#1"}}
-{"lemma": "nass", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/nass"}}
-{"lemma": "natürlich", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/nat%C3%BCrlich"}}
-{"lemma": "nebelig", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/nebelig"}}
-{"lemma": "neblig", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/neblig"}}
-{"lemma": "nervös", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/nerv%C3%B6s"}}
-{"lemma": "nett", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/nett"}}
-{"lemma": "notwendig", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/notwendig"}}
-{"lemma": "nützlich", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/n%C3%BCtzlich"}}
-{"lemma": "offen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/offen"}}
-{"lemma": "phantastisch", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/phantastisch"}}
-{"lemma": "plötzlich", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/pl%C3%B6tzlich"}}
-{"lemma": "praktisch", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/praktisch"}}
-{"lemma": "preiswert", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/preiswert"}}
-{"lemma": "privat", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/privat"}}
-{"lemma": "recht", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv; dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/recht#2; https://www.dwds.de/wb/recht#1"}}
-{"lemma": "reich", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/reich"}}
-{"lemma": "romantisch", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/romantisch"}}
-{"lemma": "rund", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/rund"}}
-{"lemma": "sauber", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/sauber"}}
-{"lemma": "sauer", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/sauer"}}
-{"lemma": "schade", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/schade"}}
-{"lemma": "scharf", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/scharf"}}
-{"lemma": "schlimm", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/schlimm"}}
-{"lemma": "schmutzig", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/schmutzig"}}
-{"lemma": "schrecklich", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/schrecklich"}}
-{"lemma": "schriftlich", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/schriftlich"}}
-{"lemma": "schwach", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/schwach"}}
-{"lemma": "schwanger", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/schwanger"}}
-{"lemma": "schwierig", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/schwierig"}}
-{"lemma": "schädlich", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/sch%C3%A4dlich"}}
-{"lemma": "sonnig", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/sonnig"}}
-{"lemma": "sportlich", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/sportlich"}}
-{"lemma": "stark", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/stark"}}
-{"lemma": "streng", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/streng"}}
-{"lemma": "stressig", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/stressig"}}
-{"lemma": "super", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/super"}}
-{"lemma": "sympathisch", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/sympathisch"}}
-{"lemma": "süß", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/s%C3%BC%C3%9F"}}
-{"lemma": "tief", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/tief"}}
-{"lemma": "toll", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/toll"}}
-{"lemma": "total", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/total"}}
-{"lemma": "traurig", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/traurig"}}
-{"lemma": "trocken", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/trocken"}}
-{"lemma": "typisch", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/typisch"}}
-{"lemma": "unbedingt", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/unbedingt"}}
-{"lemma": "verschieden", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/verschieden"}}
-{"lemma": "voll", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/voll"}}
-{"lemma": "wach", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/wach"}}
-{"lemma": "wahr", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/wahr"}}
-{"lemma": "wahrscheinlich", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/wahrscheinlich"}}
-{"lemma": "warm", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/warm"}}
-{"lemma": "weich", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/weich"}}
-{"lemma": "windig", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/windig"}}
-{"lemma": "wirklich", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/wirklich"}}
-{"lemma": "witzig", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/witzig"}}
-{"lemma": "wurscht", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/wurscht"}}
-{"lemma": "wurst", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/wurst"}}
-{"lemma": "abhängig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/abh%C3%A4ngig"}}
-{"lemma": "absolut", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/absolut#1"}}
-{"lemma": "abwesend", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/abwesend"}}
-{"lemma": "allerbest", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/allerbest"}}
-{"lemma": "allerschönst", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/allersch%C3%B6nst"}}
-{"lemma": "allgemein", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/allgemein"}}
-{"lemma": "alltäglich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/allt%C3%A4glich"}}
-{"lemma": "alternativ", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/alternativ"}}
-{"lemma": "angenehm", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/angenehm"}}
-{"lemma": "anwesend", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/anwesend"}}
-{"lemma": "aufmerksam", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/aufmerksam"}}
-{"lemma": "bereit", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/bereit"}}
-{"lemma": "beruflich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/beruflich"}}
-{"lemma": "berufstätig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/berufst%C3%A4tig"}}
-{"lemma": "besonder", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/besonder"}}
-{"lemma": "bio", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/bio"}}
-{"lemma": "biologisch", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/biologisch"}}
-{"lemma": "blass", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/blass"}}
-{"lemma": "blind", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/blind"}}
-{"lemma": "chic", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/chic"}}
-{"lemma": "dankbar", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/dankbar"}}
-{"lemma": "dicht", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/dicht"}}
-{"lemma": "digital", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/digital"}}
-{"lemma": "doppelt", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/doppelt"}}
-{"lemma": "durchschnittlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/durchschnittlich"}}
-{"lemma": "durstig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/durstig"}}
-{"lemma": "eckig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/eckig"}}
-{"lemma": "ehrlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/ehrlich"}}
-{"lemma": "eindeutig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/eindeutig"}}
-{"lemma": "einheitlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/einheitlich"}}
-{"lemma": "einsam", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/einsam"}}
-{"lemma": "einzig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/einzig"}}
-{"lemma": "elegant", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/elegant"}}
-{"lemma": "elektrisch", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/elektrisch"}}
-{"lemma": "elektronisch", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/elektronisch"}}
-{"lemma": "endgültig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/endg%C3%BCltig"}}
-{"lemma": "erfolgreich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/erfolgreich"}}
-{"lemma": "erforderlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/erforderlich"}}
-{"lemma": "ernst", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/ernst"}}
-{"lemma": "ernsthaft", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/ernsthaft"}}
-{"lemma": "eventuell", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/eventuell"}}
-{"lemma": "ewig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/ewig"}}
-{"lemma": "extrem", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/extrem"}}
-{"lemma": "fair", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/fair"}}
-{"lemma": "farbig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/farbig"}}
-{"lemma": "fest", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/fest"}}
-{"lemma": "feucht", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/feucht"}}
-{"lemma": "finanziell", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/finanziell"}}
-{"lemma": "flach", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/flach"}}
-{"lemma": "flexibel", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/flexibel"}}
-{"lemma": "frech", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/frech"}}
-{"lemma": "fröhlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/fr%C3%B6hlich"}}
-{"lemma": "fällig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/f%C3%A4llig"}}
-{"lemma": "färbig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/f%C3%A4rbig"}}
-{"lemma": "gar", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/gar#1"}}
-{"lemma": "geheim", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/geheim"}}
-{"lemma": "gemeinsam", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/gemeinsam"}}
-{"lemma": "gemütlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/gem%C3%BCtlich"}}
-{"lemma": "gerecht", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/gerecht"}}
-{"lemma": "gering", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/gering"}}
-{"lemma": "gesamt", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/gesamt"}}
-{"lemma": "gewöhnlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/gew%C3%B6hnlich"}}
-{"lemma": "giftig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/giftig"}}
-{"lemma": "glatt", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/glatt"}}
-{"lemma": "gleichberechtigt", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/gleichberechtigt"}}
-{"lemma": "gleichzeitig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/gleichzeitig"}}
-{"lemma": "gründlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/gr%C3%BCndlich"}}
-{"lemma": "haltbar", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/haltbar"}}
-{"lemma": "heimlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/heimlich"}}
-{"lemma": "historisch", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/historisch"}}
-{"lemma": "hungrig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/hungrig"}}
-{"lemma": "häufig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/h%C3%A4ufig"}}
-{"lemma": "höflich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/h%C3%B6flich"}}
-{"lemma": "hübsch", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/h%C3%BCbsch"}}
-{"lemma": "ideal", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/ideal"}}
-{"lemma": "illegal", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/illegal"}}
-{"lemma": "individuell", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/individuell"}}
-{"lemma": "inner", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/inner"}}
-{"lemma": "intensiv", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/intensiv"}}
-{"lemma": "interessant", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/interessant"}}
-{"lemma": "interkulturell", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/interkulturell"}}
-{"lemma": "klasse", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/klasse"}}
-{"lemma": "knapp", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/knapp"}}
-{"lemma": "komplett", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/komplett"}}
-{"lemma": "korrekt", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/korrekt"}}
-{"lemma": "kreativ", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/kreativ"}}
-{"lemma": "kritisch", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/kritisch"}}
-{"lemma": "kräftig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/kr%C3%A4ftig"}}
-{"lemma": "körperlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/k%C3%B6rperlich"}}
-{"lemma": "künstlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/k%C3%BCnstlich"}}
-{"lemma": "kürzlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/k%C3%BCrzlich"}}
-{"lemma": "lecker", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/lecker"}}
-{"lemma": "link", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/link"}}
-{"lemma": "locker", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/locker"}}
-{"lemma": "mager", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/mager"}}
-{"lemma": "maximal", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/maximal"}}
-{"lemma": "menschlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/menschlich"}}
-{"lemma": "merkwürdig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/merkw%C3%BCrdig"}}
-{"lemma": "mild", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/mild"}}
-{"lemma": "minimal", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/minimal"}}
-{"lemma": "mittler", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/mittler"}}
-{"lemma": "mobil", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/mobil"}}
-{"lemma": "musikalisch", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/musikalisch"}}
-{"lemma": "mutig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/mutig"}}
-{"lemma": "mündlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/m%C3%BCndlich"}}
-{"lemma": "nah", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/nah"}}
-{"lemma": "nahe", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/nahe"}}
-{"lemma": "national", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/national"}}
-{"lemma": "negativ", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/negativ"}}
-{"lemma": "neugierig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/neugierig"}}
-{"lemma": "niedrig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/niedrig"}}
-{"lemma": "nötig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/n%C3%B6tig"}}
-{"lemma": "offenbar", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/offenbar"}}
-{"lemma": "offiziell", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/offiziell"}}
-{"lemma": "optimistisch", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/optimistisch"}}
-{"lemma": "ordentlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/ordentlich"}}
-{"lemma": "original", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/original"}}
-{"lemma": "parallel", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/parallel"}}
-{"lemma": "passiv", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/passiv"}}
-{"lemma": "pauschal", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/pauschal"}}
-{"lemma": "peinlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/peinlich"}}
-{"lemma": "perfekt", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/perfekt"}}
-{"lemma": "persönlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/pers%C3%B6nlich"}}
-{"lemma": "politisch", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/politisch"}}
-{"lemma": "populär", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/popul%C3%A4r"}}
-{"lemma": "positiv", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/positiv"}}
-{"lemma": "prima", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/prima"}}
-{"lemma": "realistisch", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/realistisch"}}
-{"lemma": "rechtlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/rechtlich"}}
-{"lemma": "rechtzeitig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/rechtzeitig"}}
-{"lemma": "regelmäßig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/regelm%C3%A4%C3%9Fig"}}
-{"lemma": "regional", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/regional"}}
-{"lemma": "reif", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/reif"}}
-{"lemma": "relativ", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/relativ"}}
-{"lemma": "riesig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/riesig"}}
-{"lemma": "roh", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/roh"}}
-{"lemma": "salzig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/salzig"}}
-{"lemma": "satt", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/satt"}}
-{"lemma": "schick", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/schick"}}
-{"lemma": "schief", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/schief"}}
-{"lemma": "schlank", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/schlank"}}
-{"lemma": "schmal", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/schmal"}}
-{"lemma": "schuld", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/schuld"}}
-{"lemma": "schuldig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/schuldig"}}
-{"lemma": "selbstverständlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/selbstverst%C3%A4ndlich"}}
-{"lemma": "selten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/selten"}}
-{"lemma": "seltsam", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/seltsam"}}
-{"lemma": "senkrecht", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/senkrecht"}}
-{"lemma": "sicher", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/sicher"}}
-{"lemma": "sichtbar", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/sichtbar"}}
-{"lemma": "sinnlos", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/sinnlos"}}
-{"lemma": "sinnvoll", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/sinnvoll"}}
-{"lemma": "so genannt", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/so%20genannt"}}
-{"lemma": "sogenannt", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/sogenannt"}}
-{"lemma": "sozial", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/sozial"}}
-{"lemma": "sparsam", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/sparsam"}}
-{"lemma": "speziell", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/speziell"}}
-{"lemma": "spitz", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/spitz"}}
-{"lemma": "statistisch", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/statistisch"}}
-{"lemma": "steil", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/steil"}}
-{"lemma": "stilistisch", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/stilistisch"}}
-{"lemma": "still", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/still"}}
-{"lemma": "stolz", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/stolz"}}
-{"lemma": "strafbar", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/strafbar"}}
-{"lemma": "stumm", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/stumm"}}
-{"lemma": "städtisch", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/st%C3%A4dtisch"}}
-{"lemma": "ständig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/st%C3%A4ndig"}}
-{"lemma": "süchtig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/s%C3%BCchtig"}}
-{"lemma": "tatsächlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/tats%C3%A4chlich"}}
-{"lemma": "taub", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/taub"}}
-{"lemma": "technisch", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/technisch"}}
-{"lemma": "teilweise", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/teilweise#2"}}
-{"lemma": "theoretisch", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/theoretisch"}}
-{"lemma": "tolerant", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/tolerant"}}
-{"lemma": "traditionell", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/traditionell"}}
-{"lemma": "treu", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/treu"}}
-{"lemma": "tödlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/t%C3%B6dlich"}}
-{"lemma": "unentschieden", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/unentschieden"}}
-{"lemma": "ungefähr", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/ungef%C3%A4hr"}}
-{"lemma": "ungewöhnlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/ungew%C3%B6hnlich"}}
-{"lemma": "unglaublich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/unglaublich"}}
-{"lemma": "unheimlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/unheimlich"}}
-{"lemma": "unterschiedlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/unterschiedlich"}}
-{"lemma": "ursprünglich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/urspr%C3%BCnglich"}}
-{"lemma": "vegetarisch", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/vegetarisch"}}
-{"lemma": "verantwortlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verantwortlich"}}
-{"lemma": "verdächtig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verd%C3%A4chtig"}}
-{"lemma": "vergeblich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/vergeblich"}}
-{"lemma": "vermutlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/vermutlich"}}
-{"lemma": "vernünftig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/vern%C3%BCnftig"}}
-{"lemma": "verständlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verst%C3%A4ndlich"}}
-{"lemma": "verwandt", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verwandt"}}
-{"lemma": "virtuell", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/virtuell"}}
-{"lemma": "voraussichtlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/voraussichtlich"}}
-{"lemma": "vorder", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/vorder"}}
-{"lemma": "vorläufig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/vorl%C3%A4ufig"}}
-{"lemma": "völlig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/v%C3%B6llig"}}
-{"lemma": "waagerecht", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/waagerecht"}}
-{"lemma": "waagrecht", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/waagrecht"}}
-{"lemma": "wahnsinnig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/wahnsinnig"}}
-{"lemma": "weltenweit", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/weltenweit"}}
-{"lemma": "weltweit", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/weltweit"}}
-{"lemma": "wert", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/wert"}}
-{"lemma": "wertlos", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/wertlos"}}
-{"lemma": "wertvoll", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/wertvoll"}}
-{"lemma": "wild", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/wild"}}
-{"lemma": "wohl", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/wohl#1"}}
-{"lemma": "wunderschön", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/wundersch%C3%B6n"}}
-{"lemma": "zahlreich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/zahlreich"}}
-{"lemma": "zentral", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/zentral"}}
-{"lemma": "ziemlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/ziemlich"}}
-{"lemma": "zufällig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/zuf%C3%A4llig"}}
-{"lemma": "zugänglich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/zug%C3%A4nglich"}}
-{"lemma": "zukünftig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/zuk%C3%BCnftig"}}
-{"lemma": "zuständig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/zust%C3%A4ndig"}}
-{"lemma": "zusätzlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/zus%C3%A4tzlich"}}
-{"lemma": "zuverlässig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/zuverl%C3%A4ssig"}}
-{"lemma": "ähnlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/%C3%A4hnlich"}}
-{"lemma": "ängstlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/%C3%A4ngstlich"}}
-{"lemma": "ärgerlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/%C3%A4rgerlich"}}
-{"lemma": "äußerlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/%C3%A4u%C3%9Ferlich"}}
-{"lemma": "öffentlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/%C3%B6ffentlich"}}
-{"lemma": "ökologisch", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/%C3%B6kologisch"}}
-{"lemma": "üblich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/%C3%BCblich"}}
-{"lemma": "übrig", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/%C3%BCbrig"}}
+{"lemma": "schnell", "level": "A1", "english": "fast", "approved": true, "examples": [{"de": "Ein schneller Zug.", "en": "A fast train."}], "adjective": {"comparative": "schneller", "superlative": "am schnellsten"}}
+{"lemma": "freundlich", "level": "A2", "english": "friendly", "approved": true, "examples": [{"de": "Eine freundliche Person.", "en": "A friendly person."}], "adjective": {"comparative": "freundlicher", "superlative": "am freundlichsten"}}
+{"lemma": "alt", "level": "A1", "approved": false}
+{"lemma": "arbeitslos", "level": "A1", "approved": false}
+{"lemma": "ausländisch", "level": "A1", "approved": false}
+{"lemma": "automatisch", "level": "A1", "approved": false}
+{"lemma": "bar", "level": "A1", "approved": false}
+{"lemma": "billig", "level": "A1", "approved": false}
+{"lemma": "bitter", "level": "A1", "approved": false}
+{"lemma": "blau", "level": "A1", "approved": false}
+{"lemma": "braun", "level": "A1", "approved": false}
+{"lemma": "breit", "level": "A1", "approved": false}
+{"lemma": "bös", "level": "A1", "approved": false}
+{"lemma": "böse", "level": "A1", "approved": false}
+{"lemma": "deutsch", "level": "A1", "approved": false}
+{"lemma": "eilig", "level": "A1", "approved": false}
+{"lemma": "einfach", "level": "A1", "approved": false}
+{"lemma": "europäisch", "level": "A1", "approved": false}
+{"lemma": "falsch", "level": "A1", "approved": false}
+{"lemma": "fertig", "level": "A1", "approved": false}
+{"lemma": "frei", "level": "A1", "approved": false}
+{"lemma": "fremd", "level": "A1", "approved": false}
+{"lemma": "früher", "level": "A1", "approved": false}
+{"lemma": "gelb", "level": "A1", "approved": false}
+{"lemma": "gleich", "level": "A1", "approved": false}
+{"lemma": "glücklich", "level": "A1", "approved": false}
+{"lemma": "grau", "level": "A1", "approved": false}
+{"lemma": "groß", "level": "A1", "approved": false}
+{"lemma": "grün", "level": "A1", "approved": false}
+{"lemma": "gut", "level": "A1", "approved": false}
+{"lemma": "gültig", "level": "A1", "approved": false}
+{"lemma": "günstig", "level": "A1", "approved": false}
+{"lemma": "halb", "level": "A1", "approved": false}
+{"lemma": "hell", "level": "A1", "approved": false}
+{"lemma": "herzlich", "level": "A1", "approved": false}
+{"lemma": "hoch", "level": "A1", "approved": false}
+{"lemma": "international", "level": "A1", "approved": false}
+{"lemma": "jung", "level": "A1", "approved": false}
+{"lemma": "kaputt", "level": "A1", "approved": false}
+{"lemma": "klar", "level": "A1", "approved": false}
+{"lemma": "klein", "level": "A1", "approved": false}
+{"lemma": "krank", "level": "A1", "approved": false}
+{"lemma": "kulturell", "level": "A1", "approved": false}
+{"lemma": "kurz", "level": "A1", "approved": false}
+{"lemma": "lang", "level": "A1", "approved": false}
+{"lemma": "langsam", "level": "A1", "approved": false}
+{"lemma": "laut", "level": "A1", "approved": false}
+{"lemma": "ledig", "level": "A1", "approved": false}
+{"lemma": "leicht", "level": "A1", "approved": false}
+{"lemma": "leise", "level": "A1", "approved": false}
+{"lemma": "letzt", "level": "A1", "approved": false}
+{"lemma": "lieb", "level": "A1", "approved": false}
+{"lemma": "lustig", "level": "A1", "approved": false}
+{"lemma": "männlich", "level": "A1", "approved": false}
+{"lemma": "möglich", "level": "A1", "approved": false}
+{"lemma": "müde", "level": "A1", "approved": false}
+{"lemma": "neu", "level": "A1", "approved": false}
+{"lemma": "normal", "level": "A1", "approved": false}
+{"lemma": "pünktlich", "level": "A1", "approved": false}
+{"lemma": "richtig", "level": "A1", "approved": false}
+{"lemma": "rot", "level": "A1", "approved": false}
+{"lemma": "ruhig", "level": "A1", "approved": false}
+{"lemma": "schlecht", "level": "A1", "approved": false}
+{"lemma": "schwarz", "level": "A1", "approved": false}
+{"lemma": "schwer", "level": "A1", "approved": false}
+{"lemma": "schön", "level": "A1", "approved": false}
+{"lemma": "selbstständig", "level": "A1", "approved": false}
+{"lemma": "selbständig", "level": "A1", "approved": false}
+{"lemma": "spät", "level": "A1", "approved": false}
+{"lemma": "später", "level": "A1", "approved": false}
+{"lemma": "teuer", "level": "A1", "approved": false}
+{"lemma": "tot", "level": "A1", "approved": false}
+{"lemma": "viel", "level": "A1", "approved": false}
+{"lemma": "weiblich", "level": "A1", "approved": false}
+{"lemma": "weit", "level": "A1", "approved": false}
+{"lemma": "weiter", "level": "A1", "approved": false}
+{"lemma": "weiß", "level": "A1", "approved": false}
+{"lemma": "wenig", "level": "A1", "approved": false}
+{"lemma": "wichtig", "level": "A1", "approved": false}
+{"lemma": "willkommen", "level": "A1", "approved": false}
+{"lemma": "wunderbar", "level": "A1", "approved": false}
+{"lemma": "zufrieden", "level": "A1", "approved": false}
+{"lemma": "aktiv", "level": "A2", "approved": false}
+{"lemma": "aktuell", "level": "A2", "approved": false}
+{"lemma": "arm", "level": "A2", "approved": false}
+{"lemma": "bequem", "level": "A2", "approved": false}
+{"lemma": "blond", "level": "A2", "approved": false}
+{"lemma": "blöd", "level": "A2", "approved": false}
+{"lemma": "blöde", "level": "A2", "approved": false}
+{"lemma": "bunt", "level": "A2", "approved": false}
+{"lemma": "deutlich", "level": "A2", "approved": false}
+{"lemma": "dick", "level": "A2", "approved": false}
+{"lemma": "direkt", "level": "A2", "approved": false}
+{"lemma": "dumm", "level": "A2", "approved": false}
+{"lemma": "dunkel", "level": "A2", "approved": false}
+{"lemma": "dünn", "level": "A2", "approved": false}
+{"lemma": "echt", "level": "A2", "approved": false}
+{"lemma": "egal", "level": "A2", "approved": false}
+{"lemma": "eigen", "level": "A2", "approved": false}
+{"lemma": "eigentlich", "level": "A2", "approved": false}
+{"lemma": "einzeln", "level": "A2", "approved": false}
+{"lemma": "eng", "level": "A2", "approved": false}
+{"lemma": "fantastisch", "level": "A2", "approved": false}
+{"lemma": "faul", "level": "A2", "approved": false}
+{"lemma": "fett", "level": "A2", "approved": false}
+{"lemma": "fit", "level": "A2", "approved": false}
+{"lemma": "fleißig", "level": "A2", "approved": false}
+{"lemma": "freiwillig", "level": "A2", "approved": false}
+{"lemma": "frisch", "level": "A2", "approved": false}
+{"lemma": "froh", "level": "A2", "approved": false}
+{"lemma": "früh", "level": "A2", "approved": false}
+{"lemma": "furchtbar", "level": "A2", "approved": false}
+{"lemma": "ganz", "level": "A2", "approved": false}
+{"lemma": "gefährlich", "level": "A2", "approved": false}
+{"lemma": "genau", "level": "A2", "approved": false}
+{"lemma": "gesund", "level": "A2", "approved": false}
+{"lemma": "hart", "level": "A2", "approved": false}
+{"lemma": "heiß", "level": "A2", "approved": false}
+{"lemma": "hässlich", "level": "A2", "approved": false}
+{"lemma": "intelligent", "level": "A2", "approved": false}
+{"lemma": "kalt", "level": "A2", "approved": false}
+{"lemma": "klug", "level": "A2", "approved": false}
+{"lemma": "komisch", "level": "A2", "approved": false}
+{"lemma": "kostenlos", "level": "A2", "approved": false}
+{"lemma": "kühl", "level": "A2", "approved": false}
+{"lemma": "langweilig", "level": "A2", "approved": false}
+{"lemma": "leer", "level": "A2", "approved": false}
+{"lemma": "modern", "level": "A2", "approved": false}
+{"lemma": "nass", "level": "A2", "approved": false}
+{"lemma": "natürlich", "level": "A2", "approved": false}
+{"lemma": "nebelig", "level": "A2", "approved": false}
+{"lemma": "neblig", "level": "A2", "approved": false}
+{"lemma": "nervös", "level": "A2", "approved": false}
+{"lemma": "nett", "level": "A2", "approved": false}
+{"lemma": "notwendig", "level": "A2", "approved": false}
+{"lemma": "nützlich", "level": "A2", "approved": false}
+{"lemma": "offen", "level": "A2", "approved": false}
+{"lemma": "phantastisch", "level": "A2", "approved": false}
+{"lemma": "plötzlich", "level": "A2", "approved": false}
+{"lemma": "praktisch", "level": "A2", "approved": false}
+{"lemma": "preiswert", "level": "A2", "approved": false}
+{"lemma": "privat", "level": "A2", "approved": false}
+{"lemma": "recht", "level": "A2", "approved": false}
+{"lemma": "reich", "level": "A2", "approved": false}
+{"lemma": "romantisch", "level": "A2", "approved": false}
+{"lemma": "rund", "level": "A2", "approved": false}
+{"lemma": "sauber", "level": "A2", "approved": false}
+{"lemma": "sauer", "level": "A2", "approved": false}
+{"lemma": "schade", "level": "A2", "approved": false}
+{"lemma": "scharf", "level": "A2", "approved": false}
+{"lemma": "schlimm", "level": "A2", "approved": false}
+{"lemma": "schmutzig", "level": "A2", "approved": false}
+{"lemma": "schrecklich", "level": "A2", "approved": false}
+{"lemma": "schriftlich", "level": "A2", "approved": false}
+{"lemma": "schwach", "level": "A2", "approved": false}
+{"lemma": "schwanger", "level": "A2", "approved": false}
+{"lemma": "schwierig", "level": "A2", "approved": false}
+{"lemma": "schädlich", "level": "A2", "approved": false}
+{"lemma": "sonnig", "level": "A2", "approved": false}
+{"lemma": "sportlich", "level": "A2", "approved": false}
+{"lemma": "stark", "level": "A2", "approved": false}
+{"lemma": "streng", "level": "A2", "approved": false}
+{"lemma": "stressig", "level": "A2", "approved": false}
+{"lemma": "super", "level": "A2", "approved": false}
+{"lemma": "sympathisch", "level": "A2", "approved": false}
+{"lemma": "süß", "level": "A2", "approved": false}
+{"lemma": "tief", "level": "A2", "approved": false}
+{"lemma": "toll", "level": "A2", "approved": false}
+{"lemma": "total", "level": "A2", "approved": false}
+{"lemma": "traurig", "level": "A2", "approved": false}
+{"lemma": "trocken", "level": "A2", "approved": false}
+{"lemma": "typisch", "level": "A2", "approved": false}
+{"lemma": "unbedingt", "level": "A2", "approved": false}
+{"lemma": "verschieden", "level": "A2", "approved": false}
+{"lemma": "voll", "level": "A2", "approved": false}
+{"lemma": "wach", "level": "A2", "approved": false}
+{"lemma": "wahr", "level": "A2", "approved": false}
+{"lemma": "wahrscheinlich", "level": "A2", "approved": false}
+{"lemma": "warm", "level": "A2", "approved": false}
+{"lemma": "weich", "level": "A2", "approved": false}
+{"lemma": "windig", "level": "A2", "approved": false}
+{"lemma": "wirklich", "level": "A2", "approved": false}
+{"lemma": "witzig", "level": "A2", "approved": false}
+{"lemma": "wurscht", "level": "A2", "approved": false}
+{"lemma": "wurst", "level": "A2", "approved": false}
+{"lemma": "abhängig", "level": "B1", "approved": false}
+{"lemma": "absolut", "level": "B1", "approved": false}
+{"lemma": "abwesend", "level": "B1", "approved": false}
+{"lemma": "allerbest", "level": "B1", "approved": false}
+{"lemma": "allerschönst", "level": "B1", "approved": false}
+{"lemma": "allgemein", "level": "B1", "approved": false}
+{"lemma": "alltäglich", "level": "B1", "approved": false}
+{"lemma": "alternativ", "level": "B1", "approved": false}
+{"lemma": "angenehm", "level": "B1", "approved": false}
+{"lemma": "anwesend", "level": "B1", "approved": false}
+{"lemma": "aufmerksam", "level": "B1", "approved": false}
+{"lemma": "bereit", "level": "B1", "approved": false}
+{"lemma": "beruflich", "level": "B1", "approved": false}
+{"lemma": "berufstätig", "level": "B1", "approved": false}
+{"lemma": "besonder", "level": "B1", "approved": false}
+{"lemma": "bio", "level": "B1", "approved": false}
+{"lemma": "biologisch", "level": "B1", "approved": false}
+{"lemma": "blass", "level": "B1", "approved": false}
+{"lemma": "blind", "level": "B1", "approved": false}
+{"lemma": "chic", "level": "B1", "approved": false}
+{"lemma": "dankbar", "level": "B1", "approved": false}
+{"lemma": "dicht", "level": "B1", "approved": false}
+{"lemma": "digital", "level": "B1", "approved": false}
+{"lemma": "doppelt", "level": "B1", "approved": false}
+{"lemma": "durchschnittlich", "level": "B1", "approved": false}
+{"lemma": "durstig", "level": "B1", "approved": false}
+{"lemma": "eckig", "level": "B1", "approved": false}
+{"lemma": "ehrlich", "level": "B1", "approved": false}
+{"lemma": "eindeutig", "level": "B1", "approved": false}
+{"lemma": "einheitlich", "level": "B1", "approved": false}
+{"lemma": "einsam", "level": "B1", "approved": false}
+{"lemma": "einzig", "level": "B1", "approved": false}
+{"lemma": "elegant", "level": "B1", "approved": false}
+{"lemma": "elektrisch", "level": "B1", "approved": false}
+{"lemma": "elektronisch", "level": "B1", "approved": false}
+{"lemma": "endgültig", "level": "B1", "approved": false}
+{"lemma": "erfolgreich", "level": "B1", "approved": false}
+{"lemma": "erforderlich", "level": "B1", "approved": false}
+{"lemma": "ernst", "level": "B1", "approved": false}
+{"lemma": "ernsthaft", "level": "B1", "approved": false}
+{"lemma": "eventuell", "level": "B1", "approved": false}
+{"lemma": "ewig", "level": "B1", "approved": false}
+{"lemma": "extrem", "level": "B1", "approved": false}
+{"lemma": "fair", "level": "B1", "approved": false}
+{"lemma": "farbig", "level": "B1", "approved": false}
+{"lemma": "fest", "level": "B1", "approved": false}
+{"lemma": "feucht", "level": "B1", "approved": false}
+{"lemma": "finanziell", "level": "B1", "approved": false}
+{"lemma": "flach", "level": "B1", "approved": false}
+{"lemma": "flexibel", "level": "B1", "approved": false}
+{"lemma": "frech", "level": "B1", "approved": false}
+{"lemma": "fröhlich", "level": "B1", "approved": false}
+{"lemma": "fällig", "level": "B1", "approved": false}
+{"lemma": "färbig", "level": "B1", "approved": false}
+{"lemma": "gar", "level": "B1", "approved": false}
+{"lemma": "geheim", "level": "B1", "approved": false}
+{"lemma": "gemeinsam", "level": "B1", "approved": false}
+{"lemma": "gemütlich", "level": "B1", "approved": false}
+{"lemma": "gerecht", "level": "B1", "approved": false}
+{"lemma": "gering", "level": "B1", "approved": false}
+{"lemma": "gesamt", "level": "B1", "approved": false}
+{"lemma": "gewöhnlich", "level": "B1", "approved": false}
+{"lemma": "giftig", "level": "B1", "approved": false}
+{"lemma": "glatt", "level": "B1", "approved": false}
+{"lemma": "gleichberechtigt", "level": "B1", "approved": false}
+{"lemma": "gleichzeitig", "level": "B1", "approved": false}
+{"lemma": "gründlich", "level": "B1", "approved": false}
+{"lemma": "haltbar", "level": "B1", "approved": false}
+{"lemma": "heimlich", "level": "B1", "approved": false}
+{"lemma": "historisch", "level": "B1", "approved": false}
+{"lemma": "hungrig", "level": "B1", "approved": false}
+{"lemma": "häufig", "level": "B1", "approved": false}
+{"lemma": "höflich", "level": "B1", "approved": false}
+{"lemma": "hübsch", "level": "B1", "approved": false}
+{"lemma": "ideal", "level": "B1", "approved": false}
+{"lemma": "illegal", "level": "B1", "approved": false}
+{"lemma": "individuell", "level": "B1", "approved": false}
+{"lemma": "inner", "level": "B1", "approved": false}
+{"lemma": "intensiv", "level": "B1", "approved": false}
+{"lemma": "interessant", "level": "B1", "approved": false}
+{"lemma": "interkulturell", "level": "B1", "approved": false}
+{"lemma": "klasse", "level": "B1", "approved": false}
+{"lemma": "knapp", "level": "B1", "approved": false}
+{"lemma": "komplett", "level": "B1", "approved": false}
+{"lemma": "korrekt", "level": "B1", "approved": false}
+{"lemma": "kreativ", "level": "B1", "approved": false}
+{"lemma": "kritisch", "level": "B1", "approved": false}
+{"lemma": "kräftig", "level": "B1", "approved": false}
+{"lemma": "körperlich", "level": "B1", "approved": false}
+{"lemma": "künstlich", "level": "B1", "approved": false}
+{"lemma": "kürzlich", "level": "B1", "approved": false}
+{"lemma": "lecker", "level": "B1", "approved": false}
+{"lemma": "link", "level": "B1", "approved": false}
+{"lemma": "locker", "level": "B1", "approved": false}
+{"lemma": "mager", "level": "B1", "approved": false}
+{"lemma": "maximal", "level": "B1", "approved": false}
+{"lemma": "menschlich", "level": "B1", "approved": false}
+{"lemma": "merkwürdig", "level": "B1", "approved": false}
+{"lemma": "mild", "level": "B1", "approved": false}
+{"lemma": "minimal", "level": "B1", "approved": false}
+{"lemma": "mittler", "level": "B1", "approved": false}
+{"lemma": "mobil", "level": "B1", "approved": false}
+{"lemma": "musikalisch", "level": "B1", "approved": false}
+{"lemma": "mutig", "level": "B1", "approved": false}
+{"lemma": "mündlich", "level": "B1", "approved": false}
+{"lemma": "nah", "level": "B1", "approved": false}
+{"lemma": "nahe", "level": "B1", "approved": false}
+{"lemma": "national", "level": "B1", "approved": false}
+{"lemma": "negativ", "level": "B1", "approved": false}
+{"lemma": "neugierig", "level": "B1", "approved": false}
+{"lemma": "niedrig", "level": "B1", "approved": false}
+{"lemma": "nötig", "level": "B1", "approved": false}
+{"lemma": "offenbar", "level": "B1", "approved": false}
+{"lemma": "offiziell", "level": "B1", "approved": false}
+{"lemma": "optimistisch", "level": "B1", "approved": false}
+{"lemma": "ordentlich", "level": "B1", "approved": false}
+{"lemma": "original", "level": "B1", "approved": false}
+{"lemma": "parallel", "level": "B1", "approved": false}
+{"lemma": "passiv", "level": "B1", "approved": false}
+{"lemma": "pauschal", "level": "B1", "approved": false}
+{"lemma": "peinlich", "level": "B1", "approved": false}
+{"lemma": "perfekt", "level": "B1", "approved": false}
+{"lemma": "persönlich", "level": "B1", "approved": false}
+{"lemma": "politisch", "level": "B1", "approved": false}
+{"lemma": "populär", "level": "B1", "approved": false}
+{"lemma": "positiv", "level": "B1", "approved": false}
+{"lemma": "prima", "level": "B1", "approved": false}
+{"lemma": "realistisch", "level": "B1", "approved": false}
+{"lemma": "rechtlich", "level": "B1", "approved": false}
+{"lemma": "rechtzeitig", "level": "B1", "approved": false}
+{"lemma": "regelmäßig", "level": "B1", "approved": false}
+{"lemma": "regional", "level": "B1", "approved": false}
+{"lemma": "reif", "level": "B1", "approved": false}
+{"lemma": "relativ", "level": "B1", "approved": false}
+{"lemma": "riesig", "level": "B1", "approved": false}
+{"lemma": "roh", "level": "B1", "approved": false}
+{"lemma": "salzig", "level": "B1", "approved": false}
+{"lemma": "satt", "level": "B1", "approved": false}
+{"lemma": "schick", "level": "B1", "approved": false}
+{"lemma": "schief", "level": "B1", "approved": false}
+{"lemma": "schlank", "level": "B1", "approved": false}
+{"lemma": "schmal", "level": "B1", "approved": false}
+{"lemma": "schuld", "level": "B1", "approved": false}
+{"lemma": "schuldig", "level": "B1", "approved": false}
+{"lemma": "selbstverständlich", "level": "B1", "approved": false}
+{"lemma": "selten", "level": "B1", "approved": false}
+{"lemma": "seltsam", "level": "B1", "approved": false}
+{"lemma": "senkrecht", "level": "B1", "approved": false}
+{"lemma": "sicher", "level": "B1", "approved": false}
+{"lemma": "sichtbar", "level": "B1", "approved": false}
+{"lemma": "sinnlos", "level": "B1", "approved": false}
+{"lemma": "sinnvoll", "level": "B1", "approved": false}
+{"lemma": "so genannt", "level": "B1", "approved": false}
+{"lemma": "sogenannt", "level": "B1", "approved": false}
+{"lemma": "sozial", "level": "B1", "approved": false}
+{"lemma": "sparsam", "level": "B1", "approved": false}
+{"lemma": "speziell", "level": "B1", "approved": false}
+{"lemma": "spitz", "level": "B1", "approved": false}
+{"lemma": "statistisch", "level": "B1", "approved": false}
+{"lemma": "steil", "level": "B1", "approved": false}
+{"lemma": "stilistisch", "level": "B1", "approved": false}
+{"lemma": "still", "level": "B1", "approved": false}
+{"lemma": "stolz", "level": "B1", "approved": false}
+{"lemma": "strafbar", "level": "B1", "approved": false}
+{"lemma": "stumm", "level": "B1", "approved": false}
+{"lemma": "städtisch", "level": "B1", "approved": false}
+{"lemma": "ständig", "level": "B1", "approved": false}
+{"lemma": "süchtig", "level": "B1", "approved": false}
+{"lemma": "tatsächlich", "level": "B1", "approved": false}
+{"lemma": "taub", "level": "B1", "approved": false}
+{"lemma": "technisch", "level": "B1", "approved": false}
+{"lemma": "teilweise", "level": "B1", "approved": false}
+{"lemma": "theoretisch", "level": "B1", "approved": false}
+{"lemma": "tolerant", "level": "B1", "approved": false}
+{"lemma": "traditionell", "level": "B1", "approved": false}
+{"lemma": "treu", "level": "B1", "approved": false}
+{"lemma": "tödlich", "level": "B1", "approved": false}
+{"lemma": "unentschieden", "level": "B1", "approved": false}
+{"lemma": "ungefähr", "level": "B1", "approved": false}
+{"lemma": "ungewöhnlich", "level": "B1", "approved": false}
+{"lemma": "unglaublich", "level": "B1", "approved": false}
+{"lemma": "unheimlich", "level": "B1", "approved": false}
+{"lemma": "unterschiedlich", "level": "B1", "approved": false}
+{"lemma": "ursprünglich", "level": "B1", "approved": false}
+{"lemma": "vegetarisch", "level": "B1", "approved": false}
+{"lemma": "verantwortlich", "level": "B1", "approved": false}
+{"lemma": "verdächtig", "level": "B1", "approved": false}
+{"lemma": "vergeblich", "level": "B1", "approved": false}
+{"lemma": "vermutlich", "level": "B1", "approved": false}
+{"lemma": "vernünftig", "level": "B1", "approved": false}
+{"lemma": "verständlich", "level": "B1", "approved": false}
+{"lemma": "verwandt", "level": "B1", "approved": false}
+{"lemma": "virtuell", "level": "B1", "approved": false}
+{"lemma": "voraussichtlich", "level": "B1", "approved": false}
+{"lemma": "vorder", "level": "B1", "approved": false}
+{"lemma": "vorläufig", "level": "B1", "approved": false}
+{"lemma": "völlig", "level": "B1", "approved": false}
+{"lemma": "waagerecht", "level": "B1", "approved": false}
+{"lemma": "waagrecht", "level": "B1", "approved": false}
+{"lemma": "wahnsinnig", "level": "B1", "approved": false}
+{"lemma": "weltenweit", "level": "B1", "approved": false}
+{"lemma": "weltweit", "level": "B1", "approved": false}
+{"lemma": "wert", "level": "B1", "approved": false}
+{"lemma": "wertlos", "level": "B1", "approved": false}
+{"lemma": "wertvoll", "level": "B1", "approved": false}
+{"lemma": "wild", "level": "B1", "approved": false}
+{"lemma": "wohl", "level": "B1", "approved": false}
+{"lemma": "wunderschön", "level": "B1", "approved": false}
+{"lemma": "zahlreich", "level": "B1", "approved": false}
+{"lemma": "zentral", "level": "B1", "approved": false}
+{"lemma": "ziemlich", "level": "B1", "approved": false}
+{"lemma": "zufällig", "level": "B1", "approved": false}
+{"lemma": "zugänglich", "level": "B1", "approved": false}
+{"lemma": "zukünftig", "level": "B1", "approved": false}
+{"lemma": "zuständig", "level": "B1", "approved": false}
+{"lemma": "zusätzlich", "level": "B1", "approved": false}
+{"lemma": "zuverlässig", "level": "B1", "approved": false}
+{"lemma": "ähnlich", "level": "B1", "approved": false}
+{"lemma": "ängstlich", "level": "B1", "approved": false}
+{"lemma": "ärgerlich", "level": "B1", "approved": false}
+{"lemma": "äußerlich", "level": "B1", "approved": false}
+{"lemma": "öffentlich", "level": "B1", "approved": false}
+{"lemma": "ökologisch", "level": "B1", "approved": false}
+{"lemma": "üblich", "level": "B1", "approved": false}
+{"lemma": "übrig", "level": "B1", "approved": false}
