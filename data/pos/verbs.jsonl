@@ -1,693 +1,693 @@
-{"lemma": "arbeiten", "level": "A1", "english": "to work", "approved": true, "examples": [{"de": "Sie arbeitete in einer Bank.", "en": "Er hat als Koch gearbeitet."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv", "notes": "A1 Essential Verbs; https://www.dwds.de/wb/arbeiten"}, "verb": {"aux": "haben", "praeteritum": "arbeitete", "partizipIi": "gearbeitet", "perfekt": "hat gearbeitet"}}
-{"lemma": "essen", "level": "A1", "english": "to eat", "approved": true, "examples": [{"de": "Er aß ein Sandwich.", "en": "Wir haben zu Mittag gegessen."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv", "notes": "A1 Essential Verbs; https://www.dwds.de/wb/essen"}, "verb": {"aux": "haben", "praeteritum": "aß", "partizipIi": "gegessen", "perfekt": "hat gegessen"}}
-{"lemma": "gehen", "level": "A1", "english": "to go", "approved": true, "examples": [{"de": "Er ging zur Schule.", "en": "Wir sind nach Hause gegangen."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv; learn-deutsch-data:verbs", "notes": "A1 Essential Verbs; https://www.dwds.de/wb/gehen; \"gehen\" follows the standard pattern for regular verbs in the present tense."}, "verb": {"separable": false, "aux": "sein", "praesens": {"ich": "gehe", "er": "geht"}, "praeteritum": "ging", "partizipIi": "gegangen", "perfekt": "ist gegangen"}}
-{"lemma": "haben", "level": "A1", "english": "to have", "approved": true, "examples": [{"de": "Ich hatte keine Zeit.", "en": "Er hat viel Geld gehabt."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv; learn-deutsch-data:verbs", "notes": "A1 Essential Verbs; https://www.dwds.de/wb/haben; \"haben\" is an irregular verb. Note the change from \"b\" to \"s\" and \"t\" in the du and er/sie/es forms."}, "verb": {"separable": false, "aux": "haben", "praesens": {"ich": "habe", "er": "hat"}, "praeteritum": "hatte", "partizipIi": "gehabt", "perfekt": "hat gehabt"}}
-{"lemma": "heißen", "level": "A1", "english": "to be called", "approved": true, "examples": [{"de": "Er hieß Peter.", "en": "Sie hat anders geheißen."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv", "notes": "A1 Essential Verbs; https://www.dwds.de/wb/hei%C3%9Fen#1"}, "verb": {"aux": "haben", "praeteritum": "hieß", "partizipIi": "geheißen", "perfekt": "hat geheißen"}}
-{"lemma": "hören", "level": "A1", "english": "to hear", "approved": true, "examples": [{"de": "Sie hörte Musik.", "en": "Ich habe ein Geräusch gehört."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv", "notes": "A1 Essential Verbs; https://www.dwds.de/wb/h%C3%B6ren"}, "verb": {"aux": "haben", "praeteritum": "hörte", "partizipIi": "gehört", "perfekt": "hat gehört"}}
-{"lemma": "kaufen", "level": "A1", "english": "to buy", "approved": true, "examples": [{"de": "Sie kaufte neue Schuhe.", "en": "Er hat ein Auto gekauft."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv", "notes": "A1 Essential Verbs; https://www.dwds.de/wb/kaufen"}, "verb": {"aux": "haben", "praeteritum": "kaufte", "partizipIi": "gekauft", "perfekt": "hat gekauft"}}
-{"lemma": "kommen", "level": "A1", "english": "to come", "approved": true, "examples": [{"de": "Sie kam spät.", "en": "Der Bus ist pünktlich gekommen."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv", "notes": "A1 Essential Verbs; https://www.dwds.de/wb/kommen"}, "verb": {"aux": "sein", "praeteritum": "kam", "partizipIi": "gekommen", "perfekt": "ist gekommen"}}
-{"lemma": "können", "level": "A1", "english": "can/to be able to", "approved": true, "examples": [{"de": "Er konnte gut schwimmen.", "en": "Das hat er immer gut gekonnt."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv; learn-deutsch-data:modal", "notes": "A1 Essential Verbs; https://www.dwds.de/wb/k%C3%B6nnen; KÖN-nen"}, "verb": {"aux": "haben", "praesens": {"ich": "kann", "er": "kann"}, "praeteritum": "konnte", "partizipIi": "gekonnt", "perfekt": "hat gekonnt"}}
-{"lemma": "leben", "level": "A1", "english": "to live", "approved": true, "examples": [{"de": "Er lebte in Berlin.", "en": "Sie hat lange in Paris gelebt."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv", "notes": "A1 Essential Verbs; https://www.dwds.de/wb/leben"}, "verb": {"aux": "haben", "praeteritum": "lebte", "partizipIi": "gelebt", "perfekt": "hat gelebt"}}
-{"lemma": "lernen", "level": "A1", "english": "to learn", "approved": true, "examples": [{"de": "Sie lernte Deutsch.", "en": "Er hat viel gelernt."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv", "notes": "A1 Essential Verbs; https://www.dwds.de/wb/lernen"}, "verb": {"aux": "haben", "praeteritum": "lernte", "partizipIi": "gelernt", "perfekt": "hat gelernt"}}
-{"lemma": "lesen", "level": "A1", "english": "to read", "approved": true, "examples": [{"de": "Sie las ein interessantes Buch.", "en": "Er hat die Zeitung gelesen."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv", "notes": "A1 Essential Verbs; https://www.dwds.de/wb/lesen#1"}, "verb": {"aux": "haben", "praeteritum": "las", "partizipIi": "gelesen", "perfekt": "hat gelesen"}}
-{"lemma": "machen", "level": "A1", "english": "to make/do", "approved": true, "examples": [{"de": "Er machte seine Hausaufgaben.", "en": "Sie hat das Essen gemacht."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv", "notes": "A1 Essential Verbs; https://www.dwds.de/wb/machen"}, "verb": {"aux": "haben", "praeteritum": "machte", "partizipIi": "gemacht", "perfekt": "hat gemacht"}}
-{"lemma": "müssen", "level": "A1", "english": "must/to have to", "approved": true, "examples": [{"de": "Ich musste früh aufstehen.", "en": "Er hat arbeiten gemusst."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv; learn-deutsch-data:modal", "notes": "A1 Essential Verbs; https://www.dwds.de/wb/m%C3%BCssen; MÜS-sen"}, "verb": {"aux": "haben", "praesens": {"ich": "muss", "er": "muss"}, "praeteritum": "musste", "partizipIi": "gemusst", "perfekt": "hat gemusst"}}
-{"lemma": "schlafen", "level": "A1", "english": "to sleep", "approved": true, "examples": [{"de": "Das Kind schlief tief.", "en": "Ich habe gut geschlafen."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv", "notes": "A1 Essential Verbs; https://www.dwds.de/wb/schlafen"}, "verb": {"aux": "haben", "praeteritum": "schlief", "partizipIi": "geschlafen", "perfekt": "hat geschlafen"}}
-{"lemma": "schreiben", "level": "A1", "english": "to write", "approved": true, "examples": [{"de": "Er schrieb einen Brief.", "en": "Sie hat eine E-Mail geschrieben."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv", "notes": "A1 Essential Verbs; https://www.dwds.de/wb/schreiben"}, "verb": {"aux": "haben", "praeteritum": "schrieb", "partizipIi": "geschrieben", "perfekt": "hat geschrieben"}}
-{"lemma": "sehen", "level": "A1", "english": "to see", "approved": true, "examples": [{"de": "Er sah einen Film.", "en": "Wir haben uns gestern gesehen."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv", "notes": "A1 Essential Verbs; https://www.dwds.de/wb/sehen"}, "verb": {"aux": "haben", "praeteritum": "sah", "partizipIi": "gesehen", "perfekt": "hat gesehen"}}
-{"lemma": "sein", "level": "A1", "english": "to be", "approved": true, "examples": [{"de": "Er war gestern krank.", "en": "Sie ist lange in Berlin gewesen."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv; learn-deutsch-data:verbs", "notes": "A1 Essential Verbs; https://www.dwds.de/wb/sein#3; \"sein\" is a highly irregular verb. Its conjugation must be memorized."}, "verb": {"separable": false, "aux": "sein", "praesens": {"ich": "bin", "er": "ist"}, "praeteritum": "war", "partizipIi": "gewesen", "perfekt": "ist gewesen"}}
-{"lemma": "sollen", "level": "A1", "english": "should/ought to", "approved": true, "examples": [{"de": "Du solltest mehr lernen.", "en": "Das hätte ich nicht gesollt."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv; learn-deutsch-data:modal", "notes": "A1 Essential Verbs; https://www.dwds.de/wb/sollen; SOL-len"}, "verb": {"aux": "haben", "praesens": {"ich": "soll", "er": "soll"}, "praeteritum": "sollte", "partizipIi": "gesollt", "perfekt": "hat gesollt"}}
-{"lemma": "spielen", "level": "A1", "english": "to play", "approved": true, "examples": [{"de": "Das Kind spielte im Garten.", "en": "Wir haben Fußball gespielt."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv", "notes": "A1 Essential Verbs; https://www.dwds.de/wb/spielen"}, "verb": {"aux": "haben", "praeteritum": "spielte", "partizipIi": "gespielt", "perfekt": "hat gespielt"}}
-{"lemma": "sprechen", "level": "A1", "english": "to speak", "approved": true, "examples": [{"de": "Er sprach sehr gut Deutsch.", "en": "Sie hat mit ihrer Mutter gesprochen."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv; learn-deutsch-data:verbs", "notes": "A1 Essential Verbs; https://www.dwds.de/wb/sprechen; This is a stem-changing irregular verb. The vowel \"e\" changes to \"i\" in the du and er/sie/es forms."}, "verb": {"separable": false, "aux": "haben", "praesens": {"ich": "spreche", "er": "spricht"}, "praeteritum": "sprach", "partizipIi": "gesprochen", "perfekt": "hat gesprochen"}}
-{"lemma": "trinken", "level": "A1", "english": "to drink", "approved": true, "examples": [{"de": "Sie trank Wasser.", "en": "Er hat Kaffee getrunken."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv", "notes": "A1 Essential Verbs; https://www.dwds.de/wb/trinken"}, "verb": {"aux": "haben", "praeteritum": "trank", "partizipIi": "getrunken", "perfekt": "hat getrunken"}}
-{"lemma": "werden", "level": "A1", "english": "to become", "approved": true, "examples": [{"de": "Sie wurde Lehrerin.", "en": "Er ist Arzt geworden."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv", "notes": "A1 Essential Verbs; https://www.dwds.de/wb/werden"}, "verb": {"aux": "sein", "praeteritum": "wurde", "partizipIi": "geworden", "perfekt": "ist geworden"}}
-{"lemma": "wohnen", "level": "A1", "english": "to live/reside", "approved": true, "examples": [{"de": "Er wohnte im Zentrum.", "en": "Sie hat in einem Apartment gewohnt."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv", "notes": "A1 Essential Verbs; https://www.dwds.de/wb/wohnen"}, "verb": {"aux": "haben", "praeteritum": "wohnte", "partizipIi": "gewohnt", "perfekt": "hat gewohnt"}}
-{"lemma": "wollen", "level": "A1", "english": "to want", "approved": true, "examples": [{"de": "Er wollte nach Hause.", "en": "Sie hat das nicht gewollt."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv; learn-deutsch-data:modal", "notes": "A1 Essential Verbs; https://www.dwds.de/wb/wollen#2; WOL-len"}, "verb": {"aux": "haben", "praesens": {"ich": "will", "er": "will"}, "praeteritum": "wollte", "partizipIi": "gewollt", "perfekt": "hat gewollt"}}
-{"lemma": "fahren", "level": "A1", "english": "to drive/ride", "approved": true, "examples": [{"de": "Sie fuhr nach Berlin.", "en": "Er ist Auto gefahren."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv", "notes": "A2 Common Verbs; https://www.dwds.de/wb/fahren"}, "verb": {"aux": "sein", "praeteritum": "fuhr", "partizipIi": "gefahren", "perfekt": "ist gefahren"}}
-{"lemma": "fliegen", "level": "A1", "english": "to fly", "approved": true, "examples": [{"de": "Das Flugzeug flog nach Paris.", "en": "Wir sind nach London geflogen."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv", "notes": "A2 Common Verbs; https://www.dwds.de/wb/fliegen"}, "verb": {"aux": "sein", "praeteritum": "flog", "partizipIi": "geflogen", "perfekt": "ist geflogen"}}
-{"lemma": "laufen", "level": "A1", "english": "to run/walk", "approved": true, "examples": [{"de": "Er lief schnell.", "en": "Sie ist einen Marathon gelaufen."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv", "notes": "A2 Common Verbs; https://www.dwds.de/wb/laufen"}, "verb": {"aux": "sein", "praeteritum": "lief", "partizipIi": "gelaufen", "perfekt": "ist gelaufen"}}
-{"lemma": "schwimmen", "level": "A1", "english": "to swim", "approved": true, "examples": [{"de": "Er schwamm im See.", "en": "Sie ist einen Kilometer geschwommen."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv", "notes": "A2 Common Verbs; https://www.dwds.de/wb/schwimmen"}, "verb": {"aux": "sein", "praeteritum": "schwamm", "partizipIi": "geschwommen", "perfekt": "ist geschwommen"}}
-{"lemma": "tanzen", "level": "A1", "english": "to dance", "approved": true, "examples": [{"de": "Sie tanzten die ganze Nacht.", "en": "Wir haben Salsa getanzt."}], "sources": {"csv": "Goethe-Institut; dwds-goethe-A1.csv", "notes": "A2 Common Verbs; https://www.dwds.de/wb/tanzen"}, "verb": {"aux": "haben", "praeteritum": "tanzte", "partizipIi": "getanzt", "perfekt": "hat getanzt"}}
-{"lemma": "beschließen", "level": "B1", "english": "to decide", "approved": true, "examples": [{"de": "Das Komitee beschloss die Änderungen.", "en": "Sie haben eine neue Strategie beschlossen."}], "sources": {"csv": "Duden; dwds-goethe-B1.csv", "notes": "B1 Intermediate Verbs; https://www.dwds.de/wb/beschlie%C3%9Fen"}, "verb": {"aux": "haben", "praeteritum": "beschloss", "partizipIi": "beschlossen", "perfekt": "hat beschlossen"}}
-{"lemma": "entstehen", "level": "B1", "english": "to develop/arise", "approved": true, "examples": [{"de": "Daraus entstand eine neue Idee.", "en": "Das Problem ist plötzlich entstanden."}], "sources": {"csv": "Duden; dwds-goethe-B1.csv", "notes": "B1 Intermediate Verbs; https://www.dwds.de/wb/entstehen"}, "verb": {"aux": "sein", "praeteritum": "entstand", "partizipIi": "entstanden", "perfekt": "ist entstanden"}}
-{"lemma": "erreichen", "level": "A2", "english": "to reach/achieve", "approved": true, "examples": [{"de": "Sie erreichte ihr Ziel.", "en": "Er hat den Gipfel erreicht."}], "sources": {"csv": "Duden; dwds-goethe-A2.csv", "notes": "B1 Intermediate Verbs; https://www.dwds.de/wb/erreichen"}, "verb": {"aux": "haben", "praeteritum": "erreichte", "partizipIi": "erreicht", "perfekt": "hat erreicht"}}
-{"lemma": "verbinden", "level": "B1", "english": "to connect/combine", "approved": true, "examples": [{"de": "Er verband die beiden Kabel.", "en": "Sie hat Tradition mit Innovation verbunden."}], "sources": {"csv": "Duden; dwds-goethe-B1.csv", "notes": "B1 Intermediate Verbs; https://www.dwds.de/wb/verbinden"}, "verb": {"aux": "haben", "praeteritum": "verband", "partizipIi": "verbunden", "perfekt": "hat verbunden"}}
-{"lemma": "bewerten", "level": "B2", "english": "to evaluate/assess", "approved": true, "examples": [{"de": "Der Professor bewertete die Arbeiten.", "en": "Die Jury hat die Leistungen bewertet."}], "sources": {"csv": "Duden", "notes": "B2 Advanced Verbs"}, "verb": {"aux": "haben", "praeteritum": "bewertete", "partizipIi": "bewertet", "perfekt": "hat bewertet"}}
-{"lemma": "durchführen", "level": "B2", "english": "to carry out/conduct", "approved": true, "examples": [{"de": "Das Team führte das Experiment durch.", "en": "Sie haben eine Studie durchgeführt."}], "sources": {"csv": "Duden", "notes": "B2 Advanced Verbs"}, "verb": {"aux": "haben", "praeteritum": "führte durch", "partizipIi": "durchgeführt", "perfekt": "hat durchgeführt"}}
-{"lemma": "übertragen", "level": "B2", "english": "to transfer/transmit", "approved": true, "examples": [{"de": "Er übertrug die Verantwortung.", "en": "Die Krankheit hat sich schnell übertragen."}], "sources": {"csv": "Duden", "notes": "B2 Advanced Verbs"}, "verb": {"aux": "haben", "praeteritum": "übertrug", "partizipIi": "übertragen", "perfekt": "hat übertragen"}}
-{"lemma": "beinhalten", "level": "C1", "english": "to contain/include", "approved": true, "examples": [{"de": "Der Vertrag beinhaltete wichtige Klauseln.", "en": "Das Angebot hat viele Vorteile beinhaltet."}], "sources": {"csv": "Duden", "notes": "C1 Professional Verbs"}, "verb": {"aux": "haben", "praeteritum": "beinhaltete", "partizipIi": "beinhaltet", "perfekt": "hat beinhaltet"}}
-{"lemma": "entsprechen", "level": "C1", "english": "to correspond", "approved": true, "examples": [{"de": "Das Ergebnis entsprach den Erwartungen.", "en": "Die Leistung hat den Anforderungen entsprochen."}], "sources": {"csv": "Duden", "notes": "C1 Professional Verbs"}, "verb": {"aux": "haben", "praeteritum": "entsprach", "partizipIi": "entsprochen", "perfekt": "hat entsprochen"}}
-{"lemma": "erörtern", "level": "C1", "english": "to discuss/debate", "approved": true, "examples": [{"de": "Das Gremium erörterte die Vorschläge.", "en": "Die Experten haben die Problematik erörtert."}], "sources": {"csv": "Duden", "notes": "C1 Professional Verbs"}, "verb": {"aux": "haben", "praeteritum": "erörterte", "partizipIi": "erörtert", "perfekt": "hat erörtert"}}
-{"lemma": "differenzieren", "level": "C2", "english": "to differentiate", "approved": true, "examples": [{"de": "Der Experte differenzierte zwischen den Konzepten.", "en": "Sie hat genau zwischen den Optionen differenziert."}], "sources": {"csv": "Duden", "notes": "C2 Academic Verbs"}, "verb": {"aux": "haben", "praeteritum": "differenzierte", "partizipIi": "differenziert", "perfekt": "hat differenziert"}}
-{"lemma": "gedeihen", "level": "C2", "english": "to thrive/flourish", "approved": true, "examples": [{"de": "Das Unternehmen gedieh unter seiner Führung.", "en": "Die Pflanzen sind prächtig gediehen."}], "sources": {"csv": "Duden", "notes": "C2 Academic Verbs"}, "verb": {"aux": "sein", "praeteritum": "gedieh", "partizipIi": "gediehen", "perfekt": "ist gediehen"}}
-{"lemma": "suggerieren", "level": "C2", "english": "to suggest/imply", "approved": true, "examples": [{"de": "Der Text suggerierte eine andere Interpretation.", "en": "Die Studie hat einen Zusammenhang suggeriert."}], "sources": {"csv": "Duden", "notes": "C2 Academic Verbs"}, "verb": {"aux": "haben", "praeteritum": "suggerierte", "partizipIi": "suggeriert", "perfekt": "hat suggeriert"}}
-{"lemma": "abfahren", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/abfahren"}}
-{"lemma": "abfliegen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/abfliegen"}}
-{"lemma": "abgeben", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/abgeben"}}
-{"lemma": "abholen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/abholen"}}
-{"lemma": "anbieten", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/anbieten"}}
-{"lemma": "anfangen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/anfangen"}}
-{"lemma": "anklicken", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/anklicken"}}
-{"lemma": "ankommen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/ankommen"}}
-{"lemma": "ankreuzen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/ankreuzen"}}
-{"lemma": "anmachen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/anmachen"}}
-{"lemma": "anmelden", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/anmelden"}}
-{"lemma": "anrufen", "level": "A1", "english": "to call (phone)", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv; learn-deutsch-data:verbs", "notes": "https://www.dwds.de/wb/anrufen; \"anrufen\" is a separable verb. The prefix \"an-\" goes to the end of the clause in the present tense."}, "verb": {"separable": true, "praesens": {"ich": "rufe an", "er": "ruft an"}}}
-{"lemma": "antworten", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/antworten"}}
-{"lemma": "anziehen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/anziehen"}}
-{"lemma": "auf sein", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/auf%20sein"}}
-{"lemma": "aufhören", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/aufh%C3%B6ren"}}
-{"lemma": "aufstehen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/aufstehen"}}
-{"lemma": "aus sein", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/aus%20sein"}}
-{"lemma": "ausfüllen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/ausf%C3%BCllen"}}
-{"lemma": "ausmachen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/ausmachen"}}
-{"lemma": "aussehen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/aussehen"}}
-{"lemma": "aussteigen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/aussteigen"}}
-{"lemma": "ausziehen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/ausziehen"}}
-{"lemma": "baden", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/baden"}}
-{"lemma": "bedeuten", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/bedeuten"}}
-{"lemma": "beginnen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/beginnen"}}
-{"lemma": "bekommen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/bekommen"}}
-{"lemma": "benutzen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/benutzen"}}
-{"lemma": "besichtigen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/besichtigen"}}
-{"lemma": "bestellen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/bestellen"}}
-{"lemma": "besuchen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/besuchen"}}
-{"lemma": "bezahlen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/bezahlen"}}
-{"lemma": "bitten", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/bitten"}}
-{"lemma": "bleiben", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/bleiben"}}
-{"lemma": "brauchen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/brauchen"}}
-{"lemma": "bringen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/bringen"}}
-{"lemma": "buchstabieren", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/buchstabieren"}}
-{"lemma": "danken", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/danken"}}
-{"lemma": "dauern", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/dauern#1"}}
-{"lemma": "drucken", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/drucken"}}
-{"lemma": "drücken", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/dr%C3%BCcken"}}
-{"lemma": "duschen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/duschen"}}
-{"lemma": "dürfen", "level": "A1", "english": "may, to be allowed to", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv; learn-deutsch-data:modal", "notes": "https://www.dwds.de/wb/d%C3%BCrfen; DÜR-fen"}, "verb": {"praesens": {"ich": "darf", "er": "darf"}}}
-{"lemma": "einkaufen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/einkaufen"}}
-{"lemma": "einladen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/einladen#2"}}
-{"lemma": "einsteigen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/einsteigen"}}
-{"lemma": "empfehlen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/empfehlen"}}
-{"lemma": "enden", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/enden"}}
-{"lemma": "entschuldigen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/entschuldigen"}}
-{"lemma": "erklären", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/erkl%C3%A4ren"}}
-{"lemma": "erlauben", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/erlauben"}}
-{"lemma": "erzählen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/erz%C3%A4hlen"}}
-{"lemma": "fehlen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/fehlen#1"}}
-{"lemma": "feiern", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/feiern"}}
-{"lemma": "fernsehen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/fernsehen"}}
-{"lemma": "finden", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/finden"}}
-{"lemma": "fragen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/fragen"}}
-{"lemma": "freuen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/freuen"}}
-{"lemma": "frühstücken", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/fr%C3%BChst%C3%BCcken"}}
-{"lemma": "geben", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/geben"}}
-{"lemma": "gefallen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/gefallen#1"}}
-{"lemma": "gehören", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/geh%C3%B6ren"}}
-{"lemma": "gewinnen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/gewinnen"}}
-{"lemma": "glauben", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/glauben"}}
-{"lemma": "gratulieren", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/gratulieren"}}
-{"lemma": "grillen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/grillen"}}
-{"lemma": "halten", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/halten"}}
-{"lemma": "heiraten", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/heiraten"}}
-{"lemma": "helfen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/helfen"}}
-{"lemma": "holen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/holen"}}
-{"lemma": "kennen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/kennen"}}
-{"lemma": "kennen lernen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/kennen%20lernen"}}
-{"lemma": "kennenlernen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/kennenlernen"}}
-{"lemma": "kochen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/kochen"}}
-{"lemma": "kosten", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/kosten#2"}}
-{"lemma": "kriegen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/kriegen#1"}}
-{"lemma": "kümmern", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/k%C3%BCmmern#1"}}
-{"lemma": "lachen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/lachen"}}
-{"lemma": "legen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/legen"}}
-{"lemma": "lieben", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/lieben"}}
-{"lemma": "liegen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/liegen"}}
-{"lemma": "mieten", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/mieten"}}
-{"lemma": "mitbringen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/mitbringen"}}
-{"lemma": "mitkommen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/mitkommen"}}
-{"lemma": "mitmachen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/mitmachen"}}
-{"lemma": "mögen", "level": "A1", "english": "to like", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv; learn-deutsch-data:modal", "notes": "https://www.dwds.de/wb/m%C3%B6gen; MÖ-gen"}, "verb": {"praesens": {"ich": "mag", "er": "mag"}}}
-{"lemma": "nehmen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/nehmen"}}
-{"lemma": "rauchen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/rauchen"}}
-{"lemma": "regnen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/regnen"}}
-{"lemma": "reisen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/reisen"}}
-{"lemma": "reparieren", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/reparieren"}}
-{"lemma": "riechen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/riechen"}}
-{"lemma": "sagen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/sagen"}}
-{"lemma": "scheinen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/scheinen"}}
-{"lemma": "schicken", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/schicken#1"}}
-{"lemma": "schließen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/schlie%C3%9Fen"}}
-{"lemma": "schmecken", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/schmecken"}}
-{"lemma": "sitzen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/sitzen"}}
-{"lemma": "stehen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/stehen"}}
-{"lemma": "stellen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/stellen"}}
-{"lemma": "studieren", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/studieren"}}
-{"lemma": "suchen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/suchen"}}
-{"lemma": "telefonieren", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/telefonieren"}}
-{"lemma": "treffen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/treffen"}}
-{"lemma": "tun", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/tun"}}
-{"lemma": "umziehen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/umziehen"}}
-{"lemma": "unterschreiben", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/unterschreiben"}}
-{"lemma": "verdienen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/verdienen"}}
-{"lemma": "verkaufen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/verkaufen"}}
-{"lemma": "vermieten", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/vermieten"}}
-{"lemma": "verstehen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/verstehen#1"}}
-{"lemma": "vorstellen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/vorstellen"}}
-{"lemma": "wandern", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/wandern"}}
-{"lemma": "warten", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/warten#1"}}
-{"lemma": "waschen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/waschen"}}
-{"lemma": "weg sein", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/weg%20sein"}}
-{"lemma": "weh tun", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/weh%20tun"}}
-{"lemma": "wehtun", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/wehtun"}}
-{"lemma": "wieder holen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/wieder%20holen"}}
-{"lemma": "wiederholen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/wiederholen#1"}}
-{"lemma": "wissen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/wissen"}}
-{"lemma": "zahlen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/zahlen"}}
-{"lemma": "zu sein", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/zu%20sein"}}
-{"lemma": "öffnen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/%C3%B6ffnen"}}
-{"lemma": "übernachten", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/%C3%BCbernachten"}}
-{"lemma": "überweisen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/%C3%BCberweisen"}}
-{"lemma": "abschließen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/abschlie%C3%9Fen"}}
-{"lemma": "ansehen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/ansehen"}}
-{"lemma": "aufmachen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/aufmachen"}}
-{"lemma": "aufpassen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/aufpassen"}}
-{"lemma": "aufregen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/aufregen"}}
-{"lemma": "aufräumen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/aufr%C3%A4umen"}}
-{"lemma": "ausgeben", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/ausgeben"}}
-{"lemma": "ausgehen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/ausgehen"}}
-{"lemma": "auspacken", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/auspacken"}}
-{"lemma": "ausruhen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/ausruhen"}}
-{"lemma": "aussprechen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/aussprechen"}}
-{"lemma": "austauschen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/austauschen"}}
-{"lemma": "austragen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/austragen"}}
-{"lemma": "backen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/backen#1"}}
-{"lemma": "basteln", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/basteln"}}
-{"lemma": "bauen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/bauen#1"}}
-{"lemma": "beantworten", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/beantworten"}}
-{"lemma": "bedanken", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/bedanken"}}
-{"lemma": "beeilen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/beeilen"}}
-{"lemma": "beenden", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/beenden"}}
-{"lemma": "begründen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/begr%C3%BCnden"}}
-{"lemma": "beraten", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/beraten"}}
-{"lemma": "berichten", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/berichten"}}
-{"lemma": "beschreiben", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/beschreiben"}}
-{"lemma": "beschweren", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/beschweren#2"}}
-{"lemma": "bestehen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/bestehen"}}
-{"lemma": "bestätigen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/best%C3%A4tigen"}}
-{"lemma": "bewerben", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/bewerben"}}
-{"lemma": "braten", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/braten"}}
-{"lemma": "buchen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/buchen"}}
-{"lemma": "chatten", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/chatten"}}
-{"lemma": "denken", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/denken"}}
-{"lemma": "diskutieren", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/diskutieren"}}
-{"lemma": "einpacken", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/einpacken"}}
-{"lemma": "eintragen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/eintragen"}}
-{"lemma": "einziehen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/einziehen"}}
-{"lemma": "erinnern", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/erinnern"}}
-{"lemma": "fallen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/fallen"}}
-{"lemma": "fotografieren", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/fotografieren"}}
-{"lemma": "fühlen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/f%C3%BChlen"}}
-{"lemma": "herstellen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/herstellen#2"}}
-{"lemma": "herunterladen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/herunterladen"}}
-{"lemma": "hoffen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/hoffen"}}
-{"lemma": "husten", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/husten"}}
-{"lemma": "hängen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/h%C3%A4ngen#1; https://www.dwds.de/wb/h%C3%A4ngen#2"}}
-{"lemma": "informieren", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/informieren"}}
-{"lemma": "interessieren", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/interessieren"}}
-{"lemma": "joggen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/joggen"}}
-{"lemma": "klappen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/klappen"}}
-{"lemma": "kontrollieren", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/kontrollieren"}}
-{"lemma": "kündigen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/k%C3%BCndigen"}}
-{"lemma": "lassen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/lassen"}}
-{"lemma": "leidtun", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/leidtun"}}
-{"lemma": "leihen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/leihen"}}
-{"lemma": "liefern", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/liefern"}}
-{"lemma": "lügen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/l%C3%BCgen"}}
-{"lemma": "malen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/malen"}}
-{"lemma": "meinen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/meinen"}}
-{"lemma": "merken", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/merken"}}
-{"lemma": "nennen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/nennen"}}
-{"lemma": "notieren", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/notieren"}}
-{"lemma": "organisieren", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/organisieren"}}
-{"lemma": "packen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/packen"}}
-{"lemma": "parken", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/parken"}}
-{"lemma": "passen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/passen"}}
-{"lemma": "passieren", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/passieren#2"}}
-{"lemma": "planen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/planen"}}
-{"lemma": "probieren", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/probieren"}}
-{"lemma": "prüfen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/pr%C3%BCfen"}}
-{"lemma": "putzen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/putzen"}}
-{"lemma": "raten", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/raten#1; https://www.dwds.de/wb/raten#2"}}
-{"lemma": "rechnen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/rechnen"}}
-{"lemma": "reden", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/reden"}}
-{"lemma": "reiten", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/reiten"}}
-{"lemma": "renovieren", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/renovieren"}}
-{"lemma": "reservieren", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/reservieren"}}
-{"lemma": "rufen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/rufen"}}
-{"lemma": "sammeln", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/sammeln"}}
-{"lemma": "schaffen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/schaffen"}}
-{"lemma": "schenken", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/schenken"}}
-{"lemma": "schimpfen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/schimpfen"}}
-{"lemma": "schneiden", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/schneiden"}}
-{"lemma": "schneien", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/schneien"}}
-{"lemma": "setzen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/setzen"}}
-{"lemma": "singen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/singen"}}
-{"lemma": "sparen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/sparen"}}
-{"lemma": "spazieren", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/spazieren"}}
-{"lemma": "stattfinden", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/stattfinden"}}
-{"lemma": "sterben", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/sterben"}}
-{"lemma": "streiten", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/streiten"}}
-{"lemma": "stören", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/st%C3%B6ren"}}
-{"lemma": "surfen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/surfen"}}
-{"lemma": "tauschen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/tauschen"}}
-{"lemma": "teilen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/teilen"}}
-{"lemma": "teilnehmen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/teilnehmen"}}
-{"lemma": "tragen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/tragen"}}
-{"lemma": "trainieren", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/trainieren"}}
-{"lemma": "träumen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/tr%C3%A4umen"}}
-{"lemma": "umsteigen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/umsteigen"}}
-{"lemma": "unterhalten", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/unterhalten#1; https://www.dwds.de/wb/unterhalten#2"}}
-{"lemma": "unternehmen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/unternehmen"}}
-{"lemma": "untersuchen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/untersuchen"}}
-{"lemma": "verabreden", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/verabreden"}}
-{"lemma": "verbieten", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/verbieten"}}
-{"lemma": "vereinbaren", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/vereinbaren"}}
-{"lemma": "vergessen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/vergessen"}}
-{"lemma": "vergleichen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/vergleichen"}}
-{"lemma": "verletzen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/verletzen"}}
-{"lemma": "verlieben", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/verlieben"}}
-{"lemma": "verlieren", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/verlieren"}}
-{"lemma": "verpassen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/verpassen"}}
-{"lemma": "verreisen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/verreisen"}}
-{"lemma": "verschieben", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/verschieben"}}
-{"lemma": "versuchen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/versuchen"}}
-{"lemma": "vorbereiten", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/vorbereiten"}}
-{"lemma": "wechseln", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/wechseln"}}
-{"lemma": "wecken", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/wecken"}}
-{"lemma": "weinen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/weinen"}}
-{"lemma": "wählen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/w%C3%A4hlen"}}
-{"lemma": "wünschen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/w%C3%BCnschen"}}
-{"lemma": "zeichnen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/zeichnen"}}
-{"lemma": "zeigen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/zeigen"}}
-{"lemma": "ziehen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/ziehen"}}
-{"lemma": "zuhören", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/zuh%C3%B6ren"}}
-{"lemma": "zumachen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/zumachen"}}
-{"lemma": "zurückfahren", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/zur%C3%BCckfahren"}}
-{"lemma": "zurückgeben", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/zur%C3%BCckgeben"}}
-{"lemma": "zurückgehen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/zur%C3%BCckgehen"}}
-{"lemma": "zurückkommen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/zur%C3%BCckkommen"}}
-{"lemma": "zurücklaufen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/zur%C3%BCcklaufen"}}
-{"lemma": "ändern", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/%C3%A4ndern"}}
-{"lemma": "ärgern", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/%C3%A4rgern"}}
-{"lemma": "üben", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/%C3%BCben"}}
-{"lemma": "übersetzen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/%C3%BCbersetzen"}}
-{"lemma": "abbiegen", "level": "B1", "english": "to turn, to turn off", "approved": false, "examples": [{"de": "Biegen Sie jetzt links ab.", "en": "Now turn left."}], "sources": {"csv": "dwds-goethe-B1.csv; Manual Apply", "notes": "https://www.dwds.de/wb/abbiegen"}}
-{"lemma": "abheben", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/abheben"}}
-{"lemma": "abhängen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/abh%C3%A4ngen#1"}}
-{"lemma": "ablehnen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/ablehnen"}}
-{"lemma": "abmachen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/abmachen"}}
-{"lemma": "abnehmen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/abnehmen"}}
-{"lemma": "abonnieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/abonnieren"}}
-{"lemma": "absagen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/absagen"}}
-{"lemma": "abschreiben", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/abschreiben"}}
-{"lemma": "abstimmen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/abstimmen"}}
-{"lemma": "abwaschen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/abwaschen"}}
-{"lemma": "achten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/achten"}}
-{"lemma": "akzeptieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/akzeptieren"}}
-{"lemma": "amüsieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/am%C3%BCsieren"}}
-{"lemma": "analysieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/analysieren"}}
-{"lemma": "anerkennen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/anerkennen"}}
-{"lemma": "angeben", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/angeben"}}
-{"lemma": "anhaben", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/anhaben"}}
-{"lemma": "ankündigen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/ank%C3%BCndigen"}}
-{"lemma": "annehmen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/annehmen"}}
-{"lemma": "anschaffen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/anschaffen"}}
-{"lemma": "anschließen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/anschlie%C3%9Fen"}}
-{"lemma": "anschnallen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/anschnallen"}}
-{"lemma": "ansprechen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/ansprechen"}}
-{"lemma": "anstellen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/anstellen"}}
-{"lemma": "anstrengen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/anstrengen"}}
-{"lemma": "anwenden", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/anwenden"}}
-{"lemma": "anzeigen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/anzeigen"}}
-{"lemma": "atmen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/atmen"}}
-{"lemma": "auffallen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/auffallen"}}
-{"lemma": "auffordern", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/auffordern"}}
-{"lemma": "aufführen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/auff%C3%BChren"}}
-{"lemma": "aufgeben", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/aufgeben"}}
-{"lemma": "aufhalten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/aufhalten"}}
-{"lemma": "aufheben", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/aufheben"}}
-{"lemma": "aufladen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/aufladen"}}
-{"lemma": "auflösen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/aufl%C3%B6sen"}}
-{"lemma": "aufnehmen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/aufnehmen"}}
-{"lemma": "aufschreiben", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/aufschreiben"}}
-{"lemma": "auftreten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/auftreten"}}
-{"lemma": "aufwachen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/aufwachen"}}
-{"lemma": "ausbilden", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/ausbilden"}}
-{"lemma": "ausdrucken", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/ausdrucken"}}
-{"lemma": "ausfallen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/ausfallen"}}
-{"lemma": "ausreichen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/ausreichen"}}
-{"lemma": "ausrichten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/ausrichten"}}
-{"lemma": "ausschließen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/ausschlie%C3%9Fen"}}
-{"lemma": "ausstellen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/ausstellen"}}
-{"lemma": "aussuchen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/aussuchen"}}
-{"lemma": "auswählen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/ausw%C3%A4hlen"}}
-{"lemma": "beachten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/beachten"}}
-{"lemma": "beantragen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/beantragen"}}
-{"lemma": "bedienen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/bedienen"}}
-{"lemma": "beeinflussen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/beeinflussen"}}
-{"lemma": "befinden", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/befinden"}}
-{"lemma": "begegnen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/begegnen"}}
-{"lemma": "begleiten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/begleiten"}}
-{"lemma": "begrüßen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/begr%C3%BC%C3%9Fen"}}
-{"lemma": "behalten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/behalten"}}
-{"lemma": "behandeln", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/behandeln"}}
-{"lemma": "behaupten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/behaupten"}}
-{"lemma": "behindern", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/behindern"}}
-{"lemma": "beißen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/bei%C3%9Fen"}}
-{"lemma": "bekannt geben", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/bekannt%20geben"}}
-{"lemma": "bekanntgeben", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/bekanntgeben"}}
-{"lemma": "beleidigen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/beleidigen"}}
-{"lemma": "bemerken", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/bemerken"}}
-{"lemma": "bemühen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/bem%C3%BChen"}}
-{"lemma": "benötigen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/ben%C3%B6tigen"}}
-{"lemma": "beobachten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/beobachten"}}
-{"lemma": "berechnen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/berechnen"}}
-{"lemma": "beruhigen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/beruhigen"}}
-{"lemma": "beschränken", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/beschr%C3%A4nken"}}
-{"lemma": "beschädigen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/besch%C3%A4digen"}}
-{"lemma": "beschäftigen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/besch%C3%A4ftigen"}}
-{"lemma": "besetzen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/besetzen"}}
-{"lemma": "besorgen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/besorgen"}}
-{"lemma": "besprechen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/besprechen"}}
-{"lemma": "bestrafen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/bestrafen"}}
-{"lemma": "beteiligen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/beteiligen"}}
-{"lemma": "betreuen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/betreuen"}}
-{"lemma": "betrügen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/betr%C3%BCgen"}}
-{"lemma": "beweisen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/beweisen"}}
-{"lemma": "bieten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/bieten"}}
-{"lemma": "blitzen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/blitzen"}}
-{"lemma": "bluten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/bluten"}}
-{"lemma": "blühen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/bl%C3%BChen"}}
-{"lemma": "brechen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/brechen"}}
-{"lemma": "bremsen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/bremsen"}}
-{"lemma": "brennen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/brennen"}}
-{"lemma": "darstellen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/darstellen"}}
-{"lemma": "dekorieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/dekorieren"}}
-{"lemma": "dienen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/dienen"}}
-{"lemma": "donnern", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/donnern"}}
-{"lemma": "drehen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/drehen"}}
-{"lemma": "duzen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/duzen"}}
-{"lemma": "eignen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/eignen#1"}}
-{"lemma": "eilen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/eilen"}}
-{"lemma": "einbrechen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/einbrechen"}}
-{"lemma": "einfallen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/einfallen"}}
-{"lemma": "einfügen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/einf%C3%BCgen"}}
-{"lemma": "einführen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/einf%C3%BChren"}}
-{"lemma": "einigen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/einigen"}}
-{"lemma": "einnehmen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/einnehmen"}}
-{"lemma": "einrichten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/einrichten"}}
-{"lemma": "einschalten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/einschalten"}}
-{"lemma": "einsetzen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/einsetzen"}}
-{"lemma": "einstellen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/einstellen"}}
-{"lemma": "eintreten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/eintreten"}}
-{"lemma": "einzahlen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/einzahlen"}}
-{"lemma": "empfangen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/empfangen"}}
-{"lemma": "entdecken", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/entdecken"}}
-{"lemma": "entfernen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/entfernen"}}
-{"lemma": "entgegenkommen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/entgegenkommen"}}
-{"lemma": "enthalten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/enthalten"}}
-{"lemma": "entlassen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/entlassen"}}
-{"lemma": "entscheiden", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/entscheiden"}}
-{"lemma": "entschließen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/entschlie%C3%9Fen"}}
-{"lemma": "entsorgen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/entsorgen"}}
-{"lemma": "entspannen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/entspannen"}}
-{"lemma": "enttäuschen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/entt%C3%A4uschen"}}
-{"lemma": "entwickeln", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/entwickeln"}}
-{"lemma": "ereignen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/ereignen"}}
-{"lemma": "erfahren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/erfahren#1"}}
-{"lemma": "erfinden", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/erfinden"}}
-{"lemma": "erfordern", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/erfordern"}}
-{"lemma": "erfüllen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/erf%C3%BCllen"}}
-{"lemma": "ergänzen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/erg%C3%A4nzen"}}
-{"lemma": "erhalten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/erhalten"}}
-{"lemma": "erholen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/erholen"}}
-{"lemma": "erhöhen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/erh%C3%B6hen"}}
-{"lemma": "erkennen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/erkennen"}}
-{"lemma": "erkundigen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/erkundigen"}}
-{"lemma": "erkälten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/erk%C3%A4lten"}}
-{"lemma": "erleben", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/erleben"}}
-{"lemma": "erledigen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/erledigen"}}
-{"lemma": "erleichtern", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/erleichtern"}}
-{"lemma": "ernähren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/ern%C3%A4hren"}}
-{"lemma": "erschrecken", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/erschrecken#1; https://www.dwds.de/wb/erschrecken#2"}}
-{"lemma": "ersetzen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/ersetzen"}}
-{"lemma": "erstellen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/erstellen"}}
-{"lemma": "erwarten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/erwarten"}}
-{"lemma": "erziehen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/erziehen"}}
-{"lemma": "eröffnen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/er%C3%B6ffnen"}}
-{"lemma": "fangen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/fangen"}}
-{"lemma": "fassen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/fassen"}}
-{"lemma": "faulenzen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/faulenzen"}}
-{"lemma": "festhalten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/festhalten"}}
-{"lemma": "festlegen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/festlegen"}}
-{"lemma": "festnehmen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/festnehmen"}}
-{"lemma": "festsetzen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/festsetzen"}}
-{"lemma": "feststehen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/feststehen"}}
-{"lemma": "feststellen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/feststellen"}}
-{"lemma": "finanzieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/finanzieren"}}
-{"lemma": "fliehen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/fliehen"}}
-{"lemma": "fließen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/flie%C3%9Fen"}}
-{"lemma": "folgen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/folgen"}}
-{"lemma": "fordern", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/fordern"}}
-{"lemma": "fortsetzen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/fortsetzen"}}
-{"lemma": "fressen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/fressen"}}
-{"lemma": "frieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/frieren"}}
-{"lemma": "funktionieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/funktionieren"}}
-{"lemma": "fördern", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/f%C3%B6rdern"}}
-{"lemma": "führen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/f%C3%BChren"}}
-{"lemma": "fürchten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/f%C3%BCrchten"}}
-{"lemma": "füttern", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/f%C3%BCttern#1"}}
-{"lemma": "garantieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/garantieren"}}
-{"lemma": "gebrauchen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/gebrauchen"}}
-{"lemma": "gelingen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/gelingen"}}
-{"lemma": "gelten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/gelten"}}
-{"lemma": "genehmigen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/genehmigen"}}
-{"lemma": "genießen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/genie%C3%9Fen"}}
-{"lemma": "genügen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/gen%C3%BCgen"}}
-{"lemma": "geschehen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/geschehen"}}
-{"lemma": "gewöhnen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/gew%C3%B6hnen"}}
-{"lemma": "gießen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/gie%C3%9Fen"}}
-{"lemma": "greifen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/greifen"}}
-{"lemma": "grillieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/grillieren"}}
-{"lemma": "gründen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/gr%C3%BCnden"}}
-{"lemma": "grüßen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/gr%C3%BC%C3%9Fen"}}
-{"lemma": "gucken", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/gucken"}}
-{"lemma": "hageln", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/hageln"}}
-{"lemma": "handeln", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/handeln#1"}}
-{"lemma": "hassen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/hassen"}}
-{"lemma": "heben", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/heben"}}
-{"lemma": "heizen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/heizen"}}
-{"lemma": "herausfinden", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/herausfinden"}}
-{"lemma": "herunterfahren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/herunterfahren"}}
-{"lemma": "hinterlassen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/hinterlassen"}}
-{"lemma": "hinweisen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/hinweisen"}}
-{"lemma": "hochladen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/hochladen"}}
-{"lemma": "hupen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/hupen"}}
-{"lemma": "installieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/installieren"}}
-{"lemma": "integrieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/integrieren"}}
-{"lemma": "irren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/irren"}}
-{"lemma": "kaputt machen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/kaputt%20machen"}}
-{"lemma": "kaputtgehen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/kaputtgehen"}}
-{"lemma": "kaputtmachen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/kaputtmachen"}}
-{"lemma": "klagen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/klagen"}}
-{"lemma": "kleben", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/kleben"}}
-{"lemma": "klettern", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/klettern"}}
-{"lemma": "klicken", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/klicken"}}
-{"lemma": "klingeln", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/klingeln"}}
-{"lemma": "klingen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/klingen"}}
-{"lemma": "klopfen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/klopfen"}}
-{"lemma": "klären", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/kl%C3%A4ren"}}
-{"lemma": "konsumieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/konsumieren"}}
-{"lemma": "konzentrieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/konzentrieren"}}
-{"lemma": "kopieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/kopieren"}}
-{"lemma": "korrigieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/korrigieren"}}
-{"lemma": "kritisieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/kritisieren"}}
-{"lemma": "kämpfen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/k%C3%A4mpfen"}}
-{"lemma": "küssen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/k%C3%BCssen"}}
-{"lemma": "landen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/landen"}}
-{"lemma": "langweilen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/langweilen"}}
-{"lemma": "leiden", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/leiden"}}
-{"lemma": "leisten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/leisten"}}
-{"lemma": "leiten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/leiten"}}
-{"lemma": "loben", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/loben"}}
-{"lemma": "lohnen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/lohnen"}}
-{"lemma": "losfahren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/losfahren"}}
-{"lemma": "lächeln", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/l%C3%A4cheln"}}
-{"lemma": "löschen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/l%C3%B6schen#1"}}
-{"lemma": "lösen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/l%C3%B6sen"}}
-{"lemma": "markieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/markieren"}}
-{"lemma": "melden", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/melden"}}
-{"lemma": "messen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/messen"}}
-{"lemma": "mischen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/mischen"}}
-{"lemma": "mitteilen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/mitteilen"}}
-{"lemma": "nachdenken", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/nachdenken"}}
-{"lemma": "nachschlagen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/nachschlagen"}}
-{"lemma": "nutzen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/nutzen"}}
-{"lemma": "nähen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/n%C3%A4hen"}}
-{"lemma": "nähern", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/n%C3%A4hern"}}
-{"lemma": "nützen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/n%C3%BCtzen"}}
-{"lemma": "operieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/operieren"}}
-{"lemma": "ordnen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/ordnen"}}
-{"lemma": "parkieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/parkieren"}}
-{"lemma": "pensionieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/pensionieren"}}
-{"lemma": "pflanzen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/pflanzen#1"}}
-{"lemma": "pflegen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/pflegen#1"}}
-{"lemma": "produzieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/produzieren"}}
-{"lemma": "protestieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/protestieren"}}
-{"lemma": "präsentieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/pr%C3%A4sentieren"}}
-{"lemma": "rasieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/rasieren"}}
-{"lemma": "reagieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/reagieren"}}
-{"lemma": "realisieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/realisieren"}}
-{"lemma": "reduzieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/reduzieren"}}
-{"lemma": "regeln", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/regeln"}}
-{"lemma": "reichen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/reichen"}}
-{"lemma": "reinigen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/reinigen"}}
-{"lemma": "rennen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/rennen"}}
-{"lemma": "retten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/retten"}}
-{"lemma": "runterwerfen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/runterwerfen"}}
-{"lemma": "schaden", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/schaden"}}
-{"lemma": "schalten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/schalten#1"}}
-{"lemma": "schauen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/schauen"}}
-{"lemma": "scheiden", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/scheiden"}}
-{"lemma": "schieben", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/schieben"}}
-{"lemma": "schießen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/schie%C3%9Fen"}}
-{"lemma": "schminken", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/schminken"}}
-{"lemma": "schreien", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/schreien"}}
-{"lemma": "schweigen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/schweigen"}}
-{"lemma": "schwitzen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/schwitzen"}}
-{"lemma": "schätzen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/sch%C3%A4tzen"}}
-{"lemma": "schütteln", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/sch%C3%BCtteln"}}
-{"lemma": "schützen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/sch%C3%BCtzen"}}
-{"lemma": "senden", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/senden"}}
-{"lemma": "sichern", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/sichern"}}
-{"lemma": "siegen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/siegen"}}
-{"lemma": "siezen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/siezen"}}
-{"lemma": "sinken", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/sinken"}}
-{"lemma": "sorgen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/sorgen"}}
-{"lemma": "spazieren gehen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/spazieren%20gehen"}}
-{"lemma": "springen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/springen"}}
-{"lemma": "spülen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/sp%C3%BClen"}}
-{"lemma": "spüren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/sp%C3%BCren"}}
-{"lemma": "stammen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/stammen"}}
-{"lemma": "starten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/starten"}}
-{"lemma": "Staub saugen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/Staub%20saugen"}}
-{"lemma": "staubsaugen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/staubsaugen"}}
-{"lemma": "stechen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/stechen"}}
-{"lemma": "stecken", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/stecken#1; https://www.dwds.de/wb/stecken#2"}}
-{"lemma": "stehen bleiben", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/stehen%20bleiben"}}
-{"lemma": "stehenbleiben", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/stehenbleiben"}}
-{"lemma": "stehlen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/stehlen"}}
-{"lemma": "steigen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/steigen"}}
-{"lemma": "stimmen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/stimmen"}}
-{"lemma": "stinken", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/stinken"}}
-{"lemma": "stoppen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/stoppen"}}
-{"lemma": "streiken", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/streiken"}}
-{"lemma": "stürzen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/st%C3%BCrzen"}}
-{"lemma": "tanken", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/tanken"}}
-{"lemma": "tauchen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/tauchen"}}
-{"lemma": "testen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/testen"}}
-{"lemma": "tippen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/tippen#1"}}
-{"lemma": "transportieren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/transportieren"}}
-{"lemma": "treiben", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/treiben"}}
-{"lemma": "trennen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/trennen"}}
-{"lemma": "treten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/treten"}}
-{"lemma": "trocknen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/trocknen"}}
-{"lemma": "twittern", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/twittern"}}
-{"lemma": "umarmen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/umarmen"}}
-{"lemma": "umdrehen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/umdrehen"}}
-{"lemma": "umgehen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/umgehen"}}
-{"lemma": "umtauschen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/umtauschen"}}
-{"lemma": "unterbrechen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/unterbrechen"}}
-{"lemma": "unterlassen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/unterlassen"}}
-{"lemma": "unterrichten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/unterrichten"}}
-{"lemma": "unterscheiden", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/unterscheiden"}}
-{"lemma": "unterstreichen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/unterstreichen"}}
-{"lemma": "unterstützen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/unterst%C3%BCtzen"}}
-{"lemma": "verabschieden", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verabschieden"}}
-{"lemma": "verbessern", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verbessern"}}
-{"lemma": "verbrauchen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verbrauchen"}}
-{"lemma": "verbrennen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verbrennen"}}
-{"lemma": "verbringen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verbringen"}}
-{"lemma": "vergnügen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/vergn%C3%BCgen"}}
-{"lemma": "vergrößern", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/vergr%C3%B6%C3%9Fern"}}
-{"lemma": "verhaften", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verhaften"}}
-{"lemma": "verhalten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verhalten#1"}}
-{"lemma": "verhindern", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verhindern"}}
-{"lemma": "verlangen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verlangen"}}
-{"lemma": "verlassen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verlassen#1; https://www.dwds.de/wb/verlassen#2"}}
-{"lemma": "verlaufen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verlaufen"}}
-{"lemma": "verlängern", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verl%C3%A4ngern"}}
-{"lemma": "vermeiden", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/vermeiden"}}
-{"lemma": "vermissen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/vermissen"}}
-{"lemma": "vermuten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/vermuten"}}
-{"lemma": "verpacken", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verpacken"}}
-{"lemma": "verpflegen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verpflegen"}}
-{"lemma": "verpflichten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verpflichten"}}
-{"lemma": "verraten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verraten"}}
-{"lemma": "verschmutzen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verschmutzen"}}
-{"lemma": "verschreiben", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verschreiben"}}
-{"lemma": "verschwinden", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verschwinden"}}
-{"lemma": "versichern", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/versichern"}}
-{"lemma": "versprechen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/versprechen"}}
-{"lemma": "verstecken", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verstecken"}}
-{"lemma": "versäumen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/vers%C3%A4umen"}}
-{"lemma": "verteilen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verteilen"}}
-{"lemma": "vertrauen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/vertrauen"}}
-{"lemma": "vertreten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/vertreten"}}
-{"lemma": "verursachen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verursachen"}}
-{"lemma": "verurteilen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verurteilen"}}
-{"lemma": "verwechseln", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verwechseln"}}
-{"lemma": "verwenden", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verwenden"}}
-{"lemma": "verzeihen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verzeihen"}}
-{"lemma": "verzichten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/verzichten"}}
-{"lemma": "verändern", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/ver%C3%A4ndern"}}
-{"lemma": "veröffentlichen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/ver%C3%B6ffentlichen"}}
-{"lemma": "vorhaben", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/vorhaben"}}
-{"lemma": "vorkommen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/vorkommen"}}
-{"lemma": "vorlesen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/vorlesen"}}
-{"lemma": "vorschlagen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/vorschlagen"}}
-{"lemma": "wachsen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/wachsen#1"}}
-{"lemma": "warnen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/warnen"}}
-{"lemma": "weigern", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/weigern"}}
-{"lemma": "wenden", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/wenden"}}
-{"lemma": "werfen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/werfen"}}
-{"lemma": "wetten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/wetten"}}
-{"lemma": "widersprechen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/widersprechen"}}
-{"lemma": "wiegen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/wiegen#1"}}
-{"lemma": "winken", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/winken"}}
-{"lemma": "wirken", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/wirken#1"}}
-{"lemma": "wundern", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/wundern"}}
-{"lemma": "zelten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/zelten"}}
-{"lemma": "zerstören", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/zerst%C3%B6ren"}}
-{"lemma": "zubereiten", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/zubereiten"}}
-{"lemma": "zugehen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/zugehen"}}
-{"lemma": "zunehmen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/zunehmen"}}
-{"lemma": "zurechtkommen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/zurechtkommen"}}
-{"lemma": "zusagen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/zusagen"}}
-{"lemma": "zusammenfassen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/zusammenfassen"}}
-{"lemma": "zuschauen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/zuschauen"}}
-{"lemma": "zustimmen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/zustimmen"}}
-{"lemma": "zweifeln", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/zweifeln"}}
-{"lemma": "zwingen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/zwingen"}}
-{"lemma": "zählen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/z%C3%A4hlen"}}
-{"lemma": "überfahren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/%C3%BCberfahren"}}
-{"lemma": "überholen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/%C3%BCberholen"}}
-{"lemma": "überlegen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/%C3%BCberlegen#1"}}
-{"lemma": "übernehmen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/%C3%BCbernehmen"}}
-{"lemma": "überprüfen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/%C3%BCberpr%C3%BCfen"}}
-{"lemma": "überqueren", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/%C3%BCberqueren"}}
-{"lemma": "überraschen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/%C3%BCberraschen"}}
-{"lemma": "überreden", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/%C3%BCberreden"}}
-{"lemma": "übertreiben", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/%C3%BCbertreiben"}}
-{"lemma": "überzeugen", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/%C3%BCberzeugen"}}
-{"lemma": "möchten", "level": "A2", "english": "would like to", "approved": false, "sources": {"csv": "learn-deutsch-data:modal", "notes": "MÖCH-ten"}, "verb": {"praesens": {"ich": "möchte", "er": "möchte"}}}
+{"lemma": "arbeiten", "level": "A1", "english": "to work", "approved": true, "examples": [{"de": "Sie arbeitete in einer Bank.", "en": "Er hat als Koch gearbeitet."}], "verb": {"aux": "haben", "praeteritum": "arbeitete", "partizipIi": "gearbeitet", "perfekt": "hat gearbeitet"}}
+{"lemma": "essen", "level": "A1", "english": "to eat", "approved": true, "examples": [{"de": "Er aß ein Sandwich.", "en": "Wir haben zu Mittag gegessen."}], "verb": {"aux": "haben", "praeteritum": "aß", "partizipIi": "gegessen", "perfekt": "hat gegessen"}}
+{"lemma": "gehen", "level": "A1", "english": "to go", "approved": true, "examples": [{"de": "Er ging zur Schule.", "en": "Wir sind nach Hause gegangen."}], "verb": {"separable": false, "aux": "sein", "praesens": {"ich": "gehe", "er": "geht"}, "praeteritum": "ging", "partizipIi": "gegangen", "perfekt": "ist gegangen"}}
+{"lemma": "haben", "level": "A1", "english": "to have", "approved": true, "examples": [{"de": "Ich hatte keine Zeit.", "en": "Er hat viel Geld gehabt."}], "verb": {"separable": false, "aux": "haben", "praesens": {"ich": "habe", "er": "hat"}, "praeteritum": "hatte", "partizipIi": "gehabt", "perfekt": "hat gehabt"}}
+{"lemma": "heißen", "level": "A1", "english": "to be called", "approved": true, "examples": [{"de": "Er hieß Peter.", "en": "Sie hat anders geheißen."}], "verb": {"aux": "haben", "praeteritum": "hieß", "partizipIi": "geheißen", "perfekt": "hat geheißen"}}
+{"lemma": "hören", "level": "A1", "english": "to hear", "approved": true, "examples": [{"de": "Sie hörte Musik.", "en": "Ich habe ein Geräusch gehört."}], "verb": {"aux": "haben", "praeteritum": "hörte", "partizipIi": "gehört", "perfekt": "hat gehört"}}
+{"lemma": "kaufen", "level": "A1", "english": "to buy", "approved": true, "examples": [{"de": "Sie kaufte neue Schuhe.", "en": "Er hat ein Auto gekauft."}], "verb": {"aux": "haben", "praeteritum": "kaufte", "partizipIi": "gekauft", "perfekt": "hat gekauft"}}
+{"lemma": "kommen", "level": "A1", "english": "to come", "approved": true, "examples": [{"de": "Sie kam spät.", "en": "Der Bus ist pünktlich gekommen."}], "verb": {"aux": "sein", "praeteritum": "kam", "partizipIi": "gekommen", "perfekt": "ist gekommen"}}
+{"lemma": "können", "level": "A1", "english": "can/to be able to", "approved": true, "examples": [{"de": "Er konnte gut schwimmen.", "en": "Das hat er immer gut gekonnt."}], "verb": {"aux": "haben", "praesens": {"ich": "kann", "er": "kann"}, "praeteritum": "konnte", "partizipIi": "gekonnt", "perfekt": "hat gekonnt"}}
+{"lemma": "leben", "level": "A1", "english": "to live", "approved": true, "examples": [{"de": "Er lebte in Berlin.", "en": "Sie hat lange in Paris gelebt."}], "verb": {"aux": "haben", "praeteritum": "lebte", "partizipIi": "gelebt", "perfekt": "hat gelebt"}}
+{"lemma": "lernen", "level": "A1", "english": "to learn", "approved": true, "examples": [{"de": "Sie lernte Deutsch.", "en": "Er hat viel gelernt."}], "verb": {"aux": "haben", "praeteritum": "lernte", "partizipIi": "gelernt", "perfekt": "hat gelernt"}}
+{"lemma": "lesen", "level": "A1", "english": "to read", "approved": true, "examples": [{"de": "Sie las ein interessantes Buch.", "en": "Er hat die Zeitung gelesen."}], "verb": {"aux": "haben", "praeteritum": "las", "partizipIi": "gelesen", "perfekt": "hat gelesen"}}
+{"lemma": "machen", "level": "A1", "english": "to make/do", "approved": true, "examples": [{"de": "Er machte seine Hausaufgaben.", "en": "Sie hat das Essen gemacht."}], "verb": {"aux": "haben", "praeteritum": "machte", "partizipIi": "gemacht", "perfekt": "hat gemacht"}}
+{"lemma": "müssen", "level": "A1", "english": "must/to have to", "approved": true, "examples": [{"de": "Ich musste früh aufstehen.", "en": "Er hat arbeiten gemusst."}], "verb": {"aux": "haben", "praesens": {"ich": "muss", "er": "muss"}, "praeteritum": "musste", "partizipIi": "gemusst", "perfekt": "hat gemusst"}}
+{"lemma": "schlafen", "level": "A1", "english": "to sleep", "approved": true, "examples": [{"de": "Das Kind schlief tief.", "en": "Ich habe gut geschlafen."}], "verb": {"aux": "haben", "praeteritum": "schlief", "partizipIi": "geschlafen", "perfekt": "hat geschlafen"}}
+{"lemma": "schreiben", "level": "A1", "english": "to write", "approved": true, "examples": [{"de": "Er schrieb einen Brief.", "en": "Sie hat eine E-Mail geschrieben."}], "verb": {"aux": "haben", "praeteritum": "schrieb", "partizipIi": "geschrieben", "perfekt": "hat geschrieben"}}
+{"lemma": "sehen", "level": "A1", "english": "to see", "approved": true, "examples": [{"de": "Er sah einen Film.", "en": "Wir haben uns gestern gesehen."}], "verb": {"aux": "haben", "praeteritum": "sah", "partizipIi": "gesehen", "perfekt": "hat gesehen"}}
+{"lemma": "sein", "level": "A1", "english": "to be", "approved": true, "examples": [{"de": "Er war gestern krank.", "en": "Sie ist lange in Berlin gewesen."}], "verb": {"separable": false, "aux": "sein", "praesens": {"ich": "bin", "er": "ist"}, "praeteritum": "war", "partizipIi": "gewesen", "perfekt": "ist gewesen"}}
+{"lemma": "sollen", "level": "A1", "english": "should/ought to", "approved": true, "examples": [{"de": "Du solltest mehr lernen.", "en": "Das hätte ich nicht gesollt."}], "verb": {"aux": "haben", "praesens": {"ich": "soll", "er": "soll"}, "praeteritum": "sollte", "partizipIi": "gesollt", "perfekt": "hat gesollt"}}
+{"lemma": "spielen", "level": "A1", "english": "to play", "approved": true, "examples": [{"de": "Das Kind spielte im Garten.", "en": "Wir haben Fußball gespielt."}], "verb": {"aux": "haben", "praeteritum": "spielte", "partizipIi": "gespielt", "perfekt": "hat gespielt"}}
+{"lemma": "sprechen", "level": "A1", "english": "to speak", "approved": true, "examples": [{"de": "Er sprach sehr gut Deutsch.", "en": "Sie hat mit ihrer Mutter gesprochen."}], "verb": {"separable": false, "aux": "haben", "praesens": {"ich": "spreche", "er": "spricht"}, "praeteritum": "sprach", "partizipIi": "gesprochen", "perfekt": "hat gesprochen"}}
+{"lemma": "trinken", "level": "A1", "english": "to drink", "approved": true, "examples": [{"de": "Sie trank Wasser.", "en": "Er hat Kaffee getrunken."}], "verb": {"aux": "haben", "praeteritum": "trank", "partizipIi": "getrunken", "perfekt": "hat getrunken"}}
+{"lemma": "werden", "level": "A1", "english": "to become", "approved": true, "examples": [{"de": "Sie wurde Lehrerin.", "en": "Er ist Arzt geworden."}], "verb": {"aux": "sein", "praeteritum": "wurde", "partizipIi": "geworden", "perfekt": "ist geworden"}}
+{"lemma": "wohnen", "level": "A1", "english": "to live/reside", "approved": true, "examples": [{"de": "Er wohnte im Zentrum.", "en": "Sie hat in einem Apartment gewohnt."}], "verb": {"aux": "haben", "praeteritum": "wohnte", "partizipIi": "gewohnt", "perfekt": "hat gewohnt"}}
+{"lemma": "wollen", "level": "A1", "english": "to want", "approved": true, "examples": [{"de": "Er wollte nach Hause.", "en": "Sie hat das nicht gewollt."}], "verb": {"aux": "haben", "praesens": {"ich": "will", "er": "will"}, "praeteritum": "wollte", "partizipIi": "gewollt", "perfekt": "hat gewollt"}}
+{"lemma": "fahren", "level": "A1", "english": "to drive/ride", "approved": true, "examples": [{"de": "Sie fuhr nach Berlin.", "en": "Er ist Auto gefahren."}], "verb": {"aux": "sein", "praeteritum": "fuhr", "partizipIi": "gefahren", "perfekt": "ist gefahren"}}
+{"lemma": "fliegen", "level": "A1", "english": "to fly", "approved": true, "examples": [{"de": "Das Flugzeug flog nach Paris.", "en": "Wir sind nach London geflogen."}], "verb": {"aux": "sein", "praeteritum": "flog", "partizipIi": "geflogen", "perfekt": "ist geflogen"}}
+{"lemma": "laufen", "level": "A1", "english": "to run/walk", "approved": true, "examples": [{"de": "Er lief schnell.", "en": "Sie ist einen Marathon gelaufen."}], "verb": {"aux": "sein", "praeteritum": "lief", "partizipIi": "gelaufen", "perfekt": "ist gelaufen"}}
+{"lemma": "schwimmen", "level": "A1", "english": "to swim", "approved": true, "examples": [{"de": "Er schwamm im See.", "en": "Sie ist einen Kilometer geschwommen."}], "verb": {"aux": "sein", "praeteritum": "schwamm", "partizipIi": "geschwommen", "perfekt": "ist geschwommen"}}
+{"lemma": "tanzen", "level": "A1", "english": "to dance", "approved": true, "examples": [{"de": "Sie tanzten die ganze Nacht.", "en": "Wir haben Salsa getanzt."}], "verb": {"aux": "haben", "praeteritum": "tanzte", "partizipIi": "getanzt", "perfekt": "hat getanzt"}}
+{"lemma": "beschließen", "level": "B1", "english": "to decide", "approved": true, "examples": [{"de": "Das Komitee beschloss die Änderungen.", "en": "Sie haben eine neue Strategie beschlossen."}], "verb": {"aux": "haben", "praeteritum": "beschloss", "partizipIi": "beschlossen", "perfekt": "hat beschlossen"}}
+{"lemma": "entstehen", "level": "B1", "english": "to develop/arise", "approved": true, "examples": [{"de": "Daraus entstand eine neue Idee.", "en": "Das Problem ist plötzlich entstanden."}], "verb": {"aux": "sein", "praeteritum": "entstand", "partizipIi": "entstanden", "perfekt": "ist entstanden"}}
+{"lemma": "erreichen", "level": "A2", "english": "to reach/achieve", "approved": true, "examples": [{"de": "Sie erreichte ihr Ziel.", "en": "Er hat den Gipfel erreicht."}], "verb": {"aux": "haben", "praeteritum": "erreichte", "partizipIi": "erreicht", "perfekt": "hat erreicht"}}
+{"lemma": "verbinden", "level": "B1", "english": "to connect/combine", "approved": true, "examples": [{"de": "Er verband die beiden Kabel.", "en": "Sie hat Tradition mit Innovation verbunden."}], "verb": {"aux": "haben", "praeteritum": "verband", "partizipIi": "verbunden", "perfekt": "hat verbunden"}}
+{"lemma": "bewerten", "level": "B2", "english": "to evaluate/assess", "approved": true, "examples": [{"de": "Der Professor bewertete die Arbeiten.", "en": "Die Jury hat die Leistungen bewertet."}], "verb": {"aux": "haben", "praeteritum": "bewertete", "partizipIi": "bewertet", "perfekt": "hat bewertet"}}
+{"lemma": "durchführen", "level": "B2", "english": "to carry out/conduct", "approved": true, "examples": [{"de": "Das Team führte das Experiment durch.", "en": "Sie haben eine Studie durchgeführt."}], "verb": {"aux": "haben", "praeteritum": "führte durch", "partizipIi": "durchgeführt", "perfekt": "hat durchgeführt"}}
+{"lemma": "übertragen", "level": "B2", "english": "to transfer/transmit", "approved": true, "examples": [{"de": "Er übertrug die Verantwortung.", "en": "Die Krankheit hat sich schnell übertragen."}], "verb": {"aux": "haben", "praeteritum": "übertrug", "partizipIi": "übertragen", "perfekt": "hat übertragen"}}
+{"lemma": "beinhalten", "level": "C1", "english": "to contain/include", "approved": true, "examples": [{"de": "Der Vertrag beinhaltete wichtige Klauseln.", "en": "Das Angebot hat viele Vorteile beinhaltet."}], "verb": {"aux": "haben", "praeteritum": "beinhaltete", "partizipIi": "beinhaltet", "perfekt": "hat beinhaltet"}}
+{"lemma": "entsprechen", "level": "C1", "english": "to correspond", "approved": true, "examples": [{"de": "Das Ergebnis entsprach den Erwartungen.", "en": "Die Leistung hat den Anforderungen entsprochen."}], "verb": {"aux": "haben", "praeteritum": "entsprach", "partizipIi": "entsprochen", "perfekt": "hat entsprochen"}}
+{"lemma": "erörtern", "level": "C1", "english": "to discuss/debate", "approved": true, "examples": [{"de": "Das Gremium erörterte die Vorschläge.", "en": "Die Experten haben die Problematik erörtert."}], "verb": {"aux": "haben", "praeteritum": "erörterte", "partizipIi": "erörtert", "perfekt": "hat erörtert"}}
+{"lemma": "differenzieren", "level": "C2", "english": "to differentiate", "approved": true, "examples": [{"de": "Der Experte differenzierte zwischen den Konzepten.", "en": "Sie hat genau zwischen den Optionen differenziert."}], "verb": {"aux": "haben", "praeteritum": "differenzierte", "partizipIi": "differenziert", "perfekt": "hat differenziert"}}
+{"lemma": "gedeihen", "level": "C2", "english": "to thrive/flourish", "approved": true, "examples": [{"de": "Das Unternehmen gedieh unter seiner Führung.", "en": "Die Pflanzen sind prächtig gediehen."}], "verb": {"aux": "sein", "praeteritum": "gedieh", "partizipIi": "gediehen", "perfekt": "ist gediehen"}}
+{"lemma": "suggerieren", "level": "C2", "english": "to suggest/imply", "approved": true, "examples": [{"de": "Der Text suggerierte eine andere Interpretation.", "en": "Die Studie hat einen Zusammenhang suggeriert."}], "verb": {"aux": "haben", "praeteritum": "suggerierte", "partizipIi": "suggeriert", "perfekt": "hat suggeriert"}}
+{"lemma": "abfahren", "level": "A1", "approved": false}
+{"lemma": "abfliegen", "level": "A1", "approved": false}
+{"lemma": "abgeben", "level": "A1", "approved": false}
+{"lemma": "abholen", "level": "A1", "approved": false}
+{"lemma": "anbieten", "level": "A1", "approved": false}
+{"lemma": "anfangen", "level": "A1", "approved": false}
+{"lemma": "anklicken", "level": "A1", "approved": false}
+{"lemma": "ankommen", "level": "A1", "approved": false}
+{"lemma": "ankreuzen", "level": "A1", "approved": false}
+{"lemma": "anmachen", "level": "A1", "approved": false}
+{"lemma": "anmelden", "level": "A1", "approved": false}
+{"lemma": "anrufen", "level": "A1", "english": "to call (phone)", "approved": false, "verb": {"separable": true, "praesens": {"ich": "rufe an", "er": "ruft an"}}}
+{"lemma": "antworten", "level": "A1", "approved": false}
+{"lemma": "anziehen", "level": "A1", "approved": false}
+{"lemma": "auf sein", "level": "A1", "approved": false}
+{"lemma": "aufhören", "level": "A1", "approved": false}
+{"lemma": "aufstehen", "level": "A1", "approved": false}
+{"lemma": "aus sein", "level": "A1", "approved": false}
+{"lemma": "ausfüllen", "level": "A1", "approved": false}
+{"lemma": "ausmachen", "level": "A1", "approved": false}
+{"lemma": "aussehen", "level": "A1", "approved": false}
+{"lemma": "aussteigen", "level": "A1", "approved": false}
+{"lemma": "ausziehen", "level": "A1", "approved": false}
+{"lemma": "baden", "level": "A1", "approved": false}
+{"lemma": "bedeuten", "level": "A1", "approved": false}
+{"lemma": "beginnen", "level": "A1", "approved": false}
+{"lemma": "bekommen", "level": "A1", "approved": false}
+{"lemma": "benutzen", "level": "A1", "approved": false}
+{"lemma": "besichtigen", "level": "A1", "approved": false}
+{"lemma": "bestellen", "level": "A1", "approved": false}
+{"lemma": "besuchen", "level": "A1", "approved": false}
+{"lemma": "bezahlen", "level": "A1", "approved": false}
+{"lemma": "bitten", "level": "A1", "approved": false}
+{"lemma": "bleiben", "level": "A1", "approved": false}
+{"lemma": "brauchen", "level": "A1", "approved": false}
+{"lemma": "bringen", "level": "A1", "approved": false}
+{"lemma": "buchstabieren", "level": "A1", "approved": false}
+{"lemma": "danken", "level": "A1", "approved": false}
+{"lemma": "dauern", "level": "A1", "approved": false}
+{"lemma": "drucken", "level": "A1", "approved": false}
+{"lemma": "drücken", "level": "A1", "approved": false}
+{"lemma": "duschen", "level": "A1", "approved": false}
+{"lemma": "dürfen", "level": "A1", "english": "may, to be allowed to", "approved": false, "verb": {"praesens": {"ich": "darf", "er": "darf"}}}
+{"lemma": "einkaufen", "level": "A1", "approved": false}
+{"lemma": "einladen", "level": "A1", "approved": false}
+{"lemma": "einsteigen", "level": "A1", "approved": false}
+{"lemma": "empfehlen", "level": "A1", "approved": false}
+{"lemma": "enden", "level": "A1", "approved": false}
+{"lemma": "entschuldigen", "level": "A1", "approved": false}
+{"lemma": "erklären", "level": "A1", "approved": false}
+{"lemma": "erlauben", "level": "A1", "approved": false}
+{"lemma": "erzählen", "level": "A1", "approved": false}
+{"lemma": "fehlen", "level": "A1", "approved": false}
+{"lemma": "feiern", "level": "A1", "approved": false}
+{"lemma": "fernsehen", "level": "A1", "approved": false}
+{"lemma": "finden", "level": "A1", "approved": false}
+{"lemma": "fragen", "level": "A1", "approved": false}
+{"lemma": "freuen", "level": "A1", "approved": false}
+{"lemma": "frühstücken", "level": "A1", "approved": false}
+{"lemma": "geben", "level": "A1", "approved": false}
+{"lemma": "gefallen", "level": "A1", "approved": false}
+{"lemma": "gehören", "level": "A1", "approved": false}
+{"lemma": "gewinnen", "level": "A1", "approved": false}
+{"lemma": "glauben", "level": "A1", "approved": false}
+{"lemma": "gratulieren", "level": "A1", "approved": false}
+{"lemma": "grillen", "level": "A1", "approved": false}
+{"lemma": "halten", "level": "A1", "approved": false}
+{"lemma": "heiraten", "level": "A1", "approved": false}
+{"lemma": "helfen", "level": "A1", "approved": false}
+{"lemma": "holen", "level": "A1", "approved": false}
+{"lemma": "kennen", "level": "A1", "approved": false}
+{"lemma": "kennen lernen", "level": "A1", "approved": false}
+{"lemma": "kennenlernen", "level": "A1", "approved": false}
+{"lemma": "kochen", "level": "A1", "approved": false}
+{"lemma": "kosten", "level": "A1", "approved": false}
+{"lemma": "kriegen", "level": "A1", "approved": false}
+{"lemma": "kümmern", "level": "A1", "approved": false}
+{"lemma": "lachen", "level": "A1", "approved": false}
+{"lemma": "legen", "level": "A1", "approved": false}
+{"lemma": "lieben", "level": "A1", "approved": false}
+{"lemma": "liegen", "level": "A1", "approved": false}
+{"lemma": "mieten", "level": "A1", "approved": false}
+{"lemma": "mitbringen", "level": "A1", "approved": false}
+{"lemma": "mitkommen", "level": "A1", "approved": false}
+{"lemma": "mitmachen", "level": "A1", "approved": false}
+{"lemma": "mögen", "level": "A1", "english": "to like", "approved": false, "verb": {"praesens": {"ich": "mag", "er": "mag"}}}
+{"lemma": "nehmen", "level": "A1", "approved": false}
+{"lemma": "rauchen", "level": "A1", "approved": false}
+{"lemma": "regnen", "level": "A1", "approved": false}
+{"lemma": "reisen", "level": "A1", "approved": false}
+{"lemma": "reparieren", "level": "A1", "approved": false}
+{"lemma": "riechen", "level": "A1", "approved": false}
+{"lemma": "sagen", "level": "A1", "approved": false}
+{"lemma": "scheinen", "level": "A1", "approved": false}
+{"lemma": "schicken", "level": "A1", "approved": false}
+{"lemma": "schließen", "level": "A1", "approved": false}
+{"lemma": "schmecken", "level": "A1", "approved": false}
+{"lemma": "sitzen", "level": "A1", "approved": false}
+{"lemma": "stehen", "level": "A1", "approved": false}
+{"lemma": "stellen", "level": "A1", "approved": false}
+{"lemma": "studieren", "level": "A1", "approved": false}
+{"lemma": "suchen", "level": "A1", "approved": false}
+{"lemma": "telefonieren", "level": "A1", "approved": false}
+{"lemma": "treffen", "level": "A1", "approved": false}
+{"lemma": "tun", "level": "A1", "approved": false}
+{"lemma": "umziehen", "level": "A1", "approved": false}
+{"lemma": "unterschreiben", "level": "A1", "approved": false}
+{"lemma": "verdienen", "level": "A1", "approved": false}
+{"lemma": "verkaufen", "level": "A1", "approved": false}
+{"lemma": "vermieten", "level": "A1", "approved": false}
+{"lemma": "verstehen", "level": "A1", "approved": false}
+{"lemma": "vorstellen", "level": "A1", "approved": false}
+{"lemma": "wandern", "level": "A1", "approved": false}
+{"lemma": "warten", "level": "A1", "approved": false}
+{"lemma": "waschen", "level": "A1", "approved": false}
+{"lemma": "weg sein", "level": "A1", "approved": false}
+{"lemma": "weh tun", "level": "A1", "approved": false}
+{"lemma": "wehtun", "level": "A1", "approved": false}
+{"lemma": "wieder holen", "level": "A1", "approved": false}
+{"lemma": "wiederholen", "level": "A1", "approved": false}
+{"lemma": "wissen", "level": "A1", "approved": false}
+{"lemma": "zahlen", "level": "A1", "approved": false}
+{"lemma": "zu sein", "level": "A1", "approved": false}
+{"lemma": "öffnen", "level": "A1", "approved": false}
+{"lemma": "übernachten", "level": "A1", "approved": false}
+{"lemma": "überweisen", "level": "A1", "approved": false}
+{"lemma": "abschließen", "level": "A2", "approved": false}
+{"lemma": "ansehen", "level": "A2", "approved": false}
+{"lemma": "aufmachen", "level": "A2", "approved": false}
+{"lemma": "aufpassen", "level": "A2", "approved": false}
+{"lemma": "aufregen", "level": "A2", "approved": false}
+{"lemma": "aufräumen", "level": "A2", "approved": false}
+{"lemma": "ausgeben", "level": "A2", "approved": false}
+{"lemma": "ausgehen", "level": "A2", "approved": false}
+{"lemma": "auspacken", "level": "A2", "approved": false}
+{"lemma": "ausruhen", "level": "A2", "approved": false}
+{"lemma": "aussprechen", "level": "A2", "approved": false}
+{"lemma": "austauschen", "level": "A2", "approved": false}
+{"lemma": "austragen", "level": "A2", "approved": false}
+{"lemma": "backen", "level": "A2", "approved": false}
+{"lemma": "basteln", "level": "A2", "approved": false}
+{"lemma": "bauen", "level": "A2", "approved": false}
+{"lemma": "beantworten", "level": "A2", "approved": false}
+{"lemma": "bedanken", "level": "A2", "approved": false}
+{"lemma": "beeilen", "level": "A2", "approved": false}
+{"lemma": "beenden", "level": "A2", "approved": false}
+{"lemma": "begründen", "level": "A2", "approved": false}
+{"lemma": "beraten", "level": "A2", "approved": false}
+{"lemma": "berichten", "level": "A2", "approved": false}
+{"lemma": "beschreiben", "level": "A2", "approved": false}
+{"lemma": "beschweren", "level": "A2", "approved": false}
+{"lemma": "bestehen", "level": "A2", "approved": false}
+{"lemma": "bestätigen", "level": "A2", "approved": false}
+{"lemma": "bewerben", "level": "A2", "approved": false}
+{"lemma": "braten", "level": "A2", "approved": false}
+{"lemma": "buchen", "level": "A2", "approved": false}
+{"lemma": "chatten", "level": "A2", "approved": false}
+{"lemma": "denken", "level": "A2", "approved": false}
+{"lemma": "diskutieren", "level": "A2", "approved": false}
+{"lemma": "einpacken", "level": "A2", "approved": false}
+{"lemma": "eintragen", "level": "A2", "approved": false}
+{"lemma": "einziehen", "level": "A2", "approved": false}
+{"lemma": "erinnern", "level": "A2", "approved": false}
+{"lemma": "fallen", "level": "A2", "approved": false}
+{"lemma": "fotografieren", "level": "A2", "approved": false}
+{"lemma": "fühlen", "level": "A2", "approved": false}
+{"lemma": "herstellen", "level": "A2", "approved": false}
+{"lemma": "herunterladen", "level": "A2", "approved": false}
+{"lemma": "hoffen", "level": "A2", "approved": false}
+{"lemma": "husten", "level": "A2", "approved": false}
+{"lemma": "hängen", "level": "A2", "approved": false}
+{"lemma": "informieren", "level": "A2", "approved": false}
+{"lemma": "interessieren", "level": "A2", "approved": false}
+{"lemma": "joggen", "level": "A2", "approved": false}
+{"lemma": "klappen", "level": "A2", "approved": false}
+{"lemma": "kontrollieren", "level": "A2", "approved": false}
+{"lemma": "kündigen", "level": "A2", "approved": false}
+{"lemma": "lassen", "level": "A2", "approved": false}
+{"lemma": "leidtun", "level": "A2", "approved": false}
+{"lemma": "leihen", "level": "A2", "approved": false}
+{"lemma": "liefern", "level": "A2", "approved": false}
+{"lemma": "lügen", "level": "A2", "approved": false}
+{"lemma": "malen", "level": "A2", "approved": false}
+{"lemma": "meinen", "level": "A2", "approved": false}
+{"lemma": "merken", "level": "A2", "approved": false}
+{"lemma": "nennen", "level": "A2", "approved": false}
+{"lemma": "notieren", "level": "A2", "approved": false}
+{"lemma": "organisieren", "level": "A2", "approved": false}
+{"lemma": "packen", "level": "A2", "approved": false}
+{"lemma": "parken", "level": "A2", "approved": false}
+{"lemma": "passen", "level": "A2", "approved": false}
+{"lemma": "passieren", "level": "A2", "approved": false}
+{"lemma": "planen", "level": "A2", "approved": false}
+{"lemma": "probieren", "level": "A2", "approved": false}
+{"lemma": "prüfen", "level": "A2", "approved": false}
+{"lemma": "putzen", "level": "A2", "approved": false}
+{"lemma": "raten", "level": "A2", "approved": false}
+{"lemma": "rechnen", "level": "A2", "approved": false}
+{"lemma": "reden", "level": "A2", "approved": false}
+{"lemma": "reiten", "level": "A2", "approved": false}
+{"lemma": "renovieren", "level": "A2", "approved": false}
+{"lemma": "reservieren", "level": "A2", "approved": false}
+{"lemma": "rufen", "level": "A2", "approved": false}
+{"lemma": "sammeln", "level": "A2", "approved": false}
+{"lemma": "schaffen", "level": "A2", "approved": false}
+{"lemma": "schenken", "level": "A2", "approved": false}
+{"lemma": "schimpfen", "level": "A2", "approved": false}
+{"lemma": "schneiden", "level": "A2", "approved": false}
+{"lemma": "schneien", "level": "A2", "approved": false}
+{"lemma": "setzen", "level": "A2", "approved": false}
+{"lemma": "singen", "level": "A2", "approved": false}
+{"lemma": "sparen", "level": "A2", "approved": false}
+{"lemma": "spazieren", "level": "A2", "approved": false}
+{"lemma": "stattfinden", "level": "A2", "approved": false}
+{"lemma": "sterben", "level": "A2", "approved": false}
+{"lemma": "streiten", "level": "A2", "approved": false}
+{"lemma": "stören", "level": "A2", "approved": false}
+{"lemma": "surfen", "level": "A2", "approved": false}
+{"lemma": "tauschen", "level": "A2", "approved": false}
+{"lemma": "teilen", "level": "A2", "approved": false}
+{"lemma": "teilnehmen", "level": "A2", "approved": false}
+{"lemma": "tragen", "level": "A2", "approved": false}
+{"lemma": "trainieren", "level": "A2", "approved": false}
+{"lemma": "träumen", "level": "A2", "approved": false}
+{"lemma": "umsteigen", "level": "A2", "approved": false}
+{"lemma": "unterhalten", "level": "A2", "approved": false}
+{"lemma": "unternehmen", "level": "A2", "approved": false}
+{"lemma": "untersuchen", "level": "A2", "approved": false}
+{"lemma": "verabreden", "level": "A2", "approved": false}
+{"lemma": "verbieten", "level": "A2", "approved": false}
+{"lemma": "vereinbaren", "level": "A2", "approved": false}
+{"lemma": "vergessen", "level": "A2", "approved": false}
+{"lemma": "vergleichen", "level": "A2", "approved": false}
+{"lemma": "verletzen", "level": "A2", "approved": false}
+{"lemma": "verlieben", "level": "A2", "approved": false}
+{"lemma": "verlieren", "level": "A2", "approved": false}
+{"lemma": "verpassen", "level": "A2", "approved": false}
+{"lemma": "verreisen", "level": "A2", "approved": false}
+{"lemma": "verschieben", "level": "A2", "approved": false}
+{"lemma": "versuchen", "level": "A2", "approved": false}
+{"lemma": "vorbereiten", "level": "A2", "approved": false}
+{"lemma": "wechseln", "level": "A2", "approved": false}
+{"lemma": "wecken", "level": "A2", "approved": false}
+{"lemma": "weinen", "level": "A2", "approved": false}
+{"lemma": "wählen", "level": "A2", "approved": false}
+{"lemma": "wünschen", "level": "A2", "approved": false}
+{"lemma": "zeichnen", "level": "A2", "approved": false}
+{"lemma": "zeigen", "level": "A2", "approved": false}
+{"lemma": "ziehen", "level": "A2", "approved": false}
+{"lemma": "zuhören", "level": "A2", "approved": false}
+{"lemma": "zumachen", "level": "A2", "approved": false}
+{"lemma": "zurückfahren", "level": "A2", "approved": false}
+{"lemma": "zurückgeben", "level": "A2", "approved": false}
+{"lemma": "zurückgehen", "level": "A2", "approved": false}
+{"lemma": "zurückkommen", "level": "A2", "approved": false}
+{"lemma": "zurücklaufen", "level": "A2", "approved": false}
+{"lemma": "ändern", "level": "A2", "approved": false}
+{"lemma": "ärgern", "level": "A2", "approved": false}
+{"lemma": "üben", "level": "A2", "approved": false}
+{"lemma": "übersetzen", "level": "A2", "approved": false}
+{"lemma": "abbiegen", "level": "B1", "english": "to turn, to turn off", "approved": false, "examples": [{"de": "Biegen Sie jetzt links ab.", "en": "Now turn left."}]}
+{"lemma": "abheben", "level": "B1", "approved": false}
+{"lemma": "abhängen", "level": "B1", "approved": false}
+{"lemma": "ablehnen", "level": "B1", "approved": false}
+{"lemma": "abmachen", "level": "B1", "approved": false}
+{"lemma": "abnehmen", "level": "B1", "approved": false}
+{"lemma": "abonnieren", "level": "B1", "approved": false}
+{"lemma": "absagen", "level": "B1", "approved": false}
+{"lemma": "abschreiben", "level": "B1", "approved": false}
+{"lemma": "abstimmen", "level": "B1", "approved": false}
+{"lemma": "abwaschen", "level": "B1", "approved": false}
+{"lemma": "achten", "level": "B1", "approved": false}
+{"lemma": "akzeptieren", "level": "B1", "approved": false}
+{"lemma": "amüsieren", "level": "B1", "approved": false}
+{"lemma": "analysieren", "level": "B1", "approved": false}
+{"lemma": "anerkennen", "level": "B1", "approved": false}
+{"lemma": "angeben", "level": "B1", "approved": false}
+{"lemma": "anhaben", "level": "B1", "approved": false}
+{"lemma": "ankündigen", "level": "B1", "approved": false}
+{"lemma": "annehmen", "level": "B1", "approved": false}
+{"lemma": "anschaffen", "level": "B1", "approved": false}
+{"lemma": "anschließen", "level": "B1", "approved": false}
+{"lemma": "anschnallen", "level": "B1", "approved": false}
+{"lemma": "ansprechen", "level": "B1", "approved": false}
+{"lemma": "anstellen", "level": "B1", "approved": false}
+{"lemma": "anstrengen", "level": "B1", "approved": false}
+{"lemma": "anwenden", "level": "B1", "approved": false}
+{"lemma": "anzeigen", "level": "B1", "approved": false}
+{"lemma": "atmen", "level": "B1", "approved": false}
+{"lemma": "auffallen", "level": "B1", "approved": false}
+{"lemma": "auffordern", "level": "B1", "approved": false}
+{"lemma": "aufführen", "level": "B1", "approved": false}
+{"lemma": "aufgeben", "level": "B1", "approved": false}
+{"lemma": "aufhalten", "level": "B1", "approved": false}
+{"lemma": "aufheben", "level": "B1", "approved": false}
+{"lemma": "aufladen", "level": "B1", "approved": false}
+{"lemma": "auflösen", "level": "B1", "approved": false}
+{"lemma": "aufnehmen", "level": "B1", "approved": false}
+{"lemma": "aufschreiben", "level": "B1", "approved": false}
+{"lemma": "auftreten", "level": "B1", "approved": false}
+{"lemma": "aufwachen", "level": "B1", "approved": false}
+{"lemma": "ausbilden", "level": "B1", "approved": false}
+{"lemma": "ausdrucken", "level": "B1", "approved": false}
+{"lemma": "ausfallen", "level": "B1", "approved": false}
+{"lemma": "ausreichen", "level": "B1", "approved": false}
+{"lemma": "ausrichten", "level": "B1", "approved": false}
+{"lemma": "ausschließen", "level": "B1", "approved": false}
+{"lemma": "ausstellen", "level": "B1", "approved": false}
+{"lemma": "aussuchen", "level": "B1", "approved": false}
+{"lemma": "auswählen", "level": "B1", "approved": false}
+{"lemma": "beachten", "level": "B1", "approved": false}
+{"lemma": "beantragen", "level": "B1", "approved": false}
+{"lemma": "bedienen", "level": "B1", "approved": false}
+{"lemma": "beeinflussen", "level": "B1", "approved": false}
+{"lemma": "befinden", "level": "B1", "approved": false}
+{"lemma": "begegnen", "level": "B1", "approved": false}
+{"lemma": "begleiten", "level": "B1", "approved": false}
+{"lemma": "begrüßen", "level": "B1", "approved": false}
+{"lemma": "behalten", "level": "B1", "approved": false}
+{"lemma": "behandeln", "level": "B1", "approved": false}
+{"lemma": "behaupten", "level": "B1", "approved": false}
+{"lemma": "behindern", "level": "B1", "approved": false}
+{"lemma": "beißen", "level": "B1", "approved": false}
+{"lemma": "bekannt geben", "level": "B1", "approved": false}
+{"lemma": "bekanntgeben", "level": "B1", "approved": false}
+{"lemma": "beleidigen", "level": "B1", "approved": false}
+{"lemma": "bemerken", "level": "B1", "approved": false}
+{"lemma": "bemühen", "level": "B1", "approved": false}
+{"lemma": "benötigen", "level": "B1", "approved": false}
+{"lemma": "beobachten", "level": "B1", "approved": false}
+{"lemma": "berechnen", "level": "B1", "approved": false}
+{"lemma": "beruhigen", "level": "B1", "approved": false}
+{"lemma": "beschränken", "level": "B1", "approved": false}
+{"lemma": "beschädigen", "level": "B1", "approved": false}
+{"lemma": "beschäftigen", "level": "B1", "approved": false}
+{"lemma": "besetzen", "level": "B1", "approved": false}
+{"lemma": "besorgen", "level": "B1", "approved": false}
+{"lemma": "besprechen", "level": "B1", "approved": false}
+{"lemma": "bestrafen", "level": "B1", "approved": false}
+{"lemma": "beteiligen", "level": "B1", "approved": false}
+{"lemma": "betreuen", "level": "B1", "approved": false}
+{"lemma": "betrügen", "level": "B1", "approved": false}
+{"lemma": "beweisen", "level": "B1", "approved": false}
+{"lemma": "bieten", "level": "B1", "approved": false}
+{"lemma": "blitzen", "level": "B1", "approved": false}
+{"lemma": "bluten", "level": "B1", "approved": false}
+{"lemma": "blühen", "level": "B1", "approved": false}
+{"lemma": "brechen", "level": "B1", "approved": false}
+{"lemma": "bremsen", "level": "B1", "approved": false}
+{"lemma": "brennen", "level": "B1", "approved": false}
+{"lemma": "darstellen", "level": "B1", "approved": false}
+{"lemma": "dekorieren", "level": "B1", "approved": false}
+{"lemma": "dienen", "level": "B1", "approved": false}
+{"lemma": "donnern", "level": "B1", "approved": false}
+{"lemma": "drehen", "level": "B1", "approved": false}
+{"lemma": "duzen", "level": "B1", "approved": false}
+{"lemma": "eignen", "level": "B1", "approved": false}
+{"lemma": "eilen", "level": "B1", "approved": false}
+{"lemma": "einbrechen", "level": "B1", "approved": false}
+{"lemma": "einfallen", "level": "B1", "approved": false}
+{"lemma": "einfügen", "level": "B1", "approved": false}
+{"lemma": "einführen", "level": "B1", "approved": false}
+{"lemma": "einigen", "level": "B1", "approved": false}
+{"lemma": "einnehmen", "level": "B1", "approved": false}
+{"lemma": "einrichten", "level": "B1", "approved": false}
+{"lemma": "einschalten", "level": "B1", "approved": false}
+{"lemma": "einsetzen", "level": "B1", "approved": false}
+{"lemma": "einstellen", "level": "B1", "approved": false}
+{"lemma": "eintreten", "level": "B1", "approved": false}
+{"lemma": "einzahlen", "level": "B1", "approved": false}
+{"lemma": "empfangen", "level": "B1", "approved": false}
+{"lemma": "entdecken", "level": "B1", "approved": false}
+{"lemma": "entfernen", "level": "B1", "approved": false}
+{"lemma": "entgegenkommen", "level": "B1", "approved": false}
+{"lemma": "enthalten", "level": "B1", "approved": false}
+{"lemma": "entlassen", "level": "B1", "approved": false}
+{"lemma": "entscheiden", "level": "B1", "approved": false}
+{"lemma": "entschließen", "level": "B1", "approved": false}
+{"lemma": "entsorgen", "level": "B1", "approved": false}
+{"lemma": "entspannen", "level": "B1", "approved": false}
+{"lemma": "enttäuschen", "level": "B1", "approved": false}
+{"lemma": "entwickeln", "level": "B1", "approved": false}
+{"lemma": "ereignen", "level": "B1", "approved": false}
+{"lemma": "erfahren", "level": "B1", "approved": false}
+{"lemma": "erfinden", "level": "B1", "approved": false}
+{"lemma": "erfordern", "level": "B1", "approved": false}
+{"lemma": "erfüllen", "level": "B1", "approved": false}
+{"lemma": "ergänzen", "level": "B1", "approved": false}
+{"lemma": "erhalten", "level": "B1", "approved": false}
+{"lemma": "erholen", "level": "B1", "approved": false}
+{"lemma": "erhöhen", "level": "B1", "approved": false}
+{"lemma": "erkennen", "level": "B1", "approved": false}
+{"lemma": "erkundigen", "level": "B1", "approved": false}
+{"lemma": "erkälten", "level": "B1", "approved": false}
+{"lemma": "erleben", "level": "B1", "approved": false}
+{"lemma": "erledigen", "level": "B1", "approved": false}
+{"lemma": "erleichtern", "level": "B1", "approved": false}
+{"lemma": "ernähren", "level": "B1", "approved": false}
+{"lemma": "erschrecken", "level": "B1", "approved": false}
+{"lemma": "ersetzen", "level": "B1", "approved": false}
+{"lemma": "erstellen", "level": "B1", "approved": false}
+{"lemma": "erwarten", "level": "B1", "approved": false}
+{"lemma": "erziehen", "level": "B1", "approved": false}
+{"lemma": "eröffnen", "level": "B1", "approved": false}
+{"lemma": "fangen", "level": "B1", "approved": false}
+{"lemma": "fassen", "level": "B1", "approved": false}
+{"lemma": "faulenzen", "level": "B1", "approved": false}
+{"lemma": "festhalten", "level": "B1", "approved": false}
+{"lemma": "festlegen", "level": "B1", "approved": false}
+{"lemma": "festnehmen", "level": "B1", "approved": false}
+{"lemma": "festsetzen", "level": "B1", "approved": false}
+{"lemma": "feststehen", "level": "B1", "approved": false}
+{"lemma": "feststellen", "level": "B1", "approved": false}
+{"lemma": "finanzieren", "level": "B1", "approved": false}
+{"lemma": "fliehen", "level": "B1", "approved": false}
+{"lemma": "fließen", "level": "B1", "approved": false}
+{"lemma": "folgen", "level": "B1", "approved": false}
+{"lemma": "fordern", "level": "B1", "approved": false}
+{"lemma": "fortsetzen", "level": "B1", "approved": false}
+{"lemma": "fressen", "level": "B1", "approved": false}
+{"lemma": "frieren", "level": "B1", "approved": false}
+{"lemma": "funktionieren", "level": "B1", "approved": false}
+{"lemma": "fördern", "level": "B1", "approved": false}
+{"lemma": "führen", "level": "B1", "approved": false}
+{"lemma": "fürchten", "level": "B1", "approved": false}
+{"lemma": "füttern", "level": "B1", "approved": false}
+{"lemma": "garantieren", "level": "B1", "approved": false}
+{"lemma": "gebrauchen", "level": "B1", "approved": false}
+{"lemma": "gelingen", "level": "B1", "approved": false}
+{"lemma": "gelten", "level": "B1", "approved": false}
+{"lemma": "genehmigen", "level": "B1", "approved": false}
+{"lemma": "genießen", "level": "B1", "approved": false}
+{"lemma": "genügen", "level": "B1", "approved": false}
+{"lemma": "geschehen", "level": "B1", "approved": false}
+{"lemma": "gewöhnen", "level": "B1", "approved": false}
+{"lemma": "gießen", "level": "B1", "approved": false}
+{"lemma": "greifen", "level": "B1", "approved": false}
+{"lemma": "grillieren", "level": "B1", "approved": false}
+{"lemma": "gründen", "level": "B1", "approved": false}
+{"lemma": "grüßen", "level": "B1", "approved": false}
+{"lemma": "gucken", "level": "B1", "approved": false}
+{"lemma": "hageln", "level": "B1", "approved": false}
+{"lemma": "handeln", "level": "B1", "approved": false}
+{"lemma": "hassen", "level": "B1", "approved": false}
+{"lemma": "heben", "level": "B1", "approved": false}
+{"lemma": "heizen", "level": "B1", "approved": false}
+{"lemma": "herausfinden", "level": "B1", "approved": false}
+{"lemma": "herunterfahren", "level": "B1", "approved": false}
+{"lemma": "hinterlassen", "level": "B1", "approved": false}
+{"lemma": "hinweisen", "level": "B1", "approved": false}
+{"lemma": "hochladen", "level": "B1", "approved": false}
+{"lemma": "hupen", "level": "B1", "approved": false}
+{"lemma": "installieren", "level": "B1", "approved": false}
+{"lemma": "integrieren", "level": "B1", "approved": false}
+{"lemma": "irren", "level": "B1", "approved": false}
+{"lemma": "kaputt machen", "level": "B1", "approved": false}
+{"lemma": "kaputtgehen", "level": "B1", "approved": false}
+{"lemma": "kaputtmachen", "level": "B1", "approved": false}
+{"lemma": "klagen", "level": "B1", "approved": false}
+{"lemma": "kleben", "level": "B1", "approved": false}
+{"lemma": "klettern", "level": "B1", "approved": false}
+{"lemma": "klicken", "level": "B1", "approved": false}
+{"lemma": "klingeln", "level": "B1", "approved": false}
+{"lemma": "klingen", "level": "B1", "approved": false}
+{"lemma": "klopfen", "level": "B1", "approved": false}
+{"lemma": "klären", "level": "B1", "approved": false}
+{"lemma": "konsumieren", "level": "B1", "approved": false}
+{"lemma": "konzentrieren", "level": "B1", "approved": false}
+{"lemma": "kopieren", "level": "B1", "approved": false}
+{"lemma": "korrigieren", "level": "B1", "approved": false}
+{"lemma": "kritisieren", "level": "B1", "approved": false}
+{"lemma": "kämpfen", "level": "B1", "approved": false}
+{"lemma": "küssen", "level": "B1", "approved": false}
+{"lemma": "landen", "level": "B1", "approved": false}
+{"lemma": "langweilen", "level": "B1", "approved": false}
+{"lemma": "leiden", "level": "B1", "approved": false}
+{"lemma": "leisten", "level": "B1", "approved": false}
+{"lemma": "leiten", "level": "B1", "approved": false}
+{"lemma": "loben", "level": "B1", "approved": false}
+{"lemma": "lohnen", "level": "B1", "approved": false}
+{"lemma": "losfahren", "level": "B1", "approved": false}
+{"lemma": "lächeln", "level": "B1", "approved": false}
+{"lemma": "löschen", "level": "B1", "approved": false}
+{"lemma": "lösen", "level": "B1", "approved": false}
+{"lemma": "markieren", "level": "B1", "approved": false}
+{"lemma": "melden", "level": "B1", "approved": false}
+{"lemma": "messen", "level": "B1", "approved": false}
+{"lemma": "mischen", "level": "B1", "approved": false}
+{"lemma": "mitteilen", "level": "B1", "approved": false}
+{"lemma": "nachdenken", "level": "B1", "approved": false}
+{"lemma": "nachschlagen", "level": "B1", "approved": false}
+{"lemma": "nutzen", "level": "B1", "approved": false}
+{"lemma": "nähen", "level": "B1", "approved": false}
+{"lemma": "nähern", "level": "B1", "approved": false}
+{"lemma": "nützen", "level": "B1", "approved": false}
+{"lemma": "operieren", "level": "B1", "approved": false}
+{"lemma": "ordnen", "level": "B1", "approved": false}
+{"lemma": "parkieren", "level": "B1", "approved": false}
+{"lemma": "pensionieren", "level": "B1", "approved": false}
+{"lemma": "pflanzen", "level": "B1", "approved": false}
+{"lemma": "pflegen", "level": "B1", "approved": false}
+{"lemma": "produzieren", "level": "B1", "approved": false}
+{"lemma": "protestieren", "level": "B1", "approved": false}
+{"lemma": "präsentieren", "level": "B1", "approved": false}
+{"lemma": "rasieren", "level": "B1", "approved": false}
+{"lemma": "reagieren", "level": "B1", "approved": false}
+{"lemma": "realisieren", "level": "B1", "approved": false}
+{"lemma": "reduzieren", "level": "B1", "approved": false}
+{"lemma": "regeln", "level": "B1", "approved": false}
+{"lemma": "reichen", "level": "B1", "approved": false}
+{"lemma": "reinigen", "level": "B1", "approved": false}
+{"lemma": "rennen", "level": "B1", "approved": false}
+{"lemma": "retten", "level": "B1", "approved": false}
+{"lemma": "runterwerfen", "level": "B1", "approved": false}
+{"lemma": "schaden", "level": "B1", "approved": false}
+{"lemma": "schalten", "level": "B1", "approved": false}
+{"lemma": "schauen", "level": "B1", "approved": false}
+{"lemma": "scheiden", "level": "B1", "approved": false}
+{"lemma": "schieben", "level": "B1", "approved": false}
+{"lemma": "schießen", "level": "B1", "approved": false}
+{"lemma": "schminken", "level": "B1", "approved": false}
+{"lemma": "schreien", "level": "B1", "approved": false}
+{"lemma": "schweigen", "level": "B1", "approved": false}
+{"lemma": "schwitzen", "level": "B1", "approved": false}
+{"lemma": "schätzen", "level": "B1", "approved": false}
+{"lemma": "schütteln", "level": "B1", "approved": false}
+{"lemma": "schützen", "level": "B1", "approved": false}
+{"lemma": "senden", "level": "B1", "approved": false}
+{"lemma": "sichern", "level": "B1", "approved": false}
+{"lemma": "siegen", "level": "B1", "approved": false}
+{"lemma": "siezen", "level": "B1", "approved": false}
+{"lemma": "sinken", "level": "B1", "approved": false}
+{"lemma": "sorgen", "level": "B1", "approved": false}
+{"lemma": "spazieren gehen", "level": "B1", "approved": false}
+{"lemma": "springen", "level": "B1", "approved": false}
+{"lemma": "spülen", "level": "B1", "approved": false}
+{"lemma": "spüren", "level": "B1", "approved": false}
+{"lemma": "stammen", "level": "B1", "approved": false}
+{"lemma": "starten", "level": "B1", "approved": false}
+{"lemma": "Staub saugen", "level": "B1", "approved": false}
+{"lemma": "staubsaugen", "level": "B1", "approved": false}
+{"lemma": "stechen", "level": "B1", "approved": false}
+{"lemma": "stecken", "level": "B1", "approved": false}
+{"lemma": "stehen bleiben", "level": "B1", "approved": false}
+{"lemma": "stehenbleiben", "level": "B1", "approved": false}
+{"lemma": "stehlen", "level": "B1", "approved": false}
+{"lemma": "steigen", "level": "B1", "approved": false}
+{"lemma": "stimmen", "level": "B1", "approved": false}
+{"lemma": "stinken", "level": "B1", "approved": false}
+{"lemma": "stoppen", "level": "B1", "approved": false}
+{"lemma": "streiken", "level": "B1", "approved": false}
+{"lemma": "stürzen", "level": "B1", "approved": false}
+{"lemma": "tanken", "level": "B1", "approved": false}
+{"lemma": "tauchen", "level": "B1", "approved": false}
+{"lemma": "testen", "level": "B1", "approved": false}
+{"lemma": "tippen", "level": "B1", "approved": false}
+{"lemma": "transportieren", "level": "B1", "approved": false}
+{"lemma": "treiben", "level": "B1", "approved": false}
+{"lemma": "trennen", "level": "B1", "approved": false}
+{"lemma": "treten", "level": "B1", "approved": false}
+{"lemma": "trocknen", "level": "B1", "approved": false}
+{"lemma": "twittern", "level": "B1", "approved": false}
+{"lemma": "umarmen", "level": "B1", "approved": false}
+{"lemma": "umdrehen", "level": "B1", "approved": false}
+{"lemma": "umgehen", "level": "B1", "approved": false}
+{"lemma": "umtauschen", "level": "B1", "approved": false}
+{"lemma": "unterbrechen", "level": "B1", "approved": false}
+{"lemma": "unterlassen", "level": "B1", "approved": false}
+{"lemma": "unterrichten", "level": "B1", "approved": false}
+{"lemma": "unterscheiden", "level": "B1", "approved": false}
+{"lemma": "unterstreichen", "level": "B1", "approved": false}
+{"lemma": "unterstützen", "level": "B1", "approved": false}
+{"lemma": "verabschieden", "level": "B1", "approved": false}
+{"lemma": "verbessern", "level": "B1", "approved": false}
+{"lemma": "verbrauchen", "level": "B1", "approved": false}
+{"lemma": "verbrennen", "level": "B1", "approved": false}
+{"lemma": "verbringen", "level": "B1", "approved": false}
+{"lemma": "vergnügen", "level": "B1", "approved": false}
+{"lemma": "vergrößern", "level": "B1", "approved": false}
+{"lemma": "verhaften", "level": "B1", "approved": false}
+{"lemma": "verhalten", "level": "B1", "approved": false}
+{"lemma": "verhindern", "level": "B1", "approved": false}
+{"lemma": "verlangen", "level": "B1", "approved": false}
+{"lemma": "verlassen", "level": "B1", "approved": false}
+{"lemma": "verlaufen", "level": "B1", "approved": false}
+{"lemma": "verlängern", "level": "B1", "approved": false}
+{"lemma": "vermeiden", "level": "B1", "approved": false}
+{"lemma": "vermissen", "level": "B1", "approved": false}
+{"lemma": "vermuten", "level": "B1", "approved": false}
+{"lemma": "verpacken", "level": "B1", "approved": false}
+{"lemma": "verpflegen", "level": "B1", "approved": false}
+{"lemma": "verpflichten", "level": "B1", "approved": false}
+{"lemma": "verraten", "level": "B1", "approved": false}
+{"lemma": "verschmutzen", "level": "B1", "approved": false}
+{"lemma": "verschreiben", "level": "B1", "approved": false}
+{"lemma": "verschwinden", "level": "B1", "approved": false}
+{"lemma": "versichern", "level": "B1", "approved": false}
+{"lemma": "versprechen", "level": "B1", "approved": false}
+{"lemma": "verstecken", "level": "B1", "approved": false}
+{"lemma": "versäumen", "level": "B1", "approved": false}
+{"lemma": "verteilen", "level": "B1", "approved": false}
+{"lemma": "vertrauen", "level": "B1", "approved": false}
+{"lemma": "vertreten", "level": "B1", "approved": false}
+{"lemma": "verursachen", "level": "B1", "approved": false}
+{"lemma": "verurteilen", "level": "B1", "approved": false}
+{"lemma": "verwechseln", "level": "B1", "approved": false}
+{"lemma": "verwenden", "level": "B1", "approved": false}
+{"lemma": "verzeihen", "level": "B1", "approved": false}
+{"lemma": "verzichten", "level": "B1", "approved": false}
+{"lemma": "verändern", "level": "B1", "approved": false}
+{"lemma": "veröffentlichen", "level": "B1", "approved": false}
+{"lemma": "vorhaben", "level": "B1", "approved": false}
+{"lemma": "vorkommen", "level": "B1", "approved": false}
+{"lemma": "vorlesen", "level": "B1", "approved": false}
+{"lemma": "vorschlagen", "level": "B1", "approved": false}
+{"lemma": "wachsen", "level": "B1", "approved": false}
+{"lemma": "warnen", "level": "B1", "approved": false}
+{"lemma": "weigern", "level": "B1", "approved": false}
+{"lemma": "wenden", "level": "B1", "approved": false}
+{"lemma": "werfen", "level": "B1", "approved": false}
+{"lemma": "wetten", "level": "B1", "approved": false}
+{"lemma": "widersprechen", "level": "B1", "approved": false}
+{"lemma": "wiegen", "level": "B1", "approved": false}
+{"lemma": "winken", "level": "B1", "approved": false}
+{"lemma": "wirken", "level": "B1", "approved": false}
+{"lemma": "wundern", "level": "B1", "approved": false}
+{"lemma": "zelten", "level": "B1", "approved": false}
+{"lemma": "zerstören", "level": "B1", "approved": false}
+{"lemma": "zubereiten", "level": "B1", "approved": false}
+{"lemma": "zugehen", "level": "B1", "approved": false}
+{"lemma": "zunehmen", "level": "B1", "approved": false}
+{"lemma": "zurechtkommen", "level": "B1", "approved": false}
+{"lemma": "zusagen", "level": "B1", "approved": false}
+{"lemma": "zusammenfassen", "level": "B1", "approved": false}
+{"lemma": "zuschauen", "level": "B1", "approved": false}
+{"lemma": "zustimmen", "level": "B1", "approved": false}
+{"lemma": "zweifeln", "level": "B1", "approved": false}
+{"lemma": "zwingen", "level": "B1", "approved": false}
+{"lemma": "zählen", "level": "B1", "approved": false}
+{"lemma": "überfahren", "level": "B1", "approved": false}
+{"lemma": "überholen", "level": "B1", "approved": false}
+{"lemma": "überlegen", "level": "B1", "approved": false}
+{"lemma": "übernehmen", "level": "B1", "approved": false}
+{"lemma": "überprüfen", "level": "B1", "approved": false}
+{"lemma": "überqueren", "level": "B1", "approved": false}
+{"lemma": "überraschen", "level": "B1", "approved": false}
+{"lemma": "überreden", "level": "B1", "approved": false}
+{"lemma": "übertreiben", "level": "B1", "approved": false}
+{"lemma": "überzeugen", "level": "B1", "approved": false}
+{"lemma": "möchten", "level": "A2", "english": "would like to", "approved": false, "verb": {"praesens": {"ich": "möchte", "er": "möchte"}}}

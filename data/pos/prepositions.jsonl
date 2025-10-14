@@ -1,30 +1,30 @@
-{"lemma": "ab", "level": "A1", "english": "beginning at that time or location; from", "approved": false, "examples": [{"de": "Ab heute verfügbar.", "en": "Available from today."}], "sources": {"csv": "dwds-goethe-A1.csv; Manual Apply", "notes": "https://www.dwds.de/wb/ab#1"}}
-{"lemma": "an", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/an#1"}}
-{"lemma": "auf", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/auf#1"}}
-{"lemma": "aus", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/aus#1"}}
-{"lemma": "bei", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/bei#1"}}
-{"lemma": "durch", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/durch#1"}}
-{"lemma": "für", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/f%C3%BCr#1"}}
-{"lemma": "gegen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/gegen"}}
-{"lemma": "in", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/in#1"}}
-{"lemma": "mit", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/mit#1"}}
-{"lemma": "nach", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/nach#1"}}
-{"lemma": "um", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/um#1"}}
-{"lemma": "unter", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/unter#1"}}
-{"lemma": "von", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/von#1"}}
-{"lemma": "vor", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/vor#1"}}
-{"lemma": "zu", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/zu#1"}}
-{"lemma": "zwischen", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/zwischen"}}
-{"lemma": "über", "level": "A1", "approved": false, "sources": {"csv": "dwds-goethe-A1.csv", "notes": "https://www.dwds.de/wb/%C3%BCber#1"}}
-{"lemma": "außer", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/au%C3%9Fer#1"}}
-{"lemma": "gegenüber", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/gegen%C3%BCber#1"}}
-{"lemma": "hinter", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/hinter#1"}}
-{"lemma": "neben", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/neben"}}
-{"lemma": "pro", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/pro#1"}}
-{"lemma": "wegen", "level": "A2", "approved": false, "sources": {"csv": "dwds-goethe-A2.csv", "notes": "https://www.dwds.de/wb/wegen"}}
-{"lemma": "einschließlich", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/einschlie%C3%9Flich#1"}}
-{"lemma": "inklusive", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/inklusive#1"}}
-{"lemma": "innerhalb", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/innerhalb#1"}}
-{"lemma": "per", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/per"}}
-{"lemma": "statt", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/statt#2"}}
-{"lemma": "trotz", "level": "B1", "approved": false, "sources": {"csv": "dwds-goethe-B1.csv", "notes": "https://www.dwds.de/wb/trotz"}}
+{"lemma": "ab", "level": "A1", "english": "beginning at that time or location; from", "approved": false, "examples": [{"de": "Ab heute verfügbar.", "en": "Available from today."}]}
+{"lemma": "an", "level": "A1", "approved": false}
+{"lemma": "auf", "level": "A1", "approved": false}
+{"lemma": "aus", "level": "A1", "approved": false}
+{"lemma": "bei", "level": "A1", "approved": false}
+{"lemma": "durch", "level": "A1", "approved": false}
+{"lemma": "für", "level": "A1", "approved": false}
+{"lemma": "gegen", "level": "A1", "approved": false}
+{"lemma": "in", "level": "A1", "approved": false}
+{"lemma": "mit", "level": "A1", "approved": false}
+{"lemma": "nach", "level": "A1", "approved": false}
+{"lemma": "um", "level": "A1", "approved": false}
+{"lemma": "unter", "level": "A1", "approved": false}
+{"lemma": "von", "level": "A1", "approved": false}
+{"lemma": "vor", "level": "A1", "approved": false}
+{"lemma": "zu", "level": "A1", "approved": false}
+{"lemma": "zwischen", "level": "A1", "approved": false}
+{"lemma": "über", "level": "A1", "approved": false}
+{"lemma": "außer", "level": "A2", "approved": false}
+{"lemma": "gegenüber", "level": "A2", "approved": false}
+{"lemma": "hinter", "level": "A2", "approved": false}
+{"lemma": "neben", "level": "A2", "approved": false}
+{"lemma": "pro", "level": "A2", "approved": false}
+{"lemma": "wegen", "level": "A2", "approved": false}
+{"lemma": "einschließlich", "level": "B1", "approved": false}
+{"lemma": "inklusive", "level": "B1", "approved": false}
+{"lemma": "innerhalb", "level": "B1", "approved": false}
+{"lemma": "per", "level": "B1", "approved": false}
+{"lemma": "statt", "level": "B1", "approved": false}
+{"lemma": "trotz", "level": "B1", "approved": false}
