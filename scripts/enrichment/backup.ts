@@ -176,6 +176,26 @@ function ensureLeadingPrefix(config: SupabaseStorageConfig, relativePath: string
   return `${prefix}/${cleanRelative}`;
 }
 
+type WordsBackupEntryWithLegacyApproval = WordsBackupEntry & {
+  canonical?: boolean;
+};
+
+function normaliseBackupEntry(entry: WordsBackupEntryWithLegacyApproval): WordsBackupEntry {
+  if (typeof entry.approved === "boolean") {
+    return entry;
+  }
+
+  if (typeof entry.canonical === "boolean") {
+    const { canonical, ...rest } = entry;
+    return {
+      ...rest,
+      approved: canonical,
+    } satisfies WordsBackupEntry;
+  }
+
+  throw new Error("Words backup entry is missing approval status");
+}
+
 function parseBackupFile(contents: string): WordsBackupFile {
   const parsed = JSON.parse(contents) as WordsBackupFile;
   if (!parsed || typeof parsed !== "object") {
@@ -187,7 +207,11 @@ function parseBackupFile(contents: string): WordsBackupFile {
   if (!Array.isArray(parsed.words)) {
     throw new Error("Words backup is missing word entries");
   }
-  return parsed;
+  const words = parsed.words.map((entry) => normaliseBackupEntry(entry));
+  return {
+    ...parsed,
+    words,
+  } satisfies WordsBackupFile;
 }
 
 function toWordInsert(entry: WordsBackupEntry): typeof words.$inferInsert {
