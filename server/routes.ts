@@ -1703,43 +1703,127 @@ export function registerRoutes(app: Express): void {
     res.setHeader("Cache-Control", "no-store");
     res.setHeader("X-Feature-Flags", formatFeatureFlagHeader(snapshot));
 
-    const taskRowsRaw = await executeSelectRaw<Record<string, unknown>>(
-      db
-        .select({
-          taskId: taskSpecs.id,
-          taskType: taskSpecs.taskType,
-          pos: taskSpecs.pos,
-          renderer: taskSpecs.renderer,
-          lexemeId: taskSpecs.lexemeId,
-          frequencyRank: lexemes.frequencyRank,
-        })
-        .from(taskSpecs)
-        .innerJoin(lexemes, eq(taskSpecs.lexemeId, lexemes.id))
-        .where(eq(taskSpecs.id, payload.taskId))
-        .limit(1),
-    );
+    const selectTaskRowById = async (
+      taskId: string,
+    ): Promise<
+      | null
+      | {
+          taskId: string;
+          taskType: string | undefined;
+          pos: string | undefined;
+          renderer: string | undefined;
+          lexemeId: string | undefined;
+          frequencyRank: number | null | undefined;
+        }
+    > => {
+      const rows = await executeSelectRaw<Record<string, unknown>>(
+        db
+          .select({
+            taskId: taskSpecs.id,
+            taskType: taskSpecs.taskType,
+            pos: taskSpecs.pos,
+            renderer: taskSpecs.renderer,
+            lexemeId: taskSpecs.lexemeId,
+            frequencyRank: lexemes.frequencyRank,
+          })
+          .from(taskSpecs)
+          .innerJoin(lexemes, eq(taskSpecs.lexemeId, lexemes.id))
+          .where(eq(taskSpecs.id, taskId))
+          .limit(1),
+      );
 
-    if (taskRowsRaw.length === 0) {
+      if (!rows.length) {
+        return null;
+      }
+
+      const raw = rows[0]!;
+      return {
+        taskId: getRowValue<string>(raw, "taskId", "id")!,
+        taskType: getRowValue<string | undefined>(raw, "taskType", "task_type"),
+        pos: getRowValue<string | undefined>(raw, "pos"),
+        renderer: getRowValue<string | undefined>(raw, "renderer"),
+        lexemeId: getRowValue<string | undefined>(raw, "lexemeId", "lexeme_id"),
+        frequencyRank: getRowValue<number | null | undefined>(raw, "frequencyRank", "frequency_rank"),
+      };
+    };
+
+    const resolveTaskIdFromPayload = async (): Promise<string | null> => {
+      const packIdCandidate = (() => {
+        const explicitPackId = normaliseString(payload.packId);
+        if (explicitPackId) {
+          return explicitPackId;
+        }
+        const taskIdCandidate = normaliseString(payload.taskId);
+        return taskIdCandidate && taskIdCandidate.startsWith("pack:") ? taskIdCandidate : null;
+      })();
+
+      if (packIdCandidate && payload.lexemeId) {
+        const fallbackRows = await executeSelectRaw<Record<string, unknown>>(
+          db
+            .select({ primaryTaskId: packLexemeMap.primaryTaskId })
+            .from(packLexemeMap)
+            .where(
+              and(
+                eq(packLexemeMap.packId, packIdCandidate),
+                eq(packLexemeMap.lexemeId, payload.lexemeId),
+              ),
+            )
+            .limit(1),
+        );
+
+        const fallbackId = fallbackRows.length
+          ? getRowValue<string | null>(fallbackRows[0]!, "primaryTaskId", "primary_task_id")
+          : null;
+        const normalisedFallback = normaliseString(fallbackId);
+        if (normalisedFallback) {
+          return normalisedFallback;
+        }
+      }
+
+      if (payload.lexemeId) {
+        const fallbackRows = await executeSelectRaw<Record<string, unknown>>(
+          db
+            .select({ taskId: taskSpecs.id })
+            .from(taskSpecs)
+            .where(
+              and(
+                eq(taskSpecs.lexemeId, payload.lexemeId),
+                eq(taskSpecs.taskType, payload.taskType),
+              ),
+            )
+            .limit(1),
+        );
+
+        if (fallbackRows.length) {
+          const fallbackId = getRowValue<string | null>(fallbackRows[0]!, "taskId", "id");
+          const normalisedFallback = normaliseString(fallbackId);
+          if (normalisedFallback) {
+            return normalisedFallback;
+          }
+        }
+      }
+
+      return null;
+    };
+
+    let resolvedTaskId = normaliseString(payload.taskId);
+    let taskRow = resolvedTaskId ? await selectTaskRowById(resolvedTaskId) : null;
+
+    if (!taskRow) {
+      const fallbackTaskId = await resolveTaskIdFromPayload();
+      if (fallbackTaskId) {
+        resolvedTaskId = fallbackTaskId;
+        taskRow = await selectTaskRowById(fallbackTaskId);
+      }
+    }
+
+    if (!taskRow || !resolvedTaskId) {
       return sendError(res, 404, "Task not found", "TASK_NOT_FOUND");
     }
 
-    const rawTaskRow = taskRowsRaw[0]!;
-    const taskRow = {
-      taskId: getRowValue<string>(rawTaskRow, "taskId", "id")!,
-      taskType: getRowValue<string | undefined>(rawTaskRow, "taskType", "task_type"),
-      pos: getRowValue<string | undefined>(rawTaskRow, "pos"),
-      renderer: getRowValue<string | undefined>(rawTaskRow, "renderer"),
-      lexemeId: getRowValue<string | undefined>(rawTaskRow, "lexemeId", "lexeme_id"),
-      frequencyRank: getRowValue<number | null | undefined>(
-        rawTaskRow,
-        "frequencyRank",
-        "frequency_rank",
-      ),
-    };
-
     if (!taskRow.pos) {
       console.error("Task is missing part of speech", {
-        taskId: payload.taskId,
+        taskId: resolvedTaskId,
       });
       return sendError(res, 500, "Task configuration invalid", "TASK_INVALID_POS");
     }
@@ -1747,15 +1831,23 @@ export function registerRoutes(app: Express): void {
     const taskPos = asLexemePos(taskRow.pos);
     if (!taskPos) {
       console.error("Task has unsupported part of speech", {
-        taskId: payload.taskId,
+        taskId: resolvedTaskId,
         pos: taskRow.pos,
       });
       return sendError(res, 500, "Task configuration invalid", "TASK_INVALID_POS");
     }
 
+    if (resolvedTaskId !== payload.taskId) {
+      console.warn("Resolved submission task identifier", {
+        submittedTaskId: payload.taskId,
+        resolvedTaskId,
+        deviceId: payload.deviceId,
+      });
+    }
+
     try {
       ensurePosFeatureEnabled(taskPos, "tasks:submission", snapshot, {
-        taskId: payload.taskId,
+        taskId: resolvedTaskId,
         deviceId: payload.deviceId,
       });
     } catch (error) {
@@ -1810,7 +1902,7 @@ export function registerRoutes(app: Express): void {
     try {
       const submissionResult = await processTaskSubmission({
         deviceId: payload.deviceId,
-        taskId: payload.taskId,
+        taskId: resolvedTaskId,
         taskType: taskRow.taskType as TaskType,
         pos: taskPos,
         queueCap: registryEntry.queueCap,
@@ -1821,7 +1913,7 @@ export function registerRoutes(app: Express): void {
       });
 
       await db.insert(practiceHistory).values({
-        taskId: payload.taskId,
+        taskId: resolvedTaskId,
         lexemeId: taskRow.lexemeId!,
         pos: taskRow.pos!,
         taskType: taskRow.taskType!,
@@ -1854,7 +1946,7 @@ export function registerRoutes(app: Express): void {
 
       res.json({
         status: "recorded",
-        taskId: payload.taskId,
+        taskId: resolvedTaskId,
         deviceId: payload.deviceId,
         leitnerBox: submissionResult.leitnerBox,
         totalAttempts: submissionResult.totalAttempts,
