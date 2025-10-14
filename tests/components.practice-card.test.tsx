@@ -169,6 +169,7 @@ describe('PracticeCard', () => {
     expect(payload.taskId).toBe(task.taskId);
     expect(payload.result).toBe('correct');
     expect(payload.submittedResponse).toBe('gegangen');
+    expect(payload.promptSummary).toContain('gehen');
 
     await waitFor(() => {
       expect(onResult).toHaveBeenCalledTimes(1);
@@ -235,6 +236,7 @@ describe('PracticeCard', () => {
 
     const payload = vi.mocked(submitPracticeAttempt).mock.calls[0][0];
     expect(payload.taskType).toBe('noun_case_declension');
+    expect(payload.promptSummary).toContain('Haus');
 
     await waitFor(() => {
       expect(onResult).toHaveBeenCalledWith(expect.objectContaining({ result: 'correct' }));
@@ -261,6 +263,7 @@ describe('PracticeCard', () => {
     const payload = vi.mocked(submitPracticeAttempt).mock.calls[0][0];
     expect(payload.submittedResponse).toBe('den Kindern');
     expect(payload.expectedResponse).toEqual(task.expectedSolution);
+    expect(payload.promptSummary).toContain('Kind');
 
     await waitFor(() => {
       expect(onResult).toHaveBeenCalledWith(
@@ -288,6 +291,7 @@ describe('PracticeCard', () => {
 
     const payload = vi.mocked(submitPracticeAttempt).mock.calls[0][0];
     expect(payload.taskType).toBe('adj_ending');
+    expect(payload.promptSummary).toContain('schnell');
 
     await waitFor(() => {
       expect(onResult).toHaveBeenCalledWith(expect.objectContaining({ result: 'correct' }));

@@ -16,6 +16,25 @@ const MODE_LABELS: Record<PracticeMode, string> = {
   english: "English",
 };
 
+function deriveExpectedAnswer(expected: unknown): string | undefined {
+  if (typeof expected === "string") {
+    return expected;
+  }
+  if (!expected || typeof expected !== "object") {
+    return undefined;
+  }
+  const record = expected as Record<string, unknown>;
+  const form = typeof record.form === "string" ? record.form : undefined;
+  const article = typeof record.article === "string" ? record.article : undefined;
+  if (form) {
+    return [article, form].filter(Boolean).join(" ").trim();
+  }
+  if (typeof record.value === "string") {
+    return record.value;
+  }
+  return undefined;
+}
+
 const formatDuration = (milliseconds: number) => {
   const totalSeconds = Math.max(1, Math.round(milliseconds / 1000));
   if (totalSeconds < 60) {
@@ -99,7 +118,7 @@ export function AnsweredQuestionsPanel({
             const expected =
               item.result === "correct"
                 ? undefined
-                : item.correctAnswer ?? (typeof item.expectedResponse === "string" ? item.expectedResponse : undefined);
+                : item.correctAnswer ?? deriveExpectedAnswer(item.expectedResponse);
             const displayTitle = lexeme?.lemma ?? verb?.infinitive ?? promptLemma ?? prompt ?? "Unknown task";
             const subtitle = lexeme?.english ?? verb?.english ?? "";
             const präteritumExample = verb?.präteritumExample;

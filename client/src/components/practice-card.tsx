@@ -523,6 +523,7 @@ function ConjugateFormRenderer({
     setIsSubmitting(true);
 
     try {
+      const promptSummary = buildPromptSummary(copy, task);
       const payload = {
         taskId: task.taskId,
         lexemeId: task.lexemeId,
@@ -532,6 +533,7 @@ function ConjugateFormRenderer({
         result: submissionContext.result,
         submittedResponse: submitted,
         expectedResponse: task.expectedSolution,
+        promptSummary,
         timeSpentMs: submissionContext.timeSpentMs,
         answeredAt: submissionContext.answeredAt,
         cefrLevel: task.lexeme.metadata?.level as CEFRLevel | undefined,
@@ -552,7 +554,7 @@ function ConjugateFormRenderer({
         result: submissionContext.result,
         submittedResponse: submitted,
         expectedResponse: task.expectedSolution,
-        promptSummary: buildPromptSummary(copy, task),
+        promptSummary,
         timeSpentMs: submissionContext.timeSpentMs,
         answeredAt: submissionContext.answeredAt,
       });
@@ -778,6 +780,7 @@ function NounCaseDeclensionRenderer({
     setIsSubmitting(true);
 
     try {
+      const promptSummary = buildNounPromptSummary(copy, task);
       const payload = {
         taskId: task.taskId,
         lexemeId: task.lexemeId,
@@ -787,6 +790,7 @@ function NounCaseDeclensionRenderer({
         result: submissionContext.result,
         submittedResponse: submitted,
         expectedResponse: task.expectedSolution,
+        promptSummary,
         timeSpentMs: submissionContext.timeSpentMs,
         answeredAt: submissionContext.answeredAt,
         cefrLevel: task.lexeme.metadata?.level as CEFRLevel | undefined,
@@ -806,7 +810,7 @@ function NounCaseDeclensionRenderer({
         result: submissionContext.result,
         submittedResponse: submitted,
         expectedResponse: task.expectedSolution,
-        promptSummary: buildNounPromptSummary(copy, task),
+        promptSummary,
         timeSpentMs: submissionContext.timeSpentMs,
         answeredAt: submissionContext.answeredAt,
       });
@@ -1039,6 +1043,7 @@ function AdjectiveEndingRenderer({
     setIsSubmitting(true);
 
     try {
+      const promptSummary = buildAdjectivePromptSummary(copy, task);
       const payload = {
         taskId: task.taskId,
         lexemeId: task.lexemeId,
@@ -1048,6 +1053,7 @@ function AdjectiveEndingRenderer({
         result: submissionContext.result,
         submittedResponse: submitted,
         expectedResponse: task.expectedSolution,
+        promptSummary,
         timeSpentMs: submissionContext.timeSpentMs,
         answeredAt: submissionContext.answeredAt,
         cefrLevel: task.lexeme.metadata?.level as CEFRLevel | undefined,
@@ -1067,7 +1073,7 @@ function AdjectiveEndingRenderer({
         result: submissionContext.result,
         submittedResponse: submitted,
         expectedResponse: task.expectedSolution,
-        promptSummary: buildAdjectivePromptSummary(copy, task),
+        promptSummary,
         timeSpentMs: submissionContext.timeSpentMs,
         answeredAt: submissionContext.answeredAt,
       });

@@ -191,6 +191,7 @@ export interface TaskAttemptPayload {
   result: PracticeResult;
   submittedResponse: unknown;
   expectedResponse?: unknown;
+  promptSummary?: string;
   timeSpentMs: number;
   answeredAt: string;
   deviceId: string;

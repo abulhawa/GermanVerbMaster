@@ -1,10 +1,57 @@
-import type { TaskAttemptPayload } from '@shared';
+import { z } from 'zod';
+import type { CEFRLevel, TaskAnswerHistoryItem, TaskAttemptPayload } from '@shared';
 import { practiceDb, practiceDbReady, type PendingAttempt } from './db';
 import { getDeviceId } from './device';
 
 const TASK_ENDPOINT = '/api/submission';
+const PRACTICE_HISTORY_ENDPOINT = '/api/practice/history';
 
 type SubmitPayload = Omit<TaskAttemptPayload, 'deviceId'>;
+
+const answerHistoryLexemeSchema = z.object({
+  id: z.string(),
+  lemma: z.string(),
+  pos: z.string(),
+  level: z.string().optional(),
+  english: z.string().optional(),
+  example: z
+    .object({
+      de: z.string().optional(),
+      en: z.string().optional(),
+    })
+    .optional(),
+  auxiliary: z.string().optional(),
+});
+
+const practiceHistoryItemSchema = z.object({
+  id: z.string(),
+  taskId: z.string(),
+  lexemeId: z.string(),
+  taskType: z.string(),
+  pos: z.string(),
+  renderer: z.string(),
+  result: z.enum(['correct', 'incorrect']),
+  submittedResponse: z.unknown(),
+  expectedResponse: z.unknown().optional(),
+  promptSummary: z.string(),
+  answeredAt: z.string(),
+  timeSpentMs: z.number(),
+  timeSpent: z.number(),
+  cefrLevel: z.string().optional(),
+  packId: z.string().nullable().optional(),
+  mode: z.string().optional(),
+  attemptedAnswer: z.string().optional(),
+  correctAnswer: z.string().optional(),
+  prompt: z.string().optional(),
+  level: z.string().optional(),
+  lexeme: answerHistoryLexemeSchema.optional(),
+  verb: z.unknown().optional(),
+  legacyVerb: z.unknown().optional(),
+});
+
+const practiceHistoryResponseSchema = z.object({
+  history: z.array(practiceHistoryItemSchema),
+});
 
 function withDeviceId(payload: SubmitPayload): TaskAttemptPayload {
   return {
@@ -99,4 +146,54 @@ export async function flushPendingAttempts(): Promise<number> {
 export async function getPendingAttempts(): Promise<PendingAttempt[]> {
   await practiceDbReady;
   return practiceDb.pendingAttempts.orderBy('createdAt').toArray();
+}
+
+export interface PracticeHistoryFilters {
+  deviceId: string;
+  result?: 'correct' | 'incorrect';
+  level?: CEFRLevel;
+  limit?: number;
+}
+
+export async function fetchPracticeHistory(filters: PracticeHistoryFilters): Promise<TaskAnswerHistoryItem[]> {
+  const params = new URLSearchParams();
+  params.set('deviceId', filters.deviceId);
+  if (filters.result) {
+    params.set('result', filters.result);
+  }
+  if (filters.level) {
+    params.set('level', filters.level);
+  }
+  if (filters.limit) {
+    params.set('limit', String(filters.limit));
+  }
+
+  const query = params.toString();
+  const response = await fetch(
+    query ? `${PRACTICE_HISTORY_ENDPOINT}?${query}` : PRACTICE_HISTORY_ENDPOINT,
+    {
+      method: 'GET',
+      headers: { Accept: 'application/json' },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(`Failed to load practice history (${response.status})`);
+  }
+
+  const payload = await response.json().catch(() => ({ history: [] }));
+  const parsed = practiceHistoryResponseSchema.parse(payload);
+  return parsed.history as TaskAnswerHistoryItem[];
+}
+
+export async function clearPracticeHistory(filters: { deviceId: string }): Promise<void> {
+  const response = await fetch(PRACTICE_HISTORY_ENDPOINT, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ deviceId: filters.deviceId }),
+  });
+
+  if (!response.ok && response.status !== 204) {
+    throw new Error(`Failed to clear practice history (${response.status})`);
+  }
 }
