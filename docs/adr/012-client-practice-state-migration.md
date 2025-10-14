@@ -48,8 +48,8 @@ must preserve the verb-only experience during migration to avoid data loss.
    - Rename the Dexie database to `practice` and upgrade the schema so queued attempts store the new `TaskAttemptPayload` shape.
    - At database open we migrate the old `german-verb-master` data set, convert each `PracticeAttemptPayload` into a task
      payload, and delete the legacy database.
-   - Submission logic now converts back to the legacy payload when the server only accepts `/api/practice-history`; when the new
-     `/api/submission` endpoint becomes available, the task payload can be sent directly.
+  - Submission logic now posts directly to `/api/submission`. The compatibility shim for `/api/practice-history` is no longer
+    required.
 
 6. **Session controller**
    - Add `practice.session` to coordinate queued task identifiers, the active task, and completion order. It is seeded empty and

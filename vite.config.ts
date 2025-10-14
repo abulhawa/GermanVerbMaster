@@ -44,14 +44,6 @@ export default defineConfig({
               cacheableResponse: { statuses: [200] },
             },
           },
-          {
-            urlPattern: ({ url }) => url.pathname === "/api/quiz/verbs",
-            handler: "StaleWhileRevalidate",
-            method: "GET",
-            options: {
-              cacheName: "verbs-list",
-            },
-          },
         ],
       },
     }),

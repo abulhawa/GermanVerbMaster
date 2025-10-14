@@ -1,8 +1,7 @@
-import type { PracticeAttemptPayload, PracticeResult, TaskAttemptPayload } from '@shared';
+import type { TaskAttemptPayload } from '@shared';
 import { practiceDb, practiceDbReady, type PendingAttempt } from './db';
 import { getDeviceId } from './device';
 
-const LEGACY_ENDPOINT = '/api/practice-history';
 const TASK_ENDPOINT = '/api/submission';
 
 type SubmitPayload = Omit<TaskAttemptPayload, 'deviceId'>;
@@ -15,26 +14,6 @@ function withDeviceId(payload: SubmitPayload): TaskAttemptPayload {
   } satisfies TaskAttemptPayload;
 }
 
-function toLegacyPayload(payload: TaskAttemptPayload): PracticeAttemptPayload | null {
-  if (!payload.legacyVerb) {
-    return null;
-  }
-
-  const { infinitive, mode, level, attemptedAnswer } = payload.legacyVerb;
-  const result: PracticeResult = payload.result;
-
-  return {
-    verb: infinitive,
-    mode,
-    result,
-    attemptedAnswer: typeof payload.submittedResponse === 'string' ? payload.submittedResponse : attemptedAnswer ?? '',
-    timeSpent: payload.timeSpentMs,
-    level: level ?? 'A1',
-    deviceId: payload.deviceId,
-    queuedAt: payload.queuedAt,
-  } satisfies PracticeAttemptPayload;
-}
-
 async function queueAttempt(payload: TaskAttemptPayload): Promise<void> {
   await practiceDbReady;
   await practiceDb.pendingAttempts.add({
@@ -44,15 +23,6 @@ async function queueAttempt(payload: TaskAttemptPayload): Promise<void> {
 }
 
 async function sendAttempt(payload: TaskAttemptPayload): Promise<Response> {
-  const legacyPayload = toLegacyPayload(payload);
-  if (legacyPayload) {
-    return fetch(LEGACY_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(legacyPayload),
-    });
-  }
-
   return fetch(TASK_ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

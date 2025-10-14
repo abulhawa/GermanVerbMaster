@@ -1,17 +1,10 @@
 import { useCallback, useEffect } from 'react';
 import { flushPendingAttempts } from '@/lib/api';
-import { useQueryClient } from '@tanstack/react-query';
 
 export function useSyncQueue() {
-  const queryClient = useQueryClient();
-
   const flush = useCallback(async () => {
-    const flushed = await flushPendingAttempts();
-    if (flushed > 0) {
-      queryClient.invalidateQueries({ queryKey: ['/api/practice-history'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/analytics'] });
-    }
-  }, [queryClient]);
+    await flushPendingAttempts();
+  }, []);
 
   useEffect(() => {
     void flush();

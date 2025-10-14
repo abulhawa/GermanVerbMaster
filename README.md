@@ -128,7 +128,7 @@ Shut down the container with `docker stop gvm-postgres` when you are done.
 
 ## Lexeme-based task system
 - `/api/tasks` exposes POS-aware task descriptors driven by the shared registry in `shared/task-registry.ts` and server metadata in `server/tasks/registry.ts`.
-- Legacy verb routes (`/api/quiz/verbs`, `/api/practice-history`, `/api/review-queue`) remain available behind a compatibility layer while feature flag rollouts complete. Deprecation headers point clients back to the task feed.
+- Legacy verb routes have been removed. Clients should rely on `/api/tasks` for fetching practice prompts and `/api/submission` for recording attempts.
 - The deterministic schema covers `lexemes`, `inflections`, `task_specs`, `content_packs`, `pack_lexeme_map`, `scheduling_state`, and `telemetry_priorities`. These tables live alongside legacy verb tables until shadow mode validates parity.
 - Feature flags (`ENABLE_NOUNS_BETA`, `ENABLE_ADJECTIVES_BETA`) gate access to noun and adjective queues. The API emits `x-gvm-feature-flags` headers to document the current snapshot.
 
@@ -170,6 +170,6 @@ Shut down the container with `docker stop gvm-postgres` when you are done.
 - Authenticated partners can fetch embeddable drill bundles and review their request analytics via the new `/api/partner/*` routes.
 
 ## Adaptive review scheduler
-- The adaptive spaced-repetition engine persists Leitner box stats per device inside `scheduling_state`, regenerates priority-ranked queues, and exposes them through `/api/tasks` plus the `/api/review-queue` legacy alias.
+- The adaptive spaced-repetition engine persists Leitner box stats per device inside `scheduling_state`, regenerates priority-ranked queues, and exposes them through `/api/tasks`.
 - Review [`docs/adaptive-review-scheduler.md`](docs/adaptive-review-scheduler.md) for the full architecture, configuration flags, and integration checklist before extending the system.
 

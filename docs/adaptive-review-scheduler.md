@@ -4,6 +4,8 @@ _Last updated: 2025-10-02_
 
 This document captures the full architecture for the adaptive spaced-repetition system (SRS) that now powers `/api/review-queue`. It walks through the persistence model, scheduling heuristics, feature toggles, and the server/client hand-off so future contributors can confidently extend the feature after a long break.
 
+> **Legacy note:** As of October 2025 the standalone `/api/review-queue` endpoint has been decommissioned. The adaptive scheduler continues to run behind the scenes and feeds `/api/tasks` when the feature flag is enabled. The historical API contract is preserved below for reference.
+
 ## High-level goals
 
 - Persist per-device Leitner box state so the backend can make spaced-repetition decisions without depending on client storage.
@@ -52,7 +54,7 @@ The orchestrator lives in [`server/srs/engine.ts`](../server/srs/engine.ts) and 
 
 | Environment variable | Default | Notes |
 | --- | --- | --- |
-| `FEATURE_ADAPTIVE_QUEUE` | `false` | Must be truthy to surface `/api/review-queue`. Keep disabled in production until analytics are ready. |
+| `FEATURE_ADAPTIVE_QUEUE` | `false` | Must be truthy to let the adaptive scheduler enrich `/api/tasks`. Keep disabled in production until analytics are ready. |
 | `ADAPTIVE_QUEUE_MIN_SIZE` | `20` | Minimum number of `verb_scheduling_state` rows the engine maintains per device. Values above 200 are clamped. |
 | `ADAPTIVE_QUEUE_MAX_ITEMS` | `50` | Maximum queue length returned to clients. Values above 200 are clamped. |
 | `ADAPTIVE_QUEUE_TTL_MS` | `900000` (15 minutes) | Determines `validUntil` timestamps for stored queue snapshots. |
@@ -60,64 +62,19 @@ All helpers defensively parse environment variables and fall back to defaults if
 
 ## API contract
 
-Route implementation: [`server/routes.ts`](../server/routes.ts) at `/api/review-queue`.
+Route implementation: _Removed_. Refer to `processTaskSubmission()` in [`server/routes.ts`](../server/routes.ts) and the task feed orchestrator in [`server/tasks/scheduler.ts`](../server/tasks/scheduler.ts) to see how the scheduler now participates in `/api/tasks` payloads.
 
-- **Method**: `GET`
-- **Query params**:
-  - `deviceId` (required) – persistent identifier stored in `localStorage` by the client.
-  - `level` (optional) – CEFR level hint used when seeding new verbs.
-- **Responses**:
-  - `200 OK` with payload:
-    ```json
-    {
-      "deviceId": "abc-123",
-      "version": "1f3b...",
-      "generatedAt": "2024-11-24T23:59:59.123Z",
-      "validUntil": "2024-11-25T00:14:59.123Z",
-      "featureEnabled": true,
-      "items": [
-        {
-          "verb": "gehen",
-          "priority": 0.92,
-          "dueAt": "2024-11-25T08:00:00.000Z",
-          "leitnerBox": 3,
-          "accuracyWeight": 0.64,
-          "latencyWeight": 0.81,
-          "stabilityWeight": 0.43,
-          "predictedIntervalMinutes": 4320
-        }
-      ],
-      "metrics": {
-        "queueLength": 20,
-        "generationDurationMs": 37
-      }
-    }
-    ```
-  - `400 Bad Request` if `deviceId` is missing.
-  - `404 Not Found` if the feature flag is disabled.
-  - `500 Internal Server Error` for unexpected failures.
-
-The handler marks responses as `Cache-Control: no-store` and regenerates queues whenever the stored snapshot is stale.【F:server/routes.ts†L612-L675】
-
-Unit coverage for the endpoint and scoring lives in [`tests/review-queue-route.test.ts`](../tests/review-queue-route.test.ts) and [`tests/adaptive-priority.test.ts`](../tests/adaptive-priority.test.ts). These suites are the best starting point when adjusting scoring weights or TTL behavior.
+Unit coverage for the scheduler logic lives in [`tests/adaptive-priority.test.ts`](../tests/adaptive-priority.test.ts). These suites are the best starting point when adjusting scoring weights or TTL behavior.
 
 ## Client integration
 
-The current client queue helper (`client/src/lib/review-queue.ts`) still relies on `localStorage`. To integrate the adaptive backend:
-
-1. Fetch `/api/review-queue?deviceId=<uuid>&level=<CEFR>` when the home screen mounts or after each practice submission.
-2. Replace the local `focus-review-queue` storage with the server-provided `items` array, using the `version` to avoid redundant updates.
-3. When practicing verbs, send the `queuedAt` timestamp alongside attempts so latency analytics can compare predicted vs actual intervals.
-4. If the API returns an empty list, fall back to the client-maintained queue to preserve the existing experience.
-5. Respect `validUntil`; schedule a refresh slightly before expiry to keep the queue warm while the device stays online.
-
-Once the integration is complete, `enqueueReviewVerbs` can become a thin wrapper that merges bespoke study lists with the adaptive queue response.
+The legacy client queue helper (`client/src/lib/review-queue.ts`) relied on the `/api/review-queue` contract. Modern clients consume adaptive tasks directly via `/api/tasks`, so bespoke queue wiring is no longer required.
 
 ## Operational checklist
 
 - Run `npm run db:push` after pulling the migration to create the new tables locally.
 - Seed verb data (`npm run seed`) before testing so `ensureMinimumDeviceStates` can backfill state rows.
-- Start the server with `FEATURE_ADAPTIVE_QUEUE=true` in `.env` or the shell to enable the route.
+- Start the server with `FEATURE_ADAPTIVE_QUEUE=true` in `.env` or the shell to allow the scheduler to populate `/api/tasks` responses.
 - Configure an external trigger (for example, a Vercel Cron job hitting `/api/jobs/regenerate-queues`) to keep queues fresh without relying on in-process intervals.
 - Execute `npm test` to cover the API and scoring utilities before shipping changes.
 

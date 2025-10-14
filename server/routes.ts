@@ -1,8 +1,6 @@
 import type { Express, NextFunction, Request, RequestHandler, Response } from "express";
 import { db, getPool } from "@db";
 import {
-  verbPracticeHistory,
-  verbAnalytics,
   words,
   integrationPartners,
   integrationUsage,
@@ -24,9 +22,6 @@ import type { LexemePos, TaskType } from "@shared";
 import { srsEngine } from "./srs/index.js";
 import { getTaskRegistryEntry, taskRegistry } from "./tasks/registry.js";
 import { processTaskSubmission } from "./tasks/scheduler.js";
-import { runVerbQueueShadowComparison } from "./tasks/shadow-mode.js";
-import { isLexemeSchemaEnabled } from "./config.js";
-import { enforceRateLimit, hashKey } from "./api/rate-limit.js";
 import {
   computeWordEnrichment,
   resolveConfigFromEnv as resolveEnrichmentConfigFromEnv,
@@ -108,7 +103,6 @@ function toIsoString(value: Date | string): string {
   return value instanceof Date ? value.toISOString() : value;
 }
 
-const practiceModeSchema = z.enum(["präteritum", "partizipII", "auxiliary", "english"]);
 const levelSchema = z.enum(["A1", "A2", "B1", "B2", "C1", "C2"]);
 const LEVEL_ORDER = ["A1", "A2", "B1", "B2", "C1", "C2"] as const;
 
@@ -624,12 +618,6 @@ function computeFallbackPriorityScore(
   return baseScore + accuracyPenalty + incorrectBonus + dueBonus + noise;
 }
 
-function setLegacyDeprecation(res: Response): void {
-  res.setHeader('Deprecation', 'Sun, 01 Oct 2025 00:00:00 GMT');
-  res.setHeader('Link', '</api/tasks>; rel="successor-version"; title="GET /api/tasks"');
-  res.setHeader('Warning', '299 - "Legacy verb-only endpoint. Use /api/tasks."');
-}
-
 function computeWordCompleteness(word: Pick<Word, "pos"> & Partial<Word>): boolean {
   const english = word.english;
   const exampleDe = word.exampleDe;
@@ -765,93 +753,6 @@ async function authenticatePartner(req: Request, res: Response, next: NextFuncti
   } catch (error) {
     console.error("Partner authentication failed:", error);
     return sendError(res, 500, "Partner authentication failed", "PARTNER_AUTH_FAILED");
-  }
-}
-
-const recordPracticeSchema = z.object({
-  verb: z.string().trim().min(1).max(100),
-  mode: practiceModeSchema,
-  result: z.enum(["correct", "incorrect"]),
-  attemptedAnswer: z.string().trim().min(1).max(200),
-  timeSpent: z.number().int().min(0).max(1000 * 60 * 15),
-  level: levelSchema,
-  deviceId: z.string().trim().min(6).max(64),
-  queuedAt: z.string().datetime({ offset: true }).optional(),
-});
-
-type RecordPracticePayload = z.infer<typeof recordPracticeSchema>;
-type PracticeAttemptData = Omit<RecordPracticePayload, "queuedAt">;
-
-function normalizePracticePayload(payload: RecordPracticePayload): {
-  attempt: PracticeAttemptData;
-  practicedAt: Date;
-} {
-  const { queuedAt, ...attempt } = payload;
-  const practicedAt = queuedAt ? new Date(queuedAt) : new Date();
-  if (Number.isNaN(practicedAt.getTime())) {
-    return { attempt, practicedAt: new Date() };
-  }
-  return { attempt, practicedAt };
-}
-
-async function insertPracticeHistoryEntry(
-  attempt: PracticeAttemptData,
-  userId: string | null,
-): Promise<void> {
-  await db.insert(verbPracticeHistory).values({
-    ...attempt,
-    userId,
-  });
-}
-
-async function updateVerbAnalyticsWithAttempt(attempt: PracticeAttemptData): Promise<void> {
-  const analytics = await db.query.verbAnalytics.findFirst({
-    where: eq(verbAnalytics.verb, attempt.verb),
-  });
-
-  if (analytics) {
-    await db
-      .update(verbAnalytics)
-      .set({
-        totalAttempts: sql`${verbAnalytics.totalAttempts} + 1`,
-        correctAttempts:
-          attempt.result === "correct"
-            ? sql`${verbAnalytics.correctAttempts} + 1`
-            : verbAnalytics.correctAttempts,
-        averageTimeSpent: sql`(${verbAnalytics.averageTimeSpent} * ${verbAnalytics.totalAttempts} + ${attempt.timeSpent}) / (${verbAnalytics.totalAttempts} + 1)`,
-        lastPracticedAt: new Date(),
-      })
-      .where(eq(verbAnalytics.verb, attempt.verb));
-    return;
-  }
-
-  await db.insert(verbAnalytics).values({
-    verb: attempt.verb,
-    totalAttempts: 1,
-    correctAttempts: attempt.result === "correct" ? 1 : 0,
-    averageTimeSpent: attempt.timeSpent,
-    lastPracticedAt: new Date(),
-    level: attempt.level,
-  });
-}
-
-async function recordAdaptiveSchedulingAttempt(
-  attempt: PracticeAttemptData,
-  practicedAt: Date,
-  userId: string | null,
-): Promise<void> {
-  try {
-    await srsEngine.recordPracticeAttempt({
-      deviceId: attempt.deviceId,
-      verb: attempt.verb,
-      level: attempt.level,
-      result: attempt.result,
-      timeSpent: attempt.timeSpent,
-      userId,
-      practicedAt,
-    });
-  } catch (error) {
-    console.error("Failed to update adaptive scheduling state:", error);
   }
 }
 
@@ -2342,187 +2243,7 @@ export function registerRoutes(app: Express): void {
     }
   });
 
-  app.get("/api/quiz/verbs", async (req, res) => {
-    setLegacyDeprecation(res);
-    try {
-      const level = normalizeStringParam(req.query.level)?.trim();
-      const random = parseRandomFlag(req.query.random);
-      const limit = parseLimitParam(req.query.limit, 50);
-
-      const conditions: any[] = [
-        eq(words.pos, "V"),
-        eq(words.canonical, true),
-        eq(words.complete, true),
-      ];
-      if (level) {
-        conditions.push(eq(words.level, level));
-      }
-
-      const baseQuery = db.select().from(words).where(and(...conditions));
-      const orderedQuery = random
-        ? baseQuery.orderBy(sql`random()`)
-        : baseQuery.orderBy(sql`lower(${words.lemma})`);
-
-      const rows = await orderedQuery.limit(limit);
-      const verbs = rows.map(toGermanVerb);
-      res.setHeader("Cache-Control", "no-store");
-      res.json(verbs);
-    } catch (error) {
-      console.error("Error fetching quiz verbs:", error);
-      sendError(res, 500, "Failed to fetch verbs", "QUIZ_VERBS_FAILED");
-    }
-  });
-
-  app.post("/api/practice-history", async (req, res) => {
-    setLegacyDeprecation(res);
-    try {
-      const parsed = recordPracticeSchema.safeParse(req.body);
-      if (!parsed.success) {
-        return sendError(res, 400, "Invalid practice data", "INVALID_INPUT");
-      }
-      const { attempt, practicedAt } = normalizePracticePayload(parsed.data);
-
-      const limiterKey = hashKey(`practice-history:${attempt.deviceId}`);
-      const limitCheck = await enforceRateLimit({
-        key: limiterKey,
-        limit: 30,
-        windowMs: 60_000,
-      });
-
-      if (!limitCheck.allowed) {
-        return res.status(429).json({ error: "Too many practice submissions", code: "RATE_LIMITED" });
-      }
-
-      const sessionUserId = getSessionUserId(req.authSession);
-
-      await insertPracticeHistoryEntry(attempt, sessionUserId);
-      await updateVerbAnalyticsWithAttempt(attempt);
-      await recordAdaptiveSchedulingAttempt(attempt, practicedAt, sessionUserId);
-
-      res.json({ success: true });
-    } catch (error) {
-      console.error("Error recording practice:", error);
-      if (error instanceof z.ZodError) {
-        return sendError(res, 400, "Invalid practice data", "INVALID_INPUT");
-      }
-      sendError(res, 500, "Failed to record practice attempt", "PRACTICE_SAVE_FAILED");
-    }
-  });
-
-  app.get("/api/practice-history", async (req, res) => {
-    setLegacyDeprecation(res);
-    try {
-      const sessionUserId = getSessionUserId(req.authSession);
-      const history = await db.query.verbPracticeHistory.findMany({
-        where: sessionUserId ? eq(verbPracticeHistory.userId, sessionUserId) : undefined,
-        orderBy: [desc(verbPracticeHistory.createdAt)],
-        limit: 100,
-      });
-
-      res.json(history);
-    } catch (error) {
-      console.error("Error fetching practice history:", error);
-      sendError(res, 500, "Failed to fetch practice history", "HISTORY_FETCH_FAILED");
-    }
-  });
-
-  app.get("/api/analytics", async (req, res) => {
-    setLegacyDeprecation(res);
-    try {
-      const analytics = await db.query.verbAnalytics.findMany({
-        orderBy: [desc(verbAnalytics.lastPracticedAt)],
-      });
-
-      res.json(analytics);
-    } catch (error) {
-      console.error("Error fetching analytics:", error);
-      sendError(res, 500, "Failed to fetch analytics", "ANALYTICS_FETCH_FAILED");
-    }
-  });
-
-  app.get("/api/review-queue", async (req, res) => {
-    setLegacyDeprecation(res);
-    try {
-      if (!srsEngine.isEnabled()) {
-        return sendError(res, 404, "Adaptive review queue is disabled", "FEATURE_DISABLED");
-      }
-
-      const deviceId = normalizeStringParam(req.query.deviceId)?.trim();
-      if (!deviceId) {
-        return sendError(res, 400, "deviceId is required", "INVALID_DEVICE");
-      }
-
-      const rawLevel = normalizeStringParam(req.query.level);
-      let levelHint: (typeof LEVEL_ORDER)[number] | null = null;
-      if (rawLevel !== undefined) {
-        const trimmedLevel = rawLevel.trim();
-        if (trimmedLevel) {
-          const parsedLevel = levelSchema.safeParse(trimmedLevel);
-          if (!parsedLevel.success) {
-            return sendError(res, 400, "Invalid level parameter", "INVALID_LEVEL");
-          }
-          levelHint = parsedLevel.data;
-        }
-      }
-
-      let queue = await srsEngine.fetchQueueForDevice(deviceId);
-      if (!queue || srsEngine.isQueueStale(queue)) {
-        queue = await srsEngine.generateQueueForDevice(deviceId, levelHint);
-      }
-
-      if (!queue) {
-        const fallbackGeneratedAt = new Date();
-        return res.json({
-          deviceId,
-          version: "unavailable",
-          generatedAt: fallbackGeneratedAt.toISOString(),
-          validUntil: new Date(fallbackGeneratedAt.getTime() + 60_000).toISOString(),
-          featureEnabled: true,
-          items: [],
-          metrics: {
-            queueLength: 0,
-            generationDurationMs: 0,
-          },
-        });
-      }
-
-      if (isLexemeSchemaEnabled()) {
-        void runVerbQueueShadowComparison({
-          deviceId,
-          legacyQueue: {
-            deviceId,
-            items: queue.items,
-          },
-          limit: queue.items.length,
-        }).catch((error) => {
-          console.error("[shadow-mode] Failed to compare verb queues", {
-            deviceId,
-            error,
-          });
-        });
-      }
-
-      res.setHeader("Cache-Control", "no-store");
-      res.json({
-        deviceId: queue.deviceId,
-        version: queue.version,
-        generatedAt: queue.generatedAt?.toISOString() ?? new Date().toISOString(),
-        validUntil: queue.validUntil?.toISOString() ?? new Date(Date.now() + 60_000).toISOString(),
-        featureEnabled: true,
-        items: queue.items,
-        metrics: {
-          queueLength: queue.itemCount,
-          generationDurationMs: queue.generationDurationMs,
-        },
-      });
-    } catch (error) {
-      console.error("Error fetching adaptive review queue:", error);
-      sendError(res, 500, "Failed to build adaptive review queue", "REVIEW_QUEUE_FAILED");
-    }
-  });
-
   app.get("/api/partner/drills", authenticatePartner, async (req, res) => {
-    setLegacyDeprecation(res);
     try {
       const partner = req.partner!;
       const limitParam = normalizeStringParam(req.query.limit);
