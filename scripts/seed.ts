@@ -1,7 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parse } from 'csv-parse/sync';
 import { and, eq, sql } from 'drizzle-orm';
 
 import { getDb, getPool } from '@db';
@@ -116,6 +115,78 @@ interface RawWordRow {
   approved?: boolean | null;
 }
 
+interface PosJsonExample {
+  de?: string | null;
+  en?: string | null;
+  exampleDe?: string | null;
+  exampleEn?: string | null;
+  source?: string | null;
+}
+
+interface PosJsonSources {
+  csv?: string | null;
+  notes?: string | null;
+}
+
+interface BasePosJsonRecord {
+  lemma: unknown;
+  level?: unknown;
+  english?: unknown;
+  approved?: unknown;
+  examples?: unknown;
+  sources?: unknown;
+}
+
+interface VerbJsonRecord extends BasePosJsonRecord {
+  verb?: {
+    separable?: unknown;
+    aux?: unknown;
+    praesens?: {
+      ich?: unknown;
+      er?: unknown;
+    };
+    praeteritum?: unknown;
+    partizipIi?: unknown;
+    perfekt?: unknown;
+  };
+}
+
+interface NounJsonRecord extends BasePosJsonRecord {
+  noun?: {
+    gender?: unknown;
+    plural?: unknown;
+  };
+}
+
+interface AdjectiveJsonRecord extends BasePosJsonRecord {
+  adjective?: {
+    comparative?: unknown;
+    superlative?: unknown;
+  };
+}
+
+interface AdverbJsonRecord extends BasePosJsonRecord {
+  adverb?: {
+    comparative?: unknown;
+    superlative?: unknown;
+  };
+}
+
+interface PrepositionJsonRecord extends BasePosJsonRecord {
+  preposition?: {
+    cases?: unknown;
+    notes?: unknown;
+  };
+}
+
+type PosJsonRecord =
+  | VerbJsonRecord
+  | NounJsonRecord
+  | AdjectiveJsonRecord
+  | AdverbJsonRecord
+  | PrepositionJsonRecord
+  | BasePosJsonRecord;
+
 interface AggregatedWordWithKey extends AggregatedWord {
   key: string;
 }
@@ -128,6 +199,53 @@ function normaliseString(value: unknown): string | null {
   if (value === undefined || value === null) return null;
   const trimmed = String(value).trim();
   return trimmed.length ? trimmed : null;
+}
+
+function normaliseBoolean(value: unknown): boolean | null {
+  if (value === undefined || value === null) return null;
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'string') return parseBooleanish(value);
+  if (typeof value === 'number') return value === 1 ? true : value === 0 ? false : null;
+  return null;
+}
+
+function normaliseExamples(
+  rawExamples: unknown,
+): { exampleDe: string | null; exampleEn: string | null; examples: WordExample[] | null } {
+  if (!Array.isArray(rawExamples)) {
+    return { exampleDe: null, exampleEn: null, examples: null };
+  }
+
+  const examples: WordExample[] = [];
+
+  for (const entry of rawExamples) {
+    if (!entry || typeof entry !== 'object') {
+      continue;
+    }
+
+    const candidate = entry as PosJsonExample;
+    const exampleDe = normaliseString(candidate.de ?? candidate.exampleDe ?? null);
+    const exampleEn = normaliseString(candidate.en ?? candidate.exampleEn ?? null);
+    const source = normaliseString(candidate.source ?? null);
+
+    if (exampleDe === null && exampleEn === null && source === null) {
+      continue;
+    }
+
+    examples.push({
+      exampleDe,
+      exampleEn,
+      source,
+    });
+  }
+
+  const [first] = examples;
+
+  return {
+    exampleDe: first?.exampleDe ?? null,
+    exampleEn: first?.exampleEn ?? null,
+    examples: examples.length ? examples : null,
+  };
 }
 
 function normalisePos(raw: unknown): PartOfSpeech | null {
@@ -416,73 +534,73 @@ function mergeWordPosAttributes(
 interface PosFileDefinition {
   filename: string;
   pos: PartOfSpeech;
-  map(record: Record<string, unknown>): RawWordRow | null;
-}
-
-function parseDelimitedList(value: unknown): string[] {
-  const normalized = normaliseString(value);
-  if (!normalized) {
-    return [];
-  }
-  return normalized
-    .split(/[,;\n]/)
-    .map((entry) => entry.trim())
-    .filter(Boolean);
+  map(record: PosJsonRecord): RawWordRow | null;
 }
 
 const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
   {
-    filename: 'verbs.csv',
+    filename: 'verbs.jsonl',
     pos: 'V',
     map: (record) => {
-      const lemma = normaliseString(record.lemma);
+      const data = record as VerbJsonRecord;
+      const lemma = normaliseString(data.lemma);
       if (!lemma) return null;
+
+      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples);
+      const verb = (data.verb ?? {}) as NonNullable<VerbJsonRecord['verb']>;
+      const praesens = (verb.praesens ?? {}) as { ich?: unknown; er?: unknown };
+      const sources = (data.sources ?? null) as PosJsonSources | null;
 
       return {
         lemma,
         pos: 'V',
-        level: normaliseLevel(record.level),
-        english: normaliseString(record.english),
-        exampleDe: normaliseString(record.example_de),
-        exampleEn: normaliseString(record.example_en),
-        separable: parseBooleanish(record.separable),
-        aux: normaliseString(record.aux),
-        praesensIch: normaliseString(record.praesens_ich),
-        praesensEr: normaliseString(record.praesens_er),
-        praeteritum: normaliseString(record.praeteritum),
-        partizipIi: normaliseString(record.partizip_ii),
-        perfekt: normaliseString(record.perfekt),
+        level: normaliseLevel(data.level),
+        english: normaliseString(data.english),
+        exampleDe,
+        exampleEn,
+        gender: null,
+        plural: null,
+        separable: normaliseBoolean(verb.separable),
+        aux: normaliseString(verb.aux),
+        praesensIch: normaliseString(praesens.ich),
+        praesensEr: normaliseString(praesens.er),
+        praeteritum: normaliseString(verb.praeteritum),
+        partizipIi: normaliseString(verb.partizipIi),
+        perfekt: normaliseString(verb.perfekt),
         comparative: null,
         superlative: null,
-        sourcesCsv: normaliseString(record.sources_csv),
-        sourceNotes: normaliseString(record.source_notes),
+        sourcesCsv: normaliseString(sources?.csv),
+        sourceNotes: normaliseString(sources?.notes),
         translations: null,
-        examples: null,
+        examples,
         posAttributes: null,
         enrichmentAppliedAt: null,
         enrichmentMethod: null,
-        gender: null,
-        plural: null,
-        approved: parseBooleanish(record.approved) ?? false,
+        approved: normaliseBoolean(data.approved) ?? false,
       } satisfies RawWordRow;
     },
   },
   {
-    filename: 'nouns.csv',
+    filename: 'nouns.jsonl',
     pos: 'N',
     map: (record) => {
-      const lemma = normaliseString(record.lemma);
+      const data = record as NounJsonRecord;
+      const lemma = normaliseString(data.lemma);
       if (!lemma) return null;
+
+      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples);
+      const noun = (data.noun ?? {}) as NonNullable<NounJsonRecord['noun']>;
+      const sources = (data.sources ?? null) as PosJsonSources | null;
 
       return {
         lemma,
         pos: 'N',
-        level: normaliseLevel(record.level),
-        english: normaliseString(record.english),
-        exampleDe: normaliseString(record.example_de),
-        exampleEn: normaliseString(record.example_en),
-        gender: normaliseString(record.gender),
-        plural: normaliseString(record.plural),
+        level: normaliseLevel(data.level),
+        english: normaliseString(data.english),
+        exampleDe,
+        exampleEn,
+        gender: normaliseString(noun.gender),
+        plural: normaliseString(noun.plural),
         separable: null,
         aux: null,
         praesensIch: null,
@@ -492,31 +610,36 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
         perfekt: null,
         comparative: null,
         superlative: null,
-        sourcesCsv: normaliseString(record.sources_csv),
-        sourceNotes: normaliseString(record.source_notes),
+        sourcesCsv: normaliseString(sources?.csv),
+        sourceNotes: normaliseString(sources?.notes),
         translations: null,
-        examples: null,
+        examples,
         posAttributes: null,
         enrichmentAppliedAt: null,
         enrichmentMethod: null,
-        approved: parseBooleanish(record.approved) ?? false,
+        approved: normaliseBoolean(data.approved) ?? false,
       } satisfies RawWordRow;
     },
   },
   {
-    filename: 'adjectives.csv',
+    filename: 'adjectives.jsonl',
     pos: 'Adj',
     map: (record) => {
-      const lemma = normaliseString(record.lemma);
+      const data = record as AdjectiveJsonRecord;
+      const lemma = normaliseString(data.lemma);
       if (!lemma) return null;
+
+      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples);
+      const adjective = (data.adjective ?? {}) as NonNullable<AdjectiveJsonRecord['adjective']>;
+      const sources = (data.sources ?? null) as PosJsonSources | null;
 
       return {
         lemma,
         pos: 'Adj',
-        level: normaliseLevel(record.level),
-        english: normaliseString(record.english),
-        exampleDe: normaliseString(record.example_de),
-        exampleEn: normaliseString(record.example_en),
+        level: normaliseLevel(data.level),
+        english: normaliseString(data.english),
+        exampleDe,
+        exampleEn,
         gender: null,
         plural: null,
         separable: null,
@@ -526,33 +649,38 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
         praeteritum: null,
         partizipIi: null,
         perfekt: null,
-        comparative: normaliseString(record.comparative),
-        superlative: normaliseString(record.superlative),
-        sourcesCsv: normaliseString(record.sources_csv),
-        sourceNotes: normaliseString(record.source_notes),
+        comparative: normaliseString(adjective.comparative),
+        superlative: normaliseString(adjective.superlative),
+        sourcesCsv: normaliseString(sources?.csv),
+        sourceNotes: normaliseString(sources?.notes),
         translations: null,
-        examples: null,
+        examples,
         posAttributes: null,
         enrichmentAppliedAt: null,
         enrichmentMethod: null,
-        approved: parseBooleanish(record.approved) ?? false,
+        approved: normaliseBoolean(data.approved) ?? false,
       } satisfies RawWordRow;
     },
   },
   {
-    filename: 'adverbs.csv',
+    filename: 'adverbs.jsonl',
     pos: 'Adv',
     map: (record) => {
-      const lemma = normaliseString(record.lemma);
+      const data = record as AdverbJsonRecord;
+      const lemma = normaliseString(data.lemma);
       if (!lemma) return null;
+
+      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples);
+      const adverb = (data.adverb ?? {}) as NonNullable<AdverbJsonRecord['adverb']>;
+      const sources = (data.sources ?? null) as PosJsonSources | null;
 
       return {
         lemma,
         pos: 'Adv',
-        level: normaliseLevel(record.level),
-        english: normaliseString(record.english),
-        exampleDe: normaliseString(record.example_de),
-        exampleEn: normaliseString(record.example_en),
+        level: normaliseLevel(data.level),
+        english: normaliseString(data.english),
+        exampleDe,
+        exampleEn,
         gender: null,
         plural: null,
         separable: null,
@@ -562,41 +690,64 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
         praeteritum: null,
         partizipIi: null,
         perfekt: null,
-        comparative: normaliseString(record.comparative),
-        superlative: normaliseString(record.superlative),
-        sourcesCsv: normaliseString(record.sources_csv),
-        sourceNotes: normaliseString(record.source_notes),
+        comparative: normaliseString(adverb.comparative),
+        superlative: normaliseString(adverb.superlative),
+        sourcesCsv: normaliseString(sources?.csv),
+        sourceNotes: normaliseString(sources?.notes),
         translations: null,
-        examples: null,
+        examples,
         posAttributes: null,
         enrichmentAppliedAt: null,
         enrichmentMethod: null,
-        approved: parseBooleanish(record.approved) ?? false,
+        approved: normaliseBoolean(data.approved) ?? false,
       } satisfies RawWordRow;
     },
   },
   {
-    filename: 'prepositions.csv',
+    filename: 'prepositions.jsonl',
     pos: 'Präp',
     map: (record) => {
-      const lemma = normaliseString(record.lemma);
+      const data = record as PrepositionJsonRecord;
+      const lemma = normaliseString(data.lemma);
       if (!lemma) return null;
 
-      const cases = parseDelimitedList(record.cases);
-      const notes = parseDelimitedList(record.notes);
+      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples);
+      const preposition = (data.preposition ?? {}) as NonNullable<PrepositionJsonRecord['preposition']>;
+      const sources = (data.sources ?? null) as PosJsonSources | null;
+
+      const caseValues = normalizeStringArray(
+        Array.isArray(preposition.cases)
+          ? (preposition.cases as unknown[]).map((value) =>
+              value === null || value === undefined ? null : String(value),
+            )
+          : [],
+      );
+      const noteValues = normalizeStringArray(
+        Array.isArray(preposition.notes)
+          ? (preposition.notes as unknown[]).map((value) =>
+              value === null || value === undefined ? null : String(value),
+            )
+          : [],
+      );
       const posAttributes: WordPosAttributes = {
         pos: 'Präp',
-        preposition: cases.length || notes.length ? { cases, notes: notes.length ? notes : undefined } : undefined,
-        notes: notes.length ? notes : undefined,
+        preposition:
+          caseValues.length || noteValues.length
+            ? {
+                cases: caseValues.length ? caseValues : undefined,
+                notes: noteValues.length ? noteValues : undefined,
+              }
+            : undefined,
+        notes: noteValues.length ? noteValues : undefined,
       };
 
       return {
         lemma,
         pos: 'Präp',
-        level: normaliseLevel(record.level),
-        english: normaliseString(record.english),
-        exampleDe: normaliseString(record.example_de),
-        exampleEn: normaliseString(record.example_en),
+        level: normaliseLevel(data.level),
+        english: normaliseString(data.english),
+        exampleDe,
+        exampleEn,
         gender: null,
         plural: null,
         separable: null,
@@ -608,14 +759,14 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
         perfekt: null,
         comparative: null,
         superlative: null,
-        sourcesCsv: normaliseString(record.sources_csv),
-        sourceNotes: normaliseString(record.source_notes),
+        sourcesCsv: normaliseString(sources?.csv),
+        sourceNotes: normaliseString(sources?.notes),
         translations: null,
-        examples: null,
+        examples,
         posAttributes,
         enrichmentAppliedAt: null,
         enrichmentMethod: null,
-        approved: parseBooleanish(record.approved) ?? false,
+        approved: normaliseBoolean(data.approved) ?? false,
       } satisfies RawWordRow;
     },
   },
@@ -638,11 +789,20 @@ async function loadPosWordRowsFromDisk(rootDir: string): Promise<RawWordRow[]> {
       throw error;
     }
 
-    const records = parse(content, {
-      columns: true,
-      skip_empty_lines: true,
-      trim: true,
-    }) as Array<Record<string, unknown>>;
+    const records: PosJsonRecord[] = [];
+    const lines = content.split(/\r?\n/);
+    for (const [index, rawLine] of lines.entries()) {
+      const line = rawLine.trim();
+      if (!line) {
+        continue;
+      }
+      try {
+        records.push(JSON.parse(line) as PosJsonRecord);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        throw new Error(`Failed to parse ${filePath}:${index + 1}: ${message}`);
+      }
+    }
 
     for (const record of records) {
       const row = definition.map(record);

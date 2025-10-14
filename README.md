@@ -143,12 +143,12 @@ Shut down the container with `docker stop gvm-postgres` when you are done.
 - Practice attempts are written to an IndexedDB queue (via Dexie) whenever the network is unavailable or the API is rate limited.
 - The `useSyncQueue` hook listens to `online` and `visibilitychange` events and flushes queued attempts back to `POST /api/submission`.
 - Each device receives a persistent `deviceId` stored in `localStorage`; it is sent with every practice submission and stored in `scheduling_state` for priority calculations.
-- `data/pos/*.csv` contains the POS-specific seed files (verbs, nouns, adjectives, adverbs, prepositions, …). Each file owns the columns relevant to that POS and includes an `approved` column so the seeding pipeline can promote learner-ready entries.
+- `data/pos/*.jsonl` contains the POS-specific seed files (verbs, nouns, adjectives, adverbs, prepositions, …). Each line is a JSON object that includes lemma metadata, an `approved` flag, an `examples` array of German/English pairs, and POS-specific attributes.
 - Legacy aggregated CSVs now live under `data/legacy/` for historical reference. The new seeding pipeline reads the POS-specific files directly and regenerates `data/packs/*.json` bundles on every `npm run seed`.
 
 ## Database utilities
 - The schema is managed with Drizzle + Postgres. After editing `db/schema.ts`, run `npm run db:push` to apply migrations using the configured `DATABASE_URL`.
-- `npm run seed` recomputes completeness, writes deterministic content packs to `data/packs/`, and idempotently upserts source material into Postgres. Copy updated pack JSON into `client/public/packs/` before building so offline clients can fetch the refreshed bundles. Run the seed after editing any `data/pos/*.csv` file or adjusting enrichment snapshots under `data/enrichment/`.
+- `npm run seed` recomputes completeness, writes deterministic content packs to `data/packs/`, and idempotently upserts source material into Postgres. Copy updated pack JSON into `client/public/packs/` before building so offline clients can fetch the refreshed bundles. Run the seed after editing any `data/pos/*.jsonl` file or adjusting enrichment snapshots under `data/enrichment/`.
 - The seeding pipeline synchronises the shared `lexemes`/`inflections` tables for every part of speech and records aggregated attribution metadata in each pack so CC BY-SA contributors are always credited.
 
 ## Vocabulary enrichment helpers
