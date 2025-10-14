@@ -578,10 +578,12 @@ interface SchedulingStateSnapshot {
   correctAttempts: number;
 }
 
-function stableDeterministicNoise(value: string): number {
+function stableDeterministicNoise(value: string | null | undefined): number {
+  const input = typeof value === "string" ? value : value == null ? "" : String(value);
+
   let hash = 0;
-  for (let index = 0; index < value.length; index += 1) {
-    hash = (hash * 31 + value.charCodeAt(index)) | 0;
+  for (let index = 0; index < input.length; index += 1) {
+    hash = (hash * 31 + input.charCodeAt(index)) | 0;
   }
   return ((hash >>> 0) % 1000) / 1000;
 }
