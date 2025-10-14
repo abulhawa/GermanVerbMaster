@@ -80,6 +80,10 @@ function mergeTaskLists(lists: PracticeTask[][], limit: number): PracticeTask[] 
   return result;
 }
 
+function createQueueSignature(queue: string[], taskTypes: TaskType[]): string {
+  return `${taskTypes.join(',')}|${queue.join(',')}`;
+}
+
 export default function Home() {
   const { settings, updateSettings } = usePracticeSettings();
   const [progress, setProgress] = useState<PracticeProgressState>(() => loadPracticeProgress());
@@ -91,6 +95,7 @@ export default function Home() {
   const [shouldReloadTasks, setShouldReloadTasks] = useState(false);
   const [isRecapOpen, setIsRecapOpen] = useState(false);
   const pendingFetchRef = useRef(false);
+  const lastFailedQueueSignatureRef = useRef<string | null>(null);
 
   const authSession = useAuthSession();
   const navigationItems = useMemo(
@@ -136,6 +141,10 @@ export default function Home() {
   }, [answerHistory]);
 
   const activeTask = session.activeTaskId ? tasksById[session.activeTaskId] : undefined;
+  const queueSignature = useMemo(
+    () => createQueueSignature(session.queue, activeTaskTypes),
+    [session.queue, activeTaskTypes],
+  );
 
   const fetchAndEnqueueTasks = useCallback(
     async ({ replace = false }: { replace?: boolean } = {}) => {
@@ -143,9 +152,11 @@ export default function Home() {
         return;
       }
 
+      const baseQueue = replace ? [] : session.queue;
+      const baseSignature = createQueueSignature(baseQueue, activeTaskTypes);
+
       pendingFetchRef.current = true;
       setIsFetchingTasks(true);
-      setFetchError(null);
 
       try {
         const perTypeLimit = Math.max(1, Math.ceil(FETCH_LIMIT / activeTaskTypes.length));
@@ -167,6 +178,28 @@ export default function Home() {
 
         const tasks = mergeTaskLists(fetchedTasks, FETCH_LIMIT);
 
+        if (!tasks.length) {
+          if (!baseQueue.length) {
+            setFetchError('No practice tasks are available for your current scope right now. Try adjusting your practice scope or check back later.');
+          }
+          lastFailedQueueSignatureRef.current = baseSignature;
+          return;
+        }
+
+        const seen = new Set(baseQueue);
+        const hasNewTasks = tasks.some((task) => {
+          if (seen.has(task.taskId)) {
+            return false;
+          }
+          seen.add(task.taskId);
+          return true;
+        });
+
+        if (!replace && !hasNewTasks) {
+          lastFailedQueueSignatureRef.current = baseSignature;
+          return;
+        }
+
         setTasksById((prev) => {
           const next = replace ? {} : { ...prev };
           for (const task of tasks) {
@@ -175,21 +208,33 @@ export default function Home() {
           return next;
         });
 
-        setSession((prev) => enqueueTasks(replace ? resetSession() : prev, tasks, { replace }));
+        setSession((prev) => {
+          const baseState = replace ? resetSession() : prev;
+          const nextState = enqueueTasks(baseState, tasks, { replace });
+          return nextState;
+        });
+
+        lastFailedQueueSignatureRef.current = null;
+        setFetchError(null);
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Failed to load practice tasks';
         console.error('[home] Unable to fetch practice tasks', error);
+        lastFailedQueueSignatureRef.current = null;
         setFetchError(message);
       } finally {
         pendingFetchRef.current = false;
         setIsFetchingTasks(false);
       }
     },
-    [activeTaskTypes],
+    [activeTaskTypes, session.queue],
   );
 
   useEffect(() => {
     if (fetchError) {
+      return;
+    }
+
+    if (lastFailedQueueSignatureRef.current && lastFailedQueueSignatureRef.current === queueSignature) {
       return;
     }
 
@@ -206,13 +251,22 @@ export default function Home() {
     if (session.queue.length < MIN_QUEUE_THRESHOLD && !isFetchingTasks) {
       void fetchAndEnqueueTasks();
     }
-  }, [session.queue.length, session.activeTaskId, tasksById, isFetchingTasks, fetchAndEnqueueTasks, fetchError]);
+  }, [
+    session.queue.length,
+    session.activeTaskId,
+    tasksById,
+    isFetchingTasks,
+    fetchAndEnqueueTasks,
+    fetchError,
+    queueSignature,
+  ]);
 
   useEffect(() => {
     if (shouldReloadTasks) {
       setShouldReloadTasks(false);
       setTasksById({});
       setSession(resetSession());
+      lastFailedQueueSignatureRef.current = null;
       void fetchAndEnqueueTasks({ replace: true });
     }
   }, [shouldReloadTasks, fetchAndEnqueueTasks]);
@@ -397,6 +451,7 @@ export default function Home() {
                     variant="secondary"
                     className="rounded-full px-4"
                     onClick={() => {
+                      lastFailedQueueSignatureRef.current = null;
                       setFetchError(null);
                       void fetchAndEnqueueTasks({ replace: true });
                     }}
@@ -421,6 +476,7 @@ export default function Home() {
                       variant="secondary"
                       className="rounded-full px-4"
                       onClick={() => {
+                        lastFailedQueueSignatureRef.current = null;
                         setFetchError(null);
                         void fetchAndEnqueueTasks({ replace: true });
                       }}

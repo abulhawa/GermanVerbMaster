@@ -118,6 +118,90 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value && typeof value === "object");
 }
 
+function normaliseExampleRecord(example: unknown):
+  | {
+      de: string | null;
+      en: string | null;
+    }
+  | undefined {
+  if (!isRecord(example)) {
+    return undefined;
+  }
+
+  const de = normaliseString(example.de);
+  const english = normaliseString(example.en);
+
+  if (!de && !english) {
+    return undefined;
+  }
+
+  return {
+    de: de ?? null,
+    en: english ?? null,
+  };
+}
+
+function normaliseLexemeMetadata(metadata: unknown): Record<string, unknown> | null {
+  if (!isRecord(metadata)) {
+    return null;
+  }
+
+  const base: Record<string, unknown> = { ...metadata };
+  const rawExample = isRecord(base.example) ? base.example : null;
+
+  if (rawExample) {
+    const example = normaliseExampleRecord(rawExample);
+    if (example) {
+      base.example = example;
+    } else {
+      delete base.example;
+    }
+  }
+
+  return base;
+}
+
+function normaliseStringOrNull(value: unknown): string | null {
+  return normaliseString(value) ?? null;
+}
+
+function extractPackSlugFromTaskId(taskId: string | null): string | null {
+  if (!taskId) {
+    return null;
+  }
+
+  const trimmed = taskId.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  const match = /^pack:([a-z0-9-]+):/i.exec(trimmed);
+  if (!match) {
+    return null;
+  }
+
+  return match[1]?.toLowerCase() ?? null;
+}
+
+function normaliseTaskPrompt(prompt: unknown): Record<string, unknown> {
+  if (!isRecord(prompt)) {
+    return {};
+  }
+
+  const base: Record<string, unknown> = { ...prompt };
+  const rawExample = isRecord(base.example) ? base.example : null;
+  if (rawExample) {
+    const example = normaliseExampleRecord(rawExample);
+    if (example) {
+      base.example = example;
+    } else {
+      delete base.example;
+    }
+  }
+
+  return base;
+}
+
 function normaliseCefrLevel(value: unknown): CEFRLevel | undefined {
   if (typeof value !== "string") {
     return undefined;
@@ -137,7 +221,7 @@ function normaliseString(value: unknown): string | undefined {
 function buildLexemeSnapshotFromRow(
   row: Pick<PracticeHistoryRow, "lexemeId" | "lexemeLemma" | "pos" | "lexemeMetadata" | "cefrLevel">,
 ): AnswerHistoryLexemeSnapshot {
-  const metadata = isRecord(row.lexemeMetadata) ? row.lexemeMetadata : {};
+  const metadata = normaliseLexemeMetadata(row.lexemeMetadata) ?? {};
   const exampleMeta = isRecord(metadata.example) ? metadata.example : null;
   const level = normaliseCefrLevel(row.cefrLevel ?? metadata.level);
   const english = normaliseString(metadata.english);
@@ -1329,30 +1413,122 @@ export function registerRoutes(app: Express): void {
         }
       }
 
-      const payload = allowedRows.map((row) => {
-        const registryEntry = getTaskRegistryEntry(row.taskType as TaskType);
-        return {
-          id: row.id,
-          taskType: row.taskType,
-          renderer: row.renderer,
-          pos: row.pos,
-          prompt: row.prompt,
-          solution: row.solution,
+      const fallbackPackSlugs = new Set<string>();
+      for (const row of allowedRows) {
+        if (row.packId && row.packSlug && row.packName) {
+          continue;
+        }
+
+        const normalisedId = normaliseString(row.id);
+        if (!normalisedId) {
+          continue;
+        }
+
+        const derivedSlug = extractPackSlugFromTaskId(normalisedId);
+        if (derivedSlug) {
+          fallbackPackSlugs.add(derivedSlug);
+        }
+      }
+
+      let fallbackPackMap = new Map<string, { id: string; slug: string; name: string }>();
+      if (fallbackPackSlugs.size) {
+        const fallbackPackRows = await db
+          .select({ id: contentPacks.id, slug: contentPacks.slug, name: contentPacks.name })
+          .from(contentPacks)
+          .where(inArray(contentPacks.slug, Array.from(fallbackPackSlugs)));
+
+        fallbackPackMap = new Map(
+          fallbackPackRows
+            .map((record) => {
+              const id = normaliseString(record.id);
+              const slug = normaliseString(record.slug);
+              const name = normaliseString(record.name);
+
+              if (!id || !slug || !name) {
+                return null;
+              }
+
+              return [slug.toLowerCase(), { id, slug, name }] as const;
+            })
+            .filter((entry): entry is readonly [string, { id: string; slug: string; name: string }] => Boolean(entry)),
+        );
+      }
+
+      const payload: Array<{
+        id: string;
+        taskType: string;
+        renderer: string;
+        pos: string;
+        prompt: Record<string, unknown>;
+        solution?: unknown;
+        queueCap: number;
+        lexeme: { id: string; lemma: string; metadata: Record<string, unknown> | null };
+        pack: { id: string; slug: string; name: string } | null;
+      }> = [];
+
+      for (const row of allowedRows) {
+        const taskId = normaliseString(row.id);
+        const taskTypeValue = normaliseString(row.taskType);
+        const rendererValue = normaliseString(row.renderer);
+        const posValue = normaliseString(row.pos);
+        const lexemeId = normaliseString(row.lexemeId);
+        const lexemeLemmaRaw = normaliseStringOrNull(row.lexemeLemma);
+
+        if (!taskId || !taskTypeValue || !posValue || !lexemeId) {
+          continue;
+        }
+
+        const lexemeLemma = lexemeLemmaRaw ?? lexemeId;
+        if (!lexemeLemma) {
+          continue;
+        }
+
+        let registryEntry: ReturnType<typeof getTaskRegistryEntry> | null = null;
+        try {
+          registryEntry = getTaskRegistryEntry(taskTypeValue as TaskType);
+        } catch (error) {
+          console.error("Failed to resolve registry entry for task", { taskType: taskTypeValue, taskId, error });
+          throw error;
+        }
+
+        const prompt = normaliseTaskPrompt(row.prompt);
+        const metadata = normaliseLexemeMetadata(row.lexemeMetadata) ?? null;
+
+        const packMetadata = (() => {
+          if (row.packId && row.packSlug && row.packName) {
+            const packId = normaliseString(row.packId);
+            const packSlug = normaliseString(row.packSlug);
+            const packName = normaliseString(row.packName);
+            if (packId && packSlug && packName) {
+              return { id: packId, slug: packSlug, name: packName };
+            }
+          }
+
+          const derivedSlug = extractPackSlugFromTaskId(taskId);
+          if (!derivedSlug) {
+            return null;
+          }
+
+          const fallback = fallbackPackMap.get(derivedSlug);
+          return fallback ?? null;
+        })();
+
+        payload.push({
+          id: taskId,
+          taskType: taskTypeValue,
+          renderer: rendererValue ?? registryEntry.renderer,
+          pos: posValue,
+          prompt,
+          solution: row.solution ?? undefined,
           queueCap: registryEntry.queueCap,
           lexeme: {
-            id: row.lexemeId,
-            lemma: row.lexemeLemma,
-            metadata: row.lexemeMetadata,
+            id: lexemeId,
+            lemma: lexemeLemma,
+            metadata,
           },
-          pack: row.packId
-            ? {
-                id: row.packId,
-                slug: row.packSlug,
-                name: row.packName,
-              }
-            : null,
-        };
-      });
+          pack: packMetadata,
+        });
+      }
 
       res.json({ tasks: payload });
     } catch (error) {
