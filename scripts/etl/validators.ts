@@ -21,9 +21,6 @@ function baseValidation(word: AggregatedWord): PosValidationResult {
   if (!word.approved) {
     warnings.push('pending_approval');
   }
-  if (!word.sourcesCsv) {
-    warnings.push('sources');
-  }
 
   return { lemma: word.lemma, pos: word.pos, errors, warnings };
 }

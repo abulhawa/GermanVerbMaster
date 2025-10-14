@@ -79,9 +79,7 @@ interface EditFieldConfig {
     | 'partizipIi'
     | 'perfekt'
     | 'comparative'
-    | 'superlative'
-    | 'sourcesCsv'
-    | 'sourceNotes';
+    | 'superlative';
   label: string;
   type?: 'text' | 'textarea' | 'select' | 'boolean';
   options?: Array<{ label: string; value: string }>;
@@ -92,8 +90,6 @@ const commonFields: EditFieldConfig[] = [
   { key: 'english', label: 'English' },
   { key: 'exampleDe', label: 'Example (DE)', type: 'textarea' },
   { key: 'exampleEn', label: 'Example (EN)', type: 'textarea' },
-  { key: 'sourcesCsv', label: 'Sources' },
-  { key: 'sourceNotes', label: 'Source notes', type: 'textarea' },
 ];
 
 const verbFields: EditFieldConfig[] = [
@@ -141,8 +137,6 @@ const wordFormSchema = z.object({
   perfekt: z.string(),
   comparative: z.string(),
   superlative: z.string(),
-  sourcesCsv: z.string(),
-  sourceNotes: z.string(),
 });
 
 type WordFormState = z.infer<typeof wordFormSchema>;
@@ -164,8 +158,6 @@ function createFormState(word: Word): WordFormState {
     perfekt: word.perfekt ?? '',
     comparative: word.comparative ?? '',
     superlative: word.superlative ?? '',
-    sourcesCsv: word.sourcesCsv ?? '',
-    sourceNotes: word.sourceNotes ?? '',
   };
 }
 
@@ -181,8 +173,6 @@ function preparePayload(form: WordFormState, pos: Word['pos']) {
   assignText('english', 'english');
   assignText('exampleDe', 'exampleDe');
   assignText('exampleEn', 'exampleEn');
-  assignText('sourcesCsv', 'sourcesCsv');
-  assignText('sourceNotes', 'sourceNotes');
 
   if (pos === 'V') {
     if (form.aux === 'unset') {

@@ -654,8 +654,6 @@ const wordUpdateSchema = z
     comparative: optionalText(100),
     superlative: optionalText(100),
     approved: optionalBoolean,
-    sourcesCsv: optionalText(500),
-    sourceNotes: optionalText(500),
     translations: translationRecordSchema.array().nullable().optional(),
     examples: exampleRecordSchema.array().nullable().optional(),
     posAttributes: posAttributesSchema.nullable().optional(),
@@ -697,7 +695,6 @@ const enrichmentPatchSchema = z
     english: optionalText(400),
     exampleDe: optionalText(800),
     exampleEn: optionalText(800),
-    sourcesCsv: optionalText(800),
     complete: optionalBoolean,
     praeteritum: optionalText(200),
     partizipIi: optionalText(200),
@@ -873,6 +870,11 @@ function computeWordCompleteness(word: Pick<Word, "pos"> & Partial<Word>): boole
   }
 }
 
+function presentWord(word: Word): Omit<Word, "sourcesCsv" | "sourceNotes"> {
+  const { sourcesCsv: _sourcesCsv, sourceNotes: _sourceNotes, ...rest } = word;
+  return rest;
+}
+
 function normaliseAuxiliaryValue(aux: string | null | undefined): 'haben' | 'sein' | 'haben / sein' {
   if (!aux) {
     return 'haben';
@@ -895,8 +897,8 @@ function toGermanVerb(word: Word): GermanVerb {
   const level = LEVEL_ORDER.includes((word.level ?? "A1") as typeof LEVEL_ORDER[number])
     ? (word.level as GermanVerb["level"])
     : "A1";
-  const sourceName = word.sourcesCsv?.split(";")[0]?.trim() || "words_all_sources";
-  const levelReference = word.sourceNotes?.split(";")[0]?.trim() || word.level || "N/A";
+  const sourceName = "words_all_sources";
+  const levelReference = word.level || "N/A";
 
   return {
     infinitive: word.lemma,
@@ -2019,7 +2021,7 @@ export function registerRoutes(app: Express): void {
 
       res.setHeader("Cache-Control", "no-store");
       res.json({
-        data: rows,
+        data: rows.map(presentWord),
         pagination: {
           page: safePage,
           perPage,
@@ -2046,7 +2048,7 @@ export function registerRoutes(app: Express): void {
       }
 
       res.setHeader("Cache-Control", "no-store");
-      res.json(word);
+      res.json(presentWord(word));
     } catch (error) {
       console.error("Error fetching word", error);
       sendError(res, 500, "Failed to fetch word", "WORD_FETCH_FAILED");
@@ -2251,8 +2253,6 @@ export function registerRoutes(app: Express): void {
       assign("perfekt", "perfekt");
       assign("comparative", "comparative");
       assign("superlative", "superlative");
-      assign("sourcesCsv", "sourcesCsv");
-      assign("sourceNotes", "sourceNotes");
       assign("translations", "translations");
       assign("examples", "examples");
       assign("posAttributes", "posAttributes");
@@ -2298,7 +2298,7 @@ export function registerRoutes(app: Express): void {
         return sendError(res, 500, "Failed to update word", "WORD_UPDATE_FAILED");
       }
 
-      res.json(refreshed);
+      res.json(presentWord(refreshed));
     } catch (error) {
       console.error("Error updating word:", error);
       if (error instanceof z.ZodError) {
@@ -2477,13 +2477,6 @@ export function registerRoutes(app: Express): void {
           contentApplied = true;
         }
       }
-      if (Object.prototype.hasOwnProperty.call(patch, "sourcesCsv") && patch.sourcesCsv !== undefined) {
-        if (patch.sourcesCsv !== existing.sourcesCsv) {
-          updates.sourcesCsv = patch.sourcesCsv;
-          appliedFields.push("sourcesCsv");
-          contentApplied = true;
-        }
-      }
       if (Object.prototype.hasOwnProperty.call(patch, "gender") && patch.gender !== undefined) {
         if (patch.gender !== existing.gender) {
           updates.gender = patch.gender;
@@ -2630,7 +2623,6 @@ export function registerRoutes(app: Express): void {
           exampleEn: refreshed.exampleEn ?? null,
           translations: refreshed.translations ?? null,
           examples: refreshed.examples ?? null,
-          sourcesCsv: refreshed.sourcesCsv ?? null,
           gender: refreshed.gender ?? null,
           plural: refreshed.plural ?? null,
           praeteritum: refreshed.praeteritum ?? null,
@@ -2830,7 +2822,7 @@ export function registerRoutes(app: Express): void {
             answer: word.english ?? "",
           },
         },
-        source: word.sourcesCsv ?? null,
+        source: "words_all_sources",
         updatedAt: word.updatedAt,
       }));
 

@@ -156,7 +156,6 @@ describe('Partner integration routes', () => {
         praeteritum: 'ging',
         partizipIi: 'gegangen',
         perfekt: 'ist gegangen',
-        sourcesCsv: 'Duden',
         updatedAt: new Date('2024-01-01T00:00:00Z'),
         approved: true,
         complete: true,

@@ -113,7 +113,6 @@ const MISSING_FIELD_LABELS: Record<string, string> = {
   english: 'English translation',
   exampleDe: 'German example',
   exampleEn: 'English example',
-  sourcesCsv: 'Sources',
   praeteritum: 'Präteritum',
   partizipIi: 'Partizip II',
   perfekt: 'Perfekt',
@@ -143,7 +142,6 @@ export function getMissingFields(word: AdminWord): string[] {
   check(word.english, 'english');
   check(word.exampleDe, 'exampleDe');
   check(word.exampleEn, 'exampleEn');
-  check(word.sourcesCsv, 'sourcesCsv');
 
   switch (word.pos) {
     case 'V':

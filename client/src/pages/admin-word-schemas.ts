@@ -50,8 +50,6 @@ export const wordSchema = z.object({
   superlative: z.string().nullable(),
   approved: z.boolean(),
   complete: z.boolean(),
-  sourcesCsv: z.string().nullable(),
-  sourceNotes: z.string().nullable(),
   translations: z.array(translationSchema).nullable(),
   examples: z.array(exampleSchema).nullable(),
   posAttributes: posAttributesSchema.nullable(),

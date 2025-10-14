@@ -488,7 +488,6 @@ function createLexemeSeed(word: AggregatedWord): LexemeSeed {
     separable: word.separable ?? undefined,
     auxiliary: word.aux ?? undefined,
     perfekt: word.perfekt ?? undefined,
-    sourceNotes: word.sourceNotes ?? undefined,
   };
 
   const tags = word.posAttributes?.tags ?? null;

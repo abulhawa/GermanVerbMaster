@@ -2,12 +2,17 @@ import path from 'node:path';
 import { tmpdir } from 'node:os';
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { count } from 'drizzle-orm';
 
 import { setupTestDatabase, type TestDatabaseContext } from './helpers/pg';
 
 describe('seedDatabase', () => {
+  afterEach(() => {
+    vi.resetModules();
+    vi.clearAllMocks();
+  });
+
   it(
     'populates core lexeme and task tables',
       async () => {
@@ -36,7 +41,6 @@ describe('seedDatabase', () => {
                   partizipIi: 'gegangen',
                   perfekt: 'ist gegangen',
                 },
-                sources: { csv: 'test-source' },
               }),
             ].join('\n'),
             'utf8',
@@ -52,7 +56,6 @@ describe('seedDatabase', () => {
                 approved: true,
                 examples: [{ de: 'Das Haus ist groß.', en: 'The house is big.' }],
                 noun: { gender: 'das', plural: 'Häuser' },
-                sources: { csv: 'test-source' },
               }),
             ].join('\n'),
             'utf8',
@@ -99,4 +102,54 @@ describe('seedDatabase', () => {
     },
     60000,
   );
+
+  it('fails when a POS JSONL file defines the same word twice', async () => {
+    const context: TestDatabaseContext = await setupTestDatabase();
+    context.mock();
+
+    const seedRoot = await mkdtemp(path.join(tmpdir(), 'gvm-seed-dupe-'));
+
+    try {
+      const posDir = path.join(seedRoot, 'data', 'pos');
+      await mkdir(posDir, { recursive: true });
+
+      const duplicateVerb = {
+        lemma: 'gehen',
+        level: 'A1',
+        english: 'to go',
+        approved: true,
+        examples: [{ de: 'Ich gehe.', en: 'I go.' }],
+        verb: {
+          separable: false,
+          aux: 'sein',
+          praeteritum: 'ging',
+          partizipIi: 'gegangen',
+          perfekt: 'ist gegangen',
+        },
+      };
+
+      await writeFile(
+        path.join(posDir, 'verbs.jsonl'),
+        [JSON.stringify(duplicateVerb), JSON.stringify(duplicateVerb)].join('\n'),
+        'utf8',
+      );
+
+      vi.doMock('../scripts/etl/golden', async () => {
+        const actual = await vi.importActual<typeof import('../scripts/etl/golden')>(
+          '../scripts/etl/golden',
+        );
+        return {
+          ...actual,
+          writeGoldenBundlesToDisk: vi.fn(),
+        };
+      });
+
+      const { seedDatabase } = await import('../scripts/seed');
+
+      await expect(seedDatabase(seedRoot)).rejects.toThrow(/duplicate word gehen \(V\)/i);
+    } finally {
+      await context.cleanup();
+      await rm(seedRoot, { recursive: true, force: true });
+    }
+  });
 });

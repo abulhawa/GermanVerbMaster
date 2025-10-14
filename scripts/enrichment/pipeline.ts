@@ -45,7 +45,6 @@ type WordPatch = Partial<
     | "english"
     | "exampleDe"
     | "exampleEn"
-    | "sourcesCsv"
     | "complete"
     | "updatedAt"
     | "praeteritum"
@@ -1713,16 +1712,6 @@ function determineUpdates(
     });
   }
 
-  const mergedSources = mergeSourcesCsv(word.sourcesCsv, suggestions.sources);
-  if (mergedSources !== word.sourcesCsv) {
-    patch.sourcesCsv = mergedSources;
-    updates.push({
-      field: "sourcesCsv",
-      previous: word.sourcesCsv,
-      next: mergedSources,
-    });
-  }
-
   const nextComplete = computeCompleteness(word, patch);
   if (nextComplete !== word.complete) {
     patch.complete = nextComplete;
@@ -2143,20 +2132,6 @@ function pickPreferredAdjectiveCandidate(
     }
   }
   return undefined;
-}
-
-function mergeSourcesCsv(existing: string | null | undefined, additions: string[]): string | null {
-  const set = new Set<string>();
-  for (const value of (existing ?? "").split(/[,;]/)) {
-    const trimmed = value.trim();
-    if (trimmed) set.add(trimmed);
-  }
-  for (const addition of additions) {
-    const trimmed = addition.trim();
-    if (trimmed) set.add(trimmed);
-  }
-  const combined = Array.from(set).sort();
-  return combined.length ? combined.join(",") : null;
 }
 
 type TranslationRecord = NonNullable<WordRecord["translations"]>[number];

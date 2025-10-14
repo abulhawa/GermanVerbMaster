@@ -105,8 +105,6 @@ interface RawWordRow {
   perfekt?: string | null;
   comparative?: string | null;
   superlative?: string | null;
-  sourcesCsv?: string | null;
-  sourceNotes?: string | null;
   translations?: WordTranslation[] | null;
   examples?: WordExample[] | null;
   posAttributes?: WordPosAttributes | null;
@@ -123,18 +121,12 @@ interface PosJsonExample {
   source?: string | null;
 }
 
-interface PosJsonSources {
-  csv?: string | null;
-  notes?: string | null;
-}
-
 interface BasePosJsonRecord {
   lemma: unknown;
   level?: unknown;
   english?: unknown;
   approved?: unknown;
   examples?: unknown;
-  sources?: unknown;
 }
 
 interface VerbJsonRecord extends BasePosJsonRecord {
@@ -347,8 +339,6 @@ function mergeWord(existing: RawWordRow | null, incoming: RawWordRow): RawWordRo
   merged.perfekt = existing.perfekt ?? incoming.perfekt ?? null;
   merged.comparative = existing.comparative ?? incoming.comparative ?? null;
   merged.superlative = existing.superlative ?? incoming.superlative ?? null;
-  merged.sourcesCsv = dedupeSources(existing.sourcesCsv, incoming.sourcesCsv);
-  merged.sourceNotes = dedupeSources(existing.sourceNotes, incoming.sourceNotes);
   merged.translations = mergeTranslations(existing.translations, incoming.translations);
   merged.examples = mergeExamples(existing.examples, incoming.examples);
   merged.posAttributes = mergeWordPosAttributes(existing.posAttributes, incoming.posAttributes);
@@ -377,19 +367,6 @@ function pickPreferredLevel(existing: string | null, incoming: string | null): s
   if (existingIndex === -1) return incoming;
   if (incomingIndex === -1) return existing;
   return incomingIndex < existingIndex ? incoming : existing;
-}
-
-function dedupeSources(existing: string | null | undefined, incoming: string | null | undefined): string | null {
-  const values = new Set<string>();
-  for (const candidate of [existing, incoming]) {
-    if (!candidate) continue;
-    candidate
-      .split(';')
-      .map((entry) => entry.trim())
-      .filter(Boolean)
-      .forEach((entry) => values.add(entry));
-  }
-  return values.size ? Array.from(values).join('; ') : null;
 }
 
 function mergeTranslations(
@@ -549,7 +526,6 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
       const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples);
       const verb = (data.verb ?? {}) as NonNullable<VerbJsonRecord['verb']>;
       const praesens = (verb.praesens ?? {}) as { ich?: unknown; er?: unknown };
-      const sources = (data.sources ?? null) as PosJsonSources | null;
 
       return {
         lemma,
@@ -569,8 +545,6 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
         perfekt: normaliseString(verb.perfekt),
         comparative: null,
         superlative: null,
-        sourcesCsv: normaliseString(sources?.csv),
-        sourceNotes: normaliseString(sources?.notes),
         translations: null,
         examples,
         posAttributes: null,
@@ -590,7 +564,6 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
 
       const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples);
       const noun = (data.noun ?? {}) as NonNullable<NounJsonRecord['noun']>;
-      const sources = (data.sources ?? null) as PosJsonSources | null;
 
       return {
         lemma,
@@ -610,8 +583,6 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
         perfekt: null,
         comparative: null,
         superlative: null,
-        sourcesCsv: normaliseString(sources?.csv),
-        sourceNotes: normaliseString(sources?.notes),
         translations: null,
         examples,
         posAttributes: null,
@@ -631,7 +602,6 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
 
       const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples);
       const adjective = (data.adjective ?? {}) as NonNullable<AdjectiveJsonRecord['adjective']>;
-      const sources = (data.sources ?? null) as PosJsonSources | null;
 
       return {
         lemma,
@@ -651,8 +621,6 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
         perfekt: null,
         comparative: normaliseString(adjective.comparative),
         superlative: normaliseString(adjective.superlative),
-        sourcesCsv: normaliseString(sources?.csv),
-        sourceNotes: normaliseString(sources?.notes),
         translations: null,
         examples,
         posAttributes: null,
@@ -672,7 +640,6 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
 
       const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples);
       const adverb = (data.adverb ?? {}) as NonNullable<AdverbJsonRecord['adverb']>;
-      const sources = (data.sources ?? null) as PosJsonSources | null;
 
       return {
         lemma,
@@ -692,8 +659,6 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
         perfekt: null,
         comparative: normaliseString(adverb.comparative),
         superlative: normaliseString(adverb.superlative),
-        sourcesCsv: normaliseString(sources?.csv),
-        sourceNotes: normaliseString(sources?.notes),
         translations: null,
         examples,
         posAttributes: null,
@@ -713,7 +678,6 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
 
       const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples);
       const preposition = (data.preposition ?? {}) as NonNullable<PrepositionJsonRecord['preposition']>;
-      const sources = (data.sources ?? null) as PosJsonSources | null;
 
       const caseValues = normalizeStringArray(
         Array.isArray(preposition.cases)
@@ -759,11 +723,120 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
         perfekt: null,
         comparative: null,
         superlative: null,
-        sourcesCsv: normaliseString(sources?.csv),
-        sourceNotes: normaliseString(sources?.notes),
         translations: null,
         examples,
         posAttributes,
+        enrichmentAppliedAt: null,
+        enrichmentMethod: null,
+        approved: normaliseBoolean(data.approved) ?? false,
+      } satisfies RawWordRow;
+    },
+  },
+  {
+    filename: 'conjunctions.jsonl',
+    pos: 'Konj',
+    map: (record) => {
+      const data = record as BasePosJsonRecord;
+      const lemma = normaliseString(data.lemma);
+      if (!lemma) return null;
+
+      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples);
+
+      return {
+        lemma,
+        pos: 'Konj',
+        level: normaliseLevel(data.level),
+        english: normaliseString(data.english),
+        exampleDe,
+        exampleEn,
+        gender: null,
+        plural: null,
+        separable: null,
+        aux: null,
+        praesensIch: null,
+        praesensEr: null,
+        praeteritum: null,
+        partizipIi: null,
+        perfekt: null,
+        comparative: null,
+        superlative: null,
+        translations: null,
+        examples,
+        posAttributes: null,
+        enrichmentAppliedAt: null,
+        enrichmentMethod: null,
+        approved: normaliseBoolean(data.approved) ?? false,
+      } satisfies RawWordRow;
+    },
+  },
+  {
+    filename: 'pronouns.jsonl',
+    pos: 'Pron',
+    map: (record) => {
+      const data = record as BasePosJsonRecord;
+      const lemma = normaliseString(data.lemma);
+      if (!lemma) return null;
+
+      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples);
+
+      return {
+        lemma,
+        pos: 'Pron',
+        level: normaliseLevel(data.level),
+        english: normaliseString(data.english),
+        exampleDe,
+        exampleEn,
+        gender: null,
+        plural: null,
+        separable: null,
+        aux: null,
+        praesensIch: null,
+        praesensEr: null,
+        praeteritum: null,
+        partizipIi: null,
+        perfekt: null,
+        comparative: null,
+        superlative: null,
+        translations: null,
+        examples,
+        posAttributes: null,
+        enrichmentAppliedAt: null,
+        enrichmentMethod: null,
+        approved: normaliseBoolean(data.approved) ?? false,
+      } satisfies RawWordRow;
+    },
+  },
+  {
+    filename: 'particles.jsonl',
+    pos: 'Part',
+    map: (record) => {
+      const data = record as BasePosJsonRecord;
+      const lemma = normaliseString(data.lemma);
+      if (!lemma) return null;
+
+      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples);
+
+      return {
+        lemma,
+        pos: 'Part',
+        level: normaliseLevel(data.level),
+        english: normaliseString(data.english),
+        exampleDe,
+        exampleEn,
+        gender: null,
+        plural: null,
+        separable: null,
+        aux: null,
+        praesensIch: null,
+        praesensEr: null,
+        praeteritum: null,
+        partizipIi: null,
+        perfekt: null,
+        comparative: null,
+        superlative: null,
+        translations: null,
+        examples,
+        posAttributes: null,
         enrichmentAppliedAt: null,
         enrichmentMethod: null,
         approved: normaliseBoolean(data.approved) ?? false,
@@ -775,6 +848,7 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
 async function loadPosWordRowsFromDisk(rootDir: string): Promise<RawWordRow[]> {
   const posDir = path.join(rootDir, 'data', 'pos');
   const results: RawWordRow[] = [];
+  const seen = new Map<string, { file: string; line: number }>();
 
   for (const definition of POS_FILE_DEFINITIONS) {
     const filePath = path.join(posDir, definition.filename);
@@ -789,7 +863,7 @@ async function loadPosWordRowsFromDisk(rootDir: string): Promise<RawWordRow[]> {
       throw error;
     }
 
-    const records: PosJsonRecord[] = [];
+    const records: Array<{ record: PosJsonRecord; line: number }> = [];
     const lines = content.split(/\r?\n/);
     for (const [index, rawLine] of lines.entries()) {
       const line = rawLine.trim();
@@ -797,16 +871,24 @@ async function loadPosWordRowsFromDisk(rootDir: string): Promise<RawWordRow[]> {
         continue;
       }
       try {
-        records.push(JSON.parse(line) as PosJsonRecord);
+        records.push({ record: JSON.parse(line) as PosJsonRecord, line: index + 1 });
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         throw new Error(`Failed to parse ${filePath}:${index + 1}: ${message}`);
       }
     }
 
-    for (const record of records) {
+    for (const { record, line } of records) {
       const row = definition.map(record);
       if (row) {
+        const key = keyFor(row.lemma, row.pos);
+        const existing = seen.get(key);
+        if (existing) {
+          throw new Error(
+            `Duplicate word ${row.lemma} (${row.pos}) in ${filePath}:${line} (also defined at ${existing.file}:${existing.line})`,
+          );
+        }
+        seen.set(key, { file: filePath, line });
         results.push(row);
       }
     }
@@ -914,7 +996,6 @@ function buildRowFromPersistedWordData(data: PersistedWordData): RawWordRow | nu
   let enrichmentAppliedAt: string | null = data.updatedAt ?? null;
   let enrichmentMethod: EnrichmentMethod | null = null;
   let separable: boolean | null = null;
-  let sourcesCsv: string | null = null;
   let posAttributes: WordPosAttributes | null = null;
 
   let hasAppliedData = false;
@@ -925,8 +1006,6 @@ function buildRowFromPersistedWordData(data: PersistedWordData): RawWordRow | nu
     }
 
     hasAppliedData = true;
-    sourcesCsv = dedupeSources(sourcesCsv, provider.providerLabel ?? provider.providerId ?? null);
-
     translations = mergeTranslations(translations, provider.translations);
     if (!english && provider.translations) {
       const candidate = provider.translations.find((entry) => isEnglishLanguage(entry.language));
@@ -1055,8 +1134,6 @@ function buildRowFromPersistedWordData(data: PersistedWordData): RawWordRow | nu
     perfekt,
     comparative: null,
     superlative: null,
-    sourcesCsv,
-    sourceNotes: null,
     translations,
     examples,
     posAttributes,
@@ -1121,8 +1198,6 @@ async function aggregateWords(rootDir: string): Promise<AggregatedWordWithKey[]>
       superlative: value.superlative ?? null,
       approved,
       complete,
-      sourcesCsv: value.sourcesCsv ?? null,
-      sourceNotes: value.sourceNotes ?? null,
       translations: value.translations ?? null,
       examples: value.examples ?? null,
       enrichmentAppliedAt: value.enrichmentAppliedAt ?? null,
@@ -1167,8 +1242,6 @@ async function seedLegacyWords(db: DatabaseClient, wordsToUpsert: AggregatedWord
         superlative: word.superlative,
         approved: word.approved,
         complete: word.complete,
-        sourcesCsv: word.sourcesCsv,
-        sourceNotes: word.sourceNotes,
         translations: word.translations ?? null,
         examples: word.examples ?? null,
         enrichmentAppliedAt: toDateOrNull(word.enrichmentAppliedAt),
@@ -1194,8 +1267,6 @@ async function seedLegacyWords(db: DatabaseClient, wordsToUpsert: AggregatedWord
           superlative: sql`excluded.superlative`,
           approved: sql`excluded.approved`,
           complete: sql`excluded.complete`,
-          sourcesCsv: sql`excluded.sources_csv`,
-          sourceNotes: sql`excluded.source_notes`,
           translations: sql`excluded.translations`,
           examples: sql`excluded.examples`,
           enrichmentAppliedAt: sql`excluded.enrichment_applied_at`,
