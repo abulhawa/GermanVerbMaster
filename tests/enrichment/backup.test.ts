@@ -5,7 +5,7 @@ import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import type { Word } from '@db';
-import { writeWordsBackupToDisk } from '../../scripts/enrichment/backup';
+import { __internal, writeWordsBackupToDisk } from '../../scripts/enrichment/backup';
 
 const ORIGINAL_CWD = process.cwd();
 
@@ -80,5 +80,52 @@ describe('words backup utilities', () => {
       enrichmentMethod: 'manual_api',
     });
     expect(typeof contents.schemaVersion).toBe('number');
+  });
+
+  it('preserves approval state when restoring a legacy backup payload', () => {
+    const legacyPayload = {
+      schemaVersion: 1,
+      generatedAt: '2024-05-01T00:00:00.000Z',
+      total: 1,
+      words: [
+        {
+          id: 7,
+          lemma: 'bestehen',
+          pos: 'V',
+          level: 'B1',
+          english: 'to pass',
+          exampleDe: 'Sie hat die Prüfung bestanden.',
+          exampleEn: 'She passed the exam.',
+          gender: null,
+          plural: null,
+          separable: false,
+          aux: 'haben',
+          praesensIch: null,
+          praesensEr: null,
+          praeteritum: 'bestand',
+          partizipIi: 'bestanden',
+          perfekt: 'hat bestanden',
+          comparative: null,
+          superlative: null,
+          canonical: true,
+          complete: true,
+          sourcesCsv: 'manual',
+          sourceNotes: null,
+          translations: null,
+          examples: null,
+          posAttributes: null,
+          enrichmentAppliedAt: null,
+          enrichmentMethod: null,
+          createdAt: '2024-05-01T00:00:00.000Z',
+          updatedAt: '2024-05-01T00:00:00.000Z',
+        },
+      ],
+    } satisfies Record<string, unknown>;
+
+    const serialised = JSON.stringify(legacyPayload);
+    const parsed = __internal.parseBackupFile(serialised);
+
+    expect(parsed.words).toHaveLength(1);
+    expect(parsed.words[0].approved).toBe(true);
   });
 });
