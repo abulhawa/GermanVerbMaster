@@ -41,7 +41,7 @@ The orchestrator lives in [`server/srs/engine.ts`](../server/srs/engine.ts) and 
 2. **Practice ingestion** – `recordPracticeAttempt()` is invoked from the existing `/api/practice` route after a submission is stored. The method:
    - Upserts a `verb_scheduling_state` row for the `(deviceId, verb)` pair.
    - Recomputes Leitner box, weights, due date, and priority score.
-   - Ensures each device has at least `ADAPTIVE_QUEUE_MIN_SIZE` verbs populated by seeding missing canonical verbs at the caller's CEFR level.
+   - Ensures each device has at least `ADAPTIVE_QUEUE_MIN_SIZE` verbs populated by seeding missing approved verbs at the caller's CEFR level.
    - Invalidates any cached queue for the device by expiring `valid_until`.
 3. **Queue generation** – `generateQueueForDevice()` wraps `regenerateForDevice()` and persists snapshots via `storeQueue()`:
    - Gathers all state rows for a device and recomputes priority scores (`buildQueueItems`).

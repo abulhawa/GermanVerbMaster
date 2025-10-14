@@ -4,8 +4,9 @@ import path from "node:path";
 import { createClient } from "@supabase/supabase-js";
 import { asc, sql } from "drizzle-orm";
 
-import { db, words } from "@db";
-import type { Word } from "@db";
+import { getDb } from "@db/client";
+import { words } from "@db/schema";
+import type { Word } from "@db/schema";
 import type { WordsBackupEntry, WordsBackupFile, WordsBackupSummary } from "@shared/enrichment";
 import {
   getSupabaseStorageConfigFromEnv,
@@ -78,7 +79,7 @@ function normaliseWordForBackup(word: Word): WordsBackupEntry {
     perfekt: word.perfekt ?? null,
     comparative: word.comparative ?? null,
     superlative: word.superlative ?? null,
-    canonical: word.canonical,
+    approved: word.approved,
     complete: word.complete,
     sourcesCsv: word.sourcesCsv ?? null,
     sourceNotes: word.sourceNotes ?? null,
@@ -115,7 +116,8 @@ function buildSummary(
 }
 
 async function defaultFetchWords(): Promise<Word[]> {
-  return db.select().from(words).orderBy(asc(words.id));
+  const database = getDb();
+  return database.select().from(words).orderBy(asc(words.id));
 }
 
 function buildBackupPayload(wordsList: Word[]): WordsBackupFile {
@@ -214,7 +216,7 @@ function toWordInsert(entry: WordsBackupEntry): typeof words.$inferInsert {
     perfekt: entry.perfekt ?? null,
     comparative: entry.comparative ?? null,
     superlative: entry.superlative ?? null,
-    canonical: entry.canonical,
+    approved: entry.approved,
     complete: entry.complete,
     sourcesCsv: entry.sourcesCsv ?? null,
     sourceNotes: entry.sourceNotes ?? null,
@@ -252,7 +254,9 @@ export async function restoreWordsBackupFromSupabase(
   const ids = entries.map((entry) => entry.id).filter((id): id is number => typeof id === "number");
   const maxId = ids.length ? Math.max(...ids) : null;
 
-  await db.transaction(async (tx) => {
+  const database = getDb();
+
+  await database.transaction(async (tx) => {
     if (options.truncate !== false) {
       await tx.delete(words);
       await tx.execute(sql`ALTER SEQUENCE words_id_seq RESTART WITH 1`);

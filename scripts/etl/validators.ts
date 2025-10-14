@@ -18,8 +18,8 @@ function baseValidation(word: AggregatedWord): PosValidationResult {
   if (!word.lemma?.trim()) {
     errors.push('lemma');
   }
-  if (!word.canonical) {
-    warnings.push('non_canonical');
+  if (!word.approved) {
+    warnings.push('pending_approval');
   }
   if (!word.sourcesCsv) {
     warnings.push('sources');

@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { getDb } from "@db";
+import { getDb } from "@db/client";
 import { enrichmentProviderSnapshots, words } from "@db/schema";
 import { and, desc, eq, inArray } from "drizzle-orm";
 
@@ -115,7 +115,7 @@ export interface WordEnrichmentComputation {
 
 export interface PipelineConfig {
   limit: number;
-  mode: "non-canonical" | "canonical" | "all";
+  mode: "pending" | "approved" | "all";
   onlyIncomplete: boolean;
   dryRun: boolean;
   apply: boolean;
@@ -412,11 +412,16 @@ function parseBoolean(value: string | undefined, fallback: boolean): boolean {
 function normaliseMode(value: string | undefined): PipelineConfig["mode"] {
   switch (value?.trim().toLowerCase()) {
     case "canonical":
-      return "canonical";
+    case "approved":
+      return "approved";
+    case "non-canonical":
+    case "pending":
+    case "unapproved":
+      return "pending";
     case "all":
       return "all";
     default:
-      return "non-canonical";
+      return "pending";
   }
 }
 
@@ -527,10 +532,10 @@ function parsePosFilters(value: string | undefined): string[] {
 export function buildWhereClause(config: PipelineConfig) {
   const clauses: Array<ReturnType<typeof eq>> = [];
 
-  if (config.mode === "canonical") {
-    clauses.push(eq(words.canonical, true));
-  } else if (config.mode === "non-canonical") {
-    clauses.push(eq(words.canonical, false));
+  if (config.mode === "approved") {
+    clauses.push(eq(words.approved, true));
+  } else if (config.mode === "pending") {
+    clauses.push(eq(words.approved, false));
   }
 
   if (config.onlyIncomplete) {
@@ -1188,7 +1193,7 @@ export function buildProviderSnapshotFromRecord(
     status: record.status as EnrichmentSnapshotStatus,
     error: record.error,
     trigger: (record.trigger as EnrichmentSnapshotTrigger) ?? "preview",
-    mode: (record.mode as EnrichmentRunMode) ?? "non-canonical",
+    mode: (record.mode as EnrichmentRunMode) ?? "pending",
     translations: (record.translations as WordTranslation[] | null) ?? null,
     examples: (record.examples as WordExample[] | null) ?? null,
     synonyms: (record.synonyms as string[] | null) ?? null,

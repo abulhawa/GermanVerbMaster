@@ -28,7 +28,7 @@ import WordEnrichmentDetailView, {
   type WordConfigState,
 } from './admin-enrichment-detail';
 
-type CanonicalFilter = 'all' | 'only' | 'non';
+type ApprovalFilter = 'all' | 'approved' | 'pending';
 type CompleteFilter = 'all' | 'complete' | 'incomplete';
 type EnrichmentFilter = 'all' | 'enriched' | 'unenriched';
 
@@ -236,7 +236,7 @@ const AdminWordsPage = () => {
   const [search, setSearch] = useState('');
   const [pos, setPos] = useState<Word['pos'] | 'ALL'>('ALL');
   const [level, setLevel] = useState<string>('All');
-  const [canonicalFilter, setCanonicalFilter] = useState<CanonicalFilter>('all');
+  const [approvalFilter, setApprovalFilter] = useState<ApprovalFilter>('all');
   const [completeFilter, setCompleteFilter] = useState<CompleteFilter>('all');
   const [enrichmentFilter, setEnrichmentFilter] = useState<EnrichmentFilter>('all');
   const [page, setPage] = useState(1);
@@ -259,20 +259,20 @@ const AdminWordsPage = () => {
 
   useEffect(() => {
     setPage(1);
-  }, [search, pos, level, canonicalFilter, completeFilter, enrichmentFilter]);
+  }, [search, pos, level, approvalFilter, completeFilter, enrichmentFilter]);
 
   const filters = useMemo(
     () => ({
       search,
       pos,
       level,
-      canonicalFilter,
+      approvalFilter,
       completeFilter,
       enrichmentFilter,
       page,
       perPage,
     }),
-    [search, pos, level, canonicalFilter, completeFilter, enrichmentFilter, page, perPage],
+    [search, pos, level, approvalFilter, completeFilter, enrichmentFilter, page, perPage],
   );
 
   const queryKey = useMemo(
@@ -289,8 +289,8 @@ const AdminWordsPage = () => {
       if (filters.pos !== 'ALL') params.set('pos', filters.pos);
       if (filters.level !== 'All') params.set('level', filters.level);
       if (filters.search.trim()) params.set('search', filters.search.trim());
-      if (filters.canonicalFilter === 'only') params.set('canonical', 'only');
-      if (filters.canonicalFilter === 'non') params.set('canonical', 'non');
+      if (filters.approvalFilter === 'approved') params.set('approved', 'true');
+      if (filters.approvalFilter === 'pending') params.set('approved', 'false');
       if (filters.completeFilter === 'complete') params.set('complete', 'only');
       if (filters.completeFilter === 'incomplete') params.set('complete', 'non');
       if (filters.enrichmentFilter === 'enriched') params.set('enriched', 'only');
@@ -373,8 +373,8 @@ const AdminWordsPage = () => {
     closeEditor();
   };
 
-  const toggleCanonical = (word: Word) => {
-    updateMutation.mutate({ id: word.id, payload: { canonical: !word.canonical } });
+  const toggleApproval = (word: Word) => {
+    updateMutation.mutate({ id: word.id, payload: { approved: !word.approved } });
   };
 
   const words = wordsQuery.data?.data ?? [];
@@ -426,7 +426,7 @@ const AdminWordsPage = () => {
       );
     }
 
-    base.push({ key: 'canonical', label: 'Canonical' });
+    base.push({ key: 'approval', label: 'Approval' });
     base.push({ key: 'complete', label: 'Complete' });
     base.push({ key: 'enrichmentAppliedAt', label: 'Enriched' });
     base.push({ key: 'actions', label: 'Actions' });
@@ -563,34 +563,34 @@ const AdminWordsPage = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Canonical</Label>
+                <Label>Approval</Label>
                 <div className="flex rounded-2xl border border-border/60 bg-card/60 p-1 shadow-sm">
                   <Button
                     size="sm"
-                    variant={canonicalFilter === 'all' ? 'default' : 'secondary'}
+                    variant={approvalFilter === 'all' ? 'default' : 'secondary'}
                     className="flex-1 rounded-2xl"
-                    onClick={() => setCanonicalFilter('all')}
-                    debugId={`${pageDebugId}-canonical-filter-all-button`}
+                    onClick={() => setApprovalFilter('all')}
+                    debugId={`${pageDebugId}-approval-filter-all-button`}
                   >
                     All
                   </Button>
                   <Button
                     size="sm"
-                    variant={canonicalFilter === 'only' ? 'default' : 'secondary'}
+                    variant={approvalFilter === 'approved' ? 'default' : 'secondary'}
                     className="flex-1 rounded-2xl"
-                    onClick={() => setCanonicalFilter('only')}
-                    debugId={`${pageDebugId}-canonical-filter-only-button`}
+                    onClick={() => setApprovalFilter('approved')}
+                    debugId={`${pageDebugId}-approval-filter-approved-button`}
                   >
-                    Canonical
+                    Approved
                   </Button>
                   <Button
                     size="sm"
-                    variant={canonicalFilter === 'non' ? 'default' : 'secondary'}
+                    variant={approvalFilter === 'pending' ? 'default' : 'secondary'}
                     className="flex-1 rounded-2xl"
-                    onClick={() => setCanonicalFilter('non')}
-                    debugId={`${pageDebugId}-canonical-filter-non-button`}
+                    onClick={() => setApprovalFilter('pending')}
+                    debugId={`${pageDebugId}-approval-filter-pending-button`}
                   >
-                    Non-canonical
+                    Pending
                   </Button>
                 </div>
               </div>
@@ -722,8 +722,8 @@ const AdminWordsPage = () => {
                       </>
                     )}
                     <TableCell className="px-2 py-2">
-                      <Badge variant={word.canonical ? 'default' : 'secondary'}>
-                        {word.canonical ? 'Canonical' : 'Shadow'}
+                      <Badge variant={word.approved ? 'default' : 'secondary'}>
+                        {word.approved ? 'Approved' : 'Pending'}
                       </Badge>
                     </TableCell>
                     <TableCell className="px-2 py-2">
@@ -748,14 +748,14 @@ const AdminWordsPage = () => {
                     <TableCell className="flex items-center gap-2 px-2 py-2">
                       <Button
                         size="icon"
-                        variant={word.canonical ? 'destructive' : 'secondary'}
+                        variant={word.approved ? 'destructive' : 'secondary'}
                         className="rounded-xl"
-                        title={word.canonical ? 'Remove canonical flag' : 'Mark as canonical'}
-                        aria-label={word.canonical ? 'Remove canonical flag' : 'Mark as canonical'}
-                        onClick={() => toggleCanonical(word)}
-                        debugId={`${pageDebugId}-word-${word.id}-toggle-canonical-button`}
+                        title={word.approved ? 'Revoke approval' : 'Mark as approved'}
+                        aria-label={word.approved ? 'Revoke approval' : 'Mark as approved'}
+                        onClick={() => toggleApproval(word)}
+                        debugId={`${pageDebugId}-word-${word.id}-toggle-approval-button`}
                       >
-                        {word.canonical ? (
+                        {word.approved ? (
                           <Trash2 className="h-4 w-4" aria-hidden />
                         ) : (
                           <Sparkles className="h-4 w-4" aria-hidden />

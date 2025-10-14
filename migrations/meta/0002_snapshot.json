@@ -2530,13 +2530,6 @@
           "primaryKey": false,
           "notNull": false
         },
-        "canonical": {
-          "name": "canonical",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": false
-        },
         "complete": {
           "name": "complete",
           "type": "boolean",
@@ -2569,6 +2562,13 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "approved": {
+          "name": "approved",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         }
       },
       "indexes": {

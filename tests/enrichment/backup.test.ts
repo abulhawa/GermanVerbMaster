@@ -42,7 +42,7 @@ describe('words backup utilities', () => {
       perfekt: 'ist gelaufen',
       comparative: null,
       superlative: null,
-      canonical: true,
+      approved: true,
       complete: true,
       sourcesCsv: 'manual',
       sourceNotes: null,

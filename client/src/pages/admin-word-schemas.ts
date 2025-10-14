@@ -48,7 +48,7 @@ export const wordSchema = z.object({
   perfekt: z.string().nullable(),
   comparative: z.string().nullable(),
   superlative: z.string().nullable(),
-  canonical: z.boolean(),
+  approved: z.boolean(),
   complete: z.boolean(),
   sourcesCsv: z.string().nullable(),
   sourceNotes: z.string().nullable(),

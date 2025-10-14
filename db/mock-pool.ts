@@ -263,7 +263,7 @@ function seedMockData(mem: IMemoryDb): void {
       praeteritum,
       partizip_ii,
       perfekt,
-      canonical,
+      approved,
       complete,
       translations,
       examples,
@@ -349,7 +349,7 @@ function seedMockData(mem: IMemoryDb): void {
       'success',
       NULL,
       'manual',
-      'canonical',
+      'approved',
       ${toJsonLiteral([
         { value: "to work", source: "wiktextract", language: "en", confidence: 0.92 },
       ])},
@@ -380,7 +380,7 @@ function seedMockData(mem: IMemoryDb): void {
       'success',
       NULL,
       'manual',
-      'canonical',
+      'approved',
       ${toJsonLiteral([
         { value: "to labour", source: "kaikki", language: "en", confidence: 0.75 },
         { value: "to toil", source: "kaikki", language: "en", confidence: 0.68 },

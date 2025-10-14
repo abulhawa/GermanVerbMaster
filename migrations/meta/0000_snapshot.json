@@ -1827,8 +1827,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "präteritum": {
-          "name": "präteritum",
+        "pr\u00e4teritum": {
+          "name": "pr\u00e4teritum",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -1851,8 +1851,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "präteritumExample": {
-          "name": "präteritumExample",
+        "pr\u00e4teritumExample": {
+          "name": "pr\u00e4teritumExample",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -2026,13 +2026,6 @@
           "primaryKey": false,
           "notNull": false
         },
-        "canonical": {
-          "name": "canonical",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": false
-        },
         "complete": {
           "name": "complete",
           "type": "boolean",
@@ -2065,6 +2058,13 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "approved": {
+          "name": "approved",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         }
       },
       "indexes": {

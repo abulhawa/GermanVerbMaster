@@ -53,7 +53,7 @@ const SOURCE_CATALOG: Record<string, SourceMetadata> = {
     url: 'https://github.com/savaged/learn-deutsch-data',
   },
   words_all_sources: {
-    label: 'Merged canonical corpus',
+    label: 'Merged approved corpus',
     license: 'Composite – see component sources',
     notes: 'Internal aggregate of CC-BY-SA compatible feeds',
   },

@@ -143,27 +143,27 @@ Shut down the container with `docker stop gvm-postgres` when you are done.
 - Practice attempts are written to an IndexedDB queue (via Dexie) whenever the network is unavailable or the API is rate limited.
 - The `useSyncQueue` hook listens to `online` and `visibilitychange` events and flushes queued attempts back to `POST /api/submission`.
 - Each device receives a persistent `deviceId` stored in `localStorage`; it is sent with every practice submission and stored in `scheduling_state` for priority calculations.
-- `data/words_manual.csv` stores handcrafted rows that supplement the scraped sources.
-- `data/words_all_sources.csv` is regenerated on each `npm run seed` by combining `docs/external/**` with the manual rows, and `data/words_canonical.csv` marks the curated canonical subset. Running `npm run seed` normalises, merges, and upserts that data into Postgres while regenerating `data/packs/*.json` bundles.
+- `data/pos/*.csv` contains the POS-specific seed files (verbs, nouns, adjectives, adverbs, prepositions, …). Each file owns the columns relevant to that POS and includes an `approved` column so the seeding pipeline can promote learner-ready entries.
+- Legacy aggregated CSVs now live under `data/legacy/` for historical reference. The new seeding pipeline reads the POS-specific files directly and regenerates `data/packs/*.json` bundles on every `npm run seed`.
 
 ## Database utilities
 - The schema is managed with Drizzle + Postgres. After editing `db/schema.ts`, run `npm run db:push` to apply migrations using the configured `DATABASE_URL`.
-- `npm run seed` recomputes completeness, writes deterministic content packs to `data/packs/`, and idempotently upserts source material into Postgres. Copy updated pack JSON into `client/public/packs/` before building so offline clients can fetch the refreshed bundles. Run the seed after editing `data/words_manual.csv`, adding sources under `docs/external`, or changing `data/words_canonical.csv`.
+- `npm run seed` recomputes completeness, writes deterministic content packs to `data/packs/`, and idempotently upserts source material into Postgres. Copy updated pack JSON into `client/public/packs/` before building so offline clients can fetch the refreshed bundles. Run the seed after editing any `data/pos/*.csv` file or adjusting enrichment snapshots under `data/enrichment/`.
 - The seeding pipeline synchronises the shared `lexemes`/`inflections` tables for every part of speech and records aggregated attribution metadata in each pack so CC BY-SA contributors are always credited.
 
 ## Vocabulary enrichment helpers
 - Run `npm run enrich` to execute the enrichment pipeline. By default it inspects incomplete entries (`ONLY_INCOMPLETE=true`), queries Kaikki's Wiktextract dataset, OpenThesaurus, MyMemory, Tatoeba, and optionally OpenAI (`ENABLE_AI=true`) for missing metadata, and writes a structured report under `data/generated/enrichment/`. Set `APPLY_UPDATES=true` to upsert the suggested `english`/example values back into Postgres after taking a JSON backup (`data/generated/backups/words-backup-*.json`). Use `COLLECT_WIKTEXTRACT=false` to disable the Wiktextract integration when debugging network behaviour.
 - Wiktextract responses now flow into `words.pos_attributes`: governed cases, Kaikki usage notes, and POS-level tags (e.g. _separable_, _transitive_, _two-way preposition_) are merged with any existing metadata so noun/adjective/preposition cohorts accumulate the descriptors needed for the multi-POS rollout.
-- Every provider snapshot is also persisted under `data/enrichment/<pos>/<provider>.json` so Kaikki/Wiktextract, MyMemory, Tatoeba, OpenThesaurus, and OpenAI responses remain source-of-truth across schema changes. The seeding script loads these files and replays their translations, examples, verb forms, and enrichment metadata back into Postgres to keep canonical words intact. When `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and `ENRICHMENT_SUPABASE_BUCKET` are configured the same payloads are uploaded to Supabase Storage for off-site backups.
+- Every provider snapshot is also persisted under `data/enrichment/<pos>/<provider>.json` so Kaikki/Wiktextract, MyMemory, Tatoeba, OpenThesaurus, and OpenAI responses remain source-of-truth across schema changes. The seeding script loads these files and replays their translations, examples, verb forms, and enrichment metadata back into Postgres to keep approved words intact. When `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and `ENRICHMENT_SUPABASE_BUCKET` are configured the same payloads are uploaded to Supabase Storage for off-site backups.
 - See [docs/enrichment-persistence.md](docs/enrichment-persistence.md) for details on where enrichment data lives and how to export the latest applied provider snapshots with `npm run enrichment:export`.
-- `LIMIT=<n>`, `CANONICAL_MODE=<non-canonical|canonical|all>`, `DELAY_MS=<ms>`, and `OVERWRITE_EXISTING=true` fine-tune batch size, target scope, rate limiting, and whether existing translations/examples may be replaced.
+- `LIMIT=<n>`, `CANONICAL_MODE=<pending|approved|all>` (legacy values `non-canonical|canonical|all` are still accepted), `DELAY_MS=<ms>`, and `OVERWRITE_EXISTING=true` fine-tune batch size, target scope, rate limiting, and whether existing translations/examples may be replaced.
 - `POS_FILTERS=N,Adj` (comma/space separated) narrows the run to specific parts of speech so noun/adjective backfills can be validated without touching the verb catalog.
-- The legacy `tsx scripts/enrich-non-canonical-words.ts` wrapper remains for quick exports to `data/generated/non-canonical-enrichment.json` without mutating the database.
+- Use `tsx scripts/enrich-pending-words.ts` for quick exports to `data/generated/pending-approval-enrichment.json` without mutating the database.
 
 ## Lexeme & content admin tools
 - Configure an `ADMIN_API_TOKEN` in your `.env` file (see `.env.example`) to protect ingestion routes. Restart the dev server after changing environment variables.
 - Visit `http://localhost:5000/admin` to access the words dashboard. Multi-select filters now support verbs, nouns, and adjectives plus CEFR level and pack membership.
-- Updates are issued via `PATCH /api/words/:id` with the `x-admin-token` header. Canonical toggles and field edits immediately invalidate the admin cache and prompt pack regeneration during the next `npm run seed`.
+- Updates are issued via `PATCH /api/words/:id` with the `x-admin-token` header. Approval toggles and field edits immediately invalidate the admin cache and prompt pack regeneration during the next `npm run seed`.
 
 ## Partner integrations
 - Generate sandbox API keys with `npm run integration:create-key` and follow the workflow documented in [`docs/integration-api.md`](docs/integration-api.md).

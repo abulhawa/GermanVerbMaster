@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { and, eq, isNotNull } from "drizzle-orm";
 
-import { db, getPool } from "@db";
+import { getDb, getPool } from "@db/client";
 import { enrichmentProviderSnapshots, words } from "@db/schema";
 import type { EnrichmentProviderSnapshot } from "@shared/enrichment";
 
@@ -27,7 +27,7 @@ function toSnapshot(record: typeof enrichmentProviderSnapshots.$inferSelect): En
     status: record.status as EnrichmentProviderSnapshot["status"],
     error: record.error ?? undefined,
     trigger: (record.trigger as EnrichmentProviderSnapshot["trigger"]) ?? "preview",
-    mode: (record.mode as EnrichmentProviderSnapshot["mode"]) ?? "non-canonical",
+    mode: (record.mode as EnrichmentProviderSnapshot["mode"]) ?? "pending",
     translations: (record.translations as EnrichmentProviderSnapshot["translations"]) ?? null,
     examples: (record.examples as EnrichmentProviderSnapshot["examples"]) ?? null,
     synonyms: (record.synonyms as EnrichmentProviderSnapshot["synonyms"]) ?? null,
@@ -54,7 +54,8 @@ function serialiseDate(value: Date | string | null): string {
 }
 
 async function loadAppliedSnapshots(): Promise<EnrichmentProviderSnapshot[]> {
-  const rows = await db
+  const database = getDb();
+  const rows = await database
     .select({ snapshot: enrichmentProviderSnapshots })
     .from(enrichmentProviderSnapshots)
     .innerJoin(words, eq(words.id, enrichmentProviderSnapshots.wordId))

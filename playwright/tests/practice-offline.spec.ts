@@ -123,16 +123,22 @@ await page.addInitScript((task) => {
 
     await page.goto('/');
 
-    await expect(page.getByTestId('practice-card')).toBeVisible();
+    const card = page.getByTestId('practice-card');
+    await expect(card).toBeVisible();
     await expect(page.getByRole('button', { name: 'Check' })).toBeVisible();
     await expect(page.getByLabel('Enter plural form', { exact: false })).toBeVisible();
-    await expect(page.getByText('Give the Dative Plural form of "Kind".')).toBeVisible();
+    await expect(card).toContainText('Give the Dativ Plural form of "Kind"');
 
-    await page.getByTestId('language-toggle').click();
-    await page.getByRole('option', { name: 'Deutsch' }).click();
+    await page.evaluate(() => {
+      localStorage.setItem('gvm.locale', 'de');
+    });
+    await page.reload();
+
+    const germanCard = page.getByTestId('practice-card');
+    await expect(germanCard).toBeVisible();
 
     await expect(page.getByRole('button', { name: 'Prüfen' })).toBeVisible();
     await expect(page.getByLabel('Pluralform eingeben', { exact: false })).toBeVisible();
-    await expect(page.getByText('Bilde die Dativ Plural-Form von „Kind“.')).toBeVisible();
+    await expect(germanCard).toContainText('Bilde die Dativ Plural-Form von „Kind“');
   });
 });

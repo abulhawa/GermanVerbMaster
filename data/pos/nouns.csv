@@ -1,0 +1,4 @@
+lemma,level,english,example_de,example_en,gender,plural,approved,sources_csv,source_notes
+das Haus,A1,house,Das Haus ist groß.,The house is big.,das,Häuser,true,DWDS Goethe-Zertifikat; Learn-Deutsch Manual,
+die Schule,A1,school,Die Schule ist modern.,The school is modern.,die,Schulen,false,Learn-Deutsch Manual,Needs photo asset
+der Lehrer,A2,teacher,Der Lehrer erklärt die Regel.,The teacher explains the rule.,der,Lehrer,true,Goethe-Institut,

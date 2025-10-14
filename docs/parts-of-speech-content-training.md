@@ -8,7 +8,7 @@
 - Editors now help steward pack metadata that powers both online and offline experiences.
 
 ## Slide 2 – Key concepts
-- **Lexeme**: canonical lemma + POS + metadata; deterministic ID (e.g., `de:noun:Kind:wx3af912`).
+- **Lexeme**: approved lemma + POS + metadata; deterministic ID (e.g., `de:noun:Kind:wx3af912`).
 - **Inflection**: surface form + morphological features linked to a lexeme.
 - **Task spec**: prompt/solution pair bound to a lexeme and task type (e.g., `noun_case_declension`).
 - **Content pack**: curated bundle with license metadata, lexeme list, inflections, and tasks.
@@ -17,7 +17,7 @@
 1. Pull latest `main` and install dependencies.
 2. Run `npm run seed` to refresh packs and QA fixtures.
 3. Open `/admin` to review candidate entries (filters by POS, level, completeness).
-4. Edit entries inline; reseed if you adjust canonical flags or metadata.
+4. Edit entries inline; reseed if you adjust approval flags or metadata.
 5. Execute `npm run packs:lint` to validate packs before handing off to QA.
 
 ## Slide 4 – Authoring guidelines

@@ -6,7 +6,7 @@ import type {
   WordTranslation,
 } from "./types.js";
 
-export type EnrichmentRunMode = "non-canonical" | "canonical" | "all";
+export type EnrichmentRunMode = "pending" | "approved" | "all";
 export type EnrichmentSnapshotStatus = "success" | "error";
 export type EnrichmentSnapshotTrigger = "preview" | "apply";
 
@@ -198,7 +198,7 @@ export interface WordsBackupEntry {
   perfekt?: string | null;
   comparative?: string | null;
   superlative?: string | null;
-  canonical: boolean;
+  approved: boolean;
   complete: boolean;
   sourcesCsv?: string | null;
   sourceNotes?: string | null;

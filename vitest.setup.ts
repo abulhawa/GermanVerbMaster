@@ -1,3 +1,5 @@
+process.env.DATABASE_URL = process.env.DATABASE_URL ?? 'postgres://test.invalid/german-verb-master';
+
 if (typeof window === 'undefined' || typeof document === 'undefined') {
   const { JSDOM } = await import('jsdom');
   const dom = new JSDOM('<!doctype html><html><body></body></html>', {
