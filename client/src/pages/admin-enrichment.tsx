@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Wand2,
   UploadCloud,
@@ -79,6 +79,7 @@ const AdminEnrichmentPage = () => {
     () => getPrimaryNavigationItems(session?.user?.role),
     [session?.user?.role],
   );
+  const queryClient = useQueryClient();
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const searchString = useSearch();
@@ -302,6 +303,7 @@ const AdminEnrichmentPage = () => {
       return result;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-enrichment'] });
       searchQuery.refetch();
       missingWordsQuery.refetch();
       setPreviewData(null);
