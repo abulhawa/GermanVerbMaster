@@ -917,9 +917,9 @@ const WordEnrichmentDetailView = ({
     return null;
   }
 
-  const canonicalBadge = word.canonical
-    ? renderStatusBadge('Canonical', 'success')
-    : renderStatusBadge('Non-canonical', 'warning');
+  const approvalBadge = word.approved
+    ? renderStatusBadge('Approved', 'success')
+    : renderStatusBadge('Pending approval', 'warning');
   const completenessBadge = nextComplete
     ? renderStatusBadge('Complete', 'success')
     : renderStatusBadge('Incomplete', 'warning');
@@ -962,7 +962,7 @@ const WordEnrichmentDetailView = ({
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-wrap gap-2">
-            {canonicalBadge}
+            {approvalBadge}
             {renderStatusBadge(word.complete ? 'Stored as complete' : 'Stored as incomplete', 'default')}
             {completenessBadge}
           </div>
@@ -1781,12 +1781,12 @@ function formatSnapshotTriggerLabel(trigger: EnrichmentSnapshotTrigger): string 
 
 function formatSnapshotModeLabel(mode: string): string {
   switch (mode) {
-    case 'canonical':
-      return 'Canonical mode';
+    case 'approved':
+      return 'Approved mode';
     case 'all':
       return 'Full dataset';
     default:
-      return 'Non-canonical mode';
+      return 'Pending mode';
   }
 }
 

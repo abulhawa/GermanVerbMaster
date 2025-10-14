@@ -17,48 +17,25 @@ describe('seedDatabase', () => {
         const seedRoot = await mkdtemp(path.join(tmpdir(), 'gvm-seed-'));
 
         try {
-          await mkdir(path.join(seedRoot, 'data'), { recursive: true });
-          await mkdir(path.join(seedRoot, 'docs', 'external'), { recursive: true });
+          await mkdir(path.join(seedRoot, 'data', 'pos'), { recursive: true });
 
           await writeFile(
-            path.join(seedRoot, 'data', 'words_canonical.csv'),
-            'lemma,pos\ngehen,V\n',
+            path.join(seedRoot, 'data', 'pos', 'verbs.csv'),
+            [
+              'lemma,level,english,example_de,example_en,separable,aux,praesens_ich,praesens_er,praeteritum,partizip_ii,perfekt,approved,sources_csv,source_notes',
+              'gehen,A1,to go,Ich gehe.,I go.,false,sein,gehe,geht,ging,gegangen,ist gegangen,true,test-source,',
+            ].join('\n'),
             'utf8',
           );
 
-          vi.doMock('../scripts/source-loaders', async () => {
-            const actual = await vi.importActual<typeof import('../scripts/source-loaders')>(
-              '../scripts/source-loaders',
-            );
-            return {
-              ...actual,
-              loadManualWordRows: vi.fn(async () => [
-                {
-                  lemma: 'gehen',
-                  pos: 'V',
-                  level: 'A1',
-                  english: 'to go',
-                  example_de: 'Ich gehe.',
-                  example_en: 'I go.',
-                  praeteritum: 'ging',
-                  partizip_ii: 'gegangen',
-                  perfekt: 'ist gegangen',
-                },
-              ]),
-              loadExternalWordRows: vi.fn(async () => [
-                {
-                  lemma: 'gehen',
-                  pos: 'V',
-                  level: 'A1',
-                  english: 'to walk',
-                  example_de: 'Wir gehen nach Hause.',
-                  example_en: 'We walk home.',
-                  sources_csv: 'external',
-                },
-              ]),
-              snapshotExternalSources: vi.fn(),
-            };
-          });
+          await writeFile(
+            path.join(seedRoot, 'data', 'pos', 'nouns.csv'),
+            [
+              'lemma,level,english,example_de,example_en,gender,plural,approved,sources_csv,source_notes',
+              'das Haus,A1,house,Das Haus ist groß.,The house is big.,das,Häuser,true,test-source,',
+            ].join('\n'),
+            'utf8',
+          );
 
           vi.doMock('../scripts/etl/golden', async () => {
             const actual = await vi.importActual<typeof import('../scripts/etl/golden')>(

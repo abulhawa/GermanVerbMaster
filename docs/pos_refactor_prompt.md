@@ -3,6 +3,8 @@
 ## Objective
 Restructure the GermanVerbMaster lexical data pipeline, storage schema, and documentation so that words are managed per part-of-speech (POS) with a simplified approval workflow and legacy assets archived.
 
+> **Implementation status:** complete – the data pipeline, database schema, admin tooling, and documentation now reflect the approved-per-POS workflow and legacy CSVs are archived under `data/legacy/`.
+
 ## Key Requirements
 - **Rename "canonical" to "approved" conceptually**
   - Update terminology across backend models, database schema, API contracts, seeding scripts, UI labels, tests, and documentation.
@@ -50,5 +52,5 @@ Restructure the GermanVerbMaster lexical data pipeline, storage schema, and docu
 
 ## Open Questions
 - How will we migrate existing database records to the new schema while maintaining learner continuity? IGNORE it, we are starting afresh from scratch. 
-- Do we need a manual approval queue or dashboard updates to replace the canonical review process? Yes, we will use approve in admin tools, like we      currently have to make a word canonical
+- Do we need a manual approval queue or dashboard updates to replace the approval review process? Yes, we will use approval toggles in admin tools, like we currently have to mark a word approved
 - Should any enrichment capabilities be preserved in a future iteration, and if so, where would that data live? IGNORE, we dont want to store enrichment data.

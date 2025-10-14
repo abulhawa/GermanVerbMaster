@@ -196,7 +196,7 @@ export const words = pgTable(
     perfekt: text("perfekt"),
     comparative: text("comparative"),
     superlative: text("superlative"),
-    canonical: boolean("canonical").default(false).notNull(),
+    approved: boolean("approved").default(false).notNull(),
     complete: boolean("complete").default(false).notNull(),
     sourcesCsv: text("sources_csv"),
     sourceNotes: text("source_notes"),

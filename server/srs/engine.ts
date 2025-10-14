@@ -106,7 +106,7 @@ async function ensureMinimumDeviceStates(deviceId: string, preferredLevel: strin
     .select({ lemma: words.lemma, level: words.level })
     .from(words)
     .where(
-      and(eq(words.pos, "V"), eq(words.canonical, true), eq(words.complete, true))
+      and(eq(words.pos, "V"), eq(words.approved, true), eq(words.complete, true))
     )
     .orderBy(levelPriority, sql`lower(${words.lemma})`)
     .limit(minSize * 4);

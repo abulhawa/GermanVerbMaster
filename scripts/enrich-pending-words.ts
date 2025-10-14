@@ -7,12 +7,12 @@ const OUTPUT_FILE = path.resolve(
   process.cwd(),
   "data",
   "generated",
-  "non-canonical-enrichment.json",
+  "pending-approval-enrichment.json",
 );
 
 async function main() {
   const baseConfig = resolveConfigFromEnv({
-    mode: "non-canonical",
+    mode: "pending",
     onlyIncomplete: false,
     apply: false,
     emitReport: false,

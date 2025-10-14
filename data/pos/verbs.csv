@@ -1,0 +1,4 @@
+lemma,level,english,example_de,example_en,separable,aux,praesens_ich,praesens_er,praeteritum,partizip_ii,perfekt,approved,sources_csv,source_notes
+arbeiten,A1,to work,Sie arbeitet in einer Bank.,She works in a bank.,false,haben,arbeite,arbeitet,arbeitete,gearbeitet,hat gearbeitet,true,Goethe-Institut; dwds-goethe-A1.csv,A1 Essential Verbs
+gehen,A1,to go,Wir gehen nach Hause.,We are going home.,false,sein,gehe,geht,ging,gegangen,ist gegangen,true,Goethe-Institut; dwds-goethe-A1.csv,
+lernen,A1,to learn,Wir lernen Deutsch.,We are learning German.,false,haben,lerne,lernt,lernte,gelernt,hat gelernt,false,Learn-Deutsch Manual,Requires audio review

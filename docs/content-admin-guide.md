@@ -11,7 +11,7 @@ The admin dashboard at `/admin` now manages verbs, nouns, and adjectives from a 
 ## Navigating the dashboard
 1. Open `http://localhost:5000/admin` and enter the admin token when prompted. The token is stored locally for the session.
 2. Use the **Part of speech** filter to switch between verbs (`V`), nouns (`N`), adjectives (`Adj`), and the other supported categories imported from upstream sources.
-3. Combine filters for CEFR level, canonical status, and completeness to focus on items that are ready for pack promotion.
+3. Combine filters for CEFR level, approval status, and completeness to focus on items that are ready for pack promotion.
 4. Click a row to edit: the drawer surfaces shared metadata (translations, examples, sources) along with POS-specific fields such as auxiliary verbs, noun plurals, or adjective degrees.
 5. Save changes to issue a `PATCH /api/words/:id` request. Successful edits automatically refresh the table and invalidate cached rows.
 

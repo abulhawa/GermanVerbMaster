@@ -6,7 +6,7 @@ import type {
 
 export interface RunEnrichmentPayload {
   limit?: number;
-  mode?: 'non-canonical' | 'canonical' | 'all';
+  mode?: 'pending' | 'approved' | 'all';
   onlyIncomplete?: boolean;
   enableAi?: boolean;
   allowOverwrite?: boolean;

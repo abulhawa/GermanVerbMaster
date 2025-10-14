@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const LEVEL_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
-const DEFAULT_CANONICAL_PATH = path.resolve(__dirname, '..', 'data', 'verbs_canonical.csv');
+const DEFAULT_CANONICAL_PATH = path.resolve(__dirname, '..', 'data', 'legacy', 'verbs_canonical.csv');
 const DEFAULT_OUTPUT_DIR = path.resolve(__dirname, '..', 'data', 'generated');
 
 function normaliseHeader(header) {

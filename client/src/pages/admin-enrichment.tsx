@@ -51,7 +51,7 @@ const DEFAULT_MISSING_PER_PAGE = 25;
 
 interface BulkConfigState extends RunEnrichmentPayload {
   limit: number;
-  mode: 'non-canonical' | 'canonical' | 'all';
+  mode: 'pending' | 'approved' | 'all';
   onlyIncomplete: boolean;
   enableAi: boolean;
   allowOverwrite: boolean;
@@ -63,7 +63,7 @@ interface BulkConfigState extends RunEnrichmentPayload {
 
 const DEFAULT_BULK_CONFIG: BulkConfigState = {
   limit: 25,
-  mode: 'non-canonical',
+  mode: 'pending',
   onlyIncomplete: true,
   enableAi: false,
   allowOverwrite: false,
@@ -213,7 +213,7 @@ const AdminEnrichmentPage = () => {
     ],
     queryFn: async () => {
       const params = new URLSearchParams({
-        canonical: 'false',
+        approved: 'false',
         complete: 'false',
         perPage: String(missingPerPage),
         page: String(missingPage),
@@ -257,7 +257,7 @@ const AdminEnrichmentPage = () => {
   const missingSummaryText =
     totalMissingWords > 0 && missingRangeStart > 0
       ? `Showing ${missingRangeStart.toLocaleString()}–${missingRangeEnd.toLocaleString()} of ${totalMissingWords.toLocaleString()} words`
-      : 'No non-canonical words with missing data were found.';
+      : 'No pending words with missing data were found.';
   const displayMissingPage = currentMissingPage > 0 ? currentMissingPage : 1;
   const displayTotalMissingPages =
     totalMissingPages > 0 ? totalMissingPages : Math.max(displayMissingPage, 1);
@@ -460,8 +460,8 @@ const AdminEnrichmentPage = () => {
                   <SelectValue placeholder="Select mode" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="non-canonical">Non-canonical only</SelectItem>
-                  <SelectItem value="canonical">Canonical only</SelectItem>
+                  <SelectItem value="pending">Pending only</SelectItem>
+                  <SelectItem value="approved">Approved only</SelectItem>
                   <SelectItem value="all">All words</SelectItem>
                 </SelectContent>
               </Select>
@@ -794,7 +794,7 @@ const AdminEnrichmentPage = () => {
         <CollapsibleSection
           icon={ListChecks}
           title="Words missing information"
-          description="Browse non-canonical entries that still need translations or examples."
+          description="Browse pending entries that still need translations or examples."
           open={isMissingOpen}
           onOpenChange={setIsMissingOpen}
           triggerId="missing-words"
@@ -841,7 +841,7 @@ const AdminEnrichmentPage = () => {
 
           {!missingWordsQuery.isFetching && !missingWordsQuery.isError && !missingWords.length ? (
             <p className="text-sm text-muted-foreground">
-              No non-canonical words are currently missing required data.
+              No pending words are currently missing required data.
             </p>
           ) : null}
 

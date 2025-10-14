@@ -65,7 +65,7 @@ export interface Word {
   perfekt: string | null;
   comparative: string | null;
   superlative: string | null;
-  canonical: boolean;
+  approved: boolean;
   complete: boolean;
   sourcesCsv: string | null;
   sourceNotes: string | null;

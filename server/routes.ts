@@ -653,7 +653,7 @@ const wordUpdateSchema = z
     perfekt: optionalText(150),
     comparative: optionalText(100),
     superlative: optionalText(100),
-    canonical: optionalBoolean,
+    approved: optionalBoolean,
     sourcesCsv: optionalText(500),
     sourceNotes: optionalText(500),
     translations: translationRecordSchema.array().nullable().optional(),
@@ -664,7 +664,7 @@ const wordUpdateSchema = z
   })
   .strict();
 
-const enrichmentModeSchema = z.enum(["non-canonical", "canonical", "all"]);
+const enrichmentModeSchema = z.enum(["pending", "approved", "all"]);
 
 const enrichmentRunSchema = z
   .object({
@@ -1967,7 +1967,7 @@ export function registerRoutes(app: Express): void {
     try {
       const pos = normalizeStringParam(req.query.pos)?.trim();
       const level = normalizeStringParam(req.query.level)?.trim();
-      const canonicalFilter = parseTriState(req.query.canonical);
+      const approvalFilter = parseTriState(req.query.approved);
       const completeFilter = parseTriState(req.query.complete);
       const enrichedFilter = parseTriState(req.query.enriched);
       const search = normalizeStringParam(req.query.search)?.trim().toLowerCase();
@@ -1981,8 +1981,8 @@ export function registerRoutes(app: Express): void {
       if (level) {
         conditions.push(eq(words.level, level));
       }
-      if (typeof canonicalFilter === "boolean") {
-        conditions.push(eq(words.canonical, canonicalFilter));
+      if (typeof approvalFilter === "boolean") {
+        conditions.push(eq(words.approved, approvalFilter));
       }
       if (typeof completeFilter === "boolean") {
         conditions.push(eq(words.complete, completeFilter));
@@ -2259,20 +2259,20 @@ export function registerRoutes(app: Express): void {
       assign("enrichmentAppliedAt", "enrichmentAppliedAt");
       assign("enrichmentMethod", "enrichmentMethod");
 
-      const canonical = data.canonical ?? existing.canonical;
+      const approved = data.approved ?? existing.approved;
       const merged: Pick<Word, "pos"> & Partial<Word> = {
         ...existing,
         ...updates,
-        canonical,
+        approved,
       };
 
       const complete = computeWordCompleteness(merged);
 
-      updates.canonical = canonical;
+      updates.approved = approved;
       updates.complete = complete;
       const hasContentUpdates = Object.keys(updates).some((key) =>
         ![
-          "canonical",
+          "approved",
           "complete",
           "updatedAt",
           "enrichmentAppliedAt",
@@ -2795,7 +2795,7 @@ export function registerRoutes(app: Express): void {
         ? Math.min(parsedLimit, PARTNER_DRILL_LIMIT)
         : 20;
 
-      const conditions: any[] = [eq(words.pos, "V"), eq(words.canonical, true)];
+      const conditions: any[] = [eq(words.pos, "V"), eq(words.approved, true)];
       if (level) {
         conditions.push(eq(words.level, level));
       }

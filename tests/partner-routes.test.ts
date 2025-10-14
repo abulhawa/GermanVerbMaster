@@ -158,7 +158,7 @@ describe('Partner integration routes', () => {
         perfekt: 'ist gegangen',
         sourcesCsv: 'Duden',
         updatedAt: new Date('2024-01-01T00:00:00Z'),
-        canonical: true,
+        approved: true,
         complete: true,
       },
     ]);

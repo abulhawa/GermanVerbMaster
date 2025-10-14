@@ -7,13 +7,6 @@ import { and, eq, sql } from 'drizzle-orm';
 import { getDb, getPool } from '@db';
 import { words } from '@db/schema';
 import {
-  loadExternalWordRows,
-  loadManualWordRows,
-  snapshotExternalSources,
-  type ExternalPartOfSpeech,
-  type ExternalWordRow,
-} from './source-loaders';
-import {
   buildGoldenBundles,
   buildLexemeInventory,
   upsertGoldenBundles,
@@ -21,7 +14,13 @@ import {
   writeGoldenBundlesToDisk,
 } from './etl/golden';
 import type { AggregatedWord } from './etl/types';
-import type { EnrichmentMethod, WordExample, WordPosAttributes, WordTranslation } from '@shared/types';
+import type {
+  EnrichmentMethod,
+  PartOfSpeech,
+  WordExample,
+  WordPosAttributes,
+  WordTranslation,
+} from '@shared/types';
 import type { PersistedProviderEntry, PersistedWordData } from '@shared/enrichment';
 import { loadPersistedWordData } from './enrichment/storage';
 import { applyMigrations } from './db-push';
@@ -46,7 +45,7 @@ async function ensureLegacySchema(db: DatabaseClient): Promise<void> {
 }
 
 const LEVEL_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
-const POS_MAP = new Map<string, ExternalPartOfSpeech>([
+const POS_MAP = new Map<string, PartOfSpeech>([
   ['verb', 'V'],
   ['v', 'V'],
   ['v.', 'V'],
@@ -75,7 +74,7 @@ const POS_MAP = new Map<string, ExternalPartOfSpeech>([
   ['interjektion', 'Interj'],
 ]);
 
-const EXTERNAL_POS_VALUES: readonly ExternalPartOfSpeech[] = [
+const EXTERNAL_POS_VALUES: readonly PartOfSpeech[] = [
   'V',
   'N',
   'Adj',
@@ -91,7 +90,7 @@ const EXTERNAL_POS_VALUES: readonly ExternalPartOfSpeech[] = [
 
 interface RawWordRow {
   lemma: string;
-  pos: ExternalPartOfSpeech;
+  pos: PartOfSpeech;
   level?: string | null;
   english?: string | null;
   exampleDe?: string | null;
@@ -114,6 +113,7 @@ interface RawWordRow {
   posAttributes?: WordPosAttributes | null;
   enrichmentAppliedAt?: string | null;
   enrichmentMethod?: EnrichmentMethod | null;
+  approved?: boolean | null;
 }
 
 interface AggregatedWordWithKey extends AggregatedWord {
@@ -130,12 +130,12 @@ function normaliseString(value: unknown): string | null {
   return trimmed.length ? trimmed : null;
 }
 
-function normalisePos(raw: unknown): ExternalPartOfSpeech | null {
+function normalisePos(raw: unknown): PartOfSpeech | null {
   if (raw === undefined || raw === null) return null;
   const value = String(raw).trim();
   if (!value) return null;
   if ((EXTERNAL_POS_VALUES as readonly string[]).includes(value)) {
-    return value as ExternalPartOfSpeech;
+    return value as PartOfSpeech;
   }
   const upper = value.toUpperCase();
   switch (upper) {
@@ -181,7 +181,7 @@ function normaliseLevel(level: unknown): string | null {
   return LEVEL_ORDER.includes(upper as (typeof LEVEL_ORDER)[number]) ? upper : value;
 }
 
-function computeCompleteness(word: RawWordRow & { pos: ExternalPartOfSpeech }): boolean {
+function computeCompleteness(word: RawWordRow & { pos: PartOfSpeech }): boolean {
   const english = word.english ?? null;
   const exampleDe = word.exampleDe ?? null;
   const exampleEn = word.exampleEn ?? null;
@@ -206,37 +206,6 @@ function computeCompleteness(word: RawWordRow & { pos: ExternalPartOfSpeech }): 
     default:
       return true;
   }
-}
-
-function mapRow(row: Record<string, unknown>): RawWordRow | null {
-  const lemma = normaliseString(row.lemma ?? row.Lemma);
-  const rawPos = row.pos ?? row.POS ?? row.part_of_speech ?? row.PartOfSpeech;
-  const pos = normalisePos(rawPos);
-  if (!lemma || !pos) {
-    return null;
-  }
-
-  return {
-    lemma,
-    pos,
-    level: normaliseLevel(row.level ?? row.cefr ?? row.difficulty),
-    english: normaliseString(row.english ?? row.translation ?? row.translation_en),
-    exampleDe: normaliseString(row.example_de ?? row.exampleDe ?? row.example_deu),
-    exampleEn: normaliseString(row.example_en ?? row.exampleEn ?? row.example_eng),
-    gender: normaliseString(row.gender ?? row.article ?? row.Genus ?? row.Artikel),
-    plural: normaliseString(row.plural ?? row.Plural),
-    separable: parseBooleanish(row.separable ?? row.isSeparable),
-    aux: normaliseString(row.aux ?? row.auxiliary),
-    praesensIch: normaliseString(row.praesens_ich ?? row.praesensIch ?? row.ich_form),
-    praesensEr: normaliseString(row.praesens_er ?? row.praesensEr ?? row.er_form),
-    praeteritum: normaliseString(row.praeteritum ?? row.praet ?? row.präteritum),
-    partizipIi: normaliseString(row.partizip_ii ?? row.partizipIi ?? row.partizip2),
-    perfekt: normaliseString(row.perfekt ?? row.perfect),
-    comparative: normaliseString(row.comparative ?? row.komparativ),
-    superlative: normaliseString(row.superlative ?? row.superlativ),
-    sourcesCsv: normaliseString(row.sources_csv ?? row.source ?? row.sources),
-    sourceNotes: normaliseString(row.source_notes ?? row.notes ?? row.sourceNotes ?? row.URL),
-  };
 }
 
 function mergeWord(existing: RawWordRow | null, incoming: RawWordRow): RawWordRow {
@@ -270,6 +239,11 @@ function mergeWord(existing: RawWordRow | null, incoming: RawWordRow): RawWordRo
     incoming.enrichmentAppliedAt ?? null,
   );
   merged.enrichmentMethod = existing.enrichmentMethod ?? incoming.enrichmentMethod ?? null;
+  if (incoming.approved !== undefined && incoming.approved !== null) {
+    merged.approved = incoming.approved;
+  } else if (merged.approved === undefined) {
+    merged.approved = existing.approved ?? null;
+  }
 
   return merged;
 }
@@ -437,6 +411,248 @@ function mergeWordPosAttributes(
   }
 
   return Object.keys(next).length ? next : null;
+}
+
+interface PosFileDefinition {
+  filename: string;
+  pos: PartOfSpeech;
+  map(record: Record<string, unknown>): RawWordRow | null;
+}
+
+function parseDelimitedList(value: unknown): string[] {
+  const normalized = normaliseString(value);
+  if (!normalized) {
+    return [];
+  }
+  return normalized
+    .split(/[,;\n]/)
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+}
+
+const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
+  {
+    filename: 'verbs.csv',
+    pos: 'V',
+    map: (record) => {
+      const lemma = normaliseString(record.lemma);
+      if (!lemma) return null;
+
+      return {
+        lemma,
+        pos: 'V',
+        level: normaliseLevel(record.level),
+        english: normaliseString(record.english),
+        exampleDe: normaliseString(record.example_de),
+        exampleEn: normaliseString(record.example_en),
+        separable: parseBooleanish(record.separable),
+        aux: normaliseString(record.aux),
+        praesensIch: normaliseString(record.praesens_ich),
+        praesensEr: normaliseString(record.praesens_er),
+        praeteritum: normaliseString(record.praeteritum),
+        partizipIi: normaliseString(record.partizip_ii),
+        perfekt: normaliseString(record.perfekt),
+        comparative: null,
+        superlative: null,
+        sourcesCsv: normaliseString(record.sources_csv),
+        sourceNotes: normaliseString(record.source_notes),
+        translations: null,
+        examples: null,
+        posAttributes: null,
+        enrichmentAppliedAt: null,
+        enrichmentMethod: null,
+        gender: null,
+        plural: null,
+        approved: parseBooleanish(record.approved) ?? false,
+      } satisfies RawWordRow;
+    },
+  },
+  {
+    filename: 'nouns.csv',
+    pos: 'N',
+    map: (record) => {
+      const lemma = normaliseString(record.lemma);
+      if (!lemma) return null;
+
+      return {
+        lemma,
+        pos: 'N',
+        level: normaliseLevel(record.level),
+        english: normaliseString(record.english),
+        exampleDe: normaliseString(record.example_de),
+        exampleEn: normaliseString(record.example_en),
+        gender: normaliseString(record.gender),
+        plural: normaliseString(record.plural),
+        separable: null,
+        aux: null,
+        praesensIch: null,
+        praesensEr: null,
+        praeteritum: null,
+        partizipIi: null,
+        perfekt: null,
+        comparative: null,
+        superlative: null,
+        sourcesCsv: normaliseString(record.sources_csv),
+        sourceNotes: normaliseString(record.source_notes),
+        translations: null,
+        examples: null,
+        posAttributes: null,
+        enrichmentAppliedAt: null,
+        enrichmentMethod: null,
+        approved: parseBooleanish(record.approved) ?? false,
+      } satisfies RawWordRow;
+    },
+  },
+  {
+    filename: 'adjectives.csv',
+    pos: 'Adj',
+    map: (record) => {
+      const lemma = normaliseString(record.lemma);
+      if (!lemma) return null;
+
+      return {
+        lemma,
+        pos: 'Adj',
+        level: normaliseLevel(record.level),
+        english: normaliseString(record.english),
+        exampleDe: normaliseString(record.example_de),
+        exampleEn: normaliseString(record.example_en),
+        gender: null,
+        plural: null,
+        separable: null,
+        aux: null,
+        praesensIch: null,
+        praesensEr: null,
+        praeteritum: null,
+        partizipIi: null,
+        perfekt: null,
+        comparative: normaliseString(record.comparative),
+        superlative: normaliseString(record.superlative),
+        sourcesCsv: normaliseString(record.sources_csv),
+        sourceNotes: normaliseString(record.source_notes),
+        translations: null,
+        examples: null,
+        posAttributes: null,
+        enrichmentAppliedAt: null,
+        enrichmentMethod: null,
+        approved: parseBooleanish(record.approved) ?? false,
+      } satisfies RawWordRow;
+    },
+  },
+  {
+    filename: 'adverbs.csv',
+    pos: 'Adv',
+    map: (record) => {
+      const lemma = normaliseString(record.lemma);
+      if (!lemma) return null;
+
+      return {
+        lemma,
+        pos: 'Adv',
+        level: normaliseLevel(record.level),
+        english: normaliseString(record.english),
+        exampleDe: normaliseString(record.example_de),
+        exampleEn: normaliseString(record.example_en),
+        gender: null,
+        plural: null,
+        separable: null,
+        aux: null,
+        praesensIch: null,
+        praesensEr: null,
+        praeteritum: null,
+        partizipIi: null,
+        perfekt: null,
+        comparative: normaliseString(record.comparative),
+        superlative: normaliseString(record.superlative),
+        sourcesCsv: normaliseString(record.sources_csv),
+        sourceNotes: normaliseString(record.source_notes),
+        translations: null,
+        examples: null,
+        posAttributes: null,
+        enrichmentAppliedAt: null,
+        enrichmentMethod: null,
+        approved: parseBooleanish(record.approved) ?? false,
+      } satisfies RawWordRow;
+    },
+  },
+  {
+    filename: 'prepositions.csv',
+    pos: 'Präp',
+    map: (record) => {
+      const lemma = normaliseString(record.lemma);
+      if (!lemma) return null;
+
+      const cases = parseDelimitedList(record.cases);
+      const notes = parseDelimitedList(record.notes);
+      const posAttributes: WordPosAttributes = {
+        pos: 'Präp',
+        preposition: cases.length || notes.length ? { cases, notes: notes.length ? notes : undefined } : undefined,
+        notes: notes.length ? notes : undefined,
+      };
+
+      return {
+        lemma,
+        pos: 'Präp',
+        level: normaliseLevel(record.level),
+        english: normaliseString(record.english),
+        exampleDe: normaliseString(record.example_de),
+        exampleEn: normaliseString(record.example_en),
+        gender: null,
+        plural: null,
+        separable: null,
+        aux: null,
+        praesensIch: null,
+        praesensEr: null,
+        praeteritum: null,
+        partizipIi: null,
+        perfekt: null,
+        comparative: null,
+        superlative: null,
+        sourcesCsv: normaliseString(record.sources_csv),
+        sourceNotes: normaliseString(record.source_notes),
+        translations: null,
+        examples: null,
+        posAttributes,
+        enrichmentAppliedAt: null,
+        enrichmentMethod: null,
+        approved: parseBooleanish(record.approved) ?? false,
+      } satisfies RawWordRow;
+    },
+  },
+];
+
+async function loadPosWordRowsFromDisk(rootDir: string): Promise<RawWordRow[]> {
+  const posDir = path.join(rootDir, 'data', 'pos');
+  const results: RawWordRow[] = [];
+
+  for (const definition of POS_FILE_DEFINITIONS) {
+    const filePath = path.join(posDir, definition.filename);
+    let content: string;
+    try {
+      content = await fs.readFile(filePath, 'utf8');
+    } catch (error) {
+      const err = error as NodeJS.ErrnoException;
+      if (err?.code === 'ENOENT') {
+        continue;
+      }
+      throw error;
+    }
+
+    const records = parse(content, {
+      columns: true,
+      skip_empty_lines: true,
+      trim: true,
+    }) as Array<Record<string, unknown>>;
+
+    for (const record of records) {
+      const row = definition.map(record);
+      if (row) {
+        results.push(row);
+      }
+    }
+  }
+
+  return results;
 }
 
 function pickLatestTimestamp(a: string | null, b: string | null): string | null {
@@ -698,28 +914,7 @@ function toDateOrNull(value: string | null | undefined): Date | null {
 }
 
 async function aggregateWords(rootDir: string): Promise<AggregatedWordWithKey[]> {
-  const manualPath = path.join(rootDir, 'data', 'words_manual.csv');
-  const canonicalPath = path.join(rootDir, 'data', 'words_canonical.csv');
-  const externalDir = path.join(rootDir, 'docs', 'external');
-  const snapshotPath = path.join(rootDir, 'data', 'words_all_sources.csv');
-
-  const [manualRows, externalRows] = await Promise.all([
-    loadManualWordRows(manualPath),
-    loadExternalWordRows(externalDir),
-  ]);
-
-  const canonicalRows = await loadCanonicalRows(canonicalPath);
-  const canonicalSet = new Set<string>(
-    canonicalRows.map((row) => {
-      const lemma = normaliseString(row.lemma);
-      const pos = normalisePos(row.pos);
-      if (!lemma || !pos) {
-        throw new Error(`Invalid canonical record: ${JSON.stringify(row)}`);
-      }
-      return keyFor(lemma, pos);
-    }),
-  );
-
+  const posRows = await loadPosWordRowsFromDisk(rootDir);
   const aggregated = new Map<string, RawWordRow>();
 
   const upsertAggregatedRow = (row: RawWordRow | null | undefined) => {
@@ -732,12 +927,8 @@ async function aggregateWords(rootDir: string): Promise<AggregatedWordWithKey[]>
     aggregated.set(key, merged);
   };
 
-  for (const row of manualRows) {
-    upsertAggregatedRow(mapRow(row));
-  }
-
-  for (const row of externalRows) {
-    upsertAggregatedRow(mapRow(row as unknown as Record<string, unknown>));
+  for (const row of posRows) {
+    upsertAggregatedRow(row);
   }
 
   const persistedWordData = await loadPersistedWordData(rootDir);
@@ -745,34 +936,10 @@ async function aggregateWords(rootDir: string): Promise<AggregatedWordWithKey[]>
     upsertAggregatedRow(buildRowFromPersistedWordData(entry));
   }
 
-  const snapshotRows: ExternalWordRow[] = Array.from(aggregated.values()).map((row) => ({
-    lemma: row.lemma,
-    pos: row.pos,
-    level: row.level ?? undefined,
-    english: row.english ?? undefined,
-    example_de: row.exampleDe ?? undefined,
-    example_en: row.exampleEn ?? undefined,
-    gender: row.gender ?? undefined,
-    plural: row.plural ?? undefined,
-    separable: row.separable ?? undefined,
-    aux: row.aux ?? undefined,
-    praesens_ich: row.praesensIch ?? undefined,
-    praesens_er: row.praesensEr ?? undefined,
-    praeteritum: row.praeteritum ?? undefined,
-    partizip_ii: row.partizipIi ?? undefined,
-    perfekt: row.perfekt ?? undefined,
-    comparative: row.comparative ?? undefined,
-    superlative: row.superlative ?? undefined,
-    sources_csv: row.sourcesCsv ?? undefined,
-    source_notes: row.sourceNotes ?? undefined,
-  }));
-
-  await snapshotExternalSources(snapshotPath, snapshotRows);
-
   const wordsWithMetadata: AggregatedWordWithKey[] = [];
   for (const [key, value] of aggregated.entries()) {
     const complete = computeCompleteness(value);
-    const canonical = canonicalSet.has(key);
+    const approved = Boolean(value.approved);
     wordsWithMetadata.push({
       key,
       lemma: value.lemma,
@@ -792,7 +959,7 @@ async function aggregateWords(rootDir: string): Promise<AggregatedWordWithKey[]>
       perfekt: value.perfekt ?? null,
       comparative: value.comparative ?? null,
       superlative: value.superlative ?? null,
-      canonical,
+      approved,
       complete,
       sourcesCsv: value.sourcesCsv ?? null,
       sourceNotes: value.sourceNotes ?? null,
@@ -804,15 +971,6 @@ async function aggregateWords(rootDir: string): Promise<AggregatedWordWithKey[]>
   }
 
   return wordsWithMetadata;
-}
-
-async function loadCanonicalRows(filePath: string): Promise<Array<Record<string, string>>> {
-  const content = await fs.readFile(filePath, 'utf8');
-  return parse(content, {
-    columns: true,
-    skip_empty_lines: true,
-    trim: true,
-  }) as Array<Record<string, string>>;
 }
 
 async function seedLegacyWords(db: DatabaseClient, wordsToUpsert: AggregatedWordWithKey[]): Promise<void> {
@@ -847,7 +1005,7 @@ async function seedLegacyWords(db: DatabaseClient, wordsToUpsert: AggregatedWord
         perfekt: word.perfekt,
         comparative: word.comparative,
         superlative: word.superlative,
-        canonical: word.canonical,
+        approved: word.approved,
         complete: word.complete,
         sourcesCsv: word.sourcesCsv,
         sourceNotes: word.sourceNotes,
@@ -874,7 +1032,7 @@ async function seedLegacyWords(db: DatabaseClient, wordsToUpsert: AggregatedWord
           perfekt: sql`excluded.perfekt`,
           comparative: sql`excluded.comparative`,
           superlative: sql`excluded.superlative`,
-          canonical: sql`excluded.canonical`,
+          approved: sql`excluded.approved`,
           complete: sql`excluded.complete`,
           sourcesCsv: sql`excluded.sources_csv`,
           sourceNotes: sql`excluded.source_notes`,
