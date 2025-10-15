@@ -26,6 +26,14 @@ import type {
   WordExample,
   WordTranslation,
 } from "@shared";
+import {
+  getExampleSentence,
+  getExampleTranslation,
+  canonicalizeExamples,
+  examplesEqual,
+  normalizeWordExample,
+  normalizeWordExamples,
+} from "@shared";
 import type { LexemePos, TaskType } from "@shared";
 import { posPrimarySourceId } from "@shared/source-ids";
 import { getTaskRegistryEntry, taskRegistry } from "./tasks/registry.js";
@@ -226,8 +234,18 @@ function buildLexemeSnapshotFromRow(
   const exampleMeta = isRecord(metadata.example) ? metadata.example : null;
   const level = normaliseCefrLevel(row.cefrLevel ?? metadata.level);
   const english = normaliseString(metadata.english);
-  const exampleDe = exampleMeta ? normaliseString(exampleMeta.de) : undefined;
-  const exampleEn = exampleMeta ? normaliseString(exampleMeta.en) : undefined;
+  const normalizedExample = exampleMeta
+    ? normalizeWordExample({
+        sentence: typeof exampleMeta.sentence === "string" ? exampleMeta.sentence : undefined,
+        translations: isRecord(exampleMeta.translations)
+          ? Object.fromEntries(
+              Object.entries(exampleMeta.translations).filter((entry): entry is [string, string] => typeof entry[1] === "string"),
+            )
+          : undefined,
+        exampleDe: typeof exampleMeta.de === "string" ? exampleMeta.de : undefined,
+        exampleEn: typeof exampleMeta.en === "string" ? exampleMeta.en : undefined,
+      })
+    : null;
   const auxiliary = normaliseString(metadata.auxiliary);
   const allowedAuxiliaries = new Set(["haben", "sein", "haben / sein"]);
 
@@ -238,10 +256,10 @@ function buildLexemeSnapshotFromRow(
     level,
     english: english ?? undefined,
     example:
-      exampleDe || exampleEn
+      normalizedExample && (normalizedExample.sentence || normalizedExample.translations?.en)
         ? {
-            de: exampleDe,
-            en: exampleEn,
+            de: normalizedExample.sentence ?? undefined,
+            en: normalizedExample.translations?.en ?? undefined,
           }
         : undefined,
     auxiliary: auxiliary && allowedAuxiliaries.has(auxiliary) ? (auxiliary as AnswerHistoryLexemeSnapshot["auxiliary"]) : undefined,
@@ -582,11 +600,52 @@ const translationRecordSchema = z.object({
   confidence: optionalConfidence,
 });
 
-const exampleRecordSchema = z.object({
-  exampleDe: optionalText(800),
-  exampleEn: optionalText(800),
-  source: optionalText(200),
-});
+const exampleTranslationsSchema = z
+  .preprocess((value) => {
+    if (value === undefined) return undefined;
+    if (value === null) return null;
+    if (!isRecord(value)) return null;
+    const cleaned = Object.entries(value).reduce<Record<string, string>>((acc, [rawLanguage, rawValue]) => {
+      if (typeof rawValue !== "string") {
+        return acc;
+      }
+      const language = rawLanguage.trim().toLowerCase();
+      const translation = rawValue.trim();
+      if (!language || !translation || language.length > 20 || translation.length > 800) {
+        return acc;
+      }
+      acc[language] = translation;
+      return acc;
+    }, {});
+    return Object.keys(cleaned).length > 0 ? cleaned : null;
+  }, z.union([z.record(z.string().min(1).max(20), z.string().min(1).max(800)), z.null()]))
+  .optional();
+
+const exampleRecordSchema = z
+  .preprocess((value) => {
+    if (value === undefined || value === null || !isRecord(value)) {
+      return value;
+    }
+    const record = value as Record<string, unknown>;
+    const sentence = record.sentence ?? record.exampleDe;
+    const source = record.source;
+    let translations = record.translations;
+    if (!translations && typeof record.exampleEn === "string") {
+      translations = { en: record.exampleEn };
+    }
+    return {
+      sentence,
+      translations,
+      source,
+    };
+  },
+  z
+    .object({
+      sentence: optionalText(800),
+      translations: exampleTranslationsSchema,
+      source: optionalText(200),
+    })
+    .strict());
 
 const optionalTimestamp = z
   .preprocess((value) => {
@@ -853,13 +912,14 @@ function computeFallbackPriorityScore(
 
 function computeWordCompleteness(word: Pick<Word, "pos"> & Partial<Word>): boolean {
   const english = word.english;
-  const exampleDe = word.exampleDe;
-  const exampleEn = word.exampleEn;
-  const examples = word.examples ?? [];
-  const hasExamplePair = Boolean(
-    exampleDe?.trim() && exampleEn?.trim()
-    || examples.some((entry) => entry?.exampleDe?.trim() && entry?.exampleEn?.trim()),
-  );
+  const examples = normalizeWordExamples(word.examples) ?? [];
+  const hasExamplePair = examples.some((entry) => {
+    if (!entry.sentence) {
+      return false;
+    }
+    const translations = entry.translations ?? {};
+    return Object.values(translations).some((value) => typeof value === "string" && value.trim().length > 0);
+  });
   if (!english || !english.trim()) {
     return false;
   }
@@ -880,7 +940,15 @@ function computeWordCompleteness(word: Pick<Word, "pos"> & Partial<Word>): boole
 
 function presentWord(word: Word): Omit<Word, "sourcesCsv" | "sourceNotes"> {
   const { sourcesCsv: _sourcesCsv, sourceNotes: _sourceNotes, ...rest } = word;
-  return rest;
+  const normalizedExamples = canonicalizeExamples(rest.examples);
+  const primarySentence = getExampleSentence(normalizedExamples);
+  const primaryEnglish = getExampleTranslation(normalizedExamples, "en");
+  return {
+    ...rest,
+    examples: normalizedExamples.length > 0 ? normalizedExamples : null,
+    exampleDe: primarySentence ?? rest.exampleDe ?? null,
+    exampleEn: primaryEnglish ?? rest.exampleEn ?? null,
+  };
 }
 
 function normaliseAuxiliaryValue(aux: string | null | undefined): 'haben' | 'sein' | 'haben / sein' {
@@ -915,8 +983,8 @@ function toGermanVerb(word: Word): GermanVerb {
     partizipII: partizip,
     auxiliary,
     level,
-    präteritumExample: word.exampleDe ?? "",
-    partizipIIExample: word.exampleEn ?? "",
+    präteritumExample: getExampleSentence(word.examples) ?? "",
+    partizipIIExample: getExampleTranslation(word.examples, "en") ?? "",
     source: {
       name: sourceName,
       levelReference,
@@ -2075,33 +2143,27 @@ export function registerRoutes(app: Express): void {
       const examples = (() => {
         const map = new Map<string, WordExample>();
         const upsert = (entry: WordExample | null | undefined) => {
-          if (!entry) {
+          const normalized = normalizeWordExample(entry);
+          if (!normalized) {
             return;
           }
-          const exampleDe = normalizeString(entry.exampleDe ?? null);
-          const exampleEn = normalizeString(entry.exampleEn ?? null);
-          if (!exampleDe && !exampleEn) {
-            return;
-          }
-          const source = normalizeString(entry.source ?? null);
-          const key = `${(exampleDe ?? "").toLowerCase()}::${(exampleEn ?? "").toLowerCase()}::${(source ?? "").toLowerCase()}`;
+          const key = `${(normalized.sentence ?? "").toLowerCase()}::${(normalized.source ?? "").toLowerCase()}`;
           const existing = map.get(key);
           if (!existing) {
-            map.set(key, {
-              exampleDe,
-              exampleEn,
-              source,
-            });
+            map.set(key, normalized);
             return;
           }
-          if (!existing.exampleDe && exampleDe) {
-            existing.exampleDe = exampleDe;
+          if (!existing.sentence && normalized.sentence) {
+            existing.sentence = normalized.sentence;
           }
-          if (!existing.exampleEn && exampleEn) {
-            existing.exampleEn = exampleEn;
+          if (normalized.translations) {
+            existing.translations = {
+              ...(existing.translations ?? {}),
+              ...normalized.translations,
+            };
           }
-          if (!existing.source && source) {
-            existing.source = source;
+          if (!existing.source && normalized.source) {
+            existing.source = normalized.source;
           }
         };
 
@@ -2115,8 +2177,8 @@ export function registerRoutes(app: Express): void {
         }
 
         return Array.from(map.values()).sort((a, b) => {
-          const aLabel = a.exampleDe ?? a.exampleEn ?? "";
-          const bLabel = b.exampleDe ?? b.exampleEn ?? "";
+          const aLabel = a.sentence ?? "";
+          const bLabel = b.sentence ?? "";
           const valueCompare = aLabel.localeCompare(bLabel, undefined, { sensitivity: "base" });
           if (valueCompare !== 0) {
             return valueCompare;
@@ -2173,8 +2235,6 @@ export function registerRoutes(app: Express): void {
 
       assign("level", "level");
       assign("english", "english");
-      assign("exampleDe", "exampleDe");
-      assign("exampleEn", "exampleEn");
       assign("gender", "gender");
       assign("plural", "plural");
       assign("separable", "separable");
@@ -2187,10 +2247,50 @@ export function registerRoutes(app: Express): void {
       assign("comparative", "comparative");
       assign("superlative", "superlative");
       assign("translations", "translations");
-      assign("examples", "examples");
       assign("posAttributes", "posAttributes");
       assign("enrichmentAppliedAt", "enrichmentAppliedAt");
       assign("enrichmentMethod", "enrichmentMethod");
+
+      const existingExamples = canonicalizeExamples(existing.examples);
+      let nextExamples = existingExamples;
+      let examplesTouched = false;
+
+      if (Object.prototype.hasOwnProperty.call(data, "examples") && data.examples !== undefined) {
+        nextExamples = canonicalizeExamples(data.examples ?? null);
+        examplesTouched = true;
+      }
+
+      const exampleDeProvided = Object.prototype.hasOwnProperty.call(data, "exampleDe");
+      const exampleEnProvided = Object.prototype.hasOwnProperty.call(data, "exampleEn");
+
+      if (exampleDeProvided || exampleEnProvided) {
+        const sentence = exampleDeProvided ? data.exampleDe ?? null : getExampleSentence(nextExamples) ?? null;
+        const englishExample = exampleEnProvided ? data.exampleEn ?? null : getExampleTranslation(nextExamples, "en") ?? null;
+        const manualExamples = sentence || englishExample
+          ? canonicalizeExamples([
+              {
+                sentence,
+                translations: englishExample ? { en: englishExample } : null,
+              },
+            ])
+          : [];
+        nextExamples = manualExamples;
+        examplesTouched = true;
+      }
+
+      if (examplesTouched) {
+        if (!examplesEqual(nextExamples, existingExamples)) {
+          updates.examples = nextExamples.length > 0 ? nextExamples : null;
+        }
+        const primarySentence = getExampleSentence(nextExamples);
+        if (primarySentence !== existing.exampleDe) {
+          updates.exampleDe = primarySentence ?? null;
+        }
+        const primaryEnglish = getExampleTranslation(nextExamples, "en");
+        if (primaryEnglish !== existing.exampleEn) {
+          updates.exampleEn = primaryEnglish ?? null;
+        }
+      }
 
       const approved = data.approved ?? existing.approved;
       const merged: Pick<Word, "pos"> & Partial<Word> = {
@@ -2452,16 +2552,48 @@ export function registerRoutes(app: Express): void {
           contentApplied = true;
         }
       }
-      if (Object.prototype.hasOwnProperty.call(patch, "exampleDe") && patch.exampleDe !== undefined) {
-        if (patch.exampleDe !== existing.exampleDe) {
-          updates.exampleDe = patch.exampleDe;
+      const existingExamples = canonicalizeExamples(existing.examples);
+      let nextExamples = existingExamples;
+      let examplesTouched = false;
+
+      if (Object.prototype.hasOwnProperty.call(patch, "examples") && patch.examples !== undefined) {
+        nextExamples = canonicalizeExamples(patch.examples ?? null);
+        examplesTouched = true;
+      }
+
+      const exampleDeProvided = Object.prototype.hasOwnProperty.call(patch, "exampleDe");
+      const exampleEnProvided = Object.prototype.hasOwnProperty.call(patch, "exampleEn");
+
+      if (exampleDeProvided || exampleEnProvided) {
+        const sentence = exampleDeProvided ? patch.exampleDe ?? null : getExampleSentence(nextExamples) ?? null;
+        const englishExample = exampleEnProvided ? patch.exampleEn ?? null : getExampleTranslation(nextExamples, "en") ?? null;
+        const manualExamples = sentence || englishExample
+          ? canonicalizeExamples([
+              {
+                sentence,
+                translations: englishExample ? { en: englishExample } : null,
+              },
+            ])
+          : [];
+        nextExamples = manualExamples;
+        examplesTouched = true;
+      }
+
+      if (examplesTouched) {
+        if (!examplesEqual(nextExamples, existingExamples)) {
+          updates.examples = nextExamples.length > 0 ? nextExamples : null;
+          appliedFields.push("examples");
+          contentApplied = true;
+        }
+        const primarySentence = getExampleSentence(nextExamples);
+        if (primarySentence !== existing.exampleDe) {
+          updates.exampleDe = primarySentence ?? null;
           appliedFields.push("exampleDe");
           contentApplied = true;
         }
-      }
-      if (Object.prototype.hasOwnProperty.call(patch, "exampleEn") && patch.exampleEn !== undefined) {
-        if (patch.exampleEn !== existing.exampleEn) {
-          updates.exampleEn = patch.exampleEn;
+        const primaryEnglish = getExampleTranslation(nextExamples, "en");
+        if (primaryEnglish !== existing.exampleEn) {
+          updates.exampleEn = primaryEnglish ?? null;
           appliedFields.push("exampleEn");
           contentApplied = true;
         }
@@ -2794,12 +2926,12 @@ export function registerRoutes(app: Express): void {
           praeteritum: {
             question: `Was ist die Präteritum-Form von “${word.lemma}”?`,
             answer: word.praeteritum ?? "",
-            example: word.exampleDe ?? null,
+            example: getExampleSentence(word.examples),
           },
           partizipII: {
             question: `Was ist das Partizip II von “${word.lemma}”?`,
             answer: word.partizipIi ?? "",
-            example: word.exampleEn ?? null,
+            example: getExampleTranslation(word.examples, "en"),
           },
           auxiliary: {
             question: `Welches Hilfsverb wird mit “${word.lemma}” verwendet?`,

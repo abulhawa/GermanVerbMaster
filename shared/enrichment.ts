@@ -2,6 +2,7 @@ import type {
   EnrichmentMethod,
   PartOfSpeech,
   WordExample,
+  WordExampleTranslations,
   WordPosAttributes,
   WordTranslation,
 } from "./types.js";
@@ -44,9 +45,13 @@ export interface EnrichmentTranslationCandidate {
 }
 
 export interface EnrichmentExampleCandidate {
-  exampleDe?: string;
-  exampleEn?: string;
+  sentence?: string;
+  translations?: WordExampleTranslations | null;
   source: string;
+  /** @deprecated Use {@link sentence}. */
+  exampleDe?: string;
+  /** @deprecated Use {@link translations}. */
+  exampleEn?: string;
 }
 
 export interface EnrichmentPrepositionSuggestion {

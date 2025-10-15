@@ -16,11 +16,8 @@ import {
   type ExportOperation,
   type ExportWordPayload,
 } from "@shared";
-import {
-  makeDedupKey,
-  normaliseText,
-} from "@shared";
-import type { WordExample, WordTranslation } from "@shared";
+import { canonicalizeExamples, makeDedupKey, normaliseText } from "@shared";
+import type { WordExample, WordExampleTranslations, WordTranslation } from "@shared";
 import {
   and,
   asc,
@@ -211,38 +208,61 @@ function buildExampleCandidates(
 ): ExampleCandidate[] {
   const candidates: ExampleCandidate[] = [];
 
-  if (word.exampleDe || word.exampleEn) {
-    candidates.push({
-      sentence: { de: word.exampleDe ?? "" },
-      translations: word.exampleEn ? { en: word.exampleEn } : {},
-      source: null,
-      approved: word.approved,
-    });
+  const normalizedWordExamples = canonicalizeExamples(word.examples);
+  if (normalizedWordExamples.length === 0 && (word.exampleDe || word.exampleEn)) {
+    normalizedWordExamples.push(
+      ...canonicalizeExamples([
+        {
+          sentence: word.exampleDe ?? null,
+          translations: word.exampleEn ? { en: word.exampleEn } : null,
+        },
+      ]),
+    );
   }
 
-  for (const entry of word.examples ?? []) {
+  for (const entry of normalizedWordExamples) {
     candidates.push({
-      sentence: { de: entry.exampleDe ?? "" },
-      translations: entry.exampleEn ? { en: entry.exampleEn } : {},
+      sentence: entry.sentence ? { de: entry.sentence } : {},
+      translations: toTranslationRecord(entry.translations),
       source: entry.source ?? null,
       approved: word.approved,
     });
   }
 
   for (const snapshot of snapshots) {
-    for (const entry of snapshot.examples ?? []) {
-      const source = entry.source ?? null;
+    for (const entry of canonicalizeExamples(snapshot.examples)) {
       candidates.push({
         id: (entry as { id?: string | null }).id ?? null,
-        sentence: { de: entry.exampleDe ?? "" },
-        translations: entry.exampleEn ? { en: entry.exampleEn } : {},
-        source,
+        sentence: entry.sentence ? { de: entry.sentence } : {},
+        translations: toTranslationRecord(entry.translations),
+        source: entry.source ?? null,
         approved: word.approved,
       });
     }
   }
 
   return candidates;
+}
+
+function toTranslationRecord(
+  translations: WordExampleTranslations | null | undefined,
+): Record<string, string> {
+  if (!translations) {
+    return {};
+  }
+
+  const entries = Object.entries(translations)
+    .map(([language, value]) => {
+      const normalizedLanguage = normaliseText(language)?.toLowerCase();
+      const normalizedValue = normaliseText(value);
+      if (!normalizedLanguage || !normalizedValue) {
+        return null;
+      }
+      return [normalizedLanguage, normalizedValue] as const;
+    })
+    .filter((entry): entry is readonly [string, string] => entry !== null);
+
+  return Object.fromEntries(entries);
 }
 
 function combineExamples(
