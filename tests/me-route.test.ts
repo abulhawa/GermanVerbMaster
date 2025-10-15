@@ -18,7 +18,6 @@ const dbMock = vi.hoisted(() => ({
   query: {
     verbPracticeHistory: { findMany: vi.fn(() => Promise.resolve([])) },
     verbAnalytics: { findFirst: vi.fn(() => Promise.resolve(null)) },
-    verbs: { findFirst: vi.fn(() => Promise.resolve(null)) },
     words: { findFirst: vi.fn(() => Promise.resolve(null)) },
     integrationPartners: { findFirst: vi.fn(() => Promise.resolve(null)) },
     integrationUsage: { findMany: vi.fn(() => Promise.resolve([])) },

@@ -1,9 +1,7 @@
-import { writeFile } from 'fs/promises';
-import { z } from 'zod';
 import { db } from "@db";
-import { verbs } from "@db/schema";
+import { words } from "@db/schema";
 import fetch from 'node-fetch';
-import { sql } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 
 // Using German Wiktionary API with proper namespace handling
 const DE_WIKTIONARY_API = 'https://de.wiktionary.org/w/api.php';
@@ -19,7 +17,7 @@ const VERB_CATEGORIES = [
 ];
 
 // Verb translations and patterns from verb-lists.ts
-import { verbTranslations, irregularForms, timeExpressions } from './verb-lists';
+import { verbTranslations, irregularForms } from './verb-lists';
 
 interface WiktionaryResponse {
   query?: {
@@ -126,7 +124,9 @@ async function main() {
     console.log('Starting verb import process...');
 
     // Clear existing Wiktionary verbs
-    await db.delete(verbs).where(sql`json_extract(${verbs.source}, '$.name') = 'Wiktionary'`);
+    await db
+      .delete(words)
+      .where(and(eq(words.pos, 'V'), eq(words.sourcesCsv, 'Wiktionary')));
     console.log('Cleared existing Wiktionary verbs');
 
     // Process categories sequentially
@@ -147,8 +147,8 @@ async function main() {
     for (const verb of uniqueVerbs) {
       try {
         // Skip if already exists
-        const existing = await db.query.verbs.findFirst({
-          where: sql`infinitive = ${verb}`
+        const existing = await db.query.words.findFirst({
+          where: and(eq(words.lemma, verb), eq(words.pos, 'V')),
         });
 
         if (existing) {
@@ -165,23 +165,25 @@ async function main() {
 
         const auxiliary = irregularForms[verb]?.auxiliary || 'haben';
 
-        await db.insert(verbs).values({
-          infinitive: verb,
+        await db.insert(words).values({
+          lemma: verb,
+          pos: 'V',
           english: verbTranslations[verb] || `to ${verb}`,
           praeteritum: präteritum,
           partizipIi: partizipII,
-          auxiliary,
+          aux: auxiliary,
           level: 'A2', // Default level
-          praeteritumExample: `Er ${präteritum} gestern.`,
-          partizipIiExample: `Sie ${auxiliary} heute ${partizipII}.`,
-          source: {
-            name: "Wiktionary",
-            levelReference: "Auto-imported from Wiktionary"
-          },
-          pattern: irregularForms[verb] ? {
-            type: "irregular",
-            group: "strong verbs"
-          } : null
+          examples: [
+            { exampleDe: `Er ${präteritum} gestern.` },
+            { exampleDe: `Sie ${auxiliary} heute ${partizipII}.` },
+          ],
+          approved: true,
+          complete: false,
+          sourcesCsv: 'Wiktionary',
+          sourceNotes: 'Auto-imported from Wiktionary',
+          posAttributes: irregularForms[verb]
+            ? { tags: ['irregular', 'strong verbs'] }
+            : null,
         });
 
         imported++;

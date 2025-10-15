@@ -1,11 +1,47 @@
 import { writeFile } from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { eq } from 'drizzle-orm';
 
 async function loadFromDatabase() {
   const { db } = await import('@db');
-  const { verbs } = await import('@db/schema');
-  return db.select().from(verbs).orderBy(verbs.infinitive);
+  const { words } = await import('@db/schema');
+  const rows = await db
+    .select({
+      lemma: words.lemma,
+      english: words.english,
+      level: words.level,
+      praeteritum: words.praeteritum,
+      partizipIi: words.partizipIi,
+      aux: words.aux,
+      examples: words.examples,
+      sourcesCsv: words.sourcesCsv,
+      sourceNotes: words.sourceNotes,
+    })
+    .from(words)
+    .where(eq(words.pos, 'V'))
+    .orderBy(words.lemma);
+
+  return rows.map((row) => {
+    const [firstExample, secondExample] = row.examples ?? [];
+    const primarySource = row.sourcesCsv?.split(';')[0]?.trim() || null;
+
+    return {
+      infinitive: row.lemma,
+      english: row.english,
+      präteritum: row.praeteritum,
+      partizipII: row.partizipIi,
+      auxiliary: row.aux,
+      level: row.level,
+      präteritumExample: firstExample?.exampleDe ?? null,
+      partizipIIExample: secondExample?.exampleDe ?? null,
+      source: {
+        name: primarySource ?? 'words_table',
+        levelReference: row.sourceNotes ?? '',
+      },
+      pattern: null,
+    };
+  });
 }
 
 async function loadFromSeed() {

@@ -1,6 +1,5 @@
 import type {
   AdaptiveQueueItem,
-  GermanVerb,
   PracticeResult,
   WordExample,
   WordPosAttributes,
@@ -471,26 +470,6 @@ export const practiceHistory = pgTable(
   ],
 );
 
-export const verbs = pgTable(
-  "verbs",
-  {
-    id: serial("id").primaryKey(),
-    infinitive: text("infinitive").notNull(),
-    english: text("english").notNull(),
-    praeteritum: text("präteritum").notNull(),
-    partizipIi: text("partizipII").notNull(),
-    auxiliary: text("auxiliary").notNull(),
-    level: text("level").notNull(),
-    praeteritumExample: text("präteritumExample").notNull(),
-    partizipIiExample: text("partizipIIExample").notNull(),
-    source: jsonb("source").$type<GermanVerb["source"]>().notNull(),
-    pattern: jsonb("pattern").$type<GermanVerb["pattern"]>(),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
-  },
-  (table) => [uniqueIndex("verbs_infinitive_idx").on(table.infinitive)],
-);
-
 export const verbPracticeHistory = pgTable("verb_practice_history", {
   id: serial("id").primaryKey(),
   userId: text("user_id").references(() => authUsers.id),
@@ -566,9 +545,6 @@ export const insertWordSchema = createInsertSchema(words);
 export const selectWordSchema = createSelectSchema(words);
 export type InsertWord = typeof words.$inferInsert;
 export type Word = typeof words.$inferSelect;
-
-export type InsertVerb = typeof verbs.$inferInsert;
-export type Verb = typeof verbs.$inferSelect;
 
 export type VerbPracticeHistory = typeof verbPracticeHistory.$inferSelect;
 export type InsertVerbPracticeHistory = typeof verbPracticeHistory.$inferInsert;
