@@ -47,9 +47,15 @@ For posterity, the following tables and endpoints have been removed from the sch
 - `verb_practice_history`
 - `verb_review_queues`
 - `verb_scheduling_state`
+- `practice_queue`
 - `/api/review-queue`
 - `/api/jobs/regenerate-queues`
 
 The scoring utilities in [`server/srs/priority.ts`](../server/srs/priority.ts) remain in use and are exercised by [`tests/adaptiv
 e-priority.test.ts`](../tests/adaptive-priority.test.ts). When tuning Leitner behaviour or debugging device-specific queues, start
 with `processTaskSubmission()` and the related tests; no additional feature flags or regeneration cron jobs are required.
+
+## Operational checklist
+
+- Migration `0010_drop_legacy_tables` drops the unused `practice_queue` table. Before applying it to production, export any remaining rows for archival purposes and confirm no Supabase functions, dashboards, or cron jobs still depend on the legacy queue snapshot.
+- Schedule the migration alongside the regular deployment window so that `/api/tasks` continues to rely on `scheduling_state` without downtime; no background job restart is required once the table is removed.

@@ -54,6 +54,10 @@ Refer to `db/schema.ts` for column-level details, indices, and relationships.
 - `telemetry_priorities` records scheduled priority weights per task. Export these rows when tuning scheduler coefficients or comparing queue health across releases.
 - Because feature flags are included in both API responses and practice history metadata, analysts can measure noun/adjective rollout impact without guessing which cohorts were exposed.
 
+## Pack migration notes
+- Migration `0010_drop_legacy_tables` permanently removes the deprecated `content_pack_lexeme_map` table. Before applying it, run a manual export if you still need the historical pack membership for audit trails or reconstruction of pre-lexeme bundles.
+- Confirm that any Supabase functions, dashboards, or automation scripts reference `pack_lexeme_map` instead of the legacy table; the deterministic pack workflow already uses the new mapping exclusively.
+
 ## Related references
 - [`docs/parts-of-speech-onboarding-guide.md`](./parts-of-speech-onboarding-guide.md) – step-by-step environment setup and QA checklist.
 - [`docs/parts-of-speech-content-training.md`](./parts-of-speech-content-training.md) – slide outline for onboarding content editors.
