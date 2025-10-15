@@ -209,7 +209,6 @@ export const words = pgTable(
       | Array<{
           sentence?: string | null;
           translations?: Record<string, string | null | undefined> | null;
-          source?: string | null;
           exampleDe?: string | null;
           exampleEn?: string | null;
         }>
