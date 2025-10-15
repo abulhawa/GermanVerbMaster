@@ -52,18 +52,35 @@ const SOURCE_CATALOG: Record<string, SourceMetadata> = {
     license: 'CC BY-SA 4.0 (community dataset)',
     url: 'https://github.com/savaged/learn-deutsch-data',
   },
-  words_all_sources: {
-    label: 'Merged approved corpus',
-    license: 'Composite – see component sources',
-    notes: 'Internal aggregate of CC-BY-SA compatible feeds',
-  },
 };
 
 function resolveSourceMetadata(id: string): SourceMetadata {
-  return SOURCE_CATALOG[id] ?? {
+  if (SOURCE_CATALOG[id]) {
+    return SOURCE_CATALOG[id];
+  }
+
+  if (id.startsWith('pos_jsonl:')) {
+    const [, slug] = id.split(':');
+    return {
+      label: `POS seed (${slug ?? 'unknown'}.jsonl)`,
+      license: 'CC BY-SA 4.0 (internal data/pos source)',
+      notes: 'Deterministic per-POS JSONL inventory committed in data/pos/',
+    } satisfies SourceMetadata;
+  }
+
+  if (id.startsWith('enrichment:')) {
+    const [, method] = id.split(':');
+    return {
+      label: `Enrichment applied (${method ?? 'unknown'})`,
+      license: 'Composite – see enrichment snapshots',
+      notes: 'Derived from stored enrichment provider payloads under data/enrichment/',
+    } satisfies SourceMetadata;
+  }
+
+  return {
     label: id,
     license: 'unspecified – pending review',
-  };
+  } satisfies SourceMetadata;
 }
 
 export function buildAttributionSummary(words: AggregatedWord[]): AttributionEntry[] {

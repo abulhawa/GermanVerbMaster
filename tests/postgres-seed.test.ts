@@ -3,9 +3,50 @@ import { tmpdir } from 'node:os';
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { count } from 'drizzle-orm';
+import { count, eq } from 'drizzle-orm';
 
 import { setupTestDatabase, type TestDatabaseContext } from './helpers/pg';
+
+async function writeBasicPosFiles(root: string): Promise<void> {
+  await mkdir(path.join(root, 'data', 'pos'), { recursive: true });
+
+  await writeFile(
+    path.join(root, 'data', 'pos', 'verbs.jsonl'),
+    [
+      JSON.stringify({
+        lemma: 'gehen',
+        level: 'A1',
+        english: 'to go',
+        approved: true,
+        examples: [{ de: 'Ich gehe.', en: 'I go.' }],
+        verb: {
+          separable: false,
+          aux: 'sein',
+          praesens: { ich: 'gehe', er: 'geht' },
+          praeteritum: 'ging',
+          partizipIi: 'gegangen',
+          perfekt: 'ist gegangen',
+        },
+      }),
+    ].join('\n'),
+    'utf8',
+  );
+
+  await writeFile(
+    path.join(root, 'data', 'pos', 'nouns.jsonl'),
+    [
+      JSON.stringify({
+        lemma: 'das Haus',
+        level: 'A1',
+        english: 'house',
+        approved: true,
+        examples: [{ de: 'Das Haus ist groß.', en: 'The house is big.' }],
+        noun: { gender: 'das', plural: 'Häuser' },
+      }),
+    ].join('\n'),
+    'utf8',
+  );
+}
 
 describe('seedDatabase', () => {
   afterEach(() => {
@@ -22,44 +63,7 @@ describe('seedDatabase', () => {
         const seedRoot = await mkdtemp(path.join(tmpdir(), 'gvm-seed-'));
 
         try {
-          await mkdir(path.join(seedRoot, 'data', 'pos'), { recursive: true });
-
-          await writeFile(
-            path.join(seedRoot, 'data', 'pos', 'verbs.jsonl'),
-            [
-              JSON.stringify({
-                lemma: 'gehen',
-                level: 'A1',
-                english: 'to go',
-                approved: true,
-                examples: [{ de: 'Ich gehe.', en: 'I go.' }],
-                verb: {
-                  separable: false,
-                  aux: 'sein',
-                  praesens: { ich: 'gehe', er: 'geht' },
-                  praeteritum: 'ging',
-                  partizipIi: 'gegangen',
-                  perfekt: 'ist gegangen',
-                },
-              }),
-            ].join('\n'),
-            'utf8',
-          );
-
-          await writeFile(
-            path.join(seedRoot, 'data', 'pos', 'nouns.jsonl'),
-            [
-              JSON.stringify({
-                lemma: 'das Haus',
-                level: 'A1',
-                english: 'house',
-                approved: true,
-                examples: [{ de: 'Das Haus ist groß.', en: 'The house is big.' }],
-                noun: { gender: 'das', plural: 'Häuser' },
-              }),
-            ].join('\n'),
-            'utf8',
-          );
+          await writeBasicPosFiles(seedRoot);
 
           vi.doMock('../scripts/etl/golden', async () => {
             const actual = await vi.importActual<typeof import('../scripts/etl/golden')>(
@@ -128,11 +132,11 @@ describe('seedDatabase', () => {
         },
       };
 
-      await writeFile(
-        path.join(posDir, 'verbs.jsonl'),
-        [JSON.stringify(duplicateVerb), JSON.stringify(duplicateVerb)].join('\n'),
-        'utf8',
-      );
+          await writeFile(
+            path.join(posDir, 'verbs.jsonl'),
+            [JSON.stringify(duplicateVerb), JSON.stringify(duplicateVerb)].join('\n'),
+            'utf8',
+          );
 
       vi.doMock('../scripts/etl/golden', async () => {
         const actual = await vi.importActual<typeof import('../scripts/etl/golden')>(
@@ -147,6 +151,65 @@ describe('seedDatabase', () => {
       const { seedDatabase } = await import('../scripts/seed');
 
       await expect(seedDatabase(seedRoot)).rejects.toThrow(/duplicate word gehen \(V\)/i);
+    } finally {
+      await context.cleanup();
+      await rm(seedRoot, { recursive: true, force: true });
+    }
+  });
+
+  it('resets seeded tables before seeding when requested', async () => {
+    const context: TestDatabaseContext = await setupTestDatabase();
+    context.mock();
+
+    const seedRoot = await mkdtemp(path.join(tmpdir(), 'gvm-seed-reset-'));
+
+    try {
+      await writeBasicPosFiles(seedRoot);
+
+      const { words, lexemes } = await import('../db/schema.js');
+
+      await context.db.insert(words).values({
+        lemma: 'sentinel',
+        pos: 'V',
+        approved: true,
+        complete: true,
+      });
+
+      const sentinelLexemeId = 'sentinel:lexeme';
+      await context.db.insert(lexemes).values({
+        id: sentinelLexemeId,
+        lemma: 'sentinel',
+        pos: 'verb',
+        metadata: {},
+        sourceIds: [],
+      });
+
+      vi.doMock('../scripts/etl/golden', async () => {
+        const actual = await vi.importActual<typeof import('../scripts/etl/golden')>(
+          '../scripts/etl/golden',
+        );
+        return {
+          ...actual,
+          writeGoldenBundlesToDisk: vi.fn(),
+        };
+      });
+
+      const { seedDatabase } = await import('../scripts/seed');
+
+      const result = await seedDatabase(seedRoot, context.db, { reset: true });
+      expect(result.lexemeCount).toBeGreaterThan(0);
+
+      const sentinelWordRows = await context.db
+        .select({ value: count() })
+        .from(words)
+        .where(eq(words.lemma, 'sentinel'));
+      expect(Number(sentinelWordRows[0]?.value ?? 0)).toBe(0);
+
+      const sentinelLexemeRows = await context.db
+        .select({ value: count() })
+        .from(lexemes)
+        .where(eq(lexemes.id, sentinelLexemeId));
+      expect(Number(sentinelLexemeRows[0]?.value ?? 0)).toBe(0);
     } finally {
       await context.cleanup();
       await rm(seedRoot, { recursive: true, force: true });

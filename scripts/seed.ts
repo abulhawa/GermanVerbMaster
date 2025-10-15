@@ -4,7 +4,14 @@ import { fileURLToPath } from 'node:url';
 import { and, eq, sql } from 'drizzle-orm';
 
 import { getDb, getPool } from '@db';
-import { words } from '@db/schema';
+import {
+  words,
+  lexemes as lexemesTable,
+  inflections as inflectionsTable,
+  taskSpecs as taskSpecsTable,
+  contentPacks,
+  packLexemeMap as packLexemeMapTable,
+} from '@db/schema';
 import {
   buildGoldenBundles,
   buildLexemeInventory,
@@ -41,6 +48,58 @@ async function ensureLegacySchema(db: DatabaseClient): Promise<void> {
   await db.execute(
     sql`ALTER TABLE enrichment_provider_snapshots ADD COLUMN IF NOT EXISTS preposition_attributes JSONB`,
   );
+}
+
+export interface SeedOptions {
+  reset?: boolean;
+}
+
+function parseBooleanOption(value: string | undefined): boolean {
+  if (!value) {
+    return true;
+  }
+  const normalised = value.trim().toLowerCase();
+  if (normalised === '' || normalised === 'true' || normalised === '1' || normalised === 'yes') {
+    return true;
+  }
+  if (normalised === 'false' || normalised === '0' || normalised === 'no') {
+    return false;
+  }
+  return true;
+}
+
+export function parseSeedOptions(argv: readonly string[]): SeedOptions {
+  let reset = false;
+  for (const raw of argv) {
+    if (!raw || raw === '--') {
+      continue;
+    }
+    if (raw === '--reset' || raw === '-r') {
+      reset = true;
+      continue;
+    }
+    if (raw === '--no-reset') {
+      reset = false;
+      continue;
+    }
+    if (raw.startsWith('--reset=')) {
+      const [, value] = raw.split('=');
+      reset = parseBooleanOption(value);
+    }
+  }
+
+  return { reset } satisfies SeedOptions;
+}
+
+async function resetSeededContent(db: DatabaseClient): Promise<void> {
+  await db.transaction(async (tx) => {
+    await tx.delete(packLexemeMapTable);
+    await tx.delete(taskSpecsTable);
+    await tx.delete(contentPacks);
+    await tx.delete(inflectionsTable);
+    await tx.delete(lexemesTable);
+    await tx.delete(words);
+  });
 }
 
 const LEVEL_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
@@ -1280,6 +1339,7 @@ async function seedLegacyWords(db: DatabaseClient, wordsToUpsert: AggregatedWord
 export async function seedDatabase(
   rootDir: string,
   db: DatabaseClient = ensureDatabase(),
+  options: SeedOptions = {},
 ): Promise<{
   aggregatedCount: number;
   lexemeCount: number;
@@ -1288,6 +1348,11 @@ export async function seedDatabase(
   bundleCount: number;
 }> {
   await ensureLegacySchema(db);
+
+  if (options.reset) {
+    console.log('Resetting seeded lexemes, inflections, packs, and legacy words before seeding…');
+    await resetSeededContent(db);
+  }
 
   const aggregated = await aggregateWords(rootDir);
   await seedLegacyWords(db, aggregated);
@@ -1320,10 +1385,12 @@ async function main(): Promise<void> {
   const pool = getPool();
   await applyMigrations(pool);
 
+  const options = parseSeedOptions(process.argv.slice(2));
   const database = ensureDatabase();
   const { aggregatedCount, lexemeCount, inflectionCount, taskCount, bundleCount } = await seedDatabase(
     root,
     database,
+    options,
   );
 
   console.log(`Seeded ${aggregatedCount} words into legacy table.`);

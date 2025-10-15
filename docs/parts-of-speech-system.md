@@ -20,7 +20,7 @@ The feature flag helper normalises environment variables, emits an `X-Feature-Fl
 ## Data model
 The lexeme schema sits alongside the legacy verb tables so we can run both systems in parallel. Key tables include:
 
-- **`lexemes`** – canonical lemma rows keyed by deterministic IDs with POS, gender, metadata, frequency, and source identifiers.
+- **`lexemes`** – canonical lemma rows keyed by deterministic IDs with POS, gender, metadata, frequency, and source identifiers (`pos_jsonl:<slug>` for per-POS JSONL seeds plus optional `enrichment:<method>` tags).
 - **`inflections`** – surface forms plus a JSON `features` bundle (case, number, tense, etc.) linked back to `lexemes`.
 - **`task_specs`** – prompt/solution payloads per lexeme and task type, including renderer, revision, hints, and default pack attribution.
 - **`scheduling_state`** – per-device Leitner progress, cached priority scores, and attempt counters keyed by `task_id`.
@@ -45,7 +45,7 @@ Refer to `db/schema.ts` for column-level details, indices, and relationships.
 - Renderers resolve by task type; adding a new type requires updating the shared registry, server registry, client renderer map, and `packs:lint` validation in the same pull request to maintain parity.
 
 ## Content pipeline & QA
-- `npm run seed` hydrates the lexeme tables and regenerates deterministic pack JSON under `data/packs/`. Copy the updated packs to `client/public/packs/` before building so offline clients stay in sync.
+- `npm run seed` hydrates the lexeme tables and regenerates deterministic pack JSON under `data/packs/`. Copy the updated packs to `client/public/packs/` before building so offline clients stay in sync. Pass `--reset` (`npm run seed -- --reset`) when you need to wipe previously seeded `words`, `lexemes`, `inflections`, `task_specs`, `content_packs`, and `pack_lexeme_map` rows before re-importing updated POS JSONL files.
 - `npm run packs:lint` (backed by `scripts/packs-lint.ts`) validates pack headers, license fields, lexeme membership, and task payloads against the shared registry. The command exits non-zero on any issue, making it safe to wire into CI.
 - Keep attribution notes and source tracking up to date in pack metadata; the lint script enforces license presence and highlights missing `packLexemeMap` entries.
 

@@ -27,6 +27,7 @@ import type {
   WordTranslation,
 } from "@shared";
 import type { LexemePos, TaskType } from "@shared";
+import { posPrimarySourceId } from "@shared/source-ids";
 import { srsEngine } from "./srs/index.js";
 import { getTaskRegistryEntry, taskRegistry } from "./tasks/registry.js";
 import { processTaskSubmission } from "./tasks/scheduler.js";
@@ -897,7 +898,7 @@ function toGermanVerb(word: Word): GermanVerb {
   const level = LEVEL_ORDER.includes((word.level ?? "A1") as typeof LEVEL_ORDER[number])
     ? (word.level as GermanVerb["level"])
     : "A1";
-  const sourceName = "words_all_sources";
+  const sourceName = posPrimarySourceId(word.pos);
   const levelReference = word.level || "N/A";
 
   return {
@@ -2822,7 +2823,7 @@ export function registerRoutes(app: Express): void {
             answer: word.english ?? "",
           },
         },
-        source: "words_all_sources",
+        source: posPrimarySourceId(word.pos),
         updatedAt: word.updatedAt,
       }));
 

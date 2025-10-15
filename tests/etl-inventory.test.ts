@@ -176,7 +176,7 @@ describe('buildLexemeInventory', () => {
       (inflection) => inflection.lexemeId === prepositionLexeme?.id,
     );
     expect(prepositionInflections[0]?.features.governedCases).toEqual(['Akkusativ']);
-    expect(prepositionInflections[0]?.sourceRevision).toMatch(/^words_all_sources:/);
+    expect(prepositionInflections[0]?.sourceRevision).toMatch(/^pos_jsonl:prepositions:/);
   });
 });
 

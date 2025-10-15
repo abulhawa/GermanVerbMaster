@@ -1,14 +1,19 @@
+import { enrichmentSourceId, posPrimarySourceId } from '@shared/source-ids';
+
 import type { AggregatedWord } from './types';
 import { sha1 } from './utils';
 
-const DEFAULT_SOURCE_ID = 'words_all_sources';
-
-export function primarySourceId(_: AggregatedWord): string {
-  return DEFAULT_SOURCE_ID;
+export function primarySourceId(word: AggregatedWord): string {
+  return posPrimarySourceId(word.pos);
 }
 
-export function collectSources(_: AggregatedWord): string[] {
-  return [DEFAULT_SOURCE_ID];
+export function collectSources(word: AggregatedWord): string[] {
+  const sources = new Set<string>();
+  sources.add(primarySourceId(word));
+  if (word.enrichmentMethod) {
+    sources.add(enrichmentSourceId(word.enrichmentMethod));
+  }
+  return Array.from(sources);
 }
 
 export function deriveSourceRevision(word: AggregatedWord): string {
@@ -36,5 +41,5 @@ export function deriveSourceRevision(word: AggregatedWord): string {
     }),
   ).slice(0, 10);
 
-  return `${DEFAULT_SOURCE_ID}:${digest}`;
+  return `${primarySourceId(word)}:${digest}`;
 }
