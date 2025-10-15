@@ -83,13 +83,6 @@ export const integrationUsage = pgTable("integration_usage", {
   requestedAt: timestamp("requested_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(),
-  role: userRoleEnum("role").notNull().default("standard"),
-});
-
 export const authUsers = pgTable(
   "auth_users",
   {
@@ -469,11 +462,6 @@ export const practiceHistory = pgTable(
     index("practice_history_pack_idx").on(table.packId),
   ],
 );
-
-export const insertUserSchema = createInsertSchema(users);
-export const selectUserSchema = createSelectSchema(users);
-export type InsertUser = typeof users.$inferInsert;
-export type SelectUser = typeof users.$inferSelect;
 
 export const insertWordSchema = createInsertSchema(words);
 export const selectWordSchema = createSelectSchema(words);

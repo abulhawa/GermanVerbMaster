@@ -71,6 +71,13 @@
       "when": 1760238000000,
       "tag": "0009_remove_verb_practice_tables",
       "breakpoints": false
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1760248800000,
+      "tag": "0010_drop_legacy_tables",
+      "breakpoints": false
     }
   ]
 }

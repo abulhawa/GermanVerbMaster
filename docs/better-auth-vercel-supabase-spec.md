@@ -55,7 +55,7 @@ OAuth redirect URIs (production + local):
 ## 7. Data Model & Migrations
 1. Run `npx better-auth generate --adapter drizzle` to scaffold Better Auth schema files.
 2. Integrate generated schema into `db/schema` (e.g., `db/schema/auth.ts`). Align naming with repository conventions.
-3. Extend the existing `users` table with a `role` column (`'standard' | 'admin'`, default `'standard'`) **or** create a `user_roles` table if separation is preferred. Column approach recommended for simplicity.
+3. Ensure the Better Auth-managed `auth_users` table carries the `role` column (`'standard' | 'admin'`, default `'standard'`). The legacy `users` table has been removed, so all role assignment flows must target `auth_users` going forward. Export any outstanding credentials from `users` before running migration `0010_drop_legacy_tables` in production environments.
 4. Update Drizzle migration scripts:
    - Add Better Auth tables (accounts, sessions, verification tokens, magic link tokens, keys).
    - Add role column with default.
@@ -123,7 +123,7 @@ OAuth redirect URIs (production + local):
 - Store secrets only in Vercel environment variables and local `.env` (gitignored).
 - Document admin promotion SQL:
   ```sql
-  update users set role = 'admin' where email = 'admin@example.com';
+  update auth_users set role = 'admin' where email = 'admin@example.com';
   ```
 - Monitor Supabase and Better Auth logs for anomalies; set alerting where available.
 
