@@ -1,15 +1,15 @@
 import { count, eq, gte } from 'drizzle-orm';
 
 import { db } from '@db';
-import { verbPracticeHistory } from '@db/schema';
+import { practiceHistory } from '@db/schema';
 
 type PracticeRow = {
   deviceId: string | null;
   userId: string | null;
   result: 'correct' | 'incorrect';
-  timeSpent: number;
+  responseMs: number;
   level: string;
-  createdAt: Date;
+  submittedAt: Date;
 };
 
 type PracticeTotals = {
@@ -22,26 +22,26 @@ type PracticeTotals = {
 async function loadPracticeRows(since: Date): Promise<PracticeRow[]> {
   const baseQuery = db
     .select({
-      deviceId: verbPracticeHistory.deviceId,
-      userId: verbPracticeHistory.userId,
-      result: verbPracticeHistory.result,
-      timeSpent: verbPracticeHistory.timeSpent,
-      level: verbPracticeHistory.level,
-      createdAt: verbPracticeHistory.createdAt,
+      deviceId: practiceHistory.deviceId,
+      userId: practiceHistory.userId,
+      result: practiceHistory.result,
+      responseMs: practiceHistory.responseMs,
+      level: practiceHistory.cefrLevel,
+      submittedAt: practiceHistory.submittedAt,
     })
-    .from(verbPracticeHistory)
-    .orderBy(verbPracticeHistory.createdAt);
+    .from(practiceHistory)
+    .orderBy(practiceHistory.submittedAt);
 
-  const recent = await baseQuery.where(gte(verbPracticeHistory.createdAt, since));
+  const recent = await baseQuery.where(gte(practiceHistory.submittedAt, since));
   const rows = recent.length > 0 ? recent : await baseQuery;
 
   return rows.map((row) => ({
     deviceId: row.deviceId,
     userId: row.userId ?? null,
     result: row.result,
-    timeSpent: row.timeSpent,
+    responseMs: row.responseMs,
     level: row.level ?? 'unknown',
-    createdAt: row.createdAt ?? new Date(),
+    submittedAt: row.submittedAt ?? new Date(),
   }));
 }
 
@@ -50,7 +50,7 @@ async function main(): Promise<void> {
   const cutoff = new Date(Date.now() - THIRTY_DAYS_MS);
 
   const rows = await loadPracticeRows(cutoff);
-  const dataWindow = rows.some((row) => row.createdAt >= cutoff) ? '30d' : 'all-time';
+  const dataWindow = rows.some((row) => row.submittedAt >= cutoff) ? '30d' : 'all-time';
 
   const byDevice = new Set(
     rows.map((row) => row.deviceId ?? `anon-${row.userId ?? 'unknown'}`),
@@ -61,8 +61,8 @@ async function main(): Promise<void> {
     (acc, row) => {
       acc.totalAttempts += 1;
       if (row.result === 'correct') acc.correctAttempts += 1;
-      acc.timeSpentMs += row.timeSpent;
-      const day = row.createdAt.toISOString().slice(0, 10);
+      acc.timeSpentMs += row.responseMs;
+      const day = row.submittedAt.toISOString().slice(0, 10);
       acc.byDay.set(day, (acc.byDay.get(day) || 0) + 1);
       return acc;
     },
@@ -92,8 +92,8 @@ async function main(): Promise<void> {
 
   const totalCorrect = await db
     .select({ total: count() })
-    .from(verbPracticeHistory)
-    .where(eq(verbPracticeHistory.result, 'correct'));
+    .from(practiceHistory)
+    .where(eq(practiceHistory.result, 'correct'));
 
   console.log(
     JSON.stringify(

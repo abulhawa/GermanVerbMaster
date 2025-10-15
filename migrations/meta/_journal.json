@@ -64,6 +64,13 @@
       "when": 1760227200000,
       "tag": "0008_retire_legacy_verbs_table",
       "breakpoints": false
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1760238000000,
+      "tag": "0009_remove_verb_practice_tables",
+      "breakpoints": false
     }
   ]
 }

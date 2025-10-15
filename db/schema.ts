@@ -470,72 +470,6 @@ export const practiceHistory = pgTable(
   ],
 );
 
-export const verbPracticeHistory = pgTable("verb_practice_history", {
-  id: serial("id").primaryKey(),
-  userId: text("user_id").references(() => authUsers.id),
-  verb: text("verb").notNull(),
-  mode: text("mode").notNull(),
-  result: practiceResultEnum("result").notNull(),
-  attemptedAnswer: text("attempted_answer").notNull(),
-  timeSpent: integer("time_spent").notNull(),
-  level: text("level").notNull(),
-  deviceId: text("device_id").notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-});
-
-export const verbAnalytics = pgTable("verb_analytics", {
-  id: serial("id").primaryKey(),
-  verb: text("verb").notNull(),
-  totalAttempts: integer("total_attempts").notNull().default(0),
-  correctAttempts: integer("correct_attempts").notNull().default(0),
-  averageTimeSpent: integer("average_time_spent").notNull().default(0),
-  lastPracticedAt: timestamp("last_practiced_at", { withTimezone: true }),
-  level: text("level").notNull(),
-});
-
-export const verbSchedulingState = pgTable(
-  "verb_scheduling_state",
-  {
-    id: serial("id").primaryKey(),
-    userId: text("user_id").references(() => authUsers.id),
-    deviceId: text("device_id").notNull(),
-    verb: text("verb").notNull(),
-    level: text("level").notNull(),
-    leitnerBox: integer("leitner_box").notNull().default(1),
-    totalAttempts: integer("total_attempts").notNull().default(0),
-    correctAttempts: integer("correct_attempts").notNull().default(0),
-    averageResponseMs: integer("average_response_ms").notNull().default(0),
-    accuracyWeight: doublePrecision("accuracy_weight").notNull().default(0),
-    latencyWeight: doublePrecision("latency_weight").notNull().default(0),
-    stabilityWeight: doublePrecision("stability_weight").notNull().default(0),
-    priorityScore: doublePrecision("priority_score").notNull().default(0),
-    dueAt: timestamp("due_at", { withTimezone: true }),
-    lastResult: practiceResultEnum("last_result").notNull().default("correct"),
-    lastPracticedAt: timestamp("last_practiced_at", { withTimezone: true }),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
-  },
-  (table) => [uniqueIndex("verb_srs_device_verb_idx").on(table.deviceId, table.verb)],
-);
-
-export const verbReviewQueues = pgTable(
-  "verb_review_queues",
-  {
-    id: serial("id").primaryKey(),
-    userId: text("user_id").references(() => authUsers.id),
-    deviceId: text("device_id").notNull(),
-    version: text("version").notNull(),
-    generatedAt: timestamp("generated_at", { withTimezone: true }).defaultNow().notNull(),
-    validUntil: timestamp("valid_until", { withTimezone: true }).defaultNow().notNull(),
-    generationDurationMs: integer("generation_duration_ms").notNull().default(0),
-    itemCount: integer("item_count").notNull().default(0),
-    items: jsonb("items").$type<AdaptiveQueueItem[]>().notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
-  },
-  (table) => [uniqueIndex("verb_queue_device_idx").on(table.deviceId)],
-);
-
 export const insertUserSchema = createInsertSchema(users);
 export const selectUserSchema = createSelectSchema(users);
 export type InsertUser = typeof users.$inferInsert;
@@ -546,19 +480,8 @@ export const selectWordSchema = createSelectSchema(words);
 export type InsertWord = typeof words.$inferInsert;
 export type Word = typeof words.$inferSelect;
 
-export type VerbPracticeHistory = typeof verbPracticeHistory.$inferSelect;
-export type InsertVerbPracticeHistory = typeof verbPracticeHistory.$inferInsert;
-
-export type VerbAnalytics = typeof verbAnalytics.$inferSelect;
-export type InsertVerbAnalytics = typeof verbAnalytics.$inferInsert;
 export type PracticeHistory = typeof practiceHistory.$inferSelect;
 export type InsertPracticeHistory = typeof practiceHistory.$inferInsert;
-
-export type VerbSchedulingState = typeof verbSchedulingState.$inferSelect;
-export type InsertVerbSchedulingState = typeof verbSchedulingState.$inferInsert;
-
-export type VerbReviewQueue = typeof verbReviewQueues.$inferSelect;
-export type InsertVerbReviewQueue = typeof verbReviewQueues.$inferInsert;
 
 export type IntegrationPartner = typeof integrationPartners.$inferSelect;
 export type InsertIntegrationPartner = typeof integrationPartners.$inferInsert;

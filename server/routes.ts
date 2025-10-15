@@ -28,7 +28,6 @@ import type {
 } from "@shared";
 import type { LexemePos, TaskType } from "@shared";
 import { posPrimarySourceId } from "@shared/source-ids";
-import { srsEngine } from "./srs/index.js";
 import { getTaskRegistryEntry, taskRegistry } from "./tasks/registry.js";
 import { processTaskSubmission } from "./tasks/scheduler.js";
 import {
@@ -1156,65 +1155,11 @@ export function registerRoutes(app: Express): void {
 
       const filteredQuery = filters.length ? baseQuery.where(and(...filters)) : baseQuery;
 
-      const prioritizedLemmas: string[] = [];
-      const canUseAdaptiveQueue =
-        Boolean(deviceId)
-        && !pack
-        && (!pos || pos === "verb")
-        && (!taskType || taskType === "conjugate_form")
-        && srsEngine.isEnabled();
-
-      if (canUseAdaptiveQueue && deviceId) {
-        try {
-          let queue = await srsEngine.fetchQueueForDevice(deviceId);
-          if (!queue || srsEngine.isQueueStale(queue)) {
-            queue = await srsEngine.generateQueueForDevice(deviceId, level ?? null);
-          }
-
-          if (queue?.items?.length) {
-            const seen = new Set<string>();
-            const maxQueueSamples = Math.max(limit * 2, limit + 5);
-            for (const item of queue.items) {
-              const normalized = item.verb?.trim();
-              if (!normalized) {
-                continue;
-              }
-              const key = normalized.toLowerCase();
-              if (seen.has(key)) {
-                continue;
-              }
-              seen.add(key);
-              prioritizedLemmas.push(normalized);
-              if (prioritizedLemmas.length >= maxQueueSamples) {
-                break;
-              }
-            }
-          }
-        } catch (error) {
-          console.error("Failed to resolve adaptive queue for /api/tasks", {
-            deviceId,
-            error,
-          });
-        }
-      }
-
-      const fallbackFetchLimit = prioritizedLemmas.length
-        ? Math.min(100, Math.max(limit, limit + prioritizedLemmas.length))
-        : limit;
+      const fallbackFetchLimit = limit;
 
       const fallbackQuery = filteredQuery.orderBy(desc(taskSpecs.updatedAt)).limit(fallbackFetchLimit);
       const fallbackRowsRaw = await executeSelectRaw<Record<string, unknown>>(fallbackQuery);
       const fallbackRows = fallbackRowsRaw.map((row) => mapTaskRow(row as Record<string, any>));
-
-      const prioritizedRows = prioritizedLemmas.length
-        ? await executeSelectRaw<Record<string, unknown>>(
-            (filters.length
-              ? baseQuery.where(and(...filters, inArray(lexemes.lemma, prioritizedLemmas)))
-              : baseQuery.where(inArray(lexemes.lemma, prioritizedLemmas)))
-              .orderBy(desc(taskSpecs.updatedAt))
-              .limit(Math.min(fallbackFetchLimit, prioritizedLemmas.length * 2)),
-          ).then((rows) => rows.map((row) => mapTaskRow(row as Record<string, any>)))
-        : ([] as TaskRow[]);
 
       let schedulingStateRows: SchedulingStateSnapshot[] = [];
       if (deviceId) {
@@ -1285,13 +1230,6 @@ export function registerRoutes(app: Express): void {
         schedulingStateMap.set(row.taskId, row);
       }
 
-      const queueOrder = new Map<string, number>();
-      if (prioritizedLemmas.length) {
-        prioritizedLemmas.forEach((lemma, index) => {
-          queueOrder.set(lemma.toLowerCase(), index);
-        });
-      }
-
       const schedulingSorted = [...schedulingStateRows]
         .filter((row) => row.dueAt && row.dueAt <= new Date())
         .sort((a, b) => {
@@ -1315,8 +1253,6 @@ export function registerRoutes(app: Express): void {
         }
       };
       fallbackRows.forEach(registerRow);
-      prioritizedRows.forEach(registerRow);
-
       const pushRow = (row: TaskRow | undefined) => {
         if (!row) {
           return;
@@ -1348,18 +1284,6 @@ export function registerRoutes(app: Express): void {
         }
       }
 
-      if (queueOrder.size) {
-        const prioritizedSorted = [...prioritizedRows].sort((a, b) => {
-          const indexA = queueOrder.get((a.lexemeLemma ?? "").toLowerCase()) ?? Number.MAX_SAFE_INTEGER;
-          const indexB = queueOrder.get((b.lexemeLemma ?? "").toLowerCase()) ?? Number.MAX_SAFE_INTEGER;
-          if (indexA !== indexB) {
-            return indexA - indexB;
-          }
-          return 0;
-        });
-        prioritizedSorted.forEach(pushRow);
-      }
-
       if (schedulingSorted.length) {
         schedulingSorted.forEach((row) => {
           pushRow(taskRowById.get(row.taskId));
@@ -1371,7 +1295,7 @@ export function registerRoutes(app: Express): void {
       });
 
       let orderedRows = combinedRows;
-      if (!queueOrder.size && deviceId) {
+      if (deviceId) {
         const nowMs = Date.now();
         orderedRows = [...combinedRows]
           .map((row) => ({
@@ -2935,22 +2859,4 @@ export function registerRoutes(app: Express): void {
     }
   });
 
-  app.post("/api/jobs/regenerate-queues", async (_req, res) => {
-    try {
-      if (!srsEngine.isEnabled()) {
-        return res.status(200).json({ status: "disabled" });
-      }
-
-      await srsEngine.regenerateQueuesOnce();
-      return res.status(202).json({ status: "queued" });
-    } catch (error) {
-      console.error("Failed to regenerate adaptive review queues:", error);
-      return sendError(
-        res,
-        500,
-        "Failed to regenerate adaptive review queues",
-        "QUEUE_REGENERATION_FAILED",
-      );
-    }
-  });
 }
