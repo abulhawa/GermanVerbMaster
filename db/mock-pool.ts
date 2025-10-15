@@ -300,14 +300,10 @@ function seedMockData(mem: IMemoryDb): void {
         {
           sentence: "Sie arbeitet jeden Tag im Büro.",
           translations: { en: "She works in the office every day." },
-          exampleDe: "Sie arbeitet jeden Tag im Büro.",
-          exampleEn: "She works in the office every day.",
         },
         {
           sentence: "Wir haben gestern lange gearbeitet.",
           translations: { en: "We worked for a long time yesterday." },
-          exampleDe: "Wir haben gestern lange gearbeitet.",
-          exampleEn: "We worked for a long time yesterday.",
         },
       ])},
       ${toJsonLiteral({ verbForms: { infinitive: "arbeiten", participle: "gearbeitet" } })},
@@ -360,8 +356,6 @@ function seedMockData(mem: IMemoryDb): void {
         {
           sentence: "Sie arbeitet als Ingenieurin.",
           translations: { en: "She works as an engineer." },
-          exampleDe: "Sie arbeitet als Ingenieurin.",
-          exampleEn: "She works as an engineer.",
         },
       ])},
       ${toJsonLiteral(["schaffen", "tätig sein"])},
@@ -393,8 +387,6 @@ function seedMockData(mem: IMemoryDb): void {
         {
           sentence: "Wir arbeiten gemeinsam an dem Projekt.",
           translations: { en: "We are working on the project together." },
-          exampleDe: "Wir arbeiten gemeinsam an dem Projekt.",
-          exampleEn: "We are working on the project together.",
         },
       ])},
       ${toJsonLiteral(["kooperieren", "handwerken"])},

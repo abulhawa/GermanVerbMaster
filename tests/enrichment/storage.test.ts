@@ -87,13 +87,10 @@ describe('enrichment storage', () => {
         {
           sentence: 'Der Apfel ist rot.',
           translations: { en: 'The apple is red.' },
-          exampleDe: 'Der Apfel ist rot.',
-          exampleEn: 'The apple is red.',
         },
         {
           sentence: 'Äpfel sind lecker.',
           translations: {},
-          exampleDe: 'Äpfel sind lecker.',
         },
       ],
       synonyms: ['Apfel'],

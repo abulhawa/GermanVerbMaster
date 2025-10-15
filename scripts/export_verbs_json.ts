@@ -24,6 +24,8 @@ async function loadFromDatabase() {
 
   return rows.map((row) => {
     const [firstExample, secondExample] = row.examples ?? [];
+    const firstSentence = firstExample?.sentence ?? firstExample?.exampleDe ?? null;
+    const secondSentence = secondExample?.sentence ?? secondExample?.exampleDe ?? null;
     const primarySource = row.sourcesCsv?.split(';')[0]?.trim() || null;
 
     return {
@@ -33,8 +35,8 @@ async function loadFromDatabase() {
       partizipII: row.partizipIi,
       auxiliary: row.aux,
       level: row.level,
-      präteritumExample: firstExample?.exampleDe ?? null,
-      partizipIIExample: secondExample?.exampleDe ?? null,
+      präteritumExample: firstSentence,
+      partizipIIExample: secondSentence,
       source: {
         name: primarySource ?? 'words_table',
         levelReference: row.sourceNotes ?? '',

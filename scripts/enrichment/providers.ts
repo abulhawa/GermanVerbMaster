@@ -26,6 +26,8 @@ export interface TranslationLookup {
 }
 
 export interface ExampleLookup {
+  sentence?: string;
+  translations?: Record<string, string | null | undefined> | null;
   exampleDe?: string;
   exampleEn?: string;
   source: string;
@@ -33,6 +35,8 @@ export interface ExampleLookup {
 
 export interface AiLookup {
   translation?: string;
+  sentence?: string;
+  translations?: Record<string, string | null | undefined> | null;
   exampleDe?: string;
   exampleEn?: string;
   source: string;
@@ -150,6 +154,8 @@ export interface WiktextractTranslation {
 }
 
 export interface WiktextractExample {
+  sentence?: string;
+  translations?: Record<string, string | null | undefined> | null;
   exampleDe?: string;
   exampleEn?: string;
 }
@@ -533,6 +539,8 @@ function collectExamples(entry: KaikkiEntry): WiktextractExample[] {
       }
       seen.add(key);
       results.push({
+        sentence: exampleDe || undefined,
+        translations: exampleEn ? { en: exampleEn } : undefined,
         exampleDe: exampleDe || undefined,
         exampleEn: exampleEn || undefined,
       });
@@ -1144,6 +1152,8 @@ export async function lookupExampleSentence(lemma: string): Promise<ExampleLooku
   }
 
   return {
+    sentence: german,
+    translations: english ? { en: english } : undefined,
     exampleDe: german,
     exampleEn: english,
     source: "tatoeba.org",
@@ -1215,10 +1225,14 @@ export async function lookupAiAssistance(
       exampleDe?: string;
       exampleEn?: string;
     };
+    const exampleDe = parsed.exampleDe?.trim() || undefined;
+    const exampleEn = parsed.exampleEn?.trim() || undefined;
     return {
       translation: parsed.translation?.trim() || undefined,
-      exampleDe: parsed.exampleDe?.trim() || undefined,
-      exampleEn: parsed.exampleEn?.trim() || undefined,
+      sentence: exampleDe,
+      translations: exampleEn ? { en: exampleEn } : undefined,
+      exampleDe,
+      exampleEn,
       source: `openai:${model}`,
     };
   } catch (error) {

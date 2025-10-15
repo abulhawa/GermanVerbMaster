@@ -571,8 +571,10 @@ const AdminEnrichmentPage = () => {
                             {summary.translation.source ? ` · ${summary.translation.source}` : ''}
                           </div>
                         )}
-                        {summary.example?.exampleDe && (
-                          <div className="text-xs text-muted-foreground">Example: {summary.example.exampleDe}</div>
+                        {(summary.example?.sentence || summary.example?.exampleDe) && (
+                          <div className="text-xs text-muted-foreground">
+                            Example: {summary.example?.sentence ?? summary.example?.exampleDe}
+                          </div>
                         )}
                       </TableCell>
                       <TableCell>
@@ -742,9 +744,10 @@ const AdminEnrichmentPage = () => {
                   )}
                   {previewData.summary.example ? (
                     <div className="text-sm text-muted-foreground">
-                      Example: {previewData.summary.example.exampleDe ?? '—'}
-                      {previewData.summary.example.exampleEn
-                        ? ` / ${previewData.summary.example.exampleEn}`
+                      Example: {previewData.summary.example.sentence ?? previewData.summary.example.exampleDe ?? '—'}
+                      {previewData.summary.example.translations?.en
+                        || previewData.summary.example.exampleEn
+                        ? ` / ${previewData.summary.example.translations?.en ?? previewData.summary.example.exampleEn}`
                         : ''}
                     </div>
                   ) : (

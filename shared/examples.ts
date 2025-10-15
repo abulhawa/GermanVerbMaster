@@ -51,8 +51,6 @@ export function normalizeWordExample(entry: WordExample | null | undefined): Wor
   return {
     sentence,
     translations,
-    exampleDe: sentence ?? null,
-    exampleEn: translations?.en ?? null,
   };
 }
 
@@ -87,8 +85,6 @@ export function canonicalizeExamples(
     return {
       sentence: entry.sentence ?? null,
       translations,
-      exampleDe: entry.sentence ?? null,
-      exampleEn: translations?.en ?? null,
     };
   });
 }
