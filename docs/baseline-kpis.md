@@ -20,7 +20,7 @@ This baseline captures current engagement metrics ahead of Phase 1 work. Data wa
 Higher levels currently have no recorded activity; this will inform the seeding strategy for demo accounts and QA scripts.
 
 ## Methodology
-1. Query `verb_practice_history` for the last 30 days. If no rows exist, fall back to all-time data.
+1. Query `practice_history` for the last 30 days. If no rows exist, fall back to all-time data.
 2. Treat unique `device_id` values as learner proxies until account support lands.
 3. Compute per-day attempt counts, overall accuracy, and average completion time (milliseconds converted to seconds).
 4. Output a JSON summary to prevent Excel drift; paste the results above.

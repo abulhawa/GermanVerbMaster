@@ -6,17 +6,6 @@ import type { AggregatedWord } from '../scripts/etl/types';
 import { setupTestDatabase, type TestDatabaseContext } from './helpers/pg';
 import { createApiInvoker } from './helpers/vercel';
 
-vi.mock('../server/srs/index.js', () => ({
-  srsEngine: {
-    regenerateQueuesOnce: vi.fn(),
-    recordPracticeAttempt: vi.fn(),
-    fetchQueueForDevice: vi.fn(),
-    generateQueueForDevice: vi.fn(),
-    isEnabled: vi.fn(() => false),
-    isQueueStale: vi.fn(() => false),
-  },
-}));
-
 describe('tasks API', () => {
   let buildGoldenBundles: typeof import('../scripts/etl/golden').buildGoldenBundles;
   let upsertGoldenBundles: typeof import('../scripts/etl/golden').upsertGoldenBundles;
@@ -28,8 +17,6 @@ describe('tasks API', () => {
   let practiceHistoryTable: typeof import('../db/schema.js').practiceHistory;
   let drizzleDb: typeof import('@db').db;
   let dbContext: TestDatabaseContext | undefined;
-  let mockedSrsEngine: any;
-
   beforeEach(async () => {
     const context = await setupTestDatabase();
     dbContext = context;
@@ -154,21 +141,6 @@ describe('tasks API', () => {
     ({ createVercelApiHandler } = await import('../server/api/vercel-handler.js'));
     const handler = createVercelApiHandler({ enableCors: false });
     invokeApi = createApiInvoker(handler);
-
-    mockedSrsEngine = (await import('../server/srs/index.js')).srsEngine as any;
-    if (mockedSrsEngine) {
-      Object.values(mockedSrsEngine).forEach((fn: any) => {
-        if (typeof fn?.mockReset === 'function') {
-          fn.mockReset();
-        }
-      });
-      if (typeof mockedSrsEngine.isEnabled?.mockReturnValue === 'function') {
-        mockedSrsEngine.isEnabled.mockReturnValue(false);
-      }
-      if (typeof mockedSrsEngine.isQueueStale?.mockReturnValue === 'function') {
-        mockedSrsEngine.isQueueStale.mockReturnValue(false);
-      }
-    }
   });
 
   afterEach(async () => {
@@ -265,53 +237,6 @@ describe('tasks API', () => {
       queueCap: submissionBody.queueCap,
       leitnerBox: submissionBody.leitnerBox,
     });
-  });
-
-  it('prioritizes verbs surfaced by the adaptive queue when enabled', async () => {
-    if (!mockedSrsEngine) {
-      throw new Error('srsEngine mock not initialised');
-    }
-
-    mockedSrsEngine.isEnabled.mockReturnValue(true);
-    mockedSrsEngine.fetchQueueForDevice.mockResolvedValue({
-      deviceId: 'device-123',
-      version: 'v1',
-      generatedAt: new Date(),
-      validUntil: new Date(Date.now() + 60_000),
-      generationDurationMs: 5,
-      itemCount: 2,
-      items: [
-        {
-          verb: 'kommen',
-          priority: 1,
-          dueAt: new Date().toISOString(),
-          leitnerBox: 2,
-          accuracyWeight: 0.6,
-          latencyWeight: 0.7,
-          stabilityWeight: 0.4,
-          predictedIntervalMinutes: 180,
-        },
-        {
-          verb: 'gehen',
-          priority: 0.8,
-          dueAt: new Date().toISOString(),
-          leitnerBox: 1,
-          accuracyWeight: 0.5,
-          latencyWeight: 0.6,
-          stabilityWeight: 0.3,
-          predictedIntervalMinutes: 120,
-        },
-      ],
-    });
-
-    const response = await invokeApi('/api/tasks?pos=verb&limit=2&deviceId=device-123&level=A1');
-    expect(response.status).toBe(200);
-    const payload = response.bodyJson as { tasks: any[] };
-    expect(payload.tasks).toHaveLength(2);
-    expect(payload.tasks[0]?.lexeme?.lemma).toBe('kommen');
-    expect(payload.tasks[1]?.lexeme?.lemma).toBeDefined();
-    expect(mockedSrsEngine.fetchQueueForDevice).toHaveBeenCalledWith('device-123');
-    expect(mockedSrsEngine.generateQueueForDevice).not.toHaveBeenCalled();
   });
 
   it('reorders fallback tasks using scheduling state when adaptive queue is disabled', async () => {

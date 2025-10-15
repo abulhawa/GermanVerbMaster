@@ -8,17 +8,6 @@ import { setupTestDatabase, type TestDatabaseContext } from './helpers/pg';
 import { createApiInvoker } from './helpers/vercel';
 import { seedLexemeInventoryForWords } from './helpers/task-fixtures';
 
-vi.mock('../server/srs/index.js', () => ({
-  srsEngine: {
-    regenerateQueuesOnce: vi.fn(),
-    recordPracticeAttempt: vi.fn(),
-    fetchQueueForDevice: vi.fn(),
-    generateQueueForDevice: vi.fn(),
-    isEnabled: vi.fn(() => false),
-    isQueueStale: vi.fn(() => false),
-  },
-}));
-
 describe('feature flags', () => {
   let invokeApi: ReturnType<typeof createApiInvoker>;
   let drizzleDb: typeof import('@db').db;

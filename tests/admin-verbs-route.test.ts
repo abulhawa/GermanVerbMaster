@@ -31,15 +31,6 @@ const {
   findFirstMock: vi.fn(),
 }));
 
-const srsEngineMock = vi.hoisted(() => ({
-  regenerateQueuesOnce: vi.fn(),
-  recordPracticeAttempt: vi.fn(),
-  fetchQueueForDevice: vi.fn(),
-  generateQueueForDevice: vi.fn(),
-  isEnabled: vi.fn(() => false),
-  isQueueStale: vi.fn(() => false),
-}));
-
 const mockedDb = vi.hoisted(() => ({
   select: selectMock,
   update: updateMock,
@@ -71,27 +62,10 @@ vi.mock('../db/schema.js', async () => {
   return actual;
 });
 
-vi.mock('../server/srs/index.js', () => ({
-  srsEngine: srsEngineMock,
-}));
-
 describe('Admin words API', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubEnv('ADMIN_API_TOKEN', 'secret');
-
-    srsEngineMock.regenerateQueuesOnce.mockReset();
-    srsEngineMock.regenerateQueuesOnce.mockResolvedValue(undefined);
-    srsEngineMock.recordPracticeAttempt.mockReset();
-    srsEngineMock.fetchQueueForDevice.mockReset();
-    srsEngineMock.generateQueueForDevice.mockReset();
-    srsEngineMock.isEnabled.mockReset();
-    srsEngineMock.isQueueStale.mockReset();
-    srsEngineMock.recordPracticeAttempt.mockResolvedValue(undefined);
-    srsEngineMock.fetchQueueForDevice.mockResolvedValue(null);
-    srsEngineMock.generateQueueForDevice.mockResolvedValue(null);
-    srsEngineMock.isEnabled.mockReturnValue(false);
-    srsEngineMock.isQueueStale.mockReturnValue(true);
 
     const dataSelectChain = { from: fromMock };
     const countSelectChain = { from: countFromMock };

@@ -28,12 +28,6 @@ const hoisted = vi.hoisted(() => {
       integrationUsage: {
         findMany: vi.fn(() => Promise.resolve([])),
       },
-      verbAnalytics: {
-        findFirst: vi.fn(() => Promise.resolve(null)),
-      },
-      verbPracticeHistory: {
-        findMany: vi.fn(() => Promise.resolve([])),
-      },
     },
   } as const;
 
@@ -47,15 +41,6 @@ const hoisted = vi.hoisted(() => {
     getSelectResultData: () => selectResultData,
   };
 });
-
-const srsEngineMock = vi.hoisted(() => ({
-  regenerateQueuesOnce: vi.fn(),
-  recordPracticeAttempt: vi.fn(),
-  fetchQueueForDevice: vi.fn(),
-  generateQueueForDevice: vi.fn(),
-  isEnabled: vi.fn(() => false),
-  isQueueStale: vi.fn(() => false),
-}));
 
 vi.mock('@db', async () => {
   const schema = await vi.importActual<typeof import('../db/schema.js')>('../db/schema.js');
@@ -71,10 +56,6 @@ vi.mock('@db/client', () => ({
   getDb: () => hoisted.mockDb,
   createPool: vi.fn(),
   getPool: vi.fn(),
-}));
-
-vi.mock('../server/srs/index.js', () => ({
-  srsEngine: srsEngineMock,
 }));
 
 const { mockDb, selectChain, insertValuesMock, setSelectResultData } = hoisted;
@@ -116,19 +97,6 @@ describe('Partner integration routes', () => {
       ...mockPartnerRecord,
       apiKeyHash: hashedKey,
     });
-
-    srsEngineMock.regenerateQueuesOnce.mockReset();
-    srsEngineMock.regenerateQueuesOnce.mockResolvedValue(undefined);
-    srsEngineMock.recordPracticeAttempt.mockReset();
-    srsEngineMock.recordPracticeAttempt.mockResolvedValue(undefined);
-    srsEngineMock.fetchQueueForDevice.mockReset();
-    srsEngineMock.fetchQueueForDevice.mockResolvedValue(null);
-    srsEngineMock.generateQueueForDevice.mockReset();
-    srsEngineMock.generateQueueForDevice.mockResolvedValue(null);
-    srsEngineMock.isEnabled.mockReset();
-    srsEngineMock.isQueueStale.mockReset();
-    srsEngineMock.isEnabled.mockReturnValue(false);
-    srsEngineMock.isQueueStale.mockReturnValue(true);
   });
 
   it('rejects requests without an API key', async () => {
