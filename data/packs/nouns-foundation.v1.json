@@ -9,7 +9,7 @@
     "license": "CC-BY-SA-4.0",
     "licenseNotes": null,
     "version": 1,
-    "checksum": "23cabe9f1678286781b1200c4aa889d20bfacd2f",
+    "checksum": "9ad681006473064d93956399f58d7829b050a3fc",
     "metadata": {
       "taskTypes": [],
       "size": 50,
@@ -20,43 +20,24 @@
       ],
       "attribution": [
         {
-          "id": "dwds-goethe-A1.csv",
-          "count": 14,
-          "pos": [
-            "N"
-          ],
-          "label": "DWDS Goethe-Zertifikat A1 export",
-          "license": "CC BY-SA 4.0",
-          "url": "https://www.dwds.de/"
-        },
-        {
-          "id": "dwds-goethe-A2.csv",
-          "count": 3,
-          "pos": [
-            "N"
-          ],
-          "label": "DWDS Goethe-Zertifikat A2 export",
-          "license": "CC BY-SA 4.0",
-          "url": "https://www.dwds.de/"
-        },
-        {
-          "id": "dwds-goethe-B1.csv",
-          "count": 33,
-          "pos": [
-            "N"
-          ],
-          "label": "DWDS Goethe-Zertifikat B1 export",
-          "license": "CC BY-SA 4.0",
-          "url": "https://www.dwds.de/"
-        },
-        {
-          "id": "Manual Apply",
+          "id": "enrichment:manual_api",
           "count": 1,
           "pos": [
             "N"
           ],
-          "label": "Manual Apply",
-          "license": "unspecified – pending review"
+          "label": "Enrichment applied (manual_api)",
+          "license": "Composite – see enrichment snapshots",
+          "notes": "Derived from stored enrichment provider payloads under data/enrichment/"
+        },
+        {
+          "id": "pos_jsonl:nouns",
+          "count": 50,
+          "pos": [
+            "N"
+          ],
+          "label": "POS seed (nouns.jsonl)",
+          "license": "CC BY-SA 4.0 (internal data/pos source)",
+          "notes": "Deterministic per-POS JSONL inventory committed in data/pos/"
         }
       ]
     },
@@ -65,619 +46,584 @@
   },
   "lexemes": [
     {
-      "id": "de:noun:abbildung:bef2d41d",
+      "id": "de:noun:abbildung:eb9368a2",
       "lemma": "Abbildung",
       "language": "de",
       "pos": "noun",
       "gender": "die",
       "metadata": {
         "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Abbildung"
+        "english": "depiction, image, figure, picture, illustration"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:abend:71fbedd8",
+      "id": "de:noun:abend:912b0647",
       "lemma": "Abend",
       "language": "de",
       "pos": "noun",
       "gender": "der",
       "metadata": {
-        "level": "A1",
-        "sourceNotes": "https://www.dwds.de/wb/Abend"
+        "level": "A1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:abenteuer:2d29e6d0",
+      "id": "de:noun:abenteuer:2c43ce3b",
       "lemma": "Abenteuer",
       "language": "de",
       "pos": "noun",
       "gender": "das",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Abenteuer"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:abfahrt:0246d1b4",
+      "id": "de:noun:abfahrt:27582942",
       "lemma": "Abfahrt",
       "language": "de",
       "pos": "noun",
       "gender": "die",
       "metadata": {
-        "level": "A1",
-        "sourceNotes": "https://www.dwds.de/wb/Abfahrt"
+        "level": "A1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:abfall:f5e55bd6",
+      "id": "de:noun:abfall:30313a9f",
       "lemma": "Abfall",
       "language": "de",
       "pos": "noun",
       "gender": "der",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Abfall"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:abfalleimer:195a582f",
+      "id": "de:noun:abfalleimer:0e07181b",
       "lemma": "Abfalleimer",
       "language": "de",
       "pos": "noun",
       "gender": "der",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Abfalleimer"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:abflug:6597e2c4",
+      "id": "de:noun:abflug:43dfd6fa",
       "lemma": "Abflug",
       "language": "de",
       "pos": "noun",
       "gender": "der",
       "metadata": {
-        "level": "A1",
-        "sourceNotes": "https://www.dwds.de/wb/Abflug"
+        "level": "A1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:abgas:a8d688ad",
+      "id": "de:noun:abgas:93829efe",
       "lemma": "Abgas",
       "language": "de",
       "pos": "noun",
       "gender": "das",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Abgas"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:abitur:286a54f1",
+      "id": "de:noun:abitur:8aff8a6e",
       "lemma": "Abitur",
       "language": "de",
       "pos": "noun",
       "gender": "das",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Abitur"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:abonnement:ba18d4e6",
+      "id": "de:noun:abonnement:18a6f1c1",
       "lemma": "Abonnement",
       "language": "de",
       "pos": "noun",
       "gender": "das",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Abonnement"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:abschied:57edcbe8",
+      "id": "de:noun:abschied:6c704629",
       "lemma": "Abschied",
       "language": "de",
       "pos": "noun",
       "gender": "der",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Abschied"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:abschluss:8d2397f4",
+      "id": "de:noun:abschluss:797ab2ef",
       "lemma": "Abschluss",
       "language": "de",
       "pos": "noun",
       "gender": "der",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Abschluss"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:abschnitt:9f22e828",
+      "id": "de:noun:abschnitt:ca2aa65a",
       "lemma": "Abschnitt",
       "language": "de",
       "pos": "noun",
       "gender": "der",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Abschnitt"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:absender:83be6066",
+      "id": "de:noun:absender:fc0034b7",
       "lemma": "Absender",
       "language": "de",
       "pos": "noun",
       "gender": "der",
       "metadata": {
-        "level": "A1",
-        "sourceNotes": "https://www.dwds.de/wb/Absender"
+        "level": "A1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:absenderin:c5eadeaf",
+      "id": "de:noun:absenderin:39cd1e89",
       "lemma": "Absenderin",
       "language": "de",
       "pos": "noun",
       "gender": "die",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Absenderin"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:abt:5c541254",
+      "id": "de:noun:abt:21198f35",
       "lemma": "Abt",
       "language": "de",
       "pos": "noun",
       "gender": "der",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Abt"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:abteilung:be4c3648",
+      "id": "de:noun:abteilung:517e99fd",
       "lemma": "Abteilung",
       "language": "de",
       "pos": "noun",
       "gender": "die",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Abteilung"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:abwart:4cafda60",
+      "id": "de:noun:abwart:83831b77",
       "lemma": "Abwart",
       "language": "de",
       "pos": "noun",
       "gender": "der",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Abwart"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:abwartin:bee87c83",
+      "id": "de:noun:abwartin:85269bab",
       "lemma": "Abwartin",
       "language": "de",
       "pos": "noun",
       "gender": "die",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Abwartin"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:achtung:01872480",
+      "id": "de:noun:achtung:0cdfbc1c",
       "lemma": "Achtung",
       "language": "de",
       "pos": "noun",
       "gender": "die",
       "metadata": {
-        "level": "A1",
-        "sourceNotes": "https://www.dwds.de/wb/Achtung"
+        "level": "A1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:adresse:07526cdb",
+      "id": "de:noun:adresse:09054a76",
       "lemma": "Adresse",
       "language": "de",
       "pos": "noun",
       "gender": "die",
       "metadata": {
-        "level": "A1",
-        "sourceNotes": "https://www.dwds.de/wb/Adresse"
+        "level": "A1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:ahnung:817994fd",
+      "id": "de:noun:ahnung:2f155091",
       "lemma": "Ahnung",
       "language": "de",
       "pos": "noun",
       "gender": "die",
       "metadata": {
-        "level": "A2",
-        "sourceNotes": "https://www.dwds.de/wb/Ahnung"
+        "level": "A2"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A2.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:aktion:5a883559",
+      "id": "de:noun:aktion:6e070b5b",
       "lemma": "Aktion",
       "language": "de",
       "pos": "noun",
       "gender": "die",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Aktion"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:aktivitat:105f25f3",
+      "id": "de:noun:aktivitat:a7a59d4e",
       "lemma": "Aktivität",
       "language": "de",
       "pos": "noun",
       "gender": "die",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Aktivit%C3%A4t"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:alarm:d88a56f4",
+      "id": "de:noun:alarm:e2acf66d",
       "lemma": "Alarm",
       "language": "de",
       "pos": "noun",
       "gender": "der",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Alarm"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:alkohol:878c6033",
+      "id": "de:noun:alkohol:7b8725b5",
       "lemma": "Alkohol",
       "language": "de",
       "pos": "noun",
       "gender": "der",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Alkohol"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:alltag:d53acf00",
+      "id": "de:noun:alltag:babc7406",
       "lemma": "Alltag",
       "language": "de",
       "pos": "noun",
       "gender": "der",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Alltag"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:alphabet:a1b70ff6",
+      "id": "de:noun:alphabet:0a91a597",
       "lemma": "Alphabet",
       "language": "de",
       "pos": "noun",
       "gender": "das",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Alphabet"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:altenheim:4722bf1c",
+      "id": "de:noun:altenheim:da2e850f",
       "lemma": "Altenheim",
       "language": "de",
       "pos": "noun",
       "gender": "das",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Altenheim"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:alter:29a50e41",
+      "id": "de:noun:alter:f79cb658",
       "lemma": "Alter",
       "language": "de",
       "pos": "noun",
       "gender": "das",
       "metadata": {
-        "level": "A1",
-        "sourceNotes": "https://www.dwds.de/wb/Alter"
+        "level": "A1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:alternative:08aa44ce",
+      "id": "de:noun:alternative:b2db8d00",
       "lemma": "Alternative",
       "language": "de",
       "pos": "noun",
       "gender": "die",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Alternative#1"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:altersheim:8d372f5a",
+      "id": "de:noun:altersheim:9bbe5ccc",
       "lemma": "Altersheim",
       "language": "de",
       "pos": "noun",
       "gender": "das",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Altersheim"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:ampel:67cbb4b6",
+      "id": "de:noun:ampel:06210dd3",
       "lemma": "Ampel",
       "language": "de",
       "pos": "noun",
       "gender": "die",
       "metadata": {
-        "level": "A2",
-        "sourceNotes": "https://www.dwds.de/wb/Ampel"
+        "level": "A2"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A2.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:amt:bf0246dc",
+      "id": "de:noun:amt:d335abe2",
       "lemma": "Amt",
       "language": "de",
       "pos": "noun",
       "gender": "das",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Amt"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:anbieter:d8a39acd",
+      "id": "de:noun:anbieter:ba8ef147",
       "lemma": "Anbieter",
       "language": "de",
       "pos": "noun",
       "gender": "der",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Anbieter"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:anderung:c0428c63",
+      "id": "de:noun:anderung:9a6f7044",
       "lemma": "Änderung",
       "language": "de",
       "pos": "noun",
       "gender": "die",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/%C3%84nderung"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:anfang:dd1edb9e",
+      "id": "de:noun:anfang:651aed8b",
       "lemma": "Anfang",
       "language": "de",
       "pos": "noun",
@@ -688,234 +634,220 @@
         "example": {
           "de": "1545, Martin Luther, Biblia: das ist: Die gantze Heilige Schrifft: Deudsch Auffs new zugericht, Moses I (Genesis) 1:1",
           "en": "In the beginning, God created heaven and earth."
-        },
-        "sourceNotes": "https://www.dwds.de/wb/Anfang"
+        }
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Manual Apply"
+        "pos_jsonl:nouns",
+        "enrichment:manual_api"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:angabe:57abcfb3",
+      "id": "de:noun:angabe:eef3f38e",
       "lemma": "Angabe",
       "language": "de",
       "pos": "noun",
       "gender": "die",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Angabe"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:angebot:d95067bb",
+      "id": "de:noun:angebot:b4d4afa7",
       "lemma": "Angebot",
       "language": "de",
       "pos": "noun",
       "gender": "das",
       "metadata": {
-        "level": "A1",
-        "sourceNotes": "https://www.dwds.de/wb/Angebot"
+        "level": "A1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:angehorige:2ba9c118",
+      "id": "de:noun:angehorige:99fa9a7d",
       "lemma": "Angehörige",
       "language": "de",
       "pos": "noun",
       "gender": "die, der",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Angeh%C3%B6rige"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:angestellte:b7d15dcb",
+      "id": "de:noun:angestellte:b3b553e1",
       "lemma": "Angestellte",
       "language": "de",
       "pos": "noun",
       "gender": "der, die",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Angestellte"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:angst:2eb1ac0e",
+      "id": "de:noun:angst:e02efed4",
       "lemma": "Angst",
       "language": "de",
       "pos": "noun",
       "gender": "die",
       "metadata": {
-        "level": "A2",
-        "sourceNotes": "https://www.dwds.de/wb/Angst"
+        "level": "A2"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A2.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:ankunft:200bfd53",
+      "id": "de:noun:ankunft:e269a4f3",
       "lemma": "Ankunft",
       "language": "de",
       "pos": "noun",
       "gender": "die",
       "metadata": {
-        "level": "A1",
-        "sourceNotes": "https://www.dwds.de/wb/Ankunft"
+        "level": "A1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:anlage:e5fbcb16",
+      "id": "de:noun:anlage:64e4a401",
       "lemma": "Anlage",
       "language": "de",
       "pos": "noun",
       "gender": "die",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Anlage"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:anleitung:ccc798ba",
+      "id": "de:noun:anleitung:e8adc561",
       "lemma": "Anleitung",
       "language": "de",
       "pos": "noun",
       "gender": "die",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Anleitung"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:anmeldung:a9d4bd0b",
+      "id": "de:noun:anmeldung:79e5dc16",
       "lemma": "Anmeldung",
       "language": "de",
       "pos": "noun",
       "gender": "die",
       "metadata": {
-        "level": "A1",
-        "sourceNotes": "https://www.dwds.de/wb/Anmeldung"
+        "level": "A1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:annonce:07eb4560",
+      "id": "de:noun:annonce:f37ff3a2",
       "lemma": "Annonce",
       "language": "de",
       "pos": "noun",
       "gender": "die",
       "metadata": {
-        "level": "B1",
-        "sourceNotes": "https://www.dwds.de/wb/Annonce"
+        "level": "B1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:anrede:825b1dc1",
+      "id": "de:noun:anrede:f87503d6",
       "lemma": "Anrede",
       "language": "de",
       "pos": "noun",
       "gender": "die",
       "metadata": {
-        "level": "A1",
-        "sourceNotes": "https://www.dwds.de/wb/Anrede"
+        "level": "A1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:anruf:bfe5ba5a",
+      "id": "de:noun:anruf:bfa80687",
       "lemma": "Anruf",
       "language": "de",
       "pos": "noun",
       "gender": "der",
       "metadata": {
-        "level": "A1",
-        "sourceNotes": "https://www.dwds.de/wb/Anruf"
+        "level": "A1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:noun:anrufbeantworter:0f86b296",
+      "id": "de:noun:anrufbeantworter:ab602907",
       "lemma": "Anrufbeantworter",
       "language": "de",
       "pos": "noun",
       "gender": "der",
       "metadata": {
-        "level": "A1",
-        "sourceNotes": "https://www.dwds.de/wb/Anrufbeantworter"
+        "level": "A1"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv"
+        "pos_jsonl:nouns"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -923,8 +855,8 @@
   ],
   "inflections": [
     {
-      "id": "inf:de:noun:abbildung:bef2d41d:d5d6241748",
-      "lexemeId": "de:noun:abbildung:bef2d41d",
+      "id": "inf:de:noun:abbildung:eb9368a2:088ee94325",
+      "lexemeId": "de:noun:abbildung:eb9368a2",
       "form": "Abbildung",
       "features": {
         "case": "nominative",
@@ -932,14 +864,14 @@
         "gender": "die"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:bccc1cf79f",
+      "sourceRevision": "pos_jsonl:nouns:b97ee28f98",
       "checksum": "5ff10b359b94265c",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:abend:71fbedd8:383e3e7835",
-      "lexemeId": "de:noun:abend:71fbedd8",
+      "id": "inf:de:noun:abend:912b0647:2ac6a02ac7",
+      "lexemeId": "de:noun:abend:912b0647",
       "form": "Abend",
       "features": {
         "case": "nominative",
@@ -947,14 +879,14 @@
         "gender": "der"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-A1.csv:314fcbb9ab",
+      "sourceRevision": "pos_jsonl:nouns:6cef06c06b",
       "checksum": "1a4ede732b225f6f",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:abenteuer:2d29e6d0:f5d485f97d",
-      "lexemeId": "de:noun:abenteuer:2d29e6d0",
+      "id": "inf:de:noun:abenteuer:2c43ce3b:3ce119e73e",
+      "lexemeId": "de:noun:abenteuer:2c43ce3b",
       "form": "Abenteuer",
       "features": {
         "case": "nominative",
@@ -962,14 +894,14 @@
         "gender": "das"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:6c7f137d98",
+      "sourceRevision": "pos_jsonl:nouns:61f4cd3c3f",
       "checksum": "cb6892d64cbb5e66",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:abfahrt:0246d1b4:82bf0ace84",
-      "lexemeId": "de:noun:abfahrt:0246d1b4",
+      "id": "inf:de:noun:abfahrt:27582942:843fddfc21",
+      "lexemeId": "de:noun:abfahrt:27582942",
       "form": "Abfahrt",
       "features": {
         "case": "nominative",
@@ -977,14 +909,14 @@
         "gender": "die"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-A1.csv:d6612f55af",
+      "sourceRevision": "pos_jsonl:nouns:a8a0f4a11c",
       "checksum": "6c87a5f28a578274",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:abfall:f5e55bd6:831a48058f",
-      "lexemeId": "de:noun:abfall:f5e55bd6",
+      "id": "inf:de:noun:abfall:30313a9f:0083f86027",
+      "lexemeId": "de:noun:abfall:30313a9f",
       "form": "Abfall",
       "features": {
         "case": "nominative",
@@ -992,14 +924,14 @@
         "gender": "der"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:b3bb91179c",
+      "sourceRevision": "pos_jsonl:nouns:80e05bdfe1",
       "checksum": "0633863058c862ed",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:abfalleimer:195a582f:16ab6df93b",
-      "lexemeId": "de:noun:abfalleimer:195a582f",
+      "id": "inf:de:noun:abfalleimer:0e07181b:d2ecf88538",
+      "lexemeId": "de:noun:abfalleimer:0e07181b",
       "form": "Abfalleimer",
       "features": {
         "case": "nominative",
@@ -1007,14 +939,14 @@
         "gender": "der"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:7fbfe6cf8b",
+      "sourceRevision": "pos_jsonl:nouns:3b68826888",
       "checksum": "f4c7d948fe209a64",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:abflug:6597e2c4:248c8ca47d",
-      "lexemeId": "de:noun:abflug:6597e2c4",
+      "id": "inf:de:noun:abflug:43dfd6fa:5b201e7304",
+      "lexemeId": "de:noun:abflug:43dfd6fa",
       "form": "Abflug",
       "features": {
         "case": "nominative",
@@ -1022,14 +954,14 @@
         "gender": "der"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-A1.csv:64441edd8e",
+      "sourceRevision": "pos_jsonl:nouns:524805d748",
       "checksum": "1e75abe34df0beba",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:abgas:a8d688ad:751825696a",
-      "lexemeId": "de:noun:abgas:a8d688ad",
+      "id": "inf:de:noun:abgas:93829efe:7ab8eb3a98",
+      "lexemeId": "de:noun:abgas:93829efe",
       "form": "Abgas",
       "features": {
         "case": "nominative",
@@ -1037,14 +969,14 @@
         "gender": "das"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:b5139bf2c8",
+      "sourceRevision": "pos_jsonl:nouns:ebfd6e073e",
       "checksum": "1e4a49fbf3f3967d",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:abitur:286a54f1:e8a67fec07",
-      "lexemeId": "de:noun:abitur:286a54f1",
+      "id": "inf:de:noun:abitur:8aff8a6e:8c9d659aa3",
+      "lexemeId": "de:noun:abitur:8aff8a6e",
       "form": "Abitur",
       "features": {
         "case": "nominative",
@@ -1052,14 +984,14 @@
         "gender": "das"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:ae0e246328",
+      "sourceRevision": "pos_jsonl:nouns:26266254f5",
       "checksum": "c91903e3a447e031",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:abonnement:ba18d4e6:343757ef44",
-      "lexemeId": "de:noun:abonnement:ba18d4e6",
+      "id": "inf:de:noun:abonnement:18a6f1c1:97375aa87d",
+      "lexemeId": "de:noun:abonnement:18a6f1c1",
       "form": "Abonnement",
       "features": {
         "case": "nominative",
@@ -1067,14 +999,14 @@
         "gender": "das"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:d985604592",
+      "sourceRevision": "pos_jsonl:nouns:f674541777",
       "checksum": "d1bf0ccc88a27538",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:abschied:57edcbe8:2ea3f6ef7e",
-      "lexemeId": "de:noun:abschied:57edcbe8",
+      "id": "inf:de:noun:abschied:6c704629:bcfefb6b1c",
+      "lexemeId": "de:noun:abschied:6c704629",
       "form": "Abschied",
       "features": {
         "case": "nominative",
@@ -1082,14 +1014,14 @@
         "gender": "der"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:4c164d8ac5",
+      "sourceRevision": "pos_jsonl:nouns:cc33af7690",
       "checksum": "be2344a5e82a95be",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:abschluss:8d2397f4:064f8b7365",
-      "lexemeId": "de:noun:abschluss:8d2397f4",
+      "id": "inf:de:noun:abschluss:797ab2ef:3ceb8dd9f7",
+      "lexemeId": "de:noun:abschluss:797ab2ef",
       "form": "Abschluss",
       "features": {
         "case": "nominative",
@@ -1097,14 +1029,14 @@
         "gender": "der"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:34d2c21a21",
+      "sourceRevision": "pos_jsonl:nouns:e71efed696",
       "checksum": "0ccfb835bcba9793",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:abschnitt:9f22e828:35999f0ac5",
-      "lexemeId": "de:noun:abschnitt:9f22e828",
+      "id": "inf:de:noun:abschnitt:ca2aa65a:e9ee27c07f",
+      "lexemeId": "de:noun:abschnitt:ca2aa65a",
       "form": "Abschnitt",
       "features": {
         "case": "nominative",
@@ -1112,14 +1044,14 @@
         "gender": "der"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:edd11a9d1a",
+      "sourceRevision": "pos_jsonl:nouns:d3f781982b",
       "checksum": "fc98ebab710587d2",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:absender:83be6066:1c6d1d6c72",
-      "lexemeId": "de:noun:absender:83be6066",
+      "id": "inf:de:noun:absender:fc0034b7:ad22ff8cb1",
+      "lexemeId": "de:noun:absender:fc0034b7",
       "form": "Absender",
       "features": {
         "case": "nominative",
@@ -1127,14 +1059,14 @@
         "gender": "der"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-A1.csv:90c72e988c",
+      "sourceRevision": "pos_jsonl:nouns:2a8cfca8ef",
       "checksum": "76a2fb106ba1c092",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:absenderin:c5eadeaf:b3e01a7b67",
-      "lexemeId": "de:noun:absenderin:c5eadeaf",
+      "id": "inf:de:noun:absenderin:39cd1e89:385be19ea2",
+      "lexemeId": "de:noun:absenderin:39cd1e89",
       "form": "Absenderin",
       "features": {
         "case": "nominative",
@@ -1142,14 +1074,14 @@
         "gender": "die"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:2460aaee67",
+      "sourceRevision": "pos_jsonl:nouns:d20dc1b8f3",
       "checksum": "7fd0629fa97e243c",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:abt:5c541254:d0aec88e3e",
-      "lexemeId": "de:noun:abt:5c541254",
+      "id": "inf:de:noun:abt:21198f35:706971ecd5",
+      "lexemeId": "de:noun:abt:21198f35",
       "form": "Abt",
       "features": {
         "case": "nominative",
@@ -1157,14 +1089,14 @@
         "gender": "der"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:f61f54aef0",
+      "sourceRevision": "pos_jsonl:nouns:8fc0475baa",
       "checksum": "bd47da174a0d1745",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:abteilung:be4c3648:642414497a",
-      "lexemeId": "de:noun:abteilung:be4c3648",
+      "id": "inf:de:noun:abteilung:517e99fd:fab5b9fc36",
+      "lexemeId": "de:noun:abteilung:517e99fd",
       "form": "Abteilung",
       "features": {
         "case": "nominative",
@@ -1172,14 +1104,14 @@
         "gender": "die"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:8e0f24ef51",
+      "sourceRevision": "pos_jsonl:nouns:e04fa0aea4",
       "checksum": "f422b72c3f58fb79",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:abwart:4cafda60:56367a8189",
-      "lexemeId": "de:noun:abwart:4cafda60",
+      "id": "inf:de:noun:abwart:83831b77:b710005a3b",
+      "lexemeId": "de:noun:abwart:83831b77",
       "form": "Abwart",
       "features": {
         "case": "nominative",
@@ -1187,14 +1119,14 @@
         "gender": "der"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:9374138975",
+      "sourceRevision": "pos_jsonl:nouns:8696662b1b",
       "checksum": "d128619a527c7785",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:abwartin:bee87c83:056d5f38e3",
-      "lexemeId": "de:noun:abwartin:bee87c83",
+      "id": "inf:de:noun:abwartin:85269bab:cb2e447bc0",
+      "lexemeId": "de:noun:abwartin:85269bab",
       "form": "Abwartin",
       "features": {
         "case": "nominative",
@@ -1202,14 +1134,14 @@
         "gender": "die"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:bd7ec569fa",
+      "sourceRevision": "pos_jsonl:nouns:aaa61507c5",
       "checksum": "b4afdd6415fb080c",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:achtung:01872480:28a10a6a2c",
-      "lexemeId": "de:noun:achtung:01872480",
+      "id": "inf:de:noun:achtung:0cdfbc1c:7e1736f11e",
+      "lexemeId": "de:noun:achtung:0cdfbc1c",
       "form": "Achtung",
       "features": {
         "case": "nominative",
@@ -1217,14 +1149,14 @@
         "gender": "die"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-A1.csv:75ee4e04fe",
+      "sourceRevision": "pos_jsonl:nouns:d4148a6bd3",
       "checksum": "0bf2580262fe594e",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:adresse:07526cdb:f898349039",
-      "lexemeId": "de:noun:adresse:07526cdb",
+      "id": "inf:de:noun:adresse:09054a76:0f6d3dd885",
+      "lexemeId": "de:noun:adresse:09054a76",
       "form": "Adresse",
       "features": {
         "case": "nominative",
@@ -1232,14 +1164,14 @@
         "gender": "die"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-A1.csv:21a4e76f12",
+      "sourceRevision": "pos_jsonl:nouns:6bfb880283",
       "checksum": "05bfb7b192022c7f",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:ahnung:817994fd:728497914c",
-      "lexemeId": "de:noun:ahnung:817994fd",
+      "id": "inf:de:noun:ahnung:2f155091:e1c5ed9391",
+      "lexemeId": "de:noun:ahnung:2f155091",
       "form": "Ahnung",
       "features": {
         "case": "nominative",
@@ -1247,14 +1179,14 @@
         "gender": "die"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-A2.csv:04618f1123",
+      "sourceRevision": "pos_jsonl:nouns:e5eca251a9",
       "checksum": "18f21b6d2552a5d2",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:aktion:5a883559:4d3f8a0d72",
-      "lexemeId": "de:noun:aktion:5a883559",
+      "id": "inf:de:noun:aktion:6e070b5b:12dfbe9add",
+      "lexemeId": "de:noun:aktion:6e070b5b",
       "form": "Aktion",
       "features": {
         "case": "nominative",
@@ -1262,14 +1194,14 @@
         "gender": "die"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:2e6d401316",
+      "sourceRevision": "pos_jsonl:nouns:bd3ef2a194",
       "checksum": "f2b6685055c82d76",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:aktivitat:105f25f3:fd6e017e09",
-      "lexemeId": "de:noun:aktivitat:105f25f3",
+      "id": "inf:de:noun:aktivitat:a7a59d4e:53034df8cd",
+      "lexemeId": "de:noun:aktivitat:a7a59d4e",
       "form": "Aktivität",
       "features": {
         "case": "nominative",
@@ -1277,14 +1209,14 @@
         "gender": "die"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:60419c60a7",
+      "sourceRevision": "pos_jsonl:nouns:5e122bb118",
       "checksum": "8ce3647ef3fa73c8",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:alarm:d88a56f4:33633f7f9d",
-      "lexemeId": "de:noun:alarm:d88a56f4",
+      "id": "inf:de:noun:alarm:e2acf66d:198e39c159",
+      "lexemeId": "de:noun:alarm:e2acf66d",
       "form": "Alarm",
       "features": {
         "case": "nominative",
@@ -1292,14 +1224,14 @@
         "gender": "der"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:41b0d672ac",
+      "sourceRevision": "pos_jsonl:nouns:12cc163ad7",
       "checksum": "1dbd6b2142a722bf",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:alkohol:878c6033:7a0ca58b97",
-      "lexemeId": "de:noun:alkohol:878c6033",
+      "id": "inf:de:noun:alkohol:7b8725b5:127632a7dc",
+      "lexemeId": "de:noun:alkohol:7b8725b5",
       "form": "Alkohol",
       "features": {
         "case": "nominative",
@@ -1307,14 +1239,14 @@
         "gender": "der"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:13e9a4d164",
+      "sourceRevision": "pos_jsonl:nouns:bd4df15376",
       "checksum": "a5f1e15fa3ec0f58",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:alltag:d53acf00:9a5701b00d",
-      "lexemeId": "de:noun:alltag:d53acf00",
+      "id": "inf:de:noun:alltag:babc7406:f858ca6463",
+      "lexemeId": "de:noun:alltag:babc7406",
       "form": "Alltag",
       "features": {
         "case": "nominative",
@@ -1322,14 +1254,14 @@
         "gender": "der"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:eb39580df2",
+      "sourceRevision": "pos_jsonl:nouns:db5c29dc12",
       "checksum": "41e6241a6a373236",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:alphabet:a1b70ff6:f258b863d8",
-      "lexemeId": "de:noun:alphabet:a1b70ff6",
+      "id": "inf:de:noun:alphabet:0a91a597:f175d94859",
+      "lexemeId": "de:noun:alphabet:0a91a597",
       "form": "Alphabet",
       "features": {
         "case": "nominative",
@@ -1337,14 +1269,14 @@
         "gender": "das"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:1af46efc8e",
+      "sourceRevision": "pos_jsonl:nouns:23ca5ec664",
       "checksum": "1cbfd639a0f7d5f1",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:altenheim:4722bf1c:2f658a506b",
-      "lexemeId": "de:noun:altenheim:4722bf1c",
+      "id": "inf:de:noun:altenheim:da2e850f:ac1e1bdc12",
+      "lexemeId": "de:noun:altenheim:da2e850f",
       "form": "Altenheim",
       "features": {
         "case": "nominative",
@@ -1352,14 +1284,14 @@
         "gender": "das"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:49668e0f0f",
+      "sourceRevision": "pos_jsonl:nouns:6b2cf3bf58",
       "checksum": "b4f442933721d28c",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:alter:29a50e41:4aa0020072",
-      "lexemeId": "de:noun:alter:29a50e41",
+      "id": "inf:de:noun:alter:f79cb658:5898564784",
+      "lexemeId": "de:noun:alter:f79cb658",
       "form": "Alter",
       "features": {
         "case": "nominative",
@@ -1367,14 +1299,14 @@
         "gender": "das"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-A1.csv:fe792b63a5",
+      "sourceRevision": "pos_jsonl:nouns:e25ca5ec39",
       "checksum": "5d2b74cc810bbc43",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:alternative:08aa44ce:d197afd3df",
-      "lexemeId": "de:noun:alternative:08aa44ce",
+      "id": "inf:de:noun:alternative:b2db8d00:c6d70658dd",
+      "lexemeId": "de:noun:alternative:b2db8d00",
       "form": "Alternative",
       "features": {
         "case": "nominative",
@@ -1382,14 +1314,14 @@
         "gender": "die"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:9b5072b1db",
+      "sourceRevision": "pos_jsonl:nouns:22eea80473",
       "checksum": "05d968efd53f781d",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:altersheim:8d372f5a:bd6753ab95",
-      "lexemeId": "de:noun:altersheim:8d372f5a",
+      "id": "inf:de:noun:altersheim:9bbe5ccc:834316235a",
+      "lexemeId": "de:noun:altersheim:9bbe5ccc",
       "form": "Altersheim",
       "features": {
         "case": "nominative",
@@ -1397,14 +1329,14 @@
         "gender": "das"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:2703ecd488",
+      "sourceRevision": "pos_jsonl:nouns:07d90b9e3a",
       "checksum": "6e7208647b91dedb",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:ampel:67cbb4b6:6a1e698aa5",
-      "lexemeId": "de:noun:ampel:67cbb4b6",
+      "id": "inf:de:noun:ampel:06210dd3:646e15daf2",
+      "lexemeId": "de:noun:ampel:06210dd3",
       "form": "Ampel",
       "features": {
         "case": "nominative",
@@ -1412,14 +1344,14 @@
         "gender": "die"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-A2.csv:71356c9ac4",
+      "sourceRevision": "pos_jsonl:nouns:43f7f708d1",
       "checksum": "04fe09e7e6ce6d5f",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:amt:bf0246dc:14ee739362",
-      "lexemeId": "de:noun:amt:bf0246dc",
+      "id": "inf:de:noun:amt:d335abe2:9f60d94224",
+      "lexemeId": "de:noun:amt:d335abe2",
       "form": "Amt",
       "features": {
         "case": "nominative",
@@ -1427,14 +1359,14 @@
         "gender": "das"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:eba56bc6ee",
+      "sourceRevision": "pos_jsonl:nouns:dcbb03c027",
       "checksum": "d1c3658a62b4f47c",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:anbieter:d8a39acd:3f0a36d40f",
-      "lexemeId": "de:noun:anbieter:d8a39acd",
+      "id": "inf:de:noun:anbieter:ba8ef147:65ff997f47",
+      "lexemeId": "de:noun:anbieter:ba8ef147",
       "form": "Anbieter",
       "features": {
         "case": "nominative",
@@ -1442,14 +1374,14 @@
         "gender": "der"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:f59eb8fe93",
+      "sourceRevision": "pos_jsonl:nouns:9ef35f212e",
       "checksum": "0d3a727e37d60a0a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:anderung:c0428c63:41e1d49701",
-      "lexemeId": "de:noun:anderung:c0428c63",
+      "id": "inf:de:noun:anderung:9a6f7044:d40ce8c27e",
+      "lexemeId": "de:noun:anderung:9a6f7044",
       "form": "Änderung",
       "features": {
         "case": "nominative",
@@ -1457,14 +1389,14 @@
         "gender": "die"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:afae4d51a1",
+      "sourceRevision": "pos_jsonl:nouns:d891f81682",
       "checksum": "5ff5206e53c16d98",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:anfang:dd1edb9e:b01c6f30ce",
-      "lexemeId": "de:noun:anfang:dd1edb9e",
+      "id": "inf:de:noun:anfang:651aed8b:697c727d91",
+      "lexemeId": "de:noun:anfang:651aed8b",
       "form": "Anfang",
       "features": {
         "case": "nominative",
@@ -1472,14 +1404,14 @@
         "gender": "der"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-A1.csv:32bd782157",
+      "sourceRevision": "pos_jsonl:nouns:56ffb7cd42",
       "checksum": "8740960c4afce5da",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:angabe:57abcfb3:4da02bbb1d",
-      "lexemeId": "de:noun:angabe:57abcfb3",
+      "id": "inf:de:noun:angabe:eef3f38e:ccbcd2a8e0",
+      "lexemeId": "de:noun:angabe:eef3f38e",
       "form": "Angabe",
       "features": {
         "case": "nominative",
@@ -1487,14 +1419,14 @@
         "gender": "die"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:313097d69d",
+      "sourceRevision": "pos_jsonl:nouns:27e7bcb385",
       "checksum": "6d8ec951cb7c9845",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:angebot:d95067bb:62f93fa364",
-      "lexemeId": "de:noun:angebot:d95067bb",
+      "id": "inf:de:noun:angebot:b4d4afa7:acfbe145d3",
+      "lexemeId": "de:noun:angebot:b4d4afa7",
       "form": "Angebot",
       "features": {
         "case": "nominative",
@@ -1502,14 +1434,14 @@
         "gender": "das"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-A1.csv:2712caef06",
+      "sourceRevision": "pos_jsonl:nouns:4edc439cc6",
       "checksum": "1b52f21874ebdb23",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:angehorige:2ba9c118:295b28118d",
-      "lexemeId": "de:noun:angehorige:2ba9c118",
+      "id": "inf:de:noun:angehorige:99fa9a7d:963c987036",
+      "lexemeId": "de:noun:angehorige:99fa9a7d",
       "form": "Angehörige",
       "features": {
         "case": "nominative",
@@ -1517,14 +1449,14 @@
         "gender": "die, der"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:ce976a0085",
+      "sourceRevision": "pos_jsonl:nouns:9ef6cdc3e5",
       "checksum": "5941a328dbd51659",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:angestellte:b7d15dcb:6527d8d9a7",
-      "lexemeId": "de:noun:angestellte:b7d15dcb",
+      "id": "inf:de:noun:angestellte:b3b553e1:db05b2486f",
+      "lexemeId": "de:noun:angestellte:b3b553e1",
       "form": "Angestellte",
       "features": {
         "case": "nominative",
@@ -1532,14 +1464,14 @@
         "gender": "der, die"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:4f3f6747d3",
+      "sourceRevision": "pos_jsonl:nouns:f4793a65c1",
       "checksum": "29ba78d59b86b64b",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:angst:2eb1ac0e:73485a4901",
-      "lexemeId": "de:noun:angst:2eb1ac0e",
+      "id": "inf:de:noun:angst:e02efed4:dedf8d4177",
+      "lexemeId": "de:noun:angst:e02efed4",
       "form": "Angst",
       "features": {
         "case": "nominative",
@@ -1547,14 +1479,14 @@
         "gender": "die"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-A2.csv:8b5d612e1d",
+      "sourceRevision": "pos_jsonl:nouns:3b5115f89e",
       "checksum": "745d35e5a88b38a0",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:ankunft:200bfd53:64e2209af7",
-      "lexemeId": "de:noun:ankunft:200bfd53",
+      "id": "inf:de:noun:ankunft:e269a4f3:ae79ec2304",
+      "lexemeId": "de:noun:ankunft:e269a4f3",
       "form": "Ankunft",
       "features": {
         "case": "nominative",
@@ -1562,14 +1494,14 @@
         "gender": "die"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-A1.csv:70dc986bde",
+      "sourceRevision": "pos_jsonl:nouns:cf4373f15c",
       "checksum": "9810f7d757bc9a24",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:anlage:e5fbcb16:44814a8857",
-      "lexemeId": "de:noun:anlage:e5fbcb16",
+      "id": "inf:de:noun:anlage:64e4a401:8036f8b2c5",
+      "lexemeId": "de:noun:anlage:64e4a401",
       "form": "Anlage",
       "features": {
         "case": "nominative",
@@ -1577,14 +1509,14 @@
         "gender": "die"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:3f3f70b697",
+      "sourceRevision": "pos_jsonl:nouns:8ecd60bfdd",
       "checksum": "332d718f33c483d3",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:anleitung:ccc798ba:25e64c4c11",
-      "lexemeId": "de:noun:anleitung:ccc798ba",
+      "id": "inf:de:noun:anleitung:e8adc561:45604a9b2c",
+      "lexemeId": "de:noun:anleitung:e8adc561",
       "form": "Anleitung",
       "features": {
         "case": "nominative",
@@ -1592,14 +1524,14 @@
         "gender": "die"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:fcdc6c7bc2",
+      "sourceRevision": "pos_jsonl:nouns:71a024d75b",
       "checksum": "1957c74c1d7e89f7",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:anmeldung:a9d4bd0b:71977a88f9",
-      "lexemeId": "de:noun:anmeldung:a9d4bd0b",
+      "id": "inf:de:noun:anmeldung:79e5dc16:27f4d91033",
+      "lexemeId": "de:noun:anmeldung:79e5dc16",
       "form": "Anmeldung",
       "features": {
         "case": "nominative",
@@ -1607,14 +1539,14 @@
         "gender": "die"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-A1.csv:54379a0697",
+      "sourceRevision": "pos_jsonl:nouns:58ba5a3df6",
       "checksum": "df470cacd0c33840",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:annonce:07eb4560:47670338a5",
-      "lexemeId": "de:noun:annonce:07eb4560",
+      "id": "inf:de:noun:annonce:f37ff3a2:56b2b0ee5f",
+      "lexemeId": "de:noun:annonce:f37ff3a2",
       "form": "Annonce",
       "features": {
         "case": "nominative",
@@ -1622,14 +1554,14 @@
         "gender": "die"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-B1.csv:a79cc96686",
+      "sourceRevision": "pos_jsonl:nouns:5754e13818",
       "checksum": "11828646cff85b87",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:anrede:825b1dc1:71686bb069",
-      "lexemeId": "de:noun:anrede:825b1dc1",
+      "id": "inf:de:noun:anrede:f87503d6:500c19615b",
+      "lexemeId": "de:noun:anrede:f87503d6",
       "form": "Anrede",
       "features": {
         "case": "nominative",
@@ -1637,14 +1569,14 @@
         "gender": "die"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-A1.csv:1677cb5b80",
+      "sourceRevision": "pos_jsonl:nouns:477da8b022",
       "checksum": "a6bada256ab2a996",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:anruf:bfe5ba5a:20d764d9c2",
-      "lexemeId": "de:noun:anruf:bfe5ba5a",
+      "id": "inf:de:noun:anruf:bfa80687:4c0edbd22d",
+      "lexemeId": "de:noun:anruf:bfa80687",
       "form": "Anruf",
       "features": {
         "case": "nominative",
@@ -1652,14 +1584,14 @@
         "gender": "der"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-A1.csv:5e3614bce7",
+      "sourceRevision": "pos_jsonl:nouns:de9d5e221d",
       "checksum": "70b48351e4aff3e6",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:noun:anrufbeantworter:0f86b296:b8d44cbb3c",
-      "lexemeId": "de:noun:anrufbeantworter:0f86b296",
+      "id": "inf:de:noun:anrufbeantworter:ab602907:0ce0098e4d",
+      "lexemeId": "de:noun:anrufbeantworter:ab602907",
       "form": "Anrufbeantworter",
       "features": {
         "case": "nominative",
@@ -1667,7 +1599,7 @@
         "gender": "der"
       },
       "audioAsset": null,
-      "sourceRevision": "dwds-goethe-A1.csv:af49ad6afa",
+      "sourceRevision": "pos_jsonl:nouns:b01634a1ad",
       "checksum": "117a4b7344e762cf",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1677,7 +1609,7 @@
   "packLexemeMap": [
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:abbildung:bef2d41d",
+      "lexemeId": "de:noun:abbildung:eb9368a2",
       "primaryTaskId": null,
       "position": 1,
       "notes": null,
@@ -1686,7 +1618,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:abend:71fbedd8",
+      "lexemeId": "de:noun:abend:912b0647",
       "primaryTaskId": null,
       "position": 2,
       "notes": null,
@@ -1695,7 +1627,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:abenteuer:2d29e6d0",
+      "lexemeId": "de:noun:abenteuer:2c43ce3b",
       "primaryTaskId": null,
       "position": 3,
       "notes": null,
@@ -1704,7 +1636,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:abfahrt:0246d1b4",
+      "lexemeId": "de:noun:abfahrt:27582942",
       "primaryTaskId": null,
       "position": 4,
       "notes": null,
@@ -1713,7 +1645,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:abfall:f5e55bd6",
+      "lexemeId": "de:noun:abfall:30313a9f",
       "primaryTaskId": null,
       "position": 5,
       "notes": null,
@@ -1722,7 +1654,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:abfalleimer:195a582f",
+      "lexemeId": "de:noun:abfalleimer:0e07181b",
       "primaryTaskId": null,
       "position": 6,
       "notes": null,
@@ -1731,7 +1663,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:abflug:6597e2c4",
+      "lexemeId": "de:noun:abflug:43dfd6fa",
       "primaryTaskId": null,
       "position": 7,
       "notes": null,
@@ -1740,7 +1672,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:abgas:a8d688ad",
+      "lexemeId": "de:noun:abgas:93829efe",
       "primaryTaskId": null,
       "position": 8,
       "notes": null,
@@ -1749,7 +1681,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:abitur:286a54f1",
+      "lexemeId": "de:noun:abitur:8aff8a6e",
       "primaryTaskId": null,
       "position": 9,
       "notes": null,
@@ -1758,7 +1690,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:abonnement:ba18d4e6",
+      "lexemeId": "de:noun:abonnement:18a6f1c1",
       "primaryTaskId": null,
       "position": 10,
       "notes": null,
@@ -1767,7 +1699,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:abschied:57edcbe8",
+      "lexemeId": "de:noun:abschied:6c704629",
       "primaryTaskId": null,
       "position": 11,
       "notes": null,
@@ -1776,7 +1708,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:abschluss:8d2397f4",
+      "lexemeId": "de:noun:abschluss:797ab2ef",
       "primaryTaskId": null,
       "position": 12,
       "notes": null,
@@ -1785,7 +1717,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:abschnitt:9f22e828",
+      "lexemeId": "de:noun:abschnitt:ca2aa65a",
       "primaryTaskId": null,
       "position": 13,
       "notes": null,
@@ -1794,7 +1726,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:absender:83be6066",
+      "lexemeId": "de:noun:absender:fc0034b7",
       "primaryTaskId": null,
       "position": 14,
       "notes": null,
@@ -1803,7 +1735,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:absenderin:c5eadeaf",
+      "lexemeId": "de:noun:absenderin:39cd1e89",
       "primaryTaskId": null,
       "position": 15,
       "notes": null,
@@ -1812,7 +1744,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:abt:5c541254",
+      "lexemeId": "de:noun:abt:21198f35",
       "primaryTaskId": null,
       "position": 16,
       "notes": null,
@@ -1821,7 +1753,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:abteilung:be4c3648",
+      "lexemeId": "de:noun:abteilung:517e99fd",
       "primaryTaskId": null,
       "position": 17,
       "notes": null,
@@ -1830,7 +1762,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:abwart:4cafda60",
+      "lexemeId": "de:noun:abwart:83831b77",
       "primaryTaskId": null,
       "position": 18,
       "notes": null,
@@ -1839,7 +1771,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:abwartin:bee87c83",
+      "lexemeId": "de:noun:abwartin:85269bab",
       "primaryTaskId": null,
       "position": 19,
       "notes": null,
@@ -1848,7 +1780,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:achtung:01872480",
+      "lexemeId": "de:noun:achtung:0cdfbc1c",
       "primaryTaskId": null,
       "position": 20,
       "notes": null,
@@ -1857,7 +1789,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:adresse:07526cdb",
+      "lexemeId": "de:noun:adresse:09054a76",
       "primaryTaskId": null,
       "position": 21,
       "notes": null,
@@ -1866,7 +1798,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:ahnung:817994fd",
+      "lexemeId": "de:noun:ahnung:2f155091",
       "primaryTaskId": null,
       "position": 22,
       "notes": null,
@@ -1875,7 +1807,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:aktion:5a883559",
+      "lexemeId": "de:noun:aktion:6e070b5b",
       "primaryTaskId": null,
       "position": 23,
       "notes": null,
@@ -1884,7 +1816,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:aktivitat:105f25f3",
+      "lexemeId": "de:noun:aktivitat:a7a59d4e",
       "primaryTaskId": null,
       "position": 24,
       "notes": null,
@@ -1893,7 +1825,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:alarm:d88a56f4",
+      "lexemeId": "de:noun:alarm:e2acf66d",
       "primaryTaskId": null,
       "position": 25,
       "notes": null,
@@ -1902,7 +1834,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:alkohol:878c6033",
+      "lexemeId": "de:noun:alkohol:7b8725b5",
       "primaryTaskId": null,
       "position": 26,
       "notes": null,
@@ -1911,7 +1843,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:alltag:d53acf00",
+      "lexemeId": "de:noun:alltag:babc7406",
       "primaryTaskId": null,
       "position": 27,
       "notes": null,
@@ -1920,7 +1852,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:alphabet:a1b70ff6",
+      "lexemeId": "de:noun:alphabet:0a91a597",
       "primaryTaskId": null,
       "position": 28,
       "notes": null,
@@ -1929,7 +1861,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:altenheim:4722bf1c",
+      "lexemeId": "de:noun:altenheim:da2e850f",
       "primaryTaskId": null,
       "position": 29,
       "notes": null,
@@ -1938,7 +1870,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:alter:29a50e41",
+      "lexemeId": "de:noun:alter:f79cb658",
       "primaryTaskId": null,
       "position": 30,
       "notes": null,
@@ -1947,7 +1879,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:alternative:08aa44ce",
+      "lexemeId": "de:noun:alternative:b2db8d00",
       "primaryTaskId": null,
       "position": 31,
       "notes": null,
@@ -1956,7 +1888,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:altersheim:8d372f5a",
+      "lexemeId": "de:noun:altersheim:9bbe5ccc",
       "primaryTaskId": null,
       "position": 32,
       "notes": null,
@@ -1965,7 +1897,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:ampel:67cbb4b6",
+      "lexemeId": "de:noun:ampel:06210dd3",
       "primaryTaskId": null,
       "position": 33,
       "notes": null,
@@ -1974,7 +1906,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:amt:bf0246dc",
+      "lexemeId": "de:noun:amt:d335abe2",
       "primaryTaskId": null,
       "position": 34,
       "notes": null,
@@ -1983,7 +1915,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:anbieter:d8a39acd",
+      "lexemeId": "de:noun:anbieter:ba8ef147",
       "primaryTaskId": null,
       "position": 35,
       "notes": null,
@@ -1992,7 +1924,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:anderung:c0428c63",
+      "lexemeId": "de:noun:anderung:9a6f7044",
       "primaryTaskId": null,
       "position": 36,
       "notes": null,
@@ -2001,7 +1933,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:anfang:dd1edb9e",
+      "lexemeId": "de:noun:anfang:651aed8b",
       "primaryTaskId": null,
       "position": 37,
       "notes": null,
@@ -2010,7 +1942,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:angabe:57abcfb3",
+      "lexemeId": "de:noun:angabe:eef3f38e",
       "primaryTaskId": null,
       "position": 38,
       "notes": null,
@@ -2019,7 +1951,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:angebot:d95067bb",
+      "lexemeId": "de:noun:angebot:b4d4afa7",
       "primaryTaskId": null,
       "position": 39,
       "notes": null,
@@ -2028,7 +1960,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:angehorige:2ba9c118",
+      "lexemeId": "de:noun:angehorige:99fa9a7d",
       "primaryTaskId": null,
       "position": 40,
       "notes": null,
@@ -2037,7 +1969,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:angestellte:b7d15dcb",
+      "lexemeId": "de:noun:angestellte:b3b553e1",
       "primaryTaskId": null,
       "position": 41,
       "notes": null,
@@ -2046,7 +1978,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:angst:2eb1ac0e",
+      "lexemeId": "de:noun:angst:e02efed4",
       "primaryTaskId": null,
       "position": 42,
       "notes": null,
@@ -2055,7 +1987,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:ankunft:200bfd53",
+      "lexemeId": "de:noun:ankunft:e269a4f3",
       "primaryTaskId": null,
       "position": 43,
       "notes": null,
@@ -2064,7 +1996,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:anlage:e5fbcb16",
+      "lexemeId": "de:noun:anlage:64e4a401",
       "primaryTaskId": null,
       "position": 44,
       "notes": null,
@@ -2073,7 +2005,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:anleitung:ccc798ba",
+      "lexemeId": "de:noun:anleitung:e8adc561",
       "primaryTaskId": null,
       "position": 45,
       "notes": null,
@@ -2082,7 +2014,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:anmeldung:a9d4bd0b",
+      "lexemeId": "de:noun:anmeldung:79e5dc16",
       "primaryTaskId": null,
       "position": 46,
       "notes": null,
@@ -2091,7 +2023,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:annonce:07eb4560",
+      "lexemeId": "de:noun:annonce:f37ff3a2",
       "primaryTaskId": null,
       "position": 47,
       "notes": null,
@@ -2100,7 +2032,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:anrede:825b1dc1",
+      "lexemeId": "de:noun:anrede:f87503d6",
       "primaryTaskId": null,
       "position": 48,
       "notes": null,
@@ -2109,7 +2041,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:anruf:bfe5ba5a",
+      "lexemeId": "de:noun:anruf:bfa80687",
       "primaryTaskId": null,
       "position": 49,
       "notes": null,
@@ -2118,7 +2050,7 @@
     },
     {
       "packId": "pack:nouns-foundation:1",
-      "lexemeId": "de:noun:anrufbeantworter:0f86b296",
+      "lexemeId": "de:noun:anrufbeantworter:ab602907",
       "primaryTaskId": null,
       "position": 50,
       "notes": null,

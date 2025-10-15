@@ -9,7 +9,7 @@
     "license": "CC-BY-SA-4.0",
     "licenseNotes": null,
     "version": 1,
-    "checksum": "549973a57aa1512e683f8c01fe4682f601125fa2",
+    "checksum": "5180cf49f6d44d0dd5ec8cbf832fbed1433a4831",
     "metadata": {
       "taskTypes": [
         "adj_ending"
@@ -21,43 +21,14 @@
       ],
       "attribution": [
         {
-          "id": "Duden",
-          "count": 1,
+          "id": "pos_jsonl:adjectives",
+          "count": 2,
           "pos": [
             "Adj"
           ],
-          "label": "Duden",
-          "license": "unspecified – pending review"
-        },
-        {
-          "id": "dwds-goethe-A1.csv",
-          "count": 1,
-          "pos": [
-            "Adj"
-          ],
-          "label": "DWDS Goethe-Zertifikat A1 export",
-          "license": "CC BY-SA 4.0",
-          "url": "https://www.dwds.de/"
-        },
-        {
-          "id": "dwds-goethe-A2.csv",
-          "count": 1,
-          "pos": [
-            "Adj"
-          ],
-          "label": "DWDS Goethe-Zertifikat A2 export",
-          "license": "CC BY-SA 4.0",
-          "url": "https://www.dwds.de/"
-        },
-        {
-          "id": "Goethe-Institut",
-          "count": 1,
-          "pos": [
-            "Adj"
-          ],
-          "label": "Goethe-Institut curated list",
-          "license": "CC BY-SA 4.0 (DWDS export)",
-          "url": "https://www.goethe.de/"
+          "label": "POS seed (adjectives.jsonl)",
+          "license": "CC BY-SA 4.0 (internal data/pos source)",
+          "notes": "Deterministic per-POS JSONL inventory committed in data/pos/"
         }
       ]
     },
@@ -66,7 +37,7 @@
   },
   "lexemes": [
     {
-      "id": "de:adjective:freundlich:6998fa1a",
+      "id": "de:adjective:freundlich:f291a9fc",
       "lemma": "freundlich",
       "language": "de",
       "pos": "adjective",
@@ -77,19 +48,17 @@
         "example": {
           "de": "Eine freundliche Person.",
           "en": "A friendly person."
-        },
-        "sourceNotes": "https://www.dwds.de/wb/freundlich"
+        }
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Duden",
-        "dwds-goethe-A2.csv"
+        "pos_jsonl:adjectives"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:adjective:schnell:5f78762a",
+      "id": "de:adjective:schnell:219f6a5a",
       "lemma": "schnell",
       "language": "de",
       "pos": "adjective",
@@ -100,13 +69,11 @@
         "example": {
           "de": "Ein schneller Zug.",
           "en": "A fast train."
-        },
-        "sourceNotes": "https://www.dwds.de/wb/schnell"
+        }
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut"
+        "pos_jsonl:adjectives"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -114,79 +81,79 @@
   ],
   "inflections": [
     {
-      "id": "inf:de:adjective:freundlich:6998fa1a:e9281581e2",
-      "lexemeId": "de:adjective:freundlich:6998fa1a",
+      "id": "inf:de:adjective:freundlich:f291a9fc:80e25fc62a",
+      "lexemeId": "de:adjective:freundlich:f291a9fc",
       "form": "freundlich",
       "features": {
         "degree": "positive"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:01d6ea843a",
+      "sourceRevision": "pos_jsonl:adjectives:f70dd530b5",
       "checksum": "ebe8bb370e0e5f4d",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:adjective:freundlich:6998fa1a:d316da0d79",
-      "lexemeId": "de:adjective:freundlich:6998fa1a",
+      "id": "inf:de:adjective:freundlich:f291a9fc:5272884278",
+      "lexemeId": "de:adjective:freundlich:f291a9fc",
       "form": "freundlicher",
       "features": {
         "degree": "comparative"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:01d6ea843a",
+      "sourceRevision": "pos_jsonl:adjectives:f70dd530b5",
       "checksum": "a6e4506607917fcc",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:adjective:freundlich:6998fa1a:68cf1cd00b",
-      "lexemeId": "de:adjective:freundlich:6998fa1a",
+      "id": "inf:de:adjective:freundlich:f291a9fc:a748800b01",
+      "lexemeId": "de:adjective:freundlich:f291a9fc",
       "form": "am freundlichsten",
       "features": {
         "degree": "superlative"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:01d6ea843a",
+      "sourceRevision": "pos_jsonl:adjectives:f70dd530b5",
       "checksum": "33dc86cba2a69454",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:adjective:schnell:5f78762a:5546ea67f6",
-      "lexemeId": "de:adjective:schnell:5f78762a",
+      "id": "inf:de:adjective:schnell:219f6a5a:cb17e3b733",
+      "lexemeId": "de:adjective:schnell:219f6a5a",
       "form": "schnell",
       "features": {
         "degree": "positive"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:7cfb141e46",
+      "sourceRevision": "pos_jsonl:adjectives:9d8925e109",
       "checksum": "6047e55b2718a67b",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:adjective:schnell:5f78762a:6cf710a8a4",
-      "lexemeId": "de:adjective:schnell:5f78762a",
+      "id": "inf:de:adjective:schnell:219f6a5a:289fc4564a",
+      "lexemeId": "de:adjective:schnell:219f6a5a",
       "form": "schneller",
       "features": {
         "degree": "comparative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:7cfb141e46",
+      "sourceRevision": "pos_jsonl:adjectives:9d8925e109",
       "checksum": "0b32a10f00a96cbc",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:adjective:schnell:5f78762a:563bfbac6b",
-      "lexemeId": "de:adjective:schnell:5f78762a",
+      "id": "inf:de:adjective:schnell:219f6a5a:f217ede43a",
+      "lexemeId": "de:adjective:schnell:219f6a5a",
       "form": "am schnellsten",
       "features": {
         "degree": "superlative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:7cfb141e46",
+      "sourceRevision": "pos_jsonl:adjectives:9d8925e109",
       "checksum": "64f9ffc0ca3542c3",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -194,8 +161,8 @@
   ],
   "tasks": [
     {
-      "id": "task:de:adjective:freundlich:6998fa1a:adj_ending:1:ed7a3665",
-      "lexemeId": "de:adjective:freundlich:6998fa1a",
+      "id": "task:de:adjective:freundlich:f291a9fc:adj_ending:1:51b0c542",
+      "lexemeId": "de:adjective:freundlich:f291a9fc",
       "pos": "adjective",
       "taskType": "adj_ending",
       "renderer": "adj_ending",
@@ -231,8 +198,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:adjective:schnell:5f78762a:adj_ending:1:f5b4dc1e",
-      "lexemeId": "de:adjective:schnell:5f78762a",
+      "id": "task:de:adjective:schnell:219f6a5a:adj_ending:1:d453d560",
+      "lexemeId": "de:adjective:schnell:219f6a5a",
       "pos": "adjective",
       "taskType": "adj_ending",
       "renderer": "adj_ending",
@@ -271,8 +238,8 @@
   "packLexemeMap": [
     {
       "packId": "pack:adjectives-foundation:1",
-      "lexemeId": "de:adjective:freundlich:6998fa1a",
-      "primaryTaskId": "task:de:adjective:freundlich:6998fa1a:adj_ending:1:ed7a3665",
+      "lexemeId": "de:adjective:freundlich:f291a9fc",
+      "primaryTaskId": "task:de:adjective:freundlich:f291a9fc:adj_ending:1:51b0c542",
       "position": 1,
       "notes": null,
       "createdAt": 1735689600,
@@ -280,8 +247,8 @@
     },
     {
       "packId": "pack:adjectives-foundation:1",
-      "lexemeId": "de:adjective:schnell:5f78762a",
-      "primaryTaskId": "task:de:adjective:schnell:5f78762a:adj_ending:1:f5b4dc1e",
+      "lexemeId": "de:adjective:schnell:219f6a5a",
+      "primaryTaskId": "task:de:adjective:schnell:219f6a5a:adj_ending:1:d453d560",
       "position": 2,
       "notes": null,
       "createdAt": 1735689600,
