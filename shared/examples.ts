@@ -43,7 +43,6 @@ export function normalizeWordExample(entry: WordExample | null | undefined): Wor
   const translations = normalizeTranslations(
     entry.translations ?? (entry.exampleEn ? { en: entry.exampleEn } : null),
   );
-  const source = normalizeString(entry.source ?? undefined);
 
   if (!sentence && !translations) {
     return null;
@@ -52,7 +51,6 @@ export function normalizeWordExample(entry: WordExample | null | undefined): Wor
   return {
     sentence,
     translations,
-    source,
     exampleDe: sentence ?? null,
     exampleEn: translations?.en ?? null,
   };
@@ -89,7 +87,6 @@ export function canonicalizeExamples(
     return {
       sentence: entry.sentence ?? null,
       translations,
-      source: entry.source ?? null,
       exampleDe: entry.sentence ?? null,
       exampleEn: translations?.en ?? null,
     };
@@ -109,9 +106,6 @@ export function examplesEqual(
     const lhs = canonicalA[index];
     const rhs = canonicalB[index];
     if (lhs.sentence !== rhs.sentence) {
-      return false;
-    }
-    if (lhs.source !== rhs.source) {
       return false;
     }
     const lhsTranslations = sortTranslations(lhs.translations);
@@ -196,12 +190,10 @@ export function upsertExampleTranslation(
   sentence: string | null | undefined,
   language: string,
   value: string | null | undefined,
-  source?: string | null | undefined,
 ): WordExample[] | null {
   const normalizedSentence = normalizeString(sentence);
   const normalizedLanguage = normalizeString(language)?.toLowerCase();
   const normalizedValue = normalizeString(value);
-  const normalizedSource = normalizeString(source ?? undefined);
 
   if (!normalizedSentence && !normalizedValue) {
     return normalizeWordExamples(examples);
@@ -230,7 +222,6 @@ export function upsertExampleTranslation(
     const newEntry: WordExample = {
       sentence: normalizedSentence,
       translations: normalizedLanguage && normalizedValue ? { [normalizedLanguage]: normalizedValue } : null,
-      source: normalizedSource,
     };
     return normalizeWordExamples([...normalizedExamples, newEntry]);
   }
@@ -239,8 +230,5 @@ export function upsertExampleTranslation(
     ...(existing.translations ?? {}),
     ...(normalizedLanguage && normalizedValue ? { [normalizedLanguage]: normalizedValue } : {}),
   };
-  if (normalizedSource) {
-    existing.source = normalizedSource;
-  }
   return normalizeWordExamples(normalizedExamples);
 }

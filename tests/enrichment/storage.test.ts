@@ -84,8 +84,17 @@ describe('enrichment storage', () => {
         { value: 'Apfel', language: 'German', source: 'kaikki.org' },
       ],
       examples: [
-        { exampleDe: 'Der Apfel ist rot.', exampleEn: 'The apple is red.', source: 'kaikki.org' },
-        { exampleDe: 'Äpfel sind lecker.', source: 'kaikki.org' },
+        {
+          sentence: 'Der Apfel ist rot.',
+          translations: { en: 'The apple is red.' },
+          exampleDe: 'Der Apfel ist rot.',
+          exampleEn: 'The apple is red.',
+        },
+        {
+          sentence: 'Äpfel sind lecker.',
+          translations: {},
+          exampleDe: 'Äpfel sind lecker.',
+        },
       ],
       synonyms: ['Apfel'],
       englishHints: ['apple'],

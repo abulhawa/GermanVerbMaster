@@ -172,7 +172,6 @@ interface ExampleCandidate {
   id?: string | null;
   sentence: Record<string, string>;
   translations: Record<string, string>;
-  source?: string | null;
   approved: boolean;
 }
 
@@ -197,7 +196,6 @@ function normaliseExampleCandidate(
   return {
     sentence,
     translations,
-    source: candidate.source ?? null,
     approved: candidate.approved,
   };
 }
@@ -224,7 +222,6 @@ function buildExampleCandidates(
     candidates.push({
       sentence: entry.sentence ? { de: entry.sentence } : {},
       translations: toTranslationRecord(entry.translations),
-      source: entry.source ?? null,
       approved: word.approved,
     });
   }
@@ -235,7 +232,6 @@ function buildExampleCandidates(
         id: (entry as { id?: string | null }).id ?? null,
         sentence: entry.sentence ? { de: entry.sentence } : {},
         translations: toTranslationRecord(entry.translations),
-        source: entry.source ?? null,
         approved: word.approved,
       });
     }
@@ -291,7 +287,7 @@ function combineExamples(
       continue;
     }
 
-    // Merge missing translations/sources
+    // Merge missing translations/sentences
     for (const [language, value] of Object.entries(normalised.translations)) {
       if (!existing.translations[language]) {
         existing.translations[language] = value;
@@ -301,9 +297,6 @@ function combineExamples(
       if (!existing.sentence[language]) {
         existing.sentence[language] = value;
       }
-    }
-    if (!existing.source && normalised.source) {
-      existing.source = normalised.source;
     }
     existing.approved = existing.approved && normalised.approved;
   }

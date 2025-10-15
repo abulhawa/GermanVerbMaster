@@ -220,7 +220,6 @@ function mergeLegacyExampleFields(
       canonical[0] = {
         sentence: null,
         translations: null,
-        source: null,
         exampleDe: null,
         exampleEn: null,
       };
@@ -2208,23 +2207,27 @@ export function registerRoutes(app: Express): void {
           if (!normalized) {
             return;
           }
-          const key = `${(normalized.sentence ?? "").toLowerCase()}::${(normalized.source ?? "").toLowerCase()}`;
-          const existing = map.get(key);
-          if (!existing) {
-            map.set(key, normalized);
+          const [canonical] = canonicalizeExamples([normalized]);
+          if (!canonical) {
             return;
           }
-          if (!existing.sentence && normalized.sentence) {
-            existing.sentence = normalized.sentence;
+          const key = JSON.stringify([
+            (canonical.sentence ?? canonical.exampleDe ?? "").trim().toLowerCase(),
+            Object.entries(canonical.translations ?? {}),
+          ]);
+          const existing = map.get(key);
+          if (!existing) {
+            map.set(key, cloneExample(canonical));
+            return;
           }
-          if (normalized.translations) {
+          if (!existing.sentence && canonical.sentence) {
+            existing.sentence = canonical.sentence;
+          }
+          if (canonical.translations) {
             existing.translations = {
               ...(existing.translations ?? {}),
-              ...normalized.translations,
+              ...canonical.translations,
             };
-          }
-          if (!existing.source && normalized.source) {
-            existing.source = normalized.source;
           }
         };
 
@@ -2240,11 +2243,7 @@ export function registerRoutes(app: Express): void {
         return Array.from(map.values()).sort((a, b) => {
           const aLabel = a.sentence ?? "";
           const bLabel = b.sentence ?? "";
-          const valueCompare = aLabel.localeCompare(bLabel, undefined, { sensitivity: "base" });
-          if (valueCompare !== 0) {
-            return valueCompare;
-          }
-          return (a.source ?? "").localeCompare(b.source ?? "", undefined, { sensitivity: "base" });
+          return aLabel.localeCompare(bLabel, undefined, { sensitivity: "base" });
         });
       })();
 

@@ -5,7 +5,6 @@ export type ExportOperation = "upsert" | "delete";
 export interface ExportExample {
   sentence: Record<string, string>;
   translations: Record<string, string>;
-  source?: string | null;
   approved: boolean;
 }
 

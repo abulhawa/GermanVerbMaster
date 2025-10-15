@@ -147,9 +147,10 @@ function deriveExamples(payload: ExportWordPayload): {
     const sentenceDe = example.sentence.de ?? null;
     const translationEn = example.translations.en ?? Object.values(example.translations)[0] ?? null;
     const wordExample: WordExample = {
+      sentence: sentenceDe,
+      translations: translationEn ? { en: translationEn } : null,
       exampleDe: sentenceDe,
       exampleEn: translationEn,
-      source: example.source ?? null,
     };
     mapped.push(wordExample);
 

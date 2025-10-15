@@ -12,8 +12,7 @@ BEGIN
       FROM (
         SELECT jsonb_strip_nulls(jsonb_build_object(
           'sentence', entry_details.sentence,
-          'translations', entry_details.translations,
-          'source', entry_details.source
+          'translations', entry_details.translations
         )) AS entry_json
         FROM jsonb_array_elements(rec.examples) AS elem(value)
         CROSS JOIN LATERAL (
@@ -31,8 +30,7 @@ BEGIN
                 ) AS trans(k, v)
               ) AS translation_pairs
               WHERE lower_key IS NOT NULL AND value_text IS NOT NULL
-            ) AS translations,
-            NULLIF(BTRIM(value->>'source'), '') AS source
+            ) AS translations
         ) AS entry_details
       ) AS entry
       WHERE entry_json IS NOT NULL;

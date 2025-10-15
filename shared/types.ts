@@ -31,7 +31,6 @@ export type WordExampleTranslations = Record<string, string | null | undefined>;
 export interface WordExample {
   sentence?: string | null;
   translations?: WordExampleTranslations | null;
-  source?: string | null;
   /**
    * @deprecated Use {@link sentence} instead.
    */
