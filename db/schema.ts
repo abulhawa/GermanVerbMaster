@@ -21,11 +21,13 @@ import {
   jsonb,
   pgEnum,
   pgTable,
+  pgView,
   primaryKey,
   serial,
   text,
   timestamp,
   uniqueIndex,
+  uuid,
 } from "drizzle-orm/pg-core";
 
 const practiceResult = ["correct", "incorrect"] as const satisfies ReadonlyArray<PracticeResult>;
@@ -192,6 +194,8 @@ export const words = pgTable(
     complete: boolean("complete").default(false).notNull(),
     sourcesCsv: text("sources_csv"),
     sourceNotes: text("source_notes"),
+    exportUid: uuid("export_uid").default(sql`gen_random_uuid()`).notNull(),
+    exportedAt: timestamp("exported_at", { withTimezone: true }),
     translations: jsonb("translations").$type<
       | Array<{
           value: string;
@@ -217,6 +221,15 @@ export const words = pgTable(
   },
   (table) => [uniqueIndex("words_lemma_pos_idx").on(table.lemma, table.pos)],
 );
+
+export const wordsExportQueue = pgView("words_export_queue", {
+  id: integer("id"),
+  exportUid: uuid("export_uid"),
+  pos: text("pos"),
+  updatedAt: timestamp("updated_at", { withTimezone: true }),
+  exportedAt: timestamp("exported_at", { withTimezone: true }),
+  needsExport: boolean("needs_export"),
+});
 
 export const enrichmentProviderSnapshots = pgTable(
   "enrichment_provider_snapshots",

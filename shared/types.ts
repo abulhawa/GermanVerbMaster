@@ -67,6 +67,8 @@ export interface Word {
   superlative: string | null;
   approved: boolean;
   complete: boolean;
+  exportUid: string;
+  exportedAt: Date | null;
   translations: WordTranslation[] | null;
   examples: WordExample[] | null;
   posAttributes: WordPosAttributes | null;

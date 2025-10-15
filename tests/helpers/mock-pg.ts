@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+
 import { newDb, type IMemoryDb } from 'pg-mem';
 import { Pool, types, type PoolClient, type QueryResult } from 'pg';
 
@@ -197,6 +199,12 @@ export function createMockPool(): Pool {
     name: 'random',
     returns: 'double precision',
     implementation: () => Math.random(),
+  });
+  mem.public.registerFunction({
+    name: 'gen_random_uuid',
+    returns: 'uuid',
+    implementation: () => randomUUID(),
+    impure: true,
   });
   mem.public.registerFunction({
     name: 'floor',

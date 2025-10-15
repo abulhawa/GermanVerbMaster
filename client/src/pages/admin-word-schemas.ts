@@ -31,6 +31,8 @@ const posAttributesSchema = z
 
 export const wordSchema = z.object({
   id: z.number(),
+  exportUid: z.string().uuid(),
+  exportedAt: z.coerce.date().nullable(),
   lemma: z.string(),
   pos: z.enum(['V', 'N', 'Adj', 'Adv', 'Pron', 'Det', 'Präp', 'Konj', 'Num', 'Part', 'Interj']),
   level: z.string().nullable(),
@@ -71,3 +73,18 @@ export const wordsResponseSchema = z.object({
 
 export type AdminWord = z.infer<typeof wordSchema>;
 export type WordsResponse = z.infer<typeof wordsResponseSchema>;
+
+export const exportStatusSchema = z.object({
+  generatedAt: z.coerce.date(),
+  totalDirty: z.number(),
+  oldestDirtyUpdatedAt: z.coerce.date().nullable(),
+  perPos: z.record(
+    z.string(),
+    z.object({
+      count: z.number(),
+      oldestUpdatedAt: z.coerce.date().nullable(),
+    }),
+  ),
+});
+
+export type ExportStatus = z.infer<typeof exportStatusSchema>;

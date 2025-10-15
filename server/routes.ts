@@ -30,6 +30,7 @@ import type { LexemePos, TaskType } from "@shared";
 import { posPrimarySourceId } from "@shared/source-ids";
 import { getTaskRegistryEntry, taskRegistry } from "./tasks/registry.js";
 import { processTaskSubmission } from "./tasks/scheduler.js";
+import { exportWordById, getExportStatus, runBulkExport } from "./export-sync.js";
 import {
   computeWordEnrichment,
   resolveConfigFromEnv as resolveEnrichmentConfigFromEnv,
@@ -661,6 +662,13 @@ const wordUpdateSchema = z
     enrichmentMethod: enrichmentMethodSchema.nullable().optional(),
   })
   .strict();
+
+const exportBulkSchema = z
+  .object({
+    pos: trimmedString(10).optional(),
+    limit: z.coerce.number().int().min(1).max(1000).optional(),
+  })
+  .partial();
 
 const enrichmentModeSchema = z.enum(["pending", "approved", "all"]);
 
@@ -2230,6 +2238,62 @@ export function registerRoutes(app: Express): void {
         return sendError(res, 400, "Invalid word payload", "INVALID_WORD_INPUT");
       }
       sendError(res, 500, "Failed to update word", "WORD_UPDATE_FAILED");
+    }
+  });
+
+  app.get("/api/admin/export/status", requireAdminAccess, async (_req, res) => {
+    try {
+      const summary = await getExportStatus();
+      res.setHeader("Cache-Control", "no-store");
+      res.json({
+        generatedAt: new Date().toISOString(),
+        ...summary,
+      });
+    } catch (error) {
+      console.error("Failed to load export status", error);
+      sendError(res, 500, "Failed to load export status", "EXPORT_STATUS_FAILED");
+    }
+  });
+
+  app.post("/api/admin/export/bulk", requireAdminAccess, async (req, res) => {
+    const parsed = exportBulkSchema.safeParse(req.body ?? {});
+    if (!parsed.success) {
+      return sendError(res, 400, "Invalid bulk export request", "INVALID_EXPORT_REQUEST");
+    }
+
+    const { pos, limit = 250 } = parsed.data;
+
+    try {
+      const result = await runBulkExport({ pos: pos ?? null, limit, localDir: undefined });
+      res.setHeader("Cache-Control", "no-store");
+      res.json(result);
+    } catch (error) {
+      console.error("Failed to run bulk export", error);
+      sendError(res, 500, "Failed to run bulk export", "EXPORT_BULK_FAILED");
+    }
+  });
+
+  app.post("/api/admin/words/:id/save-to-files", requireAdminAccess, async (req, res) => {
+    const id = Number.parseInt(req.params.id, 10);
+    if (!Number.isFinite(id) || id <= 0) {
+      return sendError(res, 400, "Invalid word id", "INVALID_WORD_ID");
+    }
+
+    try {
+      const result = await exportWordById(id);
+      res.setHeader("Cache-Control", "no-store");
+      res.json({
+        status: "exported",
+        wordId: id,
+        wroteLocal: result.wroteLocal,
+        payload: result.payload,
+      });
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("not found")) {
+        return sendError(res, 404, "Word not found", "WORD_NOT_FOUND");
+      }
+      console.error("Failed to export word", error);
+      sendError(res, 500, "Failed to export word", "EXPORT_WORD_FAILED");
     }
   });
 
