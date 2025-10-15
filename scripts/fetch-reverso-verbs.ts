@@ -1,8 +1,8 @@
 import { writeFile } from 'fs/promises';
 import { db } from "@db";
-import { verbs } from "@db/schema";
+import { words } from "@db/schema";
 import { spawn } from 'child_process';
-import { sql } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 
 // Python script to fetch verbs using Reverso API
 const PYTHON_SCRIPT = `
@@ -134,7 +134,9 @@ async function importVerbs() {
     console.log(`Fetched ${verbsData.length} verbs from Reverso`);
 
     // Clear existing verbs that were auto-imported from Reverso
-    await db.delete(verbs).where(sql`json_extract(${verbs.source}, '$.name') = 'Reverso'`);
+    await db
+      .delete(words)
+      .where(and(eq(words.pos, 'V'), eq(words.sourcesCsv, 'Reverso')));
     console.log('Cleared existing Reverso-imported verbs');
 
     let imported = 0;
@@ -149,18 +151,31 @@ async function importVerbs() {
           continue;
         }
 
-        await db.insert(verbs).values({
-          infinitive: verb.infinitive,
-          english: verb.english,
-          praeteritum: verb.praeteritum,
-          partizipIi: verb.partizipII,
-          auxiliary: verb.auxiliary,
-          level: verb.level,
-          praeteritumExample: verb.praeteritumExample,
-          partizipIiExample: verb.partizipIIExample,
-          source: verb.source,
-          pattern: verb.pattern
-        }).onConflictDoNothing();
+        const tags = [verb.pattern?.type, verb.pattern?.group].filter(
+          (value): value is string => Boolean(value),
+        );
+
+        await db
+          .insert(words)
+          .values({
+            lemma: verb.infinitive,
+            pos: 'V',
+            english: verb.english,
+            praeteritum: verb.praeteritum,
+            partizipIi: verb.partizipII,
+            aux: verb.auxiliary,
+            level: verb.level,
+            examples: [
+              { exampleDe: verb.praeteritumExample },
+              { exampleDe: verb.partizipIIExample },
+            ],
+            approved: true,
+            complete: false,
+            sourcesCsv: 'Reverso',
+            sourceNotes: 'Auto-generated using Reverso API',
+            posAttributes: tags.length ? { tags } : null,
+          })
+          .onConflictDoNothing({ target: [words.lemma, words.pos] });
 
         imported++;
         if (imported % 5 === 0) {

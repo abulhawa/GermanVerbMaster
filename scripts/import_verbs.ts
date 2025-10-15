@@ -1,8 +1,8 @@
 import { access, writeFile } from 'fs/promises';
 import { db } from "@db";
-import { verbs } from "@db/schema";
+import { words } from "@db/schema";
 import { spawn } from 'child_process';
-import { sql } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { tmpdir } from 'os';
 import path from 'path';
 
@@ -106,7 +106,9 @@ async function importVerbs() {
     console.log('Sample verb data:', JSON.stringify(verbsData[0], null, 2));
 
     // Clear existing verbs that were auto-imported
-    await db.delete(verbs).where(sql`json_extract(${verbs.source}, '$.name') = 'German_Verbs_Dataset'`);
+    await db
+      .delete(words)
+      .where(and(eq(words.pos, 'V'), eq(words.sourcesCsv, 'German_Verbs_Dataset')));
     console.log('Cleared existing imported verbs');
 
     let imported = 0;
@@ -124,21 +126,31 @@ async function importVerbs() {
         const level = determineLevel(verb);
         const pattern = detectPattern(verb);
 
-        await db.insert(verbs).values({
-          infinitive: verb.infinitive,
-          english: verb.english || `to ${verb.infinitive}`,
-          praeteritum: verb.praeteritum,
-          partizipIi: verb.partizipII,
-          auxiliary: verb.auxiliary || 'haben',
-          level,
-          praeteritumExample: `Er ${verb.praeteritum} gestern.`,
-          partizipIiExample: `Sie ${verb.auxiliary || 'haben'} heute ${verb.partizipII}.`,
-          source: {
-            name: "German_Verbs_Dataset",
-            levelReference: "Automatically categorized based on verb properties"
-          },
-          pattern: pattern
-        }).onConflictDoNothing();
+        const tags = [pattern?.type, pattern?.group].filter(
+          (value): value is string => Boolean(value),
+        );
+
+        await db
+          .insert(words)
+          .values({
+            lemma: verb.infinitive,
+            pos: 'V',
+            english: verb.english || `to ${verb.infinitive}`,
+            praeteritum: verb.praeteritum,
+            partizipIi: verb.partizipII,
+            aux: verb.auxiliary || 'haben',
+            level,
+            examples: [
+              { exampleDe: `Er ${verb.praeteritum} gestern.` },
+              { exampleDe: `Sie ${verb.auxiliary || 'haben'} heute ${verb.partizipII}.` },
+            ],
+            approved: true,
+            complete: false,
+            sourcesCsv: 'German_Verbs_Dataset',
+            sourceNotes: 'Automatically categorized based on verb properties',
+            posAttributes: tags.length ? { tags } : null,
+          })
+          .onConflictDoNothing({ target: [words.lemma, words.pos] });
 
         imported++;
         if (imported % 100 === 0) {

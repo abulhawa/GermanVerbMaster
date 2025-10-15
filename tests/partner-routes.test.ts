@@ -28,9 +28,6 @@ const hoisted = vi.hoisted(() => {
       integrationUsage: {
         findMany: vi.fn(() => Promise.resolve([])),
       },
-      verbs: {
-        findFirst: vi.fn(() => Promise.resolve(null)),
-      },
       verbAnalytics: {
         findFirst: vi.fn(() => Promise.resolve(null)),
       },
