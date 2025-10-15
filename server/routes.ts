@@ -192,6 +192,67 @@ function extractPackSlugFromTaskId(taskId: string | null): string | null {
   return match[1]?.toLowerCase() ?? null;
 }
 
+function cloneExample(entry: WordExample): WordExample {
+  return {
+    ...entry,
+    translations: entry.translations ? { ...entry.translations } : null,
+  };
+}
+
+function mergeLegacyExampleFields(
+  examples: Array<WordExample | null | undefined> | null | undefined,
+  {
+    sentenceProvided,
+    sentence,
+    englishProvided,
+    english,
+  }: {
+    sentenceProvided: boolean;
+    sentence: string | null | undefined;
+    englishProvided: boolean;
+    english: string | null | undefined;
+  },
+): WordExample[] {
+  const canonical = canonicalizeExamples(examples).map((entry) => cloneExample(entry));
+
+  const ensurePrimary = (): WordExample => {
+    if (!canonical[0]) {
+      canonical[0] = {
+        sentence: null,
+        translations: null,
+        source: null,
+        exampleDe: null,
+        exampleEn: null,
+      };
+      return canonical[0];
+    }
+
+    const current = canonical[0];
+    canonical[0] = cloneExample(current);
+    return canonical[0];
+  };
+
+  if (sentenceProvided) {
+    const primary = ensurePrimary();
+    primary.sentence = sentence ?? null;
+    primary.exampleDe = sentence ?? null;
+  }
+
+  if (englishProvided) {
+    const primary = ensurePrimary();
+    const englishValue = english ?? null;
+    if (englishValue) {
+      primary.translations = { ...(primary.translations ?? {}), en: englishValue };
+    } else if (primary.translations) {
+      const { en: _removed, ...rest } = primary.translations;
+      primary.translations = Object.keys(rest).length > 0 ? rest : null;
+    }
+    primary.exampleEn = englishValue;
+  }
+
+  return canonicalizeExamples(canonical);
+}
+
 function normaliseTaskPrompt(prompt: unknown): Record<string, unknown> {
   if (!isRecord(prompt)) {
     return {};
@@ -2264,17 +2325,12 @@ export function registerRoutes(app: Express): void {
       const exampleEnProvided = Object.prototype.hasOwnProperty.call(data, "exampleEn");
 
       if (exampleDeProvided || exampleEnProvided) {
-        const sentence = exampleDeProvided ? data.exampleDe ?? null : getExampleSentence(nextExamples) ?? null;
-        const englishExample = exampleEnProvided ? data.exampleEn ?? null : getExampleTranslation(nextExamples, "en") ?? null;
-        const manualExamples = sentence || englishExample
-          ? canonicalizeExamples([
-              {
-                sentence,
-                translations: englishExample ? { en: englishExample } : null,
-              },
-            ])
-          : [];
-        nextExamples = manualExamples;
+        nextExamples = mergeLegacyExampleFields(nextExamples, {
+          sentenceProvided: exampleDeProvided,
+          sentence: exampleDeProvided ? data.exampleDe ?? null : undefined,
+          englishProvided: exampleEnProvided,
+          english: exampleEnProvided ? data.exampleEn ?? null : undefined,
+        });
         examplesTouched = true;
       }
 
@@ -2565,17 +2621,12 @@ export function registerRoutes(app: Express): void {
       const exampleEnProvided = Object.prototype.hasOwnProperty.call(patch, "exampleEn");
 
       if (exampleDeProvided || exampleEnProvided) {
-        const sentence = exampleDeProvided ? patch.exampleDe ?? null : getExampleSentence(nextExamples) ?? null;
-        const englishExample = exampleEnProvided ? patch.exampleEn ?? null : getExampleTranslation(nextExamples, "en") ?? null;
-        const manualExamples = sentence || englishExample
-          ? canonicalizeExamples([
-              {
-                sentence,
-                translations: englishExample ? { en: englishExample } : null,
-              },
-            ])
-          : [];
-        nextExamples = manualExamples;
+        nextExamples = mergeLegacyExampleFields(nextExamples, {
+          sentenceProvided: exampleDeProvided,
+          sentence: exampleDeProvided ? patch.exampleDe ?? null : undefined,
+          englishProvided: exampleEnProvided,
+          english: exampleEnProvided ? patch.exampleEn ?? null : undefined,
+        });
         examplesTouched = true;
       }
 
