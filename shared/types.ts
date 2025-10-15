@@ -26,10 +26,20 @@ export interface WordTranslation {
   confidence?: number | null;
 }
 
+export type WordExampleTranslations = Record<string, string | null | undefined>;
+
 export interface WordExample {
-  exampleDe?: string | null;
-  exampleEn?: string | null;
+  sentence?: string | null;
+  translations?: WordExampleTranslations | null;
   source?: string | null;
+  /**
+   * @deprecated Use {@link sentence} instead.
+   */
+  exampleDe?: string | null;
+  /**
+   * @deprecated Use {@link translations} with an `en` key instead.
+   */
+  exampleEn?: string | null;
 }
 
 export interface WordPrepositionAttributes {

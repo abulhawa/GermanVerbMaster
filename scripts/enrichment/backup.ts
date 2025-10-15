@@ -8,6 +8,7 @@ import { getDb } from "@db/client";
 import { words } from "@db/schema";
 import type { Word } from "@db/schema";
 import type { WordsBackupEntry, WordsBackupFile, WordsBackupSummary } from "@shared/enrichment";
+import { canonicalizeExamples } from "@shared";
 import {
   getSupabaseStorageConfigFromEnv,
   SupabaseStorageNotConfiguredError,
@@ -60,6 +61,8 @@ function serialiseDate(value: Date | string | null | undefined): string | null {
 }
 
 function normaliseWordForBackup(word: Word): WordsBackupEntry {
+  const normalizedExamples = canonicalizeExamples(word.examples);
+
   return {
     id: word.id,
     lemma: word.lemma,
@@ -82,7 +85,7 @@ function normaliseWordForBackup(word: Word): WordsBackupEntry {
     approved: word.approved,
     complete: word.complete,
     translations: word.translations ?? null,
-    examples: word.examples ?? null,
+    examples: normalizedExamples.length > 0 ? normalizedExamples : null,
     posAttributes: word.posAttributes ?? null,
     enrichmentAppliedAt: serialiseDate(word.enrichmentAppliedAt ?? null),
     enrichmentMethod: word.enrichmentMethod ?? null,

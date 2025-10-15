@@ -207,9 +207,11 @@ export const words = pgTable(
     >(),
     examples: jsonb("examples").$type<
       | Array<{
+          sentence?: string | null;
+          translations?: Record<string, string | null | undefined> | null;
+          source?: string | null;
           exampleDe?: string | null;
           exampleEn?: string | null;
-          source?: string | null;
         }>
       | null
     >(),

@@ -5,3 +5,4 @@ export * from "./enrichment.js";
 export * from "./source-ids.js";
 export * from "./text-normalizer.js";
 export * from "./export-types.js";
+export * from "./examples.js";
