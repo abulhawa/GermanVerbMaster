@@ -220,8 +220,6 @@ function mergeLegacyExampleFields(
       canonical[0] = {
         sentence: null,
         translations: null,
-        exampleDe: null,
-        exampleEn: null,
       };
       return canonical[0];
     }
@@ -234,7 +232,6 @@ function mergeLegacyExampleFields(
   if (sentenceProvided) {
     const primary = ensurePrimary();
     primary.sentence = sentence ?? null;
-    primary.exampleDe = sentence ?? null;
   }
 
   if (englishProvided) {
@@ -246,7 +243,6 @@ function mergeLegacyExampleFields(
       const { en: _removed, ...rest } = primary.translations;
       primary.translations = Object.keys(rest).length > 0 ? rest : null;
     }
-    primary.exampleEn = englishValue;
   }
 
   return canonicalizeExamples(canonical);

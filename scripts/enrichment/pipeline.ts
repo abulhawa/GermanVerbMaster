@@ -679,17 +679,21 @@ async function collectSuggestions(
   const addExampleCandidate = (candidate: ExampleCandidate): ExampleCandidate | null => {
     const sanitized: ExampleCandidate = {
       source: candidate.source,
+      sentence: candidate.sentence?.trim() || candidate.exampleDe?.trim() || undefined,
+      translations: candidate.translations ? { ...candidate.translations } : null,
       exampleDe: candidate.exampleDe?.trim() || undefined,
       exampleEn: candidate.exampleEn?.trim() || undefined,
     };
-    if (!sanitized.exampleDe && !sanitized.exampleEn) {
+    const hasSentence = Boolean(sanitized.sentence);
+    const englishTranslation = sanitized.translations?.en ?? sanitized.exampleEn ?? undefined;
+    if (!hasSentence && !englishTranslation) {
       return null;
     }
     const exists = examples.some(
       (entry) =>
         entry.source === sanitized.source
-        && (entry.exampleDe ?? "") === (sanitized.exampleDe ?? "")
-        && (entry.exampleEn ?? "") === (sanitized.exampleEn ?? ""),
+        && ((entry.sentence ?? entry.exampleDe ?? "") === (sanitized.sentence ?? ""))
+        && ((entry.translations?.en ?? entry.exampleEn ?? "") === (englishTranslation ?? "")),
     );
     if (!exists) {
       examples.push(sanitized);
@@ -806,6 +810,8 @@ async function collectSuggestions(
       snapshot.rawPayload = value ?? null;
       if (value && (value.exampleDe || value.exampleEn)) {
         const candidate = addExampleCandidate({
+          sentence: value.sentence ?? value.exampleDe,
+          translations: value.translations ?? null,
           exampleDe: value.exampleDe,
           exampleEn: value.exampleEn,
           source: value.source,
@@ -864,6 +870,8 @@ async function collectSuggestions(
         if (value.examples.length) {
           for (const example of value.examples) {
             const candidate = addExampleCandidate({
+              sentence: example.sentence ?? example.exampleDe,
+              translations: example.translations ?? null,
               exampleDe: example.exampleDe,
               exampleEn: example.exampleEn,
               source: "kaikki.org",
@@ -981,6 +989,8 @@ async function collectSuggestions(
         }
         if (aiResult.exampleDe || aiResult.exampleEn) {
           const candidate = addExampleCandidate({
+            sentence: aiResult.sentence ?? aiResult.exampleDe,
+            translations: aiResult.translations ?? null,
             exampleDe: aiResult.exampleDe,
             exampleEn: aiResult.exampleEn,
             source: aiResult.source,
@@ -1174,7 +1184,7 @@ function toWordExamples(candidates: ExampleCandidate[]): WordExample[] | null {
     }
     const translationEntries = Object.entries(canonical.translations ?? {});
     const key = JSON.stringify([
-      (canonical.sentence ?? canonical.exampleDe ?? "").toLowerCase(),
+      (canonical.sentence ?? "").toLowerCase(),
       translationEntries,
     ]);
     if (seen.has(key)) {
@@ -1746,10 +1756,16 @@ function determineUpdates(
 }
 
 function pickExampleCandidate(examples: ExampleCandidate[]): ExampleCandidate | undefined {
+  const hasSentence = (example: ExampleCandidate) =>
+    Boolean((example.sentence ?? example.exampleDe ?? "").trim());
+  const hasEnglish = (example: ExampleCandidate) => {
+    const translation = example.translations?.en ?? example.exampleEn;
+    return Boolean((translation ?? "").trim());
+  };
   return (
-    examples.find((example) => example.exampleDe && example.exampleEn)
-    ?? examples.find((example) => example.exampleDe)
-    ?? examples.find((example) => example.exampleEn)
+    examples.find((example) => hasSentence(example) && hasEnglish(example))
+    ?? examples.find((example) => hasSentence(example))
+    ?? examples.find((example) => hasEnglish(example))
     ?? examples[0]
   );
 }

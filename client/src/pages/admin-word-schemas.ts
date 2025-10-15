@@ -8,9 +8,10 @@ export const translationSchema = z.object({
 });
 
 export const exampleSchema = z.object({
+  sentence: z.string().nullable().optional(),
+  translations: z.record(z.string(), z.string()).nullable().optional(),
   exampleDe: z.string().nullable().optional(),
   exampleEn: z.string().nullable().optional(),
-  source: z.string().nullable().optional(),
 });
 
 const prepositionAttributesSchema = z

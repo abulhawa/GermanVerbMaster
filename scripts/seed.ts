@@ -285,16 +285,14 @@ function normaliseExamples(
     examples.push({
       sentence: exampleDe,
       translations: exampleEn ? { en: exampleEn } : null,
-      exampleDe,
-      exampleEn,
     });
   }
 
   const [first] = examples;
 
   return {
-    exampleDe: first?.exampleDe ?? null,
-    exampleEn: first?.exampleEn ?? null,
+    exampleDe: first?.sentence ?? null,
+    exampleEn: first?.translations?.en ?? null,
     examples: examples.length ? examples : null,
   };
 }

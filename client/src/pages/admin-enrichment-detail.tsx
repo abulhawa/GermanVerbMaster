@@ -1019,15 +1019,19 @@ const WordEnrichmentDetailView = ({
                 <div>
                   <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Examples</div>
                   <ul className="mt-1 space-y-2 text-sm">
-                    {history.examples.map((example, index) => (
-                      <li
-                        key={`${example.exampleDe ?? '—'}-${example.exampleEn ?? '—'}-${index}`}
-                        className="leading-snug"
-                      >
-                        <span className="font-medium text-foreground">{example.exampleDe ?? '—'}</span>
-                        {example.exampleEn ? <span className="text-muted-foreground"> · {example.exampleEn}</span> : null}
-                      </li>
-                    ))}
+                    {history.examples.map((example, index) => {
+                      const sentence = example.sentence ?? example.exampleDe ?? '—';
+                      const english = example.translations?.en ?? example.exampleEn ?? null;
+                      return (
+                        <li
+                          key={`${sentence}-${english ?? '—'}-${index}`}
+                          className="leading-snug"
+                        >
+                          <span className="font-medium text-foreground">{sentence}</span>
+                          {english ? <span className="text-muted-foreground"> · {english}</span> : null}
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               ) : null}
@@ -1704,12 +1708,16 @@ function SnapshotDataList({ snapshot }: { snapshot: EnrichmentProviderSnapshot }
         <div>
           <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Examples</div>
           <ul className="space-y-1">
-            {examples.map((example, index) => (
-              <li key={`${example.exampleDe ?? '—'}-${example.exampleEn ?? '—'}-${index}`} className="leading-snug">
-                <span className="font-medium text-foreground">{example.exampleDe ?? '—'}</span>
-                {example.exampleEn ? <span className="text-muted-foreground"> · {example.exampleEn}</span> : null}
-              </li>
-            ))}
+            {examples.map((example, index) => {
+              const sentence = example.sentence ?? example.exampleDe ?? '—';
+              const english = example.translations?.en ?? example.exampleEn ?? null;
+              return (
+                <li key={`${sentence}-${english ?? '—'}-${index}`} className="leading-snug">
+                  <span className="font-medium text-foreground">{sentence}</span>
+                  {english ? <span className="text-muted-foreground"> · {english}</span> : null}
+                </li>
+              );
+            })}
           </ul>
         </div>
       ) : null}

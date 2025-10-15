@@ -60,7 +60,12 @@ describe('lookupWiktextract', () => {
     expect(result?.translations.map((entry) => entry.language)).toEqual(['English', 'English']);
     expect(result?.englishHints).toEqual(['to turn']);
     expect(result?.examples).toEqual([
-      { exampleDe: 'Biegen Sie links ab.', exampleEn: 'Turn left.' },
+      {
+        sentence: 'Biegen Sie links ab.',
+        translations: { en: 'Turn left.' },
+        exampleDe: 'Biegen Sie links ab.',
+        exampleEn: 'Turn left.',
+      },
     ]);
     expect(result?.synonyms).toEqual(['abbiegen']);
     expect(result?.verbForms?.praeteritum).toBe('bog ab');
