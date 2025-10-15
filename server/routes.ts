@@ -2663,15 +2663,6 @@ export function registerRoutes(app: Express): void {
           contentApplied = true;
         }
       }
-      if (Object.prototype.hasOwnProperty.call(patch, "examples") && patch.examples !== undefined) {
-        const nextExamples = patch.examples ?? null;
-        const existingExamples = existing.examples ?? null;
-        if (JSON.stringify(existingExamples) !== JSON.stringify(nextExamples)) {
-          updates.examples = nextExamples;
-          appliedFields.push("examples");
-          contentApplied = true;
-        }
-      }
       if (
         Object.prototype.hasOwnProperty.call(patch, "posAttributes")
         && patch.posAttributes !== undefined
