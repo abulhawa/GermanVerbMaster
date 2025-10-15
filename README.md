@@ -43,6 +43,7 @@ Requires Node.js 22.0.0 or newer and npm 10+ (see `package.json` engines field).
    npm run test:e2e   # execute Playwright end-to-end tests (browsers required)
    npm run test:all   # run unit tests followed by Playwright end-to-end coverage
    npm run packs:lint # validate generated content packs against the task registry
+   npm run db:reset   # drop all Postgres objects and clear generated data (preserves data/pos)
    ```
 
 Point the backend at any Postgres instance (local Docker, Supabase, etc.) via `DATABASE_URL`. The driver enables SSL by default so managed providers just work; override `DATABASE_SSL=disable` or `PGSSLMODE=disable` for plain-text local development.

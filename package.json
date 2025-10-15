@@ -15,6 +15,7 @@
     "check": "tsc",
     "lint": "npm run check && npm run packs:lint",
     "packs:lint": "tsx scripts/packs-lint.ts",
+    "db:reset": "tsx scripts/db-reset.ts",
     "db:push": "tsx scripts/db-push.ts",
     "test": "npm run test:unit",
     "test:unit": "vitest run",
