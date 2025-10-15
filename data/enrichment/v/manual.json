@@ -1,0 +1,941 @@
+{
+  "schemaVersion": 1,
+  "providerId": "manual",
+  "providerLabel": "Manual Apply",
+  "pos": "V",
+  "updatedAt": "2025-10-15T20:08:34.351Z",
+  "entries": {
+    "abbiegen": {
+      "lemma": "abbiegen",
+      "pos": "V",
+      "providerId": "manual",
+      "providerLabel": "Manual Apply",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-15T19:43:19.431Z",
+      "translations": [
+        {
+          "value": "to turn, to turn off",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "to bend, to turn (of a road, street, path, etc.)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "to fold (metal)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "to head off, to stave off",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "to branch off",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": [
+        {
+          "sentence": "Ich glaube, wir sind falsch abgebogen.",
+          "exampleDe": "Ich glaube, wir sind falsch abgebogen.",
+          "exampleEn": "I think we took a wrong turn.",
+          "translations": {
+            "en": "I think we took a wrong turn."
+          }
+        },
+        {
+          "sentence": "Ich glaube, wir sind falsch abgebogen.",
+          "exampleDe": "Ich glaube, wir sind falsch abgebogen.",
+          "exampleEn": "I think we took a wrong turn.",
+          "translations": {
+            "en": "I think we took a wrong turn."
+          }
+        },
+        {
+          "sentence": "Die Straße biegt vor uns nach links ab.",
+          "exampleDe": "Die Straße biegt vor uns nach links ab.",
+          "exampleEn": "The road bends to the left up ahead.",
+          "translations": {
+            "en": "The road bends to the left up ahead."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "word": {
+          "id": 304,
+          "aux": "haben / sein",
+          "pos": "V",
+          "lemma": "abbiegen",
+          "gender": null,
+          "plural": null,
+          "english": "to turn, to turn off",
+          "perfekt": "hat abgebogen / ist abgebogen",
+          "examples": [
+            {
+              "sentence": "Ich glaube, wir sind falsch abgebogen.",
+              "exampleDe": "Ich glaube, wir sind falsch abgebogen.",
+              "exampleEn": "I think we took a wrong turn.",
+              "translations": {
+                "en": "I think we took a wrong turn."
+              }
+            },
+            {
+              "sentence": "Ich glaube, wir sind falsch abgebogen.",
+              "exampleDe": "Ich glaube, wir sind falsch abgebogen.",
+              "exampleEn": "I think we took a wrong turn.",
+              "translations": {
+                "en": "I think we took a wrong turn."
+              }
+            },
+            {
+              "sentence": "Die Straße biegt vor uns nach links ab.",
+              "exampleDe": "Die Straße biegt vor uns nach links ab.",
+              "exampleEn": "The road bends to the left up ahead.",
+              "translations": {
+                "en": "The road bends to the left up ahead."
+              }
+            }
+          ],
+          "exampleDe": "Ich glaube, wir sind falsch abgebogen.",
+          "exampleEn": "I think we took a wrong turn.",
+          "partizipIi": "abgebogen",
+          "comparative": null,
+          "praeteritum": "bog ab",
+          "superlative": null,
+          "translations": [
+            {
+              "value": "to turn, to turn off",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "to bend, to turn (of a road, street, path, etc.)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "to fold (metal)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "to head off, to stave off",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "to branch off",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            }
+          ],
+          "posAttributes": {
+            "pos": "verb",
+            "tags": [
+              "class 2",
+              "figuratively",
+              "intransitive",
+              "strong",
+              "transitive"
+            ],
+            "notes": [
+              "class 2 strong verbs",
+              "intransitive verbs",
+              "Pages with 1 entry",
+              "Pages with entries",
+              "strong verbs",
+              "technical terms",
+              "terms inherited from Middle High German",
+              "terms with usage examples",
+              "transitive verbs",
+              "verbs",
+              "verbs using haben and sein as auxiliary",
+              "verbs using haben as auxiliary",
+              "verbs using sein as auxiliary",
+              "verbs with red links in their inflection tables"
+            ]
+          },
+          "enrichmentMethod": "manual_api",
+          "enrichmentAppliedAt": "2025-10-15T19:43:17.373Z"
+        },
+        "patch": {
+          "examples": [
+            {
+              "sentence": "Biegen Sie jetzt links ab.",
+              "translations": {
+                "en": "Now turn left."
+              }
+            },
+            {
+              "sentence": "Ich glaube, wir sind falsch abgebogen.",
+              "translations": {
+                "en": "I think we took a wrong turn."
+              }
+            },
+            {
+              "sentence": "Die Straße biegt vor uns nach links ab.",
+              "translations": {
+                "en": "The road bends to the left up ahead."
+              }
+            }
+          ],
+          "exampleDe": "Ich glaube, wir sind falsch abgebogen.",
+          "exampleEn": "I think we took a wrong turn.",
+          "translations": [
+            {
+              "value": "to turn, to turn off",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "to bend, to turn (of a road, street, path, etc.)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "to fold (metal)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "to head off, to stave off",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "to branch off",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            }
+          ],
+          "posAttributes": {
+            "pos": "verb",
+            "tags": [
+              "class 2",
+              "figuratively",
+              "intransitive",
+              "strong",
+              "transitive"
+            ],
+            "notes": [
+              "class 2 strong verbs",
+              "intransitive verbs",
+              "Pages with 1 entry",
+              "Pages with entries",
+              "strong verbs",
+              "technical terms",
+              "terms inherited from Middle High German",
+              "terms with usage examples",
+              "transitive verbs",
+              "verbs",
+              "verbs using haben and sein as auxiliary",
+              "verbs using haben as auxiliary",
+              "verbs using sein as auxiliary",
+              "verbs with red links in their inflection tables"
+            ]
+          }
+        },
+        "method": "manual_api",
+        "source": "manual_apply",
+        "appliedAt": "2025-10-15T19:43:17.373Z",
+        "appliedFields": [
+          "examples",
+          "exampleDe",
+          "exampleEn",
+          "enrichmentAppliedAt",
+          "enrichmentMethod"
+        ]
+      },
+      "wordId": 304,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "all",
+        "snapshotId": 21,
+        "wordId": 304,
+        "createdAt": "2025-10-15T19:43:19.431Z",
+        "enrichmentMethod": "manual_api",
+        "appliedAt": "2025-10-15T19:43:17.373Z",
+        "source": "manual_apply"
+      }
+    },
+    "leben": {
+      "lemma": "leben",
+      "pos": "V",
+      "providerId": "manual",
+      "providerLabel": "Manual Apply",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-15T19:56:15.416Z",
+      "translations": [
+        {
+          "value": "to live, to be alive",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "to dwell, to reside",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "to live, to exist, to occupy a place",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "to cope with, to live with, to deal with",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "to lead (a certain life or existence)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "to fulfill, to live out (a dream/wish regarding one's life)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "to put into practice, to routinely follow (of processes and policies)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": [
+        {
+          "sentence": "Er lebte in Berlin.",
+          "exampleDe": "Er lebte in Berlin.",
+          "exampleEn": "He lived in Berlin.",
+          "translations": {
+            "en": "He lived in Berlin."
+          }
+        },
+        {
+          "sentence": "Lebt dein Uropa noch?",
+          "exampleDe": "Lebt dein Uropa noch?",
+          "exampleEn": "Is your great-grandpa still alive?",
+          "translations": {
+            "en": "Is your great-grandpa still alive?"
+          }
+        },
+        {
+          "sentence": "Ich lebe in der Schillerstraße in der Nähe des Stadtzentrums.",
+          "exampleDe": "Ich lebe in der Schillerstraße in der Nähe des Stadtzentrums.",
+          "exampleEn": "I live on the Schiller street near the city center.",
+          "translations": {
+            "en": "I live on the Schiller street near the city center."
+          }
+        },
+        {
+          "sentence": "Es leben etwa 300 000 Bürger des ehemaligen Jugoslawien in der Schweiz, kaum ein Staat hat damals im Verhältnis zu seiner Einwohnerzahl so viele Flüchtlinge aufgenommen.",
+          "exampleDe": "Es leben etwa 300 000 Bürger des ehemaligen Jugoslawien in der Schweiz, kaum ein Staat hat damals im Verhältnis zu seiner Einwohnerzahl so viele Flüchtlinge aufgenommen.",
+          "exampleEn": "There are (reside) about 300,000 citizens of the former Yugoslavia living in Switzerland, hardly any state took in so many refugees in relation to its population at that time.",
+          "translations": {
+            "en": "There are (reside) about 300,000 citizens of the former Yugoslavia living in Switzerland, hardly any state took in so many refugees in relation to its population at that time."
+          }
+        },
+        {
+          "sentence": "Die Dinosaurier lebten für Jahrmillionen auf der Erde bevor der Mensch erschien.",
+          "exampleDe": "Die Dinosaurier lebten für Jahrmillionen auf der Erde bevor der Mensch erschien.",
+          "exampleEn": "The dinosaurs existed on Earth for millions of years prior to the rise of man.",
+          "translations": {
+            "en": "The dinosaurs existed on Earth for millions of years prior to the rise of man."
+          }
+        },
+        {
+          "sentence": "Du wirst wohl damit leben müssen!",
+          "exampleDe": "Du wirst wohl damit leben müssen!",
+          "exampleEn": "You'll have to cope with it!",
+          "translations": {
+            "en": "You'll have to cope with it!"
+          }
+        },
+        {
+          "sentence": "Jeder muss mit seinen eigenen Problemen leben!",
+          "exampleDe": "Jeder muss mit seinen eigenen Problemen leben!",
+          "exampleEn": "Everybody has to deal with their own issues.",
+          "translations": {
+            "en": "Everybody has to deal with their own issues."
+          }
+        },
+        {
+          "sentence": "ein einfaches Leben leben",
+          "exampleDe": "ein einfaches Leben leben",
+          "exampleEn": "to lead a simple life",
+          "translations": {
+            "en": "to lead a simple life"
+          }
+        },
+        {
+          "sentence": "Diese Änderungen funktionieren nur, wenn die entsprechenden Prozesse auch gelebt werden.",
+          "exampleDe": "Diese Änderungen funktionieren nur, wenn die entsprechenden Prozesse auch gelebt werden.",
+          "exampleEn": "These changes only work if the relevant processes are actually being put into practice.",
+          "translations": {
+            "en": "These changes only work if the relevant processes are actually being put into practice."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "word": {
+          "id": 10,
+          "aux": "haben",
+          "pos": "V",
+          "lemma": "leben",
+          "gender": null,
+          "plural": null,
+          "english": "to live",
+          "perfekt": "hat gelebt",
+          "examples": [
+            {
+              "sentence": "Er lebte in Berlin.",
+              "exampleDe": "Er lebte in Berlin.",
+              "exampleEn": "He lived in Berlin.",
+              "translations": {
+                "en": "He lived in Berlin."
+              }
+            },
+            {
+              "sentence": "Lebt dein Uropa noch?",
+              "exampleDe": "Lebt dein Uropa noch?",
+              "exampleEn": "Is your great-grandpa still alive?",
+              "translations": {
+                "en": "Is your great-grandpa still alive?"
+              }
+            },
+            {
+              "sentence": "Ich lebe in der Schillerstraße in der Nähe des Stadtzentrums.",
+              "exampleDe": "Ich lebe in der Schillerstraße in der Nähe des Stadtzentrums.",
+              "exampleEn": "I live on the Schiller street near the city center.",
+              "translations": {
+                "en": "I live on the Schiller street near the city center."
+              }
+            },
+            {
+              "sentence": "Es leben etwa 300 000 Bürger des ehemaligen Jugoslawien in der Schweiz, kaum ein Staat hat damals im Verhältnis zu seiner Einwohnerzahl so viele Flüchtlinge aufgenommen.",
+              "exampleDe": "Es leben etwa 300 000 Bürger des ehemaligen Jugoslawien in der Schweiz, kaum ein Staat hat damals im Verhältnis zu seiner Einwohnerzahl so viele Flüchtlinge aufgenommen.",
+              "exampleEn": "There are (reside) about 300,000 citizens of the former Yugoslavia living in Switzerland, hardly any state took in so many refugees in relation to its population at that time.",
+              "translations": {
+                "en": "There are (reside) about 300,000 citizens of the former Yugoslavia living in Switzerland, hardly any state took in so many refugees in relation to its population at that time."
+              }
+            },
+            {
+              "sentence": "Die Dinosaurier lebten für Jahrmillionen auf der Erde bevor der Mensch erschien.",
+              "exampleDe": "Die Dinosaurier lebten für Jahrmillionen auf der Erde bevor der Mensch erschien.",
+              "exampleEn": "The dinosaurs existed on Earth for millions of years prior to the rise of man.",
+              "translations": {
+                "en": "The dinosaurs existed on Earth for millions of years prior to the rise of man."
+              }
+            },
+            {
+              "sentence": "Du wirst wohl damit leben müssen!",
+              "exampleDe": "Du wirst wohl damit leben müssen!",
+              "exampleEn": "You'll have to cope with it!",
+              "translations": {
+                "en": "You'll have to cope with it!"
+              }
+            },
+            {
+              "sentence": "Jeder muss mit seinen eigenen Problemen leben!",
+              "exampleDe": "Jeder muss mit seinen eigenen Problemen leben!",
+              "exampleEn": "Everybody has to deal with their own issues.",
+              "translations": {
+                "en": "Everybody has to deal with their own issues."
+              }
+            },
+            {
+              "sentence": "ein einfaches Leben leben",
+              "exampleDe": "ein einfaches Leben leben",
+              "exampleEn": "to lead a simple life",
+              "translations": {
+                "en": "to lead a simple life"
+              }
+            },
+            {
+              "sentence": "Diese Änderungen funktionieren nur, wenn die entsprechenden Prozesse auch gelebt werden.",
+              "exampleDe": "Diese Änderungen funktionieren nur, wenn die entsprechenden Prozesse auch gelebt werden.",
+              "exampleEn": "These changes only work if the relevant processes are actually being put into practice.",
+              "translations": {
+                "en": "These changes only work if the relevant processes are actually being put into practice."
+              }
+            }
+          ],
+          "exampleDe": "Er lebte in Berlin.",
+          "exampleEn": "He lived in Berlin.",
+          "partizipIi": "gelebt",
+          "comparative": null,
+          "praeteritum": "lebte",
+          "superlative": null,
+          "translations": [
+            {
+              "value": "to live, to be alive",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "to dwell, to reside",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "to live, to exist, to occupy a place",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "to cope with, to live with, to deal with",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "to lead (a certain life or existence)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "to fulfill, to live out (a dream/wish regarding one's life)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "to put into practice, to routinely follow (of processes and policies)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            }
+          ],
+          "posAttributes": {
+            "pos": "verb",
+            "tags": [
+              "excessive",
+              "intransitive",
+              "transitive",
+              "weak"
+            ],
+            "notes": [
+              "de:Business",
+              "hyperboles",
+              "intransitive verbs",
+              "Old High German neuter nouns",
+              "Old High German nouns",
+              "Pages with 4 entries",
+              "Pages with entries",
+              "terms inherited from Middle High German",
+              "terms inherited from Old High German",
+              "terms inherited from Proto-Germanic",
+              "terms inherited from Proto-West Germanic",
+              "terms with quotations",
+              "terms with usage examples",
+              "transitive verbs",
+              "verbs",
+              "verbs using haben as auxiliary",
+              "weak verbs"
+            ]
+          },
+          "enrichmentMethod": "manual_api",
+          "enrichmentAppliedAt": "2025-10-15T19:56:13.367Z"
+        },
+        "patch": {
+          "examples": [
+            {
+              "sentence": "Er lebte in Berlin.",
+              "translations": {
+                "en": "Sie hat lange in Paris gelebt."
+              }
+            },
+            {
+              "sentence": "Lebt dein Uropa noch?",
+              "translations": {
+                "en": "Is your great-grandpa still alive?"
+              }
+            },
+            {
+              "sentence": "Ich lebe in der Schillerstraße in der Nähe des Stadtzentrums.",
+              "translations": {
+                "en": "I live on the Schiller street near the city center."
+              }
+            },
+            {
+              "sentence": "Es leben etwa 300 000 Bürger des ehemaligen Jugoslawien in der Schweiz, kaum ein Staat hat damals im Verhältnis zu seiner Einwohnerzahl so viele Flüchtlinge aufgenommen.",
+              "translations": {
+                "en": "There are (reside) about 300,000 citizens of the former Yugoslavia living in Switzerland, hardly any state took in so many refugees in relation to its population at that time."
+              }
+            },
+            {
+              "sentence": "Die Dinosaurier lebten für Jahrmillionen auf der Erde bevor der Mensch erschien.",
+              "translations": {
+                "en": "The dinosaurs existed on Earth for millions of years prior to the rise of man."
+              }
+            },
+            {
+              "sentence": "Du wirst wohl damit leben müssen!",
+              "translations": {
+                "en": "You'll have to cope with it!"
+              }
+            },
+            {
+              "sentence": "Jeder muss mit seinen eigenen Problemen leben!",
+              "translations": {
+                "en": "Everybody has to deal with their own issues."
+              }
+            },
+            {
+              "sentence": "ein einfaches Leben leben",
+              "translations": {
+                "en": "to lead a simple life"
+              }
+            },
+            {
+              "sentence": "Diese Änderungen funktionieren nur, wenn die entsprechenden Prozesse auch gelebt werden.",
+              "translations": {
+                "en": "These changes only work if the relevant processes are actually being put into practice."
+              }
+            }
+          ],
+          "exampleEn": "He lived in Berlin.",
+          "translations": [
+            {
+              "value": "to live, to be alive",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "to dwell, to reside",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "to live, to exist, to occupy a place",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "to cope with, to live with, to deal with",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "to lead (a certain life or existence)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "to fulfill, to live out (a dream/wish regarding one's life)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "to put into practice, to routinely follow (of processes and policies)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            }
+          ],
+          "posAttributes": {
+            "pos": "verb",
+            "tags": [
+              "excessive",
+              "intransitive",
+              "transitive",
+              "weak"
+            ],
+            "notes": [
+              "de:Business",
+              "hyperboles",
+              "intransitive verbs",
+              "Old High German neuter nouns",
+              "Old High German nouns",
+              "Pages with 4 entries",
+              "Pages with entries",
+              "terms inherited from Middle High German",
+              "terms inherited from Old High German",
+              "terms inherited from Proto-Germanic",
+              "terms inherited from Proto-West Germanic",
+              "terms with quotations",
+              "terms with usage examples",
+              "transitive verbs",
+              "verbs",
+              "verbs using haben as auxiliary",
+              "weak verbs"
+            ]
+          }
+        },
+        "method": "manual_api",
+        "source": "manual_apply",
+        "appliedAt": "2025-10-15T19:56:13.367Z",
+        "appliedFields": [
+          "examples",
+          "exampleEn",
+          "translations",
+          "posAttributes",
+          "enrichmentAppliedAt",
+          "enrichmentMethod"
+        ]
+      },
+      "wordId": 10,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "all",
+        "snapshotId": 25,
+        "wordId": 10,
+        "createdAt": "2025-10-15T19:56:15.416Z",
+        "enrichmentMethod": "manual_api",
+        "appliedAt": "2025-10-15T19:56:13.367Z",
+        "source": "manual_apply"
+      }
+    },
+    "beinhalten": {
+      "lemma": "beinhalten",
+      "pos": "V",
+      "providerId": "manual",
+      "providerLabel": "Manual Apply",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-15T20:08:36.273Z",
+      "translations": [
+        {
+          "value": "to comprise, to contain, to include, to involve",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "to comprise, to entail",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "to imply, to implicate",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": [
+        {
+          "sentence": "Der Vertrag beinhaltete wichtige Klauseln.",
+          "exampleDe": "Der Vertrag beinhaltete wichtige Klauseln.",
+          "exampleEn": "Das Angebot hat viele Vorteile beinhaltet.",
+          "translations": {
+            "en": "Das Angebot hat viele Vorteile beinhaltet."
+          }
+        },
+        {
+          "sentence": "Das Gesetz beinhaltet auch folgenden Absatz.",
+          "exampleDe": "Das Gesetz beinhaltet auch folgenden Absatz.",
+          "exampleEn": "The law also includes the following paragraph.",
+          "translations": {
+            "en": "The law also includes the following paragraph."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "word": {
+          "id": 38,
+          "aux": "haben",
+          "pos": "V",
+          "lemma": "beinhalten",
+          "gender": null,
+          "plural": null,
+          "english": "to contain/include",
+          "perfekt": "hat beinhaltet",
+          "examples": [
+            {
+              "sentence": "Der Vertrag beinhaltete wichtige Klauseln.",
+              "exampleDe": "Der Vertrag beinhaltete wichtige Klauseln.",
+              "exampleEn": "Das Angebot hat viele Vorteile beinhaltet.",
+              "translations": {
+                "en": "Das Angebot hat viele Vorteile beinhaltet."
+              }
+            },
+            {
+              "sentence": "Das Gesetz beinhaltet auch folgenden Absatz.",
+              "exampleDe": "Das Gesetz beinhaltet auch folgenden Absatz.",
+              "exampleEn": "The law also includes the following paragraph.",
+              "translations": {
+                "en": "The law also includes the following paragraph."
+              }
+            }
+          ],
+          "exampleDe": "Der Vertrag beinhaltete wichtige Klauseln.",
+          "exampleEn": "Das Angebot hat viele Vorteile beinhaltet.",
+          "partizipIi": "beinhaltet",
+          "comparative": null,
+          "praeteritum": "beinhaltete",
+          "superlative": null,
+          "translations": [
+            {
+              "value": "to comprise, to contain, to include, to involve",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "to comprise, to entail",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "to imply, to implicate",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            }
+          ],
+          "posAttributes": {
+            "pos": "verb",
+            "tags": [
+              "weak"
+            ],
+            "notes": [
+              "Pages with 1 entry",
+              "Pages with entries",
+              "terms with usage examples",
+              "verbs",
+              "verbs using haben as auxiliary",
+              "verbs with red links in their inflection tables",
+              "weak verbs"
+            ]
+          },
+          "enrichmentMethod": "manual_api",
+          "enrichmentAppliedAt": "2025-10-15T20:08:34.181Z"
+        },
+        "patch": {
+          "examples": [
+            {
+              "sentence": "Der Vertrag beinhaltete wichtige Klauseln.",
+              "translations": {
+                "en": "Das Angebot hat viele Vorteile beinhaltet."
+              }
+            },
+            {
+              "sentence": "Das Gesetz beinhaltet auch folgenden Absatz.",
+              "translations": {
+                "en": "The law also includes the following paragraph."
+              }
+            }
+          ],
+          "translations": [
+            {
+              "value": "to comprise, to contain, to include, to involve",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "to comprise, to entail",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "to imply, to implicate",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            }
+          ],
+          "posAttributes": {
+            "pos": "verb",
+            "tags": [
+              "weak"
+            ],
+            "notes": [
+              "Pages with 1 entry",
+              "Pages with entries",
+              "terms with usage examples",
+              "verbs",
+              "verbs using haben as auxiliary",
+              "verbs with red links in their inflection tables",
+              "weak verbs"
+            ]
+          }
+        },
+        "method": "manual_api",
+        "source": "manual_apply",
+        "appliedAt": "2025-10-15T20:08:34.181Z",
+        "appliedFields": [
+          "examples",
+          "exampleEn",
+          "enrichmentAppliedAt",
+          "enrichmentMethod"
+        ]
+      },
+      "wordId": 38,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "all",
+        "snapshotId": 28,
+        "wordId": 38,
+        "createdAt": "2025-10-15T20:08:36.273Z",
+        "enrichmentMethod": "manual_api",
+        "appliedAt": "2025-10-15T20:08:34.181Z",
+        "source": "manual_apply"
+      }
+    }
+  },
+  "meta": {
+    "createdAt": "2025-10-15T19:40:22.681Z"
+  }
+}
