@@ -209,6 +209,22 @@ export async function upsertLexemeInventory(
   db: DrizzleDatabase,
   inventory: LexemeInventory,
 ): Promise<void> {
+  const incomingLexemeIds = new Set(inventory.lexemes.map((lexeme) => lexeme.id));
+  const existingLexemes = await db.select({ id: lexemesTable.id }).from(lexemesTable);
+
+  if (incomingLexemeIds.size === 0) {
+    if (existingLexemes.length > 0) {
+      await db.delete(lexemesTable);
+    }
+  } else {
+    const staleLexemeIds = existingLexemes
+      .map((row) => row.id)
+      .filter((id): id is string => Boolean(id) && !incomingLexemeIds.has(id));
+    if (staleLexemeIds.length > 0) {
+      await db.delete(lexemesTable).where(inArray(lexemesTable.id, staleLexemeIds));
+    }
+  }
+
   if (inventory.lexemes.length > 0) {
     await db
       .insert(lexemesTable)
