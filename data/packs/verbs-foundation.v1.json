@@ -9,7 +9,7 @@
     "license": "CC-BY-SA-4.0",
     "licenseNotes": null,
     "version": 1,
-    "checksum": "0ccefb3b96a436a64fb45399166dd09f25ba77d8",
+    "checksum": "8e60754ccf22b8f62356bda8ac097dae649e3311",
     "metadata": {
       "taskTypes": [
         "conjugate_form"
@@ -25,73 +25,14 @@
       ],
       "attribution": [
         {
-          "id": "Duden",
-          "count": 13,
+          "id": "pos_jsonl:verbs",
+          "count": 43,
           "pos": [
             "V"
           ],
-          "label": "Duden",
-          "license": "unspecified – pending review"
-        },
-        {
-          "id": "dwds-goethe-A1.csv",
-          "count": 30,
-          "pos": [
-            "V"
-          ],
-          "label": "DWDS Goethe-Zertifikat A1 export",
-          "license": "CC BY-SA 4.0",
-          "url": "https://www.dwds.de/"
-        },
-        {
-          "id": "dwds-goethe-A2.csv",
-          "count": 1,
-          "pos": [
-            "V"
-          ],
-          "label": "DWDS Goethe-Zertifikat A2 export",
-          "license": "CC BY-SA 4.0",
-          "url": "https://www.dwds.de/"
-        },
-        {
-          "id": "dwds-goethe-B1.csv",
-          "count": 3,
-          "pos": [
-            "V"
-          ],
-          "label": "DWDS Goethe-Zertifikat B1 export",
-          "license": "CC BY-SA 4.0",
-          "url": "https://www.dwds.de/"
-        },
-        {
-          "id": "Goethe-Institut",
-          "count": 30,
-          "pos": [
-            "V"
-          ],
-          "label": "Goethe-Institut curated list",
-          "license": "CC BY-SA 4.0 (DWDS export)",
-          "url": "https://www.goethe.de/"
-        },
-        {
-          "id": "learn-deutsch-data:modal",
-          "count": 4,
-          "pos": [
-            "V"
-          ],
-          "label": "Learn Deutsch community modal verbs",
-          "license": "CC BY-SA 4.0 (community dataset)",
-          "url": "https://github.com/savaged/learn-deutsch-data"
-        },
-        {
-          "id": "learn-deutsch-data:verbs",
-          "count": 4,
-          "pos": [
-            "V"
-          ],
-          "label": "Learn Deutsch community verbs",
-          "license": "CC BY-SA 4.0 (community dataset)",
-          "url": "https://github.com/savaged/learn-deutsch-data"
+          "label": "POS seed (verbs.jsonl)",
+          "license": "CC BY-SA 4.0 (internal data/pos source)",
+          "notes": "Deterministic per-POS JSONL inventory committed in data/pos/"
         }
       ]
     },
@@ -100,7 +41,7 @@
   },
   "lexemes": [
     {
-      "id": "de:verb:arbeiten:905fa38d",
+      "id": "de:verb:arbeiten:c2cef652",
       "lemma": "arbeiten",
       "language": "de",
       "pos": "verb",
@@ -113,19 +54,17 @@
           "en": "Er hat als Koch gearbeitet."
         },
         "auxiliary": "haben",
-        "perfekt": "hat gearbeitet",
-        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/arbeiten"
+        "perfekt": "hat gearbeitet"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:beinhalten:fe6f16ea",
+      "id": "de:verb:beinhalten:fa95ac03",
       "lemma": "beinhalten",
       "language": "de",
       "pos": "verb",
@@ -138,18 +77,17 @@
           "en": "Das Angebot hat viele Vorteile beinhaltet."
         },
         "auxiliary": "haben",
-        "perfekt": "hat beinhaltet",
-        "sourceNotes": "C1 Professional Verbs"
+        "perfekt": "hat beinhaltet"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Duden"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:beschlieen:b68aaef9",
+      "id": "de:verb:beschlieen:ce493422",
       "lemma": "beschließen",
       "language": "de",
       "pos": "verb",
@@ -162,19 +100,17 @@
           "en": "Sie haben eine neue Strategie beschlossen."
         },
         "auxiliary": "haben",
-        "perfekt": "hat beschlossen",
-        "sourceNotes": "B1 Intermediate Verbs; https://www.dwds.de/wb/beschlie%C3%9Fen"
+        "perfekt": "hat beschlossen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Duden",
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:bewerten:8ba3cd51",
+      "id": "de:verb:bewerten:f1003356",
       "lemma": "bewerten",
       "language": "de",
       "pos": "verb",
@@ -187,18 +123,17 @@
           "en": "Die Jury hat die Leistungen bewertet."
         },
         "auxiliary": "haben",
-        "perfekt": "hat bewertet",
-        "sourceNotes": "B2 Advanced Verbs"
+        "perfekt": "hat bewertet"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Duden"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:differenzieren:dfd84879",
+      "id": "de:verb:differenzieren:c9b5965e",
       "lemma": "differenzieren",
       "language": "de",
       "pos": "verb",
@@ -211,18 +146,17 @@
           "en": "Sie hat genau zwischen den Optionen differenziert."
         },
         "auxiliary": "haben",
-        "perfekt": "hat differenziert",
-        "sourceNotes": "C2 Academic Verbs"
+        "perfekt": "hat differenziert"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Duden"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:durchfuhren:d7dd8386",
+      "id": "de:verb:durchfuhren:731130f4",
       "lemma": "durchführen",
       "language": "de",
       "pos": "verb",
@@ -235,18 +169,17 @@
           "en": "Sie haben eine Studie durchgeführt."
         },
         "auxiliary": "haben",
-        "perfekt": "hat durchgeführt",
-        "sourceNotes": "B2 Advanced Verbs"
+        "perfekt": "hat durchgeführt"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Duden"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:entsprechen:57d109b8",
+      "id": "de:verb:entsprechen:05be9f70",
       "lemma": "entsprechen",
       "language": "de",
       "pos": "verb",
@@ -259,18 +192,17 @@
           "en": "Die Leistung hat den Anforderungen entsprochen."
         },
         "auxiliary": "haben",
-        "perfekt": "hat entsprochen",
-        "sourceNotes": "C1 Professional Verbs"
+        "perfekt": "hat entsprochen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Duden"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:entstehen:1f1ff688",
+      "id": "de:verb:entstehen:62495810",
       "lemma": "entstehen",
       "language": "de",
       "pos": "verb",
@@ -283,19 +215,17 @@
           "en": "Das Problem ist plötzlich entstanden."
         },
         "auxiliary": "sein",
-        "perfekt": "ist entstanden",
-        "sourceNotes": "B1 Intermediate Verbs; https://www.dwds.de/wb/entstehen"
+        "perfekt": "ist entstanden"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Duden",
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:erortern:09d9db06",
+      "id": "de:verb:erortern:4ff066fd",
       "lemma": "erörtern",
       "language": "de",
       "pos": "verb",
@@ -308,18 +238,17 @@
           "en": "Die Experten haben die Problematik erörtert."
         },
         "auxiliary": "haben",
-        "perfekt": "hat erörtert",
-        "sourceNotes": "C1 Professional Verbs"
+        "perfekt": "hat erörtert"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Duden"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:erreichen:94cfa315",
+      "id": "de:verb:erreichen:de0151a9",
       "lemma": "erreichen",
       "language": "de",
       "pos": "verb",
@@ -332,19 +261,17 @@
           "en": "Er hat den Gipfel erreicht."
         },
         "auxiliary": "haben",
-        "perfekt": "hat erreicht",
-        "sourceNotes": "B1 Intermediate Verbs; https://www.dwds.de/wb/erreichen"
+        "perfekt": "hat erreicht"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Duden",
-        "dwds-goethe-A2.csv"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:essen:9062b395",
+      "id": "de:verb:essen:6b8d9469",
       "lemma": "essen",
       "language": "de",
       "pos": "verb",
@@ -357,19 +284,17 @@
           "en": "Wir haben zu Mittag gegessen."
         },
         "auxiliary": "haben",
-        "perfekt": "hat gegessen",
-        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/essen"
+        "perfekt": "hat gegessen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:fahren:15cf3f6b",
+      "id": "de:verb:fahren:c2a3428d",
       "lemma": "fahren",
       "language": "de",
       "pos": "verb",
@@ -382,19 +307,17 @@
           "en": "Er ist Auto gefahren."
         },
         "auxiliary": "sein",
-        "perfekt": "ist gefahren",
-        "sourceNotes": "A2 Common Verbs; https://www.dwds.de/wb/fahren"
+        "perfekt": "ist gefahren"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:fliegen:75459563",
+      "id": "de:verb:fliegen:010ae8c3",
       "lemma": "fliegen",
       "language": "de",
       "pos": "verb",
@@ -407,19 +330,17 @@
           "en": "Wir sind nach London geflogen."
         },
         "auxiliary": "sein",
-        "perfekt": "ist geflogen",
-        "sourceNotes": "A2 Common Verbs; https://www.dwds.de/wb/fliegen"
+        "perfekt": "ist geflogen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:gedeihen:8ff24825",
+      "id": "de:verb:gedeihen:76005b84",
       "lemma": "gedeihen",
       "language": "de",
       "pos": "verb",
@@ -432,18 +353,17 @@
           "en": "Die Pflanzen sind prächtig gediehen."
         },
         "auxiliary": "sein",
-        "perfekt": "ist gediehen",
-        "sourceNotes": "C2 Academic Verbs"
+        "perfekt": "ist gediehen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Duden"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:gehen:c7dab9ca",
+      "id": "de:verb:gehen:d8137135",
       "lemma": "gehen",
       "language": "de",
       "pos": "verb",
@@ -457,20 +377,17 @@
         },
         "separable": false,
         "auxiliary": "sein",
-        "perfekt": "ist gegangen",
-        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/gehen; \"gehen\" follows the standard pattern for regular verbs in the present tense."
+        "perfekt": "ist gegangen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut",
-        "learn-deutsch-data:verbs"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:haben:6b7855da",
+      "id": "de:verb:haben:332ab797",
       "lemma": "haben",
       "language": "de",
       "pos": "verb",
@@ -484,20 +401,17 @@
         },
         "separable": false,
         "auxiliary": "haben",
-        "perfekt": "hat gehabt",
-        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/haben; \"haben\" is an irregular verb. Note the change from \"b\" to \"s\" and \"t\" in the du and er/sie/es forms."
+        "perfekt": "hat gehabt"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut",
-        "learn-deutsch-data:verbs"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:heien:0a417ffe",
+      "id": "de:verb:heien:4ac6e1b6",
       "lemma": "heißen",
       "language": "de",
       "pos": "verb",
@@ -510,19 +424,17 @@
           "en": "Sie hat anders geheißen."
         },
         "auxiliary": "haben",
-        "perfekt": "hat geheißen",
-        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/hei%C3%9Fen#1"
+        "perfekt": "hat geheißen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:horen:76923fd3",
+      "id": "de:verb:horen:e75e9ebf",
       "lemma": "hören",
       "language": "de",
       "pos": "verb",
@@ -535,19 +447,17 @@
           "en": "Ich habe ein Geräusch gehört."
         },
         "auxiliary": "haben",
-        "perfekt": "hat gehört",
-        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/h%C3%B6ren"
+        "perfekt": "hat gehört"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:kaufen:b2486f52",
+      "id": "de:verb:kaufen:e233c411",
       "lemma": "kaufen",
       "language": "de",
       "pos": "verb",
@@ -560,19 +470,17 @@
           "en": "Er hat ein Auto gekauft."
         },
         "auxiliary": "haben",
-        "perfekt": "hat gekauft",
-        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/kaufen"
+        "perfekt": "hat gekauft"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:kommen:7df1ed0e",
+      "id": "de:verb:kommen:d2ab1849",
       "lemma": "kommen",
       "language": "de",
       "pos": "verb",
@@ -585,19 +493,17 @@
           "en": "Der Bus ist pünktlich gekommen."
         },
         "auxiliary": "sein",
-        "perfekt": "ist gekommen",
-        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/kommen"
+        "perfekt": "ist gekommen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:konnen:f5b71764",
+      "id": "de:verb:konnen:9fb4f19a",
       "lemma": "können",
       "language": "de",
       "pos": "verb",
@@ -610,20 +516,17 @@
           "en": "Das hat er immer gut gekonnt."
         },
         "auxiliary": "haben",
-        "perfekt": "hat gekonnt",
-        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/k%C3%B6nnen; KÖN-nen"
+        "perfekt": "hat gekonnt"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut",
-        "learn-deutsch-data:modal"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:laufen:a1f8f02c",
+      "id": "de:verb:laufen:99ad38b1",
       "lemma": "laufen",
       "language": "de",
       "pos": "verb",
@@ -636,19 +539,17 @@
           "en": "Sie ist einen Marathon gelaufen."
         },
         "auxiliary": "sein",
-        "perfekt": "ist gelaufen",
-        "sourceNotes": "A2 Common Verbs; https://www.dwds.de/wb/laufen"
+        "perfekt": "ist gelaufen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:leben:eedbdf34",
+      "id": "de:verb:leben:8bf6bfa6",
       "lemma": "leben",
       "language": "de",
       "pos": "verb",
@@ -661,19 +562,17 @@
           "en": "Sie hat lange in Paris gelebt."
         },
         "auxiliary": "haben",
-        "perfekt": "hat gelebt",
-        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/leben"
+        "perfekt": "hat gelebt"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:lernen:5b328a53",
+      "id": "de:verb:lernen:a57ac1c5",
       "lemma": "lernen",
       "language": "de",
       "pos": "verb",
@@ -686,19 +585,17 @@
           "en": "Er hat viel gelernt."
         },
         "auxiliary": "haben",
-        "perfekt": "hat gelernt",
-        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/lernen"
+        "perfekt": "hat gelernt"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:lesen:c900d552",
+      "id": "de:verb:lesen:62751638",
       "lemma": "lesen",
       "language": "de",
       "pos": "verb",
@@ -711,19 +608,17 @@
           "en": "Er hat die Zeitung gelesen."
         },
         "auxiliary": "haben",
-        "perfekt": "hat gelesen",
-        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/lesen#1"
+        "perfekt": "hat gelesen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:machen:3e9552c8",
+      "id": "de:verb:machen:28cbaea6",
       "lemma": "machen",
       "language": "de",
       "pos": "verb",
@@ -736,19 +631,17 @@
           "en": "Sie hat das Essen gemacht."
         },
         "auxiliary": "haben",
-        "perfekt": "hat gemacht",
-        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/machen"
+        "perfekt": "hat gemacht"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:mussen:5c5eebed",
+      "id": "de:verb:mussen:84258bb6",
       "lemma": "müssen",
       "language": "de",
       "pos": "verb",
@@ -761,20 +654,17 @@
           "en": "Er hat arbeiten gemusst."
         },
         "auxiliary": "haben",
-        "perfekt": "hat gemusst",
-        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/m%C3%BCssen; MÜS-sen"
+        "perfekt": "hat gemusst"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut",
-        "learn-deutsch-data:modal"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:schlafen:d2453ec6",
+      "id": "de:verb:schlafen:9d87c270",
       "lemma": "schlafen",
       "language": "de",
       "pos": "verb",
@@ -787,19 +677,17 @@
           "en": "Ich habe gut geschlafen."
         },
         "auxiliary": "haben",
-        "perfekt": "hat geschlafen",
-        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/schlafen"
+        "perfekt": "hat geschlafen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:schreiben:954e0878",
+      "id": "de:verb:schreiben:43e2636e",
       "lemma": "schreiben",
       "language": "de",
       "pos": "verb",
@@ -812,19 +700,17 @@
           "en": "Sie hat eine E-Mail geschrieben."
         },
         "auxiliary": "haben",
-        "perfekt": "hat geschrieben",
-        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/schreiben"
+        "perfekt": "hat geschrieben"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:schwimmen:669504d1",
+      "id": "de:verb:schwimmen:df578857",
       "lemma": "schwimmen",
       "language": "de",
       "pos": "verb",
@@ -837,19 +723,17 @@
           "en": "Sie ist einen Kilometer geschwommen."
         },
         "auxiliary": "sein",
-        "perfekt": "ist geschwommen",
-        "sourceNotes": "A2 Common Verbs; https://www.dwds.de/wb/schwimmen"
+        "perfekt": "ist geschwommen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:sehen:b70191ab",
+      "id": "de:verb:sehen:65ea9516",
       "lemma": "sehen",
       "language": "de",
       "pos": "verb",
@@ -862,19 +746,17 @@
           "en": "Wir haben uns gestern gesehen."
         },
         "auxiliary": "haben",
-        "perfekt": "hat gesehen",
-        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/sehen"
+        "perfekt": "hat gesehen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:sein:406c878d",
+      "id": "de:verb:sein:34a39e53",
       "lemma": "sein",
       "language": "de",
       "pos": "verb",
@@ -888,20 +770,17 @@
         },
         "separable": false,
         "auxiliary": "sein",
-        "perfekt": "ist gewesen",
-        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/sein#3; \"sein\" is a highly irregular verb. Its conjugation must be memorized."
+        "perfekt": "ist gewesen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut",
-        "learn-deutsch-data:verbs"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:sollen:d4809c2d",
+      "id": "de:verb:sollen:66218d7e",
       "lemma": "sollen",
       "language": "de",
       "pos": "verb",
@@ -914,20 +793,17 @@
           "en": "Das hätte ich nicht gesollt."
         },
         "auxiliary": "haben",
-        "perfekt": "hat gesollt",
-        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/sollen; SOL-len"
+        "perfekt": "hat gesollt"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut",
-        "learn-deutsch-data:modal"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:spielen:71cf6aa9",
+      "id": "de:verb:spielen:898c6e6c",
       "lemma": "spielen",
       "language": "de",
       "pos": "verb",
@@ -940,19 +816,17 @@
           "en": "Wir haben Fußball gespielt."
         },
         "auxiliary": "haben",
-        "perfekt": "hat gespielt",
-        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/spielen"
+        "perfekt": "hat gespielt"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:sprechen:1c525275",
+      "id": "de:verb:sprechen:bc48e7ed",
       "lemma": "sprechen",
       "language": "de",
       "pos": "verb",
@@ -966,20 +840,17 @@
         },
         "separable": false,
         "auxiliary": "haben",
-        "perfekt": "hat gesprochen",
-        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/sprechen; This is a stem-changing irregular verb. The vowel \"e\" changes to \"i\" in the du and er/sie/es forms."
+        "perfekt": "hat gesprochen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut",
-        "learn-deutsch-data:verbs"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:suggerieren:3dbc0640",
+      "id": "de:verb:suggerieren:977d3b62",
       "lemma": "suggerieren",
       "language": "de",
       "pos": "verb",
@@ -992,18 +863,17 @@
           "en": "Die Studie hat einen Zusammenhang suggeriert."
         },
         "auxiliary": "haben",
-        "perfekt": "hat suggeriert",
-        "sourceNotes": "C2 Academic Verbs"
+        "perfekt": "hat suggeriert"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Duden"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:tanzen:2154a418",
+      "id": "de:verb:tanzen:6b59b36d",
       "lemma": "tanzen",
       "language": "de",
       "pos": "verb",
@@ -1016,19 +886,17 @@
           "en": "Wir haben Salsa getanzt."
         },
         "auxiliary": "haben",
-        "perfekt": "hat getanzt",
-        "sourceNotes": "A2 Common Verbs; https://www.dwds.de/wb/tanzen"
+        "perfekt": "hat getanzt"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:trinken:2db1376a",
+      "id": "de:verb:trinken:ddf6daef",
       "lemma": "trinken",
       "language": "de",
       "pos": "verb",
@@ -1041,19 +909,17 @@
           "en": "Er hat Kaffee getrunken."
         },
         "auxiliary": "haben",
-        "perfekt": "hat getrunken",
-        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/trinken"
+        "perfekt": "hat getrunken"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:ubertragen:f1a0f3ad",
+      "id": "de:verb:ubertragen:c67eaac8",
       "lemma": "übertragen",
       "language": "de",
       "pos": "verb",
@@ -1066,18 +932,17 @@
           "en": "Die Krankheit hat sich schnell übertragen."
         },
         "auxiliary": "haben",
-        "perfekt": "hat übertragen",
-        "sourceNotes": "B2 Advanced Verbs"
+        "perfekt": "hat übertragen"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Duden"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:verbinden:ec6e57bb",
+      "id": "de:verb:verbinden:ec21851b",
       "lemma": "verbinden",
       "language": "de",
       "pos": "verb",
@@ -1090,19 +955,17 @@
           "en": "Sie hat Tradition mit Innovation verbunden."
         },
         "auxiliary": "haben",
-        "perfekt": "hat verbunden",
-        "sourceNotes": "B1 Intermediate Verbs; https://www.dwds.de/wb/verbinden"
+        "perfekt": "hat verbunden"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "Duden",
-        "dwds-goethe-B1.csv"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:werden:c8b02b87",
+      "id": "de:verb:werden:3598e23c",
       "lemma": "werden",
       "language": "de",
       "pos": "verb",
@@ -1115,19 +978,17 @@
           "en": "Er ist Arzt geworden."
         },
         "auxiliary": "sein",
-        "perfekt": "ist geworden",
-        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/werden"
+        "perfekt": "ist geworden"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:wohnen:c1f88595",
+      "id": "de:verb:wohnen:7a4a1284",
       "lemma": "wohnen",
       "language": "de",
       "pos": "verb",
@@ -1140,19 +1001,17 @@
           "en": "Sie hat in einem Apartment gewohnt."
         },
         "auxiliary": "haben",
-        "perfekt": "hat gewohnt",
-        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/wohnen"
+        "perfekt": "hat gewohnt"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "de:verb:wollen:97a9e5f9",
+      "id": "de:verb:wollen:8792d930",
       "lemma": "wollen",
       "language": "de",
       "pos": "verb",
@@ -1165,14 +1024,11 @@
           "en": "Sie hat das nicht gewollt."
         },
         "auxiliary": "haben",
-        "perfekt": "hat gewollt",
-        "sourceNotes": "A1 Essential Verbs; https://www.dwds.de/wb/wollen#2; WOL-len"
+        "perfekt": "hat gewollt"
       },
       "frequencyRank": null,
       "sourceIds": [
-        "dwds-goethe-A1.csv",
-        "Goethe-Institut",
-        "learn-deutsch-data:modal"
+        "pos_jsonl:verbs"
       ],
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -1180,22 +1036,22 @@
   ],
   "inflections": [
     {
-      "id": "inf:de:verb:arbeiten:905fa38d:77c138a889",
-      "lexemeId": "de:verb:arbeiten:905fa38d",
+      "id": "inf:de:verb:arbeiten:c2cef652:194a990a14",
+      "lexemeId": "de:verb:arbeiten:c2cef652",
       "form": "arbeiten",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:bafb85ee31",
+      "sourceRevision": "pos_jsonl:verbs:50c2eae36d",
       "checksum": "59df55afeb6848b2",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:arbeiten:905fa38d:6de7cdd4c7",
-      "lexemeId": "de:verb:arbeiten:905fa38d",
+      "id": "inf:de:verb:arbeiten:c2cef652:615dcd8aed",
+      "lexemeId": "de:verb:arbeiten:c2cef652",
       "form": "arbeitete",
       "features": {
         "tense": "past",
@@ -1204,56 +1060,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:bafb85ee31",
+      "sourceRevision": "pos_jsonl:verbs:50c2eae36d",
       "checksum": "309f1c556c3ea0e5",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:arbeiten:905fa38d:efe12c70a0",
-      "lexemeId": "de:verb:arbeiten:905fa38d",
+      "id": "inf:de:verb:arbeiten:c2cef652:34d72905ae",
+      "lexemeId": "de:verb:arbeiten:c2cef652",
       "form": "gearbeitet",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:bafb85ee31",
+      "sourceRevision": "pos_jsonl:verbs:50c2eae36d",
       "checksum": "aa88676c3345f1f4",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:arbeiten:905fa38d:d1d6826e30",
-      "lexemeId": "de:verb:arbeiten:905fa38d",
+      "id": "inf:de:verb:arbeiten:c2cef652:77021ecff6",
+      "lexemeId": "de:verb:arbeiten:c2cef652",
       "form": "hat gearbeitet",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:bafb85ee31",
+      "sourceRevision": "pos_jsonl:verbs:50c2eae36d",
       "checksum": "dc1cd735d144fd06",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:beinhalten:fe6f16ea:2337c8077f",
-      "lexemeId": "de:verb:beinhalten:fe6f16ea",
+      "id": "inf:de:verb:beinhalten:fa95ac03:dc5e821874",
+      "lexemeId": "de:verb:beinhalten:fa95ac03",
       "form": "beinhalten",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:844db77fa4",
+      "sourceRevision": "pos_jsonl:verbs:bf8ca08652",
       "checksum": "a4350dbcb986bf04",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:beinhalten:fe6f16ea:d4ae0b4838",
-      "lexemeId": "de:verb:beinhalten:fe6f16ea",
+      "id": "inf:de:verb:beinhalten:fa95ac03:b9a7f05257",
+      "lexemeId": "de:verb:beinhalten:fa95ac03",
       "form": "beinhaltete",
       "features": {
         "tense": "past",
@@ -1262,56 +1118,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:844db77fa4",
+      "sourceRevision": "pos_jsonl:verbs:bf8ca08652",
       "checksum": "ce8c488dbca169e3",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:beinhalten:fe6f16ea:9d439254a2",
-      "lexemeId": "de:verb:beinhalten:fe6f16ea",
+      "id": "inf:de:verb:beinhalten:fa95ac03:56c769ca70",
+      "lexemeId": "de:verb:beinhalten:fa95ac03",
       "form": "beinhaltet",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:844db77fa4",
+      "sourceRevision": "pos_jsonl:verbs:bf8ca08652",
       "checksum": "da2b3789ebcd8ee9",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:beinhalten:fe6f16ea:4a0d7f4f55",
-      "lexemeId": "de:verb:beinhalten:fe6f16ea",
+      "id": "inf:de:verb:beinhalten:fa95ac03:2cbe2b9a17",
+      "lexemeId": "de:verb:beinhalten:fa95ac03",
       "form": "hat beinhaltet",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:844db77fa4",
+      "sourceRevision": "pos_jsonl:verbs:bf8ca08652",
       "checksum": "16b4899ca796c8be",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:beschlieen:b68aaef9:7ed108da8c",
-      "lexemeId": "de:verb:beschlieen:b68aaef9",
+      "id": "inf:de:verb:beschlieen:ce493422:e0a889906b",
+      "lexemeId": "de:verb:beschlieen:ce493422",
       "form": "beschließen",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:6db1a5c7ae",
+      "sourceRevision": "pos_jsonl:verbs:24d3c14edb",
       "checksum": "b8fcae87b3b483a3",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:beschlieen:b68aaef9:083a08fca7",
-      "lexemeId": "de:verb:beschlieen:b68aaef9",
+      "id": "inf:de:verb:beschlieen:ce493422:d3ea76a45b",
+      "lexemeId": "de:verb:beschlieen:ce493422",
       "form": "beschloss",
       "features": {
         "tense": "past",
@@ -1320,56 +1176,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:6db1a5c7ae",
+      "sourceRevision": "pos_jsonl:verbs:24d3c14edb",
       "checksum": "150f6f4880911a5a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:beschlieen:b68aaef9:59eea66356",
-      "lexemeId": "de:verb:beschlieen:b68aaef9",
+      "id": "inf:de:verb:beschlieen:ce493422:c1382aabab",
+      "lexemeId": "de:verb:beschlieen:ce493422",
       "form": "beschlossen",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:6db1a5c7ae",
+      "sourceRevision": "pos_jsonl:verbs:24d3c14edb",
       "checksum": "3ec02faadbb61126",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:beschlieen:b68aaef9:c0324bf64f",
-      "lexemeId": "de:verb:beschlieen:b68aaef9",
+      "id": "inf:de:verb:beschlieen:ce493422:59d71b7bf1",
+      "lexemeId": "de:verb:beschlieen:ce493422",
       "form": "hat beschlossen",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:6db1a5c7ae",
+      "sourceRevision": "pos_jsonl:verbs:24d3c14edb",
       "checksum": "3b3382db570c8708",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:bewerten:8ba3cd51:fffa00a2d8",
-      "lexemeId": "de:verb:bewerten:8ba3cd51",
+      "id": "inf:de:verb:bewerten:f1003356:62dd877a2d",
+      "lexemeId": "de:verb:bewerten:f1003356",
       "form": "bewerten",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:f6f40861d8",
+      "sourceRevision": "pos_jsonl:verbs:a580c57b51",
       "checksum": "7cb28a64591e1d8b",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:bewerten:8ba3cd51:1edf5b99e0",
-      "lexemeId": "de:verb:bewerten:8ba3cd51",
+      "id": "inf:de:verb:bewerten:f1003356:9263fceaaf",
+      "lexemeId": "de:verb:bewerten:f1003356",
       "form": "bewertete",
       "features": {
         "tense": "past",
@@ -1378,56 +1234,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:f6f40861d8",
+      "sourceRevision": "pos_jsonl:verbs:a580c57b51",
       "checksum": "9e4d32725a9eb324",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:bewerten:8ba3cd51:321938ddad",
-      "lexemeId": "de:verb:bewerten:8ba3cd51",
+      "id": "inf:de:verb:bewerten:f1003356:f5ca85c71a",
+      "lexemeId": "de:verb:bewerten:f1003356",
       "form": "bewertet",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:f6f40861d8",
+      "sourceRevision": "pos_jsonl:verbs:a580c57b51",
       "checksum": "4dc389f919373440",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:bewerten:8ba3cd51:ce528c4385",
-      "lexemeId": "de:verb:bewerten:8ba3cd51",
+      "id": "inf:de:verb:bewerten:f1003356:dfe6105310",
+      "lexemeId": "de:verb:bewerten:f1003356",
       "form": "hat bewertet",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:f6f40861d8",
+      "sourceRevision": "pos_jsonl:verbs:a580c57b51",
       "checksum": "7056e97e56f41d3c",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:differenzieren:dfd84879:90a88c0e33",
-      "lexemeId": "de:verb:differenzieren:dfd84879",
+      "id": "inf:de:verb:differenzieren:c9b5965e:56d2e480dc",
+      "lexemeId": "de:verb:differenzieren:c9b5965e",
       "form": "differenzieren",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:86a10b40fb",
+      "sourceRevision": "pos_jsonl:verbs:188d2b5414",
       "checksum": "f98502c64dabd356",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:differenzieren:dfd84879:e64edbbafc",
-      "lexemeId": "de:verb:differenzieren:dfd84879",
+      "id": "inf:de:verb:differenzieren:c9b5965e:2917b3b639",
+      "lexemeId": "de:verb:differenzieren:c9b5965e",
       "form": "differenzierte",
       "features": {
         "tense": "past",
@@ -1436,56 +1292,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:86a10b40fb",
+      "sourceRevision": "pos_jsonl:verbs:188d2b5414",
       "checksum": "5d44c1ab269b224f",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:differenzieren:dfd84879:4455e74855",
-      "lexemeId": "de:verb:differenzieren:dfd84879",
+      "id": "inf:de:verb:differenzieren:c9b5965e:3f10dbaf2c",
+      "lexemeId": "de:verb:differenzieren:c9b5965e",
       "form": "differenziert",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:86a10b40fb",
+      "sourceRevision": "pos_jsonl:verbs:188d2b5414",
       "checksum": "5cece1d588217862",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:differenzieren:dfd84879:f366b8f9c3",
-      "lexemeId": "de:verb:differenzieren:dfd84879",
+      "id": "inf:de:verb:differenzieren:c9b5965e:2b1857fff3",
+      "lexemeId": "de:verb:differenzieren:c9b5965e",
       "form": "hat differenziert",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:86a10b40fb",
+      "sourceRevision": "pos_jsonl:verbs:188d2b5414",
       "checksum": "eb2cf2c41b144333",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:durchfuhren:d7dd8386:0566dd92f4",
-      "lexemeId": "de:verb:durchfuhren:d7dd8386",
+      "id": "inf:de:verb:durchfuhren:731130f4:87055b938e",
+      "lexemeId": "de:verb:durchfuhren:731130f4",
       "form": "durchführen",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:f6f40861d8",
+      "sourceRevision": "pos_jsonl:verbs:ae845da226",
       "checksum": "5f5eba679a936c52",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:durchfuhren:d7dd8386:6c0c936373",
-      "lexemeId": "de:verb:durchfuhren:d7dd8386",
+      "id": "inf:de:verb:durchfuhren:731130f4:e88954990d",
+      "lexemeId": "de:verb:durchfuhren:731130f4",
       "form": "führte durch",
       "features": {
         "tense": "past",
@@ -1494,56 +1350,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:f6f40861d8",
+      "sourceRevision": "pos_jsonl:verbs:ae845da226",
       "checksum": "a097140619135cd6",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:durchfuhren:d7dd8386:32e926bcfe",
-      "lexemeId": "de:verb:durchfuhren:d7dd8386",
+      "id": "inf:de:verb:durchfuhren:731130f4:1ce9b2bbcd",
+      "lexemeId": "de:verb:durchfuhren:731130f4",
       "form": "durchgeführt",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:f6f40861d8",
+      "sourceRevision": "pos_jsonl:verbs:ae845da226",
       "checksum": "1f56a75804ea975f",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:durchfuhren:d7dd8386:08dc08965b",
-      "lexemeId": "de:verb:durchfuhren:d7dd8386",
+      "id": "inf:de:verb:durchfuhren:731130f4:60ffaf707f",
+      "lexemeId": "de:verb:durchfuhren:731130f4",
       "form": "hat durchgeführt",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:f6f40861d8",
+      "sourceRevision": "pos_jsonl:verbs:ae845da226",
       "checksum": "6298828a2b62f236",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:entsprechen:57d109b8:07ee904d6b",
-      "lexemeId": "de:verb:entsprechen:57d109b8",
+      "id": "inf:de:verb:entsprechen:05be9f70:f009fac035",
+      "lexemeId": "de:verb:entsprechen:05be9f70",
       "form": "entsprechen",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:844db77fa4",
+      "sourceRevision": "pos_jsonl:verbs:cac5e8b4e6",
       "checksum": "45d960383f969fc5",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:entsprechen:57d109b8:01c41571cf",
-      "lexemeId": "de:verb:entsprechen:57d109b8",
+      "id": "inf:de:verb:entsprechen:05be9f70:87e853ccc1",
+      "lexemeId": "de:verb:entsprechen:05be9f70",
       "form": "entsprach",
       "features": {
         "tense": "past",
@@ -1552,56 +1408,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:844db77fa4",
+      "sourceRevision": "pos_jsonl:verbs:cac5e8b4e6",
       "checksum": "2f5ba1fd09896d02",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:entsprechen:57d109b8:637c51fbd8",
-      "lexemeId": "de:verb:entsprechen:57d109b8",
+      "id": "inf:de:verb:entsprechen:05be9f70:9d65d9d3e2",
+      "lexemeId": "de:verb:entsprechen:05be9f70",
       "form": "entsprochen",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:844db77fa4",
+      "sourceRevision": "pos_jsonl:verbs:cac5e8b4e6",
       "checksum": "828f4d889ae6f51d",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:entsprechen:57d109b8:721680aed5",
-      "lexemeId": "de:verb:entsprechen:57d109b8",
+      "id": "inf:de:verb:entsprechen:05be9f70:8da6e1de59",
+      "lexemeId": "de:verb:entsprechen:05be9f70",
       "form": "hat entsprochen",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:844db77fa4",
+      "sourceRevision": "pos_jsonl:verbs:cac5e8b4e6",
       "checksum": "2e15474cde566040",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:entstehen:1f1ff688:a1dcd4f9ac",
-      "lexemeId": "de:verb:entstehen:1f1ff688",
+      "id": "inf:de:verb:entstehen:62495810:e9c5869690",
+      "lexemeId": "de:verb:entstehen:62495810",
       "form": "entstehen",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:82ea987c20",
+      "sourceRevision": "pos_jsonl:verbs:43cbc32b07",
       "checksum": "d08f63b2fe299f5e",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:entstehen:1f1ff688:38c9636d00",
-      "lexemeId": "de:verb:entstehen:1f1ff688",
+      "id": "inf:de:verb:entstehen:62495810:804bff1a87",
+      "lexemeId": "de:verb:entstehen:62495810",
       "form": "entstand",
       "features": {
         "tense": "past",
@@ -1610,56 +1466,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:82ea987c20",
+      "sourceRevision": "pos_jsonl:verbs:43cbc32b07",
       "checksum": "4bb01ee29254121e",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:entstehen:1f1ff688:3b64ed8a59",
-      "lexemeId": "de:verb:entstehen:1f1ff688",
+      "id": "inf:de:verb:entstehen:62495810:5757b47e4d",
+      "lexemeId": "de:verb:entstehen:62495810",
       "form": "entstanden",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:82ea987c20",
+      "sourceRevision": "pos_jsonl:verbs:43cbc32b07",
       "checksum": "38a8fce2ac4060d4",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:entstehen:1f1ff688:5df57880a4",
-      "lexemeId": "de:verb:entstehen:1f1ff688",
+      "id": "inf:de:verb:entstehen:62495810:cc5f6319b5",
+      "lexemeId": "de:verb:entstehen:62495810",
       "form": "ist entstanden",
       "features": {
         "tense": "perfect",
         "auxiliary": "sein"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:82ea987c20",
+      "sourceRevision": "pos_jsonl:verbs:43cbc32b07",
       "checksum": "07bee43998b9b994",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:erortern:09d9db06:80ed719fb3",
-      "lexemeId": "de:verb:erortern:09d9db06",
+      "id": "inf:de:verb:erortern:4ff066fd:9a8bcb0c7e",
+      "lexemeId": "de:verb:erortern:4ff066fd",
       "form": "erörtern",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:844db77fa4",
+      "sourceRevision": "pos_jsonl:verbs:d206229848",
       "checksum": "cde95fb1c7ebaf95",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:erortern:09d9db06:8e935e1a0c",
-      "lexemeId": "de:verb:erortern:09d9db06",
+      "id": "inf:de:verb:erortern:4ff066fd:d99179114c",
+      "lexemeId": "de:verb:erortern:4ff066fd",
       "form": "erörterte",
       "features": {
         "tense": "past",
@@ -1668,56 +1524,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:844db77fa4",
+      "sourceRevision": "pos_jsonl:verbs:d206229848",
       "checksum": "343da2e2cfb60f23",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:erortern:09d9db06:1dae34da52",
-      "lexemeId": "de:verb:erortern:09d9db06",
+      "id": "inf:de:verb:erortern:4ff066fd:f1ddfbe7da",
+      "lexemeId": "de:verb:erortern:4ff066fd",
       "form": "erörtert",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:844db77fa4",
+      "sourceRevision": "pos_jsonl:verbs:d206229848",
       "checksum": "ff5c0f6338c4249d",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:erortern:09d9db06:e043f0e023",
-      "lexemeId": "de:verb:erortern:09d9db06",
+      "id": "inf:de:verb:erortern:4ff066fd:02f7a30a9d",
+      "lexemeId": "de:verb:erortern:4ff066fd",
       "form": "hat erörtert",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:844db77fa4",
+      "sourceRevision": "pos_jsonl:verbs:d206229848",
       "checksum": "ca5189ce1171aff8",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:erreichen:94cfa315:3494eb2199",
-      "lexemeId": "de:verb:erreichen:94cfa315",
+      "id": "inf:de:verb:erreichen:de0151a9:bfab96d3f2",
+      "lexemeId": "de:verb:erreichen:de0151a9",
       "form": "erreichen",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:db800cae63",
+      "sourceRevision": "pos_jsonl:verbs:fd8f6b5993",
       "checksum": "44e61a3b22f23b9a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:erreichen:94cfa315:5b80a8dfc3",
-      "lexemeId": "de:verb:erreichen:94cfa315",
+      "id": "inf:de:verb:erreichen:de0151a9:a4655e066f",
+      "lexemeId": "de:verb:erreichen:de0151a9",
       "form": "erreichte",
       "features": {
         "tense": "past",
@@ -1726,56 +1582,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:db800cae63",
+      "sourceRevision": "pos_jsonl:verbs:fd8f6b5993",
       "checksum": "cdfde2b166955f3a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:erreichen:94cfa315:e8d84eaa68",
-      "lexemeId": "de:verb:erreichen:94cfa315",
+      "id": "inf:de:verb:erreichen:de0151a9:750ab096c9",
+      "lexemeId": "de:verb:erreichen:de0151a9",
       "form": "erreicht",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:db800cae63",
+      "sourceRevision": "pos_jsonl:verbs:fd8f6b5993",
       "checksum": "8f85287936a16a0d",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:erreichen:94cfa315:544d774734",
-      "lexemeId": "de:verb:erreichen:94cfa315",
+      "id": "inf:de:verb:erreichen:de0151a9:4663cddfe1",
+      "lexemeId": "de:verb:erreichen:de0151a9",
       "form": "hat erreicht",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:db800cae63",
+      "sourceRevision": "pos_jsonl:verbs:fd8f6b5993",
       "checksum": "5972bff8ac4ae589",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:essen:9062b395:d5bc254e20",
-      "lexemeId": "de:verb:essen:9062b395",
+      "id": "inf:de:verb:essen:6b8d9469:8c9429efae",
+      "lexemeId": "de:verb:essen:6b8d9469",
       "form": "essen",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:44f5eb9ddc",
+      "sourceRevision": "pos_jsonl:verbs:d2d61f8d35",
       "checksum": "727891512666e614",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:essen:9062b395:a8fdfb3f0d",
-      "lexemeId": "de:verb:essen:9062b395",
+      "id": "inf:de:verb:essen:6b8d9469:e433eb06a0",
+      "lexemeId": "de:verb:essen:6b8d9469",
       "form": "aß",
       "features": {
         "tense": "past",
@@ -1784,56 +1640,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:44f5eb9ddc",
+      "sourceRevision": "pos_jsonl:verbs:d2d61f8d35",
       "checksum": "37118d67a0da816a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:essen:9062b395:ebc066acd0",
-      "lexemeId": "de:verb:essen:9062b395",
+      "id": "inf:de:verb:essen:6b8d9469:1e5b9df481",
+      "lexemeId": "de:verb:essen:6b8d9469",
       "form": "gegessen",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:44f5eb9ddc",
+      "sourceRevision": "pos_jsonl:verbs:d2d61f8d35",
       "checksum": "3267d50d9f6314f8",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:essen:9062b395:5e7588bc7c",
-      "lexemeId": "de:verb:essen:9062b395",
+      "id": "inf:de:verb:essen:6b8d9469:b2b5721cb9",
+      "lexemeId": "de:verb:essen:6b8d9469",
       "form": "hat gegessen",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:44f5eb9ddc",
+      "sourceRevision": "pos_jsonl:verbs:d2d61f8d35",
       "checksum": "4f29cd7fa710388e",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:fahren:15cf3f6b:a319a43426",
-      "lexemeId": "de:verb:fahren:15cf3f6b",
+      "id": "inf:de:verb:fahren:c2a3428d:1b5be01db7",
+      "lexemeId": "de:verb:fahren:c2a3428d",
       "form": "fahren",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:4f9a05272b",
+      "sourceRevision": "pos_jsonl:verbs:d7331878aa",
       "checksum": "efb100f343e4f93a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:fahren:15cf3f6b:1be9c26af7",
-      "lexemeId": "de:verb:fahren:15cf3f6b",
+      "id": "inf:de:verb:fahren:c2a3428d:fcb26caa0b",
+      "lexemeId": "de:verb:fahren:c2a3428d",
       "form": "fuhr",
       "features": {
         "tense": "past",
@@ -1842,56 +1698,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:4f9a05272b",
+      "sourceRevision": "pos_jsonl:verbs:d7331878aa",
       "checksum": "e9605d6859331c94",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:fahren:15cf3f6b:67c7c357b4",
-      "lexemeId": "de:verb:fahren:15cf3f6b",
+      "id": "inf:de:verb:fahren:c2a3428d:2dcad47fd2",
+      "lexemeId": "de:verb:fahren:c2a3428d",
       "form": "gefahren",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:4f9a05272b",
+      "sourceRevision": "pos_jsonl:verbs:d7331878aa",
       "checksum": "050e4cddd40535f2",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:fahren:15cf3f6b:bbf43d316e",
-      "lexemeId": "de:verb:fahren:15cf3f6b",
+      "id": "inf:de:verb:fahren:c2a3428d:02bbac9953",
+      "lexemeId": "de:verb:fahren:c2a3428d",
       "form": "ist gefahren",
       "features": {
         "tense": "perfect",
         "auxiliary": "sein"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:4f9a05272b",
+      "sourceRevision": "pos_jsonl:verbs:d7331878aa",
       "checksum": "45eb92c9ae5b03cf",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:fliegen:75459563:97eb482b0a",
-      "lexemeId": "de:verb:fliegen:75459563",
+      "id": "inf:de:verb:fliegen:010ae8c3:bca3d38f1d",
+      "lexemeId": "de:verb:fliegen:010ae8c3",
       "form": "fliegen",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:b9a89b0fde",
+      "sourceRevision": "pos_jsonl:verbs:5d85017529",
       "checksum": "e3a5eb546a57fce3",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:fliegen:75459563:90c2a6d9bf",
-      "lexemeId": "de:verb:fliegen:75459563",
+      "id": "inf:de:verb:fliegen:010ae8c3:4abcb85ae2",
+      "lexemeId": "de:verb:fliegen:010ae8c3",
       "form": "flog",
       "features": {
         "tense": "past",
@@ -1900,56 +1756,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:b9a89b0fde",
+      "sourceRevision": "pos_jsonl:verbs:5d85017529",
       "checksum": "46cb7e0ba9dab331",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:fliegen:75459563:ad8cdc69e6",
-      "lexemeId": "de:verb:fliegen:75459563",
+      "id": "inf:de:verb:fliegen:010ae8c3:51bef26b05",
+      "lexemeId": "de:verb:fliegen:010ae8c3",
       "form": "geflogen",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:b9a89b0fde",
+      "sourceRevision": "pos_jsonl:verbs:5d85017529",
       "checksum": "54b09ade3dd2917a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:fliegen:75459563:8565779e84",
-      "lexemeId": "de:verb:fliegen:75459563",
+      "id": "inf:de:verb:fliegen:010ae8c3:602690fcb6",
+      "lexemeId": "de:verb:fliegen:010ae8c3",
       "form": "ist geflogen",
       "features": {
         "tense": "perfect",
         "auxiliary": "sein"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:b9a89b0fde",
+      "sourceRevision": "pos_jsonl:verbs:5d85017529",
       "checksum": "173e5ffb3d30777f",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:gedeihen:8ff24825:c54353e913",
-      "lexemeId": "de:verb:gedeihen:8ff24825",
+      "id": "inf:de:verb:gedeihen:76005b84:40611254d6",
+      "lexemeId": "de:verb:gedeihen:76005b84",
       "form": "gedeihen",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:86a10b40fb",
+      "sourceRevision": "pos_jsonl:verbs:8840415f8a",
       "checksum": "eee09ecdfc2543d9",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:gedeihen:8ff24825:8eaf1250b2",
-      "lexemeId": "de:verb:gedeihen:8ff24825",
+      "id": "inf:de:verb:gedeihen:76005b84:16eda01159",
+      "lexemeId": "de:verb:gedeihen:76005b84",
       "form": "gedieh",
       "features": {
         "tense": "past",
@@ -1958,56 +1814,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:86a10b40fb",
+      "sourceRevision": "pos_jsonl:verbs:8840415f8a",
       "checksum": "413219676a3e91cf",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:gedeihen:8ff24825:34c8c587e5",
-      "lexemeId": "de:verb:gedeihen:8ff24825",
+      "id": "inf:de:verb:gedeihen:76005b84:41a1b3663d",
+      "lexemeId": "de:verb:gedeihen:76005b84",
       "form": "gediehen",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:86a10b40fb",
+      "sourceRevision": "pos_jsonl:verbs:8840415f8a",
       "checksum": "e9894668677269fa",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:gedeihen:8ff24825:1abdcdacac",
-      "lexemeId": "de:verb:gedeihen:8ff24825",
+      "id": "inf:de:verb:gedeihen:76005b84:14769a5e61",
+      "lexemeId": "de:verb:gedeihen:76005b84",
       "form": "ist gediehen",
       "features": {
         "tense": "perfect",
         "auxiliary": "sein"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:86a10b40fb",
+      "sourceRevision": "pos_jsonl:verbs:8840415f8a",
       "checksum": "0141fbe036d8ab80",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:gehen:c7dab9ca:79abfd94ee",
-      "lexemeId": "de:verb:gehen:c7dab9ca",
+      "id": "inf:de:verb:gehen:d8137135:c97c0899d8",
+      "lexemeId": "de:verb:gehen:d8137135",
       "form": "gehen",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:8d6e522ec6",
+      "sourceRevision": "pos_jsonl:verbs:542d3d3cef",
       "checksum": "bd8cfd2c57bd9e3e",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:gehen:c7dab9ca:c3105167de",
-      "lexemeId": "de:verb:gehen:c7dab9ca",
+      "id": "inf:de:verb:gehen:d8137135:06dacfd000",
+      "lexemeId": "de:verb:gehen:d8137135",
       "form": "gehe",
       "features": {
         "tense": "present",
@@ -2016,14 +1872,14 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:8d6e522ec6",
+      "sourceRevision": "pos_jsonl:verbs:542d3d3cef",
       "checksum": "047a5334160c6e12",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:gehen:c7dab9ca:cf14ac8f66",
-      "lexemeId": "de:verb:gehen:c7dab9ca",
+      "id": "inf:de:verb:gehen:d8137135:c097ba3ae0",
+      "lexemeId": "de:verb:gehen:d8137135",
       "form": "geht",
       "features": {
         "tense": "present",
@@ -2032,14 +1888,14 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:8d6e522ec6",
+      "sourceRevision": "pos_jsonl:verbs:542d3d3cef",
       "checksum": "295aca8c571ef143",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:gehen:c7dab9ca:501f0bfb52",
-      "lexemeId": "de:verb:gehen:c7dab9ca",
+      "id": "inf:de:verb:gehen:d8137135:b3ac3fba77",
+      "lexemeId": "de:verb:gehen:d8137135",
       "form": "ging",
       "features": {
         "tense": "past",
@@ -2048,56 +1904,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:8d6e522ec6",
+      "sourceRevision": "pos_jsonl:verbs:542d3d3cef",
       "checksum": "3d7df642e38f771b",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:gehen:c7dab9ca:749fb14fa3",
-      "lexemeId": "de:verb:gehen:c7dab9ca",
+      "id": "inf:de:verb:gehen:d8137135:245699dea3",
+      "lexemeId": "de:verb:gehen:d8137135",
       "form": "gegangen",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:8d6e522ec6",
+      "sourceRevision": "pos_jsonl:verbs:542d3d3cef",
       "checksum": "b8f7fdcb72be77c2",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:gehen:c7dab9ca:b09f26731e",
-      "lexemeId": "de:verb:gehen:c7dab9ca",
+      "id": "inf:de:verb:gehen:d8137135:9d110f3551",
+      "lexemeId": "de:verb:gehen:d8137135",
       "form": "ist gegangen",
       "features": {
         "tense": "perfect",
         "auxiliary": "sein"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:8d6e522ec6",
+      "sourceRevision": "pos_jsonl:verbs:542d3d3cef",
       "checksum": "1fc8ee6fb0e9579c",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:haben:6b7855da:6b3041ec57",
-      "lexemeId": "de:verb:haben:6b7855da",
+      "id": "inf:de:verb:haben:332ab797:cc74863d45",
+      "lexemeId": "de:verb:haben:332ab797",
       "form": "haben",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:42c7de1c97",
+      "sourceRevision": "pos_jsonl:verbs:6503e26406",
       "checksum": "42ec019a80eff876",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:haben:6b7855da:3df6cf5119",
-      "lexemeId": "de:verb:haben:6b7855da",
+      "id": "inf:de:verb:haben:332ab797:fe92440e9a",
+      "lexemeId": "de:verb:haben:332ab797",
       "form": "habe",
       "features": {
         "tense": "present",
@@ -2106,14 +1962,14 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:42c7de1c97",
+      "sourceRevision": "pos_jsonl:verbs:6503e26406",
       "checksum": "a7dbdc4f4e484ec0",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:haben:6b7855da:670e4b621c",
-      "lexemeId": "de:verb:haben:6b7855da",
+      "id": "inf:de:verb:haben:332ab797:25ae2d4305",
+      "lexemeId": "de:verb:haben:332ab797",
       "form": "hat",
       "features": {
         "tense": "present",
@@ -2122,14 +1978,14 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:42c7de1c97",
+      "sourceRevision": "pos_jsonl:verbs:6503e26406",
       "checksum": "1f1a10166cfef86b",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:haben:6b7855da:e90c78b96c",
-      "lexemeId": "de:verb:haben:6b7855da",
+      "id": "inf:de:verb:haben:332ab797:f300114d06",
+      "lexemeId": "de:verb:haben:332ab797",
       "form": "hatte",
       "features": {
         "tense": "past",
@@ -2138,56 +1994,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:42c7de1c97",
+      "sourceRevision": "pos_jsonl:verbs:6503e26406",
       "checksum": "b25ea7e007c4277a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:haben:6b7855da:c52ef6c7a8",
-      "lexemeId": "de:verb:haben:6b7855da",
+      "id": "inf:de:verb:haben:332ab797:3ff26af87a",
+      "lexemeId": "de:verb:haben:332ab797",
       "form": "gehabt",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:42c7de1c97",
+      "sourceRevision": "pos_jsonl:verbs:6503e26406",
       "checksum": "3256ad8d3933223a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:haben:6b7855da:e163491f15",
-      "lexemeId": "de:verb:haben:6b7855da",
+      "id": "inf:de:verb:haben:332ab797:dff90642e4",
+      "lexemeId": "de:verb:haben:332ab797",
       "form": "hat gehabt",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:42c7de1c97",
+      "sourceRevision": "pos_jsonl:verbs:6503e26406",
       "checksum": "e804d90fb8f5a4f9",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:heien:0a417ffe:f755858565",
-      "lexemeId": "de:verb:heien:0a417ffe",
+      "id": "inf:de:verb:heien:4ac6e1b6:24a1b70216",
+      "lexemeId": "de:verb:heien:4ac6e1b6",
       "form": "heißen",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:18b3c3ab4a",
+      "sourceRevision": "pos_jsonl:verbs:40beaca628",
       "checksum": "67c645b46eb6438d",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:heien:0a417ffe:1e2cdfbe3a",
-      "lexemeId": "de:verb:heien:0a417ffe",
+      "id": "inf:de:verb:heien:4ac6e1b6:972a775436",
+      "lexemeId": "de:verb:heien:4ac6e1b6",
       "form": "hieß",
       "features": {
         "tense": "past",
@@ -2196,56 +2052,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:18b3c3ab4a",
+      "sourceRevision": "pos_jsonl:verbs:40beaca628",
       "checksum": "3a373caf401c2ad0",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:heien:0a417ffe:109ac7a1ac",
-      "lexemeId": "de:verb:heien:0a417ffe",
+      "id": "inf:de:verb:heien:4ac6e1b6:7d8506af3a",
+      "lexemeId": "de:verb:heien:4ac6e1b6",
       "form": "geheißen",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:18b3c3ab4a",
+      "sourceRevision": "pos_jsonl:verbs:40beaca628",
       "checksum": "092a98aaf8d08502",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:heien:0a417ffe:4d96b685b9",
-      "lexemeId": "de:verb:heien:0a417ffe",
+      "id": "inf:de:verb:heien:4ac6e1b6:ce3e908d60",
+      "lexemeId": "de:verb:heien:4ac6e1b6",
       "form": "hat geheißen",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:18b3c3ab4a",
+      "sourceRevision": "pos_jsonl:verbs:40beaca628",
       "checksum": "c746fb3c8c2d83e1",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:horen:76923fd3:e15fe661aa",
-      "lexemeId": "de:verb:horen:76923fd3",
+      "id": "inf:de:verb:horen:e75e9ebf:42508915e2",
+      "lexemeId": "de:verb:horen:e75e9ebf",
       "form": "hören",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:dd264d996e",
+      "sourceRevision": "pos_jsonl:verbs:3f6565e26e",
       "checksum": "453ec5582c1fb4ca",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:horen:76923fd3:c44a4733c0",
-      "lexemeId": "de:verb:horen:76923fd3",
+      "id": "inf:de:verb:horen:e75e9ebf:de22d3892c",
+      "lexemeId": "de:verb:horen:e75e9ebf",
       "form": "hörte",
       "features": {
         "tense": "past",
@@ -2254,56 +2110,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:dd264d996e",
+      "sourceRevision": "pos_jsonl:verbs:3f6565e26e",
       "checksum": "62e01b07f10bcd01",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:horen:76923fd3:4eca446d83",
-      "lexemeId": "de:verb:horen:76923fd3",
+      "id": "inf:de:verb:horen:e75e9ebf:702d8b9aa8",
+      "lexemeId": "de:verb:horen:e75e9ebf",
       "form": "gehört",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:dd264d996e",
+      "sourceRevision": "pos_jsonl:verbs:3f6565e26e",
       "checksum": "8b7914f675c31f02",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:horen:76923fd3:4fb5c4d087",
-      "lexemeId": "de:verb:horen:76923fd3",
+      "id": "inf:de:verb:horen:e75e9ebf:c0013f54f1",
+      "lexemeId": "de:verb:horen:e75e9ebf",
       "form": "hat gehört",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:dd264d996e",
+      "sourceRevision": "pos_jsonl:verbs:3f6565e26e",
       "checksum": "39dce2891abdb825",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:kaufen:b2486f52:11a972e86b",
-      "lexemeId": "de:verb:kaufen:b2486f52",
+      "id": "inf:de:verb:kaufen:e233c411:6d45f72309",
+      "lexemeId": "de:verb:kaufen:e233c411",
       "form": "kaufen",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:e8f9860eba",
+      "sourceRevision": "pos_jsonl:verbs:c5a4033dba",
       "checksum": "c5af53c572d6c469",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:kaufen:b2486f52:495f191db5",
-      "lexemeId": "de:verb:kaufen:b2486f52",
+      "id": "inf:de:verb:kaufen:e233c411:900b2f4bdc",
+      "lexemeId": "de:verb:kaufen:e233c411",
       "form": "kaufte",
       "features": {
         "tense": "past",
@@ -2312,56 +2168,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:e8f9860eba",
+      "sourceRevision": "pos_jsonl:verbs:c5a4033dba",
       "checksum": "367e7f8321ca5f3d",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:kaufen:b2486f52:98466d44cb",
-      "lexemeId": "de:verb:kaufen:b2486f52",
+      "id": "inf:de:verb:kaufen:e233c411:33ce7ab30a",
+      "lexemeId": "de:verb:kaufen:e233c411",
       "form": "gekauft",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:e8f9860eba",
+      "sourceRevision": "pos_jsonl:verbs:c5a4033dba",
       "checksum": "d1e8271bb320046e",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:kaufen:b2486f52:6390d8175a",
-      "lexemeId": "de:verb:kaufen:b2486f52",
+      "id": "inf:de:verb:kaufen:e233c411:f99da4a5fd",
+      "lexemeId": "de:verb:kaufen:e233c411",
       "form": "hat gekauft",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:e8f9860eba",
+      "sourceRevision": "pos_jsonl:verbs:c5a4033dba",
       "checksum": "06223b8f0ba75255",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:kommen:7df1ed0e:a6170b54c6",
-      "lexemeId": "de:verb:kommen:7df1ed0e",
+      "id": "inf:de:verb:kommen:d2ab1849:237408634d",
+      "lexemeId": "de:verb:kommen:d2ab1849",
       "form": "kommen",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:f2b4098889",
+      "sourceRevision": "pos_jsonl:verbs:91907c5135",
       "checksum": "131bf1ffe110113d",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:kommen:7df1ed0e:9e702819f4",
-      "lexemeId": "de:verb:kommen:7df1ed0e",
+      "id": "inf:de:verb:kommen:d2ab1849:85998304e5",
+      "lexemeId": "de:verb:kommen:d2ab1849",
       "form": "kam",
       "features": {
         "tense": "past",
@@ -2370,56 +2226,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:f2b4098889",
+      "sourceRevision": "pos_jsonl:verbs:91907c5135",
       "checksum": "8433e1af2795736d",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:kommen:7df1ed0e:465568d1f1",
-      "lexemeId": "de:verb:kommen:7df1ed0e",
+      "id": "inf:de:verb:kommen:d2ab1849:5996d5f31f",
+      "lexemeId": "de:verb:kommen:d2ab1849",
       "form": "gekommen",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:f2b4098889",
+      "sourceRevision": "pos_jsonl:verbs:91907c5135",
       "checksum": "d33fdce864734588",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:kommen:7df1ed0e:5582b9adb8",
-      "lexemeId": "de:verb:kommen:7df1ed0e",
+      "id": "inf:de:verb:kommen:d2ab1849:ea1f50ece8",
+      "lexemeId": "de:verb:kommen:d2ab1849",
       "form": "ist gekommen",
       "features": {
         "tense": "perfect",
         "auxiliary": "sein"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:f2b4098889",
+      "sourceRevision": "pos_jsonl:verbs:91907c5135",
       "checksum": "4cac3e1c37cb7fc4",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:konnen:f5b71764:a9c1c1e7bb",
-      "lexemeId": "de:verb:konnen:f5b71764",
+      "id": "inf:de:verb:konnen:9fb4f19a:e8fcf0574f",
+      "lexemeId": "de:verb:konnen:9fb4f19a",
       "form": "können",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:ce3437b0b0",
+      "sourceRevision": "pos_jsonl:verbs:9fa282d0b9",
       "checksum": "96f0e4b2d5e98650",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:konnen:f5b71764:5ac17addb0",
-      "lexemeId": "de:verb:konnen:f5b71764",
+      "id": "inf:de:verb:konnen:9fb4f19a:37c21840ed",
+      "lexemeId": "de:verb:konnen:9fb4f19a",
       "form": "kann",
       "features": {
         "tense": "present",
@@ -2428,14 +2284,14 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:ce3437b0b0",
+      "sourceRevision": "pos_jsonl:verbs:9fa282d0b9",
       "checksum": "75d0db804503a44a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:konnen:f5b71764:b290b0e885",
-      "lexemeId": "de:verb:konnen:f5b71764",
+      "id": "inf:de:verb:konnen:9fb4f19a:0c6bbc01d8",
+      "lexemeId": "de:verb:konnen:9fb4f19a",
       "form": "kann",
       "features": {
         "tense": "present",
@@ -2444,14 +2300,14 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:ce3437b0b0",
+      "sourceRevision": "pos_jsonl:verbs:9fa282d0b9",
       "checksum": "332f5713ab6aa405",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:konnen:f5b71764:a9f82417ae",
-      "lexemeId": "de:verb:konnen:f5b71764",
+      "id": "inf:de:verb:konnen:9fb4f19a:53f0484bc9",
+      "lexemeId": "de:verb:konnen:9fb4f19a",
       "form": "konnte",
       "features": {
         "tense": "past",
@@ -2460,56 +2316,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:ce3437b0b0",
+      "sourceRevision": "pos_jsonl:verbs:9fa282d0b9",
       "checksum": "931f86444deee30a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:konnen:f5b71764:30ebea0009",
-      "lexemeId": "de:verb:konnen:f5b71764",
+      "id": "inf:de:verb:konnen:9fb4f19a:84ef9d009c",
+      "lexemeId": "de:verb:konnen:9fb4f19a",
       "form": "gekonnt",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:ce3437b0b0",
+      "sourceRevision": "pos_jsonl:verbs:9fa282d0b9",
       "checksum": "705bd3ddbe26e402",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:konnen:f5b71764:5fdc37cc38",
-      "lexemeId": "de:verb:konnen:f5b71764",
+      "id": "inf:de:verb:konnen:9fb4f19a:431844781f",
+      "lexemeId": "de:verb:konnen:9fb4f19a",
       "form": "hat gekonnt",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:ce3437b0b0",
+      "sourceRevision": "pos_jsonl:verbs:9fa282d0b9",
       "checksum": "0b78af5bb57b71ee",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:laufen:a1f8f02c:9d573f9a08",
-      "lexemeId": "de:verb:laufen:a1f8f02c",
+      "id": "inf:de:verb:laufen:99ad38b1:f55c364e57",
+      "lexemeId": "de:verb:laufen:99ad38b1",
       "form": "laufen",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:a663c9b914",
+      "sourceRevision": "pos_jsonl:verbs:bd67ab6fa4",
       "checksum": "0eb12f0e2183e909",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:laufen:a1f8f02c:742db16485",
-      "lexemeId": "de:verb:laufen:a1f8f02c",
+      "id": "inf:de:verb:laufen:99ad38b1:84036e0a7e",
+      "lexemeId": "de:verb:laufen:99ad38b1",
       "form": "lief",
       "features": {
         "tense": "past",
@@ -2518,56 +2374,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:a663c9b914",
+      "sourceRevision": "pos_jsonl:verbs:bd67ab6fa4",
       "checksum": "10ae1154fd411dd6",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:laufen:a1f8f02c:48c401582c",
-      "lexemeId": "de:verb:laufen:a1f8f02c",
+      "id": "inf:de:verb:laufen:99ad38b1:d9cb916ce9",
+      "lexemeId": "de:verb:laufen:99ad38b1",
       "form": "gelaufen",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:a663c9b914",
+      "sourceRevision": "pos_jsonl:verbs:bd67ab6fa4",
       "checksum": "edd294b19e73ab8e",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:laufen:a1f8f02c:f12168d464",
-      "lexemeId": "de:verb:laufen:a1f8f02c",
+      "id": "inf:de:verb:laufen:99ad38b1:098ecc229c",
+      "lexemeId": "de:verb:laufen:99ad38b1",
       "form": "ist gelaufen",
       "features": {
         "tense": "perfect",
         "auxiliary": "sein"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:a663c9b914",
+      "sourceRevision": "pos_jsonl:verbs:bd67ab6fa4",
       "checksum": "61cecdfc658871be",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:leben:eedbdf34:c520186668",
-      "lexemeId": "de:verb:leben:eedbdf34",
+      "id": "inf:de:verb:leben:8bf6bfa6:55dfbf513a",
+      "lexemeId": "de:verb:leben:8bf6bfa6",
       "form": "leben",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:162a084e27",
+      "sourceRevision": "pos_jsonl:verbs:d800325c05",
       "checksum": "5157b63d3e4687cb",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:leben:eedbdf34:674b093cea",
-      "lexemeId": "de:verb:leben:eedbdf34",
+      "id": "inf:de:verb:leben:8bf6bfa6:dd94628b4e",
+      "lexemeId": "de:verb:leben:8bf6bfa6",
       "form": "lebte",
       "features": {
         "tense": "past",
@@ -2576,56 +2432,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:162a084e27",
+      "sourceRevision": "pos_jsonl:verbs:d800325c05",
       "checksum": "914ec579646f5637",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:leben:eedbdf34:1d457fbfad",
-      "lexemeId": "de:verb:leben:eedbdf34",
+      "id": "inf:de:verb:leben:8bf6bfa6:525b372d6a",
+      "lexemeId": "de:verb:leben:8bf6bfa6",
       "form": "gelebt",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:162a084e27",
+      "sourceRevision": "pos_jsonl:verbs:d800325c05",
       "checksum": "2b4a5faed75683c4",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:leben:eedbdf34:b265651f97",
-      "lexemeId": "de:verb:leben:eedbdf34",
+      "id": "inf:de:verb:leben:8bf6bfa6:c7c1a99749",
+      "lexemeId": "de:verb:leben:8bf6bfa6",
       "form": "hat gelebt",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:162a084e27",
+      "sourceRevision": "pos_jsonl:verbs:d800325c05",
       "checksum": "5c509e5f0cfe4182",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:lernen:5b328a53:e5d52765fe",
-      "lexemeId": "de:verb:lernen:5b328a53",
+      "id": "inf:de:verb:lernen:a57ac1c5:b28e847a48",
+      "lexemeId": "de:verb:lernen:a57ac1c5",
       "form": "lernen",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:4258b28b48",
+      "sourceRevision": "pos_jsonl:verbs:ad66220486",
       "checksum": "c00d79b30edf4701",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:lernen:5b328a53:81a909b122",
-      "lexemeId": "de:verb:lernen:5b328a53",
+      "id": "inf:de:verb:lernen:a57ac1c5:b304bdf157",
+      "lexemeId": "de:verb:lernen:a57ac1c5",
       "form": "lernte",
       "features": {
         "tense": "past",
@@ -2634,56 +2490,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:4258b28b48",
+      "sourceRevision": "pos_jsonl:verbs:ad66220486",
       "checksum": "ac1db51c1c6bd543",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:lernen:5b328a53:f76ca8dcb5",
-      "lexemeId": "de:verb:lernen:5b328a53",
+      "id": "inf:de:verb:lernen:a57ac1c5:c862d5ebf4",
+      "lexemeId": "de:verb:lernen:a57ac1c5",
       "form": "gelernt",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:4258b28b48",
+      "sourceRevision": "pos_jsonl:verbs:ad66220486",
       "checksum": "49ccfa2795819131",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:lernen:5b328a53:5f632b0f3a",
-      "lexemeId": "de:verb:lernen:5b328a53",
+      "id": "inf:de:verb:lernen:a57ac1c5:c7cfcd092a",
+      "lexemeId": "de:verb:lernen:a57ac1c5",
       "form": "hat gelernt",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:4258b28b48",
+      "sourceRevision": "pos_jsonl:verbs:ad66220486",
       "checksum": "c89e10c18a82b6e0",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:lesen:c900d552:a5441dfc3d",
-      "lexemeId": "de:verb:lesen:c900d552",
+      "id": "inf:de:verb:lesen:62751638:1bb56ea5bf",
+      "lexemeId": "de:verb:lesen:62751638",
       "form": "lesen",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:612910f095",
+      "sourceRevision": "pos_jsonl:verbs:c7a4677afd",
       "checksum": "7a67419865f7baf8",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:lesen:c900d552:76e422cd45",
-      "lexemeId": "de:verb:lesen:c900d552",
+      "id": "inf:de:verb:lesen:62751638:7ee0a95e9a",
+      "lexemeId": "de:verb:lesen:62751638",
       "form": "las",
       "features": {
         "tense": "past",
@@ -2692,56 +2548,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:612910f095",
+      "sourceRevision": "pos_jsonl:verbs:c7a4677afd",
       "checksum": "1f123b5e8f5790c9",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:lesen:c900d552:6d2a52c331",
-      "lexemeId": "de:verb:lesen:c900d552",
+      "id": "inf:de:verb:lesen:62751638:a2f566ece7",
+      "lexemeId": "de:verb:lesen:62751638",
       "form": "gelesen",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:612910f095",
+      "sourceRevision": "pos_jsonl:verbs:c7a4677afd",
       "checksum": "ce5de8861d3cd72a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:lesen:c900d552:4d929593a2",
-      "lexemeId": "de:verb:lesen:c900d552",
+      "id": "inf:de:verb:lesen:62751638:36b82af421",
+      "lexemeId": "de:verb:lesen:62751638",
       "form": "hat gelesen",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:612910f095",
+      "sourceRevision": "pos_jsonl:verbs:c7a4677afd",
       "checksum": "5330ff2d12a83620",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:machen:3e9552c8:821c7ec6e2",
-      "lexemeId": "de:verb:machen:3e9552c8",
+      "id": "inf:de:verb:machen:28cbaea6:63093347a3",
+      "lexemeId": "de:verb:machen:28cbaea6",
       "form": "machen",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:fe7eb7dd1c",
+      "sourceRevision": "pos_jsonl:verbs:02f74876a0",
       "checksum": "a7b7a983d84225af",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:machen:3e9552c8:ce5f529e22",
-      "lexemeId": "de:verb:machen:3e9552c8",
+      "id": "inf:de:verb:machen:28cbaea6:775c637238",
+      "lexemeId": "de:verb:machen:28cbaea6",
       "form": "machte",
       "features": {
         "tense": "past",
@@ -2750,56 +2606,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:fe7eb7dd1c",
+      "sourceRevision": "pos_jsonl:verbs:02f74876a0",
       "checksum": "a66a513e64684c1d",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:machen:3e9552c8:e6ce5ef977",
-      "lexemeId": "de:verb:machen:3e9552c8",
+      "id": "inf:de:verb:machen:28cbaea6:6bb5cb3d0a",
+      "lexemeId": "de:verb:machen:28cbaea6",
       "form": "gemacht",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:fe7eb7dd1c",
+      "sourceRevision": "pos_jsonl:verbs:02f74876a0",
       "checksum": "e0aa90d88baa2609",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:machen:3e9552c8:0b1c64e874",
-      "lexemeId": "de:verb:machen:3e9552c8",
+      "id": "inf:de:verb:machen:28cbaea6:e3287e9821",
+      "lexemeId": "de:verb:machen:28cbaea6",
       "form": "hat gemacht",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:fe7eb7dd1c",
+      "sourceRevision": "pos_jsonl:verbs:02f74876a0",
       "checksum": "adf799cd2f064653",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:mussen:5c5eebed:cf8ca8b1fe",
-      "lexemeId": "de:verb:mussen:5c5eebed",
+      "id": "inf:de:verb:mussen:84258bb6:28671a051e",
+      "lexemeId": "de:verb:mussen:84258bb6",
       "form": "müssen",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:435a7eafbf",
+      "sourceRevision": "pos_jsonl:verbs:02ac661bf7",
       "checksum": "ce573bc54432e707",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:mussen:5c5eebed:fcbf4c7aa6",
-      "lexemeId": "de:verb:mussen:5c5eebed",
+      "id": "inf:de:verb:mussen:84258bb6:5dd2259049",
+      "lexemeId": "de:verb:mussen:84258bb6",
       "form": "muss",
       "features": {
         "tense": "present",
@@ -2808,14 +2664,14 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:435a7eafbf",
+      "sourceRevision": "pos_jsonl:verbs:02ac661bf7",
       "checksum": "5e6222ea31c55867",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:mussen:5c5eebed:0be37bbb10",
-      "lexemeId": "de:verb:mussen:5c5eebed",
+      "id": "inf:de:verb:mussen:84258bb6:f911dc6029",
+      "lexemeId": "de:verb:mussen:84258bb6",
       "form": "muss",
       "features": {
         "tense": "present",
@@ -2824,14 +2680,14 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:435a7eafbf",
+      "sourceRevision": "pos_jsonl:verbs:02ac661bf7",
       "checksum": "ac99b97e41cf92f0",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:mussen:5c5eebed:ce0045fce9",
-      "lexemeId": "de:verb:mussen:5c5eebed",
+      "id": "inf:de:verb:mussen:84258bb6:7919e5401c",
+      "lexemeId": "de:verb:mussen:84258bb6",
       "form": "musste",
       "features": {
         "tense": "past",
@@ -2840,56 +2696,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:435a7eafbf",
+      "sourceRevision": "pos_jsonl:verbs:02ac661bf7",
       "checksum": "a939a85016760745",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:mussen:5c5eebed:0520193009",
-      "lexemeId": "de:verb:mussen:5c5eebed",
+      "id": "inf:de:verb:mussen:84258bb6:a6c37ad574",
+      "lexemeId": "de:verb:mussen:84258bb6",
       "form": "gemusst",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:435a7eafbf",
+      "sourceRevision": "pos_jsonl:verbs:02ac661bf7",
       "checksum": "2b668a7889b2cc1a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:mussen:5c5eebed:01b0ab5b79",
-      "lexemeId": "de:verb:mussen:5c5eebed",
+      "id": "inf:de:verb:mussen:84258bb6:746dacaaae",
+      "lexemeId": "de:verb:mussen:84258bb6",
       "form": "hat gemusst",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:435a7eafbf",
+      "sourceRevision": "pos_jsonl:verbs:02ac661bf7",
       "checksum": "863e0baaa2cd45b1",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:schlafen:d2453ec6:1019f20c9d",
-      "lexemeId": "de:verb:schlafen:d2453ec6",
+      "id": "inf:de:verb:schlafen:9d87c270:ba383a8c0b",
+      "lexemeId": "de:verb:schlafen:9d87c270",
       "form": "schlafen",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:4935e9f7e5",
+      "sourceRevision": "pos_jsonl:verbs:85ce8dfe40",
       "checksum": "86225f1f58fddddd",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:schlafen:d2453ec6:f0c941ae34",
-      "lexemeId": "de:verb:schlafen:d2453ec6",
+      "id": "inf:de:verb:schlafen:9d87c270:c5bbc4410a",
+      "lexemeId": "de:verb:schlafen:9d87c270",
       "form": "schlief",
       "features": {
         "tense": "past",
@@ -2898,56 +2754,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:4935e9f7e5",
+      "sourceRevision": "pos_jsonl:verbs:85ce8dfe40",
       "checksum": "b1d7fd3eb7fa6d4a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:schlafen:d2453ec6:4ef9c38b0d",
-      "lexemeId": "de:verb:schlafen:d2453ec6",
+      "id": "inf:de:verb:schlafen:9d87c270:0f607e562f",
+      "lexemeId": "de:verb:schlafen:9d87c270",
       "form": "geschlafen",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:4935e9f7e5",
+      "sourceRevision": "pos_jsonl:verbs:85ce8dfe40",
       "checksum": "60f75d7bf3930a9e",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:schlafen:d2453ec6:808904e6b5",
-      "lexemeId": "de:verb:schlafen:d2453ec6",
+      "id": "inf:de:verb:schlafen:9d87c270:d669f4ed7c",
+      "lexemeId": "de:verb:schlafen:9d87c270",
       "form": "hat geschlafen",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:4935e9f7e5",
+      "sourceRevision": "pos_jsonl:verbs:85ce8dfe40",
       "checksum": "a8189a424d24c045",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:schreiben:954e0878:58d8dc6399",
-      "lexemeId": "de:verb:schreiben:954e0878",
+      "id": "inf:de:verb:schreiben:43e2636e:4346c56ae6",
+      "lexemeId": "de:verb:schreiben:43e2636e",
       "form": "schreiben",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:02caa1d5c4",
+      "sourceRevision": "pos_jsonl:verbs:95d7decaa5",
       "checksum": "bb35fc02b0cf4ff5",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:schreiben:954e0878:55adcecfcd",
-      "lexemeId": "de:verb:schreiben:954e0878",
+      "id": "inf:de:verb:schreiben:43e2636e:2efaad83eb",
+      "lexemeId": "de:verb:schreiben:43e2636e",
       "form": "schrieb",
       "features": {
         "tense": "past",
@@ -2956,56 +2812,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:02caa1d5c4",
+      "sourceRevision": "pos_jsonl:verbs:95d7decaa5",
       "checksum": "7b3d1bc48f6c359b",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:schreiben:954e0878:1137de2fd7",
-      "lexemeId": "de:verb:schreiben:954e0878",
+      "id": "inf:de:verb:schreiben:43e2636e:d965768c8b",
+      "lexemeId": "de:verb:schreiben:43e2636e",
       "form": "geschrieben",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:02caa1d5c4",
+      "sourceRevision": "pos_jsonl:verbs:95d7decaa5",
       "checksum": "3152f130747bf30d",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:schreiben:954e0878:c10db11237",
-      "lexemeId": "de:verb:schreiben:954e0878",
+      "id": "inf:de:verb:schreiben:43e2636e:d24edabff1",
+      "lexemeId": "de:verb:schreiben:43e2636e",
       "form": "hat geschrieben",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:02caa1d5c4",
+      "sourceRevision": "pos_jsonl:verbs:95d7decaa5",
       "checksum": "314697ffb39864ef",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:schwimmen:669504d1:d1872f4ce2",
-      "lexemeId": "de:verb:schwimmen:669504d1",
+      "id": "inf:de:verb:schwimmen:df578857:be1c151cf8",
+      "lexemeId": "de:verb:schwimmen:df578857",
       "form": "schwimmen",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:e55cdaf1b3",
+      "sourceRevision": "pos_jsonl:verbs:099bc3f040",
       "checksum": "6e5d5d1a9925c94a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:schwimmen:669504d1:ecd091156e",
-      "lexemeId": "de:verb:schwimmen:669504d1",
+      "id": "inf:de:verb:schwimmen:df578857:cbe8669648",
+      "lexemeId": "de:verb:schwimmen:df578857",
       "form": "schwamm",
       "features": {
         "tense": "past",
@@ -3014,56 +2870,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:e55cdaf1b3",
+      "sourceRevision": "pos_jsonl:verbs:099bc3f040",
       "checksum": "cb40267b1a69a68c",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:schwimmen:669504d1:a5d2f961ed",
-      "lexemeId": "de:verb:schwimmen:669504d1",
+      "id": "inf:de:verb:schwimmen:df578857:52d73c80bc",
+      "lexemeId": "de:verb:schwimmen:df578857",
       "form": "geschwommen",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:e55cdaf1b3",
+      "sourceRevision": "pos_jsonl:verbs:099bc3f040",
       "checksum": "ed117c477d65c564",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:schwimmen:669504d1:2e7f315884",
-      "lexemeId": "de:verb:schwimmen:669504d1",
+      "id": "inf:de:verb:schwimmen:df578857:8dff49342c",
+      "lexemeId": "de:verb:schwimmen:df578857",
       "form": "ist geschwommen",
       "features": {
         "tense": "perfect",
         "auxiliary": "sein"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:e55cdaf1b3",
+      "sourceRevision": "pos_jsonl:verbs:099bc3f040",
       "checksum": "e1304d5685202362",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:sehen:b70191ab:cd70af5ba6",
-      "lexemeId": "de:verb:sehen:b70191ab",
+      "id": "inf:de:verb:sehen:65ea9516:0873e51f4f",
+      "lexemeId": "de:verb:sehen:65ea9516",
       "form": "sehen",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:fd1db0b553",
+      "sourceRevision": "pos_jsonl:verbs:0211c6bc4c",
       "checksum": "ac6368ded4cf80be",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:sehen:b70191ab:d9545a707e",
-      "lexemeId": "de:verb:sehen:b70191ab",
+      "id": "inf:de:verb:sehen:65ea9516:78ae31b617",
+      "lexemeId": "de:verb:sehen:65ea9516",
       "form": "sah",
       "features": {
         "tense": "past",
@@ -3072,56 +2928,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:fd1db0b553",
+      "sourceRevision": "pos_jsonl:verbs:0211c6bc4c",
       "checksum": "b67c25de15e1a133",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:sehen:b70191ab:6f7171b175",
-      "lexemeId": "de:verb:sehen:b70191ab",
+      "id": "inf:de:verb:sehen:65ea9516:5cd332b138",
+      "lexemeId": "de:verb:sehen:65ea9516",
       "form": "gesehen",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:fd1db0b553",
+      "sourceRevision": "pos_jsonl:verbs:0211c6bc4c",
       "checksum": "80c529fc9e0c3fa3",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:sehen:b70191ab:6b2e4a85eb",
-      "lexemeId": "de:verb:sehen:b70191ab",
+      "id": "inf:de:verb:sehen:65ea9516:a7ad392616",
+      "lexemeId": "de:verb:sehen:65ea9516",
       "form": "hat gesehen",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:fd1db0b553",
+      "sourceRevision": "pos_jsonl:verbs:0211c6bc4c",
       "checksum": "643ebc4968d743d8",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:sein:406c878d:6d549e4ab2",
-      "lexemeId": "de:verb:sein:406c878d",
+      "id": "inf:de:verb:sein:34a39e53:40b55bd9be",
+      "lexemeId": "de:verb:sein:34a39e53",
       "form": "sein",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:4dababad85",
+      "sourceRevision": "pos_jsonl:verbs:5c7874bb5b",
       "checksum": "1a6baedf498d10b2",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:sein:406c878d:1f700a0243",
-      "lexemeId": "de:verb:sein:406c878d",
+      "id": "inf:de:verb:sein:34a39e53:c5751607e0",
+      "lexemeId": "de:verb:sein:34a39e53",
       "form": "bin",
       "features": {
         "tense": "present",
@@ -3130,14 +2986,14 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:4dababad85",
+      "sourceRevision": "pos_jsonl:verbs:5c7874bb5b",
       "checksum": "dad430b79f926297",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:sein:406c878d:4c8526e4ed",
-      "lexemeId": "de:verb:sein:406c878d",
+      "id": "inf:de:verb:sein:34a39e53:d7523d3f2a",
+      "lexemeId": "de:verb:sein:34a39e53",
       "form": "ist",
       "features": {
         "tense": "present",
@@ -3146,14 +3002,14 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:4dababad85",
+      "sourceRevision": "pos_jsonl:verbs:5c7874bb5b",
       "checksum": "4b08263807ca37f5",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:sein:406c878d:c7515fff20",
-      "lexemeId": "de:verb:sein:406c878d",
+      "id": "inf:de:verb:sein:34a39e53:6afc501f76",
+      "lexemeId": "de:verb:sein:34a39e53",
       "form": "war",
       "features": {
         "tense": "past",
@@ -3162,56 +3018,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:4dababad85",
+      "sourceRevision": "pos_jsonl:verbs:5c7874bb5b",
       "checksum": "ac027520f0aad8ae",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:sein:406c878d:d4be5eb740",
-      "lexemeId": "de:verb:sein:406c878d",
+      "id": "inf:de:verb:sein:34a39e53:93f605c4b6",
+      "lexemeId": "de:verb:sein:34a39e53",
       "form": "gewesen",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:4dababad85",
+      "sourceRevision": "pos_jsonl:verbs:5c7874bb5b",
       "checksum": "5597c4035f0c3768",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:sein:406c878d:aee8685688",
-      "lexemeId": "de:verb:sein:406c878d",
+      "id": "inf:de:verb:sein:34a39e53:350919a747",
+      "lexemeId": "de:verb:sein:34a39e53",
       "form": "ist gewesen",
       "features": {
         "tense": "perfect",
         "auxiliary": "sein"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:4dababad85",
+      "sourceRevision": "pos_jsonl:verbs:5c7874bb5b",
       "checksum": "fcb0b5f96d763d2e",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:sollen:d4809c2d:926e42edb3",
-      "lexemeId": "de:verb:sollen:d4809c2d",
+      "id": "inf:de:verb:sollen:66218d7e:ca83f36074",
+      "lexemeId": "de:verb:sollen:66218d7e",
       "form": "sollen",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:1206628043",
+      "sourceRevision": "pos_jsonl:verbs:9fd33d4a8c",
       "checksum": "264c57a3a7949f0a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:sollen:d4809c2d:6cbc98feb4",
-      "lexemeId": "de:verb:sollen:d4809c2d",
+      "id": "inf:de:verb:sollen:66218d7e:14664f6e9a",
+      "lexemeId": "de:verb:sollen:66218d7e",
       "form": "soll",
       "features": {
         "tense": "present",
@@ -3220,14 +3076,14 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:1206628043",
+      "sourceRevision": "pos_jsonl:verbs:9fd33d4a8c",
       "checksum": "31f6cd7590c44330",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:sollen:d4809c2d:134bbc33fc",
-      "lexemeId": "de:verb:sollen:d4809c2d",
+      "id": "inf:de:verb:sollen:66218d7e:d7b4cc9fa9",
+      "lexemeId": "de:verb:sollen:66218d7e",
       "form": "soll",
       "features": {
         "tense": "present",
@@ -3236,14 +3092,14 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:1206628043",
+      "sourceRevision": "pos_jsonl:verbs:9fd33d4a8c",
       "checksum": "c729c3f76be0ed14",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:sollen:d4809c2d:c133dcc4be",
-      "lexemeId": "de:verb:sollen:d4809c2d",
+      "id": "inf:de:verb:sollen:66218d7e:b244bbf13e",
+      "lexemeId": "de:verb:sollen:66218d7e",
       "form": "sollte",
       "features": {
         "tense": "past",
@@ -3252,56 +3108,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:1206628043",
+      "sourceRevision": "pos_jsonl:verbs:9fd33d4a8c",
       "checksum": "fe2b420ed96758a9",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:sollen:d4809c2d:af8a1de7df",
-      "lexemeId": "de:verb:sollen:d4809c2d",
+      "id": "inf:de:verb:sollen:66218d7e:800abd0790",
+      "lexemeId": "de:verb:sollen:66218d7e",
       "form": "gesollt",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:1206628043",
+      "sourceRevision": "pos_jsonl:verbs:9fd33d4a8c",
       "checksum": "af71a96b7ac55bf7",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:sollen:d4809c2d:a7559fc47b",
-      "lexemeId": "de:verb:sollen:d4809c2d",
+      "id": "inf:de:verb:sollen:66218d7e:7702727e90",
+      "lexemeId": "de:verb:sollen:66218d7e",
       "form": "hat gesollt",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:1206628043",
+      "sourceRevision": "pos_jsonl:verbs:9fd33d4a8c",
       "checksum": "91aaacb85db2537e",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:spielen:71cf6aa9:cb8bcc6b7f",
-      "lexemeId": "de:verb:spielen:71cf6aa9",
+      "id": "inf:de:verb:spielen:898c6e6c:bc5c33f986",
+      "lexemeId": "de:verb:spielen:898c6e6c",
       "form": "spielen",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:754b899c4f",
+      "sourceRevision": "pos_jsonl:verbs:eca57682a2",
       "checksum": "8ecb35d22ea1d423",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:spielen:71cf6aa9:ee1dc5b45c",
-      "lexemeId": "de:verb:spielen:71cf6aa9",
+      "id": "inf:de:verb:spielen:898c6e6c:618249b9c8",
+      "lexemeId": "de:verb:spielen:898c6e6c",
       "form": "spielte",
       "features": {
         "tense": "past",
@@ -3310,56 +3166,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:754b899c4f",
+      "sourceRevision": "pos_jsonl:verbs:eca57682a2",
       "checksum": "4c6bc213343ac3a5",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:spielen:71cf6aa9:5b69d317de",
-      "lexemeId": "de:verb:spielen:71cf6aa9",
+      "id": "inf:de:verb:spielen:898c6e6c:5f7a5f4b86",
+      "lexemeId": "de:verb:spielen:898c6e6c",
       "form": "gespielt",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:754b899c4f",
+      "sourceRevision": "pos_jsonl:verbs:eca57682a2",
       "checksum": "1c28c1faa70884af",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:spielen:71cf6aa9:e29f077758",
-      "lexemeId": "de:verb:spielen:71cf6aa9",
+      "id": "inf:de:verb:spielen:898c6e6c:506ce86827",
+      "lexemeId": "de:verb:spielen:898c6e6c",
       "form": "hat gespielt",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:754b899c4f",
+      "sourceRevision": "pos_jsonl:verbs:eca57682a2",
       "checksum": "081518bc075f31a6",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:sprechen:1c525275:a94d4cda31",
-      "lexemeId": "de:verb:sprechen:1c525275",
+      "id": "inf:de:verb:sprechen:bc48e7ed:44257c3c26",
+      "lexemeId": "de:verb:sprechen:bc48e7ed",
       "form": "sprechen",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:60c0395bc1",
+      "sourceRevision": "pos_jsonl:verbs:857204460e",
       "checksum": "842adcfe2a054b07",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:sprechen:1c525275:72905e002e",
-      "lexemeId": "de:verb:sprechen:1c525275",
+      "id": "inf:de:verb:sprechen:bc48e7ed:9a740dbffa",
+      "lexemeId": "de:verb:sprechen:bc48e7ed",
       "form": "spreche",
       "features": {
         "tense": "present",
@@ -3368,14 +3224,14 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:60c0395bc1",
+      "sourceRevision": "pos_jsonl:verbs:857204460e",
       "checksum": "59b5244d77974748",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:sprechen:1c525275:364bb030c1",
-      "lexemeId": "de:verb:sprechen:1c525275",
+      "id": "inf:de:verb:sprechen:bc48e7ed:5908292c04",
+      "lexemeId": "de:verb:sprechen:bc48e7ed",
       "form": "spricht",
       "features": {
         "tense": "present",
@@ -3384,14 +3240,14 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:60c0395bc1",
+      "sourceRevision": "pos_jsonl:verbs:857204460e",
       "checksum": "9322f5f5864c6436",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:sprechen:1c525275:f7ce01d9b1",
-      "lexemeId": "de:verb:sprechen:1c525275",
+      "id": "inf:de:verb:sprechen:bc48e7ed:787e635bcc",
+      "lexemeId": "de:verb:sprechen:bc48e7ed",
       "form": "sprach",
       "features": {
         "tense": "past",
@@ -3400,56 +3256,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:60c0395bc1",
+      "sourceRevision": "pos_jsonl:verbs:857204460e",
       "checksum": "a62ee12f9e0fff8d",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:sprechen:1c525275:044c65e597",
-      "lexemeId": "de:verb:sprechen:1c525275",
+      "id": "inf:de:verb:sprechen:bc48e7ed:c5b1d26294",
+      "lexemeId": "de:verb:sprechen:bc48e7ed",
       "form": "gesprochen",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:60c0395bc1",
+      "sourceRevision": "pos_jsonl:verbs:857204460e",
       "checksum": "1938ba3ee57819ee",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:sprechen:1c525275:01da05045c",
-      "lexemeId": "de:verb:sprechen:1c525275",
+      "id": "inf:de:verb:sprechen:bc48e7ed:6336c2083b",
+      "lexemeId": "de:verb:sprechen:bc48e7ed",
       "form": "hat gesprochen",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:60c0395bc1",
+      "sourceRevision": "pos_jsonl:verbs:857204460e",
       "checksum": "53dc81d35de5899a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:suggerieren:3dbc0640:6db66e2f93",
-      "lexemeId": "de:verb:suggerieren:3dbc0640",
+      "id": "inf:de:verb:suggerieren:977d3b62:8efe4bdd00",
+      "lexemeId": "de:verb:suggerieren:977d3b62",
       "form": "suggerieren",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:86a10b40fb",
+      "sourceRevision": "pos_jsonl:verbs:6d89378595",
       "checksum": "32e13cd2dadb295e",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:suggerieren:3dbc0640:efa5acefba",
-      "lexemeId": "de:verb:suggerieren:3dbc0640",
+      "id": "inf:de:verb:suggerieren:977d3b62:380a513d88",
+      "lexemeId": "de:verb:suggerieren:977d3b62",
       "form": "suggerierte",
       "features": {
         "tense": "past",
@@ -3458,56 +3314,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:86a10b40fb",
+      "sourceRevision": "pos_jsonl:verbs:6d89378595",
       "checksum": "1ab7f9671e000348",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:suggerieren:3dbc0640:59e934a137",
-      "lexemeId": "de:verb:suggerieren:3dbc0640",
+      "id": "inf:de:verb:suggerieren:977d3b62:87dc97b337",
+      "lexemeId": "de:verb:suggerieren:977d3b62",
       "form": "suggeriert",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:86a10b40fb",
+      "sourceRevision": "pos_jsonl:verbs:6d89378595",
       "checksum": "03fd655482678e9d",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:suggerieren:3dbc0640:9185baac4e",
-      "lexemeId": "de:verb:suggerieren:3dbc0640",
+      "id": "inf:de:verb:suggerieren:977d3b62:d778dcb9bd",
+      "lexemeId": "de:verb:suggerieren:977d3b62",
       "form": "hat suggeriert",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:86a10b40fb",
+      "sourceRevision": "pos_jsonl:verbs:6d89378595",
       "checksum": "b75c5de4269063e6",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:tanzen:2154a418:37f47e11d5",
-      "lexemeId": "de:verb:tanzen:2154a418",
+      "id": "inf:de:verb:tanzen:6b59b36d:2ceff8d4f5",
+      "lexemeId": "de:verb:tanzen:6b59b36d",
       "form": "tanzen",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:5923f0ad99",
+      "sourceRevision": "pos_jsonl:verbs:72d81c62ab",
       "checksum": "ba99df19b03adcdd",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:tanzen:2154a418:58400a0265",
-      "lexemeId": "de:verb:tanzen:2154a418",
+      "id": "inf:de:verb:tanzen:6b59b36d:c2c7a4d846",
+      "lexemeId": "de:verb:tanzen:6b59b36d",
       "form": "tanzte",
       "features": {
         "tense": "past",
@@ -3516,56 +3372,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:5923f0ad99",
+      "sourceRevision": "pos_jsonl:verbs:72d81c62ab",
       "checksum": "1faed6741f262f04",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:tanzen:2154a418:164d005e12",
-      "lexemeId": "de:verb:tanzen:2154a418",
+      "id": "inf:de:verb:tanzen:6b59b36d:9665192ef5",
+      "lexemeId": "de:verb:tanzen:6b59b36d",
       "form": "getanzt",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:5923f0ad99",
+      "sourceRevision": "pos_jsonl:verbs:72d81c62ab",
       "checksum": "f64c9c56b0e3ab26",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:tanzen:2154a418:9f9a37daed",
-      "lexemeId": "de:verb:tanzen:2154a418",
+      "id": "inf:de:verb:tanzen:6b59b36d:a23ea2e9e0",
+      "lexemeId": "de:verb:tanzen:6b59b36d",
       "form": "hat getanzt",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:5923f0ad99",
+      "sourceRevision": "pos_jsonl:verbs:72d81c62ab",
       "checksum": "320b6f2feeec1887",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:trinken:2db1376a:478ec1d088",
-      "lexemeId": "de:verb:trinken:2db1376a",
+      "id": "inf:de:verb:trinken:ddf6daef:d6a04c2dfe",
+      "lexemeId": "de:verb:trinken:ddf6daef",
       "form": "trinken",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:b8f63a6eb4",
+      "sourceRevision": "pos_jsonl:verbs:c7ce4647d9",
       "checksum": "1049db39275f3bfe",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:trinken:2db1376a:78c387d4e3",
-      "lexemeId": "de:verb:trinken:2db1376a",
+      "id": "inf:de:verb:trinken:ddf6daef:f681432a28",
+      "lexemeId": "de:verb:trinken:ddf6daef",
       "form": "trank",
       "features": {
         "tense": "past",
@@ -3574,56 +3430,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:b8f63a6eb4",
+      "sourceRevision": "pos_jsonl:verbs:c7ce4647d9",
       "checksum": "34ca377506589eb5",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:trinken:2db1376a:d030b665ab",
-      "lexemeId": "de:verb:trinken:2db1376a",
+      "id": "inf:de:verb:trinken:ddf6daef:939fd1fb15",
+      "lexemeId": "de:verb:trinken:ddf6daef",
       "form": "getrunken",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:b8f63a6eb4",
+      "sourceRevision": "pos_jsonl:verbs:c7ce4647d9",
       "checksum": "dabfeb8ba72eacb8",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:trinken:2db1376a:f0b7f56b7e",
-      "lexemeId": "de:verb:trinken:2db1376a",
+      "id": "inf:de:verb:trinken:ddf6daef:cf36560336",
+      "lexemeId": "de:verb:trinken:ddf6daef",
       "form": "hat getrunken",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:b8f63a6eb4",
+      "sourceRevision": "pos_jsonl:verbs:c7ce4647d9",
       "checksum": "06bca7d1b026fdde",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:ubertragen:f1a0f3ad:4a82d353fb",
-      "lexemeId": "de:verb:ubertragen:f1a0f3ad",
+      "id": "inf:de:verb:ubertragen:c67eaac8:a574254529",
+      "lexemeId": "de:verb:ubertragen:c67eaac8",
       "form": "übertragen",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:f6f40861d8",
+      "sourceRevision": "pos_jsonl:verbs:ce26a6ab75",
       "checksum": "da491ea8f2376236",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:ubertragen:f1a0f3ad:7b2489027c",
-      "lexemeId": "de:verb:ubertragen:f1a0f3ad",
+      "id": "inf:de:verb:ubertragen:c67eaac8:9f296ec2e6",
+      "lexemeId": "de:verb:ubertragen:c67eaac8",
       "form": "übertrug",
       "features": {
         "tense": "past",
@@ -3632,56 +3488,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:f6f40861d8",
+      "sourceRevision": "pos_jsonl:verbs:ce26a6ab75",
       "checksum": "9c1c46f248fb3088",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:ubertragen:f1a0f3ad:f1c7bc6adc",
-      "lexemeId": "de:verb:ubertragen:f1a0f3ad",
+      "id": "inf:de:verb:ubertragen:c67eaac8:4b95e7462d",
+      "lexemeId": "de:verb:ubertragen:c67eaac8",
       "form": "übertragen",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:f6f40861d8",
+      "sourceRevision": "pos_jsonl:verbs:ce26a6ab75",
       "checksum": "382142e296e8ea64",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:ubertragen:f1a0f3ad:db4df4db49",
-      "lexemeId": "de:verb:ubertragen:f1a0f3ad",
+      "id": "inf:de:verb:ubertragen:c67eaac8:1f4c90647b",
+      "lexemeId": "de:verb:ubertragen:c67eaac8",
       "form": "hat übertragen",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:f6f40861d8",
+      "sourceRevision": "pos_jsonl:verbs:ce26a6ab75",
       "checksum": "7346c8406f16e2b1",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:verbinden:ec6e57bb:ddd1655d54",
-      "lexemeId": "de:verb:verbinden:ec6e57bb",
+      "id": "inf:de:verb:verbinden:ec21851b:0f9d8a0a92",
+      "lexemeId": "de:verb:verbinden:ec21851b",
       "form": "verbinden",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:925b0738ba",
+      "sourceRevision": "pos_jsonl:verbs:2cb845c9c1",
       "checksum": "12e01eccf0f2385f",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:verbinden:ec6e57bb:d053032c91",
-      "lexemeId": "de:verb:verbinden:ec6e57bb",
+      "id": "inf:de:verb:verbinden:ec21851b:8848479651",
+      "lexemeId": "de:verb:verbinden:ec21851b",
       "form": "verband",
       "features": {
         "tense": "past",
@@ -3690,56 +3546,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:925b0738ba",
+      "sourceRevision": "pos_jsonl:verbs:2cb845c9c1",
       "checksum": "3f2a6883200888ad",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:verbinden:ec6e57bb:7f44debdea",
-      "lexemeId": "de:verb:verbinden:ec6e57bb",
+      "id": "inf:de:verb:verbinden:ec21851b:391f59022b",
+      "lexemeId": "de:verb:verbinden:ec21851b",
       "form": "verbunden",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:925b0738ba",
+      "sourceRevision": "pos_jsonl:verbs:2cb845c9c1",
       "checksum": "80bd31a7d709e1be",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:verbinden:ec6e57bb:2bb1c42abc",
-      "lexemeId": "de:verb:verbinden:ec6e57bb",
+      "id": "inf:de:verb:verbinden:ec21851b:ac2a04a9d4",
+      "lexemeId": "de:verb:verbinden:ec21851b",
       "form": "hat verbunden",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Duden:925b0738ba",
+      "sourceRevision": "pos_jsonl:verbs:2cb845c9c1",
       "checksum": "be92a174ec72b03b",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:werden:c8b02b87:f46138d953",
-      "lexemeId": "de:verb:werden:c8b02b87",
+      "id": "inf:de:verb:werden:3598e23c:84a54bdae7",
+      "lexemeId": "de:verb:werden:3598e23c",
       "form": "werden",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:81c54b2b18",
+      "sourceRevision": "pos_jsonl:verbs:b93b7e3be0",
       "checksum": "9fd75e2835ec88b3",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:werden:c8b02b87:a3c5776aa7",
-      "lexemeId": "de:verb:werden:c8b02b87",
+      "id": "inf:de:verb:werden:3598e23c:16e548d9fd",
+      "lexemeId": "de:verb:werden:3598e23c",
       "form": "wurde",
       "features": {
         "tense": "past",
@@ -3748,56 +3604,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:81c54b2b18",
+      "sourceRevision": "pos_jsonl:verbs:b93b7e3be0",
       "checksum": "389f79d23065a405",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:werden:c8b02b87:c59478cda9",
-      "lexemeId": "de:verb:werden:c8b02b87",
+      "id": "inf:de:verb:werden:3598e23c:d2b7919f01",
+      "lexemeId": "de:verb:werden:3598e23c",
       "form": "geworden",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:81c54b2b18",
+      "sourceRevision": "pos_jsonl:verbs:b93b7e3be0",
       "checksum": "3d879ce19e927929",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:werden:c8b02b87:71777330bc",
-      "lexemeId": "de:verb:werden:c8b02b87",
+      "id": "inf:de:verb:werden:3598e23c:a360ff21a5",
+      "lexemeId": "de:verb:werden:3598e23c",
       "form": "ist geworden",
       "features": {
         "tense": "perfect",
         "auxiliary": "sein"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:81c54b2b18",
+      "sourceRevision": "pos_jsonl:verbs:b93b7e3be0",
       "checksum": "7c37cf1496532cd4",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:wohnen:c1f88595:f6eeb0a4e4",
-      "lexemeId": "de:verb:wohnen:c1f88595",
+      "id": "inf:de:verb:wohnen:7a4a1284:8be692d5cb",
+      "lexemeId": "de:verb:wohnen:7a4a1284",
       "form": "wohnen",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:c6dec431ee",
+      "sourceRevision": "pos_jsonl:verbs:614e84a6d0",
       "checksum": "137de53d96a22b93",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:wohnen:c1f88595:8dd6b757ad",
-      "lexemeId": "de:verb:wohnen:c1f88595",
+      "id": "inf:de:verb:wohnen:7a4a1284:41273b6572",
+      "lexemeId": "de:verb:wohnen:7a4a1284",
       "form": "wohnte",
       "features": {
         "tense": "past",
@@ -3806,56 +3662,56 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:c6dec431ee",
+      "sourceRevision": "pos_jsonl:verbs:614e84a6d0",
       "checksum": "df9eb3059312c08e",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:wohnen:c1f88595:b490290415",
-      "lexemeId": "de:verb:wohnen:c1f88595",
+      "id": "inf:de:verb:wohnen:7a4a1284:6b5977bceb",
+      "lexemeId": "de:verb:wohnen:7a4a1284",
       "form": "gewohnt",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:c6dec431ee",
+      "sourceRevision": "pos_jsonl:verbs:614e84a6d0",
       "checksum": "c9a572bd1725990d",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:wohnen:c1f88595:7a69e00a1f",
-      "lexemeId": "de:verb:wohnen:c1f88595",
+      "id": "inf:de:verb:wohnen:7a4a1284:cf1ebc0e4a",
+      "lexemeId": "de:verb:wohnen:7a4a1284",
       "form": "hat gewohnt",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:c6dec431ee",
+      "sourceRevision": "pos_jsonl:verbs:614e84a6d0",
       "checksum": "9f5e0b85fb5eb5fc",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:wollen:97a9e5f9:95587278b9",
-      "lexemeId": "de:verb:wollen:97a9e5f9",
+      "id": "inf:de:verb:wollen:8792d930:0e355f9b1b",
+      "lexemeId": "de:verb:wollen:8792d930",
       "form": "wollen",
       "features": {
         "tense": "infinitive",
         "mood": "indicative"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:0c64eae4da",
+      "sourceRevision": "pos_jsonl:verbs:91951b4e21",
       "checksum": "cccca09be72bf7ba",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:wollen:97a9e5f9:4c192d2a2b",
-      "lexemeId": "de:verb:wollen:97a9e5f9",
+      "id": "inf:de:verb:wollen:8792d930:9ed653a046",
+      "lexemeId": "de:verb:wollen:8792d930",
       "form": "will",
       "features": {
         "tense": "present",
@@ -3864,14 +3720,14 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:0c64eae4da",
+      "sourceRevision": "pos_jsonl:verbs:91951b4e21",
       "checksum": "3055be51a87e98e5",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:wollen:97a9e5f9:f1fad8eced",
-      "lexemeId": "de:verb:wollen:97a9e5f9",
+      "id": "inf:de:verb:wollen:8792d930:49a4139a10",
+      "lexemeId": "de:verb:wollen:8792d930",
       "form": "will",
       "features": {
         "tense": "present",
@@ -3880,14 +3736,14 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:0c64eae4da",
+      "sourceRevision": "pos_jsonl:verbs:91951b4e21",
       "checksum": "55ee2553b3fb0bb8",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:wollen:97a9e5f9:946d7dbad1",
-      "lexemeId": "de:verb:wollen:97a9e5f9",
+      "id": "inf:de:verb:wollen:8792d930:007ca8740d",
+      "lexemeId": "de:verb:wollen:8792d930",
       "form": "wollte",
       "features": {
         "tense": "past",
@@ -3896,35 +3752,35 @@
         "number": "singular"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:0c64eae4da",
+      "sourceRevision": "pos_jsonl:verbs:91951b4e21",
       "checksum": "dec5158a607b06f6",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:wollen:97a9e5f9:8a921fd68a",
-      "lexemeId": "de:verb:wollen:97a9e5f9",
+      "id": "inf:de:verb:wollen:8792d930:347b0478dd",
+      "lexemeId": "de:verb:wollen:8792d930",
       "form": "gewollt",
       "features": {
         "tense": "participle",
         "aspect": "perfect"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:0c64eae4da",
+      "sourceRevision": "pos_jsonl:verbs:91951b4e21",
       "checksum": "33eeadbca9556f8a",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
     },
     {
-      "id": "inf:de:verb:wollen:97a9e5f9:46951b04cd",
-      "lexemeId": "de:verb:wollen:97a9e5f9",
+      "id": "inf:de:verb:wollen:8792d930:3c5581ec65",
+      "lexemeId": "de:verb:wollen:8792d930",
       "form": "hat gewollt",
       "features": {
         "tense": "perfect",
         "auxiliary": "haben"
       },
       "audioAsset": null,
-      "sourceRevision": "Goethe-Institut:0c64eae4da",
+      "sourceRevision": "pos_jsonl:verbs:91951b4e21",
       "checksum": "c792d57653eea5f8",
       "createdAt": 1735689600,
       "updatedAt": 1735689600
@@ -3932,8 +3788,8 @@
   ],
   "tasks": [
     {
-      "id": "task:de:verb:arbeiten:905fa38d:conjugate_form:1:bd580ed8",
-      "lexemeId": "de:verb:arbeiten:905fa38d",
+      "id": "task:de:verb:arbeiten:c2cef652:conjugate_form:1:b07108d6",
+      "lexemeId": "de:verb:arbeiten:c2cef652",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -3979,8 +3835,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:arbeiten:905fa38d:conjugate_form:2:12220cac",
-      "lexemeId": "de:verb:arbeiten:905fa38d",
+      "id": "task:de:verb:arbeiten:c2cef652:conjugate_form:2:82902db1",
+      "lexemeId": "de:verb:arbeiten:c2cef652",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -4025,8 +3881,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:beinhalten:fe6f16ea:conjugate_form:1:1d09ab7a",
-      "lexemeId": "de:verb:beinhalten:fe6f16ea",
+      "id": "task:de:verb:beinhalten:fa95ac03:conjugate_form:1:127e07f7",
+      "lexemeId": "de:verb:beinhalten:fa95ac03",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -4072,8 +3928,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:beinhalten:fe6f16ea:conjugate_form:2:34e5b22a",
-      "lexemeId": "de:verb:beinhalten:fe6f16ea",
+      "id": "task:de:verb:beinhalten:fa95ac03:conjugate_form:2:10da8fd1",
+      "lexemeId": "de:verb:beinhalten:fa95ac03",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -4118,8 +3974,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:beschlieen:b68aaef9:conjugate_form:1:cf691764",
-      "lexemeId": "de:verb:beschlieen:b68aaef9",
+      "id": "task:de:verb:beschlieen:ce493422:conjugate_form:1:da15eac4",
+      "lexemeId": "de:verb:beschlieen:ce493422",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -4165,8 +4021,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:beschlieen:b68aaef9:conjugate_form:2:fbe233a8",
-      "lexemeId": "de:verb:beschlieen:b68aaef9",
+      "id": "task:de:verb:beschlieen:ce493422:conjugate_form:2:b820cecd",
+      "lexemeId": "de:verb:beschlieen:ce493422",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -4211,8 +4067,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:bewerten:8ba3cd51:conjugate_form:1:40a4b311",
-      "lexemeId": "de:verb:bewerten:8ba3cd51",
+      "id": "task:de:verb:bewerten:f1003356:conjugate_form:1:41c92064",
+      "lexemeId": "de:verb:bewerten:f1003356",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -4258,8 +4114,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:bewerten:8ba3cd51:conjugate_form:2:7c9079d8",
-      "lexemeId": "de:verb:bewerten:8ba3cd51",
+      "id": "task:de:verb:bewerten:f1003356:conjugate_form:2:391a4925",
+      "lexemeId": "de:verb:bewerten:f1003356",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -4304,8 +4160,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:differenzieren:dfd84879:conjugate_form:1:3bbdbe9c",
-      "lexemeId": "de:verb:differenzieren:dfd84879",
+      "id": "task:de:verb:differenzieren:c9b5965e:conjugate_form:1:42fd1b1a",
+      "lexemeId": "de:verb:differenzieren:c9b5965e",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -4351,8 +4207,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:differenzieren:dfd84879:conjugate_form:2:f24ad9fb",
-      "lexemeId": "de:verb:differenzieren:dfd84879",
+      "id": "task:de:verb:differenzieren:c9b5965e:conjugate_form:2:17274784",
+      "lexemeId": "de:verb:differenzieren:c9b5965e",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -4397,8 +4253,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:durchfuhren:d7dd8386:conjugate_form:1:2c58a283",
-      "lexemeId": "de:verb:durchfuhren:d7dd8386",
+      "id": "task:de:verb:durchfuhren:731130f4:conjugate_form:1:ea948ac4",
+      "lexemeId": "de:verb:durchfuhren:731130f4",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -4444,8 +4300,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:durchfuhren:d7dd8386:conjugate_form:2:ff7af9ab",
-      "lexemeId": "de:verb:durchfuhren:d7dd8386",
+      "id": "task:de:verb:durchfuhren:731130f4:conjugate_form:2:7c8a2e68",
+      "lexemeId": "de:verb:durchfuhren:731130f4",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -4490,8 +4346,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:entsprechen:57d109b8:conjugate_form:1:995bbdc4",
-      "lexemeId": "de:verb:entsprechen:57d109b8",
+      "id": "task:de:verb:entsprechen:05be9f70:conjugate_form:1:653d950e",
+      "lexemeId": "de:verb:entsprechen:05be9f70",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -4537,8 +4393,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:entsprechen:57d109b8:conjugate_form:2:d249263c",
-      "lexemeId": "de:verb:entsprechen:57d109b8",
+      "id": "task:de:verb:entsprechen:05be9f70:conjugate_form:2:0423a5f4",
+      "lexemeId": "de:verb:entsprechen:05be9f70",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -4583,8 +4439,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:entstehen:1f1ff688:conjugate_form:1:6ca90e42",
-      "lexemeId": "de:verb:entstehen:1f1ff688",
+      "id": "task:de:verb:entstehen:62495810:conjugate_form:1:5969e173",
+      "lexemeId": "de:verb:entstehen:62495810",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -4630,8 +4486,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:entstehen:1f1ff688:conjugate_form:2:884f876e",
-      "lexemeId": "de:verb:entstehen:1f1ff688",
+      "id": "task:de:verb:entstehen:62495810:conjugate_form:2:1734f6e1",
+      "lexemeId": "de:verb:entstehen:62495810",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -4676,8 +4532,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:erortern:09d9db06:conjugate_form:1:72542330",
-      "lexemeId": "de:verb:erortern:09d9db06",
+      "id": "task:de:verb:erortern:4ff066fd:conjugate_form:1:591c9cb6",
+      "lexemeId": "de:verb:erortern:4ff066fd",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -4723,8 +4579,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:erortern:09d9db06:conjugate_form:2:f658bbb6",
-      "lexemeId": "de:verb:erortern:09d9db06",
+      "id": "task:de:verb:erortern:4ff066fd:conjugate_form:2:588ec28c",
+      "lexemeId": "de:verb:erortern:4ff066fd",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -4769,8 +4625,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:erreichen:94cfa315:conjugate_form:1:3cd5b367",
-      "lexemeId": "de:verb:erreichen:94cfa315",
+      "id": "task:de:verb:erreichen:de0151a9:conjugate_form:1:ea17b34d",
+      "lexemeId": "de:verb:erreichen:de0151a9",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -4816,8 +4672,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:erreichen:94cfa315:conjugate_form:2:f5e281c5",
-      "lexemeId": "de:verb:erreichen:94cfa315",
+      "id": "task:de:verb:erreichen:de0151a9:conjugate_form:2:a1f33662",
+      "lexemeId": "de:verb:erreichen:de0151a9",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -4862,8 +4718,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:essen:9062b395:conjugate_form:1:71a6436f",
-      "lexemeId": "de:verb:essen:9062b395",
+      "id": "task:de:verb:essen:6b8d9469:conjugate_form:1:c55083db",
+      "lexemeId": "de:verb:essen:6b8d9469",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -4909,8 +4765,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:essen:9062b395:conjugate_form:2:89c60b9f",
-      "lexemeId": "de:verb:essen:9062b395",
+      "id": "task:de:verb:essen:6b8d9469:conjugate_form:2:bc59f5c6",
+      "lexemeId": "de:verb:essen:6b8d9469",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -4955,8 +4811,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:fahren:15cf3f6b:conjugate_form:1:bad98e13",
-      "lexemeId": "de:verb:fahren:15cf3f6b",
+      "id": "task:de:verb:fahren:c2a3428d:conjugate_form:1:498cf4d0",
+      "lexemeId": "de:verb:fahren:c2a3428d",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -5002,8 +4858,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:fahren:15cf3f6b:conjugate_form:2:89297dfc",
-      "lexemeId": "de:verb:fahren:15cf3f6b",
+      "id": "task:de:verb:fahren:c2a3428d:conjugate_form:2:28f815aa",
+      "lexemeId": "de:verb:fahren:c2a3428d",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -5048,8 +4904,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:fliegen:75459563:conjugate_form:1:cc487f39",
-      "lexemeId": "de:verb:fliegen:75459563",
+      "id": "task:de:verb:fliegen:010ae8c3:conjugate_form:1:7113e84a",
+      "lexemeId": "de:verb:fliegen:010ae8c3",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -5095,8 +4951,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:fliegen:75459563:conjugate_form:2:fb1db13b",
-      "lexemeId": "de:verb:fliegen:75459563",
+      "id": "task:de:verb:fliegen:010ae8c3:conjugate_form:2:5319e52a",
+      "lexemeId": "de:verb:fliegen:010ae8c3",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -5141,8 +4997,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:gedeihen:8ff24825:conjugate_form:1:134320da",
-      "lexemeId": "de:verb:gedeihen:8ff24825",
+      "id": "task:de:verb:gedeihen:76005b84:conjugate_form:1:96bac697",
+      "lexemeId": "de:verb:gedeihen:76005b84",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -5188,8 +5044,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:gedeihen:8ff24825:conjugate_form:2:dd0bdf2b",
-      "lexemeId": "de:verb:gedeihen:8ff24825",
+      "id": "task:de:verb:gedeihen:76005b84:conjugate_form:2:ea771491",
+      "lexemeId": "de:verb:gedeihen:76005b84",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -5234,8 +5090,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:gehen:c7dab9ca:conjugate_form:1:acaba522",
-      "lexemeId": "de:verb:gehen:c7dab9ca",
+      "id": "task:de:verb:gehen:d8137135:conjugate_form:1:21f10bdc",
+      "lexemeId": "de:verb:gehen:d8137135",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -5282,8 +5138,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:gehen:c7dab9ca:conjugate_form:2:974a1ce6",
-      "lexemeId": "de:verb:gehen:c7dab9ca",
+      "id": "task:de:verb:gehen:d8137135:conjugate_form:2:be7c9113",
+      "lexemeId": "de:verb:gehen:d8137135",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -5328,8 +5184,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:haben:6b7855da:conjugate_form:1:f7700b3c",
-      "lexemeId": "de:verb:haben:6b7855da",
+      "id": "task:de:verb:haben:332ab797:conjugate_form:1:5ecdfdb7",
+      "lexemeId": "de:verb:haben:332ab797",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -5376,8 +5232,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:haben:6b7855da:conjugate_form:2:4d4919a7",
-      "lexemeId": "de:verb:haben:6b7855da",
+      "id": "task:de:verb:haben:332ab797:conjugate_form:2:9297b20b",
+      "lexemeId": "de:verb:haben:332ab797",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -5422,8 +5278,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:heien:0a417ffe:conjugate_form:1:b2e3b5a5",
-      "lexemeId": "de:verb:heien:0a417ffe",
+      "id": "task:de:verb:heien:4ac6e1b6:conjugate_form:1:4b6b8548",
+      "lexemeId": "de:verb:heien:4ac6e1b6",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -5469,8 +5325,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:heien:0a417ffe:conjugate_form:2:41649159",
-      "lexemeId": "de:verb:heien:0a417ffe",
+      "id": "task:de:verb:heien:4ac6e1b6:conjugate_form:2:2ea5a9f5",
+      "lexemeId": "de:verb:heien:4ac6e1b6",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -5515,8 +5371,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:horen:76923fd3:conjugate_form:1:7876028c",
-      "lexemeId": "de:verb:horen:76923fd3",
+      "id": "task:de:verb:horen:e75e9ebf:conjugate_form:1:081d6b79",
+      "lexemeId": "de:verb:horen:e75e9ebf",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -5562,8 +5418,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:horen:76923fd3:conjugate_form:2:47e22841",
-      "lexemeId": "de:verb:horen:76923fd3",
+      "id": "task:de:verb:horen:e75e9ebf:conjugate_form:2:691ea7e6",
+      "lexemeId": "de:verb:horen:e75e9ebf",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -5608,8 +5464,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:kaufen:b2486f52:conjugate_form:1:e176f3fc",
-      "lexemeId": "de:verb:kaufen:b2486f52",
+      "id": "task:de:verb:kaufen:e233c411:conjugate_form:1:b4d4a4e8",
+      "lexemeId": "de:verb:kaufen:e233c411",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -5655,8 +5511,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:kaufen:b2486f52:conjugate_form:2:48438cf3",
-      "lexemeId": "de:verb:kaufen:b2486f52",
+      "id": "task:de:verb:kaufen:e233c411:conjugate_form:2:9e180e05",
+      "lexemeId": "de:verb:kaufen:e233c411",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -5701,8 +5557,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:kommen:7df1ed0e:conjugate_form:1:c775599e",
-      "lexemeId": "de:verb:kommen:7df1ed0e",
+      "id": "task:de:verb:kommen:d2ab1849:conjugate_form:1:914dd1f0",
+      "lexemeId": "de:verb:kommen:d2ab1849",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -5748,8 +5604,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:kommen:7df1ed0e:conjugate_form:2:ea852eaa",
-      "lexemeId": "de:verb:kommen:7df1ed0e",
+      "id": "task:de:verb:kommen:d2ab1849:conjugate_form:2:4ecfff94",
+      "lexemeId": "de:verb:kommen:d2ab1849",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -5794,8 +5650,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:konnen:f5b71764:conjugate_form:1:53a0fb89",
-      "lexemeId": "de:verb:konnen:f5b71764",
+      "id": "task:de:verb:konnen:9fb4f19a:conjugate_form:1:175a2230",
+      "lexemeId": "de:verb:konnen:9fb4f19a",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -5841,8 +5697,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:konnen:f5b71764:conjugate_form:2:e7b864a3",
-      "lexemeId": "de:verb:konnen:f5b71764",
+      "id": "task:de:verb:konnen:9fb4f19a:conjugate_form:2:1c439106",
+      "lexemeId": "de:verb:konnen:9fb4f19a",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -5887,8 +5743,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:laufen:a1f8f02c:conjugate_form:1:ec588a48",
-      "lexemeId": "de:verb:laufen:a1f8f02c",
+      "id": "task:de:verb:laufen:99ad38b1:conjugate_form:1:e33322ae",
+      "lexemeId": "de:verb:laufen:99ad38b1",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -5934,8 +5790,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:laufen:a1f8f02c:conjugate_form:2:bbededa4",
-      "lexemeId": "de:verb:laufen:a1f8f02c",
+      "id": "task:de:verb:laufen:99ad38b1:conjugate_form:2:71e49975",
+      "lexemeId": "de:verb:laufen:99ad38b1",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -5980,8 +5836,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:leben:eedbdf34:conjugate_form:1:1eb6d6cd",
-      "lexemeId": "de:verb:leben:eedbdf34",
+      "id": "task:de:verb:leben:8bf6bfa6:conjugate_form:1:316bb890",
+      "lexemeId": "de:verb:leben:8bf6bfa6",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -6027,8 +5883,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:leben:eedbdf34:conjugate_form:2:c963e1fd",
-      "lexemeId": "de:verb:leben:eedbdf34",
+      "id": "task:de:verb:leben:8bf6bfa6:conjugate_form:2:c22de3fb",
+      "lexemeId": "de:verb:leben:8bf6bfa6",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -6073,8 +5929,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:lernen:5b328a53:conjugate_form:1:7faeff2f",
-      "lexemeId": "de:verb:lernen:5b328a53",
+      "id": "task:de:verb:lernen:a57ac1c5:conjugate_form:1:af121602",
+      "lexemeId": "de:verb:lernen:a57ac1c5",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -6120,8 +5976,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:lernen:5b328a53:conjugate_form:2:3ed01d4f",
-      "lexemeId": "de:verb:lernen:5b328a53",
+      "id": "task:de:verb:lernen:a57ac1c5:conjugate_form:2:bb0c9656",
+      "lexemeId": "de:verb:lernen:a57ac1c5",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -6166,8 +6022,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:lesen:c900d552:conjugate_form:1:b4a99265",
-      "lexemeId": "de:verb:lesen:c900d552",
+      "id": "task:de:verb:lesen:62751638:conjugate_form:1:712f8e20",
+      "lexemeId": "de:verb:lesen:62751638",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -6213,8 +6069,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:lesen:c900d552:conjugate_form:2:8df6c882",
-      "lexemeId": "de:verb:lesen:c900d552",
+      "id": "task:de:verb:lesen:62751638:conjugate_form:2:43d6e594",
+      "lexemeId": "de:verb:lesen:62751638",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -6259,8 +6115,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:machen:3e9552c8:conjugate_form:1:31576471",
-      "lexemeId": "de:verb:machen:3e9552c8",
+      "id": "task:de:verb:machen:28cbaea6:conjugate_form:1:69a01bfe",
+      "lexemeId": "de:verb:machen:28cbaea6",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -6306,8 +6162,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:machen:3e9552c8:conjugate_form:2:3af8e751",
-      "lexemeId": "de:verb:machen:3e9552c8",
+      "id": "task:de:verb:machen:28cbaea6:conjugate_form:2:4eedef9a",
+      "lexemeId": "de:verb:machen:28cbaea6",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -6352,8 +6208,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:mussen:5c5eebed:conjugate_form:1:53200caa",
-      "lexemeId": "de:verb:mussen:5c5eebed",
+      "id": "task:de:verb:mussen:84258bb6:conjugate_form:1:7d6cff1a",
+      "lexemeId": "de:verb:mussen:84258bb6",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -6399,8 +6255,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:mussen:5c5eebed:conjugate_form:2:9a84db25",
-      "lexemeId": "de:verb:mussen:5c5eebed",
+      "id": "task:de:verb:mussen:84258bb6:conjugate_form:2:2d9ae7f0",
+      "lexemeId": "de:verb:mussen:84258bb6",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -6445,8 +6301,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:schlafen:d2453ec6:conjugate_form:1:52f22253",
-      "lexemeId": "de:verb:schlafen:d2453ec6",
+      "id": "task:de:verb:schlafen:9d87c270:conjugate_form:1:bf30ca5a",
+      "lexemeId": "de:verb:schlafen:9d87c270",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -6492,8 +6348,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:schlafen:d2453ec6:conjugate_form:2:3b358c53",
-      "lexemeId": "de:verb:schlafen:d2453ec6",
+      "id": "task:de:verb:schlafen:9d87c270:conjugate_form:2:f54013f7",
+      "lexemeId": "de:verb:schlafen:9d87c270",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -6538,8 +6394,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:schreiben:954e0878:conjugate_form:1:d9cc235e",
-      "lexemeId": "de:verb:schreiben:954e0878",
+      "id": "task:de:verb:schreiben:43e2636e:conjugate_form:1:e4385d6c",
+      "lexemeId": "de:verb:schreiben:43e2636e",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -6585,8 +6441,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:schreiben:954e0878:conjugate_form:2:7a9179d6",
-      "lexemeId": "de:verb:schreiben:954e0878",
+      "id": "task:de:verb:schreiben:43e2636e:conjugate_form:2:80aad40f",
+      "lexemeId": "de:verb:schreiben:43e2636e",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -6631,8 +6487,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:schwimmen:669504d1:conjugate_form:1:203f0b85",
-      "lexemeId": "de:verb:schwimmen:669504d1",
+      "id": "task:de:verb:schwimmen:df578857:conjugate_form:1:52ec845a",
+      "lexemeId": "de:verb:schwimmen:df578857",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -6678,8 +6534,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:schwimmen:669504d1:conjugate_form:2:d4737f9b",
-      "lexemeId": "de:verb:schwimmen:669504d1",
+      "id": "task:de:verb:schwimmen:df578857:conjugate_form:2:a6a6cb4c",
+      "lexemeId": "de:verb:schwimmen:df578857",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -6724,8 +6580,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:sehen:b70191ab:conjugate_form:1:fbf4d725",
-      "lexemeId": "de:verb:sehen:b70191ab",
+      "id": "task:de:verb:sehen:65ea9516:conjugate_form:1:aaa522f1",
+      "lexemeId": "de:verb:sehen:65ea9516",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -6771,8 +6627,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:sehen:b70191ab:conjugate_form:2:e6169ae8",
-      "lexemeId": "de:verb:sehen:b70191ab",
+      "id": "task:de:verb:sehen:65ea9516:conjugate_form:2:696942c8",
+      "lexemeId": "de:verb:sehen:65ea9516",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -6817,8 +6673,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:sein:406c878d:conjugate_form:1:27131c62",
-      "lexemeId": "de:verb:sein:406c878d",
+      "id": "task:de:verb:sein:34a39e53:conjugate_form:1:c158a098",
+      "lexemeId": "de:verb:sein:34a39e53",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -6865,8 +6721,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:sein:406c878d:conjugate_form:2:059130a6",
-      "lexemeId": "de:verb:sein:406c878d",
+      "id": "task:de:verb:sein:34a39e53:conjugate_form:2:da8114e1",
+      "lexemeId": "de:verb:sein:34a39e53",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -6911,8 +6767,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:sollen:d4809c2d:conjugate_form:1:0146e0ed",
-      "lexemeId": "de:verb:sollen:d4809c2d",
+      "id": "task:de:verb:sollen:66218d7e:conjugate_form:1:edec1413",
+      "lexemeId": "de:verb:sollen:66218d7e",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -6958,8 +6814,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:sollen:d4809c2d:conjugate_form:2:b827b7a5",
-      "lexemeId": "de:verb:sollen:d4809c2d",
+      "id": "task:de:verb:sollen:66218d7e:conjugate_form:2:932ea971",
+      "lexemeId": "de:verb:sollen:66218d7e",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -7004,8 +6860,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:spielen:71cf6aa9:conjugate_form:1:d0e5b3e0",
-      "lexemeId": "de:verb:spielen:71cf6aa9",
+      "id": "task:de:verb:spielen:898c6e6c:conjugate_form:1:e6c1b949",
+      "lexemeId": "de:verb:spielen:898c6e6c",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -7051,8 +6907,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:spielen:71cf6aa9:conjugate_form:2:9e6f555b",
-      "lexemeId": "de:verb:spielen:71cf6aa9",
+      "id": "task:de:verb:spielen:898c6e6c:conjugate_form:2:bc733c3b",
+      "lexemeId": "de:verb:spielen:898c6e6c",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -7097,8 +6953,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:sprechen:1c525275:conjugate_form:1:c0d6448e",
-      "lexemeId": "de:verb:sprechen:1c525275",
+      "id": "task:de:verb:sprechen:bc48e7ed:conjugate_form:1:6fa4bb71",
+      "lexemeId": "de:verb:sprechen:bc48e7ed",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -7145,8 +7001,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:sprechen:1c525275:conjugate_form:2:72d7211a",
-      "lexemeId": "de:verb:sprechen:1c525275",
+      "id": "task:de:verb:sprechen:bc48e7ed:conjugate_form:2:8f71e3d8",
+      "lexemeId": "de:verb:sprechen:bc48e7ed",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -7191,8 +7047,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:suggerieren:3dbc0640:conjugate_form:1:5d1312b6",
-      "lexemeId": "de:verb:suggerieren:3dbc0640",
+      "id": "task:de:verb:suggerieren:977d3b62:conjugate_form:1:323bca66",
+      "lexemeId": "de:verb:suggerieren:977d3b62",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -7238,8 +7094,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:suggerieren:3dbc0640:conjugate_form:2:96695288",
-      "lexemeId": "de:verb:suggerieren:3dbc0640",
+      "id": "task:de:verb:suggerieren:977d3b62:conjugate_form:2:6c93e49c",
+      "lexemeId": "de:verb:suggerieren:977d3b62",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -7284,8 +7140,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:tanzen:2154a418:conjugate_form:1:5fbaee68",
-      "lexemeId": "de:verb:tanzen:2154a418",
+      "id": "task:de:verb:tanzen:6b59b36d:conjugate_form:1:a4133cb7",
+      "lexemeId": "de:verb:tanzen:6b59b36d",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -7331,8 +7187,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:tanzen:2154a418:conjugate_form:2:b9e8b143",
-      "lexemeId": "de:verb:tanzen:2154a418",
+      "id": "task:de:verb:tanzen:6b59b36d:conjugate_form:2:33ce2883",
+      "lexemeId": "de:verb:tanzen:6b59b36d",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -7377,8 +7233,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:trinken:2db1376a:conjugate_form:1:252e598e",
-      "lexemeId": "de:verb:trinken:2db1376a",
+      "id": "task:de:verb:trinken:ddf6daef:conjugate_form:1:4c5906db",
+      "lexemeId": "de:verb:trinken:ddf6daef",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -7424,8 +7280,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:trinken:2db1376a:conjugate_form:2:42fee64a",
-      "lexemeId": "de:verb:trinken:2db1376a",
+      "id": "task:de:verb:trinken:ddf6daef:conjugate_form:2:ec432dfc",
+      "lexemeId": "de:verb:trinken:ddf6daef",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -7470,8 +7326,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:ubertragen:f1a0f3ad:conjugate_form:1:2857eaf0",
-      "lexemeId": "de:verb:ubertragen:f1a0f3ad",
+      "id": "task:de:verb:ubertragen:c67eaac8:conjugate_form:1:35bd121d",
+      "lexemeId": "de:verb:ubertragen:c67eaac8",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -7517,8 +7373,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:ubertragen:f1a0f3ad:conjugate_form:2:94fa9bd3",
-      "lexemeId": "de:verb:ubertragen:f1a0f3ad",
+      "id": "task:de:verb:ubertragen:c67eaac8:conjugate_form:2:c9c1c8fe",
+      "lexemeId": "de:verb:ubertragen:c67eaac8",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -7563,8 +7419,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:verbinden:ec6e57bb:conjugate_form:1:e081fad4",
-      "lexemeId": "de:verb:verbinden:ec6e57bb",
+      "id": "task:de:verb:verbinden:ec21851b:conjugate_form:1:77276342",
+      "lexemeId": "de:verb:verbinden:ec21851b",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -7610,8 +7466,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:verbinden:ec6e57bb:conjugate_form:2:47f32766",
-      "lexemeId": "de:verb:verbinden:ec6e57bb",
+      "id": "task:de:verb:verbinden:ec21851b:conjugate_form:2:3c03441e",
+      "lexemeId": "de:verb:verbinden:ec21851b",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -7656,8 +7512,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:werden:c8b02b87:conjugate_form:1:060aa62b",
-      "lexemeId": "de:verb:werden:c8b02b87",
+      "id": "task:de:verb:werden:3598e23c:conjugate_form:1:0179b57c",
+      "lexemeId": "de:verb:werden:3598e23c",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -7703,8 +7559,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:werden:c8b02b87:conjugate_form:2:970b5c59",
-      "lexemeId": "de:verb:werden:c8b02b87",
+      "id": "task:de:verb:werden:3598e23c:conjugate_form:2:c0a785fb",
+      "lexemeId": "de:verb:werden:3598e23c",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -7749,8 +7605,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:wohnen:c1f88595:conjugate_form:1:f70cc6bf",
-      "lexemeId": "de:verb:wohnen:c1f88595",
+      "id": "task:de:verb:wohnen:7a4a1284:conjugate_form:1:907ebeb6",
+      "lexemeId": "de:verb:wohnen:7a4a1284",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -7796,8 +7652,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:wohnen:c1f88595:conjugate_form:2:aa42d106",
-      "lexemeId": "de:verb:wohnen:c1f88595",
+      "id": "task:de:verb:wohnen:7a4a1284:conjugate_form:2:93a9d34f",
+      "lexemeId": "de:verb:wohnen:7a4a1284",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -7842,8 +7698,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:wollen:97a9e5f9:conjugate_form:1:301a7e9e",
-      "lexemeId": "de:verb:wollen:97a9e5f9",
+      "id": "task:de:verb:wollen:8792d930:conjugate_form:1:22fdeeea",
+      "lexemeId": "de:verb:wollen:8792d930",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -7889,8 +7745,8 @@
       "updatedAt": 1735689600
     },
     {
-      "id": "task:de:verb:wollen:97a9e5f9:conjugate_form:2:5fbe4a05",
-      "lexemeId": "de:verb:wollen:97a9e5f9",
+      "id": "task:de:verb:wollen:8792d930:conjugate_form:2:82ecd3c5",
+      "lexemeId": "de:verb:wollen:8792d930",
       "pos": "verb",
       "taskType": "conjugate_form",
       "renderer": "conjugate_form",
@@ -7938,8 +7794,8 @@
   "packLexemeMap": [
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:arbeiten:905fa38d",
-      "primaryTaskId": "task:de:verb:arbeiten:905fa38d:conjugate_form:1:bd580ed8",
+      "lexemeId": "de:verb:arbeiten:c2cef652",
+      "primaryTaskId": "task:de:verb:arbeiten:c2cef652:conjugate_form:1:b07108d6",
       "position": 1,
       "notes": null,
       "createdAt": 1735689600,
@@ -7947,8 +7803,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:beinhalten:fe6f16ea",
-      "primaryTaskId": "task:de:verb:beinhalten:fe6f16ea:conjugate_form:1:1d09ab7a",
+      "lexemeId": "de:verb:beinhalten:fa95ac03",
+      "primaryTaskId": "task:de:verb:beinhalten:fa95ac03:conjugate_form:1:127e07f7",
       "position": 2,
       "notes": null,
       "createdAt": 1735689600,
@@ -7956,8 +7812,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:beschlieen:b68aaef9",
-      "primaryTaskId": "task:de:verb:beschlieen:b68aaef9:conjugate_form:1:cf691764",
+      "lexemeId": "de:verb:beschlieen:ce493422",
+      "primaryTaskId": "task:de:verb:beschlieen:ce493422:conjugate_form:1:da15eac4",
       "position": 3,
       "notes": null,
       "createdAt": 1735689600,
@@ -7965,8 +7821,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:bewerten:8ba3cd51",
-      "primaryTaskId": "task:de:verb:bewerten:8ba3cd51:conjugate_form:1:40a4b311",
+      "lexemeId": "de:verb:bewerten:f1003356",
+      "primaryTaskId": "task:de:verb:bewerten:f1003356:conjugate_form:1:41c92064",
       "position": 4,
       "notes": null,
       "createdAt": 1735689600,
@@ -7974,8 +7830,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:differenzieren:dfd84879",
-      "primaryTaskId": "task:de:verb:differenzieren:dfd84879:conjugate_form:1:3bbdbe9c",
+      "lexemeId": "de:verb:differenzieren:c9b5965e",
+      "primaryTaskId": "task:de:verb:differenzieren:c9b5965e:conjugate_form:1:42fd1b1a",
       "position": 5,
       "notes": null,
       "createdAt": 1735689600,
@@ -7983,8 +7839,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:durchfuhren:d7dd8386",
-      "primaryTaskId": "task:de:verb:durchfuhren:d7dd8386:conjugate_form:1:2c58a283",
+      "lexemeId": "de:verb:durchfuhren:731130f4",
+      "primaryTaskId": "task:de:verb:durchfuhren:731130f4:conjugate_form:1:ea948ac4",
       "position": 6,
       "notes": null,
       "createdAt": 1735689600,
@@ -7992,8 +7848,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:entsprechen:57d109b8",
-      "primaryTaskId": "task:de:verb:entsprechen:57d109b8:conjugate_form:1:995bbdc4",
+      "lexemeId": "de:verb:entsprechen:05be9f70",
+      "primaryTaskId": "task:de:verb:entsprechen:05be9f70:conjugate_form:1:653d950e",
       "position": 7,
       "notes": null,
       "createdAt": 1735689600,
@@ -8001,8 +7857,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:entstehen:1f1ff688",
-      "primaryTaskId": "task:de:verb:entstehen:1f1ff688:conjugate_form:1:6ca90e42",
+      "lexemeId": "de:verb:entstehen:62495810",
+      "primaryTaskId": "task:de:verb:entstehen:62495810:conjugate_form:1:5969e173",
       "position": 8,
       "notes": null,
       "createdAt": 1735689600,
@@ -8010,8 +7866,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:erortern:09d9db06",
-      "primaryTaskId": "task:de:verb:erortern:09d9db06:conjugate_form:1:72542330",
+      "lexemeId": "de:verb:erortern:4ff066fd",
+      "primaryTaskId": "task:de:verb:erortern:4ff066fd:conjugate_form:1:591c9cb6",
       "position": 9,
       "notes": null,
       "createdAt": 1735689600,
@@ -8019,8 +7875,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:erreichen:94cfa315",
-      "primaryTaskId": "task:de:verb:erreichen:94cfa315:conjugate_form:1:3cd5b367",
+      "lexemeId": "de:verb:erreichen:de0151a9",
+      "primaryTaskId": "task:de:verb:erreichen:de0151a9:conjugate_form:1:ea17b34d",
       "position": 10,
       "notes": null,
       "createdAt": 1735689600,
@@ -8028,8 +7884,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:essen:9062b395",
-      "primaryTaskId": "task:de:verb:essen:9062b395:conjugate_form:1:71a6436f",
+      "lexemeId": "de:verb:essen:6b8d9469",
+      "primaryTaskId": "task:de:verb:essen:6b8d9469:conjugate_form:1:c55083db",
       "position": 11,
       "notes": null,
       "createdAt": 1735689600,
@@ -8037,8 +7893,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:fahren:15cf3f6b",
-      "primaryTaskId": "task:de:verb:fahren:15cf3f6b:conjugate_form:1:bad98e13",
+      "lexemeId": "de:verb:fahren:c2a3428d",
+      "primaryTaskId": "task:de:verb:fahren:c2a3428d:conjugate_form:1:498cf4d0",
       "position": 12,
       "notes": null,
       "createdAt": 1735689600,
@@ -8046,8 +7902,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:fliegen:75459563",
-      "primaryTaskId": "task:de:verb:fliegen:75459563:conjugate_form:1:cc487f39",
+      "lexemeId": "de:verb:fliegen:010ae8c3",
+      "primaryTaskId": "task:de:verb:fliegen:010ae8c3:conjugate_form:1:7113e84a",
       "position": 13,
       "notes": null,
       "createdAt": 1735689600,
@@ -8055,8 +7911,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:gedeihen:8ff24825",
-      "primaryTaskId": "task:de:verb:gedeihen:8ff24825:conjugate_form:1:134320da",
+      "lexemeId": "de:verb:gedeihen:76005b84",
+      "primaryTaskId": "task:de:verb:gedeihen:76005b84:conjugate_form:1:96bac697",
       "position": 14,
       "notes": null,
       "createdAt": 1735689600,
@@ -8064,8 +7920,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:gehen:c7dab9ca",
-      "primaryTaskId": "task:de:verb:gehen:c7dab9ca:conjugate_form:1:acaba522",
+      "lexemeId": "de:verb:gehen:d8137135",
+      "primaryTaskId": "task:de:verb:gehen:d8137135:conjugate_form:1:21f10bdc",
       "position": 15,
       "notes": null,
       "createdAt": 1735689600,
@@ -8073,8 +7929,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:haben:6b7855da",
-      "primaryTaskId": "task:de:verb:haben:6b7855da:conjugate_form:1:f7700b3c",
+      "lexemeId": "de:verb:haben:332ab797",
+      "primaryTaskId": "task:de:verb:haben:332ab797:conjugate_form:1:5ecdfdb7",
       "position": 16,
       "notes": null,
       "createdAt": 1735689600,
@@ -8082,8 +7938,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:heien:0a417ffe",
-      "primaryTaskId": "task:de:verb:heien:0a417ffe:conjugate_form:1:b2e3b5a5",
+      "lexemeId": "de:verb:heien:4ac6e1b6",
+      "primaryTaskId": "task:de:verb:heien:4ac6e1b6:conjugate_form:1:4b6b8548",
       "position": 17,
       "notes": null,
       "createdAt": 1735689600,
@@ -8091,8 +7947,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:horen:76923fd3",
-      "primaryTaskId": "task:de:verb:horen:76923fd3:conjugate_form:1:7876028c",
+      "lexemeId": "de:verb:horen:e75e9ebf",
+      "primaryTaskId": "task:de:verb:horen:e75e9ebf:conjugate_form:1:081d6b79",
       "position": 18,
       "notes": null,
       "createdAt": 1735689600,
@@ -8100,8 +7956,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:kaufen:b2486f52",
-      "primaryTaskId": "task:de:verb:kaufen:b2486f52:conjugate_form:1:e176f3fc",
+      "lexemeId": "de:verb:kaufen:e233c411",
+      "primaryTaskId": "task:de:verb:kaufen:e233c411:conjugate_form:1:b4d4a4e8",
       "position": 19,
       "notes": null,
       "createdAt": 1735689600,
@@ -8109,8 +7965,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:kommen:7df1ed0e",
-      "primaryTaskId": "task:de:verb:kommen:7df1ed0e:conjugate_form:1:c775599e",
+      "lexemeId": "de:verb:kommen:d2ab1849",
+      "primaryTaskId": "task:de:verb:kommen:d2ab1849:conjugate_form:1:914dd1f0",
       "position": 20,
       "notes": null,
       "createdAt": 1735689600,
@@ -8118,8 +7974,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:konnen:f5b71764",
-      "primaryTaskId": "task:de:verb:konnen:f5b71764:conjugate_form:1:53a0fb89",
+      "lexemeId": "de:verb:konnen:9fb4f19a",
+      "primaryTaskId": "task:de:verb:konnen:9fb4f19a:conjugate_form:1:175a2230",
       "position": 21,
       "notes": null,
       "createdAt": 1735689600,
@@ -8127,8 +7983,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:laufen:a1f8f02c",
-      "primaryTaskId": "task:de:verb:laufen:a1f8f02c:conjugate_form:1:ec588a48",
+      "lexemeId": "de:verb:laufen:99ad38b1",
+      "primaryTaskId": "task:de:verb:laufen:99ad38b1:conjugate_form:1:e33322ae",
       "position": 22,
       "notes": null,
       "createdAt": 1735689600,
@@ -8136,8 +7992,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:leben:eedbdf34",
-      "primaryTaskId": "task:de:verb:leben:eedbdf34:conjugate_form:1:1eb6d6cd",
+      "lexemeId": "de:verb:leben:8bf6bfa6",
+      "primaryTaskId": "task:de:verb:leben:8bf6bfa6:conjugate_form:1:316bb890",
       "position": 23,
       "notes": null,
       "createdAt": 1735689600,
@@ -8145,8 +8001,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:lernen:5b328a53",
-      "primaryTaskId": "task:de:verb:lernen:5b328a53:conjugate_form:1:7faeff2f",
+      "lexemeId": "de:verb:lernen:a57ac1c5",
+      "primaryTaskId": "task:de:verb:lernen:a57ac1c5:conjugate_form:1:af121602",
       "position": 24,
       "notes": null,
       "createdAt": 1735689600,
@@ -8154,8 +8010,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:lesen:c900d552",
-      "primaryTaskId": "task:de:verb:lesen:c900d552:conjugate_form:1:b4a99265",
+      "lexemeId": "de:verb:lesen:62751638",
+      "primaryTaskId": "task:de:verb:lesen:62751638:conjugate_form:1:712f8e20",
       "position": 25,
       "notes": null,
       "createdAt": 1735689600,
@@ -8163,8 +8019,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:machen:3e9552c8",
-      "primaryTaskId": "task:de:verb:machen:3e9552c8:conjugate_form:1:31576471",
+      "lexemeId": "de:verb:machen:28cbaea6",
+      "primaryTaskId": "task:de:verb:machen:28cbaea6:conjugate_form:1:69a01bfe",
       "position": 26,
       "notes": null,
       "createdAt": 1735689600,
@@ -8172,8 +8028,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:mussen:5c5eebed",
-      "primaryTaskId": "task:de:verb:mussen:5c5eebed:conjugate_form:1:53200caa",
+      "lexemeId": "de:verb:mussen:84258bb6",
+      "primaryTaskId": "task:de:verb:mussen:84258bb6:conjugate_form:1:7d6cff1a",
       "position": 27,
       "notes": null,
       "createdAt": 1735689600,
@@ -8181,8 +8037,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:schlafen:d2453ec6",
-      "primaryTaskId": "task:de:verb:schlafen:d2453ec6:conjugate_form:1:52f22253",
+      "lexemeId": "de:verb:schlafen:9d87c270",
+      "primaryTaskId": "task:de:verb:schlafen:9d87c270:conjugate_form:1:bf30ca5a",
       "position": 28,
       "notes": null,
       "createdAt": 1735689600,
@@ -8190,8 +8046,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:schreiben:954e0878",
-      "primaryTaskId": "task:de:verb:schreiben:954e0878:conjugate_form:1:d9cc235e",
+      "lexemeId": "de:verb:schreiben:43e2636e",
+      "primaryTaskId": "task:de:verb:schreiben:43e2636e:conjugate_form:1:e4385d6c",
       "position": 29,
       "notes": null,
       "createdAt": 1735689600,
@@ -8199,8 +8055,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:schwimmen:669504d1",
-      "primaryTaskId": "task:de:verb:schwimmen:669504d1:conjugate_form:1:203f0b85",
+      "lexemeId": "de:verb:schwimmen:df578857",
+      "primaryTaskId": "task:de:verb:schwimmen:df578857:conjugate_form:1:52ec845a",
       "position": 30,
       "notes": null,
       "createdAt": 1735689600,
@@ -8208,8 +8064,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:sehen:b70191ab",
-      "primaryTaskId": "task:de:verb:sehen:b70191ab:conjugate_form:1:fbf4d725",
+      "lexemeId": "de:verb:sehen:65ea9516",
+      "primaryTaskId": "task:de:verb:sehen:65ea9516:conjugate_form:1:aaa522f1",
       "position": 31,
       "notes": null,
       "createdAt": 1735689600,
@@ -8217,8 +8073,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:sein:406c878d",
-      "primaryTaskId": "task:de:verb:sein:406c878d:conjugate_form:1:27131c62",
+      "lexemeId": "de:verb:sein:34a39e53",
+      "primaryTaskId": "task:de:verb:sein:34a39e53:conjugate_form:1:c158a098",
       "position": 32,
       "notes": null,
       "createdAt": 1735689600,
@@ -8226,8 +8082,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:sollen:d4809c2d",
-      "primaryTaskId": "task:de:verb:sollen:d4809c2d:conjugate_form:1:0146e0ed",
+      "lexemeId": "de:verb:sollen:66218d7e",
+      "primaryTaskId": "task:de:verb:sollen:66218d7e:conjugate_form:1:edec1413",
       "position": 33,
       "notes": null,
       "createdAt": 1735689600,
@@ -8235,8 +8091,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:spielen:71cf6aa9",
-      "primaryTaskId": "task:de:verb:spielen:71cf6aa9:conjugate_form:1:d0e5b3e0",
+      "lexemeId": "de:verb:spielen:898c6e6c",
+      "primaryTaskId": "task:de:verb:spielen:898c6e6c:conjugate_form:1:e6c1b949",
       "position": 34,
       "notes": null,
       "createdAt": 1735689600,
@@ -8244,8 +8100,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:sprechen:1c525275",
-      "primaryTaskId": "task:de:verb:sprechen:1c525275:conjugate_form:1:c0d6448e",
+      "lexemeId": "de:verb:sprechen:bc48e7ed",
+      "primaryTaskId": "task:de:verb:sprechen:bc48e7ed:conjugate_form:1:6fa4bb71",
       "position": 35,
       "notes": null,
       "createdAt": 1735689600,
@@ -8253,8 +8109,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:suggerieren:3dbc0640",
-      "primaryTaskId": "task:de:verb:suggerieren:3dbc0640:conjugate_form:1:5d1312b6",
+      "lexemeId": "de:verb:suggerieren:977d3b62",
+      "primaryTaskId": "task:de:verb:suggerieren:977d3b62:conjugate_form:1:323bca66",
       "position": 36,
       "notes": null,
       "createdAt": 1735689600,
@@ -8262,8 +8118,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:tanzen:2154a418",
-      "primaryTaskId": "task:de:verb:tanzen:2154a418:conjugate_form:1:5fbaee68",
+      "lexemeId": "de:verb:tanzen:6b59b36d",
+      "primaryTaskId": "task:de:verb:tanzen:6b59b36d:conjugate_form:1:a4133cb7",
       "position": 37,
       "notes": null,
       "createdAt": 1735689600,
@@ -8271,8 +8127,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:trinken:2db1376a",
-      "primaryTaskId": "task:de:verb:trinken:2db1376a:conjugate_form:1:252e598e",
+      "lexemeId": "de:verb:trinken:ddf6daef",
+      "primaryTaskId": "task:de:verb:trinken:ddf6daef:conjugate_form:1:4c5906db",
       "position": 38,
       "notes": null,
       "createdAt": 1735689600,
@@ -8280,8 +8136,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:ubertragen:f1a0f3ad",
-      "primaryTaskId": "task:de:verb:ubertragen:f1a0f3ad:conjugate_form:1:2857eaf0",
+      "lexemeId": "de:verb:ubertragen:c67eaac8",
+      "primaryTaskId": "task:de:verb:ubertragen:c67eaac8:conjugate_form:1:35bd121d",
       "position": 39,
       "notes": null,
       "createdAt": 1735689600,
@@ -8289,8 +8145,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:verbinden:ec6e57bb",
-      "primaryTaskId": "task:de:verb:verbinden:ec6e57bb:conjugate_form:1:e081fad4",
+      "lexemeId": "de:verb:verbinden:ec21851b",
+      "primaryTaskId": "task:de:verb:verbinden:ec21851b:conjugate_form:1:77276342",
       "position": 40,
       "notes": null,
       "createdAt": 1735689600,
@@ -8298,8 +8154,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:werden:c8b02b87",
-      "primaryTaskId": "task:de:verb:werden:c8b02b87:conjugate_form:1:060aa62b",
+      "lexemeId": "de:verb:werden:3598e23c",
+      "primaryTaskId": "task:de:verb:werden:3598e23c:conjugate_form:1:0179b57c",
       "position": 41,
       "notes": null,
       "createdAt": 1735689600,
@@ -8307,8 +8163,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:wohnen:c1f88595",
-      "primaryTaskId": "task:de:verb:wohnen:c1f88595:conjugate_form:1:f70cc6bf",
+      "lexemeId": "de:verb:wohnen:7a4a1284",
+      "primaryTaskId": "task:de:verb:wohnen:7a4a1284:conjugate_form:1:907ebeb6",
       "position": 42,
       "notes": null,
       "createdAt": 1735689600,
@@ -8316,8 +8172,8 @@
     },
     {
       "packId": "pack:verbs-foundation:1",
-      "lexemeId": "de:verb:wollen:97a9e5f9",
-      "primaryTaskId": "task:de:verb:wollen:97a9e5f9:conjugate_form:1:301a7e9e",
+      "lexemeId": "de:verb:wollen:8792d930",
+      "primaryTaskId": "task:de:verb:wollen:8792d930:conjugate_form:1:22fdeeea",
       "position": 43,
       "notes": null,
       "createdAt": 1735689600,
