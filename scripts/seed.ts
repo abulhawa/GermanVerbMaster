@@ -27,6 +27,7 @@ import type {
   WordPosAttributes,
   WordTranslation,
 } from '@shared/types';
+import { normalizeWordExample } from '@shared/examples';
 import type { PersistedProviderEntry, PersistedWordData } from '@shared/enrichment';
 import { loadPersistedWordData } from './enrichment/storage';
 import { applyMigrations } from './db-push';
@@ -277,16 +278,15 @@ function normaliseExamples(
     const candidate = entry as PosJsonExample;
     const exampleDe = normaliseString(candidate.de ?? candidate.exampleDe ?? null);
     const exampleEn = normaliseString(candidate.en ?? candidate.exampleEn ?? null);
-    const source = normaliseString(candidate.source ?? null);
-
-    if (exampleDe === null && exampleEn === null && source === null) {
+    if (exampleDe === null && exampleEn === null) {
       continue;
     }
 
     examples.push({
+      sentence: exampleDe,
+      translations: exampleEn ? { en: exampleEn } : null,
       exampleDe,
       exampleEn,
-      source,
     });
   }
 
@@ -470,21 +470,32 @@ function mergeExamples(
   const seen = new Set<string>();
   const deduped: WordExample[] = [];
   for (const entry of combined) {
-    if (!entry) {
+    const normalized = normalizeWordExample(entry);
+    if (!normalized) {
       continue;
     }
-    const exampleDe = entry.exampleDe?.trim() ?? null;
-    const exampleEn = entry.exampleEn?.trim() ?? null;
-    const source = entry.source?.trim() ?? null;
-    if (!exampleDe && !exampleEn) {
-      continue;
+    const sentence = (normalized.sentence ?? normalized.exampleDe ?? '').trim().toLowerCase();
+    const translations: Array<readonly [string, string]> = [];
+    if (normalized.translations) {
+      for (const [language, value] of Object.entries(normalized.translations)) {
+        if (typeof value !== 'string') {
+          continue;
+        }
+        const trimmedLanguage = language.trim().toLowerCase();
+        const trimmedValue = value.trim().toLowerCase();
+        if (!trimmedLanguage || !trimmedValue) {
+          continue;
+        }
+        translations.push([trimmedLanguage, trimmedValue]);
+      }
+      translations.sort((a, b) => a[0].localeCompare(b[0]));
     }
-    const key = `${exampleDe ?? ''}::${exampleEn ?? ''}::${source ?? ''}`.toLowerCase();
+    const key = JSON.stringify([sentence, translations]);
     if (seen.has(key)) {
       continue;
     }
     seen.add(key);
-    deduped.push({ exampleDe, exampleEn, source });
+    deduped.push(normalized);
   }
   return deduped.length ? deduped : null;
 }

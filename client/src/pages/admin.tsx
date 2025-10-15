@@ -1000,15 +1000,12 @@ const AdminWordsPage = () => {
                                   <ul className="mt-1 space-y-2 text-sm">
                                     {word.examples.map((example, index) => (
                                       <li
-                                        key={`${example.exampleDe ?? '—'}-${example.exampleEn ?? '—'}-${example.source ?? 'unknown'}-${index}`}
+                                        key={`${example.exampleDe ?? '—'}-${example.exampleEn ?? '—'}-${index}`}
                                         className="leading-snug"
                                       >
                                         <span className="font-medium text-foreground">{example.exampleDe ?? '—'}</span>
                                         {example.exampleEn ? (
                                           <span className="text-muted-foreground"> · {example.exampleEn}</span>
-                                        ) : null}
-                                        {example.source ? (
-                                          <span className="text-muted-foreground"> · {example.source}</span>
                                         ) : null}
                                       </li>
                                     ))}

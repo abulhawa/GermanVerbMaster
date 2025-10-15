@@ -25,6 +25,7 @@ import type {
   WordEnrichmentSuggestions,
 } from "@shared/enrichment";
 import type { WordExample, WordPosAttributes, WordTranslation } from "@shared/types";
+import { canonicalizeExamples, examplesEqual, normalizeWordExample } from "@shared/examples";
 
 import {
   delay,
@@ -1163,18 +1164,24 @@ function toWordExamples(candidates: ExampleCandidate[]): WordExample[] | null {
   const seen = new Set<string>();
   const records: WordExample[] = [];
   for (const candidate of candidates) {
-    const exampleDe = candidate.exampleDe?.trim() ?? null;
-    const exampleEn = candidate.exampleEn?.trim() ?? null;
-    const source = candidate.source?.trim() ?? null;
-    if (!exampleDe && !exampleEn) {
+    const normalized = normalizeWordExample(candidate as WordExample);
+    if (!normalized) {
       continue;
     }
-    const key = `${(exampleDe ?? "").toLowerCase()}::${(exampleEn ?? "").toLowerCase()}::${(source ?? "").toLowerCase()}`;
+    const [canonical] = canonicalizeExamples([normalized]);
+    if (!canonical) {
+      continue;
+    }
+    const translationEntries = Object.entries(canonical.translations ?? {});
+    const key = JSON.stringify([
+      (canonical.sentence ?? canonical.exampleDe ?? "").toLowerCase(),
+      translationEntries,
+    ]);
     if (seen.has(key)) {
       continue;
     }
     seen.add(key);
-    records.push({ exampleDe, exampleEn, source });
+    records.push(canonical);
   }
   return records.length ? records : null;
 }
@@ -1270,14 +1277,11 @@ function sortExamples(values: WordExample[]): WordExample[] {
     .map((entry) => ({
       exampleDe: entry.exampleDe?.trim() ?? null,
       exampleEn: entry.exampleEn?.trim() ?? null,
-      source: entry.source?.trim() ?? null,
     }))
     .sort((a, b) => {
       const deCompare = (a.exampleDe ?? "").localeCompare(b.exampleDe ?? "");
       if (deCompare !== 0) return deCompare;
-      const enCompare = (a.exampleEn ?? "").localeCompare(b.exampleEn ?? "");
-      if (enCompare !== 0) return enCompare;
-      return (a.source ?? "").localeCompare(b.source ?? "");
+      return (a.exampleEn ?? "").localeCompare(b.exampleEn ?? "");
     });
 }
 
@@ -1742,15 +1746,11 @@ function determineUpdates(
 }
 
 function pickExampleCandidate(examples: ExampleCandidate[]): ExampleCandidate | undefined {
-  const preferKaikki = examples.filter((example) => example.source === "kaikki.org");
-  const fallback = examples.filter((example) => example.source !== "kaikki.org");
   return (
-    preferKaikki.find((example) => example.exampleDe && example.exampleEn)
-    ?? preferKaikki.find((example) => example.exampleDe)
-    ?? preferKaikki.find((example) => example.exampleEn)
-    ?? fallback.find((example) => example.exampleDe && example.exampleEn)
-    ?? fallback.find((example) => example.exampleDe)
-    ?? fallback.find((example) => example.exampleEn)
+    examples.find((example) => example.exampleDe && example.exampleEn)
+    ?? examples.find((example) => example.exampleDe)
+    ?? examples.find((example) => example.exampleEn)
+    ?? examples[0]
   );
 }
 
@@ -2187,31 +2187,45 @@ function mergeExampleRecords(
 ): WordRecord["examples"] {
   const map = new Map<string, ExampleRecord>();
 
-  const addRecord = (exampleDe?: string, exampleEn?: string, source?: string | null) => {
-    const trimmedDe = exampleDe?.trim();
-    const trimmedEn = exampleEn?.trim();
-    if (!trimmedDe && !trimmedEn) {
+  const serialiseKey = (example: ExampleRecord): string => {
+    const sentence = (example.sentence ?? example.exampleDe ?? "").trim().toLowerCase();
+    const translations: Array<readonly [string, string]> = [];
+    if (example.translations) {
+      for (const [language, value] of Object.entries(example.translations)) {
+        if (typeof value !== "string") {
+          continue;
+        }
+        const trimmedLanguage = language.trim().toLowerCase();
+        const trimmedValue = value.trim().toLowerCase();
+        if (!trimmedLanguage || !trimmedValue) {
+          continue;
+        }
+        translations.push([trimmedLanguage, trimmedValue]);
+      }
+      translations.sort((a, b) => a[0].localeCompare(b[0]));
+    }
+    return JSON.stringify([sentence, translations]);
+  };
+
+  const addRecord = (entry: ExampleRecord | ExampleCandidate | WordExample | null | undefined) => {
+    const normalized = normalizeWordExample(entry as WordExample);
+    if (!normalized) {
       return;
     }
-    const normalisedSource = source ? source.trim() : null;
-    const key = `${(trimmedDe ?? "").toLowerCase()}::${(trimmedEn ?? "").toLowerCase()}::${(normalisedSource ?? "").toLowerCase()}`;
+    const key = serialiseKey(normalized);
     if (!map.has(key)) {
-      map.set(key, {
-        exampleDe: trimmedDe ?? null,
-        exampleEn: trimmedEn ?? null,
-        source: normalisedSource,
-      });
+      map.set(key, normalized);
     }
   };
 
   if (Array.isArray(existing)) {
     for (const record of existing) {
-      addRecord(record.exampleDe ?? undefined, record.exampleEn ?? undefined, record.source ?? null);
+      addRecord(record);
     }
   }
 
   for (const candidate of candidates) {
-    addRecord(candidate.exampleDe, candidate.exampleEn, candidate.source);
+    addRecord(candidate);
   }
 
   const result = Array.from(map.values());
@@ -2245,22 +2259,7 @@ function areExampleRecordsEqual(
   previous: WordRecord["examples"],
   next: WordRecord["examples"],
 ): boolean {
-  const prevList = Array.isArray(previous) ? previous : [];
-  const nextList = Array.isArray(next) ? next : [];
-  if (prevList.length !== nextList.length) {
-    return false;
-  }
-
-  const serialise = (record: ExampleRecord) =>
-    JSON.stringify([
-      (record.exampleDe ?? "").trim().toLowerCase(),
-      (record.exampleEn ?? "").trim().toLowerCase(),
-      (record.source ?? "").trim().toLowerCase(),
-    ]);
-
-  const sortedPrev = prevList.map(serialise).sort();
-  const sortedNext = nextList.map(serialise).sort();
-  return sortedPrev.every((value, index) => value === sortedNext[index]);
+  return examplesEqual(previous ?? null, next ?? null);
 }
 
 function buildPerfektFromForms(aux: string, partizip: string): string | null {

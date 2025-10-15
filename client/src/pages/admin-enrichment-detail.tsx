@@ -1021,12 +1021,11 @@ const WordEnrichmentDetailView = ({
                   <ul className="mt-1 space-y-2 text-sm">
                     {history.examples.map((example, index) => (
                       <li
-                        key={`${example.exampleDe ?? '—'}-${example.exampleEn ?? '—'}-${example.source ?? 'unknown'}-${index}`}
+                        key={`${example.exampleDe ?? '—'}-${example.exampleEn ?? '—'}-${index}`}
                         className="leading-snug"
                       >
                         <span className="font-medium text-foreground">{example.exampleDe ?? '—'}</span>
                         {example.exampleEn ? <span className="text-muted-foreground"> · {example.exampleEn}</span> : null}
-                        {example.source ? <span className="text-muted-foreground"> · {example.source}</span> : null}
                       </li>
                     ))}
                   </ul>
@@ -1173,9 +1172,6 @@ const WordEnrichmentDetailView = ({
                       <li key={`${entry.exampleDe ?? ''}-${entry.exampleEn ?? ''}-${index}`} className="space-y-0.5">
                         <div>{entry.exampleDe ?? '—'}</div>
                         {entry.exampleEn ? <div className="text-xs text-muted-foreground">EN: {entry.exampleEn}</div> : null}
-                        {entry.source ? (
-                          <div className="text-xs text-muted-foreground">Source: {entry.source}</div>
-                        ) : null}
                       </li>
                     ))}
                   </ul>
@@ -1712,7 +1708,6 @@ function SnapshotDataList({ snapshot }: { snapshot: EnrichmentProviderSnapshot }
               <li key={`${example.exampleDe ?? '—'}-${example.exampleEn ?? '—'}-${index}`} className="leading-snug">
                 <span className="font-medium text-foreground">{example.exampleDe ?? '—'}</span>
                 {example.exampleEn ? <span className="text-muted-foreground"> · {example.exampleEn}</span> : null}
-                {example.source ? <span className="text-muted-foreground"> · {example.source}</span> : null}
               </li>
             ))}
           </ul>
@@ -1970,14 +1965,14 @@ function buildExampleOptions(
     }
     const source = candidate.source?.trim();
     const resolvedSource = source ?? (origin === 'history' ? 'stored' : 'suggestion');
-    const key = `${(exampleDe ?? '').toLowerCase()}::${(exampleEn ?? '').toLowerCase()}::${(source ?? '').toLowerCase()}`;
+    const key = JSON.stringify([(exampleDe ?? '').toLowerCase(), (exampleEn ?? '').toLowerCase()]);
     if (seen.has(key)) {
       return;
     }
     seen.add(key);
     const id = `${origin}-example-${encodeURIComponent(exampleDe?.toLowerCase() ?? 'none')}-${encodeURIComponent(
       exampleEn?.toLowerCase() ?? 'none',
-    )}-${encodeURIComponent(source?.toLowerCase() ?? 'unknown')}`;
+    )}`;
     options.push({
       id,
       candidate: {
@@ -1993,7 +1988,7 @@ function buildExampleOptions(
     for (const record of history.examples) {
       addCandidate(
         {
-          source: record.source?.trim() ?? 'stored',
+          source: 'stored',
           exampleDe: record.exampleDe ?? undefined,
           exampleEn: record.exampleEn ?? undefined,
         },

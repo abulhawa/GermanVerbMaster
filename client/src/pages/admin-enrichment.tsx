@@ -746,7 +746,6 @@ const AdminEnrichmentPage = () => {
                       {previewData.summary.example.exampleEn
                         ? ` / ${previewData.summary.example.exampleEn}`
                         : ''}
-                      {previewData.summary.example.source ? ` · ${previewData.summary.example.source}` : ''}
                     </div>
                   ) : (
                     <div className="text-sm text-muted-foreground">No example suggested</div>
