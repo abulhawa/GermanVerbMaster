@@ -23,6 +23,8 @@
     "test:all": "npm run test:unit && npm run test:e2e",
     "seed": "tsx scripts/seed.ts",
     "enrich": "tsx scripts/run-enrichment.ts",
+    "export:compact": "tsx scripts/export-compact.ts",
+    "seed:jsonl": "tsx scripts/seed-jsonl.ts",
     "analytics:export": "tsx scripts/export-pos-analytics.ts",
     "analytics:post-launch": "tsx scripts/export-pos-analytics.ts",
     "seed:verbs": "npm run seed",

@@ -78,6 +78,13 @@
       "when": 1760248800000,
       "tag": "0010_drop_legacy_tables",
       "breakpoints": false
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1760263200000,
+      "tag": "0011_words_export_columns",
+      "breakpoints": false
     }
   ]
 }

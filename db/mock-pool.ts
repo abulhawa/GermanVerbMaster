@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -411,6 +412,12 @@ function ensureDatabase(mem: IMemoryDb): void {
     name: "random",
     returns: "double precision",
     implementation: () => Math.random(),
+  } as any);
+  mem.public.registerFunction({
+    name: "gen_random_uuid",
+    returns: "uuid",
+    implementation: () => randomUUID(),
+    impure: true,
   } as any);
   mem.public.registerFunction({
     name: "floor",

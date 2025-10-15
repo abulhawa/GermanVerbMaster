@@ -1,4 +1,5 @@
 import { promises as fs } from 'node:fs';
+import type { Dirent } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -107,7 +108,15 @@ export async function lintAllPacks(options: PackLintOptions = {}): Promise<LintI
     const directory = packDirectory
       ? path.resolve(packDirectory)
       : path.resolve(process.cwd(), 'data', 'packs');
-    const entries = await fs.readdir(directory, { withFileTypes: true });
+    let entries: Dirent[];
+    try {
+      entries = await fs.readdir(directory, { withFileTypes: true, encoding: 'utf8' });
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+        return [];
+      }
+      throw error;
+    }
     filesToCheck = entries
       .filter((entry) => entry.isFile() && entry.name.endsWith('.json'))
       .map((entry) => path.join(directory, entry.name));

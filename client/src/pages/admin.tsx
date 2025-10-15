@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
 import { Sparkles, Settings2, PenSquare, Trash2, Wand2 } from 'lucide-react';
 import { Link } from 'wouter';
+import { formatDistanceToNow } from 'date-fns';
 
 import { AppShell } from '@/components/layout/app-shell';
 import { SidebarNavButton } from '@/components/layout/sidebar-nav-button';
@@ -22,7 +23,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useAuthSession } from '@/auth/session';
 import type { Word } from '@shared';
-import { wordSchema, wordsResponseSchema } from './admin-word-schemas';
+import { exportStatusSchema, wordSchema, wordsResponseSchema } from './admin-word-schemas';
 import WordEnrichmentDetailView, {
   DEFAULT_WORD_CONFIG,
   type WordConfigState,
@@ -270,6 +271,11 @@ const AdminWordsPage = () => {
     [filters, normalizedAdminToken],
   );
 
+  const exportStatusQueryKey = useMemo(
+    () => ['export-status', normalizedAdminToken],
+    [normalizedAdminToken],
+  );
+
   const enrichmentDialogOpen = enrichmentWordId !== null;
 
   const wordsQuery = useQuery({
@@ -308,6 +314,32 @@ const AdminWordsPage = () => {
     },
   });
 
+  const exportStatusQuery = useQuery({
+    queryKey: exportStatusQueryKey,
+    queryFn: async () => {
+      const headers: Record<string, string> = {};
+      if (normalizedAdminToken) {
+        headers['x-admin-token'] = normalizedAdminToken;
+      }
+
+      const response = await fetch('/api/admin/export/status', { headers });
+      if (!response.ok) {
+        const error = new Error(`Failed to load export status (${response.status})`);
+        (error as Error & { status?: number }).status = response.status;
+        throw error;
+      }
+
+      const payload = await response.json();
+      return exportStatusSchema.parse(payload);
+    },
+    retry(failureCount, error) {
+      if (error instanceof Error && (error as Error & { status?: number }).status === 401) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+  });
+
   const updateMutation = useMutation({
     mutationFn: async ({ id, payload }: { id: number; payload: Record<string, unknown> }) => {
       const response = await fetch(`/api/words/${id}`, {
@@ -329,10 +361,52 @@ const AdminWordsPage = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
+      queryClient.invalidateQueries({ queryKey: exportStatusQueryKey });
       toast({ title: 'Word updated' });
     },
     onError: (error) => {
       toast({ title: 'Update failed', description: error instanceof Error ? error.message : String(error), variant: 'destructive' });
+    },
+  });
+
+  const bulkExportMutation = useMutation({
+    mutationFn: async () => {
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (normalizedAdminToken) {
+        headers['x-admin-token'] = normalizedAdminToken;
+      }
+
+      const body: Record<string, unknown> = {};
+      if (filters.pos !== 'ALL') {
+        body.pos = filters.pos;
+      }
+
+      const response = await fetch('/api/admin/export/bulk', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body),
+      });
+
+      if (!response.ok) {
+        const message = await response.text();
+        const error = new Error(message || `Bulk export failed (${response.status})`);
+        (error as Error & { status?: number }).status = response.status;
+        throw error;
+      }
+
+      return response.json() as Promise<{ succeeded: number; failed: number }>;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
+      queryClient.invalidateQueries({ queryKey: exportStatusQueryKey });
+      toast({ title: 'Export complete' });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Export failed',
+        description: error instanceof Error ? error.message : String(error),
+        variant: 'destructive',
+      });
     },
   });
 
@@ -384,6 +458,14 @@ const AdminWordsPage = () => {
     wordsQuery.error instanceof Error &&
     wordsQuery.error.message.includes('(401)');
 
+  const exportStatus = exportStatusQuery.data;
+  const totalDirty = exportStatus?.totalDirty ?? 0;
+  const oldestDirty = exportStatus?.oldestDirtyUpdatedAt ?? null;
+  const exportStatusUnauthorized =
+    exportStatusQuery.isError
+    && exportStatusQuery.error instanceof Error
+    && exportStatusQuery.error.message.includes('(401)');
+
   const columns = useMemo(() => {
     const base = [
       { key: 'lemma', label: 'Lemma' },
@@ -418,6 +500,7 @@ const AdminWordsPage = () => {
 
     base.push({ key: 'approval', label: 'Approval' });
     base.push({ key: 'complete', label: 'Complete' });
+    base.push({ key: 'exportStatus', label: 'Export' });
     base.push({ key: 'enrichmentAppliedAt', label: 'Enriched' });
     base.push({ key: 'actions', label: 'Actions' });
 
@@ -635,6 +718,42 @@ const AdminWordsPage = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div className="rounded-2xl border border-border/60 bg-muted/30 p-4">
+            {exportStatusQuery.isLoading ? (
+              <div className="text-sm text-muted-foreground">Checking export queue…</div>
+            ) : exportStatusQuery.isSuccess ? (
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="space-y-1">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Export queue</div>
+                  <div className="text-sm text-foreground">
+                    {totalDirty > 0
+                      ? `${totalDirty} entr${totalDirty === 1 ? 'y' : 'ies'} awaiting export`
+                      : 'All changes exported'}
+                  </div>
+                  {totalDirty > 0 && oldestDirty ? (
+                    <div className="text-xs text-muted-foreground">
+                      Oldest update {formatDistanceToNow(oldestDirty, { addSuffix: true })}
+                    </div>
+                  ) : null}
+                </div>
+                <Button
+                  className="rounded-2xl"
+                  variant={totalDirty > 0 ? 'default' : 'secondary'}
+                  onClick={() => bulkExportMutation.mutate()}
+                  disabled={bulkExportMutation.isPending || totalDirty === 0}
+                  debugId={`${pageDebugId}-bulk-export-button`}
+                >
+                  {bulkExportMutation.isPending ? 'Exporting…' : 'Export all'}
+                </Button>
+              </div>
+            ) : (
+              <div className="text-sm text-muted-foreground">
+                {exportStatusUnauthorized
+                  ? 'Enter the admin token to check export status.'
+                  : 'Failed to load export status.'}
+              </div>
+            )}
+          </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="text-sm text-muted-foreground">Page {currentPage} of {displayTotalPages}</div>
             <div className="flex items-center gap-2">
@@ -720,6 +839,24 @@ const AdminWordsPage = () => {
                       <Badge variant={word.complete ? 'default' : 'outline'}>
                         {word.complete ? 'Complete' : 'Incomplete'}
                       </Badge>
+                    </TableCell>
+                    <TableCell className="px-2 py-2">
+                      {(() => {
+                        const exportedAt = word.exportedAt;
+                        const updatedAt = word.updatedAt;
+                        const isDirty = !exportedAt || exportedAt.getTime() < updatedAt.getTime();
+                        if (isDirty) {
+                          return <Badge variant="destructive">Dirty</Badge>;
+                        }
+                        if (exportedAt) {
+                          return (
+                            <span className="text-xs text-muted-foreground">
+                              Exported {formatDistanceToNow(exportedAt, { addSuffix: true })}
+                            </span>
+                          );
+                        }
+                        return <Badge variant="secondary">Never exported</Badge>;
+                      })()}
                     </TableCell>
                     <TableCell className="px-2 py-2">
                       {word.enrichmentAppliedAt ? (

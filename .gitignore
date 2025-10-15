@@ -49,3 +49,6 @@ tests/ui/overlay.spec.ts-snapshots/
 .env
 .vercel
 load_env.ps1
+# Generated content packs and export artifacts
+data/packs/
+data/sync/
