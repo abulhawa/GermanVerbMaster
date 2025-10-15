@@ -1,0 +1,258 @@
+{
+  "pack": {
+    "id": "pack:adjectives-foundation:1",
+    "slug": "adjectives-foundation",
+    "name": "Adjectives – Foundation",
+    "description": "Comparative and superlative tasks for common adjectives.",
+    "language": "de",
+    "posScope": "adjective",
+    "license": "CC-BY-SA-4.0",
+    "licenseNotes": null,
+    "version": 1,
+    "checksum": "5180cf49f6d44d0dd5ec8cbf832fbed1433a4831",
+    "metadata": {
+      "taskTypes": [
+        "adj_ending"
+      ],
+      "size": 2,
+      "cefrLevels": [
+        "A1",
+        "A2"
+      ],
+      "attribution": [
+        {
+          "id": "pos_jsonl:adjectives",
+          "count": 2,
+          "pos": [
+            "Adj"
+          ],
+          "label": "POS seed (adjectives.jsonl)",
+          "license": "CC BY-SA 4.0 (internal data/pos source)",
+          "notes": "Deterministic per-POS JSONL inventory committed in data/pos/"
+        }
+      ]
+    },
+    "createdAt": 1735689600,
+    "updatedAt": 1735689600
+  },
+  "lexemes": [
+    {
+      "id": "de:adjective:freundlich:f291a9fc",
+      "lemma": "freundlich",
+      "language": "de",
+      "pos": "adjective",
+      "gender": null,
+      "metadata": {
+        "level": "A2",
+        "english": "friendly",
+        "example": {
+          "de": "Eine freundliche Person.",
+          "en": "A friendly person."
+        }
+      },
+      "frequencyRank": null,
+      "sourceIds": [
+        "pos_jsonl:adjectives"
+      ],
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "id": "de:adjective:schnell:219f6a5a",
+      "lemma": "schnell",
+      "language": "de",
+      "pos": "adjective",
+      "gender": null,
+      "metadata": {
+        "level": "A1",
+        "english": "fast",
+        "example": {
+          "de": "Ein schneller Zug.",
+          "en": "A fast train."
+        }
+      },
+      "frequencyRank": null,
+      "sourceIds": [
+        "pos_jsonl:adjectives"
+      ],
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    }
+  ],
+  "inflections": [
+    {
+      "id": "inf:de:adjective:freundlich:f291a9fc:80e25fc62a",
+      "lexemeId": "de:adjective:freundlich:f291a9fc",
+      "form": "freundlich",
+      "features": {
+        "degree": "positive"
+      },
+      "audioAsset": null,
+      "sourceRevision": "pos_jsonl:adjectives:f70dd530b5",
+      "checksum": "ebe8bb370e0e5f4d",
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "id": "inf:de:adjective:freundlich:f291a9fc:5272884278",
+      "lexemeId": "de:adjective:freundlich:f291a9fc",
+      "form": "freundlicher",
+      "features": {
+        "degree": "comparative"
+      },
+      "audioAsset": null,
+      "sourceRevision": "pos_jsonl:adjectives:f70dd530b5",
+      "checksum": "a6e4506607917fcc",
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "id": "inf:de:adjective:freundlich:f291a9fc:a748800b01",
+      "lexemeId": "de:adjective:freundlich:f291a9fc",
+      "form": "am freundlichsten",
+      "features": {
+        "degree": "superlative"
+      },
+      "audioAsset": null,
+      "sourceRevision": "pos_jsonl:adjectives:f70dd530b5",
+      "checksum": "33dc86cba2a69454",
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "id": "inf:de:adjective:schnell:219f6a5a:cb17e3b733",
+      "lexemeId": "de:adjective:schnell:219f6a5a",
+      "form": "schnell",
+      "features": {
+        "degree": "positive"
+      },
+      "audioAsset": null,
+      "sourceRevision": "pos_jsonl:adjectives:9d8925e109",
+      "checksum": "6047e55b2718a67b",
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "id": "inf:de:adjective:schnell:219f6a5a:289fc4564a",
+      "lexemeId": "de:adjective:schnell:219f6a5a",
+      "form": "schneller",
+      "features": {
+        "degree": "comparative"
+      },
+      "audioAsset": null,
+      "sourceRevision": "pos_jsonl:adjectives:9d8925e109",
+      "checksum": "0b32a10f00a96cbc",
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "id": "inf:de:adjective:schnell:219f6a5a:f217ede43a",
+      "lexemeId": "de:adjective:schnell:219f6a5a",
+      "form": "am schnellsten",
+      "features": {
+        "degree": "superlative"
+      },
+      "audioAsset": null,
+      "sourceRevision": "pos_jsonl:adjectives:9d8925e109",
+      "checksum": "64f9ffc0ca3542c3",
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    }
+  ],
+  "tasks": [
+    {
+      "id": "task:de:adjective:freundlich:f291a9fc:adj_ending:1:51b0c542",
+      "lexemeId": "de:adjective:freundlich:f291a9fc",
+      "pos": "adjective",
+      "taskType": "adj_ending",
+      "renderer": "adj_ending",
+      "prompt": {
+        "lemma": "freundlich",
+        "pos": "adjective",
+        "degree": "comparative",
+        "cefrLevel": "A2",
+        "instructions": "Bilde den Komparativ von \"freundlich\".",
+        "example": {
+          "de": "Eine freundliche Person.",
+          "en": "A friendly person."
+        },
+        "syntacticFrame": "Der ____ Wagen ist schneller."
+      },
+      "solution": {
+        "form": "freundlicher"
+      },
+      "hints": [
+        {
+          "type": "example_de",
+          "value": "Eine freundliche Person."
+        },
+        {
+          "type": "example_en",
+          "value": "A friendly person."
+        }
+      ],
+      "metadata": null,
+      "revision": 1,
+      "sourcePack": "adjectives-foundation",
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "id": "task:de:adjective:schnell:219f6a5a:adj_ending:1:d453d560",
+      "lexemeId": "de:adjective:schnell:219f6a5a",
+      "pos": "adjective",
+      "taskType": "adj_ending",
+      "renderer": "adj_ending",
+      "prompt": {
+        "lemma": "schnell",
+        "pos": "adjective",
+        "degree": "comparative",
+        "cefrLevel": "A1",
+        "instructions": "Bilde den Komparativ von \"schnell\".",
+        "example": {
+          "de": "Ein schneller Zug.",
+          "en": "A fast train."
+        },
+        "syntacticFrame": "Der ____ Wagen ist schneller."
+      },
+      "solution": {
+        "form": "schneller"
+      },
+      "hints": [
+        {
+          "type": "example_de",
+          "value": "Ein schneller Zug."
+        },
+        {
+          "type": "example_en",
+          "value": "A fast train."
+        }
+      ],
+      "metadata": null,
+      "revision": 1,
+      "sourcePack": "adjectives-foundation",
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    }
+  ],
+  "packLexemeMap": [
+    {
+      "packId": "pack:adjectives-foundation:1",
+      "lexemeId": "de:adjective:freundlich:f291a9fc",
+      "primaryTaskId": "task:de:adjective:freundlich:f291a9fc:adj_ending:1:51b0c542",
+      "position": 1,
+      "notes": null,
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    },
+    {
+      "packId": "pack:adjectives-foundation:1",
+      "lexemeId": "de:adjective:schnell:219f6a5a",
+      "primaryTaskId": "task:de:adjective:schnell:219f6a5a:adj_ending:1:d453d560",
+      "position": 2,
+      "notes": null,
+      "createdAt": 1735689600,
+      "updatedAt": 1735689600
+    }
+  ]
+}
