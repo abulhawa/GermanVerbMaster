@@ -28,6 +28,9 @@ import { stableStringify, sha1 } from './utils';
 
 const STABLE_TIMESTAMP = Math.floor(new Date('2025-01-01T00:00:00Z').getTime() / 1000);
 
+const LOG_VALIDATION_WARNINGS =
+  process.env.GOLDEN_LOG_VALIDATION_WARNINGS?.toLowerCase() === 'true';
+
 type TimestampSeed = { createdAt: number; updatedAt: number };
 
 function toDate(timestamp: number): Date {
@@ -173,7 +176,7 @@ export function buildLexemeInventory(words: AggregatedWord[]): LexemeInventory {
 
   for (const word of words) {
     const validation = validateWord(word);
-    if (validation.errors.length > 0) {
+    if (LOG_VALIDATION_WARNINGS && validation.errors.length > 0) {
       console.warn(
         `[etl] lexeme ${word.lemma} (${word.pos}) has validation issues: ${validation.errors.join(', ')}`,
       );
