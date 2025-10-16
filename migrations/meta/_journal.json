@@ -106,6 +106,13 @@
       "when": 1760598605293,
       "tag": "0014_remove_enrichment_pipeline",
       "breakpoints": false
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1760602200000,
+      "tag": "0015_remove_feature_flag_columns",
+      "breakpoints": false
     }
   ]
 }

@@ -37,7 +37,6 @@ describe('computePostLaunchAnalytics', () => {
         submittedAt: new Date('2025-01-01T10:00:00.000Z'),
         answeredAt: new Date('2025-01-01T09:59:59.000Z'),
         hintsUsed: false,
-        featureFlags: null,
         metadata: null,
       },
     ];
@@ -75,11 +74,6 @@ describe('computePostLaunchAnalytics', () => {
         submittedAt: new Date('2025-01-01T10:00:00.000Z'),
         hintsUsed: false,
         packId: 'pack:verbs',
-        featureFlags: {
-          verb: { enabled: true },
-          noun: { enabled: true },
-          adjective: { enabled: false },
-        },
       },
       {
         taskId: 'task:noun-1',
@@ -94,11 +88,6 @@ describe('computePostLaunchAnalytics', () => {
         submittedAt: new Date('2025-01-01T10:05:00.000Z'),
         hintsUsed: true,
         packId: 'pack:noun-foundation',
-        featureFlags: {
-          verb: { enabled: true },
-          noun: { enabled: true },
-          adjective: { enabled: false },
-        },
       },
       {
         taskId: 'task:verb-2',
@@ -112,11 +101,6 @@ describe('computePostLaunchAnalytics', () => {
         responseMs: 2100,
         submittedAt: new Date('2025-01-01T11:00:00.000Z'),
         hintsUsed: false,
-        featureFlags: {
-          verb: { enabled: true },
-          noun: { enabled: true },
-          adjective: { enabled: false },
-        },
       },
       {
         taskId: 'task:noun-1',
@@ -130,11 +114,6 @@ describe('computePostLaunchAnalytics', () => {
         responseMs: 2800,
         submittedAt: new Date('2025-01-02T09:00:00.000Z'),
         hintsUsed: false,
-        featureFlags: {
-          verb: { enabled: true },
-          noun: { enabled: true },
-          adjective: { enabled: false },
-        },
       },
       {
         taskId: 'task:adj-1',
@@ -148,11 +127,6 @@ describe('computePostLaunchAnalytics', () => {
         responseMs: 4500,
         submittedAt: new Date('2025-01-02T09:30:00.000Z'),
         hintsUsed: false,
-        featureFlags: {
-          verb: { enabled: true },
-          noun: { enabled: true },
-          adjective: { enabled: true },
-        },
       },
       {
         taskId: 'task:noun-1',
@@ -166,10 +140,6 @@ describe('computePostLaunchAnalytics', () => {
         responseMs: 3600,
         submittedAt: new Date('2025-01-03T10:00:00.000Z'),
         hintsUsed: false,
-        featureFlags: {
-          verb: { enabled: true },
-          noun: { enabled: true },
-        },
       },
     ];
 
@@ -296,11 +266,6 @@ describe('computePostLaunchAnalytics', () => {
     expect(nounPerformance).toBeDefined();
     expect(nounPerformance!.attempts).toBe(3);
     expect(nounPerformance!.accuracy).toBeCloseTo(33.33, 2);
-
-    const nounFunnel = report.posAdoption.featureFlagFunnel.find((item) => item.pos === 'noun');
-    expect(nounFunnel).toBeDefined();
-    expect(nounFunnel!.enabledSessions).toBe(4);
-    expect(nounFunnel!.adoptionRate).toBeCloseTo(75, 2);
 
     const nounHeat = report.schedulerHealth.priorityHeatmap.find(
       (item) => item.pos === 'noun' && item.leitnerBox === 1,

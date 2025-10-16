@@ -7,15 +7,10 @@ This guide replaces the historical expansion plans with a concise snapshot of th
 - The Express API mounts `GET /api/tasks` as the canonical feed. Requests can filter by part of speech, task type, and pack slug while returning deterministic IDs and metadata for every task.
 - Practice clients ship with a mode switcher that lets learners blend all task types or focus on a single POS, while a custom preset stores any combination of task types for power users.
 
-## Feature flags and rollout controls
+## Rollout controls
 | Flag | Default | Scope | Notes |
 | --- | --- | --- | --- |
 | `ENABLE_LEXEME_SCHEMA` | `true` | Server + scripts | Enables the lexeme tables, task registry, and `/api/tasks` endpoints. Turning it off reverts the legacy verb-only stack. |
-| `ENABLE_NOUNS_BETA` | `false` | Server | Gates noun tasks. When disabled, `/api/tasks` rejects noun filters and the client hides noun presets. |
-| `ENABLE_ADJECTIVES_BETA` | `false` | Server | Gates adjective tasks with the same behaviour as nouns. |
-| Other POS flags | `false` | Server | Flags exist for future parts of speech (adverb, pronoun, etc.) but remain disabled until we add task templates. |
-
-The feature flag helper normalises environment variables, emits an `X-Feature-Flags` response header, and throws descriptive errors when callers request a disabled POS. Subscribe to the listener hooks when you need telemetry or logging around blocked requests.
 
 ## Data model
 The lexeme schema sits alongside the legacy verb tables so we can run both systems in parallel. Key tables include:
@@ -35,7 +30,7 @@ Refer to `db/schema.ts` for column-level details, indices, and relationships.
 - Registry helpers power `npm run packs:lint`, rejecting any pack JSON that references unsupported task types, missing licenses, or inconsistent renderer keys before the files reach `content_packs`.
 
 ## API and scheduler flow
-- `/api/tasks` honours POS and task-type filters, verifies feature flags, and adds pack metadata when the task originated from a curated bundle.
+- `/api/tasks` honours POS and task-type filters and adds pack metadata when the task originated from a curated bundle.
 - When callers provide a `deviceId` and request verb-only queues, the endpoint samples the adaptive scheduler and interleaves those verbs ahead of the fallback content query. Stale queues trigger regeneration automatically.
 - Practice submissions route through `/api/submission`, updating `scheduling_state` rows and queue caches so the next `/api/tasks` call reflects the new priorities.
 
@@ -50,9 +45,8 @@ Refer to `db/schema.ts` for column-level details, indices, and relationships.
 - Keep attribution notes and source tracking up to date in pack metadata; the lint script enforces license presence and highlights missing `packLexemeMap` entries.
 
 ## Telemetry & analytics
-- `practice_history` tracks every attempt with POS, task type, renderer, latency, CEFR level, pack, and feature flag snapshot so dashboards can segment adoption and quality metrics.
+- `practice_history` tracks every attempt with POS, task type, renderer, latency, CEFR level, and pack context so dashboards can segment adoption and quality metrics.
 - `telemetry_priorities` records scheduled priority weights per task. Export these rows when tuning scheduler coefficients or comparing queue health across releases.
-- Because feature flags are included in both API responses and practice history metadata, analysts can measure noun/adjective rollout impact without guessing which cohorts were exposed.
 
 ## Pack migration notes
 - Migration `0010_drop_legacy_tables` permanently removes the deprecated `content_pack_lexeme_map` table. Before applying it, run a manual export if you still need the historical pack membership for audit trails or reconstruction of pre-lexeme bundles.

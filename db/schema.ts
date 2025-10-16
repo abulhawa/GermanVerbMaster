@@ -369,9 +369,6 @@ export const practiceHistory = pgTable(
     cefrLevel: text("cefr_level"),
     packId: text("pack_id"),
     hintsUsed: boolean("hints_used").notNull().default(false),
-    featureFlags: jsonb("feature_flags").$type<
-      Record<string, { enabled: boolean; stage?: string; defaultValue?: boolean }>
-    >(),
     metadata: jsonb("metadata").$type<Record<string, unknown>>(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },

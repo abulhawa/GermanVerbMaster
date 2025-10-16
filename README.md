@@ -18,7 +18,6 @@ Requires Node.js 22.0.0 or newer and npm 10+ (see `package.json` engines field).
    - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` – optional credentials for Google OAuth sign-in.
    - `MICROSOFT_CLIENT_ID` / `MICROSOFT_CLIENT_SECRET` – optional credentials for Microsoft OAuth sign-in.
    - `ENABLE_LEXEME_SCHEMA` – disable to fall back to the legacy verb-only stack (defaults to `true`).
-   - `ENABLE_NOUNS_BETA` / `ENABLE_ADJECTIVES_BETA` – flip feature flags for the new noun and adjective task cohorts. Both default to `false` so you can stage rollouts incrementally.
 3. Apply the latest migrations to your Postgres database:
    ```bash
    npm run db:push
@@ -61,7 +60,7 @@ Before running `npm run db:push` or `npm run seed` in any managed environment, s
 - `BETTER_AUTH_URL` – public base URL Better Auth should advertise in emails and OAuth callbacks.
 - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` – optional Google OAuth credentials.
 - `MICROSOFT_CLIENT_ID` / `MICROSOFT_CLIENT_SECRET` – optional Microsoft OAuth credentials.
-- Feature flags (`ENABLE_LEXEME_SCHEMA`, `ENABLE_NOUNS_BETA`, `ENABLE_ADJECTIVES_BETA`) – opt-in toggles you can adjust per environment before generating packs.
+- `ENABLE_LEXEME_SCHEMA` – opt-in toggle that keeps the multi-POS stack enabled when generating packs.
 
 These must be present both in Vercel’s Environment Variables UI and in any CI job that invokes the migration (`npm run db:push`) and seeding (`npm run seed`) scripts so the Drizzle client connects with the correct SSL options.
 
@@ -131,7 +130,6 @@ Shut down the container with `docker stop gvm-postgres` when you are done.
 - `/api/tasks` exposes POS-aware task descriptors driven by the shared registry in `shared/task-registry.ts` and server metadata in `server/tasks/registry.ts`.
 - Legacy verb routes have been removed. Clients should rely on `/api/tasks` for fetching practice prompts and `/api/submission` for recording attempts.
 - The deterministic schema covers `lexemes`, `inflections`, `task_specs`, `content_packs`, `pack_lexeme_map`, `scheduling_state`, and `telemetry_priorities`. These tables live alongside legacy verb tables until shadow mode validates parity.
-- Feature flags (`ENABLE_NOUNS_BETA`, `ENABLE_ADJECTIVES_BETA`) gate access to noun and adjective queues. The API emits `x-gvm-feature-flags` headers to document the current snapshot.
 
 ## Progressive Web App
 - The client is bundled with `vite-plugin-pwa` using an auto-updating service worker.

@@ -39,7 +39,6 @@ async function main(): Promise<void> {
       answeredAt: practiceHistory.answeredAt,
       hintsUsed: practiceHistory.hintsUsed,
       packId: practiceHistory.packId,
-      featureFlags: practiceHistory.featureFlags,
       metadata: practiceHistory.metadata,
     })
     .from(practiceHistory)
@@ -106,7 +105,6 @@ async function main(): Promise<void> {
       answeredAt: toDate(row.answeredAt),
       hintsUsed: row.hintsUsed,
       packId: row.packId ?? null,
-      featureFlags: row.featureFlags ?? null,
       metadata: row.metadata ?? null,
     })),
     schedulingSnapshots: schedulingRows.map((row) => ({
