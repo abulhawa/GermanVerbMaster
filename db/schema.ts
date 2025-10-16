@@ -40,51 +40,6 @@ export const enrichmentMethodEnum = pgEnum("enrichment_method", [
   "preexisting",
 ]);
 
-export const integrationPartners = pgTable("integration_partners", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  apiKeyHash: text("api_key_hash").notNull().unique(),
-  contactEmail: text("contact_email"),
-  allowedOrigins: jsonb("allowed_origins").$type<string[] | null>(),
-  scopes: jsonb("scopes").$type<string[]>().notNull().default(sql`'[]'::jsonb`),
-  notes: text("notes"),
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
-});
-
-export const rateLimitCounters = pgTable(
-  "rate_limit_counters",
-  {
-    key: text("key").notNull(),
-    windowStart: timestamp("window_start", { withTimezone: true }).notNull(),
-    hits: integer("hits").notNull().default(0),
-    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
-  },
-  (table) => [
-    primaryKey({
-      columns: [table.key, table.windowStart],
-      name: "rate_limit_counters_key_window_start_pk",
-    }),
-    index("rate_limit_counters_expires_idx").on(table.expiresAt),
-  ],
-);
-
-export const integrationUsage = pgTable("integration_usage", {
-  id: serial("id").primaryKey(),
-  partnerId: integer("partner_id")
-    .notNull()
-    .references(() => integrationPartners.id, { onDelete: "cascade" }),
-  endpoint: text("endpoint").notNull(),
-  method: text("method").notNull(),
-  statusCode: integer("status_code").notNull(),
-  requestId: text("request_id").notNull(),
-  responseTimeMs: integer("response_time_ms").notNull().default(0),
-  userAgent: text("user_agent"),
-  requestedAt: timestamp("requested_at", { withTimezone: true }).defaultNow().notNull(),
-});
-
 export const authUsers = pgTable(
   "auth_users",
   {
@@ -485,8 +440,3 @@ export type Word = typeof words.$inferSelect;
 export type PracticeHistory = typeof practiceHistory.$inferSelect;
 export type InsertPracticeHistory = typeof practiceHistory.$inferInsert;
 
-export type IntegrationPartner = typeof integrationPartners.$inferSelect;
-export type InsertIntegrationPartner = typeof integrationPartners.$inferInsert;
-
-export type IntegrationUsage = typeof integrationUsage.$inferSelect;
-export type InsertIntegrationUsage = typeof integrationUsage.$inferInsert;
