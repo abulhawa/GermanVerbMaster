@@ -75,17 +75,3 @@ export const wordsResponseSchema = z.object({
 export type AdminWord = z.infer<typeof wordSchema>;
 export type WordsResponse = z.infer<typeof wordsResponseSchema>;
 
-export const exportStatusSchema = z.object({
-  generatedAt: z.coerce.date(),
-  totalDirty: z.number(),
-  oldestDirtyUpdatedAt: z.coerce.date().nullable(),
-  perPos: z.record(
-    z.string(),
-    z.object({
-      count: z.number(),
-      oldestUpdatedAt: z.coerce.date().nullable(),
-    }),
-  ),
-});
-
-export type ExportStatus = z.infer<typeof exportStatusSchema>;

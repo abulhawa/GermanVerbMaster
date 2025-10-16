@@ -90,6 +90,8 @@ function createEmptyResult(): QueryResult<any> {
 function handleCustomStatements(statement: string, mem: IMemoryDb): QueryResult<any> | undefined {
   const createUserRole =
     /CREATE\s+TYPE\s+IF\s+NOT\s+EXISTS\s+"public"\."user_role"\s+AS\s+ENUM\s*\('standard',\s*'admin'\)\s*;?/i;
+  const dropWordsExportQueue = /DROP\s+VIEW\s+IF\s+EXISTS\s+"words_export_queue"\s*;?/i;
+  const dropEnrichmentSnapshots = /DROP\s+TABLE\s+IF\s+EXISTS\s+"enrichment_provider_snapshots"\s*;?/i;
 
   if (createUserRole.test(statement)) {
     try {
@@ -100,6 +102,10 @@ function handleCustomStatements(statement: string, mem: IMemoryDb): QueryResult<
       }
     }
 
+    return createEmptyResult();
+  }
+
+  if (dropWordsExportQueue.test(statement) || dropEnrichmentSnapshots.test(statement)) {
     return createEmptyResult();
   }
 
@@ -313,94 +319,8 @@ function seedMockData(mem: IMemoryDb): void {
       ${toTimestampLiteral(now)}
     );`,
   );
-
-  mem.public.none(
-    `INSERT INTO enrichment_provider_snapshots (
-      id,
-      word_id,
-      lemma,
-      pos,
-      provider_id,
-      provider_label,
-      status,
-      error,
-      trigger,
-      mode,
-      translations,
-      examples,
-      synonyms,
-      english_hints,
-      verb_forms,
-      noun_forms,
-      adjective_forms,
-      preposition_attributes,
-      raw_payload,
-      collected_at,
-      created_at
-    ) VALUES
-    (
-      1,
-      1,
-      'arbeiten',
-      'V',
-      'wiktextract',
-      'Wiktextract',
-      'success',
-      NULL,
-      'manual',
-      'approved',
-      ${toJsonLiteral([
-        { value: "to work", source: "wiktextract", language: "en", confidence: 0.92 },
-      ])},
-      ${toJsonLiteral([
-        {
-          sentence: "Sie arbeitet als Ingenieurin.",
-          translations: { en: "She works as an engineer." },
-        },
-      ])},
-      ${toJsonLiteral(["schaffen", "tätig sein"])},
-      ${toJsonLiteral(["labour", "profession"] )},
-      ${toJsonLiteral({ infinitive: "arbeiten", participle: "gearbeitet" })},
-      NULL,
-      NULL,
-      NULL,
-      ${toJsonLiteral({ provider: "wiktextract", version: "mock" })},
-      ${toTimestampLiteral(now)},
-      ${toTimestampLiteral(now)}
-    ),
-    (
-      2,
-      1,
-      'arbeiten',
-      'V',
-      'kaikki',
-      'Kaikki',
-      'success',
-      NULL,
-      'manual',
-      'approved',
-      ${toJsonLiteral([
-        { value: "to labour", source: "kaikki", language: "en", confidence: 0.75 },
-        { value: "to toil", source: "kaikki", language: "en", confidence: 0.68 },
-      ])},
-      ${toJsonLiteral([
-        {
-          sentence: "Wir arbeiten gemeinsam an dem Projekt.",
-          translations: { en: "We are working on the project together." },
-        },
-      ])},
-      ${toJsonLiteral(["kooperieren", "handwerken"])},
-      ${toJsonLiteral(["project", "teamwork"] )},
-      ${toJsonLiteral({ thirdPersonSingular: "arbeitet", past: "arbeitete" })},
-      NULL,
-      NULL,
-      NULL,
-      ${toJsonLiteral({ provider: "kaikki", version: "mock" })},
-      ${toTimestampLiteral(new Date(Date.now() - 1000 * 60 * 60))},
-      ${toTimestampLiteral(now)}
-    );`,
-  );
 }
+
 
 function ensureDatabase(mem: IMemoryDb): void {
   mem.public.none("create schema if not exists drizzle");

@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
-import { Sparkles, Settings2, PenSquare, Trash2, Wand2 } from 'lucide-react';
+import { Sparkles, Settings2, PenSquare, Trash2 } from 'lucide-react';
 import { Link } from 'wouter';
-import { formatDistanceToNow } from 'date-fns';
 
 import { AppShell } from '@/components/layout/app-shell';
 import { SidebarNavButton } from '@/components/layout/sidebar-nav-button';
@@ -16,23 +15,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useAuthSession } from '@/auth/session';
 import type { Word } from '@shared';
-import { exportStatusSchema, wordSchema, wordsResponseSchema } from './admin-word-schemas';
-import WordEnrichmentDetailView, {
-  DEFAULT_WORD_CONFIG,
-  type WordConfigState,
-} from './admin-enrichment-detail';
+import { wordSchema, wordsResponseSchema } from './admin-word-schemas';
 
 type ApprovalFilter = 'all' | 'approved' | 'pending';
 type CompleteFilter = 'all' | 'complete' | 'incomplete';
-type EnrichmentFilter = 'all' | 'enriched' | 'unenriched';
-
 const PER_PAGE_OPTIONS = [25, 50, 100, 200] as const;
 
 const POS_OPTIONS: Array<{ label: string; value: Word['pos'] | 'ALL' }> = [
@@ -56,12 +47,6 @@ const completeOptions: Array<{ label: string; value: CompleteFilter }> = [
   { label: 'All', value: 'all' },
   { label: 'Complete', value: 'complete' },
   { label: 'Incomplete', value: 'incomplete' },
-];
-
-const enrichmentOptions: Array<{ label: string; value: EnrichmentFilter }> = [
-  { label: 'All', value: 'all' },
-  { label: 'Enriched', value: 'enriched' },
-  { label: 'Needs enrichment', value: 'unenriched' },
 ];
 
 interface EditFieldConfig {
@@ -214,14 +199,6 @@ function preparePayload(form: WordFormState, pos: Word['pos']) {
   return payload;
 }
 
-function humanizeEnrichmentMethod(method: Word['enrichmentMethod'] | null | undefined) {
-  if (!method) return null;
-  return method
-    .split('_')
-    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
-    .join(' ');
-}
-
 const AdminWordsPage = () => {
   const [adminToken, setAdminToken] = useState(() => localStorage.getItem('gvm-admin-token') ?? '');
   const [search, setSearch] = useState('');
@@ -229,13 +206,10 @@ const AdminWordsPage = () => {
   const [level, setLevel] = useState<string>('All');
   const [approvalFilter, setApprovalFilter] = useState<ApprovalFilter>('all');
   const [completeFilter, setCompleteFilter] = useState<CompleteFilter>('all');
-  const [enrichmentFilter, setEnrichmentFilter] = useState<EnrichmentFilter>('all');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState<number>(50);
   const [selectedWord, setSelectedWord] = useState<Word | null>(null);
   const [formState, setFormState] = useState<WordFormState | null>(null);
-  const [wordConfig, setWordConfig] = useState<WordConfigState>(DEFAULT_WORD_CONFIG);
-  const [enrichmentWordId, setEnrichmentWordId] = useState<number | null>(null);
 
   const pageDebugId = 'admin-words';
 
@@ -250,7 +224,7 @@ const AdminWordsPage = () => {
 
   useEffect(() => {
     setPage(1);
-  }, [search, pos, level, approvalFilter, completeFilter, enrichmentFilter]);
+  }, [search, pos, level, approvalFilter, completeFilter]);
 
   const filters = useMemo(
     () => ({
@@ -259,24 +233,16 @@ const AdminWordsPage = () => {
       level,
       approvalFilter,
       completeFilter,
-      enrichmentFilter,
       page,
       perPage,
     }),
-    [search, pos, level, approvalFilter, completeFilter, enrichmentFilter, page, perPage],
+    [search, pos, level, approvalFilter, completeFilter, page, perPage],
   );
 
   const queryKey = useMemo(
     () => ['words', filters, normalizedAdminToken],
     [filters, normalizedAdminToken],
   );
-
-  const exportStatusQueryKey = useMemo(
-    () => ['export-status', normalizedAdminToken],
-    [normalizedAdminToken],
-  );
-
-  const enrichmentDialogOpen = enrichmentWordId !== null;
 
   const wordsQuery = useQuery({
     queryKey,
@@ -289,9 +255,6 @@ const AdminWordsPage = () => {
       if (filters.approvalFilter === 'pending') params.set('approved', 'false');
       if (filters.completeFilter === 'complete') params.set('complete', 'only');
       if (filters.completeFilter === 'incomplete') params.set('complete', 'non');
-      if (filters.enrichmentFilter === 'enriched') params.set('enriched', 'only');
-      if (filters.enrichmentFilter === 'unenriched') params.set('enriched', 'non');
-
       const headers: Record<string, string> = {};
       if (normalizedAdminToken) {
         headers['x-admin-token'] = normalizedAdminToken;
@@ -311,32 +274,6 @@ const AdminWordsPage = () => {
       const payload = await response.json();
       const parsed = wordsResponseSchema.parse(payload);
       return parsed;
-    },
-  });
-
-  const exportStatusQuery = useQuery({
-    queryKey: exportStatusQueryKey,
-    queryFn: async () => {
-      const headers: Record<string, string> = {};
-      if (normalizedAdminToken) {
-        headers['x-admin-token'] = normalizedAdminToken;
-      }
-
-      const response = await fetch('/api/admin/export/status', { headers });
-      if (!response.ok) {
-        const error = new Error(`Failed to load export status (${response.status})`);
-        (error as Error & { status?: number }).status = response.status;
-        throw error;
-      }
-
-      const payload = await response.json();
-      return exportStatusSchema.parse(payload);
-    },
-    retry(failureCount, error) {
-      if (error instanceof Error && (error as Error & { status?: number }).status === 401) {
-        return false;
-      }
-      return failureCount < 2;
     },
   });
 
@@ -361,52 +298,10 @@ const AdminWordsPage = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
-      queryClient.invalidateQueries({ queryKey: exportStatusQueryKey });
       toast({ title: 'Word updated' });
     },
     onError: (error) => {
       toast({ title: 'Update failed', description: error instanceof Error ? error.message : String(error), variant: 'destructive' });
-    },
-  });
-
-  const bulkExportMutation = useMutation({
-    mutationFn: async () => {
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-      if (normalizedAdminToken) {
-        headers['x-admin-token'] = normalizedAdminToken;
-      }
-
-      const body: Record<string, unknown> = {};
-      if (filters.pos !== 'ALL') {
-        body.pos = filters.pos;
-      }
-
-      const response = await fetch('/api/admin/export/bulk', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(body),
-      });
-
-      if (!response.ok) {
-        const message = await response.text();
-        const error = new Error(message || `Bulk export failed (${response.status})`);
-        (error as Error & { status?: number }).status = response.status;
-        throw error;
-      }
-
-      return response.json() as Promise<{ succeeded: number; failed: number }>;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey });
-      queryClient.invalidateQueries({ queryKey: exportStatusQueryKey });
-      toast({ title: 'Export complete' });
-    },
-    onError: (error) => {
-      toast({
-        title: 'Export failed',
-        description: error instanceof Error ? error.message : String(error),
-        variant: 'destructive',
-      });
     },
   });
 
@@ -418,14 +313,6 @@ const AdminWordsPage = () => {
   const closeEditor = () => {
     setSelectedWord(null);
     setFormState(null);
-  };
-
-  const openEnrichmentDialog = (word: Word) => {
-    setEnrichmentWordId(word.id);
-  };
-
-  const closeEnrichmentDialog = () => {
-    setEnrichmentWordId(null);
   };
 
   const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
@@ -457,14 +344,6 @@ const AdminWordsPage = () => {
     wordsQuery.isError &&
     wordsQuery.error instanceof Error &&
     wordsQuery.error.message.includes('(401)');
-
-  const exportStatus = exportStatusQuery.data;
-  const totalDirty = exportStatus?.totalDirty ?? 0;
-  const oldestDirty = exportStatus?.oldestDirtyUpdatedAt ?? null;
-  const exportStatusUnauthorized =
-    exportStatusQuery.isError
-    && exportStatusQuery.error instanceof Error
-    && exportStatusQuery.error.message.includes('(401)');
 
   const columns = useMemo(() => {
     const base = [
@@ -500,21 +379,10 @@ const AdminWordsPage = () => {
 
     base.push({ key: 'approval', label: 'Approval' });
     base.push({ key: 'complete', label: 'Complete' });
-    base.push({ key: 'exportStatus', label: 'Export' });
-    base.push({ key: 'enrichmentAppliedAt', label: 'Enriched' });
     base.push({ key: 'actions', label: 'Actions' });
 
     return base;
   }, [activePos]);
-
-  const enrichmentDateFormatter = useMemo(
-    () =>
-      new Intl.DateTimeFormat(undefined, {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-      }),
-    [],
-  );
 
   const { data: authSession } = useAuthSession();
   const navigationItems = useMemo(
@@ -682,24 +550,6 @@ const AdminWordsPage = () => {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <Label>Enrichment</Label>
-                <Select
-                  value={enrichmentFilter}
-                  onValueChange={(value: EnrichmentFilter) => setEnrichmentFilter(value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Enrichment" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {enrichmentOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
           </CardContent>
         </Card>
@@ -718,42 +568,6 @@ const AdminWordsPage = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="rounded-2xl border border-border/60 bg-muted/30 p-4">
-            {exportStatusQuery.isLoading ? (
-              <div className="text-sm text-muted-foreground">Checking export queue…</div>
-            ) : exportStatusQuery.isSuccess ? (
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="space-y-1">
-                  <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Export queue</div>
-                  <div className="text-sm text-foreground">
-                    {totalDirty > 0
-                      ? `${totalDirty} entr${totalDirty === 1 ? 'y' : 'ies'} awaiting export`
-                      : 'All changes exported'}
-                  </div>
-                  {totalDirty > 0 && oldestDirty ? (
-                    <div className="text-xs text-muted-foreground">
-                      Oldest update {formatDistanceToNow(oldestDirty, { addSuffix: true })}
-                    </div>
-                  ) : null}
-                </div>
-                <Button
-                  className="rounded-2xl"
-                  variant={totalDirty > 0 ? 'default' : 'secondary'}
-                  onClick={() => bulkExportMutation.mutate()}
-                  disabled={bulkExportMutation.isPending || totalDirty === 0}
-                  debugId={`${pageDebugId}-bulk-export-button`}
-                >
-                  {bulkExportMutation.isPending ? 'Exporting…' : 'Export all'}
-                </Button>
-              </div>
-            ) : (
-              <div className="text-sm text-muted-foreground">
-                {exportStatusUnauthorized
-                  ? 'Enter the admin token to check export status.'
-                  : 'Failed to load export status.'}
-              </div>
-            )}
-          </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="text-sm text-muted-foreground">Page {currentPage} of {displayTotalPages}</div>
             <div className="flex items-center gap-2">
@@ -797,7 +611,6 @@ const AdminWordsPage = () => {
               </TableHeader>
               <TableBody>
               {words.map((word) => {
-                const enrichmentLabel = humanizeEnrichmentMethod(word.enrichmentMethod);
                 return (
                   <TableRow key={word.id}>
                     <TableCell className="px-2 py-2 font-medium">{word.lemma}</TableCell>
@@ -839,38 +652,6 @@ const AdminWordsPage = () => {
                       <Badge variant={word.complete ? 'default' : 'outline'}>
                         {word.complete ? 'Complete' : 'Incomplete'}
                       </Badge>
-                    </TableCell>
-                    <TableCell className="px-2 py-2">
-                      {(() => {
-                        const exportedAt = word.exportedAt;
-                        const updatedAt = word.updatedAt;
-                        const isDirty = !exportedAt || exportedAt.getTime() < updatedAt.getTime();
-                        if (isDirty) {
-                          return <Badge variant="destructive">Dirty</Badge>;
-                        }
-                        if (exportedAt) {
-                          return (
-                            <span className="text-xs text-muted-foreground">
-                              Exported {formatDistanceToNow(exportedAt, { addSuffix: true })}
-                            </span>
-                          );
-                        }
-                        return <Badge variant="secondary">Never exported</Badge>;
-                      })()}
-                    </TableCell>
-                    <TableCell className="px-2 py-2">
-                      {word.enrichmentAppliedAt ? (
-                        <div className="flex flex-col">
-                          <span>{enrichmentDateFormatter.format(word.enrichmentAppliedAt)}</span>
-                          {enrichmentLabel ? (
-                            <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                              {enrichmentLabel}
-                            </span>
-                          ) : null}
-                        </div>
-                      ) : (
-                        <span className="text-muted-foreground">—</span>
-                      )}
                     </TableCell>
                     <TableCell className="flex items-center gap-2 px-2 py-2">
                       <Button
@@ -1014,10 +795,6 @@ const AdminWordsPage = () => {
                                 </div>
                               ) : null}
                             </div>
-                          ) : word.enrichmentAppliedAt ? (
-                            <p className="text-sm text-muted-foreground">
-                              No stored translations or examples recorded yet.
-                            </p>
                           ) : null}
                           <DrawerFooter>
                             <Button
@@ -1039,17 +816,6 @@ const AdminWordsPage = () => {
                         </form>
                       </DrawerContent>
                     </Drawer>
-                      <Button
-                        size="icon"
-                        variant="outline"
-                        className="rounded-xl"
-                        onClick={() => openEnrichmentDialog(word)}
-                        title="Open enrichment"
-                        aria-label="Open enrichment"
-                        debugId={`${pageDebugId}-word-${word.id}-enrich-button`}
-                      >
-                        <Wand2 className="h-4 w-4" aria-hidden />
-                      </Button>
                   </TableCell>
                   </TableRow>
                 );
@@ -1107,34 +873,6 @@ const AdminWordsPage = () => {
         </CardContent>
       </Card>
     </div>
-      <Dialog
-        open={enrichmentDialogOpen}
-        onOpenChange={(open) => {
-          if (!open) {
-            closeEnrichmentDialog();
-          }
-        }}
-      >
-        <DialogContent className="w-full max-w-6xl overflow-hidden border border-border/60 bg-background p-0">
-          <ScrollArea className="max-h-[80vh] w-full">
-            {enrichmentWordId ? (
-              <div className="space-y-6 px-6 py-6">
-                <WordEnrichmentDetailView
-                  key={enrichmentWordId}
-                  wordId={enrichmentWordId}
-                  adminToken={adminToken}
-                  normalizedAdminToken={normalizedAdminToken}
-                  onAdminTokenChange={setAdminToken}
-                  toast={toast}
-                  onClose={closeEnrichmentDialog}
-                  wordConfig={wordConfig}
-                  setWordConfig={setWordConfig}
-                />
-              </div>
-            ) : null}
-          </ScrollArea>
-        </DialogContent>
-      </Dialog>
     </AppShell>
   );
 };

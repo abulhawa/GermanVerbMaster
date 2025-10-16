@@ -99,6 +99,13 @@
       "when": 1760287200000,
       "tag": "0013_remove_partner_rate_limit_tables",
       "breakpoints": false
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1760598605293,
+      "tag": "0014_remove_enrichment_pipeline",
+      "breakpoints": false
     }
   ]
 }
