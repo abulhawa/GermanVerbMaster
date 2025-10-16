@@ -154,7 +154,6 @@ describe('offline practice bundle', () => {
           timeSpentMs: 900,
           timeSpent: 0,
           cefrLevel: 'A2',
-          packId: null,
         },
       ],
       progress: createEmptyProgressState(),
@@ -177,7 +176,6 @@ describe('offline practice bundle', () => {
 
     const attempts = await getPendingAttempts();
     expect(attempts).toHaveLength(1);
-    expect(attempts[0]?.payload.packId).toBeUndefined();
 
     const settings = loadPracticeSettings();
     expect(settings.defaultTaskType).toBe('conjugate_form');

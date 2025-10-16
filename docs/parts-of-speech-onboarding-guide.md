@@ -21,14 +21,14 @@ This guide helps new contributors ramp onto the lexeme-based architecture that n
 
 ## 3. Data flow walkthrough
 1. Source CSVs and manual overrides live in `data/` and `docs/external/`.
-2. `npm run seed` hydrates the legacy `words` table while generating deterministic `lexemes`, `inflections`, and `task_specs` packs under `data/packs/`.
-3. `npm run packs:lint` validates every pack JSON file against the shared registry before you copy the refreshed bundles into `client/public/packs/` for offline use.
+2. `npm run seed` hydrates the legacy `words` table while generating deterministic `lexemes`, `inflections`, and `task_specs` entries under `data/packs/`.
+3. The legacy JSON pack export has been retired; offline clients now synchronise tasks from the live practice queues instead of copying bundle files into `client/public/packs/`.
 4. `/api/tasks` serves queue items directly from `task_specs`, returning the latest prompts without maintaining scheduler state.
 
 ## 4. QA checklist before merging
 - Run `npm run test` for unit/integration coverage and `npm run test:e2e` after Playwright browsers are installed.
-- Execute `npm run packs:lint` whenever you touch pack data or ETL scripts.
-- Verify the admin dashboard edits propagate into packs by reseeding and spot-checking the updated JSON files.
+- Run `npm run seed` after updating ETL scripts to confirm the generated lexeme inventories still hydrate without errors.
+- Verify admin dashboard edits propagate into the generated lexeme/task spec snapshots by reseeding and spot-checking the updated JSON files.
 - Confirm `/api/tasks?pos=noun` and `/api/tasks?pos=adjective` return items for seeded datasets.
 
 ## 5. Additional resources

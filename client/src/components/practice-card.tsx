@@ -531,7 +531,6 @@ function ConjugateFormRenderer({
         timeSpentMs: submissionContext.timeSpentMs,
         answeredAt: submissionContext.answeredAt,
         cefrLevel: task.lexeme.metadata?.level as CEFRLevel | undefined,
-        packId: null,
         legacyVerb: isLegacyTask ? toLegacyVerbPayload(task, submitted) : undefined,
       } as const;
 
@@ -788,7 +787,6 @@ function NounCaseDeclensionRenderer({
         timeSpentMs: submissionContext.timeSpentMs,
         answeredAt: submissionContext.answeredAt,
         cefrLevel: task.lexeme.metadata?.level as CEFRLevel | undefined,
-        packId: null,
       } as const;
 
       const { queued } = await submitPracticeAttempt(payload);
@@ -1051,7 +1049,6 @@ function AdjectiveEndingRenderer({
         timeSpentMs: submissionContext.timeSpentMs,
         answeredAt: submissionContext.answeredAt,
         cefrLevel: task.lexeme.metadata?.level as CEFRLevel | undefined,
-        packId: null,
       } as const;
 
       const { queued } = await submitPracticeAttempt(payload);

@@ -151,7 +151,6 @@ export interface TaskAnswerHistoryItem {
   timeSpentMs: number;
   timeSpent: number;
   cefrLevel?: CEFRLevel;
-  packId?: string | null;
   mode?: PracticeMode;
   attemptedAnswer?: string;
   correctAnswer?: string;
@@ -198,7 +197,6 @@ export interface TaskAttemptPayload {
   deviceId: string;
   queuedAt?: string;
   cefrLevel?: CEFRLevel;
-  packId?: string | null;
   legacyVerb?: {
     infinitive: string;
     mode: PracticeMode;

@@ -264,7 +264,6 @@ type PracticeHistoryRow = {
   submittedAt: Date;
   answeredAt: Date | null;
   cefrLevel: string | null;
-  packId: string | null;
   metadata: Record<string, unknown> | null;
   lexemeLemma: string | null;
   lexemeMetadata: Record<string, unknown> | null;
@@ -297,7 +296,6 @@ function toAnswerHistoryItem(row: PracticeHistoryRow): TaskAnswerHistoryItem {
     timeSpentMs: row.responseMs,
     timeSpent: row.responseMs,
     cefrLevel,
-    packId: row.packId ?? null,
     mode: undefined,
     attemptedAnswer,
     correctAnswer,
@@ -436,7 +434,6 @@ const submissionSchema = z
     submittedAt: z.string().datetime().optional(),
     queuedAt: z.string().datetime().optional(),
     cefrLevel: z.string().trim().min(1).optional(),
-    packId: z.string().trim().nullable().optional(),
     promptSummary: z.string().trim().optional(),
     legacyVerb: z
       .object({
@@ -998,46 +995,46 @@ export function registerRoutes(app: Express): void {
 
       let fetchLimit = limit;
 
-      if (deviceId) {
-        const historyFilters: SQL[] = [eq(practiceHistory.deviceId, deviceId)];
+      const orderedQuery = deviceId
+        ? (() => {
+            const historyFilters: SQL[] = [eq(practiceHistory.deviceId, deviceId)];
 
-        if (normalisedPos) {
-          historyFilters.push(eq(practiceHistory.pos, normalisedPos));
-        }
+            if (normalisedPos) {
+              historyFilters.push(eq(practiceHistory.pos, normalisedPos));
+            }
 
-        if (resolvedTaskType) {
-          historyFilters.push(eq(practiceHistory.taskType, resolvedTaskType));
-        }
+            if (resolvedTaskType) {
+              historyFilters.push(eq(practiceHistory.taskType, resolvedTaskType));
+            }
 
-        const historyWhere =
-          historyFilters.length > 1 ? and(...historyFilters) : historyFilters[0]!;
+            const historyWhere =
+              historyFilters.length > 1 ? and(...historyFilters) : historyFilters[0]!;
 
-        const deviceHistory = db
-          .select({
-            taskId: practiceHistory.taskId,
-            lastPracticedAt: sql<Date | null>`max(${practiceHistory.submittedAt})`.as(
-              "last_practiced_at",
-            ),
-          })
-          .from(practiceHistory)
-          .where(historyWhere)
-          .groupBy(practiceHistory.taskId)
-          .as("device_history");
+            const deviceHistory = db
+              .select({
+                taskId: practiceHistory.taskId,
+                lastPracticedAt: sql<Date | null>`max(${practiceHistory.submittedAt})`.as(
+                  "last_practiced_at",
+                ),
+              })
+              .from(practiceHistory)
+              .where(historyWhere)
+              .groupBy(practiceHistory.taskId)
+              .as("device_history");
 
-        taskQuery = taskQuery
-          .leftJoin(deviceHistory, eq(taskSpecs.id, deviceHistory.taskId))
-          .orderBy(
-            asc(deviceHistory.lastPracticedAt),
-            desc(taskSpecs.updatedAt),
-            asc(taskSpecs.id),
-          );
+            fetchLimit = Math.max(limit * 2, limit + 5);
 
-        fetchLimit = Math.max(limit * 2, limit + 5);
-      } else {
-        taskQuery = taskQuery.orderBy(desc(taskSpecs.updatedAt), asc(taskSpecs.id));
-      }
+            return taskQuery
+              .leftJoin(deviceHistory, eq(taskSpecs.id, deviceHistory.taskId))
+              .orderBy(
+                asc(deviceHistory.lastPracticedAt),
+                desc(taskSpecs.updatedAt),
+                asc(taskSpecs.id),
+              );
+          })()
+        : taskQuery.orderBy(desc(taskSpecs.updatedAt), asc(taskSpecs.id));
 
-      const compiledQuery = taskQuery.limit(fetchLimit);
+      const compiledQuery = orderedQuery.limit(fetchLimit);
       const rowsRaw = await executeSelectRaw<Record<string, unknown>>(compiledQuery);
       const mappedRows = rowsRaw.map((row) => mapTaskRow(row as Record<string, any>));
 
@@ -1150,7 +1147,6 @@ export function registerRoutes(app: Express): void {
           submittedAt: practiceHistory.submittedAt,
           answeredAt: practiceHistory.answeredAt,
           cefrLevel: practiceHistory.cefrLevel,
-          packId: practiceHistory.packId,
           metadata: practiceHistory.metadata,
           lexemeLemma: lexemes.lemma,
           lexemeMetadata: lexemes.metadata,
@@ -1375,7 +1371,6 @@ export function registerRoutes(app: Express): void {
         answeredAt: answeredAt ?? submittedAt ?? null,
         queuedAt: queuedAt ?? null,
         cefrLevel: payload.cefrLevel ?? null,
-        packId: payload.packId ?? null,
         hintsUsed: payload.hintsUsed ?? false,
         metadata: {
           submittedResponse: payload.submittedResponse ?? payload.answer ?? null,

@@ -41,7 +41,6 @@ interface PracticeTask<T extends TaskType = TaskType> {
   prompt: TaskPrompt<T>;
   expectedSolution?: TaskSolution<T>;
   cefrLevel?: CEFRLevel;
-  packId?: string;
   assignedAt: string;
   source: "seed" | "review";
 }

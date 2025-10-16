@@ -18,14 +18,13 @@ The lexeme schema sits alongside the legacy verb tables so we can run both syste
 - **`lexemes`** – canonical lemma rows keyed by deterministic IDs with POS, gender, metadata, frequency, and source identifiers (`pos_jsonl:<slug>` for per-POS JSONL seeds plus optional `enrichment:<method>` tags).
 - **`inflections`** – surface forms plus a JSON `features` bundle (case, number, tense, etc.) linked back to `lexemes`.
 - **`task_specs`** – prompt/solution payloads per lexeme and task type, including renderer, revision, and hints metadata.
-- **`practice_history`** – append-only attempt log with POS, task type, latency, hint usage, and pack context for downstream analytics.
+- **`practice_history`** – append-only attempt log with POS, task type, latency, hint usage, and CEFR metadata for downstream analytics.
 
 Refer to `db/schema.ts` for column-level details, indices, and relationships.
 
 ## Task registry & evaluation
 - The shared registry enforces prompt and solution contracts with Zod schemas, ensuring ETL and API payloads stay valid.
 - Server entries wrap the shared definitions with evaluation metadata. All current tasks use normalised string equality; adjust the evaluation object when introducing fuzzy matching or multi-answer support.
-- Registry helpers power `npm run packs:lint`, rejecting any pack JSON that references unsupported task types, missing licenses, or inconsistent renderer keys before the files ship to clients.
 
 ## API flow
 - `/api/tasks` honours POS and task-type filters and returns deterministic metadata for each task.
@@ -35,15 +34,14 @@ Refer to `db/schema.ts` for column-level details, indices, and relationships.
 ## Client experience
 - The practice mode switcher component exposes presets for “All tasks”, “Verbs”, “Nouns”, “Adjectives”, and “Custom”. Custom mode stores explicit task-type selections, while the other presets hydrate from the registry’s `supportedPos` definitions.
 - `client/src/pages/home.tsx` fetches batches per active task type, merges them into a single queue, and persists progress, session state, and answer history keyed by deterministic `taskId`/`lexemeId` pairs.
-- Renderers resolve by task type; adding a new type requires updating the shared registry, server registry, client renderer map, and `packs:lint` validation in the same pull request to maintain parity.
+- Renderers resolve by task type; adding a new type requires updating the shared registry, server registry, and client renderer map in the same pull request to maintain parity.
 
 ## Content pipeline & QA
-- `npm run seed` hydrates the lexeme tables and regenerates deterministic pack JSON under `data/packs/`. Copy the updated packs to `client/public/packs/` before building so offline clients stay in sync. Pass `--reset` (`npm run seed -- --reset`) when you need to wipe previously seeded `words`, `lexemes`, `inflections`, and `task_specs` rows before re-importing updated POS JSONL files.
-- `npm run packs:lint` (backed by `scripts/packs-lint.ts`) validates pack headers, license fields, lexeme membership, and task payloads against the shared registry. The command exits non-zero on any issue, making it safe to wire into CI.
-- Keep attribution notes and source tracking up to date in pack metadata; the lint script enforces license presence and highlights missing lexeme references.
+- `npm run seed` hydrates the lexeme tables and regenerates deterministic task snapshots under `data/packs/`. Pass `--reset` (`npm run seed -- --reset`) when you need to wipe previously seeded `words`, `lexemes`, `inflections`, and `task_specs` rows before re-importing updated POS JSONL files.
+- Keep attribution notes and source tracking up to date in lexeme metadata; automated ETL checks surface missing license information during import.
 
 ## Analytics
-- `practice_history` tracks every attempt with POS, task type, renderer, latency, CEFR level, and pack context so dashboards can segment adoption and quality metrics.
+- `practice_history` tracks every attempt with POS, task type, renderer, latency, and CEFR level so dashboards can segment adoption and quality metrics.
 
 ## Related references
 - [`docs/parts-of-speech-onboarding-guide.md`](./parts-of-speech-onboarding-guide.md) – step-by-step environment setup and QA checklist.
