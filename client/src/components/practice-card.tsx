@@ -360,12 +360,6 @@ function renderMetadataRow(copy: PracticeCardMessages, task: PracticeTask, class
       <span>
         {copy.metadata.sourceLabel} {task.source}
       </span>
-      {task.pack ? (
-        <>
-          <span aria-hidden>•</span>
-          <span>{task.pack.name}</span>
-        </>
-      ) : null}
     </div>
   );
 }
@@ -537,7 +531,7 @@ function ConjugateFormRenderer({
         timeSpentMs: submissionContext.timeSpentMs,
         answeredAt: submissionContext.answeredAt,
         cefrLevel: task.lexeme.metadata?.level as CEFRLevel | undefined,
-        packId: task.pack?.id ?? null,
+        packId: null,
         legacyVerb: isLegacyTask ? toLegacyVerbPayload(task, submitted) : undefined,
       } as const;
 
@@ -794,7 +788,7 @@ function NounCaseDeclensionRenderer({
         timeSpentMs: submissionContext.timeSpentMs,
         answeredAt: submissionContext.answeredAt,
         cefrLevel: task.lexeme.metadata?.level as CEFRLevel | undefined,
-        packId: task.pack?.id ?? null,
+        packId: null,
       } as const;
 
       const { queued } = await submitPracticeAttempt(payload);
@@ -1057,7 +1051,7 @@ function AdjectiveEndingRenderer({
         timeSpentMs: submissionContext.timeSpentMs,
         answeredAt: submissionContext.answeredAt,
         cefrLevel: task.lexeme.metadata?.level as CEFRLevel | undefined,
-        packId: task.pack?.id ?? null,
+        packId: null,
       } as const;
 
       const { queued } = await submitPracticeAttempt(payload);

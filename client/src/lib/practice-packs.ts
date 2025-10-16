@@ -139,27 +139,6 @@ export function recordInstalledPacks(packs: InstalledPack[]): InstalledPack[] {
 }
 
 export function extractPacksFromQueue(queue: PracticeTaskQueueItem[]): InstalledPack[] {
-  const packs = new Map<string, InstalledPack>();
-
-  for (const item of queue) {
-    if (item.pack && item.pack.id && item.pack.slug) {
-      const snapshot: InstalledPack = {
-        id: item.pack.id,
-        slug: item.pack.slug,
-        name: item.pack.name,
-        installedAt: new Date().toISOString(),
-      };
-      packs.set(snapshot.id, snapshot);
-    } else if (item.metadata?.packId && item.metadata.packSlug) {
-      const snapshot: InstalledPack = {
-        id: item.metadata.packId,
-        slug: item.metadata.packSlug,
-        name: item.metadata.packName ?? item.metadata.packSlug,
-        installedAt: new Date().toISOString(),
-      };
-      packs.set(snapshot.id, snapshot);
-    }
-  }
-
-  return Array.from(packs.values());
+  void queue;
+  return [];
 }

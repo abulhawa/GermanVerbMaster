@@ -129,7 +129,7 @@ Shut down the container with `docker stop gvm-postgres` when you are done.
 ## Lexeme-based task system
 - `/api/tasks` exposes POS-aware task descriptors driven by the shared registry in `shared/task-registry.ts` and server metadata in `server/tasks/registry.ts`.
 - Legacy verb routes have been removed. Clients should rely on `/api/tasks` for fetching practice prompts and `/api/submission` for recording attempts.
-- The deterministic schema covers `lexemes`, `inflections`, `task_specs`, `content_packs`, `pack_lexeme_map`, `scheduling_state`, and `telemetry_priorities`. These tables live alongside legacy verb tables until shadow mode validates parity.
+- The deterministic schema covers `lexemes`, `inflections`, `task_specs`, `scheduling_state`, and `telemetry_priorities`. These tables live alongside legacy verb tables until shadow mode validates parity.
 
 ## Progressive Web App
 - The client is bundled with `vite-plugin-pwa` using an auto-updating service worker.

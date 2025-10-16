@@ -34,15 +34,7 @@ const baseQueueItem: PracticeTaskQueueItem = {
   metadata: {
     lemma: 'Haus',
     cefrLevel: 'A2',
-    packId: 'pack:nouns-foundation:1',
-    packSlug: 'nouns-foundation',
-    packName: 'Nouns Foundation',
   } satisfies PracticeTaskQueueItemMetadata,
-  pack: {
-    id: 'pack:nouns-foundation:1',
-    slug: 'nouns-foundation',
-    name: 'Nouns Foundation',
-  },
 };
 
 const pendingPayload: TaskAttemptPayload = {
@@ -59,7 +51,6 @@ const pendingPayload: TaskAttemptPayload = {
   deviceId: 'device-test',
   queuedAt: new Date().toISOString(),
   cefrLevel: 'A2',
-  packId: baseQueueItem.pack?.id ?? null,
 };
 
 async function resetState() {
@@ -101,7 +92,6 @@ describe('offline practice bundle', () => {
         expectedSolution: { form: 'dem Haus' },
         queueCap: 10,
         lexeme: { id: baseQueueItem.lexemeId, lemma: 'Haus', metadata: { level: 'A2' } },
-        pack: baseQueueItem.pack,
         assignedAt: new Date().toISOString(),
       },
       result: 'correct',
@@ -124,7 +114,7 @@ describe('offline practice bundle', () => {
 
     expect(bundle.version).toBeGreaterThanOrEqual(2);
     expect(bundle.queue).toHaveLength(1);
-    expect(bundle.queue[0]?.pack?.slug).toBe('nouns-foundation');
+    expect(bundle.queue[0]?.metadata?.lemma).toBe('Haus');
     expect(bundle.pendingAttempts).toHaveLength(1);
     expect(bundle.pendingAttempts[0]?.payload.taskId).toBe(baseQueueItem.taskId);
     expect(bundle.installedPacks.some((pack) => pack.slug === 'nouns-foundation')).toBe(true);
@@ -164,7 +154,7 @@ describe('offline practice bundle', () => {
           timeSpentMs: 900,
           timeSpent: 0,
           cefrLevel: 'A2',
-          packId: baseQueueItem.pack?.id ?? null,
+          packId: null,
         },
       ],
       progress: createEmptyProgressState(),
@@ -183,11 +173,11 @@ describe('offline practice bundle', () => {
 
     const queue = getReviewQueue();
     expect(queue).toHaveLength(1);
-    expect(queue[0]?.pack?.slug).toBe('nouns-foundation');
+    expect(queue[0]?.metadata?.lemma).toBe('Haus');
 
     const attempts = await getPendingAttempts();
     expect(attempts).toHaveLength(1);
-    expect(attempts[0]?.payload.packId).toBe(baseQueueItem.pack?.id ?? null);
+    expect(attempts[0]?.payload.packId).toBeUndefined();
 
     const settings = loadPracticeSettings();
     expect(settings.defaultTaskType).toBe('conjugate_form');

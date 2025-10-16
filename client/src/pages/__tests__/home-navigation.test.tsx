@@ -114,8 +114,7 @@ function buildTask(taskType: TaskType, index: number): PracticeTask {
           lemma,
           metadata: { level: 'A1' },
         },
-        pack: null,
-        assignedAt: new Date().toISOString(),
+            assignedAt: new Date().toISOString(),
         source: 'scheduler',
       } satisfies PracticeTask<'conjugate_form'>;
     }
@@ -143,8 +142,7 @@ function buildTask(taskType: TaskType, index: number): PracticeTask {
           lemma,
           metadata: { level: 'A1' },
         },
-        pack: null,
-        assignedAt: new Date().toISOString(),
+            assignedAt: new Date().toISOString(),
         source: 'scheduler',
       } satisfies PracticeTask<'noun_case_declension'>;
     }
@@ -171,8 +169,7 @@ function buildTask(taskType: TaskType, index: number): PracticeTask {
           lemma,
           metadata: { level: 'A2' },
         },
-        pack: null,
-        assignedAt: new Date().toISOString(),
+            assignedAt: new Date().toISOString(),
         source: 'scheduler',
       } satisfies PracticeTask<'adj_ending'>;
     }
@@ -202,7 +199,6 @@ function createTask(id: string, lemma: string): PracticeTask<'conjugate_form'> {
       lemma,
       metadata: { level: 'A1' },
     },
-    pack: null,
     assignedAt: new Date().toISOString(),
     source: 'scheduler',
   } satisfies PracticeTask<'conjugate_form'>;

@@ -27,11 +27,6 @@ export interface PracticeTask<T extends TaskType = TaskType> {
     lemma: string;
     metadata: Record<string, unknown> | null;
   };
-  pack: {
-    id: string;
-    slug: string;
-    name: string;
-  } | null;
   assignedAt: string;
   source: 'scheduler' | 'seed' | 'review';
 }
@@ -39,7 +34,6 @@ export interface PracticeTask<T extends TaskType = TaskType> {
 export interface TaskFetchOptions {
   pos?: LexemePos;
   taskType?: TaskType;
-  packSlug?: string;
   limit?: number;
   signal?: AbortSignal;
   deviceId?: string;
@@ -58,14 +52,6 @@ const rawTaskSchema = z.object({
     lemma: z.string().min(1),
     metadata: z.record(z.string(), z.unknown()).nullable().optional(),
   }),
-  pack: z
-    .object({
-      id: z.string().min(1),
-      slug: z.string().min(1),
-      name: z.string().min(1),
-    })
-    .nullable()
-    .optional(),
 });
 
 const tasksResponseSchema = z.object({
@@ -97,7 +83,6 @@ function mapTaskPayload(task: RawTaskPayload): PracticeTask {
       lemma: task.lexeme.lemma,
       metadata: task.lexeme.metadata ?? null,
     },
-    pack: task.pack ?? null,
     assignedAt: new Date().toISOString(),
     source: 'scheduler',
   };
@@ -110,9 +95,6 @@ function buildTasksQuery(options: TaskFetchOptions): string {
   }
   if (options.taskType) {
     params.set('taskType', options.taskType);
-  }
-  if (options.packSlug) {
-    params.set('pack', options.packSlug);
   }
   const limit = options.limit ?? DEFAULT_TASK_LIMIT;
   params.set('limit', String(limit));

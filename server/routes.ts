@@ -1,6 +1,6 @@
 import type { Express, NextFunction, Request, RequestHandler, Response } from "express";
 import { db, getPool } from "@db";
-import { words, taskSpecs, lexemes, contentPacks, packLexemeMap, schedulingState, practiceHistory, type Word } from "@db";
+import { words, taskSpecs, lexemes, schedulingState, practiceHistory, type Word } from "@db";
 import { z } from "zod";
 import { and, count, desc, eq, inArray, or, sql, type SQL } from "drizzle-orm";
 import type {
@@ -121,24 +121,6 @@ function normaliseLexemeMetadata(metadata: unknown): Record<string, unknown> | n
 
 function normaliseStringOrNull(value: unknown): string | null {
   return normaliseString(value) ?? null;
-}
-
-function extractPackSlugFromTaskId(taskId: string | null): string | null {
-  if (!taskId) {
-    return null;
-  }
-
-  const trimmed = taskId.trim();
-  if (!trimmed) {
-    return null;
-  }
-
-  const match = /^pack:([a-z0-9-]+):/i.exec(trimmed);
-  if (!match) {
-    return null;
-  }
-
-  return match[1]?.toLowerCase() ?? null;
 }
 
 function cloneExample(entry: WordExample): WordExample {
@@ -337,10 +319,6 @@ const taskQuerySchema = z.object({
     .string()
     .trim()
     .optional(),
-  pack: z
-    .string()
-    .trim()
-    .optional(),
   limit: z.coerce.number().int().min(1).max(100).default(25),
   deviceId: z
     .string()
@@ -382,9 +360,6 @@ type TaskRow = {
   lexemeId: string;
   lexemeLemma: string | null;
   lexemeMetadata: Record<string, unknown> | null;
-  packId: string | null;
-  packSlug: string | null;
-  packName: string | null;
 };
 
 function getRowValue<T>(row: Record<string, any>, ...keys: string[]): T | undefined {
@@ -435,9 +410,6 @@ function mapTaskRow(row: Record<string, any>): TaskRow {
         "lexeme_metadata",
         "metadata",
       ) ?? null,
-    packId: getRowValue<string | null>(row, "packId", "pack_id", "id1") ?? null,
-    packSlug: getRowValue<string | null>(row, "packSlug", "pack_slug", "slug") ?? null,
-    packName: getRowValue<string | null>(row, "packName", "pack_name", "name") ?? null,
   };
 }
 
@@ -1034,7 +1006,7 @@ export function registerRoutes(app: Express): void {
     }
 
     try {
-      const { pos, taskType, pack, limit, deviceId, level } = parsed.data;
+      const { pos, taskType, limit, deviceId, level } = parsed.data;
       const filters: Array<ReturnType<typeof eq>> = [];
       let normalisedPos: LexemePos | null = null;
 
@@ -1063,10 +1035,6 @@ export function registerRoutes(app: Express): void {
         filters.push(eq(taskSpecs.taskType, resolvedTaskType));
       }
 
-      if (pack) {
-        filters.push(eq(contentPacks.slug, pack));
-      }
-
       const baseQuery = db
         .select({
           taskId: taskSpecs.id,
@@ -1078,14 +1046,9 @@ export function registerRoutes(app: Express): void {
           lexemeId: taskSpecs.lexemeId,
           lexemeLemma: lexemes.lemma,
           lexemeMetadata: lexemes.metadata,
-          packId: contentPacks.id,
-          packSlug: contentPacks.slug,
-          packName: contentPacks.name,
         })
         .from(taskSpecs)
-        .innerJoin(lexemes, eq(taskSpecs.lexemeId, lexemes.id))
-        .leftJoin(packLexemeMap, eq(packLexemeMap.primaryTaskId, taskSpecs.id))
-        .leftJoin(contentPacks, eq(packLexemeMap.packId, contentPacks.id));
+        .innerJoin(lexemes, eq(taskSpecs.lexemeId, lexemes.id));
 
       const filteredQuery = filters.length ? baseQuery.where(and(...filters)) : baseQuery;
 
@@ -1251,47 +1214,6 @@ export function registerRoutes(app: Express): void {
 
       const rows = orderedRows.slice(0, limit);
 
-      const fallbackPackSlugs = new Set<string>();
-      for (const row of rows) {
-        if (row.packId && row.packSlug && row.packName) {
-          continue;
-        }
-
-        const normalisedId = normaliseString(row.taskId);
-        if (!normalisedId) {
-          continue;
-        }
-
-        const derivedSlug = extractPackSlugFromTaskId(normalisedId);
-        if (derivedSlug) {
-          fallbackPackSlugs.add(derivedSlug);
-        }
-      }
-
-      let fallbackPackMap = new Map<string, { id: string; slug: string; name: string }>();
-      if (fallbackPackSlugs.size) {
-        const fallbackPackRows = await db
-          .select({ id: contentPacks.id, slug: contentPacks.slug, name: contentPacks.name })
-          .from(contentPacks)
-          .where(inArray(contentPacks.slug, Array.from(fallbackPackSlugs)));
-
-        fallbackPackMap = new Map(
-          fallbackPackRows
-            .map((record) => {
-              const id = normaliseString(record.id);
-              const slug = normaliseString(record.slug);
-              const name = normaliseString(record.name);
-
-              if (!id || !slug || !name) {
-                return null;
-              }
-
-              return [slug.toLowerCase(), { id, slug, name }] as const;
-            })
-            .filter((entry): entry is readonly [string, { id: string; slug: string; name: string }] => Boolean(entry)),
-        );
-      }
-
       const payload: Array<{
         taskId: string;
         taskType: string;
@@ -1301,7 +1223,6 @@ export function registerRoutes(app: Express): void {
         solution?: unknown;
         queueCap: number;
         lexeme: { id: string; lemma: string; metadata: Record<string, unknown> | null };
-        pack: { id: string; slug: string; name: string } | null;
       }> = [];
 
       for (const row of rows) {
@@ -1332,25 +1253,6 @@ export function registerRoutes(app: Express): void {
         const prompt = normaliseTaskPrompt(row.prompt);
         const metadata = normaliseLexemeMetadata(row.lexemeMetadata) ?? null;
 
-        const packMetadata = (() => {
-          if (row.packId && row.packSlug && row.packName) {
-            const packId = normaliseString(row.packId);
-            const packSlug = normaliseString(row.packSlug);
-            const packName = normaliseString(row.packName);
-            if (packId && packSlug && packName) {
-              return { id: packId, slug: packSlug, name: packName };
-            }
-          }
-
-          const derivedSlug = extractPackSlugFromTaskId(taskId);
-          if (!derivedSlug) {
-            return null;
-          }
-
-          const fallback = fallbackPackMap.get(derivedSlug);
-          return fallback ?? null;
-        })();
-
         payload.push({
           taskId,
           taskType: taskTypeValue,
@@ -1364,7 +1266,6 @@ export function registerRoutes(app: Express): void {
             lemma: lexemeLemma,
             metadata,
           },
-          pack: packMetadata,
         });
       }
 
@@ -1556,38 +1457,6 @@ export function registerRoutes(app: Express): void {
     };
 
     const resolveTaskIdFromPayload = async (): Promise<string | null> => {
-      const packIdCandidate = (() => {
-        const explicitPackId = normaliseString(payload.packId);
-        if (explicitPackId) {
-          return explicitPackId;
-        }
-        const taskIdCandidate = normaliseString(payload.taskId);
-        return taskIdCandidate && taskIdCandidate.startsWith("pack:") ? taskIdCandidate : null;
-      })();
-
-      if (packIdCandidate && payload.lexemeId) {
-        const fallbackRows = await executeSelectRaw<Record<string, unknown>>(
-          db
-            .select({ primaryTaskId: packLexemeMap.primaryTaskId })
-            .from(packLexemeMap)
-            .where(
-              and(
-                eq(packLexemeMap.packId, packIdCandidate),
-                eq(packLexemeMap.lexemeId, payload.lexemeId),
-              ),
-            )
-            .limit(1),
-        );
-
-        const fallbackId = fallbackRows.length
-          ? getRowValue<string | null>(fallbackRows[0]!, "primaryTaskId", "primary_task_id")
-          : null;
-        const normalisedFallback = normaliseString(fallbackId);
-        if (normalisedFallback) {
-          return normalisedFallback;
-        }
-      }
-
       if (payload.lexemeId) {
         const fallbackRows = await executeSelectRaw<Record<string, unknown>>(
           db

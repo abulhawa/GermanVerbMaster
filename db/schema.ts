@@ -280,50 +280,6 @@ export const schedulingState = pgTable(
   ],
 );
 
-export const contentPacks = pgTable(
-  "content_packs",
-  {
-    id: text("id").primaryKey(),
-    slug: text("slug").notNull(),
-    name: text("name").notNull(),
-    description: text("description"),
-    language: text("language").notNull().default("de"),
-    posScope: text("pos_scope").notNull(),
-    license: text("license").notNull(),
-    licenseNotes: text("license_notes"),
-    version: integer("version").notNull().default(1),
-    checksum: text("checksum"),
-    metadata: jsonb("metadata").$type<Record<string, unknown>>(),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
-  },
-  (table) => [uniqueIndex("content_packs_slug_unique").on(table.slug)],
-);
-
-export const packLexemeMap = pgTable(
-  "pack_lexeme_map",
-  {
-    packId: text("pack_id")
-      .notNull()
-      .references(() => contentPacks.id, { onDelete: "cascade" }),
-    lexemeId: text("lexeme_id")
-      .notNull()
-      .references(() => lexemes.id, { onDelete: "cascade" }),
-    primaryTaskId: text("primary_task_id").references(() => taskSpecs.id),
-    position: integer("position"),
-    notes: text("notes"),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
-  },
-  (table) => [
-    primaryKey({
-      columns: [table.packId, table.lexemeId],
-      name: "pack_lexeme_map_pack_id_lexeme_id_pk",
-    }),
-    index("pack_lexeme_map_lexeme_idx").on(table.lexemeId),
-  ],
-);
-
 export const telemetryPriorities = pgTable(
   "telemetry_priorities",
   {

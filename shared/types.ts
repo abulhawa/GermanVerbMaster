@@ -170,9 +170,6 @@ export interface PracticeTaskQueueItemMetadata {
   cefrLevel?: CEFRLevel;
   legacyVerbInfinitive?: string;
   legacyPracticeMode?: PracticeMode;
-  packId?: string | null;
-  packSlug?: string | null;
-  packName?: string | null;
 }
 
 export interface PracticeTaskQueueItem {
@@ -184,11 +181,6 @@ export interface PracticeTaskQueueItem {
   source: 'review' | 'seed' | 'scheduler';
   enqueuedAt: string;
   metadata?: PracticeTaskQueueItemMetadata;
-  pack?: {
-    id: string;
-    slug: string;
-    name: string;
-  } | null;
 }
 
 export interface TaskAttemptPayload {

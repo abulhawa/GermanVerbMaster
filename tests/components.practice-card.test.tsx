@@ -37,7 +37,6 @@ function createTask(): PracticeTask<'conjugate_form'> {
       lemma: 'gehen',
       metadata: { level: 'A1', english: 'to go' },
     },
-    pack: null,
     assignedAt: new Date('2024-01-01T00:00:00.000Z').toISOString(),
     source: 'scheduler',
   } satisfies PracticeTask<'conjugate_form'>;
@@ -66,7 +65,6 @@ function createNounTask(): PracticeTask<'noun_case_declension'> {
       lemma: 'Haus',
       metadata: { level: 'A1', english: 'house' },
     },
-    pack: null,
     assignedAt: new Date('2024-01-01T00:00:00.000Z').toISOString(),
     source: 'scheduler',
   } satisfies PracticeTask<'noun_case_declension'>;
@@ -95,7 +93,6 @@ function createDativeNounTask(): PracticeTask<'noun_case_declension'> {
       lemma: 'Kind',
       metadata: { level: 'A2', english: 'child' },
     },
-    pack: null,
     assignedAt: new Date('2024-03-01T00:00:00.000Z').toISOString(),
     source: 'scheduler',
   } satisfies PracticeTask<'noun_case_declension'>;
@@ -123,7 +120,6 @@ function createAdjectiveTask(): PracticeTask<'adj_ending'> {
       lemma: 'schnell',
       metadata: { level: 'A2', english: 'fast' },
     },
-    pack: null,
     assignedAt: new Date('2024-01-01T00:00:00.000Z').toISOString(),
     source: 'scheduler',
   } satisfies PracticeTask<'adj_ending'>;

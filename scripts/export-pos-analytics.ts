@@ -1,12 +1,5 @@
 import { db } from '@db';
-import {
-  contentPacks,
-  packLexemeMap,
-  practiceHistory,
-  schedulingState,
-  taskSpecs,
-  telemetryPriorities,
-} from '@db/schema';
+import { practiceHistory, schedulingState, taskSpecs, telemetryPriorities } from '@db/schema';
 import { eq, gte } from 'drizzle-orm';
 
 import { computePostLaunchAnalytics } from '../server/analytics/post-launch.js';
@@ -38,7 +31,6 @@ async function main(): Promise<void> {
       submittedAt: practiceHistory.submittedAt,
       answeredAt: practiceHistory.answeredAt,
       hintsUsed: practiceHistory.hintsUsed,
-      packId: practiceHistory.packId,
       metadata: practiceHistory.metadata,
     })
     .from(practiceHistory)
@@ -80,16 +72,6 @@ async function main(): Promise<void> {
     .innerJoin(taskSpecs, eq(taskSpecs.id, telemetryPriorities.taskId))
     .where(gte(telemetryPriorities.sampledAt, since));
 
-  const packRows = await db
-    .select({
-      packId: packLexemeMap.packId,
-      packName: contentPacks.name,
-      posScope: contentPacks.posScope,
-      lexemeId: packLexemeMap.lexemeId,
-    })
-    .from(packLexemeMap)
-    .innerJoin(contentPacks, eq(contentPacks.id, packLexemeMap.packId));
-
   const report = computePostLaunchAnalytics({
     practiceAttempts: practiceRows.map((row) => ({
       taskId: row.taskId,
@@ -104,7 +86,6 @@ async function main(): Promise<void> {
       submittedAt: toDate(row.submittedAt) ?? new Date(),
       answeredAt: toDate(row.answeredAt),
       hintsUsed: row.hintsUsed,
-      packId: row.packId ?? null,
       metadata: row.metadata ?? null,
     })),
     schedulingSnapshots: schedulingRows.map((row) => ({
@@ -132,12 +113,6 @@ async function main(): Promise<void> {
       latencyWeight: row.latencyWeight,
       stabilityWeight: row.stabilityWeight,
       metadata: row.metadata ?? null,
-    })),
-    packMemberships: packRows.map((row) => ({
-      packId: row.packId,
-      packName: row.packName,
-      posScope: row.posScope,
-      lexemeId: row.lexemeId,
     })),
   });
 

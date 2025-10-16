@@ -24,11 +24,6 @@ const nounTaskPayload = {
     lemma: 'Kind',
     metadata: { english: 'child', level: 'A2' },
   },
-  pack: {
-    id: 'pack:nouns-foundation:1',
-    slug: 'nouns-foundation',
-    name: 'Nouns – Foundation',
-  },
 };
 
 const practiceSettings = {
