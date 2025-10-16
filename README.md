@@ -1,176 +1,56 @@
-# GermanVerbMaster
+# GermanVerbMaster Enrichment
 
-GermanVerbMaster is a full-stack, lexeme-centric practice platform for German learners. It ships with a multi-part-of-speech task registry covering verbs, nouns, and adjectives, a React-based client that renders tasks by `taskType`, and an Express API backed by Drizzle ORM. The app can be installed as a Progressive Web App and works fully offline thanks to deterministic task packs seeded at build time.
+GermanVerbMaster has been simplified into a focused enrichment workbench for German vocabulary. The app exposes the enrichment pipeline UI, supporting APIs, and administrative utilities used to collect, review, and apply content updates to the `words` catalog. Practice flows, history analytics, task packs, and adaptive scheduling have been removed so the application can operate as an independent enrichment console.
+
+## Features
+- Run bulk enrichment jobs with configurable providers and filters.
+- Preview AI and provider suggestions before committing them to the database.
+- Apply manual edits to individual words, including translations, examples, and metadata.
+- Download enrichment reports and review provider history for each word.
 
 ## Local setup
-Requires Node.js 22.0.0 or newer and npm 10+ (see `package.json` engines field).
+Requires Node.js 22.0.0 or newer and npm 10+.
 
 1. Install dependencies:
    ```bash
    npm install
    ```
-2. (Optional) Copy `.env.example` to `.env` and override the defaults. You can change:
-   - `DATABASE_URL` – Postgres connection string (e.g. Supabase or local `postgres://` URL).
-   - `DATABASE_SSL` / `PGSSLMODE` – set to `disable` when connecting to a local instance without TLS.
-   - `APP_ORIGIN` – a comma-separated allow list used for CORS in production builds.
-   - `BETTER_AUTH_SECRET` – 64-byte secret used to sign Better Auth cookies and tokens.
-   - `BETTER_AUTH_URL` – external base URL Better Auth should use when generating callbacks (defaults to `http://localhost:5000`).
-   - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` – optional credentials for Google OAuth sign-in.
-   - `MICROSOFT_CLIENT_ID` / `MICROSOFT_CLIENT_SECRET` – optional credentials for Microsoft OAuth sign-in.
-   - `ENABLE_LEXEME_SCHEMA` – disable to fall back to the legacy verb-only stack (defaults to `true`).
-   - `ENABLE_NOUNS_BETA` / `ENABLE_ADJECTIVES_BETA` – flip feature flags for the new noun and adjective task cohorts. Both default to `false` so you can stage rollouts incrementally.
-3. Apply the latest migrations to your Postgres database:
+2. (Optional) Copy `.env.example` to `.env` and configure the connection + admin values:
+   - `DATABASE_URL` – Postgres connection string used by the API.
+   - `DATABASE_SSL` / `PGSSLMODE` – set to `disable` for local development without TLS.
+   - `ADMIN_API_TOKEN` – secret token required to call admin endpoints from the UI.
+   - `APP_ORIGIN` – optional comma-separated allow list for production CORS.
+   - `BETTER_AUTH_SECRET` / `BETTER_AUTH_URL` – only required when Better Auth sign-in is enabled.
+3. Apply the latest migrations:
    ```bash
    npm run db:push
    ```
-4. Seed the content tables and regenerate deterministic task packs used by the offline cache:
+4. Seed fixture data (optional but recommended for first run):
    ```bash
    npm run seed
    ```
-5. Start the development server (Express API + Vite dev server):
+5. Start the combined API + Vite development server:
    ```bash
    npm run dev
-   npm run dev:client # start only the Vite dev server on port 5000 for UI smoke tests
    ```
-   When `DATABASE_URL` is unset the `npm run dev` script now enables an in-memory Postgres mock. The server applies the latest
-   Drizzle migrations and seeds a small enrichment fixture so admin screens and task APIs are reachable without provisioning a
-   real database. Set `USE_DEV_DB_MOCK=0` to opt out when you want to exercise a live Postgres instance locally.
-6. Additional scripts:
-   ```bash
-   npm run check      # type-check the project
-   npm run build      # create production bundles and server output
-   npm run test:unit  # run unit and integration tests with Vitest
-   npm run test:e2e   # execute Playwright end-to-end tests (browsers required)
-   npm run test:all   # run unit tests followed by Playwright end-to-end coverage
-   npm run packs:lint # validate generated content packs against the task registry
-   npm run db:reset   # drop all Postgres objects and clear generated data (preserves data/pos)
-   ```
+   The enrichment console is now available at [http://localhost:5000/](http://localhost:5000/). Provide the `ADMIN_API_TOKEN` via the "Admin token" field in the UI to access protected actions.
 
-Point the backend at any Postgres instance (local Docker, Supabase, etc.) via `DATABASE_URL`. The driver enables SSL by default so managed providers just work; override `DATABASE_SSL=disable` or `PGSSLMODE=disable` for plain-text local development.
-
-## Deployment
-
-### Environment variables
-
-Before running `npm run db:push` or `npm run seed` in any managed environment, set the same variables documented in `.env.example`:
-
-- `DATABASE_URL` (required) – Postgres connection string for the production database.
-- `DATABASE_SSL` / `PGSSLMODE` (optional) – leave unset to negotiate TLS automatically or set to `disable` when targeting a local database without SSL.
-- `APP_ORIGIN` – comma-separated allow list of trusted origins that should be able to hit the production API.
-- `BETTER_AUTH_SECRET` – secret shared with Better Auth for signing cookies and tokens.
-- `BETTER_AUTH_URL` – public base URL Better Auth should advertise in emails and OAuth callbacks.
-- `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` – optional Google OAuth credentials.
-- `MICROSOFT_CLIENT_ID` / `MICROSOFT_CLIENT_SECRET` – optional Microsoft OAuth credentials.
-- Feature flags (`ENABLE_LEXEME_SCHEMA`, `ENABLE_NOUNS_BETA`, `ENABLE_ADJECTIVES_BETA`) – opt-in toggles you can adjust per environment before generating packs.
-
-These must be present both in Vercel’s Environment Variables UI and in any CI job that invokes the migration (`npm run db:push`) and seeding (`npm run seed`) scripts so the Drizzle client connects with the correct SSL options.
-
-### Build output
-
-`npm run build` emits two deployable artifacts:
-
-1. Static client assets in `dist/public/` (generated by Vite).
-2. An ESM server bundle in `dist/index.js` plus the exported API handlers under `server/api` (bundled by esbuild).
-
-On Vercel, configure the project to run `npm install`, `npm run db:push`, `npm run seed`, and `npm run build` as the build step. Point the “Output Directory” at `dist/public` so static assets are uploaded automatically, and map `/api/*` routes to the bundled handler (see `server/api/vercel-handler.ts`) via the existing `vercel.json` configuration.
-
-### Serverless scheduler
-
-The adaptive scheduler relies on `POST /api/jobs/regenerate-queues` to recompute spaced-repetition queues. In Vercel, create a [Cron Job](https://vercel.com/docs/cron-jobs) with an interval that matches your release cadence (e.g. hourly) and set the target URL to `https://<your-app-domain>/api/jobs/regenerate-queues`. Authorise it with the same `ADMIN_API_TOKEN` used in production so the background job continues to run when the API is fully serverless.
-
-### Provisioning Supabase
-
-1. Follow the Supabase “Get started with Postgres” guide to [create a new project and database](https://supabase.com/docs/guides/database/overview).
-2. In the project dashboard, open **Project Settings → Database → Connection string** and copy the **URI** variant; this becomes `DATABASE_URL`.
-3. Still under **Project Settings → Database**, expand **SSL configuration** and enable client certificate access if required. Supabase exposes certificates compatible with the `rejectUnauthorized: false` fallback used by `db/client.ts`, so you can paste the full connection string directly. If you enforce strict SSL, supply the CA bundle and configure `DATABASE_SSL` with the appropriate JSON per the [Supabase SSL instructions](https://supabase.com/docs/guides/database/connecting/ssl). The client automatically relaxes TLS when `DATABASE_SSL=disable` or `PGSSLMODE=disable` in development.
-
-### Quick Postgres sandbox
-
-Spin up a disposable Postgres container for local development or manual testing:
-
-```bash
-docker run --rm \
-  --name gvm-postgres \
-  -e POSTGRES_PASSWORD=postgres \
-  -p 5433:5432 \
-  postgres:16
-
-export DATABASE_URL=postgres://postgres:postgres@localhost:5433/postgres
-npm run db:push
-npm run seed
-
-# (optional) point the Vitest harness at the container instead of pg-mem
-export TEST_DATABASE_URL=$DATABASE_URL
-# disable SSL for the local container (pg-mem stays the default when unset)
-export TEST_DATABASE_SSL=disable
-npm test
-```
-
-Shut down the container with `docker stop gvm-postgres` when you are done.
+### Useful scripts
+- `npm run build` – produce the production client bundle and server output.
+- `npm run check` – TypeScript type checking.
+- `npm run test:unit` – Vitest unit and integration suites.
+- `npm run enrich` – execute the enrichment pipeline from the command line.
+- `npm run enrichment:export` – export applied enrichment snapshots for auditing.
+- `npm run enrichment:restore` – restore words from an enrichment backup snapshot.
 
 ## Testing
+Run the Vitest suite to validate core helpers and UI logic:
+```bash
+npm run test:unit
+```
 
-- `npm test` (aliased to `npm run test:unit`) executes the Vitest suites. API tests no longer boot an ad-hoc Express app; they call the Vercel-style handler exported from `server/api/vercel-handler.ts` using fetch-driven mocks from `tests/helpers/vercel.ts`.
-- `tests/helpers/pg.ts` provides an isolated Postgres harness backed by [`pg-mem`](https://github.com/oguimbal/pg-mem). Each suite applies the real Drizzle migrations from `migrations/` and installs the test data by mocking `db/client.ts`, so no external database is required to run the suites in CI or locally.
-- To run the suites against a real Postgres instance, export `TEST_DATABASE_URL` (and optionally `TEST_DATABASE_SSL=disable` for local containers). The helper will wipe the `public` + `drizzle` schemas before and after the test run, apply migrations, and reuse the live pool instead of pg-mem.
-- For manual verification against a live Postgres instance, point `DATABASE_URL` at your sandbox (see above) and use `npm run db:push` followed by `npm run seed` to hydrate tables before hitting the API through the Vercel handler or Express dev server.
+## Deployment notes
+Production deployments require the same environment variables listed above. The build step should run `npm install`, `npm run db:push`, `npm run seed`, and `npm run build`. Serve the static assets from `dist/public/` and point `/api/*` routes at the bundled Express handlers in `dist/server/`.
 
-## Release checklist
-
-1. `npm run db:push`
-2. `npm run seed`
-3. `npm run test:all`
-4. Deploy the build and confirm the Vercel Cron job for `/api/jobs/regenerate-queues` is still scheduled and returning `200`.
-
-## Theme system
-- Global color tokens live in `client/src/index.css`. Light and dark palettes share the same variable names (`--bg`, `--fg`, `--accent`, etc.), so components only reference semantic utilities such as `bg-card`, `text-fg`, and `ring-accent`.
-- Accent usage is intentionally small: primary buttons, selected states, focus rings, and toggled controls. Most surfaces rely on muted neutrals for both themes.
-- The header now includes a theme toggle that persists the selection (`light`, `dark`, or `system`) in `localStorage` and respects the system preference when `system` is active. The helper logic lives in `client/src/lib/theme.ts`.
-
-## Lexeme-based task system
-- `/api/tasks` exposes POS-aware task descriptors driven by the shared registry in `shared/task-registry.ts` and server metadata in `server/tasks/registry.ts`.
-- Legacy verb routes have been removed. Clients should rely on `/api/tasks` for fetching practice prompts and `/api/submission` for recording attempts.
-- The deterministic schema covers `lexemes`, `inflections`, `task_specs`, `content_packs`, `pack_lexeme_map`, `scheduling_state`, and `telemetry_priorities`. These tables live alongside legacy verb tables until shadow mode validates parity.
-- Feature flags (`ENABLE_NOUNS_BETA`, `ENABLE_ADJECTIVES_BETA`) gate access to noun and adjective queues. The API emits `x-gvm-feature-flags` headers to document the current snapshot.
-
-## Progressive Web App
-- The client is bundled with `vite-plugin-pwa` using an auto-updating service worker.
-- `client/public/manifest.webmanifest` defines install metadata, icons, and standalone display mode.
-- Runtime caching keeps `/api/tasks` responses and pack metadata available offline. Copy the deterministic pack bundles from `data/packs/*.json` into `client/public/packs/` before a release so `/packs/*.json` remains available as the final fallback for each POS.
-- A `virtual:pwa-register` hook registers the service worker on load; the app earns an 80+ Lighthouse PWA score when built.
-
-## Offline + Sync
-- Task data is fetched from `/api/tasks` when online and automatically falls back to deterministic task packs served from `/packs/*.json` (populated from `client/public/packs/`) when offline.
-- Practice attempts are written to an IndexedDB queue (via Dexie) whenever the network is unavailable or the API is rate limited.
-- The `useSyncQueue` hook listens to `online` and `visibilitychange` events and flushes queued attempts back to `POST /api/submission`.
-- Each device receives a persistent `deviceId` stored in `localStorage`; it is sent with every practice submission and stored in `scheduling_state` for priority calculations.
-- `data/pos/*.jsonl` contains the POS-specific seed files (verbs, nouns, adjectives, adverbs, prepositions, …). Each line is a JSON object that includes lemma metadata, an `approved` flag, an `examples` array of German/English pairs, and POS-specific attributes.
-- Legacy aggregated CSVs now live under `data/legacy/` for historical reference. The new seeding pipeline reads the POS-specific files directly and regenerates `data/packs/*.json` bundles on every `npm run seed`.
-
-## Database utilities
-- The schema is managed with Drizzle + Postgres. After editing `db/schema.ts`, run `npm run db:push` to apply migrations using the configured `DATABASE_URL`.
-- `npm run seed` recomputes completeness, writes deterministic content packs to `data/packs/`, and idempotently upserts source material into Postgres. Copy updated pack JSON into `client/public/packs/` before building so offline clients can fetch the refreshed bundles. Run the seed after editing any `data/pos/*.jsonl` file or adjusting enrichment snapshots under `data/enrichment/`.
-- The seeding pipeline synchronises the shared `lexemes`/`inflections` tables for every part of speech and records aggregated attribution metadata in each pack so CC BY-SA contributors are always credited.
-
-## Vocabulary enrichment helpers
-- Run `npm run enrich` to execute the enrichment pipeline. By default it inspects incomplete entries (`ONLY_INCOMPLETE=true`), queries Kaikki's Wiktextract dataset, OpenThesaurus, MyMemory, Tatoeba, and optionally OpenAI (`ENABLE_AI=true`) for missing metadata, and writes a structured report under `data/generated/enrichment/`. Set `APPLY_UPDATES=true` to upsert the suggested `english`/example values back into Postgres after taking a JSON backup (`data/generated/backups/words-backup-*.json`). Use `COLLECT_WIKTEXTRACT=false` to disable the Wiktextract integration when debugging network behaviour.
-- Wiktextract responses now flow into `words.pos_attributes`: governed cases, Kaikki usage notes, and POS-level tags (e.g. _separable_, _transitive_, _two-way preposition_) are merged with any existing metadata so noun/adjective/preposition cohorts accumulate the descriptors needed for the multi-POS rollout.
-- Every provider snapshot is also persisted under `data/enrichment/<pos>/<provider>.json` so Kaikki/Wiktextract, MyMemory, Tatoeba, OpenThesaurus, and OpenAI responses remain source-of-truth across schema changes. The seeding script loads these files and replays their translations, examples, verb forms, and enrichment metadata back into Postgres to keep approved words intact. When `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and `ENRICHMENT_SUPABASE_BUCKET` are configured the same payloads are uploaded to Supabase Storage for off-site backups.
-- See [docs/enrichment-persistence.md](docs/enrichment-persistence.md) for details on where enrichment data lives and how to export the latest applied provider snapshots with `npm run enrichment:export`.
-- `LIMIT=<n>`, `CANONICAL_MODE=<pending|approved|all>` (legacy values `non-canonical|canonical|all` are still accepted), `DELAY_MS=<ms>`, and `OVERWRITE_EXISTING=true` fine-tune batch size, target scope, rate limiting, and whether existing translations/examples may be replaced.
-- `POS_FILTERS=N,Adj` (comma/space separated) narrows the run to specific parts of speech so noun/adjective backfills can be validated without touching the verb catalog.
-- Use `tsx scripts/enrich-pending-words.ts` for quick exports to `data/generated/pending-approval-enrichment.json` without mutating the database.
-
-## Lexeme & content admin tools
-- Configure an `ADMIN_API_TOKEN` in your `.env` file (see `.env.example`) to protect ingestion routes. Restart the dev server after changing environment variables.
-- Visit `http://localhost:5000/admin` to access the words dashboard. Multi-select filters now support verbs, nouns, and adjectives plus CEFR level and pack membership.
-- Updates are issued via `PATCH /api/words/:id` with the `x-admin-token` header. Approval toggles and field edits immediately invalidate the admin cache and prompt pack regeneration during the next `npm run seed`.
-
-## Partner integrations
-- Generate sandbox API keys with `npm run integration:create-key` and follow the workflow documented in [`docs/integration-api.md`](docs/integration-api.md).
-- Authenticated partners can fetch embeddable drill bundles and review their request analytics via the new `/api/partner/*` routes.
-
-## Adaptive review scheduler
-- The adaptive spaced-repetition engine persists Leitner box stats per device inside `scheduling_state`, regenerates priority-ranked queues, and exposes them through `/api/tasks`.
-- Review [`docs/adaptive-review-scheduler.md`](docs/adaptive-review-scheduler.md) for the full architecture, configuration flags, and integration checklist before extending the system.
-
+---
+The enrichment pipeline consumes provider definitions, storage helpers, and shared types located under `scripts/enrichment/` and `shared/enrichment/`. See [`docs/enrichment-persistence.md`](docs/enrichment-persistence.md) for details on where enrichment data is stored and how provider snapshots are synchronised.
