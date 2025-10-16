@@ -26,13 +26,5 @@ export function classifyManualChunk(id: string): string | undefined {
     return "date-fns";
   }
 
-  if (id.includes("dexie")) {
-    return "dexie";
-  }
-
-  if (id.includes("embla-carousel")) {
-    return "carousel";
-  }
-
   return "vendor";
 }
