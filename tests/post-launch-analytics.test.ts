@@ -1,12 +1,7 @@
 import { describe, expect, it, vi, afterEach } from 'vitest';
 
 import { computePostLaunchAnalytics } from '../server/analytics/post-launch.js';
-import type {
-  PackMembershipAnalytics,
-  PracticeAttemptAnalytics,
-  SchedulingSnapshotAnalytics,
-  TelemetrySnapshotAnalytics,
-} from '../server/analytics/post-launch.js';
+import type { PracticeAttemptAnalytics, SchedulingSnapshotAnalytics, TelemetrySnapshotAnalytics } from '../server/analytics/post-launch.js';
 
 const ORIGINAL_TZ = process.env.TZ;
 
@@ -44,8 +39,7 @@ describe('computePostLaunchAnalytics', () => {
     const report = computePostLaunchAnalytics({
       practiceAttempts,
       schedulingSnapshots: [],
-      telemetrySnapshots: [],
-      packMemberships: [],
+      telemetrySnapshots: []: [],
     });
 
     const januaryFirst = report.posAdoption.dailyActiveDevices.find(
@@ -73,7 +67,6 @@ describe('computePostLaunchAnalytics', () => {
         responseMs: 1500,
         submittedAt: new Date('2025-01-01T10:00:00.000Z'),
         hintsUsed: false,
-        packId: 'pack:verbs',
       },
       {
         taskId: 'task:noun-1',
@@ -87,7 +80,6 @@ describe('computePostLaunchAnalytics', () => {
         responseMs: 3200,
         submittedAt: new Date('2025-01-01T10:05:00.000Z'),
         hintsUsed: true,
-        packId: 'pack:noun-foundation',
       },
       {
         taskId: 'task:verb-2',
@@ -231,26 +223,10 @@ describe('computePostLaunchAnalytics', () => {
       },
     ];
 
-    const packMemberships: PackMembershipAnalytics[] = [
-      {
-        packId: 'pack:noun-foundation',
-        packName: 'Noun Foundation',
-        posScope: 'noun',
-        lexemeId: 'lex:noun-1',
-      },
-      {
-        packId: 'pack:verbs',
-        packName: 'Verb Essentials',
-        posScope: 'verb',
-        lexemeId: 'lex:verb-1',
-      },
-    ];
-
     const report = computePostLaunchAnalytics({
       practiceAttempts,
       schedulingSnapshots,
       telemetrySnapshots,
-      packMemberships,
     });
 
     expect(report.generatedAt).toMatch(/2025-01-05/);
@@ -286,11 +262,7 @@ describe('computePostLaunchAnalytics', () => {
     expect(nounOverdue).toBeDefined();
     expect(nounOverdue!.overduePercentage).toBe(100);
 
-    const nounPack = report.contentQuality.packAccuracy.find((item) => item.packId === 'pack:noun-foundation');
-    expect(nounPack).toBeDefined();
-    expect(nounPack!.attempts).toBe(3);
-    expect(nounPack!.accuracy).toBeCloseTo(33.33, 2);
-    expect(nounPack!.hintUsageRate).toBeCloseTo(33.33, 2);
+    expect(report.contentQuality).not.toHaveProperty('packAccuracy');
 
     expect(report.contentQuality.topChallenges[0]).toMatchObject({
       taskId: 'task:noun-1',

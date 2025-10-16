@@ -76,7 +76,7 @@ describe('seedDatabase', () => {
           });
 
           const { seedDatabase } = await import('../scripts/seed');
-          const { words, lexemes, inflections, taskSpecs, packLexemeMap } = await import('../db/schema.js');
+          const { words, lexemes, inflections, taskSpecs } = await import('../db/schema.js');
 
           const result = await seedDatabase(seedRoot);
 
@@ -97,8 +97,6 @@ describe('seedDatabase', () => {
           const taskRows = await context.db.select({ value: count() }).from(taskSpecs);
           expect(Number(taskRows[0]?.value ?? 0)).toBeGreaterThan(0);
 
-          const packMapRows = await context.db.select({ value: count() }).from(packLexemeMap);
-          expect(Number(packMapRows[0]?.value ?? 0)).toBeGreaterThan(0);
         } finally {
           await context.cleanup();
           await rm(seedRoot, { recursive: true, force: true });

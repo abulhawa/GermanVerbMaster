@@ -45,7 +45,6 @@ const practiceTask: PracticeTask = {
   expectedSolution: { form: 'gegangen' },
   queueCap: 30,
   lexeme: { id: 'lex-1', lemma: 'gehen', metadata: { level: 'A1' } },
-  pack: null,
   assignedAt: new Date().toISOString(),
   source: 'scheduler',
 };
@@ -59,7 +58,6 @@ const queueItem: PracticeTaskQueueItem = {
   source: 'review',
   enqueuedAt: new Date().toISOString(),
   metadata: { lemma: 'gehen', legacyVerbInfinitive: 'gehen' },
-  pack: null,
 };
 
 describe('practice state migrations', () => {

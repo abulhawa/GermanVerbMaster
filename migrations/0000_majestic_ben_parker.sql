@@ -1,21 +1,5 @@
 CREATE TYPE "practice_result" AS ENUM ('correct', 'incorrect');
 --> statement-breakpoint
-CREATE TABLE "content_packs" (
-	"id" text PRIMARY KEY NOT NULL,
-	"slug" text NOT NULL,
-	"name" text NOT NULL,
-	"description" text,
-	"language" text DEFAULT 'de' NOT NULL,
-	"pos_scope" text NOT NULL,
-	"license" text NOT NULL,
-	"license_notes" text,
-	"version" integer DEFAULT 1 NOT NULL,
-	"checksum" text,
-	"metadata" jsonb,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
-);
---> statement-breakpoint
 CREATE TABLE "inflections" (
 	"id" text PRIMARY KEY NOT NULL,
 	"lexeme_id" text NOT NULL,
@@ -39,17 +23,6 @@ CREATE TABLE "lexemes" (
 	"source_ids" jsonb DEFAULT '[]'::jsonb NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
-);
---> statement-breakpoint
-CREATE TABLE "pack_lexeme_map" (
-	"pack_id" text NOT NULL,
-	"lexeme_id" text NOT NULL,
-	"primary_task_id" text,
-	"position" integer,
-	"notes" text,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "pack_lexeme_map_pack_id_lexeme_id_pk" PRIMARY KEY("pack_id","lexeme_id")
 );
 --> statement-breakpoint
 CREATE TABLE "practice_history" (
@@ -232,9 +205,6 @@ CREATE TABLE "words" (
 );
 --> statement-breakpoint
 ALTER TABLE "inflections" ADD CONSTRAINT "inflections_lexeme_id_lexemes_id_fk" FOREIGN KEY ("lexeme_id") REFERENCES "public"."lexemes"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "pack_lexeme_map" ADD CONSTRAINT "pack_lexeme_map_pack_id_content_packs_id_fk" FOREIGN KEY ("pack_id") REFERENCES "public"."content_packs"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "pack_lexeme_map" ADD CONSTRAINT "pack_lexeme_map_lexeme_id_lexemes_id_fk" FOREIGN KEY ("lexeme_id") REFERENCES "public"."lexemes"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "pack_lexeme_map" ADD CONSTRAINT "pack_lexeme_map_primary_task_id_task_specs_id_fk" FOREIGN KEY ("primary_task_id") REFERENCES "public"."task_specs"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "practice_history" ADD CONSTRAINT "practice_history_task_id_task_specs_id_fk" FOREIGN KEY ("task_id") REFERENCES "public"."task_specs"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "practice_history" ADD CONSTRAINT "practice_history_lexeme_id_lexemes_id_fk" FOREIGN KEY ("lexeme_id") REFERENCES "public"."lexemes"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "practice_history" ADD CONSTRAINT "practice_history_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
@@ -245,10 +215,8 @@ ALTER TABLE "telemetry_priorities" ADD CONSTRAINT "telemetry_priorities_task_id_
 ALTER TABLE "verb_practice_history" ADD CONSTRAINT "verb_practice_history_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "verb_review_queues" ADD CONSTRAINT "verb_review_queues_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "verb_scheduling_state" ADD CONSTRAINT "verb_scheduling_state_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-CREATE UNIQUE INDEX "content_packs_slug_unique" ON "content_packs" USING btree ("slug");--> statement-breakpoint
 CREATE UNIQUE INDEX "inflections_lexeme_form_features_idx" ON "inflections" USING btree ("lexeme_id","form","features");--> statement-breakpoint
 CREATE UNIQUE INDEX "lexemes_lemma_pos_idx" ON "lexemes" USING btree ("lemma","pos");--> statement-breakpoint
-CREATE INDEX "pack_lexeme_map_lexeme_idx" ON "pack_lexeme_map" USING btree ("lexeme_id");--> statement-breakpoint
 CREATE INDEX "practice_history_task_idx" ON "practice_history" USING btree ("task_id");--> statement-breakpoint
 CREATE INDEX "practice_history_pos_idx" ON "practice_history" USING btree ("pos");--> statement-breakpoint
 CREATE INDEX "practice_history_submitted_idx" ON "practice_history" USING btree ("submitted_at");--> statement-breakpoint

@@ -16,7 +16,6 @@ const basePayload: Omit<TaskAttemptPayload, 'deviceId'> = {
   answeredAt: new Date().toISOString(),
   queuedAt: new Date().toISOString(),
   cefrLevel: 'A1',
-  packId: null,
   legacyVerb: {
     infinitive: 'sein',
     mode: 'präteritum',
@@ -37,7 +36,6 @@ const nounPayload: Omit<TaskAttemptPayload, 'deviceId'> = {
   timeSpentMs: 2100,
   answeredAt: new Date().toISOString(),
   cefrLevel: 'A2',
-  packId: 'pack:nouns-foundation:1',
 };
 
 async function resetDb() {

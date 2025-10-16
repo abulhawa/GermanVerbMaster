@@ -9,8 +9,6 @@ import {
   lexemes as lexemesTable,
   inflections as inflectionsTable,
   taskSpecs as taskSpecsTable,
-  contentPacks,
-  packLexemeMap as packLexemeMapTable,
 } from '@db/schema';
 import {
   buildGoldenBundles,
@@ -89,9 +87,7 @@ export function parseSeedOptions(argv: readonly string[]): SeedOptions {
 
 async function resetSeededContent(db: DatabaseClient): Promise<void> {
   await db.transaction(async (tx) => {
-    await tx.delete(packLexemeMapTable);
     await tx.delete(taskSpecsTable);
-    await tx.delete(contentPacks);
     await tx.delete(inflectionsTable);
     await tx.delete(lexemesTable);
     await tx.delete(words);

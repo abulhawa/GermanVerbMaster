@@ -14,7 +14,6 @@ export interface PracticeAttemptAnalytics {
   readonly submittedAt: Date;
   readonly answeredAt?: Date | null;
   readonly hintsUsed?: boolean | null;
-  readonly packId?: string | null;
   readonly metadata?: Record<string, unknown> | null;
 }
 
@@ -46,18 +45,10 @@ export interface TelemetrySnapshotAnalytics {
   readonly metadata?: Record<string, unknown> | null;
 }
 
-export interface PackMembershipAnalytics {
-  readonly packId: string;
-  readonly packName: string;
-  readonly posScope: string;
-  readonly lexemeId: string;
-}
-
 export interface PostLaunchAnalyticsInput {
   readonly practiceAttempts: PracticeAttemptAnalytics[];
   readonly schedulingSnapshots: SchedulingSnapshotAnalytics[];
   readonly telemetrySnapshots: TelemetrySnapshotAnalytics[];
-  readonly packMemberships: PackMembershipAnalytics[];
 }
 
 export interface DailyActiveDeviceMetric {
@@ -110,16 +101,6 @@ export interface OverdueSummaryMetric {
   readonly totalTasks: number;
 }
 
-export interface PackAccuracyMetric {
-  readonly packId: string;
-  readonly packName: string;
-  readonly posScope: string;
-  readonly attempts: number;
-  readonly correctAttempts: number;
-  readonly accuracy: number;
-  readonly hintUsageRate: number;
-}
-
 export interface TopChallengeMetric {
   readonly taskId: string;
   readonly pos: string;
@@ -150,7 +131,6 @@ export interface PostLaunchAnalyticsReport {
     readonly overdueSummary: OverdueSummaryMetric[];
   };
   readonly contentQuality: {
-    readonly packAccuracy: PackAccuracyMetric[];
     readonly topChallenges: TopChallengeMetric[];
     readonly telemetryAnomalies: TelemetryAnomalyMetric[];
   };
@@ -201,23 +181,10 @@ function unique<T>(values: Iterable<T>): T[] {
 }
 
 export function computePostLaunchAnalytics(input: PostLaunchAnalyticsInput): PostLaunchAnalyticsReport {
-  const { practiceAttempts, schedulingSnapshots, telemetrySnapshots, packMemberships } = input;
+  const { practiceAttempts, schedulingSnapshots, telemetrySnapshots } = input;
 
   const dailyActiveMap = new Map<string, Map<string, Set<string>>>();
   const taskPerformanceMap = new Map<string, { pos: string; taskType: string; attempts: number; correct: number; responseMs: number }>();
-  const packByLexeme = new Map<string, PackMembershipAnalytics[]>();
-  const packInfo = new Map<string, { packId: string; packName: string; posScope: string }>();
-
-  for (const membership of packMemberships) {
-    const list = packByLexeme.get(membership.lexemeId) ?? [];
-    list.push(membership);
-    packByLexeme.set(membership.lexemeId, list);
-    packInfo.set(membership.packId, {
-      packId: membership.packId,
-      packName: membership.packName,
-      posScope: membership.posScope,
-    });
-  }
 
   for (const attempt of practiceAttempts) {
     const pos = normalizePos(attempt.pos);
@@ -370,15 +337,6 @@ export function computePostLaunchAnalytics(input: PostLaunchAnalyticsInput): Pos
     }))
     .sort((a, b) => a.pos.localeCompare(b.pos));
 
-  const packAccuracyMap = new Map<string, {
-    packId: string;
-    packName: string;
-    posScope: string;
-    attempts: number;
-    correct: number;
-    hintsUsed: number;
-  }>();
-
   const topChallengesMap = new Map<string, {
     taskId: string;
     pos: string;
@@ -390,35 +348,6 @@ export function computePostLaunchAnalytics(input: PostLaunchAnalyticsInput): Pos
 
   for (const attempt of practiceAttempts) {
     const isAttemptCorrect = isCorrect(attempt.result);
-    const packCandidates = new Set<string>();
-    if (attempt.packId) {
-      packCandidates.add(attempt.packId);
-    }
-    const memberships = packByLexeme.get(attempt.lexemeId) ?? [];
-    for (const membership of memberships) {
-      packCandidates.add(membership.packId);
-    }
-
-    for (const packId of packCandidates) {
-      const info = packInfo.get(packId) ?? { packId, packName: packId, posScope: normalizePos(attempt.pos) };
-      const entry = packAccuracyMap.get(packId) ?? {
-        packId,
-        packName: info.packName,
-        posScope: info.posScope,
-        attempts: 0,
-        correct: 0,
-        hintsUsed: 0,
-      };
-      entry.attempts += 1;
-      if (isAttemptCorrect) {
-        entry.correct += 1;
-      }
-      if (attempt.hintsUsed) {
-        entry.hintsUsed += 1;
-      }
-      packAccuracyMap.set(packId, entry);
-    }
-
     const challenge = topChallengesMap.get(attempt.taskId) ?? {
       taskId: attempt.taskId,
       pos: normalizePos(attempt.pos),
@@ -434,18 +363,6 @@ export function computePostLaunchAnalytics(input: PostLaunchAnalyticsInput): Pos
     challenge.responseMs += attempt.responseMs;
     topChallengesMap.set(attempt.taskId, challenge);
   }
-
-  const packAccuracy: PackAccuracyMetric[] = Array.from(packAccuracyMap.values())
-    .map((entry) => ({
-      packId: entry.packId,
-      packName: entry.packName,
-      posScope: entry.posScope,
-      attempts: entry.attempts,
-      correctAttempts: entry.correct,
-      accuracy: entry.attempts ? Number(((entry.correct / entry.attempts) * 100).toFixed(2)) : 0,
-      hintUsageRate: entry.attempts ? Number(((entry.hintsUsed / entry.attempts) * 100).toFixed(2)) : 0,
-    }))
-    .sort((a, b) => b.attempts - a.attempts);
 
   const topChallenges: TopChallengeMetric[] = Array.from(topChallengesMap.values())
     .map((entry) => ({
@@ -494,7 +411,6 @@ export function computePostLaunchAnalytics(input: PostLaunchAnalyticsInput): Pos
       overdueSummary,
     },
     contentQuality: {
-      packAccuracy,
       topChallenges,
       telemetryAnomalies,
     },

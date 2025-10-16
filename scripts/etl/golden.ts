@@ -12,10 +12,8 @@ import {
 } from '@shared/task-registry';
 
 import {
-  contentPacks,
   inflections as inflectionsTable,
   lexemes as lexemesTable,
-  packLexemeMap as packLexemeMapTable,
   taskSpecs as taskSpecsTable,
 } from '@db/schema';
 
@@ -292,12 +290,6 @@ export async function upsertGoldenBundles(
 ): Promise<void> {
   if (bundles.length === 0) return;
   const allTaskIds = bundles.flatMap((bundle) => bundle.tasks.map((task) => task.id));
-  const allPackIds = bundles.map((bundle) => bundle.pack.id);
-
-  if (allPackIds.length) {
-    await db.delete(packLexemeMapTable).where(inArray(packLexemeMapTable.packId, allPackIds));
-    await db.delete(contentPacks).where(inArray(contentPacks.id, allPackIds));
-  }
   if (allTaskIds.length) {
     await db.delete(taskSpecsTable).where(inArray(taskSpecsTable.id, allTaskIds));
   }
@@ -317,24 +309,6 @@ export async function upsertGoldenBundles(
             updatedAt: sql`now()`,
           },
         });
-    }
-
-    await db
-      .insert(contentPacks)
-      .values(withDateColumns([bundle.pack]))
-      .onConflictDoUpdate({
-        target: contentPacks.id,
-        set: {
-          name: sql`excluded.name`,
-          description: sql`excluded.description`,
-          checksum: sql`excluded.checksum`,
-          metadata: sql`excluded.metadata`,
-          updatedAt: sql`now()`,
-        },
-      });
-
-    if (bundle.packLexemes.length > 0) {
-      await db.insert(packLexemeMapTable).values(withDateColumns(bundle.packLexemes));
     }
   }
 }

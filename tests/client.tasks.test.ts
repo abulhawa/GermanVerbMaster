@@ -49,10 +49,6 @@ describe('fetchPracticeTasks', () => {
             lemma: 'sein',
             metadata: { english: 'to be' },
           },
-          pack: {
-            id: 'pack-1',
-            slug: 'verbs-foundation',
-            name: 'Verbs Foundation',
           },
         },
       ],
@@ -80,7 +76,6 @@ describe('fetchPracticeTasks', () => {
     expect(task.taskId).toBe('task-1');
     expect(task.prompt.lemma).toBe('sein');
     expect(task.expectedSolution?.form).toBe('bin');
-    expect(task.pack?.slug).toBe('verbs-foundation');
     expect(task.source).toBe('scheduler');
   });
 

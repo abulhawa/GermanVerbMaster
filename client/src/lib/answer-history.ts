@@ -288,7 +288,7 @@ export function createAnswerHistoryEntry(options: CreateHistoryEntryOptions): Ta
     timeSpentMs: options.timeSpentMs,
     timeSpent: options.timeSpentMs,
     cefrLevel: options.task.lexeme.metadata?.level as TaskAnswerHistoryItem['cefrLevel'] | undefined,
-    packId: options.task.pack?.id ?? null,
+    packId: null,
     mode: undefined,
     attemptedAnswer: typeof submitted === 'string' ? submitted : undefined,
     correctAnswer: typeof expected === 'string' ? expected : undefined,

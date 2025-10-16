@@ -60,15 +60,6 @@ function cloneMetadata(metadata: PracticeTaskQueueItemMetadata | undefined): Pra
     return undefined;
   }
   const clone: PracticeTaskQueueItemMetadata = { ...metadata };
-  if (clone.packId && typeof clone.packId === 'string') {
-    clone.packId = clone.packId.trim() || null;
-  }
-  if (clone.packSlug && typeof clone.packSlug === 'string') {
-    clone.packSlug = clone.packSlug.trim() || null;
-  }
-  if (clone.packName && typeof clone.packName === 'string') {
-    clone.packName = clone.packName.trim() || null;
-  }
   return clone;
 }
 
@@ -102,18 +93,6 @@ function sanitiseQueue(queue: unknown): PracticeTaskQueueItem[] {
 
     const enqueuedAt = normaliseIsoDate(raw.enqueuedAt);
 
-    const pack = raw.pack
-      ? {
-          id: typeof raw.pack.id === 'string' ? raw.pack.id.trim() : '',
-          slug: typeof raw.pack.slug === 'string' ? raw.pack.slug.trim() : '',
-          name: typeof raw.pack.name === 'string' ? raw.pack.name.trim() : '',
-        }
-      : raw.pack === null
-        ? null
-        : undefined;
-
-    const normalisedPack = pack && pack !== null ? (pack.id && pack.slug ? { ...pack, name: pack.name || pack.slug } : null) : pack;
-
     result.push({
       taskId,
       lexemeId,
@@ -123,7 +102,6 @@ function sanitiseQueue(queue: unknown): PracticeTaskQueueItem[] {
       source,
       enqueuedAt,
       metadata: cloneMetadata(raw.metadata),
-      pack: normalisedPack ?? null,
     });
     seen.add(taskId);
   }

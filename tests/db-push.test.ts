@@ -37,7 +37,6 @@ describe('applyMigrations', () => {
         'task_specs',
         'scheduling_state',
         'practice_history',
-        'pack_lexeme_map',
       ]),
     );
 
