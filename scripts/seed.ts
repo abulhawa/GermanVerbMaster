@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { and, eq, sql } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 
 import { getDb, getPool } from '@db';
 import {
@@ -27,6 +27,7 @@ import type {
 } from '@shared/types';
 import { normalizeWordExample } from '@shared/examples';
 import { applyMigrations } from './db-push';
+import { chunkArray } from './etl/utils';
 
 type DatabaseClient = ReturnType<typeof getDb>;
 
@@ -95,6 +96,7 @@ async function resetSeededContent(db: DatabaseClient): Promise<void> {
 }
 
 const LEVEL_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
+const WORDS_BATCH_SIZE = 500;
 const POS_MAP = new Map<string, PartOfSpeech>([
   ['verb', 'V'],
   ['v', 'V'],
@@ -1081,41 +1083,57 @@ async function seedLegacyWords(db: DatabaseClient, wordsToUpsert: AggregatedWord
   const existing = await db.select({ lemma: words.lemma, pos: words.pos }).from(words);
   const desiredKeys = new Set(wordsToUpsert.map((word) => word.key));
 
-  for (const row of existing) {
-    const rowKey = keyFor(row.lemma, row.pos);
-    if (!desiredKeys.has(rowKey)) {
-      await db.delete(words).where(and(eq(words.lemma, row.lemma), eq(words.pos, row.pos)));
+  const wordsToDelete = existing.filter(
+    (row) => !desiredKeys.has(keyFor(row.lemma, row.pos)),
+  );
+
+  if (wordsToDelete.length > 0) {
+    for (const batch of chunkArray(wordsToDelete, WORDS_BATCH_SIZE)) {
+      const tupleList = sql.join(
+        batch.map((row) => sql`(${row.lemma}, ${row.pos})`),
+        sql`, `,
+      );
+
+      await db.execute(
+        sql`DELETE FROM "words" WHERE ("lemma", "pos") IN (${tupleList})`,
+      );
     }
   }
 
-  for (const word of wordsToUpsert) {
+  if (wordsToUpsert.length === 0) {
+    return;
+  }
+
+  for (const batch of chunkArray(wordsToUpsert, WORDS_BATCH_SIZE)) {
     await db
       .insert(words)
-      .values({
-        lemma: word.lemma,
-        pos: word.pos,
-        level: word.level,
-        english: word.english,
-        exampleDe: word.exampleDe,
-        exampleEn: word.exampleEn,
-        gender: word.gender,
-        plural: word.plural,
-        separable: word.separable,
-        aux: word.aux,
-        praesensIch: word.praesensIch,
-        praesensEr: word.praesensEr,
-        praeteritum: word.praeteritum,
-        partizipIi: word.partizipIi,
-        perfekt: word.perfekt,
-        comparative: word.comparative,
-        superlative: word.superlative,
-        approved: word.approved,
-        complete: word.complete,
-        translations: word.translations ?? null,
-        examples: word.examples ?? null,
-        enrichmentAppliedAt: toDateOrNull(word.enrichmentAppliedAt),
-        enrichmentMethod: word.enrichmentMethod ?? null,
-      })
+      .values(
+        batch.map((word) => ({
+          lemma: word.lemma,
+          pos: word.pos,
+          level: word.level,
+          english: word.english,
+          exampleDe: word.exampleDe,
+          exampleEn: word.exampleEn,
+          gender: word.gender,
+          plural: word.plural,
+          separable: word.separable,
+          aux: word.aux,
+          praesensIch: word.praesensIch,
+          praesensEr: word.praesensEr,
+          praeteritum: word.praeteritum,
+          partizipIi: word.partizipIi,
+          perfekt: word.perfekt,
+          comparative: word.comparative,
+          superlative: word.superlative,
+          approved: word.approved,
+          complete: word.complete,
+          translations: word.translations ?? null,
+          examples: word.examples ?? null,
+          enrichmentAppliedAt: toDateOrNull(word.enrichmentAppliedAt),
+          enrichmentMethod: word.enrichmentMethod ?? null,
+        })),
+      )
       .onConflictDoUpdate({
         target: [words.lemma, words.pos],
         set: {

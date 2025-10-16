@@ -18,3 +18,16 @@ export function stableStringify(value: unknown): string {
 export function sha1(payload: string): string {
   return createHash('sha1').update(payload).digest('hex');
 }
+
+export function chunkArray<T>(values: readonly T[], size: number): T[][] {
+  if (size <= 0) {
+    return [Array.from(values)];
+  }
+
+  const result: T[][] = [];
+  for (let index = 0; index < values.length; index += size) {
+    result.push(values.slice(index, index + size));
+  }
+
+  return result;
+}

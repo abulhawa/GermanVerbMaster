@@ -1,5 +1,5 @@
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { eq, inArray, sql } from 'drizzle-orm';
+import { inArray, sql } from 'drizzle-orm';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
@@ -22,9 +22,10 @@ import { buildAttributionSummary } from './attribution';
 import type { AttributionEntry } from './attribution';
 import { collectSources, deriveSourceRevision, primarySourceId } from './sources';
 import { validateWord } from './validators';
-import { stableStringify, sha1 } from './utils';
+import { chunkArray, stableStringify, sha1 } from './utils';
 
 const STABLE_TIMESTAMP = Math.floor(new Date('2025-01-01T00:00:00Z').getTime() / 1000);
+const INFLECTION_DELETE_CHUNK_SIZE = 500;
 
 const LOG_VALIDATION_WARNINGS =
   process.env.GOLDEN_LOG_VALIDATION_WARNINGS?.toLowerCase() === 'true';
@@ -243,25 +244,37 @@ export async function upsertLexemeInventory(
       });
   }
 
-  const inflectionsByLexeme = new Map<string, string[]>();
+  const inflectionsByLexeme = new Map<string, Set<string>>();
   for (const inflection of inventory.inflections) {
-    const ids = inflectionsByLexeme.get(inflection.lexemeId) ?? [];
-    ids.push(inflection.id);
-    inflectionsByLexeme.set(inflection.lexemeId, ids);
+    let ids = inflectionsByLexeme.get(inflection.lexemeId);
+    if (!ids) {
+      ids = new Set<string>();
+      inflectionsByLexeme.set(inflection.lexemeId, ids);
+    }
+    ids.add(inflection.id);
   }
 
-  for (const [lexemeId, ids] of inflectionsByLexeme) {
+  if (inflectionsByLexeme.size > 0) {
+    const lexemeIds = Array.from(inflectionsByLexeme.keys());
     const existing = await db
-      .select({ id: inflectionsTable.id })
+      .select({
+        id: inflectionsTable.id,
+        lexemeId: inflectionsTable.lexemeId,
+      })
       .from(inflectionsTable)
-      .where(eq(inflectionsTable.lexemeId, lexemeId));
-    const existingIds = new Set(existing.map((row) => row.id));
-    for (const id of ids) {
-      existingIds.delete(id);
-    }
-    const staleIds = Array.from(existingIds);
+      .where(inArray(inflectionsTable.lexemeId, lexemeIds));
+
+    const staleIds = existing
+      .filter(({ id, lexemeId }) => {
+        const incoming = inflectionsByLexeme.get(lexemeId);
+        return !incoming || !incoming.has(id);
+      })
+      .map((row) => row.id);
+
     if (staleIds.length > 0) {
-      await db.delete(inflectionsTable).where(inArray(inflectionsTable.id, staleIds));
+      for (const chunk of chunkArray(staleIds, INFLECTION_DELETE_CHUNK_SIZE)) {
+        await db.delete(inflectionsTable).where(inArray(inflectionsTable.id, chunk));
+      }
     }
   }
 
