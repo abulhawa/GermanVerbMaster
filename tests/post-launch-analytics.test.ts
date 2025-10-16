@@ -39,7 +39,7 @@ describe('computePostLaunchAnalytics', () => {
     const report = computePostLaunchAnalytics({
       practiceAttempts,
       schedulingSnapshots: [],
-      telemetrySnapshots: []: [],
+      telemetrySnapshots: [],
     });
 
     const januaryFirst = report.posAdoption.dailyActiveDevices.find(
