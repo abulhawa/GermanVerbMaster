@@ -28,31 +28,6 @@ CREATE TABLE "inflections" (
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "integration_partners" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"name" text NOT NULL,
-	"api_key_hash" text NOT NULL,
-	"contact_email" text,
-	"allowed_origins" jsonb,
-	"scopes" jsonb DEFAULT '[]'::jsonb NOT NULL,
-	"notes" text,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "integration_partners_api_key_hash_unique" UNIQUE("api_key_hash")
-);
---> statement-breakpoint
-CREATE TABLE "integration_usage" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"partner_id" integer NOT NULL,
-	"endpoint" text NOT NULL,
-	"method" text NOT NULL,
-	"status_code" integer NOT NULL,
-	"request_id" text NOT NULL,
-	"response_time_ms" integer DEFAULT 0 NOT NULL,
-	"user_agent" text,
-	"requested_at" timestamp with time zone DEFAULT now() NOT NULL
-);
---> statement-breakpoint
 CREATE TABLE "lexemes" (
 	"id" text PRIMARY KEY NOT NULL,
 	"lemma" text NOT NULL,
@@ -257,7 +232,6 @@ CREATE TABLE "words" (
 );
 --> statement-breakpoint
 ALTER TABLE "inflections" ADD CONSTRAINT "inflections_lexeme_id_lexemes_id_fk" FOREIGN KEY ("lexeme_id") REFERENCES "public"."lexemes"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "integration_usage" ADD CONSTRAINT "integration_usage_partner_id_integration_partners_id_fk" FOREIGN KEY ("partner_id") REFERENCES "public"."integration_partners"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "pack_lexeme_map" ADD CONSTRAINT "pack_lexeme_map_pack_id_content_packs_id_fk" FOREIGN KEY ("pack_id") REFERENCES "public"."content_packs"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "pack_lexeme_map" ADD CONSTRAINT "pack_lexeme_map_lexeme_id_lexemes_id_fk" FOREIGN KEY ("lexeme_id") REFERENCES "public"."lexemes"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "pack_lexeme_map" ADD CONSTRAINT "pack_lexeme_map_primary_task_id_task_specs_id_fk" FOREIGN KEY ("primary_task_id") REFERENCES "public"."task_specs"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
