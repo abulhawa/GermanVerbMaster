@@ -37,7 +37,7 @@ Refer to `db/schema.ts` for column-level details, indices, and relationships.
 - Renderers resolve by task type; adding a new type requires updating the shared registry, server registry, and client renderer map in the same pull request to maintain parity.
 
 ## Content pipeline & QA
-- `npm run seed` hydrates the lexeme tables and regenerates deterministic task snapshots under `data/packs/`. Pass `--reset` (`npm run seed -- --reset`) when you need to wipe previously seeded `words`, `lexemes`, `inflections`, and `task_specs` rows before re-importing updated POS JSONL files.
+- `npm run seed` hydrates the lexeme tables and regenerates deterministic task snapshots directly in the database via the task template registry. Pass `--reset` (`npm run seed -- --reset`) when you need to wipe previously seeded `words`, `lexemes`, `inflections`, and `task_specs` rows before re-importing updated POS JSONL files.
 - Keep attribution notes and source tracking up to date in lexeme metadata; automated ETL checks surface missing license information during import.
 
 ## Analytics

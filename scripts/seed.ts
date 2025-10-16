@@ -11,11 +11,10 @@ import {
   taskSpecs as taskSpecsTable,
 } from '@db/schema';
 import {
-  buildGoldenBundles,
   buildLexemeInventory,
-  upsertGoldenBundles,
+  buildTaskInventory,
   upsertLexemeInventory,
-  writeGoldenBundlesToDisk,
+  upsertTaskInventory,
 } from './etl/golden';
 import type { AggregatedWord } from './etl/types';
 import type {
@@ -1173,12 +1172,11 @@ export async function seedDatabase(
   lexemeCount: number;
   inflectionCount: number;
   taskCount: number;
-  bundleCount: number;
 }> {
   await ensureLegacySchema(db);
 
   if (options.reset) {
-    console.log('Resetting seeded lexemes, inflections, packs, and legacy words before seeding…');
+    console.log('Resetting seeded lexemes, inflections, task specs, and legacy words before seeding…');
     await resetSeededContent(db);
   }
 
@@ -1188,20 +1186,18 @@ export async function seedDatabase(
   const inventory = buildLexemeInventory(aggregated);
   await upsertLexemeInventory(db, inventory);
 
-  const bundles = buildGoldenBundles(aggregated);
-  await upsertGoldenBundles(db, bundles);
-  await writeGoldenBundlesToDisk(rootDir, bundles);
+  const taskInventory = buildTaskInventory(aggregated);
+  await upsertTaskInventory(db, taskInventory);
 
   const lexemeCount = inventory.lexemes.length;
   const inflectionCount = inventory.inflections.length;
-  const taskCount = bundles.reduce((sum, bundle) => sum + bundle.tasks.length, 0);
+  const taskCount = taskInventory.tasks.length;
 
   return {
     aggregatedCount: aggregated.length,
     lexemeCount,
     inflectionCount,
     taskCount,
-    bundleCount: bundles.length,
   };
 }
 
@@ -1215,7 +1211,7 @@ async function main(): Promise<void> {
 
   const options = parseSeedOptions(process.argv.slice(2));
   const database = ensureDatabase();
-  const { aggregatedCount, lexemeCount, inflectionCount, taskCount, bundleCount } = await seedDatabase(
+  const { aggregatedCount, lexemeCount, inflectionCount, taskCount } = await seedDatabase(
     root,
     database,
     options,
@@ -1223,7 +1219,7 @@ async function main(): Promise<void> {
 
   console.log(`Seeded ${aggregatedCount} words into legacy table.`);
   console.log(
-    `Upserted ${lexemeCount} lexemes, ${inflectionCount} inflections, and ${taskCount} task specs across ${bundleCount} packs.`,
+    `Upserted ${lexemeCount} lexemes, ${inflectionCount} inflections, and ${taskCount} reusable task specs.`,
   );
 }
 

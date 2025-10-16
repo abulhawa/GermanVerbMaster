@@ -1,7 +1,5 @@
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { inArray, sql } from 'drizzle-orm';
-import fs from 'node:fs/promises';
-import path from 'node:path';
 
 import type { PartOfSpeech } from '@shared';
 import {
@@ -26,6 +24,7 @@ import { chunkArray, stableStringify, sha1 } from './utils';
 
 const STABLE_TIMESTAMP = Math.floor(new Date('2025-01-01T00:00:00Z').getTime() / 1000);
 const INFLECTION_DELETE_CHUNK_SIZE = 500;
+const TASK_DELETE_CHUNK_SIZE = 1000;
 
 const LOG_VALIDATION_WARNINGS =
   process.env.GOLDEN_LOG_VALIDATION_WARNINGS?.toLowerCase() === 'true';
@@ -86,38 +85,18 @@ export interface TaskSpecSeed {
   updatedAt: number;
 }
 
-export interface PackSeed {
-  id: string;
-  slug: string;
-  name: string;
-  description: string | null;
-  language: string;
-  posScope: LexemePos | 'mixed';
-  license: string;
-  licenseNotes: string | null;
-  version: number;
-  checksum: string | null;
-  metadata: Record<string, unknown> | null;
-  createdAt: number;
-  updatedAt: number;
-}
-
-export interface PackLexemeSeed {
-  packId: string;
-  lexemeId: string;
-  primaryTaskId: string | null;
-  position: number;
-  notes: string | null;
-  createdAt: number;
-  updatedAt: number;
-}
-
-export interface PackBundle {
-  pack: PackSeed;
-  lexemes: LexemeSeed[];
-  inflections: InflectionSeed[];
+export interface TaskInventory {
   tasks: TaskSpecSeed[];
-  packLexemes: PackLexemeSeed[];
+}
+
+interface TaskTemplateDefinition {
+  key: string;
+  taskType: TaskType;
+  isAvailable(word: AggregatedWord): boolean;
+  buildPrompt(word: AggregatedWord, pos: LexemePos): Record<string, unknown>;
+  buildSolution(word: AggregatedWord): Record<string, unknown> & { form: string };
+  buildMetadata?(word: AggregatedWord): Record<string, unknown> | null | undefined;
+  buildHints?(word: AggregatedWord): unknown[];
 }
 
 export interface LexemeInventory {
@@ -128,44 +107,181 @@ export interface LexemeInventory {
 
 type DrizzleDatabase = NodePgDatabase<typeof import('@db/schema')>;
 
-export function buildGoldenBundles(words: AggregatedWord[]): PackBundle[] {
-  const verbs = selectVerbs(words);
-  const nouns = selectNouns(words);
-  const adjectives = selectAdjectives(words);
+const TASK_TEMPLATE_REGISTRY: Partial<Record<LexemePos, readonly TaskTemplateDefinition[]>> = {
+  verb: [
+    {
+      key: 'praesens_ich',
+      taskType: 'conjugate_form',
+      isAvailable: (word) => Boolean(word.praesensIch),
+      buildPrompt: (word, pos) => ({
+        lemma: word.lemma,
+        pos,
+        requestedForm: {
+          tense: 'present',
+          mood: 'indicative',
+          person: 1,
+          number: 'singular',
+        },
+        cefrLevel: word.level ?? undefined,
+        instructions: `Konjugiere "${word.lemma}" in der Präsensform (ich).`,
+        example: normaliseExample(word.exampleDe, word.exampleEn),
+      }),
+      buildSolution: (word) => ({ form: word.praesensIch! }),
+      buildMetadata: (word) => ({
+        aux: word.aux ?? undefined,
+        separable: word.separable ?? undefined,
+      }),
+    },
+    {
+      key: 'praesens_er',
+      taskType: 'conjugate_form',
+      isAvailable: (word) => Boolean(word.praesensEr),
+      buildPrompt: (word, pos) => ({
+        lemma: word.lemma,
+        pos,
+        requestedForm: {
+          tense: 'present',
+          mood: 'indicative',
+          person: 3,
+          number: 'singular',
+        },
+        cefrLevel: word.level ?? undefined,
+        instructions: `Konjugiere "${word.lemma}" in der Präsensform (er/sie/es).`,
+        example: normaliseExample(word.exampleDe, word.exampleEn),
+      }),
+      buildSolution: (word) => ({ form: word.praesensEr! }),
+      buildMetadata: (word) => ({
+        aux: word.aux ?? undefined,
+        separable: word.separable ?? undefined,
+      }),
+    },
+    {
+      key: 'praeteritum',
+      taskType: 'conjugate_form',
+      isAvailable: (word) => Boolean(word.praeteritum),
+      buildPrompt: (word, pos) => ({
+        lemma: word.lemma,
+        pos,
+        requestedForm: {
+          tense: 'past',
+          mood: 'indicative',
+          person: 3,
+          number: 'singular',
+        },
+        cefrLevel: word.level ?? undefined,
+        instructions: `Konjugiere "${word.lemma}" in der Präteritumform (er/sie/es).`,
+        example: normaliseExample(word.exampleDe, word.exampleEn),
+      }),
+      buildSolution: (word) => ({ form: word.praeteritum! }),
+      buildMetadata: (word) => ({
+        aux: word.aux ?? undefined,
+        separable: word.separable ?? undefined,
+      }),
+    },
+    {
+      key: 'partizip_ii',
+      taskType: 'conjugate_form',
+      isAvailable: (word) => Boolean(word.partizipIi),
+      buildPrompt: (word, pos) => ({
+        lemma: word.lemma,
+        pos,
+        requestedForm: {
+          tense: 'participle',
+          mood: 'indicative',
+          voice: 'active',
+        },
+        cefrLevel: word.level ?? undefined,
+        instructions: `Gib das Partizip II von "${word.lemma}" an.`,
+        example: normaliseExample(word.exampleDe, word.exampleEn),
+      }),
+      buildSolution: (word) => ({ form: word.partizipIi! }),
+      buildMetadata: (word) => ({
+        aux: word.aux ?? undefined,
+        separable: word.separable ?? undefined,
+      }),
+    },
+  ],
+  noun: [
+    {
+      key: 'accusative_plural',
+      taskType: 'noun_case_declension',
+      isAvailable: (word) => Boolean(word.plural),
+      buildPrompt: (word, pos) => ({
+        lemma: word.lemma,
+        pos,
+        gender: word.gender ?? undefined,
+        requestedCase: 'accusative',
+        requestedNumber: 'plural',
+        cefrLevel: word.level ?? undefined,
+        instructions: `Bilde die Akkusativ Plural-Form von "${word.lemma}".`,
+        example: normaliseExample(word.exampleDe, word.exampleEn),
+      }),
+      buildSolution: (word) => ({
+        form: word.plural!,
+        article: word.gender ?? undefined,
+      }),
+      buildMetadata: (word) => ({
+        article: word.gender ?? undefined,
+      }),
+    },
+  ],
+  adjective: [
+    {
+      key: 'comparative',
+      taskType: 'adj_ending',
+      isAvailable: (word) => Boolean(word.comparative),
+      buildPrompt: (word, pos) => ({
+        lemma: word.lemma,
+        pos,
+        degree: 'comparative',
+        cefrLevel: word.level ?? undefined,
+        instructions: `Bilde den Komparativ von "${word.lemma}".`,
+        example: normaliseExample(word.exampleDe, word.exampleEn),
+        syntacticFrame: 'Der ____ Wagen ist schneller.',
+      }),
+      buildSolution: (word) => ({ form: word.comparative! }),
+    },
+    {
+      key: 'superlative',
+      taskType: 'adj_ending',
+      isAvailable: (word) => Boolean(word.superlative),
+      buildPrompt: (word, pos) => ({
+        lemma: word.lemma,
+        pos,
+        degree: 'superlative',
+        cefrLevel: word.level ?? undefined,
+        instructions: `Bilde den Superlativ von "${word.lemma}".`,
+        example: normaliseExample(word.exampleDe, word.exampleEn),
+        syntacticFrame: 'Das ist der ____ Moment.',
+      }),
+      buildSolution: (word) => ({ form: word.superlative! }),
+    },
+  ],
+};
 
-  const verbBundle = createPackBundle({
-    slug: 'verbs-foundation',
-    name: 'Verbs – Foundation',
-    description: 'Core German verbs with Präteritum and Partizip II practice prompts.',
-    posScope: 'verb',
-    license: 'CC-BY-SA-4.0',
-    words: verbs,
-    taskType: 'conjugate_form',
+export function buildTaskInventory(words: AggregatedWord[]): TaskInventory {
+  const tasks: TaskSpecSeed[] = [];
+
+  for (const word of words) {
+    const validation = validateWord(word);
+    if (LOG_VALIDATION_WARNINGS && validation.errors.length > 0) {
+      console.warn(
+        `[etl] lexeme ${word.lemma} (${word.pos}) has validation issues: ${validation.errors.join(', ')}`,
+      );
+    }
+
+    const lexeme = createLexemeSeed(word);
+    const lexemeTasks = createTasksForWord(word, lexeme.id);
+    tasks.push(...lexemeTasks);
+  }
+
+  const ordered = tasks.sort((a, b) => {
+    const lexemeCompare = a.lexemeId.localeCompare(b.lexemeId);
+    if (lexemeCompare !== 0) return lexemeCompare;
+    return a.id.localeCompare(b.id);
   });
 
-  const nounBundle = createPackBundle({
-    slug: 'nouns-foundation',
-    name: 'Nouns – Foundation',
-    description: 'High-frequency nouns focusing on plural formation and case marking.',
-    posScope: 'noun',
-    license: 'CC-BY-SA-4.0',
-    words: nouns,
-    taskType: 'noun_case_declension',
-  });
-
-  const adjectiveBundle = createPackBundle({
-    slug: 'adjectives-foundation',
-    name: 'Adjectives – Foundation',
-    description: 'Comparative and superlative tasks for common adjectives.',
-    posScope: 'adjective',
-    license: 'CC-BY-SA-4.0',
-    words: adjectives,
-    taskType: 'adj_ending',
-  });
-
-  return [verbBundle, nounBundle, adjectiveBundle].filter(
-    (bundle): bundle is PackBundle => bundle.lexemes.length > 0,
-  );
+  return { tasks: ordered };
 }
 
 export function buildLexemeInventory(words: AggregatedWord[]): LexemeInventory {
@@ -296,188 +412,34 @@ export async function upsertLexemeInventory(
   }
 }
 
-export async function upsertGoldenBundles(
+export async function upsertTaskInventory(
   db: DrizzleDatabase,
-  bundles: PackBundle[],
+  inventory: TaskInventory,
 ): Promise<void> {
-  if (bundles.length === 0) return;
-  const allTaskIds = bundles.flatMap((bundle) => bundle.tasks.map((task) => task.id));
-  if (allTaskIds.length) {
-    await db.delete(taskSpecsTable).where(inArray(taskSpecsTable.id, allTaskIds));
-  }
+  if (inventory.tasks.length === 0) return;
 
-  for (const bundle of bundles) {
-    if (bundle.tasks.length > 0) {
-      await db
-        .insert(taskSpecsTable)
-        .values(withDateColumns(bundle.tasks))
-        .onConflictDoUpdate({
-          target: taskSpecsTable.id,
-          set: {
-            prompt: sql`excluded.prompt`,
-            solution: sql`excluded.solution`,
-            hints: sql`excluded.hints`,
-            metadata: sql`excluded.metadata`,
-            updatedAt: sql`now()`,
-          },
-        });
+  const incomingTaskIds = Array.from(new Set(inventory.tasks.map((task) => task.id)));
+  if (incomingTaskIds.length > 0) {
+    for (const chunk of chunkArray(incomingTaskIds, TASK_DELETE_CHUNK_SIZE)) {
+      await db.delete(taskSpecsTable).where(inArray(taskSpecsTable.id, chunk));
     }
   }
-}
 
-export async function writeGoldenBundlesToDisk(
-  rootDir: string,
-  bundles: PackBundle[],
-): Promise<void> {
-  if (bundles.length === 0) return;
-  const packsDir = path.join(rootDir, 'data', 'packs');
-  await fs.mkdir(packsDir, { recursive: true });
-
-  for (const bundle of bundles) {
-    const filename = `${bundle.pack.slug}.v${bundle.pack.version}.json`;
-    const filePath = path.join(packsDir, filename);
-    const payload = {
-      pack: bundle.pack,
-      lexemes: bundle.lexemes,
-      inflections: bundle.inflections,
-      tasks: bundle.tasks,
-      packLexemeMap: bundle.packLexemes,
-    };
-    await fs.writeFile(filePath, JSON.stringify(payload, null, 2), 'utf8');
-  }
-}
-
-interface PackBundleConfig {
-  slug: string;
-  name: string;
-  description: string;
-  posScope: LexemePos;
-  license: string;
-  words: AggregatedWord[];
-  taskType: TaskType;
-}
-
-function createPackBundle(config: PackBundleConfig): PackBundle {
-  const { slug, name, description, posScope, license, words, taskType } = config;
-  if (words.length === 0) {
-    return {
-      pack: createEmptyPack(slug, name, description, posScope, license),
-      lexemes: [],
-      inflections: [],
-      tasks: [],
-      packLexemes: [],
-    };
-  }
-
-  const lexemes: LexemeSeed[] = [];
-  const inflections: InflectionSeed[] = [];
-  const tasks: TaskSpecSeed[] = [];
-  const packLexemes: PackLexemeSeed[] = [];
-
-  words.forEach((word, index) => {
-    const lexeme = createLexemeSeed(word);
-    lexemes.push(lexeme);
-
-    const lexemeInflections = createInflectionsForWord(word, lexeme.id);
-    inflections.push(...lexemeInflections);
-
-    const lexemeTasks = createTasksForWord(word, lexeme.id, taskType);
-    tasks.push(...lexemeTasks);
-
-    const primaryTaskId = lexemeTasks[0]?.id ?? null;
-    packLexemes.push({
-      packId: packIdForSlug(slug, 1),
-      lexemeId: lexeme.id,
-      primaryTaskId,
-      position: index + 1,
-      notes: null,
-      createdAt: STABLE_TIMESTAMP,
-      updatedAt: STABLE_TIMESTAMP,
+  await db
+    .insert(taskSpecsTable)
+    .values(withDateColumns(inventory.tasks))
+    .onConflictDoUpdate({
+      target: taskSpecsTable.id,
+      set: {
+        prompt: sql`excluded.prompt`,
+        solution: sql`excluded.solution`,
+        hints: sql`excluded.hints`,
+        metadata: sql`excluded.metadata`,
+        updatedAt: sql`now()`,
+      },
     });
-  });
-
-  const attribution = buildAttributionSummary(words);
-  const packMetadata: Record<string, unknown> = {
-    taskTypes: Array.from(new Set(tasks.map((task) => task.taskType))).sort(),
-    size: lexemes.length,
-    cefrLevels: Array.from(
-      new Set(
-        lexemes
-          .map((lexeme) => (lexeme.metadata.level as string | undefined) ?? null)
-          .filter((level): level is string => Boolean(level)),
-      ),
-    ).sort(),
-    attribution,
-  };
-
-  const checksumPayload = stableStringify({ lexemes, inflections, tasks });
-  const checksum = sha1(checksumPayload);
-
-  const pack: PackSeed = {
-    id: packIdForSlug(slug, 1),
-    slug,
-    name,
-    description,
-    language: 'de',
-    posScope,
-    license,
-    licenseNotes: null,
-    version: 1,
-    checksum,
-    metadata: packMetadata,
-    createdAt: STABLE_TIMESTAMP,
-    updatedAt: STABLE_TIMESTAMP,
-  };
-
-  return { pack, lexemes, inflections, tasks, packLexemes };
 }
 
-function createEmptyPack(
-  slug: string,
-  name: string,
-  description: string,
-  posScope: LexemePos,
-  license: string,
-): PackSeed {
-  return {
-    id: packIdForSlug(slug, 1),
-    slug,
-    name,
-    description,
-    language: 'de',
-    posScope,
-    license,
-    licenseNotes: null,
-    version: 1,
-    checksum: null,
-    metadata: null,
-    createdAt: STABLE_TIMESTAMP,
-    updatedAt: STABLE_TIMESTAMP,
-  };
-}
-function selectVerbs(words: AggregatedWord[]): AggregatedWord[] {
-  return words
-    .filter((word) => word.pos === 'V')
-    .filter((word) => validateWord(word).errors.length === 0)
-    .sort((a, b) => a.lemma.localeCompare(b.lemma, 'de'))
-    .slice(0, 50);
-}
-
-function selectNouns(words: AggregatedWord[]): AggregatedWord[] {
-  return words
-    .filter((word) => word.pos === 'N')
-    .filter((word) => validateWord(word).errors.length === 0)
-    .sort((a, b) => a.lemma.localeCompare(b.lemma, 'de'))
-    .slice(0, 50);
-}
-
-function selectAdjectives(words: AggregatedWord[]): AggregatedWord[] {
-  return words
-    .filter((word) => word.pos === 'Adj')
-    .filter((word) => validateWord(word).errors.length === 0)
-    .sort((a, b) => a.lemma.localeCompare(b.lemma, 'de'))
-    .slice(0, 40);
-}
 
 function createLexemeSeed(word: AggregatedWord): LexemeSeed {
   const pos = mapPos(word.pos);
@@ -694,145 +656,47 @@ function createInflectionsForWord(word: AggregatedWord, lexemeId: string): Infle
   return unique;
 }
 
-interface TaskDefinition {
-  formKey: string;
-  solution: string;
-  prompt: Record<string, unknown>;
-  hints: unknown[];
-  metadata: Record<string, unknown>;
-}
-
-function createTasksForWord(
-  word: AggregatedWord,
-  lexemeId: string,
-  taskType: keyof typeof taskTypeRegistry,
-): TaskSpecSeed[] {
+function createTasksForWord(word: AggregatedWord, lexemeId: string): TaskSpecSeed[] {
   const pos = mapPos(word.pos);
-  const tasks: TaskDefinition[] = [];
+  const templates = TASK_TEMPLATE_REGISTRY[pos] ?? [];
+  const tasks: TaskSpecSeed[] = [];
 
-  if (taskType === 'conjugate_form' && word.praeteritum) {
-    const prompt = {
-      lemma: word.lemma,
-      pos,
-      requestedForm: {
-        tense: 'past',
-        mood: 'indicative',
-        person: 3,
-        number: 'singular',
-      },
-      cefrLevel: word.level ?? undefined,
-      instructions: `Konjugiere "${word.lemma}" in der Präteritumform (er/sie/es).`,
-      example: normaliseExample(word.exampleDe, word.exampleEn),
-    };
+  let revision = 0;
+  for (const template of templates) {
+    if (!template.isAvailable(word)) {
+      continue;
+    }
 
-    tasks.push({
-      formKey: 'praeteritum',
-      solution: word.praeteritum,
-      prompt,
-      hints: buildHints(word),
-      metadata: {
-        aux: word.aux ?? undefined,
-        separable: word.separable ?? undefined,
-      },
-    });
-  }
+    const prompt = pruneUndefined(template.buildPrompt(word, pos));
+    const solution = template.buildSolution(word);
+    const renderer = taskTypeRegistry[template.taskType].renderer;
 
-  if (taskType === 'conjugate_form' && word.partizipIi) {
-    const prompt = {
-      lemma: word.lemma,
-      pos,
-      requestedForm: {
-        tense: 'participle',
-        mood: 'indicative',
-        voice: 'active',
-      },
-      cefrLevel: word.level ?? undefined,
-      instructions: `Gib das Partizip II von "${word.lemma}" an.`,
-      example: normaliseExample(word.exampleDe, word.exampleEn),
-    };
+    validateTaskAgainstRegistry(template.taskType, pos, renderer, prompt, solution);
+
+    revision += 1;
+    const taskId = createTaskId(lexemeId, template.taskType, revision, template.key);
+    const hints = template.buildHints ? template.buildHints(word) : buildHints(word);
+    const hintList = Array.isArray(hints) ? hints : buildHints(word);
+    const metadata = template.buildMetadata ? template.buildMetadata(word) : undefined;
+    const metadataPayload = metadata && Object.keys(metadata).length ? pruneUndefined(metadata) : null;
 
     tasks.push({
-      formKey: 'partizipIi',
-      solution: word.partizipIi,
-      prompt,
-      hints: buildHints(word),
-      metadata: {
-        aux: word.aux ?? undefined,
-      },
-    });
-  }
-
-  if (taskType === 'noun_case_declension' && word.plural) {
-    const prompt = {
-      lemma: word.lemma,
-      pos,
-      gender: word.gender ?? undefined,
-      requestedCase: 'accusative',
-      requestedNumber: 'plural',
-      cefrLevel: word.level ?? undefined,
-      instructions: `Bilde die Akkusativ Plural-Form von "${word.lemma}".`,
-      example: normaliseExample(word.exampleDe, word.exampleEn),
-    };
-
-    tasks.push({
-      formKey: 'plural',
-      solution: word.plural,
-      prompt,
-      hints: buildHints(word),
-      metadata: {
-        article: word.gender ?? undefined,
-      },
-    });
-  }
-
-  if (taskType === 'adj_ending' && word.comparative) {
-    const prompt = {
-      lemma: word.lemma,
-      pos,
-      degree: 'comparative',
-      cefrLevel: word.level ?? undefined,
-      instructions: `Bilde den Komparativ von "${word.lemma}".`,
-      example: normaliseExample(word.exampleDe, word.exampleEn),
-      syntacticFrame: 'Der ____ Wagen ist schneller.',
-    };
-
-    tasks.push({
-      formKey: 'comparative',
-      solution: word.comparative,
-      prompt,
-      hints: buildHints(word),
-      metadata: {},
-    });
-  }
-
-  const results: TaskSpecSeed[] = [];
-
-  tasks.forEach((task, index) => {
-    validateTaskAgainstRegistry(taskType, pos, taskTypeRegistry[taskType].renderer, task.prompt, {
-      form: task.solution,
-    });
-
-    const revision = index + 1;
-    const taskId = createTaskId(lexemeId, taskType, revision, task.formKey);
-    const payload: TaskSpecSeed = {
       id: taskId,
       lexemeId,
       pos,
-      taskType,
-      renderer: taskTypeRegistry[taskType].renderer,
-      prompt: pruneUndefined(task.prompt),
-      solution: { form: task.solution },
-      hints: task.hints.length ? task.hints : null,
-      metadata: Object.keys(task.metadata).length ? pruneUndefined(task.metadata) : null,
+      taskType: template.taskType,
+      renderer,
+      prompt,
+      solution: pruneUndefined(solution),
+      hints: hintList.length ? hintList : null,
+      metadata: metadataPayload,
       revision,
       createdAt: STABLE_TIMESTAMP,
       updatedAt: STABLE_TIMESTAMP,
-    };
+    });
+  }
 
-    results.push(payload);
-  });
-
-  return results;
+  return tasks;
 }
 
 function createInflectionEntries(
@@ -928,10 +792,6 @@ function pruneUndefined<T extends Record<string, unknown>>(value: T): T {
   return Object.fromEntries(entries) as T;
 }
 
-function packIdForSlug(slug: string, version: number): string {
-  return `pack:${slug}:${version}`;
-}
-
 function mapPos(pos: PartOfSpeech): LexemePos {
   switch (pos) {
     case 'V':
@@ -957,6 +817,6 @@ function mapPos(pos: PartOfSpeech): LexemePos {
     case 'Interj':
       return 'interjection';
     default:
-      throw new Error(`Unsupported part of speech for golden pack: ${pos}`);
+      throw new Error(`Unsupported part of speech in task inventory: ${pos}`);
   }
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildGoldenBundles } from '../scripts/etl/golden';
+import { buildTaskInventory } from '../scripts/etl/golden';
 import { validateTaskAgainstRegistry } from '../shared/task-registry';
 
 const sampleWords = [
@@ -84,34 +84,43 @@ const sampleWords = [
   },
 ];
 
-describe('buildGoldenBundles', () => {
-  it('creates deterministic packs with validated tasks', () => {
-    const firstRun = buildGoldenBundles(sampleWords);
-    const secondRun = buildGoldenBundles(sampleWords);
+describe('buildTaskInventory', () => {
+  it('creates deterministic task specs validated against the registry', () => {
+    const firstRun = buildTaskInventory(sampleWords);
+    const secondRun = buildTaskInventory(sampleWords);
 
-    expect(firstRun).toHaveLength(3);
     expect(secondRun).toEqual(firstRun);
+    expect(firstRun.tasks).toHaveLength(7);
 
-    const verbBundle = firstRun.find((bundle) => bundle.pack.slug === 'verbs-foundation');
-    expect(verbBundle?.tasks.every((task) => task.taskType === 'conjugate_form')).toBe(true);
-    expect(verbBundle?.lexemes[0].id).toMatch(/^de:verb:/);
+    const verbTasks = firstRun.tasks.filter((task) => task.pos === 'verb');
+    expect(verbTasks).toHaveLength(4);
+    const requestedForms = verbTasks.map((task) => (task.prompt as any).requestedForm?.tense);
+    expect(requestedForms).toEqual(['present', 'present', 'past', 'participle']);
+    const requestedPersons = verbTasks.map((task) => (task.prompt as any).requestedForm?.person ?? null);
+    expect(requestedPersons).toEqual([1, 3, 3, null]);
 
-    for (const bundle of firstRun) {
-      for (const task of bundle.tasks) {
-        const validation = validateTaskAgainstRegistry(
-          task.taskType,
-          task.pos,
-          task.renderer,
-          task.prompt,
-          task.solution,
-        );
-        expect(validation.taskType).toBe(task.taskType);
-        expect(validation.renderer).toBe(task.renderer);
-      }
-      expect(bundle.packLexemes.every((entry, index) => entry.position === index + 1)).toBe(true);
-      expect(bundle.pack.checksum).toBeTruthy();
-      const metadata = bundle.pack.metadata as { attribution?: unknown } | null;
-      expect(Array.isArray(metadata?.attribution)).toBe(true);
+    const nounTasks = firstRun.tasks.filter((task) => task.pos === 'noun');
+    expect(nounTasks).toHaveLength(1);
+    expect((nounTasks[0]?.prompt as any).requestedCase).toBe('accusative');
+    expect((nounTasks[0]?.prompt as any).requestedNumber).toBe('plural');
+
+    const adjectiveTasks = firstRun.tasks.filter((task) => task.pos === 'adjective');
+    expect(adjectiveTasks).toHaveLength(2);
+    expect(adjectiveTasks.map((task) => (task.prompt as any).degree)).toEqual([
+      'comparative',
+      'superlative',
+    ]);
+
+    for (const task of firstRun.tasks) {
+      const validation = validateTaskAgainstRegistry(
+        task.taskType,
+        task.pos,
+        task.renderer,
+        task.prompt,
+        task.solution,
+      );
+      expect(validation.taskType).toBe(task.taskType);
+      expect(validation.renderer).toBe(task.renderer);
     }
   });
 });

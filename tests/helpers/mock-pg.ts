@@ -12,6 +12,7 @@ type NormalizedQuery = {
 };
 
 const userRoleDoPattern = /\s*DO\s+\$\$[\s\S]*?CREATE\s+TYPE\s+"public"\."user_role"\s+AS\s+ENUM[\s\S]*?\$\$\s*;?/gi;
+const practiceResultDoPattern = /\s*DO\s+\$\$[\s\S]*?CREATE\s+TYPE\s+"public"\."practice_result"\s+AS\s+ENUM[\s\S]*?\$\$\s*;?/gi;
 const genericDoPattern = /\s*DO\s+\$\$[\s\S]*?\$\$\s*;?/gi;
 const alterUsingPattern = /(ALTER\s+TABLE\s+[^;]+?\s+ALTER\s+COLUMN\s+[^;]+?\s+TYPE\s+[^;]+?)\s+USING\s+[^;]+(;?)/gis;
 const foreignKeyNoActionPattern = /ON\s+DELETE\s+NO\s+ACTION/gi;
@@ -39,6 +40,8 @@ function sanitizeSql(text: string): string[] {
     'CREATE TYPE IF NOT EXISTS "public"."user_role" AS ENUM (\'standard\', \'admin\');',
   );
 
+  normalized = normalized.replace(practiceResultDoPattern, '');
+
   normalized = normalized.replace(genericDoPattern, '');
   normalized = normalized.replace(alterForeignKeyPattern, '');
   normalized = normalized.replace(foreignKeyUpdateNoActionPattern, '');
@@ -63,12 +66,25 @@ function createEmptyResult(): QueryResult<any> {
 
 function handleCustomStatements(statement: string, mem: IMemoryDb): QueryResult<any> | undefined {
   const createUserRole = /CREATE\s+TYPE\s+IF\s+NOT\s+EXISTS\s+"public"\."user_role"\s+AS\s+ENUM\s*\('standard',\s*'admin'\)\s*;?/i;
+  const createPracticeResultDo = /CREATE\s+TYPE\s+"public"\."practice_result"\s+AS\s+ENUM\s*\('correct',\s*'incorrect'\)/i;
   const dropWordsExportQueue = /DROP\s+VIEW\s+IF\s+EXISTS\s+"words_export_queue"\s*;?/i;
   const dropEnrichmentSnapshots = /DROP\s+TABLE\s+IF\s+EXISTS\s+"enrichment_provider_snapshots"\s*;?/i;
 
   if (createUserRole.test(statement)) {
     try {
       mem.public.none("CREATE TYPE \"public\".\"user_role\" AS ENUM ('standard', 'admin')");
+    } catch (error) {
+      if (!/already exists/i.test((error as Error).message ?? '')) {
+        throw error;
+      }
+    }
+
+    return createEmptyResult();
+  }
+
+  if (createPracticeResultDo.test(statement)) {
+    try {
+      mem.public.none("CREATE TYPE IF NOT EXISTS \"public\".\"practice_result\" AS ENUM ('correct', 'incorrect')");
     } catch (error) {
       if (!/already exists/i.test((error as Error).message ?? '')) {
         throw error;
@@ -201,6 +217,18 @@ function patchPool(pool: Pool, mem: IMemoryDb): Pool {
 export function createMockPool(): Pool {
   const mem = newDb({ autoCreateForeignKeyIndices: true });
   mem.public.none('create schema if not exists drizzle');
+  const ensureType = (sql: string) => {
+    try {
+      mem.public.none(sql);
+    } catch (error) {
+      if (!/already exists/i.test((error as Error).message ?? '')) {
+        throw error;
+      }
+    }
+  };
+  ensureType("CREATE TYPE \"public\".\"enrichment_method\" AS ENUM ('bulk', 'manual_api', 'manual_entry', 'preexisting')");
+  ensureType("CREATE TYPE \"public\".\"user_role\" AS ENUM ('standard', 'admin')");
+  ensureType("CREATE TYPE \"public\".\"practice_result\" AS ENUM ('correct', 'incorrect')");
   mem.public.registerFunction({
     name: 'random',
     returns: 'double precision',
