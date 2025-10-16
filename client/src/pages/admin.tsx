@@ -21,7 +21,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { useAuthSession } from '@/auth/session';
 import type { Word } from '@shared';
 import { exportStatusSchema, wordSchema, wordsResponseSchema } from './admin-word-schemas';
 import WordEnrichmentDetailView, {
@@ -516,11 +515,7 @@ const AdminWordsPage = () => {
     [],
   );
 
-  const { data: authSession } = useAuthSession();
-  const navigationItems = useMemo(
-    () => getPrimaryNavigationItems(authSession?.user.role ?? null),
-    [authSession?.user.role],
-  );
+  const navigationItems = useMemo(() => getPrimaryNavigationItems(), []);
 
   const sidebar = (
     <div className="flex h-full flex-col justify-between gap-8">

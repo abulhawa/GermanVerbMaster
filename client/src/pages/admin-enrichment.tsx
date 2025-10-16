@@ -22,7 +22,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-import { useAuthSession } from '@/auth/session';
 import { wordsResponseSchema, type AdminWord, type WordsResponse } from './admin-word-schemas';
 import type { BulkEnrichmentResponse, WordEnrichmentPreview } from '@shared/enrichment';
 import {
@@ -74,11 +73,7 @@ const DEFAULT_BULK_CONFIG: BulkConfigState = {
 };
 
 const AdminEnrichmentPage = () => {
-  const { data: session } = useAuthSession();
-  const navigationItems = useMemo(
-    () => getPrimaryNavigationItems(session?.user?.role),
-    [session?.user?.role],
-  );
+  const navigationItems = useMemo(() => getPrimaryNavigationItems(), []);
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [, navigate] = useLocation();

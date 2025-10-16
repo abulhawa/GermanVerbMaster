@@ -6,7 +6,6 @@ import {
 } from "@/lib/dev-attributes";
 import { SidebarCollapsibleProvider } from "./sidebar-collapsible-context";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { UserMenuControl } from "@/components/auth/user-menu-control";
 
 interface AppShellProps extends DebuggableComponentProps {
   sidebar: ReactNode;
@@ -61,7 +60,6 @@ export function AppShell({
                 className,
               )}
             >
-              <UserMenuControl className="mb-2" />
               {children}
             </main>
           </div>

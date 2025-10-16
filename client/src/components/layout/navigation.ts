@@ -6,7 +6,6 @@ export interface AppNavigationItem {
   label: string;
   icon: LucideIcon;
   exact?: boolean;
-  requiresAdmin?: boolean;
 }
 
 const BASE_PRIMARY_NAVIGATION_ITEMS: AppNavigationItem[] = [
@@ -14,21 +13,17 @@ const BASE_PRIMARY_NAVIGATION_ITEMS: AppNavigationItem[] = [
     href: "/admin",
     label: "Admin tools",
     icon: Settings2,
-    requiresAdmin: true,
     exact: true,
   },
   {
     href: "/admin/enrichment",
     label: "Enrichment",
     icon: Wand2,
-    requiresAdmin: true,
   },
 ];
 
-export function getPrimaryNavigationItems(role: string | null | undefined): AppNavigationItem[] {
-  const normalizedRole = role?.trim().toLowerCase();
-  const isAdmin = normalizedRole === "admin";
-  return BASE_PRIMARY_NAVIGATION_ITEMS.filter((item) => !item.requiresAdmin || isAdmin);
+export function getPrimaryNavigationItems(): AppNavigationItem[] {
+  return BASE_PRIMARY_NAVIGATION_ITEMS;
 }
 
 function normalizePath(input: string | null | undefined): string {

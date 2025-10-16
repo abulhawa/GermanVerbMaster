@@ -1,4 +1,4 @@
-import type { Express, NextFunction, Request, RequestHandler, Response } from "express";
+import type { Express, NextFunction, Request, Response } from "express";
 import { db } from "@db";
 import {
   words,
@@ -32,31 +32,7 @@ import {
 } from "../scripts/enrichment/pipeline.js";
 import { persistProviderSnapshotToFile } from "../scripts/enrichment/storage.js";
 import { exportWordById, getExportStatus, runBulkExport } from "./export-sync.js";
-import { authRouter, getSessionFromRequest } from "./auth/index.js";
-import type { AuthSession } from "./auth/index.js";
-
-const attachAuthSessionMiddleware: RequestHandler = async (req, res, next) => {
-  try {
-    const session = await getSessionFromRequest(req, res);
-    req.authSession = session;
-    next();
-  } catch (error) {
-    next(error);
-  }
-};
-
-function getSessionUser(session: AuthSession | null | undefined): Record<string, unknown> | null {
-  if (!session?.user || typeof session.user !== "object") {
-    return null;
-  }
-  return session.user as Record<string, unknown>;
-}
-
-function getSessionRole(session: AuthSession | null | undefined): string | null {
-  const user = getSessionUser(session);
-  const role = user?.role;
-  return typeof role === "string" ? role : null;
-}
+import { authRouter } from "./auth/index.js";
 
 function toIsoString(value: Date | string): string {
   return value instanceof Date ? value.toISOString() : value;
@@ -502,36 +478,24 @@ function sendError(res: Response, status: number, message: string, code?: string
   return res.status(status).json({ error: message });
 }
 
-let adminAuthWarningLogged = false;
+let adminTokenWarningLogged = false;
 
 function requireAdminAccess(req: Request, res: Response, next: NextFunction) {
-  const sessionRole = getSessionRole(req.authSession);
-  if (sessionRole === "admin") {
+  const expectedToken = process.env.ADMIN_API_TOKEN?.trim();
+  if (!expectedToken) {
+    if (!adminTokenWarningLogged) {
+      console.warn("ADMIN_API_TOKEN is not configured; admin routes require the shared token header.");
+      adminTokenWarningLogged = true;
+    }
+    return sendError(res, 503, "Admin token is not configured", "ADMIN_TOKEN_MISSING");
+  }
+
+  const providedToken = normalizeStringParam(req.headers["x-admin-token"])?.trim();
+  if (providedToken === expectedToken) {
     return next();
   }
 
-  const expectedToken = process.env.ADMIN_API_TOKEN?.trim();
-  if (expectedToken) {
-    const providedToken = normalizeStringParam(req.headers["x-admin-token"])?.trim();
-    if (providedToken === expectedToken) {
-      return next();
-    }
-
-    return sendError(res, 401, "Invalid admin token", "ADMIN_AUTH_FAILED");
-  }
-
-  if (!adminAuthWarningLogged) {
-    console.warn(
-      "ADMIN_API_TOKEN is not configured; admin routes now require an authenticated Better Auth admin session.",
-    );
-    adminAuthWarningLogged = true;
-  }
-
-  if (!req.authSession) {
-    return res.status(401).json({ error: "Authentication required", code: "UNAUTHENTICATED" });
-  }
-
-  return res.status(403).json({ error: "Admin privileges required", code: "FORBIDDEN" });
+  return sendError(res, 401, "Invalid admin token", "ADMIN_AUTH_FAILED");
 }
 
 function computeWordCompleteness(word: Pick<Word, "pos"> & Partial<Word>): boolean {
@@ -577,50 +541,6 @@ function presentWord(word: Word): Omit<Word, "sourcesCsv" | "sourceNotes"> {
 
 export function registerRoutes(app: Express): void {
   app.use("/api/auth", authRouter);
-  app.use("/api", attachAuthSessionMiddleware);
-
-  app.get("/api/me", async (req, res, next) => {
-    try {
-      const authSession = req.authSession ?? undefined;
-      const activeSession = authSession?.session ?? null;
-      const user = authSession?.user ?? null;
-
-      if (!authSession || !activeSession || !user) {
-        return res.status(401).json({
-          error: "Not authenticated",
-          code: "UNAUTHENTICATED",
-        });
-      }
-
-      const resolvedRole = getSessionRole(authSession) ?? "standard";
-
-      res.setHeader("Cache-Control", "no-store");
-
-      const activeSessionRecord = activeSession as Record<string, any>;
-      const userRecord = user as Record<string, any>;
-
-      return res.json({
-        session: {
-          id: activeSessionRecord.id,
-          expiresAt: activeSessionRecord.expiresAt
-            ? toIsoString(activeSessionRecord.expiresAt)
-            : null,
-        },
-        user: {
-          id: userRecord.id,
-          name: userRecord.name,
-          email: userRecord.email,
-          image: userRecord.image ?? null,
-          emailVerified: Boolean(userRecord.emailVerified),
-          role: resolvedRole,
-          createdAt: userRecord.createdAt ? toIsoString(userRecord.createdAt) : null,
-          updatedAt: userRecord.updatedAt ? toIsoString(userRecord.updatedAt) : null,
-        },
-      });
-    } catch (error) {
-      next(error);
-    }
-  });
 
   app.get("/api/words", requireAdminAccess, async (req, res) => {
     try {
