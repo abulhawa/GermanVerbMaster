@@ -79,7 +79,7 @@ Assuming two-week sprints and a blended product/engineering team, the first six 
 | --- | --- | --- | --- |
 | Sprint 0 | Kickoff, Planning & Verb Corpus Mobilization | 0.1, 0.2, 0.3 | Project board live, verb-source approval completed, analytics instrumentation scoped |
 | Sprint 1 | Verb Data Production & SRS Foundations | 0.3, 1.1 | ≥100 A1/A2 verbs QA’d and staged; Schema + API updates deployed to staging |
-| Sprint 2 | Adaptive UI | 1.1, 1.2 | Adaptive queue visible behind feature flag |
+| Sprint 2 | Adaptive UI | 1.1, 1.2 | Adaptive queue visible in client navigation |
 | Sprint 3 | Goals & Insights | 1.2, 1.3 | Goal tracking released to beta users |
 | Sprint 4 | Analytics Enhancements | 1.3 | Focus mode recommendations GA |
 | Sprint 5 | Hardening & Launch | 1.1–1.3 | Adaptive learning GA, post-launch metrics reviewed |

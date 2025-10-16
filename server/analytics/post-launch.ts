@@ -1,8 +1,6 @@
 import type { PracticeResult } from "@shared";
 import type { LexemePos } from "@shared";
 
-type FeatureFlagSnapshotSummary = Record<string, { enabled: boolean; stage?: string; defaultValue?: boolean; flag?: string }>;
-
 export interface PracticeAttemptAnalytics {
   readonly taskId: string;
   readonly lexemeId: string;
@@ -17,7 +15,6 @@ export interface PracticeAttemptAnalytics {
   readonly answeredAt?: Date | null;
   readonly hintsUsed?: boolean | null;
   readonly packId?: string | null;
-  readonly featureFlags?: FeatureFlagSnapshotSummary | null;
   readonly metadata?: Record<string, unknown> | null;
 }
 
@@ -76,13 +73,6 @@ export interface TaskPerformanceMetric {
   readonly correctAttempts: number;
   readonly accuracy: number;
   readonly averageResponseMs: number;
-}
-
-export interface FeatureFlagFunnelMetric {
-  readonly pos: string;
-  readonly enabledSessions: number;
-  readonly sessionsWithAttempts: number;
-  readonly adoptionRate: number;
 }
 
 export interface PriorityHeatmapMetric {
@@ -152,7 +142,6 @@ export interface PostLaunchAnalyticsReport {
   readonly posAdoption: {
     readonly dailyActiveDevices: DailyActiveDeviceMetric[];
     readonly taskPerformance: TaskPerformanceMetric[];
-    readonly featureFlagFunnel: FeatureFlagFunnelMetric[];
   };
   readonly schedulerHealth: {
     readonly priorityHeatmap: PriorityHeatmapMetric[];
@@ -216,7 +205,6 @@ export function computePostLaunchAnalytics(input: PostLaunchAnalyticsInput): Pos
 
   const dailyActiveMap = new Map<string, Map<string, Set<string>>>();
   const taskPerformanceMap = new Map<string, { pos: string; taskType: string; attempts: number; correct: number; responseMs: number }>();
-  const sessionMap = new Map<string, { flags: Map<string, boolean>; attemptsByPos: Set<string> }>();
   const packByLexeme = new Map<string, PackMembershipAnalytics[]>();
   const packInfo = new Map<string, { packId: string; packName: string; posScope: string }>();
 
@@ -259,20 +247,6 @@ export function computePostLaunchAnalytics(input: PostLaunchAnalyticsInput): Pos
     existingPerformance.responseMs += attempt.responseMs;
     taskPerformanceMap.set(performanceKey, existingPerformance);
 
-    const sessionKey = `${attempt.deviceId}::${dayKey}`;
-    const session = sessionMap.get(sessionKey) ?? { flags: new Map<string, boolean>(), attemptsByPos: new Set<string>() };
-    const snapshot = attempt.featureFlags ?? null;
-    if (snapshot) {
-      for (const [flagPos, flagState] of Object.entries(snapshot)) {
-        if (flagState?.enabled) {
-          session.flags.set(normalizePos(flagPos), true);
-        } else if (!session.flags.has(normalizePos(flagPos))) {
-          session.flags.set(normalizePos(flagPos), false);
-        }
-      }
-    }
-    session.attemptsByPos.add(pos);
-    sessionMap.set(sessionKey, session);
   }
 
   const dailyActiveDevices: DailyActiveDeviceMetric[] = Array.from(dailyActiveMap.entries())
@@ -295,36 +269,6 @@ export function computePostLaunchAnalytics(input: PostLaunchAnalyticsInput): Pos
       averageResponseMs: entry.attempts ? Math.round(entry.responseMs / entry.attempts) : 0,
     }))
     .sort((a, b) => (a.pos === b.pos ? b.attempts - a.attempts : a.pos.localeCompare(b.pos)));
-
-  const allPos = unique([
-    ...practiceAttempts.map((attempt) => normalizePos(attempt.pos)),
-    ...Array.from(sessionMap.values()).flatMap((session) => Array.from(session.flags.keys())),
-  ]);
-
-  const featureFlagFunnel: FeatureFlagFunnelMetric[] = allPos
-    .map((pos) => {
-      let enabledSessions = 0;
-      let sessionsWithAttempts = 0;
-      for (const session of sessionMap.values()) {
-        const enabled = session.flags.get(pos) ?? false;
-        if (enabled) {
-          enabledSessions += 1;
-          if (session.attemptsByPos.has(pos)) {
-            sessionsWithAttempts += 1;
-          }
-        }
-      }
-      const adoptionRate = enabledSessions
-        ? Number(((sessionsWithAttempts / enabledSessions) * 100).toFixed(2))
-        : 0;
-      return {
-        pos,
-        enabledSessions,
-        sessionsWithAttempts,
-        adoptionRate,
-      } satisfies FeatureFlagFunnelMetric;
-    })
-    .sort((a, b) => a.pos.localeCompare(b.pos));
 
   const priorityHeatmapMap = new Map<string, Map<number, { total: number; count: number }>>();
   const duePerDay = new Map<string, number>();
@@ -542,7 +486,6 @@ export function computePostLaunchAnalytics(input: PostLaunchAnalyticsInput): Pos
     posAdoption: {
       dailyActiveDevices,
       taskPerformance,
-      featureFlagFunnel,
     },
     schedulerHealth: {
       priorityHeatmap,

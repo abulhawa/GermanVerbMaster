@@ -24,16 +24,6 @@ import type { LexemePos, TaskType } from "@shared";
 import { posPrimarySourceId } from "@shared/source-ids";
 import { getTaskRegistryEntry, taskRegistry } from "./tasks/registry.js";
 import { processTaskSubmission } from "./tasks/scheduler.js";
-import {
-  asLexemePos,
-  ensurePosFeatureEnabled,
-  formatFeatureFlagHeader,
-  getFeatureFlagSnapshot,
-  isPosFeatureEnabled,
-  notifyPosFeatureBlocked,
-  PosFeatureDisabledError,
-  summarizeFeatureFlagSnapshot,
-} from "./feature-flags.js";
 import { authRouter, getSessionFromRequest } from "./auth/index.js";
 import type { AuthSession } from "./auth/index.js";
 
@@ -361,8 +351,6 @@ const taskQuerySchema = z.object({
   level: levelSchema.optional(),
 });
 
-type SubmissionFeatureFlagSummary = Record<string, { enabled: boolean; stage?: string; defaultValue?: boolean }>;
-
 const practiceHistoryQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(200).default(50),
   result: z.enum(["correct", "incorrect"]).optional(),
@@ -488,16 +476,6 @@ const submissionSchema = z
       })
       .optional(),
     hintsUsed: z.boolean().optional(),
-    featureFlags: z
-      .record(
-        z.string(),
-        z.object({
-          enabled: z.boolean(),
-          stage: z.string().optional(),
-          defaultValue: z.boolean().optional(),
-        }),
-      )
-      .optional(),
   })
   .superRefine((value, ctx) => {
     if (value.responseMs === undefined && value.timeSpentMs === undefined) {
@@ -780,6 +758,31 @@ function parsePageParam(value: unknown, fallback: number): number {
   return parsed;
 }
 
+const KNOWN_LEXEME_POS = new Set<LexemePos>([
+  "verb",
+  "noun",
+  "adjective",
+  "adverb",
+  "pronoun",
+  "determiner",
+  "preposition",
+  "conjunction",
+  "numeral",
+  "particle",
+  "interjection",
+]);
+
+function asLexemePos(value: string | null | undefined): LexemePos | null {
+  if (typeof value !== "string") {
+    return null;
+  }
+  const normalized = value.trim().toLowerCase();
+  if (!normalized) {
+    return null;
+  }
+  return KNOWN_LEXEME_POS.has(normalized as LexemePos) ? (normalized as LexemePos) : null;
+}
+
 function normaliseTaskPosFilter(value: string): LexemePos | null {
   const normalized = value.trim().toLowerCase();
   if (!normalized) return null;
@@ -1035,9 +1038,7 @@ export function registerRoutes(app: Express): void {
       const filters: Array<ReturnType<typeof eq>> = [];
       let normalisedPos: LexemePos | null = null;
 
-      const snapshot = getFeatureFlagSnapshot();
       res.setHeader("Cache-Control", "no-store");
-      res.setHeader("X-Feature-Flags", formatFeatureFlagHeader(snapshot));
 
       if (pos) {
         normalisedPos = normaliseTaskPosFilter(pos);
@@ -1046,20 +1047,6 @@ export function registerRoutes(app: Express): void {
             error: `Unsupported part-of-speech filter: ${pos}`,
             code: "INVALID_POS_FILTER",
           });
-        }
-        try {
-          ensurePosFeatureEnabled(normalisedPos, "tasks:list:filter", snapshot, {
-            filter: pos,
-          });
-        } catch (error) {
-          if (error instanceof PosFeatureDisabledError) {
-            return res.status(403).json({
-              error: error.message,
-              code: "POS_FEATURE_DISABLED",
-              pos: normalisedPos,
-            });
-          }
-          throw error;
         }
         filters.push(eq(taskSpecs.pos, normalisedPos));
       }
@@ -1264,35 +1251,8 @@ export function registerRoutes(app: Express): void {
 
       const rows = orderedRows.slice(0, limit);
 
-      const allowedRows: typeof rows = [];
-      const blockedCounts = new Map<LexemePos, number>();
-
-      for (const row of rows) {
-        const rowPos = asLexemePos(row.pos);
-        if (!rowPos) {
-          allowedRows.push(row);
-          continue;
-        }
-        if (!isPosFeatureEnabled(rowPos, snapshot)) {
-          blockedCounts.set(rowPos, (blockedCounts.get(rowPos) ?? 0) + 1);
-          continue;
-        }
-        allowedRows.push(row);
-      }
-
-      if (blockedCounts.size) {
-        for (const [blockedPos, count] of blockedCounts) {
-          notifyPosFeatureBlocked(blockedPos, "tasks:list:response-filter", snapshot, {
-            filteredTasks: count,
-            totalFetched: rows.length,
-            hasExplicitPosFilter: Boolean(pos),
-            taskType: resolvedTaskType,
-          });
-        }
-      }
-
       const fallbackPackSlugs = new Set<string>();
-      for (const row of allowedRows) {
+      for (const row of rows) {
         if (row.packId && row.packSlug && row.packName) {
           continue;
         }
@@ -1344,7 +1304,7 @@ export function registerRoutes(app: Express): void {
         pack: { id: string; slug: string; name: string } | null;
       }> = [];
 
-      for (const row of allowedRows) {
+      for (const row of rows) {
         const taskId = normaliseString(row.taskId);
         const taskTypeValue = normaliseString(row.taskType);
         const rendererValue = normaliseString(row.renderer);
@@ -1412,30 +1372,6 @@ export function registerRoutes(app: Express): void {
     } catch (error) {
       next(error);
     }
-  });
-
-  app.get("/api/feature-flags", (_req, res) => {
-    const snapshot = getFeatureFlagSnapshot();
-    res.setHeader("Cache-Control", "no-store");
-    res.setHeader("X-Feature-Flags", formatFeatureFlagHeader(snapshot));
-
-    const responsePayload = Object.fromEntries(
-      Object.entries(snapshot.pos).map(([key, state]) => [
-        key,
-        {
-          enabled: state.enabled,
-          stage: state.stage,
-          flag: state.flag ?? null,
-          defaultValue: state.defaultValue,
-          description: state.description,
-        },
-      ]),
-    );
-
-    res.json({
-      fetchedAt: snapshot.fetchedAt.toISOString(),
-      pos: responsePayload,
-    });
   });
 
   app.get("/api/practice/history", async (req, res) => {
@@ -1573,9 +1509,7 @@ export function registerRoutes(app: Express): void {
     }
 
     const payload = parsed.data;
-    const snapshot = getFeatureFlagSnapshot();
     res.setHeader("Cache-Control", "no-store");
-    res.setHeader("X-Feature-Flags", formatFeatureFlagHeader(snapshot));
 
     const selectTaskRowById = async (
       taskId: string,
@@ -1719,59 +1653,12 @@ export function registerRoutes(app: Express): void {
       });
     }
 
-    try {
-      ensurePosFeatureEnabled(taskPos, "tasks:submission", snapshot, {
-        taskId: resolvedTaskId,
-        deviceId: payload.deviceId,
-      });
-    } catch (error) {
-      if (error instanceof PosFeatureDisabledError) {
-        return res.status(403).json({
-          error: error.message,
-          code: "POS_FEATURE_DISABLED",
-          pos: taskPos,
-        });
-      }
-      throw error;
-    }
-
     const registryEntry = getTaskRegistryEntry(taskRow.taskType as TaskType);
 
     const submittedAt = payload.submittedAt ? new Date(payload.submittedAt) : undefined;
     const answeredAt = payload.answeredAt ? new Date(payload.answeredAt) : undefined;
     const queuedAt = payload.queuedAt ? new Date(payload.queuedAt) : undefined;
     const responseMs = payload.responseMs ?? payload.timeSpentMs ?? 0;
-
-    const payloadFeatureFlags = payload.featureFlags as SubmissionFeatureFlagSummary | undefined;
-
-    const featureFlagSummary = (() => {
-      const serverSummary = summarizeFeatureFlagSnapshot(snapshot);
-      if (!payloadFeatureFlags) {
-        return serverSummary;
-      }
-      const merged = { ...serverSummary } as Record<string, { enabled: boolean; stage: string; flag?: string; defaultValue: boolean }>;
-      const entries = Object.entries(payloadFeatureFlags) as Array<[
-        string,
-        SubmissionFeatureFlagSummary[string],
-      ]>;
-      for (const [key, value] of entries) {
-        if (!merged[key]) {
-          merged[key] = {
-            enabled: value.enabled,
-            stage: value.stage ?? "beta",
-            defaultValue: value.defaultValue ?? false,
-          };
-          continue;
-        }
-        merged[key] = {
-          enabled: value.enabled,
-          stage: value.stage ?? merged[key]!.stage,
-          flag: merged[key]!.flag,
-          defaultValue: value.defaultValue ?? merged[key]!.defaultValue,
-        };
-      }
-      return merged;
-    })();
 
     try {
       const submissionResult = await processTaskSubmission({
@@ -1802,7 +1689,6 @@ export function registerRoutes(app: Express): void {
         cefrLevel: payload.cefrLevel ?? null,
         packId: payload.packId ?? null,
         hintsUsed: payload.hintsUsed ?? false,
-        featureFlags: featureFlagSummary,
         metadata: {
           submittedResponse: payload.submittedResponse ?? payload.answer ?? null,
           expectedResponse: payload.expectedResponse ?? null,

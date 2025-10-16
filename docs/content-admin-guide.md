@@ -5,7 +5,7 @@ The admin dashboard at `/admin` now manages verbs, nouns, and adjectives from a 
 
 ## Prerequisites
 - Set an `ADMIN_API_TOKEN` in your `.env` file and restart the server so protected routes accept updates.
-- Confirm the lexeme schema is enabled (`ENABLE_LEXEME_SCHEMA=true`). Toggle `ENABLE_NOUNS_BETA` or `ENABLE_ADJECTIVES_BETA` when you are ready to expose new queues to end users.
+- Confirm the lexeme schema is enabled (`ENABLE_LEXEME_SCHEMA=true`).
 - Run `npm install` followed by `npm run dev` so the React admin UI and Express API are available locally.
 
 ## Navigating the dashboard
@@ -18,7 +18,7 @@ The admin dashboard at `/admin` now manages verbs, nouns, and adjectives from a 
 ## Coordinating with ETL & packs
 1. After curating a batch, run `npm run seed` to re-aggregate source CSVs and regenerate deterministic task packs under `data/packs/`. Copy any updated JSON files into `client/public/packs/` so the service worker can serve them offline.
 2. Execute `npm run packs:lint` before committing changes. The lint step ensures pack metadata, task descriptors, and lexeme IDs align with the shared task registry.
-3. When promoting new POS content, keep the relevant feature flag disabled until QA signs off on the generated packs. Flip the flag, redeploy, and monitor the `/api/tasks` responses during the first live session.
+3. When promoting new POS content, reseed after QA signs off on the generated packs and monitor the `/api/tasks` responses during the first live session.
 
 ## Exporting approved words to JSONL
 Once a POS slice is ready to back up or publish, use the dedicated export endpoints and CLI helpers to sync the database with the JSONL feeds under `data/sync/`:

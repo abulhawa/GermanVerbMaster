@@ -222,7 +222,7 @@ describe('tasks API', () => {
     });
 
     const historyResult = await dbContext.pool.query(
-      'select task_id, device_id, result, pos, task_type, hints_used, feature_flags, metadata from practice_history where task_id = $1',
+      'select task_id, device_id, result, pos, task_type, hints_used, metadata from practice_history where task_id = $1',
       [task.taskId],
     );
 
@@ -232,7 +232,6 @@ describe('tasks API', () => {
     expect(historyResult.rows[0]!.pos).toBe(task.pos);
     expect(historyResult.rows[0]!.task_type).toBe(task.taskType);
     expect(historyResult.rows[0]!.hints_used).toBe(false);
-    expect(historyResult.rows[0]!.feature_flags).toBeDefined();
     expect(historyResult.rows[0]!.metadata).toMatchObject({
       queueCap: submissionBody.queueCap,
       leitnerBox: submissionBody.leitnerBox,

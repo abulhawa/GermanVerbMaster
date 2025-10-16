@@ -4,7 +4,7 @@
 
 ## Slide 1 – Why the change?
 - Verb-only infrastructure blocked expansion into nouns and adjectives.
-- New lexeme schema + task registry supports mixed POS sessions, deterministic packs, and feature-flagged rollouts.
+- New lexeme schema + task registry supports mixed POS sessions and deterministic packs.
 - Editors now help steward pack metadata that powers both online and offline experiences.
 
 ## Slide 2 – Key concepts
@@ -29,11 +29,11 @@
 ## Slide 5 – Pack QA checklist
 - Confirm pack metadata (`taskTypes`, `size`, `cefrLevels`) matches the regenerated contents.
 - Spot-check offline bundles after copying `data/packs/*.json` into `client/public/packs/` to ensure prompts/solutions render as expected.
-- Verify feature flags remain disabled until QA completes noun/adjective reviews.
+- Confirm packs present the expected tasks for every POS before sign-off.
 - Record any lint failures with file paths and share during standup.
 
 ## Slide 6 – Launch readiness signals
-- `/api/tasks` returns healthy mixes for each POS when flags are enabled.
+- `/api/tasks` returns healthy mixes for each POS from seeded content.
 - Scheduler telemetry in `scheduling_state` shows attempts across verbs, nouns, and adjectives.
 - Playwright smoke tests pass for mixed-mode sessions.
 - Training materials (this deck + admin guide) are acknowledged by the content team.
