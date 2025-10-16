@@ -134,21 +134,21 @@ Shut down the container with `docker stop gvm-postgres` when you are done.
 ## Progressive Web App
 - The client is bundled with `vite-plugin-pwa` using an auto-updating service worker.
 - `client/public/manifest.webmanifest` defines install metadata, icons, and standalone display mode.
-- Runtime caching keeps `/api/tasks` responses and pack metadata available offline. Copy the deterministic pack bundles from `data/packs/*.json` into `client/public/packs/` before a release so `/packs/*.json` remains available as the final fallback for each POS.
+- Runtime caching keeps `/api/tasks` responses available offline so the most recent prompts persist between sessions without bundling static packs.
 - A `virtual:pwa-register` hook registers the service worker on load; the app earns an 80+ Lighthouse PWA score when built.
 
 ## Offline + Sync
-- Task data is fetched from `/api/tasks` when online and automatically falls back to deterministic task packs served from `/packs/*.json` (populated from `client/public/packs/`) when offline.
+- Task data is fetched from `/api/tasks` when online and cached by the service worker for offline reuse.
 - Practice attempts are written to an IndexedDB queue (via Dexie) whenever the network is unavailable or the API is rate limited.
 - The `useSyncQueue` hook listens to `online` and `visibilitychange` events and flushes queued attempts back to `POST /api/submission`.
 - Each device receives a persistent `deviceId` stored in `localStorage`; it is sent with every practice submission and stored in `practice_history` for future analytics.
 - `data/pos/*.jsonl` contains the POS-specific seed files (verbs, nouns, adjectives, adverbs, prepositions, …). Each line is a JSON object that includes lemma metadata, an `approved` flag, an `examples` array of German/English pairs, and POS-specific attributes.
-- Legacy aggregated CSVs now live under `data/legacy/` for historical reference. The new seeding pipeline reads the POS-specific files directly and regenerates `data/packs/*.json` bundles on every `npm run seed`.
+- Legacy aggregated CSVs now live under `data/legacy/` for historical reference. The new seeding pipeline reads the POS-specific files directly and regenerates task specs in Postgres on every `npm run seed`.
 
 ## Database utilities
 - The schema is managed with Drizzle + Postgres. After editing `db/schema.ts`, run `npm run db:push` to apply migrations using the configured `DATABASE_URL`.
-- `npm run seed` recomputes completeness, writes deterministic content packs to `data/packs/`, and idempotently upserts source material into Postgres. Copy updated pack JSON into `client/public/packs/` before building so offline clients can fetch the refreshed bundles. Run the seed after editing any `data/pos/*.jsonl` file or adjusting enrichment snapshots under `data/enrichment/`.
-- The seeding pipeline synchronises the shared `lexemes`/`inflections` tables for every part of speech and records aggregated attribution metadata in each pack so CC BY-SA contributors are always credited.
+- `npm run seed` recomputes completeness, writes deterministic task specs through the template registry, and idempotently upserts source material into Postgres. Run the seed after editing any `data/pos/*.jsonl` file or adjusting enrichment snapshots under `data/enrichment/`.
+- The seeding pipeline synchronises the shared `lexemes`/`inflections` tables for every part of speech and records aggregated attribution metadata alongside each task so CC BY-SA contributors are always credited.
 
 ## Vocabulary enrichment helpers
 - Run `npm run enrich` to execute the enrichment pipeline. By default it inspects incomplete entries (`ONLY_INCOMPLETE=true`), queries Kaikki's Wiktextract dataset, OpenThesaurus, MyMemory, Tatoeba, and optionally OpenAI (`ENABLE_AI=true`) for missing metadata, and writes a structured report under `data/generated/enrichment/`. Set `APPLY_UPDATES=true` to upsert the suggested `english`/example values back into Postgres after taking a JSON backup (`data/generated/backups/words-backup-*.json`). Use `COLLECT_WIKTEXTRACT=false` to disable the Wiktextract integration when debugging network behaviour.
@@ -161,8 +161,8 @@ Shut down the container with `docker stop gvm-postgres` when you are done.
 
 ## Lexeme & content admin tools
 - Configure an `ADMIN_API_TOKEN` in your `.env` file (see `.env.example`) to protect ingestion routes. Restart the dev server after changing environment variables.
-- Visit `http://localhost:5000/admin` to access the words dashboard. Multi-select filters now support verbs, nouns, and adjectives plus CEFR level and pack membership.
-- Updates are issued via `PATCH /api/words/:id` with the `x-admin-token` header. Approval toggles and field edits immediately invalidate the admin cache and prompt pack regeneration during the next `npm run seed`.
+- Visit `http://localhost:5000/admin` to access the words dashboard. Multi-select filters now support verbs, nouns, adjectives, and CEFR levels for quick targeting.
+- Updates are issued via `PATCH /api/words/:id` with the `x-admin-token` header. Approval toggles and field edits immediately invalidate the admin cache and prompt the next `npm run seed` to refresh lexeme rows, inflections, and task specs.
 
 ## Task delivery
 - Practice tasks are served directly from `task_specs` using the latest content updates; no device-level Leitner state is required.

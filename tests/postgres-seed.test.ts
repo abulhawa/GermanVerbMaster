@@ -65,16 +65,6 @@ describe('seedDatabase', () => {
         try {
           await writeBasicPosFiles(seedRoot);
 
-          vi.doMock('../scripts/etl/golden', async () => {
-            const actual = await vi.importActual<typeof import('../scripts/etl/golden')>(
-              '../scripts/etl/golden',
-            );
-            return {
-              ...actual,
-              writeGoldenBundlesToDisk: vi.fn(),
-            };
-          });
-
           const { seedDatabase } = await import('../scripts/seed');
           const { words, lexemes, inflections, taskSpecs } = await import('../db/schema.js');
 
@@ -136,16 +126,6 @@ describe('seedDatabase', () => {
             'utf8',
           );
 
-      vi.doMock('../scripts/etl/golden', async () => {
-        const actual = await vi.importActual<typeof import('../scripts/etl/golden')>(
-          '../scripts/etl/golden',
-        );
-        return {
-          ...actual,
-          writeGoldenBundlesToDisk: vi.fn(),
-        };
-      });
-
       const { seedDatabase } = await import('../scripts/seed');
 
       await expect(seedDatabase(seedRoot)).rejects.toThrow(/duplicate word gehen \(V\)/i);
@@ -180,16 +160,6 @@ describe('seedDatabase', () => {
         pos: 'verb',
         metadata: {},
         sourceIds: [],
-      });
-
-      vi.doMock('../scripts/etl/golden', async () => {
-        const actual = await vi.importActual<typeof import('../scripts/etl/golden')>(
-          '../scripts/etl/golden',
-        );
-        return {
-          ...actual,
-          writeGoldenBundlesToDisk: vi.fn(),
-        };
       });
 
       const { seedDatabase } = await import('../scripts/seed');

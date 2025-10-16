@@ -3,7 +3,7 @@
 This document breaks down the current Vitest failures into smaller, actionable tasks based on the recent regression analysis.
 
 ## 1. Seed Lexeme Inventory for Task Pipeline Tests
-- **Problem**: `/api/tasks` now performs an `INNER JOIN` on the `lexemes` table. Test fixtures that only call `upsertGoldenBundles` end up with no matching lexeme rows, so the tasks API returns an empty array.
+- **Problem**: `/api/tasks` now performs an `INNER JOIN` on the `lexemes` table. Test fixtures that only call `upsertTaskInventory` end up with no matching lexeme rows, so the tasks API returns an empty array.
 - **Task A**: Extend the task-related test helpers to insert the minimum lexeme records (lemma, language code, and linkage) before invoking the API.
 - **Task B**: Audit all Vitest suites that depend on `/api/tasks` (queue shadowing, client fallbacks, etc.) and update their setup hooks to call the new helper.
 - **Task C**: Add a regression test that confirms a task appears after both the bundle and its lexeme are seeded, guarding against future fixture drift.

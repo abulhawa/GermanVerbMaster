@@ -6,8 +6,8 @@ import { setupTestDatabase, type TestDatabaseContext } from './helpers/pg';
 import { createApiInvoker } from './helpers/vercel';
 
 describe('tasks API', () => {
-  let buildGoldenBundles: typeof import('../scripts/etl/golden').buildGoldenBundles;
-  let upsertGoldenBundles: typeof import('../scripts/etl/golden').upsertGoldenBundles;
+  let buildTaskInventory: typeof import('../scripts/etl/golden').buildTaskInventory;
+  let upsertTaskInventory: typeof import('../scripts/etl/golden').upsertTaskInventory;
   let seedLexemeInventoryForWords: typeof import('./helpers/task-fixtures').seedLexemeInventoryForWords;
   let invokeApi: ReturnType<typeof createApiInvoker>;
   let createVercelApiHandler: typeof import('../server/api/vercel-handler.js').createVercelApiHandler;
@@ -126,12 +126,12 @@ describe('tasks API', () => {
     },
   ];
 
-    ({ buildGoldenBundles, upsertGoldenBundles } = await import('../scripts/etl/golden'));
+    ({ buildTaskInventory, upsertTaskInventory } = await import('../scripts/etl/golden'));
     ({ seedLexemeInventoryForWords } = await import('./helpers/task-fixtures'));
 
     await seedLexemeInventoryForWords(drizzleDb, sampleWords);
-    const bundles = buildGoldenBundles(sampleWords);
-    await upsertGoldenBundles(drizzleDb, bundles);
+    const taskInventory = buildTaskInventory(sampleWords);
+    await upsertTaskInventory(drizzleDb, taskInventory);
 
     ({ createVercelApiHandler } = await import('../server/api/vercel-handler.js'));
     const handler = createVercelApiHandler({ enableCors: false });
