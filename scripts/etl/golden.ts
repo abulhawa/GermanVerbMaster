@@ -81,7 +81,6 @@ export interface TaskSpecSeed {
   hints: unknown[] | null;
   metadata: Record<string, unknown> | null;
   revision: number;
-  sourcePack: string;
   createdAt: number;
   updatedAt: number;
 }
@@ -369,7 +368,7 @@ function createPackBundle(config: PackBundleConfig): PackBundle {
     const lexemeInflections = createInflectionsForWord(word, lexeme.id);
     inflections.push(...lexemeInflections);
 
-    const lexemeTasks = createTasksForWord(word, lexeme.id, taskType, slug);
+    const lexemeTasks = createTasksForWord(word, lexeme.id, taskType);
     tasks.push(...lexemeTasks);
 
     const primaryTaskId = lexemeTasks[0]?.id ?? null;
@@ -694,7 +693,6 @@ function createTasksForWord(
   word: AggregatedWord,
   lexemeId: string,
   taskType: keyof typeof taskTypeRegistry,
-  sourcePack: string,
 ): TaskSpecSeed[] {
   const pos = mapPos(word.pos);
   const tasks: TaskDefinition[] = [];
@@ -814,7 +812,6 @@ function createTasksForWord(
       hints: task.hints.length ? task.hints : null,
       metadata: Object.keys(task.metadata).length ? pruneUndefined(task.metadata) : null,
       revision,
-      sourcePack: sourcePack,
       createdAt: STABLE_TIMESTAMP,
       updatedAt: STABLE_TIMESTAMP,
     };

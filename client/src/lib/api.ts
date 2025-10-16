@@ -38,7 +38,6 @@ const practiceHistoryItemSchema = z.object({
   timeSpentMs: z.number(),
   timeSpent: z.number(),
   cefrLevel: z.string().optional(),
-  packId: z.string().nullable().optional(),
   mode: z.string().optional(),
   attemptedAnswer: z.string().optional(),
   correctAnswer: z.string().optional(),

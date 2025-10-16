@@ -82,7 +82,6 @@ function convertLegacyAttempt(payload: PracticeAttemptPayload): TaskAttemptPaylo
     deviceId: payload.deviceId,
     queuedAt: payload.queuedAt,
     cefrLevel: payload.level,
-    packId: null,
     legacyVerb: {
       infinitive: payload.verb,
       mode: payload.mode,

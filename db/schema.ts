@@ -230,7 +230,6 @@ export const taskSpecs = pgTable(
     hints: jsonb("hints").$type<unknown[]>(),
     metadata: jsonb("metadata").$type<Record<string, unknown>>(),
     revision: integer("revision").notNull().default(1),
-    sourcePack: text("source_pack"),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
@@ -265,7 +264,6 @@ export const practiceHistory = pgTable(
     answeredAt: timestamp("answered_at", { withTimezone: true }),
     queuedAt: timestamp("queued_at", { withTimezone: true }),
     cefrLevel: text("cefr_level"),
-    packId: text("pack_id"),
     hintsUsed: boolean("hints_used").notNull().default(false),
     metadata: jsonb("metadata").$type<Record<string, unknown>>(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
@@ -275,7 +273,6 @@ export const practiceHistory = pgTable(
     index("practice_history_pos_idx").on(table.pos),
     index("practice_history_submitted_idx").on(table.submittedAt),
     index("practice_history_device_idx").on(table.deviceId),
-    index("practice_history_pack_idx").on(table.packId),
   ],
 );
 
