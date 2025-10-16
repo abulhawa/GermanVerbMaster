@@ -28,7 +28,7 @@ export interface PracticeTask<T extends TaskType = TaskType> {
     metadata: Record<string, unknown> | null;
   };
   assignedAt: string;
-  source: 'scheduler' | 'seed' | 'review';
+  source: 'seed' | 'review';
 }
 
 export interface TaskFetchOptions {
@@ -84,7 +84,7 @@ function mapTaskPayload(task: RawTaskPayload): PracticeTask {
       metadata: task.lexeme.metadata ?? null,
     },
     assignedAt: new Date().toISOString(),
-    source: 'scheduler',
+    source: 'seed',
   };
 }
 

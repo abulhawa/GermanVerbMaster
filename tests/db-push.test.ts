@@ -35,7 +35,6 @@ describe('applyMigrations', () => {
       expect.arrayContaining([
         'lexemes',
         'task_specs',
-        'scheduling_state',
         'practice_history',
       ]),
     );

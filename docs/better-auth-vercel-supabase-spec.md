@@ -63,7 +63,7 @@ OAuth redirect URIs (production + local):
 5. Execute `npm run db:generate` to capture migrations, then `npm run db:migrate` locally against staging Supabase.
 6. Update Supabase RLS policies:
    - Allow Better Auth tables the access recommended by Better Auth docs.
-   - Confirm application tables (`user_settings`, `practice_history`, `scheduling_state`, etc.) restrict access to `auth.uid()`.
+   - Confirm application tables (`user_settings`, `practice_history`, etc.) restrict access to `auth.uid()`.
 
 ## 8. Server Integration Plan
 1. **Dependencies**

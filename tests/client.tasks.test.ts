@@ -49,7 +49,6 @@ describe('fetchPracticeTasks', () => {
             lemma: 'sein',
             metadata: { english: 'to be' },
           },
-          },
         },
       ],
     } satisfies Record<string, unknown>;
@@ -76,7 +75,7 @@ describe('fetchPracticeTasks', () => {
     expect(task.taskId).toBe('task-1');
     expect(task.prompt.lemma).toBe('sein');
     expect(task.expectedSolution?.form).toBe('bin');
-    expect(task.source).toBe('scheduler');
+    expect(task.source).toBe('seed');
   });
 
   it('attaches the device identifier to task feed requests', async () => {

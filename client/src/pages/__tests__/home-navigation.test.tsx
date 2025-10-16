@@ -115,7 +115,7 @@ function buildTask(taskType: TaskType, index: number): PracticeTask {
           metadata: { level: 'A1' },
         },
             assignedAt: new Date().toISOString(),
-        source: 'scheduler',
+        source: 'seed',
       } satisfies PracticeTask<'conjugate_form'>;
     }
     case 'noun_case_declension': {
@@ -143,7 +143,7 @@ function buildTask(taskType: TaskType, index: number): PracticeTask {
           metadata: { level: 'A1' },
         },
             assignedAt: new Date().toISOString(),
-        source: 'scheduler',
+        source: 'seed',
       } satisfies PracticeTask<'noun_case_declension'>;
     }
     case 'adj_ending': {
@@ -170,7 +170,7 @@ function buildTask(taskType: TaskType, index: number): PracticeTask {
           metadata: { level: 'A2' },
         },
             assignedAt: new Date().toISOString(),
-        source: 'scheduler',
+        source: 'seed',
       } satisfies PracticeTask<'adj_ending'>;
     }
     default:
@@ -200,7 +200,7 @@ function createTask(id: string, lemma: string): PracticeTask<'conjugate_form'> {
       metadata: { level: 'A1' },
     },
     assignedAt: new Date().toISOString(),
-    source: 'scheduler',
+    source: 'seed',
   } satisfies PracticeTask<'conjugate_form'>;
 }
 

@@ -1,5 +1,4 @@
 import './helpers/mock-auth';
-import { eq } from 'drizzle-orm';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { AggregatedWord } from '../scripts/etl/types';
@@ -12,8 +11,6 @@ describe('tasks API', () => {
   let seedLexemeInventoryForWords: typeof import('./helpers/task-fixtures').seedLexemeInventoryForWords;
   let invokeApi: ReturnType<typeof createApiInvoker>;
   let createVercelApiHandler: typeof import('../server/api/vercel-handler.js').createVercelApiHandler;
-  let schedulingStateTable: typeof import('../db/schema.js').schedulingState;
-  let telemetryTable: typeof import('../db/schema.js').telemetryPriorities;
   let practiceHistoryTable: typeof import('../db/schema.js').practiceHistory;
   let drizzleDb: typeof import('@db').db;
   let dbContext: TestDatabaseContext | undefined;
@@ -23,8 +20,6 @@ describe('tasks API', () => {
     context.mock();
 
     const schemaModule = await import('../db/schema.js');
-    schedulingStateTable = schemaModule.schedulingState;
-    telemetryTable = schemaModule.telemetryPriorities;
     practiceHistoryTable = schemaModule.practiceHistory;
     const dbModule = await import('@db');
     drizzleDb = dbModule.db;
@@ -197,29 +192,9 @@ describe('tasks API', () => {
     expect(submission.status).toBe(200);
     const submissionBody = submission.bodyJson as any;
     expect(submissionBody.status).toBe('recorded');
-    expect(submissionBody.leitnerBox).toBeGreaterThanOrEqual(1);
+    expect(submissionBody.taskId).toBe(task.taskId);
+    expect(submissionBody.deviceId).toBe('device-123');
     expect(submissionBody.queueCap).toBeGreaterThan(0);
-    expect(submissionBody.coverageScore).toBeGreaterThanOrEqual(0);
-
-    const schedulingResult = await dbContext.pool.query(
-      'select total_attempts, correct_attempts from scheduling_state where task_id = $1',
-      [task.taskId],
-    );
-
-    expect(schedulingResult.rows[0]?.total_attempts).toBeGreaterThan(0);
-    expect(schedulingResult.rows[0]?.correct_attempts).toBeGreaterThan(0);
-
-    const telemetryResult = await dbContext.pool.query(
-      'select priority_score, metadata from telemetry_priorities where task_id = $1',
-      [task.taskId],
-    );
-
-    expect(telemetryResult.rowCount).toBe(1);
-    expect(telemetryResult.rows[0]?.priority_score).toBeCloseTo(submissionBody.priorityScore, 5);
-    expect(telemetryResult.rows[0]?.metadata).toMatchObject({
-      posAssignments: 1,
-      queueCap: submissionBody.queueCap,
-    });
 
     const historyResult = await dbContext.pool.query(
       'select task_id, device_id, result, pos, task_type, hints_used, metadata from practice_history where task_id = $1',
@@ -234,69 +209,6 @@ describe('tasks API', () => {
     expect(historyResult.rows[0]!.hints_used).toBe(false);
     expect(historyResult.rows[0]!.metadata).toMatchObject({
       queueCap: submissionBody.queueCap,
-      leitnerBox: submissionBody.leitnerBox,
     });
-  });
-
-  it('reorders fallback tasks using scheduling state when adaptive queue is disabled', async () => {
-    const deviceId = 'device-priority';
-    const initialResponse = await invokeApi(`/api/tasks?pos=verb&limit=2&deviceId=${deviceId}`);
-    expect(initialResponse.status).toBe(200);
-    const initialTasks = (initialResponse.bodyJson as any).tasks as Array<{ taskId: string }>;
-    expect(initialTasks.length).toBeGreaterThanOrEqual(2);
-
-    const [firstTask, secondTask] = initialTasks;
-    expect(firstTask).toBeDefined();
-    expect(secondTask).toBeDefined();
-
-    await drizzleDb.delete(schedulingStateTable).where(eq(schedulingStateTable.deviceId, deviceId));
-
-    const now = new Date('2025-01-01T12:00:00.000Z');
-    const incorrectDueAt = new Date(now.getTime() - 10 * 60 * 1000);
-    const farFuture = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-
-    await drizzleDb.insert(schedulingStateTable).values([
-      {
-        deviceId,
-        taskId: firstTask.taskId,
-        leitnerBox: 3,
-        totalAttempts: 4,
-        correctAttempts: 4,
-        averageResponseMs: 1800,
-        accuracyWeight: 0.9,
-        latencyWeight: 0.85,
-        stabilityWeight: 0.65,
-        priorityScore: 0.1,
-        dueAt: farFuture,
-        lastResult: 'correct',
-        lastPracticedAt: now,
-        createdAt: now,
-        updatedAt: now,
-      },
-      {
-        deviceId,
-        taskId: secondTask.taskId,
-        leitnerBox: 1,
-        totalAttempts: 3,
-        correctAttempts: 1,
-        averageResponseMs: 4200,
-        accuracyWeight: 0.4,
-        latencyWeight: 0.5,
-        stabilityWeight: 0.25,
-        priorityScore: 1.35,
-        dueAt: incorrectDueAt,
-        lastResult: 'incorrect',
-        lastPracticedAt: incorrectDueAt,
-        createdAt: incorrectDueAt,
-        updatedAt: incorrectDueAt,
-      },
-    ]);
-
-    const prioritizedResponse = await invokeApi(`/api/tasks?pos=verb&limit=2&deviceId=${deviceId}`);
-    expect(prioritizedResponse.status).toBe(200);
-    const prioritizedTasks = (prioritizedResponse.bodyJson as any).tasks as Array<{ taskId: string }>;
-    expect(prioritizedTasks).toHaveLength(2);
-    expect(prioritizedTasks[0]?.taskId).toBe(secondTask.taskId);
-    expect(prioritizedTasks[0]?.taskId).not.toBe(firstTask.taskId);
   });
 });

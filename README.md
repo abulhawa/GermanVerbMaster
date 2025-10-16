@@ -129,7 +129,7 @@ Shut down the container with `docker stop gvm-postgres` when you are done.
 ## Lexeme-based task system
 - `/api/tasks` exposes POS-aware task descriptors driven by the shared registry in `shared/task-registry.ts` and server metadata in `server/tasks/registry.ts`.
 - Legacy verb routes have been removed. Clients should rely on `/api/tasks` for fetching practice prompts and `/api/submission` for recording attempts.
-- The deterministic schema covers `lexemes`, `inflections`, `task_specs`, `scheduling_state`, and `telemetry_priorities`. These tables live alongside legacy verb tables until shadow mode validates parity.
+- The deterministic schema covers `lexemes`, `inflections`, `task_specs`, and `practice_history`. These tables live alongside legacy verb tables until shadow mode validates parity.
 
 ## Progressive Web App
 - The client is bundled with `vite-plugin-pwa` using an auto-updating service worker.
@@ -141,7 +141,7 @@ Shut down the container with `docker stop gvm-postgres` when you are done.
 - Task data is fetched from `/api/tasks` when online and automatically falls back to deterministic task packs served from `/packs/*.json` (populated from `client/public/packs/`) when offline.
 - Practice attempts are written to an IndexedDB queue (via Dexie) whenever the network is unavailable or the API is rate limited.
 - The `useSyncQueue` hook listens to `online` and `visibilitychange` events and flushes queued attempts back to `POST /api/submission`.
-- Each device receives a persistent `deviceId` stored in `localStorage`; it is sent with every practice submission and stored in `scheduling_state` for priority calculations.
+- Each device receives a persistent `deviceId` stored in `localStorage`; it is sent with every practice submission and stored in `practice_history` for future analytics.
 - `data/pos/*.jsonl` contains the POS-specific seed files (verbs, nouns, adjectives, adverbs, prepositions, …). Each line is a JSON object that includes lemma metadata, an `approved` flag, an `examples` array of German/English pairs, and POS-specific attributes.
 - Legacy aggregated CSVs now live under `data/legacy/` for historical reference. The new seeding pipeline reads the POS-specific files directly and regenerates `data/packs/*.json` bundles on every `npm run seed`.
 
@@ -164,7 +164,7 @@ Shut down the container with `docker stop gvm-postgres` when you are done.
 - Visit `http://localhost:5000/admin` to access the words dashboard. Multi-select filters now support verbs, nouns, and adjectives plus CEFR level and pack membership.
 - Updates are issued via `PATCH /api/words/:id` with the `x-admin-token` header. Approval toggles and field edits immediately invalidate the admin cache and prompt pack regeneration during the next `npm run seed`.
 
-## Adaptive review scheduler
-- The adaptive spaced-repetition engine persists Leitner box stats per device inside `scheduling_state`, regenerates priority-ranked queues, and exposes them through `/api/tasks`.
-- Review [`docs/adaptive-review-scheduler.md`](docs/adaptive-review-scheduler.md) for the full architecture, configuration flags, and integration checklist before extending the system.
+## Task delivery
+- Practice tasks are served directly from `task_specs` using the latest content updates; no device-level Leitner state is required.
+- Submissions written to `/api/submission` are stored in `practice_history` alongside minimal metadata so analytics can be layered on later if needed.
 

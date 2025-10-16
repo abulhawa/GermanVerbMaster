@@ -18,7 +18,7 @@ The verb-only audit highlighted that the client application still depends on ver
 | Home practice flow | `client/src/pages/home.tsx` | Loads verbs via `getRandomVerb` / `getVerbByInfinitive`, stores settings & progress keyed to verbs, and displays verb-only practice modes. | Rebuild around a session controller that requests `PracticeTask` items, routes them to renderer-specific hooks, and persists progress keyed by task metadata rather than verb infinitives. |
 | Practice card & UI components | `client/src/components/practice-card.tsx` and dependants | Accept `GermanVerb` props, build prompts/validation around verb fields, and submit verb-oriented analytics payloads. | Move to renderer-specific components that accept prompt/solution data derived from the registry; verb renderers become one implementation among many. |
 | Tests & fixtures | `client/src/pages/__tests__/home-navigation.test.tsx` | Mocks `GermanVerb` responses and asserts behaviour of verb-only helpers. | Update tests to use `PracticeTask` fixtures generated from shared registry schemas, maintaining verb parity coverage while enabling mixed POS cases. |
-| Practice analytics payloads | `client/src/lib/api.ts`, `client/src/lib/db.ts` | Queue and submit practice attempts that include verb infinitives & modes. | Expand payloads to `{ taskId, lexemeId, taskType, pos }` with optional renderer hints so the server scheduler can compute mixed-POS telemetry. |
+| Practice analytics payloads | `client/src/lib/api.ts`, `client/src/lib/db.ts` | Queue and submit practice attempts that include verb infinitives & modes. | Expand payloads to `{ taskId, lexemeId, taskType, pos }` with optional renderer hints so the server can record mixed-POS analytics. |
 
 ## Decision: Neutral Practice Task Contract
 
@@ -43,12 +43,12 @@ interface PracticeTask<T extends TaskType = TaskType> {
   cefrLevel?: CEFRLevel;
   packId?: string;
   assignedAt: string;
-  source: "scheduler" | "seed" | "review";
+  source: "seed" | "review";
 }
 ```
 
 - `TaskPrompt` and `TaskSolution` alias the shared Zod schemas so `PracticeTask` always mirrors the server registry without duplicating literal types.
-- `PracticeTask` carries both scheduling metadata (`assignedAt`, `source`) and renderer hints; renderers can derive localisation, accessibility text, and evaluation rules directly from the prompt.
+- `PracticeTask` carries assignment metadata (`assignedAt`, `source`) and renderer hints; renderers can derive localisation, accessibility text, and evaluation rules directly from the prompt.
 - Verb-only helpers become adapter utilities that transform existing verb queues into `PracticeTask<'conjugate_form'>` entries during the transition period.
 
 ## Decision: Storage & State Keys
