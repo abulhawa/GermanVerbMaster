@@ -2,7 +2,7 @@ import type { Express, NextFunction, Request, RequestHandler, Response } from "e
 import { db, getPool } from "@db";
 import { words, taskSpecs, lexemes, practiceHistory, type Word } from "@db";
 import { z } from "zod";
-import { and, count, desc, eq, inArray, or, sql, type SQL } from "drizzle-orm";
+import { and, asc, count, desc, eq, inArray, or, sql, type SQL } from "drizzle-orm";
 import type {
   AnswerHistoryLexemeSnapshot,
   CEFRLevel,
@@ -994,15 +994,54 @@ export function registerRoutes(app: Express): void {
         .from(taskSpecs)
         .innerJoin(lexemes, eq(taskSpecs.lexemeId, lexemes.id));
 
-      const filteredQuery = filters.length ? baseQuery.where(and(...filters)) : baseQuery;
+      let taskQuery = filters.length ? baseQuery.where(and(...filters)) : baseQuery;
 
-      const fallbackFetchLimit = limit;
+      let fetchLimit = limit;
 
-      const fallbackQuery = filteredQuery.orderBy(desc(taskSpecs.updatedAt)).limit(fallbackFetchLimit);
-      const fallbackRowsRaw = await executeSelectRaw<Record<string, unknown>>(fallbackQuery);
-      const fallbackRows = fallbackRowsRaw.map((row) => mapTaskRow(row as Record<string, any>));
+      if (deviceId) {
+        const historyFilters: SQL[] = [eq(practiceHistory.deviceId, deviceId)];
 
-      const rows = fallbackRows.slice(0, limit);
+        if (normalisedPos) {
+          historyFilters.push(eq(practiceHistory.pos, normalisedPos));
+        }
+
+        if (resolvedTaskType) {
+          historyFilters.push(eq(practiceHistory.taskType, resolvedTaskType));
+        }
+
+        const historyWhere =
+          historyFilters.length > 1 ? and(...historyFilters) : historyFilters[0]!;
+
+        const deviceHistory = db
+          .select({
+            taskId: practiceHistory.taskId,
+            lastPracticedAt: sql<Date | null>`max(${practiceHistory.submittedAt})`.as(
+              "last_practiced_at",
+            ),
+          })
+          .from(practiceHistory)
+          .where(historyWhere)
+          .groupBy(practiceHistory.taskId)
+          .as("device_history");
+
+        taskQuery = taskQuery
+          .leftJoin(deviceHistory, eq(taskSpecs.id, deviceHistory.taskId))
+          .orderBy(
+            asc(deviceHistory.lastPracticedAt),
+            desc(taskSpecs.updatedAt),
+            asc(taskSpecs.id),
+          );
+
+        fetchLimit = Math.max(limit * 2, limit + 5);
+      } else {
+        taskQuery = taskQuery.orderBy(desc(taskSpecs.updatedAt), asc(taskSpecs.id));
+      }
+
+      const compiledQuery = taskQuery.limit(fetchLimit);
+      const rowsRaw = await executeSelectRaw<Record<string, unknown>>(compiledQuery);
+      const mappedRows = rowsRaw.map((row) => mapTaskRow(row as Record<string, any>));
+
+      const rows = mappedRows.slice(0, limit);
 
       const payload: Array<{
         taskId: string;
