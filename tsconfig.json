@@ -24,8 +24,6 @@
       "@shared/*": ["./shared/*"],
       "@assets": ["./attached_assets"],
       "@assets/*": ["./attached_assets/*"],
-      "@verbs-data": ["./data/generated"],
-      "@verbs-data/*": ["./data/generated/*"],
       "next-themes": ["./client/src/types/next-themes.d.ts"]
     }
   }

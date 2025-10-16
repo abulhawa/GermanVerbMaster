@@ -20,7 +20,6 @@ Requires Node.js 22.0.0 or newer and npm 10+.
    - `DATABASE_SSL` / `PGSSLMODE` – set to `disable` for local development without TLS.
    - `ADMIN_API_TOKEN` – secret token required to call admin endpoints from the UI.
    - `APP_ORIGIN` – optional comma-separated allow list for production CORS.
-   - `BETTER_AUTH_SECRET` / `BETTER_AUTH_URL` – only required when Better Auth sign-in is enabled.
 3. Apply the latest migrations:
    ```bash
    npm run db:push

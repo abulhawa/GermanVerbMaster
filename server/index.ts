@@ -1,14 +1,11 @@
 import { createApiApp } from "./api/app.js";
-import { registerRoutes } from "./routes.js";
 import { createServer } from "http";
 import { serveStatic } from "./serve-static.js";
-import { formatFeatureFlagHeader, getFeatureFlagSnapshot } from "./feature-flags.js";
 
 const defaultNodeEnv = process.env.VERCEL ? "production" : "development";
 process.env.NODE_ENV = process.env.NODE_ENV ?? defaultNodeEnv;
 
 const app = createApiApp();
-registerRoutes(app);
 
 const nodeEnv = process.env.NODE_ENV ?? defaultNodeEnv;
 app.set("env", nodeEnv);
@@ -50,9 +47,6 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  const featureSnapshot = getFeatureFlagSnapshot();
-  log(`feature flags initialised: ${formatFeatureFlagHeader(featureSnapshot)}`, "feature-flags");
-
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
