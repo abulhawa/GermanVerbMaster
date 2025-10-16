@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Sparkles, History, Compass, Settings2, Wand2, Cloud } from "lucide-react";
+import { Settings2, Wand2 } from "lucide-react";
 
 export interface AppNavigationItem {
   href: string;
@@ -11,33 +11,11 @@ export interface AppNavigationItem {
 
 const BASE_PRIMARY_NAVIGATION_ITEMS: AppNavigationItem[] = [
   {
-    href: "/",
-    label: "Practice",
-    icon: Sparkles,
-    exact: true,
-  },
-  {
-    href: "/answers",
-    label: "Answer history",
-    icon: History,
-  },
-  {
-    href: "/analytics",
-    label: "Analytics",
-    icon: Compass,
-  },
-  {
     href: "/admin",
     label: "Admin tools",
     icon: Settings2,
     requiresAdmin: true,
     exact: true,
-  },
-  {
-    href: "/admin/storage",
-    label: "Storage",
-    icon: Cloud,
-    requiresAdmin: true,
   },
   {
     href: "/admin/enrichment",

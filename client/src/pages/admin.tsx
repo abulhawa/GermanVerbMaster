@@ -524,11 +524,11 @@ const AdminWordsPage = () => {
 
   const sidebar = (
     <div className="flex h-full flex-col justify-between gap-8">
-        <div className="space-y-6">
-          <div className="space-y-3">
-            <div className="grid gap-2">
-              {navigationItems.map((item) => (
-                <SidebarNavButton
+      <div className="space-y-6">
+        <div className="space-y-3">
+          <div className="grid gap-2">
+            {navigationItems.map((item) => (
+              <SidebarNavButton
                 key={item.href}
                 href={item.href}
                 icon={item.icon}
@@ -560,18 +560,13 @@ const AdminWordsPage = () => {
             </p>
           </div>
           <div className="flex flex-wrap items-center justify-start gap-2 sm:justify-end">
-            <Link href="/">
+            <Link href="/admin/enrichment">
               <Button
                 variant="secondary"
                 className="rounded-2xl px-5"
-                debugId={`${pageDebugId}-topbar-back-button`}
+                debugId={`${pageDebugId}-topbar-enrichment-button`}
               >
-                Back to practice
-              </Button>
-            </Link>
-            <Link href="/analytics">
-              <Button className="rounded-2xl px-5" debugId={`${pageDebugId}-topbar-analytics-button`}>
-                Open analytics
+                Go to enrichment
               </Button>
             </Link>
           </div>

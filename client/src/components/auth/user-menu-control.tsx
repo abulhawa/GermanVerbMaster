@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Loader2, LogOut, Moon, Settings2, Sun, User, Languages } from "lucide-react";
+import { Loader2, LogOut, Moon, Sun, User, Languages } from "lucide-react";
 import { useTheme } from "next-themes";
 
 import {
@@ -22,7 +22,6 @@ import { useAuthSession, useSignOutMutation } from "@/auth/session";
 import { AuthDialog } from "@/components/auth/auth-dialog";
 import { useTranslations, useLocale, type Locale } from "@/locales";
 import { type ThemeSetting } from "@/lib/theme";
-import { dispatchPracticeSettingsOpenEvent } from "@/lib/practice-settings-events";
 
 interface UserMenuControlProps {
   className?: string;
@@ -67,10 +66,6 @@ export function UserMenuControl({ className }: UserMenuControlProps) {
 
   const handleThemeToggle = () => {
     setTheme(nextTheme);
-  };
-
-  const handleSettingsSelect = () => {
-    dispatchPracticeSettingsOpenEvent();
   };
 
   const handleLanguageChange = (value: string) => {
@@ -123,10 +118,6 @@ export function UserMenuControl({ className }: UserMenuControlProps) {
         <DropdownMenuItem onSelect={() => setAuthDialogOpen(true)}>
           <User className="h-4 w-4" aria-hidden />
           {menuCopy.accountLabel}
-        </DropdownMenuItem>
-        <DropdownMenuItem onSelect={handleSettingsSelect}>
-          <Settings2 className="h-4 w-4" aria-hidden />
-          {menuCopy.settingsLabel}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={handleThemeToggle}>
