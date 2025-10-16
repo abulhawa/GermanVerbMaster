@@ -5,12 +5,6 @@ import type {
   WordPosAttributes,
   WordTranslation,
 } from "@shared";
-import type {
-  EnrichmentAdjectiveFormSuggestion,
-  EnrichmentNounFormSuggestion,
-  EnrichmentPrepositionSuggestion,
-  EnrichmentVerbFormSuggestion,
-} from "@shared/enrichment";
 import { sql } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import {
@@ -21,7 +15,6 @@ import {
   jsonb,
   pgEnum,
   pgTable,
-  pgView,
   primaryKey,
   serial,
   text,
@@ -178,47 +171,6 @@ export const words = pgTable(
   (table) => [uniqueIndex("words_lemma_pos_idx").on(table.lemma, table.pos)],
 );
 
-export const wordsExportQueue = pgView("words_export_queue", {
-  id: integer("id"),
-  exportUid: uuid("export_uid"),
-  pos: text("pos"),
-  updatedAt: timestamp("updated_at", { withTimezone: true }),
-  exportedAt: timestamp("exported_at", { withTimezone: true }),
-  needsExport: boolean("needs_export"),
-});
-
-export const enrichmentProviderSnapshots = pgTable(
-  "enrichment_provider_snapshots",
-  {
-    id: serial("id").primaryKey(),
-    wordId: integer("word_id")
-      .notNull()
-      .references(() => words.id, { onDelete: "cascade" }),
-    lemma: text("lemma").notNull(),
-    pos: text("pos").notNull(),
-    providerId: text("provider_id").notNull(),
-    providerLabel: text("provider_label"),
-    status: text("status").notNull(),
-    error: text("error"),
-    trigger: text("trigger").notNull(),
-    mode: text("mode").notNull(),
-    translations: jsonb("translations").$type<WordTranslation[] | null>(),
-    examples: jsonb("examples").$type<WordExample[] | null>(),
-    synonyms: jsonb("synonyms").$type<string[] | null>(),
-    englishHints: jsonb("english_hints").$type<string[] | null>(),
-    verbForms: jsonb("verb_forms").$type<EnrichmentVerbFormSuggestion[] | null>(),
-    nounForms: jsonb("noun_forms").$type<EnrichmentNounFormSuggestion[] | null>(),
-    adjectiveForms: jsonb("adjective_forms").$type<EnrichmentAdjectiveFormSuggestion[] | null>(),
-    prepositionAttributes: jsonb("preposition_attributes").$type<EnrichmentPrepositionSuggestion[] | null>(),
-    rawPayload: jsonb("raw_payload"),
-    collectedAt: timestamp("collected_at", { withTimezone: true }).defaultNow().notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-  },
-  (table) => [
-    index("enrichment_snapshots_word_provider_idx").on(table.wordId, table.providerId),
-    index("enrichment_snapshots_provider_collected_idx").on(table.providerId, table.collectedAt),
-  ],
-);
 
 export const lexemes = pgTable(
   "lexemes",

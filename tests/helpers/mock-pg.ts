@@ -63,6 +63,8 @@ function createEmptyResult(): QueryResult<any> {
 
 function handleCustomStatements(statement: string, mem: IMemoryDb): QueryResult<any> | undefined {
   const createUserRole = /CREATE\s+TYPE\s+IF\s+NOT\s+EXISTS\s+"public"\."user_role"\s+AS\s+ENUM\s*\('standard',\s*'admin'\)\s*;?/i;
+  const dropWordsExportQueue = /DROP\s+VIEW\s+IF\s+EXISTS\s+"words_export_queue"\s*;?/i;
+  const dropEnrichmentSnapshots = /DROP\s+TABLE\s+IF\s+EXISTS\s+"enrichment_provider_snapshots"\s*;?/i;
 
   if (createUserRole.test(statement)) {
     try {
@@ -73,6 +75,10 @@ function handleCustomStatements(statement: string, mem: IMemoryDb): QueryResult<
       }
     }
 
+    return createEmptyResult();
+  }
+
+  if (dropWordsExportQueue.test(statement) || dropEnrichmentSnapshots.test(statement)) {
     return createEmptyResult();
   }
 
