@@ -166,10 +166,6 @@ Shut down the container with `docker stop gvm-postgres` when you are done.
 - Visit `http://localhost:5000/admin` to access the words dashboard. Multi-select filters now support verbs, nouns, and adjectives plus CEFR level and pack membership.
 - Updates are issued via `PATCH /api/words/:id` with the `x-admin-token` header. Approval toggles and field edits immediately invalidate the admin cache and prompt pack regeneration during the next `npm run seed`.
 
-## Partner integrations
-- Generate sandbox API keys with `npm run integration:create-key` and follow the workflow documented in [`docs/integration-api.md`](docs/integration-api.md).
-- Authenticated partners can fetch embeddable drill bundles and review their request analytics via the new `/api/partner/*` routes.
-
 ## Adaptive review scheduler
 - The adaptive spaced-repetition engine persists Leitner box stats per device inside `scheduling_state`, regenerates priority-ranked queues, and exposes them through `/api/tasks`.
 - Review [`docs/adaptive-review-scheduler.md`](docs/adaptive-review-scheduler.md) for the full architecture, configuration flags, and integration checklist before extending the system.

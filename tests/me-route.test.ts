@@ -17,8 +17,6 @@ const dbMock = vi.hoisted(() => ({
   })),
   query: {
     words: { findFirst: vi.fn(() => Promise.resolve(null)) },
-    integrationPartners: { findFirst: vi.fn(() => Promise.resolve(null)) },
-    integrationUsage: { findMany: vi.fn(() => Promise.resolve([])) },
   },
 }));
 

@@ -2,8 +2,6 @@ import type { Express, NextFunction, Request, RequestHandler, Response } from "e
 import { db, getPool } from "@db";
 import {
   words,
-  integrationPartners,
-  integrationUsage,
   taskSpecs,
   lexemes,
   contentPacks,
@@ -11,12 +9,10 @@ import {
   schedulingState,
   practiceHistory,
   enrichmentProviderSnapshots,
-  type IntegrationPartner,
   type Word,
 } from "@db";
 import { z } from "zod";
 import { and, count, desc, eq, inArray, or, sql, type SQL } from "drizzle-orm";
-import { createHash, randomUUID } from "node:crypto";
 import type {
   AnswerHistoryLexemeSnapshot,
   CEFRLevel,
@@ -550,15 +546,6 @@ const submissionSchema = z
     }
   });
 
-declare global {
-  namespace Express {
-    interface Request {
-      partner?: IntegrationPartner;
-      partnerRequestId?: string;
-    }
-  }
-}
-
 const optionalText = (max: number) =>
   z
     .preprocess((value) => {
@@ -841,9 +828,6 @@ const enrichmentApplySchema = z
   })
   .strict();
 
-const PARTNER_KEY_HEADER = "x-partner-key";
-const PARTNER_DRILL_LIMIT = 100;
-
 function normalizeStringParam(value: unknown): string | undefined {
   if (typeof value === "string") {
     return value;
@@ -1047,75 +1031,6 @@ function toGermanVerb(word: Word): GermanVerb {
     },
     pattern: null,
   };
-}
-
-async function authenticatePartner(req: Request, res: Response, next: NextFunction) {
-  const apiKey = normalizeStringParam(req.headers[PARTNER_KEY_HEADER]) ?? normalizeStringParam((req as any).query?.apiKey);
-
-  if (!apiKey) {
-    return sendError(res, 401, "Missing partner API key", "MISSING_PARTNER_KEY");
-  }
-
-  try {
-    const apiKeyHash = createHash("sha256").update(apiKey).digest("hex");
-    const partner = await db.query.integrationPartners.findFirst({
-      where: eq(integrationPartners.apiKeyHash, apiKeyHash),
-    });
-
-    if (!partner) {
-      return sendError(res, 401, "Invalid partner API key", "INVALID_PARTNER_KEY");
-    }
-
-    let allowedOrigins: string[] | null = null;
-    if (Array.isArray(partner.allowedOrigins)) {
-      allowedOrigins = partner.allowedOrigins.filter((origin): origin is string => typeof origin === "string");
-    } else if (typeof partner.allowedOrigins === "string") {
-      try {
-        const parsed = JSON.parse(partner.allowedOrigins);
-        if (Array.isArray(parsed)) {
-          allowedOrigins = parsed.filter((origin): origin is string => typeof origin === "string");
-        }
-      } catch (error) {
-        console.warn("Unable to parse allowedOrigins JSON for partner", partner.id, error);
-      }
-    }
-
-    const requestOrigin = normalizeStringParam(req.headers.origin ?? req.query.origin ?? req.query.embedOrigin);
-
-    if (allowedOrigins && allowedOrigins.length > 0 && requestOrigin && !allowedOrigins.includes(requestOrigin)) {
-      return sendError(res, 403, "Origin is not allowed for this partner", "PARTNER_ORIGIN_BLOCKED");
-    }
-
-    const requestId = randomUUID();
-    req.partner = partner;
-    req.partnerRequestId = requestId;
-    res.setHeader("X-Partner-Request", requestId);
-
-    const startedAt = Date.now();
-    const userAgentHeader = req.headers["user-agent"];
-    const userAgent = Array.isArray(userAgentHeader) ? userAgentHeader[0] : userAgentHeader;
-
-    res.on("finish", () => {
-      db.insert(integrationUsage)
-        .values({
-          partnerId: partner.id,
-          endpoint: req.originalUrl.split("?")[0] ?? req.path,
-          method: req.method,
-          statusCode: res.statusCode,
-          requestId,
-          responseTimeMs: Date.now() - startedAt,
-          userAgent: userAgent ?? undefined,
-        })
-        .catch((error) => {
-          console.error("Failed to log partner usage", error);
-        });
-    });
-
-    return next();
-  } catch (error) {
-    console.error("Partner authentication failed:", error);
-    return sendError(res, 500, "Partner authentication failed", "PARTNER_AUTH_FAILED");
-  }
 }
 
 function sendError(res: Response, status: number, message: string, code?: string) {
@@ -2932,163 +2847,6 @@ export function registerRoutes(app: Express): void {
       }
       console.error("Failed to clean and export enrichment data", error);
       sendError(res, 500, "Failed to clean storage snapshot", "SUPABASE_CLEAN_EXPORT_FAILED");
-    }
-  });
-
-  app.get("/api/partner/drills", authenticatePartner, async (req, res) => {
-    try {
-      const partner = req.partner!;
-      const limitParam = normalizeStringParam(req.query.limit);
-      const level = normalizeStringParam(req.query.level);
-      const parsedLimit = limitParam ? Number.parseInt(limitParam, 10) : 20;
-      const limit = Number.isFinite(parsedLimit) && parsedLimit > 0
-        ? Math.min(parsedLimit, PARTNER_DRILL_LIMIT)
-        : 20;
-
-      const conditions: any[] = [eq(words.pos, "V"), eq(words.approved, true)];
-      if (level) {
-        conditions.push(eq(words.level, level));
-      }
-
-      const drillsQuery = db.select().from(words).where(and(...conditions)).orderBy(desc(words.updatedAt)).limit(limit);
-      const wordRows = await drillsQuery;
-
-      const drills = wordRows.map((word) => ({
-        infinitive: word.lemma,
-        english: word.english ?? "",
-        auxiliary: normaliseAuxiliaryValue(word.aux),
-        level: word.level ?? null,
-        patternGroup: null,
-        prompts: {
-          praeteritum: {
-            question: `Was ist die Präteritum-Form von “${word.lemma}”?`,
-            answer: word.praeteritum ?? "",
-            example: getExampleSentence(word.examples),
-          },
-          partizipII: {
-            question: `Was ist das Partizip II von “${word.lemma}”?`,
-            answer: word.partizipIi ?? "",
-            example: getExampleTranslation(word.examples, "en"),
-          },
-          auxiliary: {
-            question: `Welches Hilfsverb wird mit “${word.lemma}” verwendet?`,
-            answer: normaliseAuxiliaryValue(word.aux),
-            example: null,
-          },
-          english: {
-            question: `What is the English meaning of “${word.lemma}”?`,
-            answer: word.english ?? "",
-          },
-        },
-        source: posPrimarySourceId(word.pos),
-        updatedAt: word.updatedAt,
-      }));
-
-      res.setHeader("Cache-Control", "no-store");
-      res.json({
-        partner: {
-          id: partner.id,
-          name: partner.name,
-          contactEmail: partner.contactEmail ?? null,
-        },
-        filters: {
-          level: level ?? null,
-          patternGroup: null,
-          limit,
-        },
-        count: drills.length,
-        generatedAt: new Date().toISOString(),
-        drills,
-      });
-    } catch (error) {
-      console.error("Error fetching partner drills:", error);
-      sendError(res, 500, "Failed to fetch partner drills", "PARTNER_DRILLS_FAILED");
-    }
-  });
-
-  app.get("/api/partner/usage-summary", authenticatePartner, async (req, res) => {
-    try {
-      const partner = req.partner!;
-      const windowHoursParam = normalizeStringParam(req.query.windowHours ?? req.query.window);
-      const windowHours = (() => {
-        const parsed = windowHoursParam ? Number.parseInt(windowHoursParam, 10) : 24;
-        if (!Number.isFinite(parsed) || parsed <= 0) {
-          return 24;
-        }
-        return Math.min(parsed, 24 * 14);
-      })();
-
-      const cutoff = Date.now() - windowHours * 60 * 60 * 1000;
-      const usageRows = await db.query.integrationUsage.findMany({
-        where: eq(integrationUsage.partnerId, partner.id),
-        orderBy: [desc(integrationUsage.requestedAt)],
-        limit: 200,
-      });
-
-      const filtered = usageRows.filter((row) => {
-        if (!row.requestedAt) return true;
-        return row.requestedAt.getTime() >= cutoff;
-      });
-
-      const totals = filtered.reduce(
-        (acc, row) => {
-          acc.total += 1;
-          if (row.statusCode >= 200 && row.statusCode < 300) {
-            acc.success += 1;
-          } else if (row.statusCode >= 500) {
-            acc.failures += 1;
-          }
-          acc.responseTimeSum += row.responseTimeMs ?? 0;
-          const key = row.endpoint ?? "unknown";
-          acc.endpointCounts.set(key, (acc.endpointCounts.get(key) ?? 0) + 1);
-          if (!acc.lastRequestAt || (row.requestedAt && row.requestedAt > acc.lastRequestAt)) {
-            acc.lastRequestAt = row.requestedAt ?? acc.lastRequestAt;
-          }
-          return acc;
-        },
-        {
-          total: 0,
-          success: 0,
-          failures: 0,
-          responseTimeSum: 0,
-          lastRequestAt: null as Date | null,
-          endpointCounts: new Map<string, number>(),
-        }
-      );
-
-      const averageResponse = totals.total > 0 ? Math.round(totals.responseTimeSum / totals.total) : 0;
-      const successRate = totals.total > 0 ? Number(((totals.success / totals.total) * 100).toFixed(2)) : 0;
-
-      const topEndpoints = Array.from(totals.endpointCounts.entries())
-        .map(([endpoint, count]) => ({ endpoint, count }))
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 5);
-
-      res.json({
-        partner: {
-          id: partner.id,
-          name: partner.name,
-        },
-        windowHours,
-        totals: {
-          totalRequests: totals.total,
-          successfulRequests: totals.success,
-          failedRequests: totals.failures,
-          successRate,
-          averageResponseTimeMs: averageResponse,
-          lastRequestAt: totals.lastRequestAt ? totals.lastRequestAt.toISOString() : null,
-        },
-        topEndpoints,
-        recentRequests: filtered.slice(0, 25).map((row) => ({
-          endpoint: row.endpoint,
-          statusCode: row.statusCode,
-          requestedAt: row.requestedAt ? row.requestedAt.toISOString() : null,
-          responseTimeMs: row.responseTimeMs,
-        })),
-      });
-    } catch (error) {
-      console.error("Error building partner usage summary:", error);
-      sendError(res, 500, "Failed to build partner usage summary", "PARTNER_USAGE_FAILED");
     }
   });
 
