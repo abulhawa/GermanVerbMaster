@@ -38,7 +38,7 @@ function createTask(): PracticeTask<'conjugate_form'> {
       metadata: { level: 'A1', english: 'to go' },
     },
     assignedAt: new Date('2024-01-01T00:00:00.000Z').toISOString(),
-    source: 'scheduler',
+    source: 'seed',
   } satisfies PracticeTask<'conjugate_form'>;
 }
 
@@ -66,7 +66,7 @@ function createNounTask(): PracticeTask<'noun_case_declension'> {
       metadata: { level: 'A1', english: 'house' },
     },
     assignedAt: new Date('2024-01-01T00:00:00.000Z').toISOString(),
-    source: 'scheduler',
+    source: 'seed',
   } satisfies PracticeTask<'noun_case_declension'>;
 }
 
@@ -94,7 +94,7 @@ function createDativeNounTask(): PracticeTask<'noun_case_declension'> {
       metadata: { level: 'A2', english: 'child' },
     },
     assignedAt: new Date('2024-03-01T00:00:00.000Z').toISOString(),
-    source: 'scheduler',
+    source: 'seed',
   } satisfies PracticeTask<'noun_case_declension'>;
 }
 
@@ -121,7 +121,7 @@ function createAdjectiveTask(): PracticeTask<'adj_ending'> {
       metadata: { level: 'A2', english: 'fast' },
     },
     assignedAt: new Date('2024-01-01T00:00:00.000Z').toISOString(),
-    source: 'scheduler',
+    source: 'seed',
   } satisfies PracticeTask<'adj_ending'>;
 }
 

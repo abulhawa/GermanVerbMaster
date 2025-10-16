@@ -23,7 +23,6 @@
     "test:all": "npm run test:unit && npm run test:e2e",
     "seed": "tsx scripts/seed.ts",
     "analytics:export": "tsx scripts/export-pos-analytics.ts",
-    "analytics:post-launch": "tsx scripts/export-pos-analytics.ts",
     "seed:verbs": "npm run seed"
   },
   "overrides": {

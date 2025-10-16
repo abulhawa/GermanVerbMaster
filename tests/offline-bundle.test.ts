@@ -29,7 +29,7 @@ const baseQueueItem: PracticeTaskQueueItem = {
   taskType: 'noun_case_declension',
   pos: 'noun',
   renderer: 'noun_case_declension',
-  source: 'scheduler',
+    source: 'seed',
   enqueuedAt: new Date().toISOString(),
   metadata: {
     lemma: 'Haus',

@@ -178,7 +178,7 @@ export interface PracticeTaskQueueItem {
   taskType: TaskType;
   pos: LexemePos;
   renderer: string;
-  source: 'review' | 'seed' | 'scheduler';
+  source: 'review' | 'seed';
   enqueuedAt: string;
   metadata?: PracticeTaskQueueItemMetadata;
 }
@@ -245,28 +245,4 @@ export interface PracticeSettingsState {
   legacyVerbLevel?: CEFRLevel;
   migratedFromLegacy?: boolean;
   updatedAt: string;
-}
-
-export interface AdaptiveQueueItem {
-  verb: string;
-  priority: number;
-  dueAt: string;
-  leitnerBox: number;
-  accuracyWeight: number;
-  latencyWeight: number;
-  stabilityWeight: number;
-  predictedIntervalMinutes: number;
-}
-
-export interface AdaptiveQueueResponse {
-  deviceId: string;
-  version: string;
-  generatedAt: string;
-  validUntil: string;
-  featureEnabled: boolean;
-  items: AdaptiveQueueItem[];
-  metrics: {
-    queueLength: number;
-    generationDurationMs: number;
-  };
 }

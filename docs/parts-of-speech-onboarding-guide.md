@@ -23,7 +23,7 @@ This guide helps new contributors ramp onto the lexeme-based architecture that n
 1. Source CSVs and manual overrides live in `data/` and `docs/external/`.
 2. `npm run seed` hydrates the legacy `words` table while generating deterministic `lexemes`, `inflections`, and `task_specs` packs under `data/packs/`.
 3. `npm run packs:lint` validates every pack JSON file against the shared registry before you copy the refreshed bundles into `client/public/packs/` for offline use.
-4. `/api/tasks` serves queue items based on `task_specs` and scheduler priorities stored in `scheduling_state`.
+4. `/api/tasks` serves queue items directly from `task_specs`, returning the latest prompts without maintaining scheduler state.
 
 ## 4. QA checklist before merging
 - Run `npm run test` for unit/integration coverage and `npm run test:e2e` after Playwright browsers are installed.

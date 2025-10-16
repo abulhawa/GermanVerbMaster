@@ -34,7 +34,7 @@
 
 ## Slide 6 – Launch readiness signals
 - `/api/tasks` returns healthy mixes for each POS from seeded content.
-- Scheduler telemetry in `scheduling_state` shows attempts across verbs, nouns, and adjectives.
+- Practice logs in `practice_history` show attempts across verbs, nouns, and adjectives.
 - Playwright smoke tests pass for mixed-mode sessions.
 - Training materials (this deck + admin guide) are acknowledged by the content team.
 

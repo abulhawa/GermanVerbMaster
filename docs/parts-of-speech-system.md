@@ -18,8 +18,7 @@ The lexeme schema sits alongside the legacy verb tables so we can run both syste
 - **`lexemes`** – canonical lemma rows keyed by deterministic IDs with POS, gender, metadata, frequency, and source identifiers (`pos_jsonl:<slug>` for per-POS JSONL seeds plus optional `enrichment:<method>` tags).
 - **`inflections`** – surface forms plus a JSON `features` bundle (case, number, tense, etc.) linked back to `lexemes`.
 - **`task_specs`** – prompt/solution payloads per lexeme and task type, including renderer, revision, and hints metadata.
-- **`scheduling_state`** – per-device Leitner progress, cached priority scores, and attempt counters keyed by `task_id`.
-- **`telemetry_priorities`** + **`practice_history`** – persisted scheduler snapshots and attempt logs with POS, task type, latency, hint usage, and pack context.
+- **`practice_history`** – append-only attempt log with POS, task type, latency, hint usage, and pack context for downstream analytics.
 
 Refer to `db/schema.ts` for column-level details, indices, and relationships.
 
@@ -28,10 +27,10 @@ Refer to `db/schema.ts` for column-level details, indices, and relationships.
 - Server entries wrap the shared definitions with evaluation metadata. All current tasks use normalised string equality; adjust the evaluation object when introducing fuzzy matching or multi-answer support.
 - Registry helpers power `npm run packs:lint`, rejecting any pack JSON that references unsupported task types, missing licenses, or inconsistent renderer keys before the files ship to clients.
 
-## API and scheduler flow
+## API flow
 - `/api/tasks` honours POS and task-type filters and returns deterministic metadata for each task.
-- When callers provide a `deviceId` and request verb-only queues, the endpoint samples the adaptive scheduler and interleaves those verbs ahead of the fallback content query. Stale queues trigger regeneration automatically.
-- Practice submissions route through `/api/submission`, updating `scheduling_state` rows and queue caches so the next `/api/tasks` call reflects the new priorities.
+- Requests simply read from `task_specs` and emit the freshest content; adaptive queue regeneration is no longer required.
+- Practice submissions route through `/api/submission`, writing rows to `practice_history` so later analytics can attribute performance.
 
 ## Client experience
 - The practice mode switcher component exposes presets for “All tasks”, “Verbs”, “Nouns”, “Adjectives”, and “Custom”. Custom mode stores explicit task-type selections, while the other presets hydrate from the registry’s `supportedPos` definitions.
@@ -43,9 +42,8 @@ Refer to `db/schema.ts` for column-level details, indices, and relationships.
 - `npm run packs:lint` (backed by `scripts/packs-lint.ts`) validates pack headers, license fields, lexeme membership, and task payloads against the shared registry. The command exits non-zero on any issue, making it safe to wire into CI.
 - Keep attribution notes and source tracking up to date in pack metadata; the lint script enforces license presence and highlights missing lexeme references.
 
-## Telemetry & analytics
+## Analytics
 - `practice_history` tracks every attempt with POS, task type, renderer, latency, CEFR level, and pack context so dashboards can segment adoption and quality metrics.
-- `telemetry_priorities` records scheduled priority weights per task. Export these rows when tuning scheduler coefficients or comparing queue health across releases.
 
 ## Related references
 - [`docs/parts-of-speech-onboarding-guide.md`](./parts-of-speech-onboarding-guide.md) – step-by-step environment setup and QA checklist.

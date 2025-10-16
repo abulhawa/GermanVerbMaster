@@ -1,10 +1,4 @@
-import type {
-  AdaptiveQueueItem,
-  PracticeResult,
-  WordExample,
-  WordPosAttributes,
-  WordTranslation,
-} from "@shared";
+import type { PracticeResult, WordExample, WordPosAttributes, WordTranslation } from "@shared";
 import { sql } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import {
@@ -247,58 +241,6 @@ export const taskSpecs = pgTable(
       table.revision,
     ),
     index("task_specs_pos_idx").on(table.pos),
-  ],
-);
-
-export const schedulingState = pgTable(
-  "scheduling_state",
-  {
-    id: serial("id").primaryKey(),
-    userId: text("user_id").references(() => authUsers.id),
-    deviceId: text("device_id").notNull(),
-    taskId: text("task_id")
-      .notNull()
-      .references(() => taskSpecs.id, { onDelete: "cascade" }),
-    leitnerBox: integer("leitner_box").notNull().default(1),
-    totalAttempts: integer("total_attempts").notNull().default(0),
-    correctAttempts: integer("correct_attempts").notNull().default(0),
-    averageResponseMs: integer("average_response_ms").notNull().default(0),
-    accuracyWeight: doublePrecision("accuracy_weight").notNull().default(0),
-    latencyWeight: doublePrecision("latency_weight").notNull().default(0),
-    stabilityWeight: doublePrecision("stability_weight").notNull().default(0),
-    priorityScore: doublePrecision("priority_score").notNull().default(0),
-    dueAt: timestamp("due_at", { withTimezone: true }),
-    lastResult: practiceResultEnum("last_result").notNull().default("correct"),
-    lastPracticedAt: timestamp("last_practiced_at", { withTimezone: true }),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
-  },
-  (table) => [
-    uniqueIndex("scheduling_state_device_task_idx").on(table.deviceId, table.taskId),
-    index("scheduling_state_task_idx").on(table.taskId),
-    index("scheduling_state_user_idx").on(table.userId),
-  ],
-);
-
-export const telemetryPriorities = pgTable(
-  "telemetry_priorities",
-  {
-    id: serial("id").primaryKey(),
-    taskId: text("task_id")
-      .notNull()
-      .references(() => taskSpecs.id, { onDelete: "cascade" }),
-    sampledAt: timestamp("sampled_at", { withTimezone: true }).defaultNow().notNull(),
-    priorityScore: doublePrecision("priority_score").notNull(),
-    accuracyWeight: doublePrecision("accuracy_weight").notNull().default(0),
-    latencyWeight: doublePrecision("latency_weight").notNull().default(0),
-    stabilityWeight: doublePrecision("stability_weight").notNull().default(0),
-    frequencyRank: integer("frequency_rank"),
-    metadata: jsonb("metadata").$type<Record<string, unknown>>(),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-  },
-  (table) => [
-    index("telemetry_priorities_task_idx").on(table.taskId),
-    index("telemetry_priorities_sampled_idx").on(table.sampledAt),
   ],
 );
 

@@ -1,6 +1,6 @@
 import type { Express, NextFunction, Request, RequestHandler, Response } from "express";
 import { db, getPool } from "@db";
-import { words, taskSpecs, lexemes, schedulingState, practiceHistory, type Word } from "@db";
+import { words, taskSpecs, lexemes, practiceHistory, type Word } from "@db";
 import { z } from "zod";
 import { and, count, desc, eq, inArray, or, sql, type SQL } from "drizzle-orm";
 import type {
@@ -23,7 +23,6 @@ import {
 import type { LexemePos, TaskType } from "@shared";
 import { posPrimarySourceId } from "@shared/source-ids";
 import { getTaskRegistryEntry, taskRegistry } from "./tasks/registry.js";
-import { processTaskSubmission } from "./tasks/scheduler.js";
 import { authRouter, getSessionFromRequest } from "./auth/index.js";
 import type { AuthSession } from "./auth/index.js";
 
@@ -770,61 +769,6 @@ function parseTaskTypeFilter(value: string): TaskType | null {
   return key in taskRegistry ? (key as TaskType) : null;
 }
 
-interface SchedulingStateSnapshot {
-  taskId: string;
-  priorityScore: number | null;
-  dueAt: Date | null;
-  lastResult: PracticeResult | null;
-  totalAttempts: number;
-  correctAttempts: number;
-}
-
-function stableDeterministicNoise(value: string | null | undefined): number {
-  const input = typeof value === "string" ? value : value == null ? "" : String(value);
-
-  let hash = 0;
-  for (let index = 0; index < input.length; index += 1) {
-    hash = (hash * 31 + input.charCodeAt(index)) | 0;
-  }
-  return ((hash >>> 0) % 1000) / 1000;
-}
-
-function computeFallbackPriorityScore(
-  snapshot: SchedulingStateSnapshot | undefined,
-  taskId: string,
-  nowMs: number,
-): number {
-  const noise = stableDeterministicNoise(taskId) * 0.05;
-
-  if (!snapshot) {
-    return 1.25 + noise;
-  }
-
-  const baseScore = typeof snapshot.priorityScore === "number" && Number.isFinite(snapshot.priorityScore)
-    ? snapshot.priorityScore
-    : 0;
-
-  const totalAttempts = Math.max(snapshot.totalAttempts ?? 0, 0);
-  const correctAttempts = Math.max(Math.min(snapshot.correctAttempts ?? 0, totalAttempts), 0);
-  const accuracy = totalAttempts > 0 ? correctAttempts / totalAttempts : 0;
-  const accuracyPenalty = (1 - Math.min(Math.max(accuracy, 0), 1)) * 0.5;
-  const incorrectBonus = snapshot.lastResult === "incorrect" ? 0.75 : 0;
-
-  let dueBonus = 0.3;
-  if (snapshot.dueAt instanceof Date && !Number.isNaN(snapshot.dueAt.getTime())) {
-    const diffMs = snapshot.dueAt.getTime() - nowMs;
-    if (diffMs <= 0) {
-      dueBonus = 0.6;
-    } else {
-      const hours = diffMs / 3_600_000;
-      const urgency = Math.max(0, 1 - Math.min(hours, 72) / 72);
-      dueBonus = urgency * 0.4;
-    }
-  }
-
-  return baseScore + accuracyPenalty + incorrectBonus + dueBonus + noise;
-}
-
 function computeWordCompleteness(word: Pick<Word, "pos"> & Partial<Word>): boolean {
   const english = word.english;
   const examples = normalizeWordExamples(word.examples) ?? [];
@@ -1058,161 +1002,7 @@ export function registerRoutes(app: Express): void {
       const fallbackRowsRaw = await executeSelectRaw<Record<string, unknown>>(fallbackQuery);
       const fallbackRows = fallbackRowsRaw.map((row) => mapTaskRow(row as Record<string, any>));
 
-      let schedulingStateRows: SchedulingStateSnapshot[] = [];
-      if (deviceId) {
-        try {
-          const schedulingFilters = [eq(schedulingState.deviceId, deviceId)];
-          if (normalisedPos) {
-            schedulingFilters.push(eq(taskSpecs.pos, normalisedPos));
-          }
-          if (resolvedTaskType) {
-            schedulingFilters.push(eq(taskSpecs.taskType, resolvedTaskType));
-          }
-          const whereCondition = schedulingFilters.length === 1
-            ? schedulingFilters[0]!
-            : and(...schedulingFilters);
-
-          const schedulingQuery = db
-            .select({
-              taskId: schedulingState.taskId,
-              priorityScore: schedulingState.priorityScore,
-              dueAt: schedulingState.dueAt,
-              lastResult: schedulingState.lastResult,
-              totalAttempts: schedulingState.totalAttempts,
-              correctAttempts: schedulingState.correctAttempts,
-            })
-            .from(schedulingState)
-            .innerJoin(taskSpecs, eq(schedulingState.taskId, taskSpecs.id))
-            .where(whereCondition);
-
-          const schedulingRowsRaw = await executeSelectRaw<Record<string, unknown>>(schedulingQuery);
-
-          schedulingStateRows = schedulingRowsRaw.map((row) => {
-            const priorityScore = getRowValue<number | null>(
-              row,
-              "priorityScore",
-              "priority_score",
-            );
-            const dueAtRaw = getRowValue<string | Date | null>(row, "dueAt", "due_at") ?? null;
-            const dueAt = (() => {
-              if (dueAtRaw == null) {
-                return null;
-              }
-              const parsed = dueAtRaw instanceof Date ? dueAtRaw : new Date(dueAtRaw);
-              return Number.isNaN(parsed.getTime()) ? null : parsed;
-            })();
-            return {
-              taskId: getRowValue<string>(row, "taskId", "task_id")!,
-              priorityScore: priorityScore == null ? null : Number(priorityScore),
-              dueAt,
-              lastResult: getRowValue<PracticeResult | null>(row, "lastResult", "last_result") ?? null,
-              totalAttempts: Number(
-                getRowValue<number>(row, "totalAttempts", "total_attempts") ?? 0,
-              ),
-              correctAttempts: Number(
-                getRowValue<number>(row, "correctAttempts", "correct_attempts") ?? 0,
-              ),
-            } satisfies SchedulingStateSnapshot;
-          });
-        } catch (error) {
-          console.error("Failed to resolve scheduling state for /api/tasks", {
-            deviceId,
-            error,
-          });
-        }
-      }
-
-      const schedulingStateMap = new Map<string, SchedulingStateSnapshot>();
-      for (const row of schedulingStateRows) {
-        schedulingStateMap.set(row.taskId, row);
-      }
-
-      const schedulingSorted = [...schedulingStateRows]
-        .filter((row) => row.dueAt && row.dueAt <= new Date())
-        .sort((a, b) => {
-          const aPriority = a.priorityScore ?? 0;
-          const bPriority = b.priorityScore ?? 0;
-          if (aPriority !== bPriority) {
-            return bPriority - aPriority;
-          }
-          if (a.dueAt && b.dueAt) {
-            return a.dueAt.getTime() - b.dueAt.getTime();
-          }
-          return 0;
-        });
-
-      const combinedRows: typeof fallbackRows = [];
-      const seenTaskIds = new Set<string>();
-      const taskRowById = new Map<string, TaskRow>();
-      const registerRow = (row: TaskRow) => {
-        if (!taskRowById.has(row.taskId)) {
-          taskRowById.set(row.taskId, row);
-        }
-      };
-      fallbackRows.forEach(registerRow);
-      const pushRow = (row: TaskRow | undefined) => {
-        if (!row) {
-          return;
-        }
-        if (seenTaskIds.has(row.taskId)) {
-          return;
-        }
-        seenTaskIds.add(row.taskId);
-        combinedRows.push(row);
-      };
-
-      if (schedulingSorted.length) {
-        const missingTaskIds = schedulingSorted
-          .map((row) => row.taskId)
-          .filter((taskId) => !taskRowById.has(taskId));
-
-        if (missingTaskIds.length) {
-          const missingTaskQuery = filters.length
-            ? baseQuery.where(and(...filters, inArray(taskSpecs.id, missingTaskIds)))
-            : baseQuery.where(inArray(taskSpecs.id, missingTaskIds));
-
-          const schedulingTaskRowsRaw = await executeSelectRaw<Record<string, unknown>>(
-            missingTaskQuery,
-          );
-          for (const rawRow of schedulingTaskRowsRaw) {
-            const mapped = mapTaskRow(rawRow as Record<string, any>);
-            registerRow(mapped);
-          }
-        }
-      }
-
-      if (schedulingSorted.length) {
-        schedulingSorted.forEach((row) => {
-          pushRow(taskRowById.get(row.taskId));
-        });
-      }
-
-      fallbackRows.forEach((row) => {
-        pushRow(taskRowById.get(row.taskId));
-      });
-
-      let orderedRows = combinedRows;
-      if (deviceId) {
-        const nowMs = Date.now();
-        orderedRows = [...combinedRows]
-          .map((row) => ({
-            row,
-            score: computeFallbackPriorityScore(
-              schedulingStateMap.get(row.taskId),
-              row.taskId,
-              nowMs,
-            ),
-          }))
-          .sort((a, b) => {
-            if (a.score === b.score) {
-              return a.row.taskId.localeCompare(b.row.taskId);
-            }
-            return b.score - a.score;
-          })
-          .map((entry) => entry.row);
-      }
-
-      const rows = orderedRows.slice(0, limit);
+      const rows = fallbackRows.slice(0, limit);
 
       const payload: Array<{
         taskId: string;
@@ -1530,17 +1320,7 @@ export function registerRoutes(app: Express): void {
     const responseMs = payload.responseMs ?? payload.timeSpentMs ?? 0;
 
     try {
-      const submissionResult = await processTaskSubmission({
-        deviceId: payload.deviceId,
-        taskId: resolvedTaskId,
-        taskType: taskRow.taskType as TaskType,
-        pos: taskPos,
-        queueCap: registryEntry.queueCap,
-        result: payload.result,
-        responseMs,
-        submittedAt,
-        frequencyRank: taskRow.frequencyRank ?? null,
-      });
+      const queueCap = registryEntry.queueCap;
 
       await db.insert(practiceHistory).values({
         taskId: resolvedTaskId,
@@ -1562,12 +1342,7 @@ export function registerRoutes(app: Express): void {
           submittedResponse: payload.submittedResponse ?? payload.answer ?? null,
           expectedResponse: payload.expectedResponse ?? null,
           promptSummary: typeof payload.promptSummary === "string" ? payload.promptSummary : null,
-          queueCap: submissionResult.queueCap,
-          priorityScore: submissionResult.priorityScore,
-          coverageScore: submissionResult.coverageScore,
-          leitnerBox: submissionResult.leitnerBox,
-          totalAttempts: submissionResult.totalAttempts,
-          correctAttempts: submissionResult.correctAttempts,
+          queueCap,
           frequencyRank: taskRow.frequencyRank ?? null,
           legacyVerb: payload.legacyVerb ?? null,
         },
@@ -1577,14 +1352,7 @@ export function registerRoutes(app: Express): void {
         status: "recorded",
         taskId: resolvedTaskId,
         deviceId: payload.deviceId,
-        leitnerBox: submissionResult.leitnerBox,
-        totalAttempts: submissionResult.totalAttempts,
-        correctAttempts: submissionResult.correctAttempts,
-        averageResponseMs: submissionResult.averageResponseMs,
-        dueAt: submissionResult.dueAt.toISOString(),
-        priorityScore: submissionResult.priorityScore,
-        coverageScore: submissionResult.coverageScore,
-        queueCap: submissionResult.queueCap,
+        queueCap,
       });
     } catch (error) {
       console.error("Failed to process task submission", error);

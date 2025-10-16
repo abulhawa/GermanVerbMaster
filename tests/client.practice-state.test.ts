@@ -46,7 +46,7 @@ const practiceTask: PracticeTask = {
   queueCap: 30,
   lexeme: { id: 'lex-1', lemma: 'gehen', metadata: { level: 'A1' } },
   assignedAt: new Date().toISOString(),
-  source: 'scheduler',
+  source: 'seed',
 };
 
 const queueItem: PracticeTaskQueueItem = {
