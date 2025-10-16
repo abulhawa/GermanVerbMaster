@@ -418,10 +418,10 @@ export async function upsertTaskInventory(
 ): Promise<void> {
   if (inventory.tasks.length === 0) return;
 
-  const incomingTaskIds = Array.from(new Set(inventory.tasks.map((task) => task.id)));
-  if (incomingTaskIds.length > 0) {
-    for (const chunk of chunkArray(incomingTaskIds, TASK_DELETE_CHUNK_SIZE)) {
-      await db.delete(taskSpecsTable).where(inArray(taskSpecsTable.id, chunk));
+  const lexemeIds = Array.from(new Set(inventory.tasks.map((task) => task.lexemeId)));
+  if (lexemeIds.length > 0) {
+    for (const chunk of chunkArray(lexemeIds, TASK_DELETE_CHUNK_SIZE)) {
+      await db.delete(taskSpecsTable).where(inArray(taskSpecsTable.lexemeId, chunk));
     }
   }
 
