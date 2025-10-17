@@ -73,12 +73,14 @@ export async function previewWordEnrichment(
 export interface ApplyEnrichmentResponse {
   word: unknown;
   appliedFields: string[];
+  draftId?: number;
 }
 
 export async function applyWordEnrichment(
   wordId: number,
   patch: EnrichmentPatch,
   adminToken?: string,
+  draftId?: number | null,
 ): Promise<ApplyEnrichmentResponse> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   if (adminToken?.trim()) {
@@ -88,7 +90,9 @@ export async function applyWordEnrichment(
   const response = await fetch(`/api/enrichment/words/${wordId}/apply`, {
     method: 'POST',
     headers,
-    body: JSON.stringify({ patch }),
+    body: JSON.stringify(
+      draftId !== undefined ? { patch, draftId } : { patch },
+    ),
   });
 
   return handleResponse<ApplyEnrichmentResponse>(response);

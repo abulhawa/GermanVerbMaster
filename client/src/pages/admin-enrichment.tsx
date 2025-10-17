@@ -23,7 +23,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { wordsResponseSchema, type AdminWord, type WordsResponse } from './admin-word-schemas';
-import type { BulkEnrichmentResponse, WordEnrichmentPreview } from '@shared/enrichment';
+import type { BulkEnrichmentResponse, EnrichmentWordSummary, WordEnrichmentPreview } from '@shared/enrichment';
 import {
   applyWordEnrichment,
   previewWordEnrichment,
@@ -32,6 +32,7 @@ import {
   type RunEnrichmentPayload,
   type WordEnrichmentOptions,
 } from '@/lib/admin-enrichment';
+import { Checkbox } from '@/components/ui/checkbox';
 import WordEnrichmentDetailView, {
   DEFAULT_WORD_CONFIG,
   formatDisplayDate,
@@ -116,6 +117,7 @@ const AdminEnrichmentPage = () => {
   const [isBulkOpen, setIsBulkOpen] = useState(true);
   const [isReviewOpen, setIsReviewOpen] = useState(true);
   const [isMissingOpen, setIsMissingOpen] = useState(true);
+  const [selectedBulkWordIds, setSelectedBulkWordIds] = useState<number[]>([]);
 
   const [wordConfig, setWordConfig] = useState<WordConfigState>(DEFAULT_WORD_CONFIG);
   const [searchInput, setSearchInput] = useState('');
@@ -132,6 +134,16 @@ const AdminEnrichmentPage = () => {
     }
   }, [bulkReportDownload]);
 
+  useEffect(() => {
+    setSelectedBulkWordIds((previous) => {
+      if (!bulkResult?.words?.length) {
+        return [];
+      }
+      const available = new Set(bulkResult.words.map((summary) => summary.id));
+      return previous.filter((id) => available.has(id));
+    });
+  }, [bulkResult]);
+
   const prepareBulkReportDownload = useCallback((data: BulkEnrichmentResponse) => {
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const timestamp = new Date().toISOString().replace(/[:]/g, '-');
@@ -145,6 +157,52 @@ const AdminEnrichmentPage = () => {
       return { url, filename };
     });
   }, []);
+
+  const bulkSummariesById = useMemo(() => {
+    const entries = bulkResult?.words ?? [];
+    return new Map(entries.map((summary) => [summary.id, summary]));
+  }, [bulkResult]);
+
+  const handleBulkSelectAll = (checked: boolean) => {
+    const entries = bulkResult?.words ?? [];
+    if (checked) {
+      setSelectedBulkWordIds(entries.map((entry) => entry.id));
+    } else {
+      setSelectedBulkWordIds([]);
+    }
+  };
+
+  const handleBulkSelectOne = (wordId: number, checked: boolean) => {
+    setSelectedBulkWordIds((previous) => {
+      if (checked) {
+        if (previous.includes(wordId)) {
+          return previous;
+        }
+        return [...previous, wordId];
+      }
+      return previous.filter((id) => id !== wordId);
+    });
+  };
+
+  const handleBulkApplySelected = () => {
+    if (!bulkResult?.words?.length) {
+      return;
+    }
+    const summaries = selectedBulkWordIds
+      .map((id) => bulkSummariesById.get(id))
+      .filter((summary): summary is EnrichmentWordSummary => Boolean(summary));
+
+    if (!summaries.length) {
+      toast({
+        title: 'No words selected',
+        description: 'Select one or more words to apply their enrichments.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    bulkApplyMutation.mutate(summaries);
+  };
 
   const bulkMutation = useMutation({
     mutationFn: async () => {
@@ -172,6 +230,94 @@ const AdminEnrichmentPage = () => {
     onError: (error) => {
       toast({
         title: 'Failed to run enrichment',
+        description: error instanceof Error ? error.message : 'Unknown error',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const bulkApplyMutation = useMutation({
+    mutationFn: async (summaries: EnrichmentWordSummary[]) => {
+      const results: Array<{ summary: EnrichmentWordSummary; response: ApplyEnrichmentResponse }> = [];
+
+      for (const summary of summaries) {
+        const options: WordEnrichmentOptions = {
+          enableAi: summary.suggestionConfig?.enableAi ?? false,
+          allowOverwrite: false,
+          collectSynonyms: summary.suggestionConfig?.collectSynonyms ?? false,
+          collectExamples: summary.suggestionConfig?.collectExamples ?? false,
+          collectTranslations: summary.suggestionConfig?.collectTranslations ?? false,
+          collectWiktextract: summary.suggestionConfig?.collectWiktextract ?? true,
+        };
+
+        const preview = await previewWordEnrichment(summary.id, options, normalizedAdminToken);
+        const response = await applyWordEnrichment(
+          summary.id,
+          preview.patch,
+          normalizedAdminToken,
+          preview.draftId ?? summary.draftId ?? null,
+        );
+
+        results.push({ summary, response });
+      }
+
+      return results;
+    },
+    onSuccess: (results) => {
+      const appliedIds = new Set(results.map(({ summary }) => summary.id));
+      const appliedCount = appliedIds.size;
+      const fieldTotals = results.reduce<string[]>((acc, { response }) => {
+        acc.push(...response.appliedFields);
+        return acc;
+      }, []);
+      const fallbackTimestamp = new Date().toISOString();
+      const appliedMetadata = new Map<number, { appliedAt: string; draftId?: number }>();
+      results.forEach(({ summary, response }) => {
+        let appliedAt: string | null = null;
+        const payload = response.word as { enrichmentAppliedAt?: string | null } | undefined;
+        if (payload && typeof payload === 'object' && 'enrichmentAppliedAt' in payload) {
+          const rawValue = payload.enrichmentAppliedAt;
+          if (typeof rawValue === 'string' && rawValue.trim().length) {
+            appliedAt = rawValue;
+          }
+        }
+        appliedMetadata.set(summary.id, {
+          appliedAt: appliedAt ?? fallbackTimestamp,
+          draftId: response.draftId ?? summary.draftId,
+        });
+      });
+
+      setSelectedBulkWordIds((previous) => previous.filter((id) => !appliedIds.has(id)));
+      setBulkResult((current) => {
+        if (!current) {
+          return current;
+        }
+        return {
+          ...current,
+          words: current.words.map((word) =>
+            appliedIds.has(word.id)
+              ? {
+                  ...word,
+                  applied: true,
+                  draftAppliedAt: appliedMetadata.get(word.id)?.appliedAt ?? fallbackTimestamp,
+                  draftId: appliedMetadata.get(word.id)?.draftId ?? word.draftId,
+                }
+              : word,
+        ),
+        } satisfies BulkEnrichmentResponse;
+      });
+      queryClient.invalidateQueries({ queryKey: ['admin-enrichment'] });
+
+      toast({
+        title: appliedCount ? `Applied ${appliedCount} ${appliedCount === 1 ? 'enrichment' : 'enrichments'}` : 'No enrichments applied',
+        description: fieldTotals.length
+          ? `Updated fields: ${Array.from(new Set(fieldTotals)).join(', ')}`
+          : undefined,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Failed to apply selected enrichments',
         description: error instanceof Error ? error.message : 'Unknown error',
         variant: 'destructive',
       });
@@ -261,6 +407,9 @@ const AdminEnrichmentPage = () => {
     totalMissingPages > 0
       ? currentMissingPage < totalMissingPages
       : missingWords.length === effectiveMissingPerPage && missingWords.length > 0;
+  const bulkWords = bulkResult?.words ?? [];
+  const allBulkSelected = bulkWords.length > 0 && selectedBulkWordIds.length === bulkWords.length;
+  const someBulkSelected = selectedBulkWordIds.length > 0 && selectedBulkWordIds.length < bulkWords.length;
   const previewMutation = useMutation({
     mutationFn: async (word: AdminWord) => {
       setPreviewWord(word);
@@ -289,7 +438,12 @@ const AdminEnrichmentPage = () => {
       if (!previewWord || !previewData) {
         throw new Error('No enrichment preview available');
       }
-      const result = await applyWordEnrichment(previewWord.id, previewData.patch, normalizedAdminToken);
+      const result = await applyWordEnrichment(
+        previewWord.id,
+        previewData.patch,
+        normalizedAdminToken,
+        previewData.draftId ?? null,
+      );
       setApplyResult(result);
       toast({
         title: 'Enrichment applied',
@@ -532,21 +686,42 @@ const AdminEnrichmentPage = () => {
                   <Sparkles className="h-4 w-4" />
                   Suggested updates for {bulkResult.updated} of {bulkResult.scanned} scanned words
                 </div>
-                {bulkReportDownload ? (
-                  <Button variant="outline" size="sm" asChild>
-                    <a
-                      href={bulkReportDownload.url}
-                      download={bulkReportDownload.filename}
-                      aria-label="Download bulk enrichment results as JSON"
-                    >
-                      Download JSON report
-                    </a>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    size="sm"
+                    onClick={handleBulkApplySelected}
+                    disabled={bulkApplyMutation.isPending || selectedBulkWordIds.length === 0}
+                  >
+                    {bulkApplyMutation.isPending
+                      ? 'Applying…'
+                      : selectedBulkWordIds.length
+                        ? `Apply ${selectedBulkWordIds.length} selected`
+                        : 'Apply selected'}
                   </Button>
-                ) : null}
+                  {bulkReportDownload ? (
+                    <Button variant="outline" size="sm" asChild>
+                      <a
+                        href={bulkReportDownload.url}
+                        download={bulkReportDownload.filename}
+                        aria-label="Download bulk enrichment results as JSON"
+                      >
+                        Download JSON report
+                      </a>
+                    </Button>
+                  ) : null}
+                </div>
               </div>
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-10">
+                      <Checkbox
+                        aria-label="Select all words"
+                        checked={allBulkSelected ? true : someBulkSelected ? 'indeterminate' : false}
+                        disabled={bulkApplyMutation.isPending || !bulkWords.length}
+                        onCheckedChange={(value) => handleBulkSelectAll(value === true)}
+                      />
+                    </TableHead>
                     <TableHead>Word</TableHead>
                     <TableHead>Missing fields</TableHead>
                     <TableHead>Proposed updates</TableHead>
@@ -555,27 +730,37 @@ const AdminEnrichmentPage = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {bulkResult.words.map((summary) => (
-                    <TableRow key={summary.id}>
-                      <TableCell className="space-y-1">
-                        <div className="font-semibold">{summary.lemma}</div>
-                        <div className="text-xs text-muted-foreground">{summary.pos}</div>
-                        {summary.translation && (
-                          <div className="text-xs text-muted-foreground">
-                            ↦ {summary.translation.value}
-                            {summary.translation.source ? ` · ${summary.translation.source}` : ''}
-                          </div>
-                        )}
-                        {(summary.example?.sentence || summary.example?.exampleDe) && (
-                          <div className="text-xs text-muted-foreground">
-                            Example: {summary.example?.sentence ?? summary.example?.exampleDe}
-                          </div>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {summary.missingFields.length ? (
-                          <div className="flex flex-wrap gap-1">
-                            {summary.missingFields.map((field) => (
+                  {bulkResult.words.map((summary) => {
+                    const isSelected = selectedBulkWordIds.includes(summary.id);
+                    return (
+                      <TableRow key={summary.id}>
+                        <TableCell>
+                          <Checkbox
+                            aria-label={`Select ${summary.lemma}`}
+                            checked={isSelected}
+                            disabled={bulkApplyMutation.isPending}
+                            onCheckedChange={(value) => handleBulkSelectOne(summary.id, value === true)}
+                          />
+                        </TableCell>
+                        <TableCell className="space-y-1">
+                          <div className="font-semibold">{summary.lemma}</div>
+                          <div className="text-xs text-muted-foreground">{summary.pos}</div>
+                          {summary.translation && (
+                            <div className="text-xs text-muted-foreground">
+                              ↦ {summary.translation.value}
+                              {summary.translation.source ? ` · ${summary.translation.source}` : ''}
+                            </div>
+                          )}
+                          {(summary.example?.sentence || summary.example?.exampleDe) && (
+                            <div className="text-xs text-muted-foreground">
+                              Example: {summary.example?.sentence ?? summary.example?.exampleDe}
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {summary.missingFields.length ? (
+                            <div className="flex flex-wrap gap-1">
+                              {summary.missingFields.map((field) => (
                               <Badge key={field} variant="secondary">
                                 {field}
                               </Badge>
@@ -585,27 +770,31 @@ const AdminEnrichmentPage = () => {
                           <span className="text-xs text-muted-foreground">None</span>
                         )}
                       </TableCell>
-                      <TableCell>{renderUpdateSummary(summary)}</TableCell>
-                      <TableCell>
-                        <div className="text-xs text-muted-foreground space-y-1">
-                          {summary.sources.length ? (
-                            <div>Sources: {summary.sources.join(', ')}</div>
-                          ) : (
-                            <div>No sources recorded</div>
-                          )}
-                          {summary.errors?.length ? (
-                            <div className="text-destructive">Errors: {summary.errors.join('; ')}</div>
-                          ) : null}
-                          {summary.aiUsed ? <div>Used AI assistance</div> : null}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="sm" onClick={() => openWordDetails(summary.id)}>
-                          Review details
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                        <TableCell>{renderUpdateSummary(summary)}</TableCell>
+                        <TableCell>
+                          <div className="text-xs text-muted-foreground space-y-1">
+                            {summary.sources.length ? (
+                              <div>Sources: {summary.sources.join(', ')}</div>
+                            ) : (
+                              <div>No sources recorded</div>
+                            )}
+                            {summary.errors?.length ? (
+                              <div className="text-destructive">Errors: {summary.errors.join('; ')}</div>
+                            ) : null}
+                            {summary.aiUsed ? <div>Used AI assistance</div> : null}
+                            {summary.draftAppliedAt ? (
+                              <div>Applied {formatDisplayDate(summary.draftAppliedAt)}</div>
+                            ) : null}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button variant="ghost" size="sm" onClick={() => openWordDetails(summary.id)}>
+                            Review details
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>
@@ -722,6 +911,18 @@ const AdminEnrichmentPage = () => {
                     </Badge>
                   ))}
                 </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                <span>
+                  Fetched {formatDisplayDate(previewData.suggestionsFetchedAt ?? new Date().toISOString())}
+                </span>
+                <Badge variant={previewData.reusedSuggestions ? 'outline' : 'secondary'}>
+                  {previewData.reusedSuggestions ? 'Cached result' : 'Fresh fetch'}
+                </Badge>
+                {previewData.draftAppliedAt ? (
+                  <span>Last applied {formatDisplayDate(previewData.draftAppliedAt)}</span>
+                ) : null}
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">

@@ -1,9 +1,10 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { createHash } from "node:crypto";
 
 import { getDb } from "@db/client";
-import { enrichmentProviderSnapshots, words } from "@db/schema";
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { enrichmentProviderSnapshots, wordEnrichmentDrafts, words } from "@db/schema";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
 
 import type {
   EnrichmentAdjectiveFormSuggestion,
@@ -22,9 +23,10 @@ import type {
   EnrichmentVerbFormSuggestion,
   EnrichmentPrepositionSuggestion,
   EnrichmentWordSummary,
+  WordEnrichmentSuggestionConfig,
   WordEnrichmentSuggestions,
 } from "@shared/enrichment";
-import type { WordExample, WordPosAttributes, WordTranslation } from "@shared/types";
+import type { EnrichmentMethod, WordExample, WordPosAttributes, WordTranslation } from "@shared/types";
 import { canonicalizeExamples, examplesEqual, normalizeWordExample } from "@shared/examples";
 
 import {
@@ -66,24 +68,7 @@ type WordPatch = Partial<
   >
 >;
 
-type SuggestionBundle = {
-  translations: EnrichmentTranslationCandidate[];
-  synonyms: string[];
-  englishHints: string[];
-  examples: EnrichmentExampleCandidate[];
-  errors: string[];
-  sources: string[];
-  aiUsed: boolean;
-  diagnostics: EnrichmentProviderDiagnostic[];
-  verbForms: EnrichmentVerbFormSuggestion[];
-  nounForms: EnrichmentNounFormSuggestion[];
-  adjectiveForms: EnrichmentAdjectiveFormSuggestion[];
-  prepositionAttributes: EnrichmentPrepositionSuggestion[];
-  posLabel?: string;
-  posTags: string[];
-  posNotes: string[];
-  snapshots: EnrichmentProviderSnapshotComparison[];
-};
+type SuggestionBundle = WordEnrichmentSuggestions;
 
 type ProviderSnapshotDraft = {
   providerId: EnrichmentProviderId | string;
@@ -104,6 +89,32 @@ type ProviderSnapshotDraft = {
 type FieldUpdate = EnrichmentFieldUpdate;
 type ExampleCandidate = EnrichmentExampleCandidate;
 type PrepositionAttributes = NonNullable<WordPosAttributes["preposition"]>;
+type WordEnrichmentDraftRecord = typeof wordEnrichmentDrafts.$inferSelect;
+
+interface SuggestionComputationResult {
+  bundle: SuggestionBundle;
+  reused: boolean;
+  draftId: number;
+  fetchedAt: Date;
+  configHash: string;
+  config: WordEnrichmentSuggestionConfig;
+  appliedAt: Date | null;
+}
+
+export interface TransientDraftEntry {
+  id: number;
+  wordId: number;
+  configHash: string;
+  config: WordEnrichmentSuggestionConfig;
+  suggestions: SuggestionBundle;
+  fetchedAt: Date;
+  appliedAt: Date | null;
+  appliedMethod: EnrichmentMethod | null;
+}
+
+const transientDraftCache = new Map<string, TransientDraftEntry>();
+let nextTransientDraftId = -1;
+let draftTableStatus: "unknown" | "available" | "missing" = "unknown";
 
 export interface WordEnrichmentComputation {
   summary: EnrichmentWordSummary;
@@ -113,6 +124,12 @@ export interface WordEnrichmentComputation {
   storedTranslations: WordRecord["translations"] | null;
   storedExamples: WordRecord["examples"] | null;
   storedPosAttributes: WordRecord["posAttributes"] | null;
+  draftId?: number;
+  suggestionsFetchedAt: Date;
+  reusedSuggestions: boolean;
+  suggestionConfigHash: string;
+  suggestionConfig: WordEnrichmentSuggestionConfig;
+  draftAppliedAt: Date | null;
 }
 
 export interface PipelineConfig {
@@ -328,7 +345,8 @@ export async function computeWordEnrichment(
   openAiKey?: string,
 ): Promise<WordEnrichmentComputation> {
   const missingFields = detectMissingFields(word);
-  const suggestions = await collectSuggestions(word, config, openAiKey);
+  const suggestionResult = await collectSuggestions(word, config, openAiKey);
+  const suggestions = suggestionResult.bundle;
   const {
     patch,
     updates,
@@ -370,6 +388,15 @@ export async function computeWordEnrichment(
     aiUsed: suggestions.aiUsed,
   };
 
+  summary.draftId = suggestionResult.draftId;
+  summary.suggestionsFetchedAt = suggestionResult.fetchedAt.toISOString();
+  summary.reusedSuggestions = suggestionResult.reused;
+  summary.suggestionConfigHash = suggestionResult.configHash;
+  summary.suggestionConfig = suggestionResult.config;
+  if (suggestionResult.appliedAt) {
+    summary.draftAppliedAt = suggestionResult.appliedAt.toISOString();
+  }
+
   return {
     summary,
     patch,
@@ -378,6 +405,12 @@ export async function computeWordEnrichment(
     storedTranslations,
     storedExamples,
     storedPosAttributes,
+    draftId: suggestionResult.draftId,
+    suggestionsFetchedAt: suggestionResult.fetchedAt,
+    reusedSuggestions: suggestionResult.reused,
+    suggestionConfigHash: suggestionResult.configHash,
+    suggestionConfig: suggestionResult.config,
+    draftAppliedAt: suggestionResult.appliedAt ?? null,
   } satisfies WordEnrichmentComputation;
 }
 
@@ -598,7 +631,70 @@ async function collectSuggestions(
   word: WordRecord,
   config: PipelineConfig,
   openAiKey: string | undefined,
-): Promise<SuggestionBundle> {
+): Promise<SuggestionComputationResult> {
+  const database = getDb();
+  const fingerprint = buildSuggestionConfigFingerprint(config);
+  const cacheKey = buildDraftCacheKey(word.id, fingerprint.hash);
+
+  if (await ensureDraftTableAvailability(database)) {
+    const cachedRecord = await loadDraftFromDatabase(database, word.id, fingerprint.hash);
+    if (cachedRecord) {
+      const bundle = (cachedRecord.suggestions as SuggestionBundle) ?? {
+        translations: [],
+        examples: [],
+        synonyms: [],
+        englishHints: [],
+        verbForms: [],
+        nounForms: [],
+        adjectiveForms: [],
+        prepositionAttributes: [],
+        posLabel: undefined,
+        posTags: [],
+        posNotes: [],
+        providerDiagnostics: [],
+        snapshots: [],
+        sources: [],
+        errors: [],
+        aiUsed: false,
+      };
+      const fetchedAt = toDate(cachedRecord.fetchedAt) ?? new Date();
+      const appliedAt = cachedRecord.appliedAt ? toDate(cachedRecord.appliedAt) ?? null : null;
+      const configFromRecord = cachedRecord.config ?? fingerprint.config;
+      transientDraftCache.set(cacheKey, {
+        id: cachedRecord.id,
+        wordId: word.id,
+        configHash: fingerprint.hash,
+        config: configFromRecord,
+        suggestions: bundle,
+        fetchedAt,
+        appliedAt,
+        appliedMethod: (cachedRecord.appliedMethod as EnrichmentMethod | null) ?? null,
+      });
+      return {
+        bundle,
+        reused: true,
+        draftId: cachedRecord.id,
+        fetchedAt,
+        configHash: fingerprint.hash,
+        config: configFromRecord,
+        appliedAt,
+      };
+    }
+  }
+
+  const fallbackDraft = transientDraftCache.get(cacheKey);
+  if (fallbackDraft) {
+    return {
+      bundle: fallbackDraft.suggestions,
+      reused: true,
+      draftId: fallbackDraft.id,
+      fetchedAt: fallbackDraft.fetchedAt,
+      configHash: fingerprint.hash,
+      config: fallbackDraft.config,
+      appliedAt: fallbackDraft.appliedAt,
+    };
+  }
+
   const sources = new Set<string>();
   const errors: string[] = [];
   const translations: EnrichmentTranslationCandidate[] = [];
@@ -1040,16 +1136,13 @@ async function collectSuggestions(
   const resolvedPosLabel = posLabel?.trim() ? posLabel.trim().replace(/\s+/g, " ") : undefined;
   const resolvedPosTags = Array.from(posTagMap.values()).sort((a, b) => a.localeCompare(b));
   const resolvedPosNotes = Array.from(posNoteMap.values()).sort((a, b) => a.localeCompare(b));
+  const sourceList = Array.from(sources).sort();
 
-  return {
+  const suggestionBundle: SuggestionBundle = {
     translations,
+    examples,
     synonyms,
     englishHints,
-    examples,
-    errors,
-    sources: Array.from(sources).sort(),
-    aiUsed,
-    diagnostics,
     verbForms,
     nounForms,
     adjectiveForms,
@@ -1057,7 +1150,97 @@ async function collectSuggestions(
     posLabel: resolvedPosLabel,
     posTags: resolvedPosTags,
     posNotes: resolvedPosNotes,
+    providerDiagnostics: diagnostics,
     snapshots: snapshotComparisons,
+    sources: sourceList,
+    errors,
+    aiUsed,
+  };
+
+  const now = new Date();
+  let persistedRecord: WordEnrichmentDraftRecord | null = null;
+
+  if (await ensureDraftTableAvailability(database)) {
+    try {
+      const [record] = await database
+        .insert(wordEnrichmentDrafts)
+        .values({
+          wordId: word.id,
+          lemma: word.lemma,
+          pos: word.pos,
+          configHash: fingerprint.hash,
+          config: fingerprint.config,
+          suggestions: suggestionBundle,
+          fetchedAt: now,
+        })
+        .onConflictDoUpdate({
+          target: [wordEnrichmentDrafts.wordId, wordEnrichmentDrafts.configHash],
+          set: {
+            lemma: word.lemma,
+            pos: word.pos,
+            config: fingerprint.config,
+            suggestions: suggestionBundle,
+            fetchedAt: sql`now()`,
+            updatedAt: sql`now()`,
+            appliedAt: null,
+            appliedMethod: null,
+          },
+        })
+        .returning();
+      if (record) {
+        persistedRecord = record;
+        draftTableStatus = "available";
+      }
+    } catch (error) {
+      if (isMissingDraftsTableError(error)) {
+        draftTableStatus = "missing";
+        console.warn(
+          "Word enrichment drafts table is unavailable. Falling back to transient cache.",
+          { wordId: word.id },
+        );
+      } else {
+        throw error;
+      }
+    }
+  }
+
+  let draftId: number;
+  let fetchedAt: Date;
+  let appliedAt: Date | null;
+  let appliedMethod: EnrichmentMethod | null;
+
+  if (persistedRecord) {
+    draftId = persistedRecord.id;
+    fetchedAt = toDate(persistedRecord.fetchedAt) ?? now;
+    appliedAt = persistedRecord.appliedAt ? toDate(persistedRecord.appliedAt) ?? null : null;
+    appliedMethod = (persistedRecord.appliedMethod as EnrichmentMethod | null) ?? null;
+  } else {
+    draftId = nextTransientDraftId--;
+    fetchedAt = now;
+    appliedAt = null;
+    appliedMethod = null;
+  }
+
+  const entry: TransientDraftEntry = {
+    id: draftId,
+    wordId: word.id,
+    configHash: fingerprint.hash,
+    config: fingerprint.config,
+    suggestions: suggestionBundle,
+    fetchedAt,
+    appliedAt,
+    appliedMethod,
+  };
+  transientDraftCache.set(cacheKey, entry);
+
+  return {
+    bundle: suggestionBundle,
+    reused: false,
+    draftId,
+    fetchedAt,
+    configHash: fingerprint.hash,
+    config: fingerprint.config,
+    appliedAt,
   };
 }
 
@@ -1252,6 +1435,151 @@ function buildSnapshotFromDraft(
     collectedAt: now,
     createdAt: now,
   } satisfies EnrichmentProviderSnapshot;
+}
+
+function buildDraftCacheKey(wordId: number, configHash: string): string {
+  return `${wordId}::${configHash}`;
+}
+
+function buildSuggestionConfigFingerprint(config: PipelineConfig): {
+  hash: string;
+  config: WordEnrichmentSuggestionConfig;
+} {
+  const suggestionConfig: WordEnrichmentSuggestionConfig = {
+    collectSynonyms: Boolean(config.collectSynonyms),
+    collectExamples: Boolean(config.collectExamples),
+    collectTranslations: Boolean(config.collectTranslations),
+    collectWiktextract: Boolean(config.collectWiktextract),
+    enableAi: Boolean(config.enableAi),
+    openAiModel: config.enableAi ? config.openAiModel ?? null : null,
+  };
+
+  const hash = createHash("sha256").update(JSON.stringify(suggestionConfig)).digest("hex");
+  return { hash, config: suggestionConfig };
+}
+
+function toDate(value: Date | string | null | undefined): Date | undefined {
+  if (!value) {
+    return undefined;
+  }
+  if (value instanceof Date) {
+    return value;
+  }
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? undefined : parsed;
+}
+
+async function ensureDraftTableAvailability(database: DatabaseClient): Promise<boolean> {
+  if (draftTableStatus === "available") {
+    return true;
+  }
+
+  if (draftTableStatus === "missing") {
+    return false;
+  }
+
+  try {
+    await database.select({ id: wordEnrichmentDrafts.id }).from(wordEnrichmentDrafts).limit(1);
+    draftTableStatus = "available";
+    return true;
+  } catch (error) {
+    if (isMissingDraftsTableError(error)) {
+      draftTableStatus = "missing";
+      console.warn(
+        "Word enrichment drafts table is unavailable. Falling back to transient cache.",
+      );
+      return false;
+    }
+
+    throw error;
+  }
+}
+
+async function loadDraftFromDatabase(
+  database: DatabaseClient,
+  wordId: number,
+  configHash: string,
+): Promise<WordEnrichmentDraftRecord | null> {
+  try {
+    const [record] = await database
+      .select()
+      .from(wordEnrichmentDrafts)
+      .where(
+        and(
+          eq(wordEnrichmentDrafts.wordId, wordId),
+          eq(wordEnrichmentDrafts.configHash, configHash),
+        ),
+      )
+      .orderBy(desc(wordEnrichmentDrafts.fetchedAt))
+      .limit(1);
+    return record ?? null;
+  } catch (error) {
+    if (isMissingDraftsTableError(error)) {
+      draftTableStatus = "missing";
+      return null;
+    }
+
+    throw error;
+  }
+}
+
+export function markEnrichmentDraftApplied(
+  draftId: number,
+  appliedAt: Date,
+  method: EnrichmentMethod | null,
+): void {
+  for (const entry of transientDraftCache.values()) {
+    if (entry.id === draftId) {
+      entry.appliedAt = appliedAt;
+      entry.appliedMethod = method ?? null;
+      break;
+    }
+  }
+}
+
+export function getTransientDraftsForWord(wordId: number): TransientDraftEntry[] {
+  const drafts: TransientDraftEntry[] = [];
+  for (const entry of transientDraftCache.values()) {
+    if (entry.wordId === wordId) {
+      drafts.push({ ...entry });
+    }
+  }
+  return drafts;
+}
+
+export function isMissingDraftsTableError(error: unknown): boolean {
+  if (!error || typeof error !== "object") {
+    return false;
+  }
+
+  const details = error as {
+    code?: unknown;
+    table?: unknown;
+    message?: unknown;
+    cause?: unknown;
+  };
+
+  if (details.cause && isMissingDraftsTableError(details.cause)) {
+    return true;
+  }
+
+  if (typeof details.code === "string" && details.code.toUpperCase() === "42P01") {
+    if (!details.table || details.table === "word_enrichment_drafts") {
+      return true;
+    }
+  }
+
+  if (typeof details.message === "string") {
+    const normalizedMessage = details.message.toLowerCase();
+    if (
+      normalizedMessage.includes("word_enrichment_drafts")
+      && (normalizedMessage.includes("does not exist") || normalizedMessage.includes("no such table"))
+    ) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 export function isMissingSnapshotsTableError(error: unknown): boolean {

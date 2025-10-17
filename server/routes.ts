@@ -3,6 +3,7 @@ import { db } from "@db";
 import {
   words,
   enrichmentProviderSnapshots,
+  wordEnrichmentDrafts,
   type Word,
 } from "@db";
 import { z } from "zod";
@@ -15,18 +16,24 @@ import {
   normalizeWordExample,
   normalizeWordExamples,
 } from "@shared";
-import type { WordExample, WordTranslation } from "@shared";
+import type { EnrichmentMethod, WordExample, WordTranslation } from "@shared";
 import type {
   BulkEnrichmentResponse,
+  EnrichmentExampleCandidate,
   EnrichmentPatch,
   EnrichmentProviderSnapshot,
+  EnrichmentTranslationCandidate,
+  StoredWordEnrichment,
   WordEnrichmentHistory,
   WordEnrichmentPreview,
 } from "@shared/enrichment";
 import {
   buildProviderSnapshotFromRecord,
   computeWordEnrichment,
+  getTransientDraftsForWord,
+  isMissingDraftsTableError,
   isMissingSnapshotsTableError,
+  markEnrichmentDraftApplied,
   resolveConfigFromEnv as resolveEnrichmentConfigFromEnv,
   runEnrichment,
   toEnrichmentPatch,
@@ -108,6 +115,75 @@ async function loadEnrichmentSnapshots(wordId: number): Promise<EnrichmentProvid
         { wordId },
       );
       return [];
+    }
+
+    throw error;
+  }
+}
+
+async function loadEnrichmentDrafts(word: Word): Promise<StoredWordEnrichment[]> {
+  try {
+    const draftRecords = await db
+      .select()
+      .from(wordEnrichmentDrafts)
+      .where(eq(wordEnrichmentDrafts.wordId, word.id))
+      .orderBy(desc(wordEnrichmentDrafts.fetchedAt));
+
+    return draftRecords.map((record) => ({
+      id: record.id,
+      wordId: record.wordId,
+      lemma: record.lemma,
+      pos: record.pos,
+      configHash: record.configHash,
+      config: (record.config as StoredWordEnrichment["config"]) ?? {
+        collectSynonyms: false,
+        collectExamples: false,
+        collectTranslations: false,
+        collectWiktextract: true,
+        enableAi: false,
+        openAiModel: null,
+      },
+      suggestions: (record.suggestions as StoredWordEnrichment["suggestions"]) ?? {
+        translations: [],
+        examples: [],
+        synonyms: [],
+        englishHints: [],
+        verbForms: [],
+        nounForms: [],
+        adjectiveForms: [],
+        prepositionAttributes: [],
+        posLabel: undefined,
+        posTags: [],
+        posNotes: [],
+        providerDiagnostics: [],
+        snapshots: [],
+        sources: [],
+        errors: [],
+        aiUsed: false,
+      },
+      fetchedAt: toIsoString(record.fetchedAt ?? new Date()),
+      appliedAt: record.appliedAt ? toIsoString(record.appliedAt) : null,
+      appliedMethod: (record.appliedMethod as EnrichmentMethod | null) ?? null,
+    }));
+  } catch (error) {
+    if (isMissingDraftsTableError(error)) {
+      console.warn(
+        "Word enrichment drafts table is unavailable. Returning transient drafts.",
+        { wordId: word.id },
+      );
+      const transientDrafts = getTransientDraftsForWord(word.id);
+      return transientDrafts.map((entry) => ({
+        id: entry.id,
+        wordId: entry.wordId,
+        lemma: word.lemma,
+        pos: word.pos,
+        configHash: entry.configHash,
+        config: entry.config,
+        suggestions: entry.suggestions,
+        fetchedAt: entry.fetchedAt.toISOString(),
+        appliedAt: entry.appliedAt ? entry.appliedAt.toISOString() : null,
+        appliedMethod: entry.appliedMethod,
+      }));
     }
 
     throw error;
@@ -492,6 +568,7 @@ const enrichmentPatchSchema = z
 const enrichmentApplySchema = z
   .object({
     patch: enrichmentPatchSchema,
+    draftId: z.number().int().optional(),
   })
   .strict();
 
@@ -668,6 +745,7 @@ export function registerRoutes(app: Express): void {
       }
 
       const snapshots = await loadEnrichmentSnapshots(id);
+      const drafts = await loadEnrichmentDrafts(word);
 
       const normalizeString = (value: string | null | undefined): string | null => {
         if (!value) {
@@ -723,6 +801,22 @@ export function registerRoutes(app: Express): void {
             upsert(entry);
           }
         }
+        for (const draft of drafts) {
+          const candidates = (draft.suggestions?.translations
+            ?? []) as EnrichmentTranslationCandidate[];
+          for (const candidate of candidates) {
+            upsert({
+              value: candidate.value,
+              source: candidate.source,
+              language: candidate.language ?? null,
+              confidence:
+                typeof candidate.confidence === "number"
+                && Number.isFinite(candidate.confidence)
+                  ? candidate.confidence
+                  : null,
+            });
+          }
+        }
 
         return Array.from(map.values()).sort((a, b) => {
           const valueCompare = a.value.localeCompare(b.value, undefined, { sensitivity: "base" });
@@ -772,6 +866,18 @@ export function registerRoutes(app: Express): void {
             upsert(entry);
           }
         }
+        for (const draft of drafts) {
+          const candidates = (draft.suggestions?.examples
+            ?? []) as EnrichmentExampleCandidate[];
+          for (const candidate of candidates) {
+            upsert({
+              sentence: candidate.sentence ?? candidate.exampleDe,
+              translations: candidate.translations ?? null,
+              exampleDe: candidate.exampleDe,
+              exampleEn: candidate.exampleEn,
+            });
+          }
+        }
 
         return Array.from(map.values()).sort((a, b) => {
           const aLabel = a.sentence ?? "";
@@ -787,6 +893,7 @@ export function registerRoutes(app: Express): void {
         snapshots,
         translations,
         examples,
+        drafts,
       };
 
       res.setHeader("Cache-Control", "no-store");
@@ -1073,9 +1180,20 @@ export function registerRoutes(app: Express): void {
           posLabel: computation.suggestions.posLabel,
           posTags: computation.suggestions.posTags,
           posNotes: computation.suggestions.posNotes,
-          providerDiagnostics: computation.suggestions.diagnostics,
+          providerDiagnostics: computation.suggestions.providerDiagnostics,
           snapshots: computation.suggestions.snapshots,
+          sources: computation.suggestions.sources,
+          errors: computation.suggestions.errors,
+          aiUsed: computation.suggestions.aiUsed,
         },
+        draftId: computation.draftId,
+        suggestionsFetchedAt: computation.suggestionsFetchedAt.toISOString(),
+        reusedSuggestions: computation.reusedSuggestions,
+        suggestionConfigHash: computation.suggestionConfigHash,
+        suggestionConfig: computation.suggestionConfig,
+        draftAppliedAt: computation.draftAppliedAt
+          ? computation.draftAppliedAt.toISOString()
+          : undefined,
       };
 
       res.setHeader("Cache-Control", "no-store");
@@ -1103,7 +1221,8 @@ export function registerRoutes(app: Express): void {
         return sendError(res, 404, "Word not found", "WORD_NOT_FOUND");
       }
 
-      const patch = parsed.data.patch as EnrichmentPatch;
+      const { patch: parsedPatch, draftId } = parsed.data;
+      const patch = parsedPatch as EnrichmentPatch;
       const updates: Record<string, unknown> = {};
       const appliedFields: string[] = [];
       let contentApplied = false;
@@ -1337,8 +1456,41 @@ export function registerRoutes(app: Express): void {
         await persistProviderSnapshotToFile(manualSnapshot);
       }
 
+      const appliedAtValue = refreshed.enrichmentAppliedAt ?? new Date();
+      const appliedAtDate = appliedAtValue instanceof Date ? appliedAtValue : new Date(appliedAtValue);
+      const appliedMethod: EnrichmentMethod =
+        (updates.enrichmentMethod as EnrichmentMethod | undefined)
+          ?? (refreshed.enrichmentMethod as EnrichmentMethod | null)
+          ?? "manual_api";
+
+      if (typeof draftId === "number") {
+        if (draftId > 0) {
+          try {
+            await db
+              .update(wordEnrichmentDrafts)
+              .set({
+                appliedAt: appliedAtDate,
+                appliedMethod,
+                updatedAt: sql`now()`,
+              })
+              .where(eq(wordEnrichmentDrafts.id, draftId));
+          } catch (error) {
+            if (!isMissingDraftsTableError(error)) {
+              console.warn("Failed to update enrichment draft record", { draftId, error });
+            }
+          }
+        }
+
+        markEnrichmentDraftApplied(draftId, appliedAtDate, appliedMethod);
+      }
+
+      const responseBody: Record<string, unknown> = { word: refreshed, appliedFields };
+      if (typeof draftId === "number") {
+        responseBody.draftId = draftId;
+      }
+
       res.setHeader("Cache-Control", "no-store");
-      res.json({ word: refreshed, appliedFields });
+      res.json(responseBody);
     } catch (error) {
       console.error("Failed to apply enrichment updates", error);
       sendError(res, 500, "Failed to apply enrichment", "ENRICHMENT_APPLY_FAILED");
