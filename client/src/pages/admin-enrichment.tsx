@@ -137,8 +137,12 @@ const AdminEnrichmentPage = () => {
       setBulkResult(data);
       toast({
         title: 'Enrichment complete',
-        description: `Proposed updates for ${data.updated} of ${data.scanned} scanned words`,
+        description:
+          data.applied > 0
+            ? `Applied updates to ${data.applied.toLocaleString()} of ${data.scanned.toLocaleString()} scanned words.`
+            : `No updates were applied after scanning ${data.scanned.toLocaleString()} words.`,
       });
+      queryClient.invalidateQueries({ queryKey: ['admin-enrichment'] });
     },
     onError: (error) => {
       toast({
@@ -475,7 +479,12 @@ const AdminEnrichmentPage = () => {
               <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-4 text-sm text-muted-foreground">
                 <Sparkles className="h-4 w-4 text-primary" aria-hidden />
                 <span>
-                  Suggested updates for {bulkResult.updated} of {bulkResult.scanned} scanned words.
+                  {bulkResult.applied > 0
+                    ? `Applied updates to ${bulkResult.applied.toLocaleString()} of ${bulkResult.scanned.toLocaleString()} scanned words.`
+                    : `No updates were applied after scanning ${bulkResult.scanned.toLocaleString()} words.`}{' '}
+                  {bulkResult.updated > 0
+                    ? `Suggestions were generated for ${bulkResult.updated.toLocaleString()} words.`
+                    : 'No suggestions were generated.'}
                 </span>
               </div>
             </>

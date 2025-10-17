@@ -346,6 +346,7 @@ export interface WordEnrichmentPreview {
 export interface BulkEnrichmentResponse {
   scanned: number;
   updated: number;
+  applied: number;
   words: EnrichmentWordSummary[];
 }
 

@@ -1066,8 +1066,8 @@ export function registerRoutes(app: Express): void {
         collectWiktextract: parsed.data.collectWiktextract,
         posFilters: parsed.data.posFilters,
         delayMs: 0,
-        apply: false,
-        dryRun: true,
+        apply: true,
+        dryRun: false,
         emitReport: false,
         backup: false,
       };
@@ -1075,8 +1075,8 @@ export function registerRoutes(app: Express): void {
       const baseConfig = resolveEnrichmentConfigFromEnv(overrides);
       const config: PipelineConfig = {
         ...baseConfig,
-        apply: false,
-        dryRun: true,
+        apply: true,
+        dryRun: false,
         emitReport: false,
         backup: false,
         delayMs: 0,
@@ -1086,7 +1086,8 @@ export function registerRoutes(app: Express): void {
       const response: BulkEnrichmentResponse = {
         scanned: result.scanned,
         updated: result.updated,
-        words: result.words.map((word) => ({ ...word, applied: false })),
+        applied: result.applied,
+        words: result.words.map((word) => ({ ...word })),
       };
 
       res.setHeader("Cache-Control", "no-store");
