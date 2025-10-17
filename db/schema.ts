@@ -22,6 +22,7 @@ import {
   integer,
   jsonb,
   pgEnum,
+  pgSchema,
   pgTable,
   pgView,
   primaryKey,
@@ -41,6 +42,8 @@ export const enrichmentMethodEnum = pgEnum("enrichment_method", [
   "manual_entry",
   "preexisting",
 ]);
+
+export const enrichmentSchema = pgSchema("enrichment");
 
 export const integrationPartners = pgTable("integration_partners", {
   id: serial("id").primaryKey(),
@@ -234,7 +237,7 @@ export const wordsExportQueue = pgView("words_export_queue", {
   needsExport: boolean("needs_export"),
 });
 
-export const enrichmentProviderSnapshots = pgTable(
+export const enrichmentProviderSnapshots = enrichmentSchema.table(
   "enrichment_provider_snapshots",
   {
     id: serial("id").primaryKey(),
@@ -267,7 +270,7 @@ export const enrichmentProviderSnapshots = pgTable(
   ],
 );
 
-export const wordEnrichmentDrafts = pgTable(
+export const wordEnrichmentDrafts = enrichmentSchema.table(
   "word_enrichment_drafts",
   {
     id: serial("id").primaryKey(),

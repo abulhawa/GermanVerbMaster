@@ -47,7 +47,7 @@ function ensureDatabase(): DatabaseClient {
 async function ensureLegacySchema(db: DatabaseClient): Promise<void> {
   await db.execute(sql`ALTER TABLE words ADD COLUMN IF NOT EXISTS pos_attributes JSONB`);
   await db.execute(
-    sql`ALTER TABLE enrichment_provider_snapshots ADD COLUMN IF NOT EXISTS preposition_attributes JSONB`,
+    sql`ALTER TABLE "enrichment"."enrichment_provider_snapshots" ADD COLUMN IF NOT EXISTS preposition_attributes JSONB`,
   );
 }
 

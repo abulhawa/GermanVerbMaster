@@ -1547,6 +1547,22 @@ export function getTransientDraftsForWord(wordId: number): TransientDraftEntry[]
   return drafts;
 }
 
+function matchesTableIdentifier(table: unknown, expected: string): boolean {
+  if (table === undefined || table === null) {
+    return true;
+  }
+  if (typeof table !== "string") {
+    return false;
+  }
+
+  const normalized = table
+    .replace(/["']/g, "")
+    .split(".")
+    .pop()?.toLowerCase();
+
+  return normalized === expected.toLowerCase();
+}
+
 export function isMissingDraftsTableError(error: unknown): boolean {
   if (!error || typeof error !== "object") {
     return false;
@@ -1564,7 +1580,7 @@ export function isMissingDraftsTableError(error: unknown): boolean {
   }
 
   if (typeof details.code === "string" && details.code.toUpperCase() === "42P01") {
-    if (!details.table || details.table === "word_enrichment_drafts") {
+    if (matchesTableIdentifier(details.table, "word_enrichment_drafts")) {
       return true;
     }
   }
@@ -1599,7 +1615,7 @@ export function isMissingSnapshotsTableError(error: unknown): boolean {
   }
 
   if (typeof details.code === "string" && details.code.toUpperCase() === "42P01") {
-    if (!details.table || details.table === "enrichment_provider_snapshots") {
+    if (matchesTableIdentifier(details.table, "enrichment_provider_snapshots")) {
       return true;
     }
   }

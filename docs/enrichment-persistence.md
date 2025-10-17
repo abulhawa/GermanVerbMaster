@@ -4,7 +4,7 @@ The enrichment pipeline stores the provider snapshots that get applied to a word
 places:
 
 1. **Database** – every enrichment run inserts a row into the
-   `enrichment_provider_snapshots` table with the provider payload that was collected.
+   `enrichment.enrichment_provider_snapshots` table with the provider payload that was collected.
    The `words` table keeps track of when enrichment was last applied and what method was used.
 2. **Repository checkout** – whenever the pipeline is executed with the `apply` trigger it also
    writes the selected provider snapshot to `data/enrichment/<pos>/<provider>.json`. These files are
