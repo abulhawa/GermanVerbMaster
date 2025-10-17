@@ -19,6 +19,7 @@ import type { WordExample, WordTranslation } from "@shared";
 import type {
   BulkEnrichmentResponse,
   EnrichmentPatch,
+  EnrichmentProviderSnapshot,
   WordEnrichmentHistory,
   WordEnrichmentPreview,
 } from "@shared/enrichment";
@@ -88,6 +89,58 @@ function cloneExample(entry: WordExample): WordExample {
     ...entry,
     translations: entry.translations ? { ...entry.translations } : null,
   };
+}
+
+function isMissingSnapshotsTableError(error: unknown): boolean {
+  if (!error || typeof error !== "object") {
+    return false;
+  }
+
+  const details = error as {
+    code?: unknown;
+    table?: unknown;
+    message?: unknown;
+  };
+
+  if (typeof details.code === "string" && details.code.toUpperCase() === "42P01") {
+    if (!details.table || details.table === "enrichment_provider_snapshots") {
+      return true;
+    }
+  }
+
+  if (typeof details.message === "string") {
+    const normalizedMessage = details.message.toLowerCase();
+    if (
+      normalizedMessage.includes("enrichment_provider_snapshots")
+      && (normalizedMessage.includes("does not exist") || normalizedMessage.includes("no such table"))
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+async function loadEnrichmentSnapshots(wordId: number): Promise<EnrichmentProviderSnapshot[]> {
+  try {
+    const snapshotRecords = await db
+      .select()
+      .from(enrichmentProviderSnapshots)
+      .where(eq(enrichmentProviderSnapshots.wordId, wordId))
+      .orderBy(desc(enrichmentProviderSnapshots.collectedAt));
+
+    return snapshotRecords.map((record) => buildProviderSnapshotFromRecord(record));
+  } catch (error) {
+    if (isMissingSnapshotsTableError(error)) {
+      console.warn(
+        "Enrichment provider snapshots table is unavailable. Returning empty history.",
+        { wordId },
+      );
+      return [];
+    }
+
+    throw error;
+  }
 }
 
 function mergeLegacyExampleFields(
@@ -643,13 +696,7 @@ export function registerRoutes(app: Express): void {
         return sendError(res, 404, "Word not found", "WORD_NOT_FOUND");
       }
 
-      const snapshotRecords = await db
-        .select()
-        .from(enrichmentProviderSnapshots)
-        .where(eq(enrichmentProviderSnapshots.wordId, id))
-        .orderBy(desc(enrichmentProviderSnapshots.collectedAt));
-
-      const snapshots = snapshotRecords.map((record) => buildProviderSnapshotFromRecord(record));
+      const snapshots = await loadEnrichmentSnapshots(id);
 
       const normalizeString = (value: string | null | undefined): string | null => {
         if (!value) {
