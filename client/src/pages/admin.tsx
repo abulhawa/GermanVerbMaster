@@ -49,6 +49,19 @@ const completeOptions: Array<{ label: string; value: CompleteFilter }> = [
   { label: 'Incomplete', value: 'incomplete' },
 ];
 
+const ADMIN_PAGE_IDS = {
+  page: 'admin-words-page',
+  content: 'admin-words-content',
+  headerSection: 'admin-words-header',
+  filterCard: 'admin-words-filter-card',
+  tokenInput: 'admin-words-token-input',
+  searchInput: 'admin-words-search-input',
+  filterControls: 'admin-words-filter-controls',
+  wordsCard: 'admin-words-table-card',
+  tableContainer: 'admin-words-table-container',
+  pagination: 'admin-words-pagination',
+} as const;
+
 interface EditFieldConfig {
   key:
     | 'level'
@@ -411,12 +424,16 @@ const AdminWordsPage = () => {
   );
 
   return (
-    <AppShell
-      sidebar={sidebar}
-      mobileNav={<MobileNavBar items={navigationItems} />}
-    >
-      <div className="space-y-6">
-        <section className="space-y-4 rounded-3xl border border-border/60 bg-card/85 p-6 shadow-soft shadow-primary/5">
+    <div id={ADMIN_PAGE_IDS.page}>
+      <AppShell
+        sidebar={sidebar}
+        mobileNav={<MobileNavBar items={navigationItems} />}
+      >
+        <div className="space-y-6" id={ADMIN_PAGE_IDS.content}>
+          <section
+            className="space-y-4 rounded-3xl border border-border/60 bg-card/85 p-6 shadow-soft shadow-primary/5"
+            id={ADMIN_PAGE_IDS.headerSection}
+          >
           <div className="space-y-1">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Admin console</p>
             <h1 className="flex items-center gap-2 text-2xl font-semibold text-foreground">
@@ -433,25 +450,33 @@ const AdminWordsPage = () => {
                 variant="secondary"
                 className="rounded-2xl px-5"
                 debugId={`${pageDebugId}-topbar-back-button`}
+                id={`${pageDebugId}-topbar-back-button`}
               >
                 Back to practice
               </Button>
             </Link>
             <Link href="/analytics">
-              <Button className="rounded-2xl px-5" debugId={`${pageDebugId}-topbar-analytics-button`}>
+              <Button
+                className="rounded-2xl px-5"
+                debugId={`${pageDebugId}-topbar-analytics-button`}
+                id={`${pageDebugId}-topbar-analytics-button`}
+              >
                 Open analytics
               </Button>
             </Link>
           </div>
-        </section>
-        <Card className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5">
+          </section>
+          <Card
+            className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5"
+            id={ADMIN_PAGE_IDS.filterCard}
+          >
           <CardHeader className="space-y-2">
             <CardTitle>Admin: Words</CardTitle>
             <CardDescription>Review and edit the aggregated lexicon. Filters update the API query in real time.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid gap-4 lg:grid-cols-2">
-              <div className="space-y-2">
+              <div className="space-y-2" id={ADMIN_PAGE_IDS.tokenInput}>
                 <Label htmlFor="admin-token">Admin token (if configured)</Label>
                 <Input
                   id="admin-token"
@@ -461,7 +486,7 @@ const AdminWordsPage = () => {
                   placeholder="Enter x-admin-token"
                 />
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2" id={ADMIN_PAGE_IDS.searchInput}>
                 <Label htmlFor="search">Search</Label>
                 <Input
                   id="search"
@@ -472,7 +497,7 @@ const AdminWordsPage = () => {
               </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-5">
+            <div className="grid gap-4 md:grid-cols-5" id={ADMIN_PAGE_IDS.filterControls}>
               <div className="space-y-2">
                 <Label>Part of speech</Label>
                 <Select value={pos} onValueChange={(value) => setPos(value as Word['pos'] | 'ALL')}>
@@ -512,6 +537,7 @@ const AdminWordsPage = () => {
                     className="flex-1 rounded-2xl"
                     onClick={() => setApprovalFilter('all')}
                     debugId={`${pageDebugId}-approval-filter-all-button`}
+                    id={`${pageDebugId}-approval-filter-all-button`}
                   >
                     All
                   </Button>
@@ -521,6 +547,7 @@ const AdminWordsPage = () => {
                     className="flex-1 rounded-2xl"
                     onClick={() => setApprovalFilter('approved')}
                     debugId={`${pageDebugId}-approval-filter-approved-button`}
+                    id={`${pageDebugId}-approval-filter-approved-button`}
                   >
                     Approved
                   </Button>
@@ -530,6 +557,7 @@ const AdminWordsPage = () => {
                     className="flex-1 rounded-2xl"
                     onClick={() => setApprovalFilter('pending')}
                     debugId={`${pageDebugId}-approval-filter-pending-button`}
+                    id={`${pageDebugId}-approval-filter-pending-button`}
                   >
                     Pending
                   </Button>
@@ -552,9 +580,12 @@ const AdminWordsPage = () => {
               </div>
             </div>
           </CardContent>
-        </Card>
+          </Card>
 
-      <Card className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5">
+        <Card
+          className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5"
+          id={ADMIN_PAGE_IDS.wordsCard}
+        >
         <CardHeader>
           <CardTitle>Words</CardTitle>
           <CardDescription>
@@ -595,7 +626,10 @@ const AdminWordsPage = () => {
               </Select>
             </div>
           </div>
-          <div className="max-h-[520px] overflow-auto rounded-3xl border border-border/60">
+          <div
+            className="max-h-[520px] overflow-auto rounded-3xl border border-border/60"
+            id={ADMIN_PAGE_IDS.tableContainer}
+          >
             <Table className="text-xs">
               <TableHeader className="sticky top-0 z-20 bg-card/95 backdrop-blur">
                 <TableRow>
@@ -662,6 +696,7 @@ const AdminWordsPage = () => {
                         aria-label={word.approved ? 'Revoke approval' : 'Mark as approved'}
                         onClick={() => toggleApproval(word)}
                         debugId={`${pageDebugId}-word-${word.id}-toggle-approval-button`}
+                        id={`${pageDebugId}-word-${word.id}-toggle-approval-button`}
                       >
                         {word.approved ? (
                           <Trash2 className="h-4 w-4" aria-hidden />
@@ -685,6 +720,7 @@ const AdminWordsPage = () => {
                             title="Edit entry"
                             aria-label="Edit entry"
                             debugId={`${pageDebugId}-word-${word.id}-edit-button`}
+                            id={`${pageDebugId}-word-${word.id}-edit-button`}
                           >
                             <PenSquare className="h-4 w-4" aria-hidden />
                           </Button>
@@ -801,6 +837,7 @@ const AdminWordsPage = () => {
                               type="submit"
                               disabled={updateMutation.isPending}
                               debugId={`${pageDebugId}-word-${word.id}-save-button`}
+                              id={`${pageDebugId}-word-${word.id}-save-button`}
                             >
                               Save changes
                             </Button>
@@ -809,6 +846,7 @@ const AdminWordsPage = () => {
                               variant="outline"
                               onClick={closeEditor}
                               debugId={`${pageDebugId}-word-${word.id}-cancel-button`}
+                              id={`${pageDebugId}-word-${word.id}-cancel-button`}
                             >
                               Cancel
                             </Button>
@@ -837,7 +875,7 @@ const AdminWordsPage = () => {
               </TableBody>
             </Table>
           </div>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between" id={ADMIN_PAGE_IDS.pagination}>
             <div className="text-sm text-muted-foreground">
               {totalWords
                 ? `Showing ${pageStart}–${pageEnd} of ${totalWords} words`
@@ -851,6 +889,7 @@ const AdminWordsPage = () => {
                 disabled={currentPage <= 1 || wordsQuery.isLoading}
                 className="rounded-2xl"
                 debugId={`${pageDebugId}-pagination-previous-button`}
+                id={`${pageDebugId}-pagination-previous-button`}
               >
                 Previous
               </Button>
@@ -865,15 +904,17 @@ const AdminWordsPage = () => {
                 }
                 className="rounded-2xl"
                 debugId={`${pageDebugId}-pagination-next-button`}
+                id={`${pageDebugId}-pagination-next-button`}
               >
                 Next
               </Button>
             </div>
           </div>
         </CardContent>
-      </Card>
+        </Card>
+      </div>
+      </AppShell>
     </div>
-    </AppShell>
   );
 };
 

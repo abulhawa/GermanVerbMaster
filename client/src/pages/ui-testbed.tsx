@@ -19,6 +19,19 @@ import { Switch } from "@/components/ui/switch";
 import { Toggle } from "@/components/ui/toggle";
 import { Button } from "@/components/ui/button";
 
+const UI_TESTBED_IDS = {
+  page: "ui-testbed-page",
+  dialogSection: "ui-testbed-dialog-section",
+  popoverSection: "ui-testbed-popover-section",
+  dropdownSection: "ui-testbed-dropdown-section",
+  controlsSection: "ui-testbed-controls-section",
+  dialogTrigger: "ui-testbed-dialog-trigger",
+  popoverTrigger: "ui-testbed-popover-trigger",
+  menuTrigger: "ui-testbed-menu-trigger",
+  switchControl: "ui-testbed-switch-control",
+  toggleControl: "ui-testbed-toggle-control",
+} as const;
+
 export default function UITestbedPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selection, setSelection] = useState("none");
@@ -26,12 +39,18 @@ export default function UITestbedPage() {
   const [toggleOn, setToggleOn] = useState(false);
 
   return (
-    <div className="min-h-screen space-y-10 bg-background p-10 text-foreground" data-testid="ui-testbed">
-      <section className="space-y-4" data-testid="dialog-section">
+    <div
+      className="min-h-screen space-y-10 bg-background p-10 text-foreground"
+      data-testid="ui-testbed"
+      id={UI_TESTBED_IDS.page}
+    >
+      <section className="space-y-4" data-testid="dialog-section" id={UI_TESTBED_IDS.dialogSection}>
         <h1 className="text-2xl font-semibold">Dialog</h1>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button data-testid="dialog-trigger">Launch dialog</Button>
+            <Button data-testid="dialog-trigger" id={UI_TESTBED_IDS.dialogTrigger}>
+              Launch dialog
+            </Button>
           </DialogTrigger>
           <DialogContent
             data-testid="dialog-content"
@@ -51,11 +70,13 @@ export default function UITestbedPage() {
         </Dialog>
       </section>
 
-      <section className="space-y-4" data-testid="popover-section">
+      <section className="space-y-4" data-testid="popover-section" id={UI_TESTBED_IDS.popoverSection}>
         <h2 className="text-2xl font-semibold">Popover</h2>
         <Popover>
           <PopoverTrigger asChild>
-            <Button data-testid="popover-trigger">Show shortcuts</Button>
+            <Button data-testid="popover-trigger" id={UI_TESTBED_IDS.popoverTrigger}>
+              Show shortcuts
+            </Button>
           </PopoverTrigger>
           <PopoverContent
             data-testid="popover-content"
@@ -76,11 +97,13 @@ export default function UITestbedPage() {
         </Popover>
       </section>
 
-      <section className="space-y-4" data-testid="dropdown-section">
+      <section className="space-y-4" data-testid="dropdown-section" id={UI_TESTBED_IDS.dropdownSection}>
         <h2 className="text-2xl font-semibold">Dropdown menu</h2>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button data-testid="menu-trigger">Menu</Button>
+            <Button data-testid="menu-trigger" id={UI_TESTBED_IDS.menuTrigger}>
+              Menu
+            </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent data-testid="menu-content">
             <DropdownMenuLabel>Account</DropdownMenuLabel>
@@ -93,7 +116,7 @@ export default function UITestbedPage() {
         <p data-testid="menu-selection">Last selection: {selection}</p>
       </section>
 
-      <section className="space-y-4" data-testid="controls-section">
+      <section className="space-y-4" data-testid="controls-section" id={UI_TESTBED_IDS.controlsSection}>
         <h2 className="text-2xl font-semibold">Controls</h2>
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
@@ -102,6 +125,7 @@ export default function UITestbedPage() {
               aria-label="Dark mode"
               checked={switchOn}
               onCheckedChange={setSwitchOn}
+              id={UI_TESTBED_IDS.switchControl}
             />
             <span>{switchOn ? "Enabled" : "Disabled"}</span>
           </div>
@@ -111,6 +135,7 @@ export default function UITestbedPage() {
               aria-label="Notifications"
               pressed={toggleOn}
               onPressedChange={setToggleOn}
+              id={UI_TESTBED_IDS.toggleControl}
             >
               Notifications
             </Toggle>

@@ -55,6 +55,23 @@ import {
 const MIN_QUEUE_THRESHOLD = 5;
 const FETCH_LIMIT = 15;
 
+const HOME_SECTION_IDS = {
+  page: 'home-page',
+  content: 'home-page-content',
+  practiceSection: 'home-practice-section',
+  modeSwitcher: 'home-practice-mode-switcher',
+  cardContainer: 'home-practice-card-container',
+  loadingState: 'home-practice-loading-state',
+  activeCardWrapper: 'home-active-practice-card',
+  emptyState: 'home-practice-empty-state',
+  fetchError: 'home-practice-fetch-error',
+  reloadButton: 'home-reload-button',
+  retryButton: 'home-retry-button',
+  skipButton: 'home-skip-button',
+  reviewHistoryLink: 'home-review-history-link',
+  reviewHistoryButton: 'home-review-history-button',
+} as const;
+
 function mergeTaskLists(lists: PracticeTask[][], limit: number): PracticeTask[] {
   const queues = lists.map((list) => [...list]);
   const result: PracticeTask[] = [];
@@ -402,15 +419,22 @@ export default function Home() {
     </div>
   );
   return (
-    <AppShell
-      sidebar={sidebar}
-      mobileNav={<MobileNavBar items={navigationItems} />}
-      debugId="home-app-shell"
-    >
-      <div className="space-y-6">
-        <section className="flex min-h-[540px] flex-col gap-6 rounded-3xl border border-border/50 bg-card/80 p-6 shadow-xl shadow-primary/10">
+    <div id={HOME_SECTION_IDS.page}>
+      <AppShell
+        sidebar={sidebar}
+        mobileNav={<MobileNavBar items={navigationItems} />}
+        debugId="home-app-shell"
+      >
+      <div className="space-y-6" id={HOME_SECTION_IDS.content}>
+        <section
+          className="flex min-h-[540px] flex-col gap-6 rounded-3xl border border-border/50 bg-card/80 p-6 shadow-xl shadow-primary/10"
+          id={HOME_SECTION_IDS.practiceSection}
+        >
           <div className="space-y-6 text-left">
-            <div className="flex flex-wrap items-center justify-between gap-3">
+            <div
+              className="flex flex-wrap items-center justify-between gap-3"
+              id={HOME_SECTION_IDS.modeSwitcher}
+            >
               <PracticeModeSwitcher
                 debugId="topbar-mode-switcher"
                 scope={scope}
@@ -424,26 +448,38 @@ export default function Home() {
           </div>
 
           <div className="flex flex-1 flex-col gap-6">
-            <div className="w-full xl:max-w-none" data-testid="practice-card-container">
+            <div
+              className="w-full xl:max-w-none"
+              data-testid="practice-card-container"
+              id={HOME_SECTION_IDS.cardContainer}
+            >
               {isInitialLoading ? (
-                <div className="flex h-[340px] items-center justify-center rounded-[28px] border border-dashed border-border/60 bg-background/70 shadow-2xl shadow-primary/15">
+                <div
+                  className="flex h-[340px] items-center justify-center rounded-[28px] border border-dashed border-border/60 bg-background/70 shadow-2xl shadow-primary/15"
+                  id={HOME_SECTION_IDS.loadingState}
+                >
                   <Loader2 className="h-8 w-8 animate-spin text-primary" />
                 </div>
               ) : activeTask ? (
-                <PracticeCard
-                  key={activeTask.taskId}
-                  task={activeTask}
-                  settings={settings}
-                  onResult={handleTaskResult}
-                  isLoadingNext={isFetchingTasks && session.queue.length === 0}
-                  debugId="home-practice-card"
-                  sessionProgress={{
-                    completed: sessionCompleted,
-                    target: milestoneTarget,
-                  }}
-                />
+                <div id={HOME_SECTION_IDS.activeCardWrapper}>
+                  <PracticeCard
+                    key={activeTask.taskId}
+                    task={activeTask}
+                    settings={settings}
+                    onResult={handleTaskResult}
+                    isLoadingNext={isFetchingTasks && session.queue.length === 0}
+                    debugId="home-practice-card"
+                    sessionProgress={{
+                      completed: sessionCompleted,
+                      target: milestoneTarget,
+                    }}
+                  />
+                </div>
               ) : (
-                <div className="flex h-[340px] flex-col items-center justify-center gap-3 rounded-[28px] border border-border/60 bg-background/70 text-center shadow-2xl shadow-primary/10">
+                <div
+                  className="flex h-[340px] flex-col items-center justify-center gap-3 rounded-[28px] border border-border/60 bg-background/70 text-center shadow-2xl shadow-primary/10"
+                  id={HOME_SECTION_IDS.emptyState}
+                >
                   <p className="text-sm text-muted-foreground">
                     No tasks are queued right now. Adjust your practice scope or reload to fetch fresh prompts.
                   </p>
@@ -455,6 +491,7 @@ export default function Home() {
                       setFetchError(null);
                       void fetchAndEnqueueTasks({ replace: true });
                     }}
+                    id={HOME_SECTION_IDS.reloadButton}
                   >
                     Reload tasks
                   </Button>
@@ -464,6 +501,7 @@ export default function Home() {
                 <div
                   className="mt-4 rounded-2xl border border-destructive/40 bg-destructive/5 px-4 py-4 text-sm text-destructive"
                   role="alert"
+                  id={HOME_SECTION_IDS.fetchError}
                 >
                   <p className="text-center font-medium">
                     We couldn't load new tasks. Check your connection or adjust your practice scope, then try again.
@@ -480,6 +518,7 @@ export default function Home() {
                         setFetchError(null);
                         void fetchAndEnqueueTasks({ replace: true });
                       }}
+                      id={HOME_SECTION_IDS.retryButton}
                     >
                       Retry loading
                     </Button>
@@ -488,18 +527,24 @@ export default function Home() {
               )}
             </div>
           </div>
-          <div className="flex w-full flex-col gap-3 sm:flex-row">
+          <div className="flex w-full flex-col gap-3 sm:flex-row" id={HOME_SECTION_IDS.reviewHistoryLink}>
             <Button
               variant="secondary"
               className="flex-1 rounded-2xl text-base sm:h-12"
               onClick={handleSkipTask}
               disabled={!activeTask}
               debugId="practice-skip-button"
+              id={HOME_SECTION_IDS.skipButton}
             >
               Skip to next
             </Button>
             <Link href="/answers" className="flex-1">
-              <Button variant="secondary" className="w-full rounded-2xl text-base sm:h-12" debugId="practice-review-history-button">
+              <Button
+                variant="secondary"
+                className="w-full rounded-2xl text-base sm:h-12"
+                debugId="practice-review-history-button"
+                id={HOME_SECTION_IDS.reviewHistoryButton}
+              >
                 <History className="mr-2 h-4 w-4" aria-hidden />
                 Review answer history
               </Button>
@@ -507,6 +552,7 @@ export default function Home() {
           </div>
         </section>
       </div>
-    </AppShell>
+      </AppShell>
+    </div>
   );
 }
