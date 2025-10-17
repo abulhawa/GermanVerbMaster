@@ -22,28 +22,11 @@ import { collectSources, deriveSourceRevision, primarySourceId } from './sources
 import { validateWord } from './validators';
 import { chunkArray, stableStringify, sha1 } from './utils';
 
-const STABLE_TIMESTAMP = Math.floor(new Date('2025-01-01T00:00:00Z').getTime() / 1000);
 const INFLECTION_DELETE_CHUNK_SIZE = 500;
 const TASK_DELETE_CHUNK_SIZE = 1000;
 
 const LOG_VALIDATION_WARNINGS =
   process.env.GOLDEN_LOG_VALIDATION_WARNINGS?.toLowerCase() === 'true';
-
-type TimestampSeed = { createdAt: number; updatedAt: number };
-
-function toDate(timestamp: number): Date {
-  return new Date(timestamp * 1000);
-}
-
-function withDateColumns<T extends TimestampSeed>(
-  rows: T[],
-): Array<Omit<T, 'createdAt' | 'updatedAt'> & { createdAt: Date; updatedAt: Date }> {
-  return rows.map((row) => ({
-    ...row,
-    createdAt: toDate(row.createdAt),
-    updatedAt: toDate(row.updatedAt),
-  }));
-}
 
 export interface LexemeSeed {
   id: string;
@@ -54,8 +37,6 @@ export interface LexemeSeed {
   metadata: Record<string, unknown>;
   frequencyRank: number | null;
   sourceIds: string[];
-  createdAt: number;
-  updatedAt: number;
 }
 
 export interface InflectionSeed {
@@ -66,8 +47,6 @@ export interface InflectionSeed {
   audioAsset: string | null;
   sourceRevision: string | null;
   checksum: string | null;
-  createdAt: number;
-  updatedAt: number;
 }
 
 export interface TaskSpecSeed {
@@ -81,8 +60,6 @@ export interface TaskSpecSeed {
   hints: unknown[] | null;
   metadata: Record<string, unknown> | null;
   revision: number;
-  createdAt: number;
-  updatedAt: number;
 }
 
 export interface TaskInventory {
@@ -345,7 +322,7 @@ export async function upsertLexemeInventory(
   if (inventory.lexemes.length > 0) {
     await db
       .insert(lexemesTable)
-      .values(withDateColumns(inventory.lexemes))
+      .values(inventory.lexemes)
       .onConflictDoUpdate({
         target: lexemesTable.id,
         set: {
@@ -397,7 +374,7 @@ export async function upsertLexemeInventory(
   if (inventory.inflections.length > 0) {
     await db
       .insert(inflectionsTable)
-      .values(withDateColumns(inventory.inflections))
+      .values(inventory.inflections)
       .onConflictDoUpdate({
         target: inflectionsTable.id,
         set: {
@@ -427,7 +404,7 @@ export async function upsertTaskInventory(
 
   await db
     .insert(taskSpecsTable)
-    .values(withDateColumns(inventory.tasks))
+    .values(inventory.tasks)
     .onConflictDoUpdate({
       target: taskSpecsTable.id,
       set: {
@@ -498,8 +475,6 @@ function createLexemeSeed(word: AggregatedWord): LexemeSeed {
     metadata: cleanedMetadata,
     frequencyRank: null,
     sourceIds: collectSources(word),
-    createdAt: STABLE_TIMESTAMP,
-    updatedAt: STABLE_TIMESTAMP,
   };
 }
 
@@ -691,8 +666,6 @@ function createTasksForWord(word: AggregatedWord, lexemeId: string): TaskSpecSee
       hints: hintList.length ? hintList : null,
       metadata: metadataPayload,
       revision,
-      createdAt: STABLE_TIMESTAMP,
-      updatedAt: STABLE_TIMESTAMP,
     });
   }
 
@@ -717,8 +690,6 @@ function createInflectionEntries(
       audioAsset: null,
       sourceRevision,
       checksum: checksum.slice(0, 16),
-      createdAt: STABLE_TIMESTAMP,
-      updatedAt: STABLE_TIMESTAMP,
     });
   }
   return seeds;
