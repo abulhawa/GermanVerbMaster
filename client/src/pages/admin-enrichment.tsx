@@ -382,12 +382,12 @@ const AdminEnrichmentPage = () => {
                 id="bulk-limit"
                 type="number"
                 min={1}
-                max={200}
+                max={2000}
                 value={bulkConfig.limit}
                 onChange={(event) =>
                   setBulkConfig((config) => ({
                     ...config,
-                    limit: Math.max(1, Math.min(200, Number.parseInt(event.target.value, 10) || config.limit)),
+                    limit: Math.max(1, Math.min(2000, Number.parseInt(event.target.value, 10) || config.limit)),
                   }))
                 }
               />

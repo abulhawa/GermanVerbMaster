@@ -519,7 +519,7 @@ const enrichmentModeSchema = z.enum(["pending", "approved", "all"]);
 
 const enrichmentRunSchema = z
   .object({
-    limit: z.coerce.number().int().min(1).max(200).optional(),
+    limit: z.coerce.number().int().min(1).max(2000).optional(),
     mode: enrichmentModeSchema.optional(),
     onlyIncomplete: optionalBoolean,
     enableAi: optionalBoolean,
