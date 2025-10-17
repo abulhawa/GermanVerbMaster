@@ -26,8 +26,6 @@
     "export:compact": "tsx scripts/export-compact.ts",
     "seed:jsonl": "tsx scripts/seed-jsonl.ts",
     "analytics:export": "tsx scripts/export-pos-analytics.ts",
-    "analytics:post-launch": "tsx scripts/export-pos-analytics.ts",
-    "seed:verbs": "npm run seed",
     "integration:create-key": "tsx scripts/create-partner-key.ts",
     "enrichment:export": "tsx scripts/enrichment/export-applied-snapshots.ts",
     "enrichment:restore": "tsx scripts/enrichment/restore-words-backup.ts"

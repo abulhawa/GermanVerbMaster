@@ -20,9 +20,9 @@ npm run packs:lint data/packs
 - POS-specific requirements hold true (e.g., noun gender present, verb level provided).
 
 ## Recommended workflow
-1. Run `npm run seed` after editing CSV inputs, packs, or lexeme metadata.
+1. Regenerate packs with the JSONL export helpers or your chosen enrichment tooling. The legacy `npm run seed` command now only logs a deprecation notice.
 2. Execute `npm run packs:lint` to catch schema issues before tests.
-3. Fix any reported JSON path or schema mismatch, rerun `npm run seed`, and lint again until the script prints `All packs passed linting.`
+3. Fix any reported JSON path or schema mismatch, rerun the pack regeneration step, and lint again until the script prints `All packs passed linting.`
 4. Commit regenerated packs alongside the change set so reviewers can inspect the deterministic diffs.
 
 ## Exit codes

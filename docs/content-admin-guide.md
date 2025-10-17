@@ -16,7 +16,7 @@ The admin dashboard at `/admin` now manages verbs, nouns, and adjectives from a 
 5. Save changes to issue a `PATCH /api/words/:id` request. Successful edits automatically refresh the table and invalidate cached rows.
 
 ## Coordinating with ETL & packs
-1. After curating a batch, run `npm run seed` to re-aggregate source CSVs and regenerate deterministic task packs under `data/packs/`. Copy any updated JSON files into `client/public/packs/` so the service worker can serve them offline.
+1. After curating a batch, use the JSONL export helpers to regenerate deterministic task packs under `data/packs/`. The legacy `npm run seed` command is now a no-op that only logs a deprecation notice.
 2. Execute `npm run packs:lint` before committing changes. The lint step ensures pack metadata, task descriptors, and lexeme IDs align with the shared task registry.
 3. When promoting new POS content, keep the relevant feature flag disabled until QA signs off on the generated packs. Flip the flag, redeploy, and monitor the `/api/tasks` responses during the first live session.
 
@@ -56,5 +56,5 @@ When publishing to cloud storage, replicate the same hierarchy under `exports/la
 ## Troubleshooting checklist
 - **Unauthorized responses**: confirm the admin token matches the `.env` value and that the request includes the `x-admin-token` header.
 - **Missing noun/adjective fields**: verify the lexeme schema feature flag remains enabled; falling back to the legacy stack hides the new form controls.
-- **Pack lint failures**: inspect the reported JSON path, fix the mismatched metadata or schema issue, rerun `npm run seed`, then lint again.
-- **Need a clean slate**: run `npm run db:reset` to drop and recreate the `public` schema, clear drizzle metadata, and wipe everything under `data/` except `data/pos/`. Follow up with `npm run db:push` to reapply migrations before seeding or restoring JSONL snapshots.
+- **Pack lint failures**: inspect the reported JSON path, fix the mismatched metadata or schema issue, rerun the JSONL sync helpers, then lint again.
+- **Need a clean slate**: run `npm run db:reset` to drop and recreate the `enrichment` schema, clear drizzle metadata, and wipe everything under `data/` except `data/pos/`. Follow up with `npm run db:push` to reapply migrations before restoring JSONL snapshots.
