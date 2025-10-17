@@ -10,6 +10,23 @@ places:
    writes the selected provider snapshot to `data/enrichment/<pos>/<provider>.json`. These files are
    the source of truth for the seed script and can be committed to the repository.
 
+## Applying the enrichment schema
+
+Run the standard migration helper after provisioning a database to create the `enrichment`
+schema and its tables without touching the `public` schema owned by the core application. The
+`drizzle.config.ts` file now points Drizzle to `db/enrichment-schema.ts`, which only re-exports the
+enrichment tables, so either workflow below keeps the public tables untouched:
+
+```bash
+npm run db:push
+# or, if you prefer to call drizzle-kit directly
+npx drizzle-kit push
+```
+
+Both commands read the SQL migrations under `migrations/` and create the enrichment schema plus the
+`enrichment.enrichment_provider_snapshots` and `enrichment.word_enrichment_drafts` tables. Use the
+same commands whenever new enrichment migrations are added.
+
 Because the production API runs inside a long-lived environment the JSON files generated at apply
 time stay on that filesystem. When we want to synchronise the latest applied data back into the
 repository we can export it directly from the database.

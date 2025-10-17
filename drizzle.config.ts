@@ -13,7 +13,7 @@ const sslConfiguration = ["disable", "allow", "prefer"].includes(sslMode)
 
 export default defineConfig({
   out: "./migrations",
-  schema: "./db/schema.ts",
+  schema: "./db/enrichment-schema.ts",
   dialect: "postgresql",
   dbCredentials: {
     url: databaseUrl,
