@@ -1097,7 +1097,7 @@ export function registerRoutes(app: Express): void {
         collectWiktextract: parsed.data.collectWiktextract,
         posFilters: parsed.data.posFilters,
         delayMs: 0,
-        apply: true,
+        apply: false,
         dryRun: false,
         emitReport: false,
         backup: false,
@@ -1107,7 +1107,7 @@ export function registerRoutes(app: Express): void {
       const baseConfig = resolveEnrichmentConfigFromEnv(overrides);
       const config: PipelineConfig = {
         ...baseConfig,
-        apply: true,
+        apply: false,
         dryRun: false,
         emitReport: false,
         backup: false,
