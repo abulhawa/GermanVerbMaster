@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { KeyboardEvent } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Wand2,
@@ -18,12 +19,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
 import { wordsResponseSchema, type AdminWord, type WordsResponse } from './admin-word-schemas';
-import type { BulkEnrichmentResponse, EnrichmentWordSummary, WordEnrichmentPreview } from '@shared/enrichment';
+import type { BulkEnrichmentResponse, WordEnrichmentPreview } from '@shared/enrichment';
 import {
   applyWordEnrichment,
   previewWordEnrichment,
@@ -32,7 +33,6 @@ import {
   type RunEnrichmentPayload,
   type WordEnrichmentOptions,
 } from '@/lib/admin-enrichment';
-import { Checkbox } from '@/components/ui/checkbox';
 import WordEnrichmentDetailView, {
   DEFAULT_WORD_CONFIG,
   formatDisplayDate,
@@ -105,13 +105,9 @@ const AdminEnrichmentPage = () => {
 
   const [bulkConfig, setBulkConfig] = useState<BulkConfigState>(DEFAULT_BULK_CONFIG);
   const [bulkResult, setBulkResult] = useState<BulkEnrichmentResponse | null>(null);
-  const [bulkReportDownload, setBulkReportDownload] = useState<
-    { url: string; filename: string } | null
-  >(null);
   const [isBulkOpen, setIsBulkOpen] = useState(true);
   const [isReviewOpen, setIsReviewOpen] = useState(true);
   const [isMissingOpen, setIsMissingOpen] = useState(true);
-  const [selectedBulkWordIds, setSelectedBulkWordIds] = useState<number[]>([]);
 
   const [wordConfig, setWordConfig] = useState<WordConfigState>(DEFAULT_WORD_CONFIG);
   const [searchInput, setSearchInput] = useState('');
@@ -121,82 +117,6 @@ const AdminEnrichmentPage = () => {
   const [applyResult, setApplyResult] = useState<ApplyEnrichmentResponse | null>(null);
   const [missingPage, setMissingPage] = useState(1);
   const [missingPerPage, setMissingPerPage] = useState(DEFAULT_MISSING_PER_PAGE);
-
-  useEffect(() => () => {
-    if (bulkReportDownload?.url) {
-      URL.revokeObjectURL(bulkReportDownload.url);
-    }
-  }, [bulkReportDownload]);
-
-  useEffect(() => {
-    setSelectedBulkWordIds((previous) => {
-      if (!bulkResult?.words?.length) {
-        return [];
-      }
-      const available = new Set(bulkResult.words.map((summary) => summary.id));
-      return previous.filter((id) => available.has(id));
-    });
-  }, [bulkResult]);
-
-  const prepareBulkReportDownload = useCallback((data: BulkEnrichmentResponse) => {
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const timestamp = new Date().toISOString().replace(/[:]/g, '-');
-    const filename = `bulk-enrichment-${timestamp}.json`;
-
-    setBulkReportDownload((previous) => {
-      if (previous?.url) {
-        URL.revokeObjectURL(previous.url);
-      }
-      const url = URL.createObjectURL(blob);
-      return { url, filename };
-    });
-  }, []);
-
-  const bulkSummariesById = useMemo(() => {
-    const entries = bulkResult?.words ?? [];
-    return new Map(entries.map((summary) => [summary.id, summary]));
-  }, [bulkResult]);
-
-  const handleBulkSelectAll = (checked: boolean) => {
-    const entries = bulkResult?.words ?? [];
-    if (checked) {
-      setSelectedBulkWordIds(entries.map((entry) => entry.id));
-    } else {
-      setSelectedBulkWordIds([]);
-    }
-  };
-
-  const handleBulkSelectOne = (wordId: number, checked: boolean) => {
-    setSelectedBulkWordIds((previous) => {
-      if (checked) {
-        if (previous.includes(wordId)) {
-          return previous;
-        }
-        return [...previous, wordId];
-      }
-      return previous.filter((id) => id !== wordId);
-    });
-  };
-
-  const handleBulkApplySelected = () => {
-    if (!bulkResult?.words?.length) {
-      return;
-    }
-    const summaries = selectedBulkWordIds
-      .map((id) => bulkSummariesById.get(id))
-      .filter((summary): summary is EnrichmentWordSummary => Boolean(summary));
-
-    if (!summaries.length) {
-      toast({
-        title: 'No words selected',
-        description: 'Select one or more words to apply their enrichments.',
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    bulkApplyMutation.mutate(summaries);
-  };
 
   const bulkMutation = useMutation({
     mutationFn: async () => {
@@ -215,7 +135,6 @@ const AdminEnrichmentPage = () => {
     },
     onSuccess: (data) => {
       setBulkResult(data);
-      prepareBulkReportDownload(data);
       toast({
         title: 'Enrichment complete',
         description: `Proposed updates for ${data.updated} of ${data.scanned} scanned words`,
@@ -224,93 +143,6 @@ const AdminEnrichmentPage = () => {
     onError: (error) => {
       toast({
         title: 'Failed to run enrichment',
-        description: error instanceof Error ? error.message : 'Unknown error',
-        variant: 'destructive',
-      });
-    },
-  });
-
-  const bulkApplyMutation = useMutation({
-    mutationFn: async (summaries: EnrichmentWordSummary[]) => {
-      const results: Array<{ summary: EnrichmentWordSummary; response: ApplyEnrichmentResponse }> = [];
-
-      for (const summary of summaries) {
-        const options: WordEnrichmentOptions = {
-          enableAi: summary.suggestionConfig?.enableAi ?? false,
-          allowOverwrite: false,
-          collectSynonyms: summary.suggestionConfig?.collectSynonyms ?? false,
-          collectExamples: summary.suggestionConfig?.collectExamples ?? false,
-          collectTranslations: summary.suggestionConfig?.collectTranslations ?? false,
-          collectWiktextract: summary.suggestionConfig?.collectWiktextract ?? true,
-        };
-
-        const preview = await previewWordEnrichment(summary.id, options);
-        const response = await applyWordEnrichment(
-          summary.id,
-          preview.patch,
-          normalizeDraftId(preview.draftId) ?? normalizeDraftId(summary.draftId),
-        );
-
-        results.push({ summary, response });
-      }
-
-      return results;
-    },
-    onSuccess: (results) => {
-      const appliedIds = new Set(results.map(({ summary }) => summary.id));
-      const appliedCount = appliedIds.size;
-      const fieldTotals = results.reduce<string[]>((acc, { response }) => {
-        acc.push(...response.appliedFields);
-        return acc;
-      }, []);
-      const fallbackTimestamp = new Date().toISOString();
-      const appliedMetadata = new Map<number, { appliedAt: string; draftId?: number }>();
-      results.forEach(({ summary, response }) => {
-        let appliedAt: string | null = null;
-        const payload = response.word as { enrichmentAppliedAt?: string | null } | undefined;
-        if (payload && typeof payload === 'object' && 'enrichmentAppliedAt' in payload) {
-          const rawValue = payload.enrichmentAppliedAt;
-          if (typeof rawValue === 'string' && rawValue.trim().length) {
-            appliedAt = rawValue;
-          }
-        }
-        appliedMetadata.set(summary.id, {
-          appliedAt: appliedAt ?? fallbackTimestamp,
-          draftId: response.draftId ?? summary.draftId,
-        });
-      });
-
-      setSelectedBulkWordIds((previous) => previous.filter((id) => !appliedIds.has(id)));
-      setBulkResult((current) => {
-        if (!current) {
-          return current;
-        }
-        return {
-          ...current,
-          words: current.words.map((word) =>
-            appliedIds.has(word.id)
-              ? {
-                  ...word,
-                  applied: true,
-                  draftAppliedAt: appliedMetadata.get(word.id)?.appliedAt ?? fallbackTimestamp,
-                  draftId: appliedMetadata.get(word.id)?.draftId ?? word.draftId,
-                }
-              : word,
-        ),
-        } satisfies BulkEnrichmentResponse;
-      });
-      queryClient.invalidateQueries({ queryKey: ['admin-enrichment'] });
-
-      toast({
-        title: appliedCount ? `Applied ${appliedCount} ${appliedCount === 1 ? 'enrichment' : 'enrichments'}` : 'No enrichments applied',
-        description: fieldTotals.length
-          ? `Updated fields: ${Array.from(new Set(fieldTotals)).join(', ')}`
-          : undefined,
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: 'Failed to apply selected enrichments',
         description: error instanceof Error ? error.message : 'Unknown error',
         variant: 'destructive',
       });
@@ -384,9 +216,6 @@ const AdminEnrichmentPage = () => {
     totalMissingPages > 0
       ? currentMissingPage < totalMissingPages
       : missingWords.length === effectiveMissingPerPage && missingWords.length > 0;
-  const bulkWords = bulkResult?.words ?? [];
-  const allBulkSelected = bulkWords.length > 0 && selectedBulkWordIds.length === bulkWords.length;
-  const someBulkSelected = selectedBulkWordIds.length > 0 && selectedBulkWordIds.length < bulkWords.length;
   const previewMutation = useMutation({
     mutationFn: async (word: AdminWord) => {
       setPreviewWord(word);
@@ -640,127 +469,17 @@ const AdminEnrichmentPage = () => {
             </div>
           </form>
 
-          {bulkResult && (
-            <div className="space-y-4">
+          {bulkResult ? (
+            <>
               <Separator />
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Sparkles className="h-4 w-4" />
-                  Suggested updates for {bulkResult.updated} of {bulkResult.scanned} scanned words
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <Button
-                    size="sm"
-                    onClick={handleBulkApplySelected}
-                    disabled={bulkApplyMutation.isPending || selectedBulkWordIds.length === 0}
-                  >
-                    {bulkApplyMutation.isPending
-                      ? 'Applying…'
-                      : selectedBulkWordIds.length
-                        ? `Apply ${selectedBulkWordIds.length} selected`
-                        : 'Apply selected'}
-                  </Button>
-                  {bulkReportDownload ? (
-                    <Button variant="outline" size="sm" asChild>
-                      <a
-                        href={bulkReportDownload.url}
-                        download={bulkReportDownload.filename}
-                        aria-label="Download bulk enrichment results as JSON"
-                      >
-                        Download JSON report
-                      </a>
-                    </Button>
-                  ) : null}
-                </div>
+              <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-4 text-sm text-muted-foreground">
+                <Sparkles className="h-4 w-4 text-primary" aria-hidden />
+                <span>
+                  Suggested updates for {bulkResult.updated} of {bulkResult.scanned} scanned words.
+                </span>
               </div>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-10">
-                      <Checkbox
-                        aria-label="Select all words"
-                        checked={allBulkSelected ? true : someBulkSelected ? 'indeterminate' : false}
-                        disabled={bulkApplyMutation.isPending || !bulkWords.length}
-                        onCheckedChange={(value) => handleBulkSelectAll(value === true)}
-                      />
-                    </TableHead>
-                    <TableHead>Word</TableHead>
-                    <TableHead>Missing fields</TableHead>
-                    <TableHead>Proposed updates</TableHead>
-                    <TableHead>Sources</TableHead>
-                    <TableHead className="text-right">Review</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {bulkResult.words.map((summary) => {
-                    const isSelected = selectedBulkWordIds.includes(summary.id);
-                    return (
-                      <TableRow key={summary.id}>
-                        <TableCell>
-                          <Checkbox
-                            aria-label={`Select ${summary.lemma}`}
-                            checked={isSelected}
-                            disabled={bulkApplyMutation.isPending}
-                            onCheckedChange={(value) => handleBulkSelectOne(summary.id, value === true)}
-                          />
-                        </TableCell>
-                        <TableCell className="space-y-1">
-                          <div className="font-semibold">{summary.lemma}</div>
-                          <div className="text-xs text-muted-foreground">{summary.pos}</div>
-                          {summary.translation && (
-                            <div className="text-xs text-muted-foreground">
-                              ↦ {summary.translation.value}
-                              {summary.translation.source ? ` · ${summary.translation.source}` : ''}
-                            </div>
-                          )}
-                          {(summary.example?.sentence || summary.example?.exampleDe) && (
-                            <div className="text-xs text-muted-foreground">
-                              Example: {summary.example?.sentence ?? summary.example?.exampleDe}
-                            </div>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {summary.missingFields.length ? (
-                            <div className="flex flex-wrap gap-1">
-                              {summary.missingFields.map((field) => (
-                              <Badge key={field} variant="secondary">
-                                {field}
-                              </Badge>
-                            ))}
-                          </div>
-                        ) : (
-                          <span className="text-xs text-muted-foreground">None</span>
-                        )}
-                      </TableCell>
-                        <TableCell>{renderUpdateSummary(summary)}</TableCell>
-                        <TableCell>
-                          <div className="text-xs text-muted-foreground space-y-1">
-                            {summary.sources.length ? (
-                              <div>Sources: {summary.sources.join(', ')}</div>
-                            ) : (
-                              <div>No sources recorded</div>
-                            )}
-                            {summary.errors?.length ? (
-                              <div className="text-destructive">Errors: {summary.errors.join('; ')}</div>
-                            ) : null}
-                            {summary.aiUsed ? <div>Used AI assistance</div> : null}
-                            {summary.draftAppliedAt ? (
-                              <div>Applied {formatDisplayDate(summary.draftAppliedAt)}</div>
-                            ) : null}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button variant="ghost" size="sm" onClick={() => openWordDetails(summary.id)}>
-                            Review details
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
-          )}
+            </>
+          ) : null}
         </CollapsibleSection>
 
         <CollapsibleSection
@@ -1023,7 +742,7 @@ const AdminEnrichmentPage = () => {
                       role="button"
                       tabIndex={0}
                       onClick={() => handleWordClick(word)}
-                      onKeyDown={(event) => {
+                      onKeyDown={(event: KeyboardEvent<HTMLTableRowElement>) => {
                         if (event.key === 'Enter' || event.key === ' ') {
                           event.preventDefault();
                           handleWordClick(word);
