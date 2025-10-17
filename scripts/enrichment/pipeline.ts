@@ -37,6 +37,8 @@ import {
 } from "./providers";
 import { persistProviderSnapshotToFile } from "./storage";
 
+type DatabaseClient = ReturnType<typeof getDb>;
+
 export type WordRecord = typeof words.$inferSelect;
 type ProviderSnapshotRecord = typeof enrichmentProviderSnapshots.$inferSelect;
 
@@ -1074,6 +1076,23 @@ async function persistProviderSnapshotsForWord(
   const mode: EnrichmentRunMode = config.mode;
   const comparisons: EnrichmentProviderSnapshotComparison[] = [];
 
+  const snapshotsTableAvailable = await ensureSnapshotsTableAvailability(database);
+
+  if (!snapshotsTableAvailable) {
+    console.warn(
+      "Enrichment provider snapshots table is unavailable. Skipping persistence and returning transient snapshots.",
+      { wordId: word.id },
+    );
+
+    return buildTransientSnapshotComparisons(
+      word,
+      snapshotDrafts,
+      trigger,
+      mode,
+      diagnosticMap,
+    );
+  }
+
   for (const draft of snapshotDrafts.values()) {
     const [previousRecord] = await database
       .select()
@@ -1141,6 +1160,128 @@ async function persistProviderSnapshotsForWord(
     const labelB = b.providerLabel ?? b.providerId;
     return labelA.localeCompare(labelB);
   });
+}
+
+async function ensureSnapshotsTableAvailability(database: DatabaseClient): Promise<boolean> {
+  try {
+    await database
+      .select({ id: enrichmentProviderSnapshots.id })
+      .from(enrichmentProviderSnapshots)
+      .limit(1);
+    return true;
+  } catch (error) {
+    if (isMissingSnapshotsTableError(error)) {
+      return false;
+    }
+
+    throw error;
+  }
+}
+
+function buildTransientSnapshotComparisons(
+  word: WordRecord,
+  snapshotDrafts: Map<string, ProviderSnapshotDraft>,
+  trigger: EnrichmentSnapshotTrigger,
+  mode: EnrichmentRunMode,
+  diagnosticMap: Map<EnrichmentProviderId, EnrichmentProviderDiagnostic>,
+): EnrichmentProviderSnapshotComparison[] {
+  const comparisons: EnrichmentProviderSnapshotComparison[] = [];
+  let idSeed = Date.now();
+
+  for (const draft of snapshotDrafts.values()) {
+    const currentSnapshot = buildSnapshotFromDraft(word, draft, trigger, mode, idSeed++);
+
+    comparisons.push({
+      providerId: currentSnapshot.providerId,
+      providerLabel: currentSnapshot.providerLabel,
+      current: currentSnapshot,
+      previous: null,
+      hasChanges: true,
+    });
+
+    const diagnostic = diagnosticMap.get(draft.providerId as EnrichmentProviderId);
+    if (diagnostic) {
+      diagnostic.currentSnapshot = currentSnapshot;
+      diagnostic.previousSnapshot = null;
+      diagnostic.hasChanges = true;
+    }
+  }
+
+  return comparisons.sort((a, b) => {
+    const labelA = a.providerLabel ?? a.providerId;
+    const labelB = b.providerLabel ?? b.providerId;
+    return labelA.localeCompare(labelB);
+  });
+}
+
+function buildSnapshotFromDraft(
+  word: WordRecord,
+  draft: ProviderSnapshotDraft,
+  trigger: EnrichmentSnapshotTrigger,
+  mode: EnrichmentRunMode,
+  id: number,
+): EnrichmentProviderSnapshot {
+  const now = new Date().toISOString();
+
+  const resolveNullableArray = <T>(values: T[]): T[] | null => (values.length ? values : null);
+
+  const translations = toWordTranslations(draft.translations);
+  const examples = toWordExamples(draft.examples);
+
+  return {
+    id,
+    wordId: word.id,
+    lemma: word.lemma,
+    pos: word.pos,
+    providerId: draft.providerId,
+    providerLabel: draft.providerLabel,
+    status: draft.status,
+    error: draft.status === "error" ? draft.error ?? null : null,
+    trigger,
+    mode,
+    translations,
+    examples,
+    synonyms: draft.status === "success" ? resolveNullableArray(draft.synonyms) : null,
+    englishHints: draft.status === "success" ? resolveNullableArray(draft.englishHints) : null,
+    verbForms: draft.status === "success" ? resolveNullableArray(draft.verbForms) : null,
+    nounForms: draft.status === "success" ? resolveNullableArray(draft.nounForms) : null,
+    adjectiveForms: draft.status === "success" ? resolveNullableArray(draft.adjectiveForms) : null,
+    prepositionAttributes:
+      draft.status === "success" ? resolveNullableArray(draft.prepositionAttributes) : null,
+    rawPayload: draft.rawPayload,
+    collectedAt: now,
+    createdAt: now,
+  } satisfies EnrichmentProviderSnapshot;
+}
+
+export function isMissingSnapshotsTableError(error: unknown): boolean {
+  if (!error || typeof error !== "object") {
+    return false;
+  }
+
+  const details = error as {
+    code?: unknown;
+    table?: unknown;
+    message?: unknown;
+  };
+
+  if (typeof details.code === "string" && details.code.toUpperCase() === "42P01") {
+    if (!details.table || details.table === "enrichment_provider_snapshots") {
+      return true;
+    }
+  }
+
+  if (typeof details.message === "string") {
+    const normalizedMessage = details.message.toLowerCase();
+    if (
+      normalizedMessage.includes("enrichment_provider_snapshots")
+      && (normalizedMessage.includes("does not exist") || normalizedMessage.includes("no such table"))
+    ) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 function toWordTranslations(candidates: EnrichmentTranslationCandidate[]): WordTranslation[] | null {

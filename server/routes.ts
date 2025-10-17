@@ -26,6 +26,7 @@ import type {
 import {
   buildProviderSnapshotFromRecord,
   computeWordEnrichment,
+  isMissingSnapshotsTableError,
   resolveConfigFromEnv as resolveEnrichmentConfigFromEnv,
   runEnrichment,
   toEnrichmentPatch,
@@ -89,36 +90,6 @@ function cloneExample(entry: WordExample): WordExample {
     ...entry,
     translations: entry.translations ? { ...entry.translations } : null,
   };
-}
-
-function isMissingSnapshotsTableError(error: unknown): boolean {
-  if (!error || typeof error !== "object") {
-    return false;
-  }
-
-  const details = error as {
-    code?: unknown;
-    table?: unknown;
-    message?: unknown;
-  };
-
-  if (typeof details.code === "string" && details.code.toUpperCase() === "42P01") {
-    if (!details.table || details.table === "enrichment_provider_snapshots") {
-      return true;
-    }
-  }
-
-  if (typeof details.message === "string") {
-    const normalizedMessage = details.message.toLowerCase();
-    if (
-      normalizedMessage.includes("enrichment_provider_snapshots")
-      && (normalizedMessage.includes("does not exist") || normalizedMessage.includes("no such table"))
-    ) {
-      return true;
-    }
-  }
-
-  return false;
 }
 
 async function loadEnrichmentSnapshots(wordId: number): Promise<EnrichmentProviderSnapshot[]> {
