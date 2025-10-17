@@ -255,7 +255,7 @@ const AdminEnrichmentPage = () => {
           summary.id,
           preview.patch,
           normalizedAdminToken,
-          preview.draftId ?? summary.draftId ?? null,
+          normalizeDraftId(preview.draftId) ?? normalizeDraftId(summary.draftId),
         );
 
         results.push({ summary, response });
@@ -433,6 +433,9 @@ const AdminEnrichmentPage = () => {
     },
   });
 
+  const normalizeDraftId = (value: number | null | undefined): number | undefined =>
+    typeof value === 'number' ? value : undefined;
+
   const applyMutation = useMutation({
     mutationFn: async () => {
       if (!previewWord || !previewData) {
@@ -442,7 +445,7 @@ const AdminEnrichmentPage = () => {
         previewWord.id,
         previewData.patch,
         normalizedAdminToken,
-        previewData.draftId ?? null,
+        normalizeDraftId(previewData.draftId),
       );
       setApplyResult(result);
       toast({
