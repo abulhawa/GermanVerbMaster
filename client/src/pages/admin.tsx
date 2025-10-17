@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { z } from 'zod';
 import { ListChecks, Sparkles, Settings2, PenSquare, Trash2, Wand2 } from 'lucide-react';
 import { Link } from 'wouter';
 import { formatDistanceToNow } from 'date-fns';
@@ -15,11 +14,9 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import type { Word } from '@shared';
 import { exportStatusSchema, wordSchema, wordsResponseSchema } from './admin-word-schemas';
@@ -63,156 +60,6 @@ const enrichmentOptions: Array<{ label: string; value: EnrichmentFilter }> = [
   { label: 'Needs enrichment', value: 'unenriched' },
 ];
 
-interface EditFieldConfig {
-  key:
-    | 'level'
-    | 'english'
-    | 'exampleDe'
-    | 'exampleEn'
-    | 'gender'
-    | 'plural'
-    | 'separable'
-    | 'aux'
-    | 'praesensIch'
-    | 'praesensEr'
-    | 'praeteritum'
-    | 'partizipIi'
-    | 'perfekt'
-    | 'comparative'
-    | 'superlative';
-  label: string;
-  type?: 'text' | 'textarea' | 'select' | 'boolean';
-  options?: Array<{ label: string; value: string }>;
-}
-
-const commonFields: EditFieldConfig[] = [
-  { key: 'level', label: 'Level' },
-  { key: 'english', label: 'English' },
-  { key: 'exampleDe', label: 'Example (DE)', type: 'textarea' },
-  { key: 'exampleEn', label: 'Example (EN)', type: 'textarea' },
-];
-
-const verbFields: EditFieldConfig[] = [
-  { key: 'aux', label: 'Auxiliary', type: 'select', options: [
-    { label: 'Unset', value: 'unset' },
-    { label: 'haben', value: 'haben' },
-    { label: 'sein', value: 'sein' },
-    { label: 'haben / sein', value: 'haben / sein' },
-  ] },
-  { key: 'separable', label: 'Separable', type: 'select', options: [
-    { label: 'Unset', value: 'unset' },
-    { label: 'Yes', value: 'true' },
-    { label: 'No', value: 'false' },
-  ] },
-  { key: 'praesensIch', label: 'Präsens (ich)' },
-  { key: 'praesensEr', label: 'Präsens (er/sie/es)' },
-  { key: 'praeteritum', label: 'Präteritum' },
-  { key: 'partizipIi', label: 'Partizip II' },
-  { key: 'perfekt', label: 'Perfekt' },
-];
-
-const nounFields: EditFieldConfig[] = [
-  { key: 'gender', label: 'Gender / Artikel' },
-  { key: 'plural', label: 'Plural' },
-];
-
-const adjectiveFields: EditFieldConfig[] = [
-  { key: 'comparative', label: 'Comparative' },
-  { key: 'superlative', label: 'Superlative' },
-];
-
-const wordFormSchema = z.object({
-  level: z.string(),
-  english: z.string(),
-  exampleDe: z.string(),
-  exampleEn: z.string(),
-  gender: z.string(),
-  plural: z.string(),
-  separable: z.string(),
-  aux: z.string(),
-  praesensIch: z.string(),
-  praesensEr: z.string(),
-  praeteritum: z.string(),
-  partizipIi: z.string(),
-  perfekt: z.string(),
-  comparative: z.string(),
-  superlative: z.string(),
-});
-
-type WordFormState = z.infer<typeof wordFormSchema>;
-
-function createFormState(word: Word): WordFormState {
-  return {
-    level: word.level ?? '',
-    english: word.english ?? '',
-    exampleDe: word.exampleDe ?? '',
-    exampleEn: word.exampleEn ?? '',
-    gender: word.gender ?? '',
-    plural: word.plural ?? '',
-    separable: word.separable === null ? 'unset' : word.separable ? 'true' : 'false',
-    aux: word.aux ?? 'unset',
-    praesensIch: word.praesensIch ?? '',
-    praesensEr: word.praesensEr ?? '',
-    praeteritum: word.praeteritum ?? '',
-    partizipIi: word.partizipIi ?? '',
-    perfekt: word.perfekt ?? '',
-    comparative: word.comparative ?? '',
-    superlative: word.superlative ?? '',
-  };
-}
-
-function preparePayload(form: WordFormState, pos: Word['pos']) {
-  const payload: Record<string, unknown> = {};
-
-  const assignText = (key: keyof WordFormState, column: keyof Word) => {
-    const raw = form[key].trim();
-    payload[column] = raw.length ? raw : null;
-  };
-
-  assignText('level', 'level');
-  assignText('english', 'english');
-  assignText('exampleDe', 'exampleDe');
-  assignText('exampleEn', 'exampleEn');
-
-  if (pos === 'V') {
-    if (form.aux === 'unset') {
-      payload.aux = null;
-    } else if (
-      form.aux === 'haben'
-      || form.aux === 'sein'
-      || form.aux === 'haben / sein'
-    ) {
-      payload.aux = form.aux;
-    }
-
-    if (form.separable === 'unset') {
-      payload.separable = null;
-    } else if (form.separable === 'true') {
-      payload.separable = true;
-    } else if (form.separable === 'false') {
-      payload.separable = false;
-    }
-
-    assignText('praesensIch', 'praesensIch');
-    assignText('praesensEr', 'praesensEr');
-    assignText('praeteritum', 'praeteritum');
-    assignText('partizipIi', 'partizipIi');
-    assignText('perfekt', 'perfekt');
-  }
-
-  if (pos === 'N') {
-    assignText('gender', 'gender');
-    assignText('plural', 'plural');
-  }
-
-  if (pos === 'Adj') {
-    assignText('comparative', 'comparative');
-    assignText('superlative', 'superlative');
-  }
-
-  return payload;
-}
-
 function humanizeEnrichmentMethod(method: Word['enrichmentMethod'] | null | undefined) {
   if (!method) return null;
   return method
@@ -230,8 +77,6 @@ const AdminWordsPage = () => {
   const [enrichmentFilter, setEnrichmentFilter] = useState<EnrichmentFilter>('all');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState<number>(50);
-  const [selectedWord, setSelectedWord] = useState<Word | null>(null);
-  const [formState, setFormState] = useState<WordFormState | null>(null);
   const [wordConfig, setWordConfig] = useState<WordConfigState>(DEFAULT_WORD_CONFIG);
   const [enrichmentWordId, setEnrichmentWordId] = useState<number | null>(null);
 
@@ -424,31 +269,12 @@ const AdminWordsPage = () => {
     },
   });
 
-  const openEditor = (word: Word) => {
-    setSelectedWord(word);
-    setFormState(createFormState(word));
-  };
-
-  const closeEditor = () => {
-    setSelectedWord(null);
-    setFormState(null);
-  };
-
   const openEnrichmentDialog = (word: Word) => {
     setEnrichmentWordId(word.id);
   };
 
   const closeEnrichmentDialog = () => {
     setEnrichmentWordId(null);
-  };
-
-  const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!selectedWord || !formState) return;
-
-    const payload = preparePayload(formState, selectedWord.pos);
-    updateMutation.mutate({ id: selectedWord.id, payload });
-    closeEditor();
   };
 
   const toggleApproval = (word: Word) => {
@@ -915,157 +741,19 @@ const AdminWordsPage = () => {
                           <Sparkles className="h-4 w-4" aria-hidden />
                         )}
                       </Button>
-                      <Drawer open={selectedWord?.id === word.id} onOpenChange={(open) => {
-                        if (open) {
-                          openEditor(word);
-                        } else {
-                          closeEditor();
-                        }
-                      }}>
-                        <DrawerTrigger asChild>
-                          <Button
-                            size="icon"
-                            variant="secondary"
-                            className="rounded-xl"
-                            onClick={() => openEditor(word)}
-                            title="Edit entry"
-                            aria-label="Edit entry"
-                            debugId={`${pageDebugId}-word-${word.id}-edit-button`}
-                          >
-                            <PenSquare className="h-4 w-4" aria-hidden />
-                          </Button>
-                        </DrawerTrigger>
-                        <DrawerContent className="max-h-[85vh] overflow-y-auto">
-                          <DrawerHeader>
-                            <DrawerTitle>Edit {word.lemma}</DrawerTitle>
-                          </DrawerHeader>
-                          <form onSubmit={submitForm} className="space-y-4 p-4">
-                          {[...commonFields,
-                            ...(word.pos === 'V' ? verbFields : []),
-                            ...(word.pos === 'N' ? nounFields : []),
-                            ...(word.pos === 'Adj' ? adjectiveFields : []),
-                          ].map((field) => (
-                            <div key={field.key} className="space-y-2">
-                              <Label className="text-sm font-medium">{field.label}</Label>
-                                {field.type === 'textarea' ? (
-                                  <Textarea
-                                    value={formState?.[field.key] ?? ''}
-                                    onChange={(event) =>
-                                      setFormState((state) =>
-                                        state ? { ...state, [field.key]: event.target.value } : state,
-                                      )
-                                    }
-                                  />
-                                ) : field.type === 'select' && field.options ? (
-                                  (() => {
-                                    const fallbackOption =
-                                      field.options.find((option) => option.value === 'unset')?.value ??
-                                      field.options[0]?.value ??
-                                      '';
-                                    const currentValue = formState?.[field.key] ?? fallbackOption;
-                                    return (
-                                      <Select
-                                        value={currentValue}
-                                        onValueChange={(value) =>
-                                          setFormState((state) =>
-                                            state ? { ...state, [field.key]: value } : state,
-                                          )
-                                        }
-                                      >
-                                        <SelectTrigger>
-                                          <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          {field.options.map((option) => (
-                                            <SelectItem key={option.value} value={option.value}>
-                                              {option.label}
-                                            </SelectItem>
-                                          ))}
-                                        </SelectContent>
-                                      </Select>
-                                    );
-                                  })()
-                                ) : (
-                                  <Input
-                                    value={formState?.[field.key] ?? ''}
-                                    onChange={(event) =>
-                                      setFormState((state) =>
-                                      state ? { ...state, [field.key]: event.target.value } : state,
-                                    )
-                                  }
-                                />
-                              )}
-                            </div>
-                          ))}
-                          {(word.translations?.length ?? 0) || (word.examples?.length ?? 0) ? (
-                            <div className="space-y-3 rounded-2xl border border-border/60 bg-muted/40 p-4">
-                              {word.translations?.length ? (
-                                <div>
-                                  <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                                    Stored translations
-                                  </div>
-                                  <ul className="mt-1 space-y-1 text-sm">
-                                    {word.translations.map((translation, index) => (
-                                      <li key={`${translation.value}-${translation.source ?? 'unknown'}-${index}`}>
-                                        <span className="font-medium">{translation.value}</span>
-                                        {translation.language ? (
-                                          <span className="text-muted-foreground"> ({translation.language})</span>
-                                        ) : null}
-                                        {translation.source ? (
-                                          <span className="text-muted-foreground"> · {translation.source}</span>
-                                        ) : null}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                </div>
-                              ) : null}
-                              {word.examples?.length ? (
-                                <div>
-                                  <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                                    Stored examples
-                                  </div>
-                                  <ul className="mt-1 space-y-2 text-sm">
-                                    {word.examples.map((example, index) => {
-                                      const sentence = example.sentence ?? example.exampleDe ?? '—';
-                                      const english = example.translations?.en ?? example.exampleEn ?? null;
-                                      return (
-                                        <li key={`${sentence}-${english ?? '—'}-${index}`} className="leading-snug">
-                                          <span className="font-medium text-foreground">{sentence}</span>
-                                          {english ? (
-                                            <span className="text-muted-foreground"> · {english}</span>
-                                          ) : null}
-                                        </li>
-                                      );
-                                    })}
-                                  </ul>
-                                </div>
-                              ) : null}
-                            </div>
-                          ) : word.enrichmentAppliedAt ? (
-                            <p className="text-sm text-muted-foreground">
-                              No stored translations or examples recorded yet.
-                            </p>
-                          ) : null}
-                          <DrawerFooter>
-                            <Button
-                              type="submit"
-                              disabled={updateMutation.isPending}
-                              debugId={`${pageDebugId}-word-${word.id}-save-button`}
-                            >
-                              Save changes
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              onClick={closeEditor}
-                              debugId={`${pageDebugId}-word-${word.id}-cancel-button`}
-                            >
-                              Cancel
-                            </Button>
-                          </DrawerFooter>
-                        </form>
-                      </DrawerContent>
-                    </Drawer>
+                      <Button
+                        size="icon"
+                        variant="secondary"
+                        className="rounded-xl"
+                        asChild
+                        title="Edit entry"
+                        aria-label="Edit entry"
+                        debugId={`${pageDebugId}-word-${word.id}-edit-button`}
+                      >
+                        <Link href={`/admin/words/${word.id}`}>
+                          <PenSquare className="h-4 w-4" aria-hidden />
+                        </Link>
+                      </Button>
                       <Button
                         size="icon"
                         variant="outline"

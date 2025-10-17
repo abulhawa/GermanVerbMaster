@@ -9,6 +9,7 @@ import { THEME_STORAGE_KEY } from "@/lib/theme";
 
 const AdminPage = lazy(() => import("@/pages/admin"));
 const AdminEnrichmentPage = lazy(() => import("@/pages/admin-enrichment"));
+const AdminWordEditPage = lazy(() => import("@/pages/admin-word-edit"));
 const NotFoundPage = lazy(() => import("@/pages/not-found"));
 
 function Router() {
@@ -17,6 +18,7 @@ function Router() {
       <Switch>
         <Route path="/" component={AdminEnrichmentPage} />
         <Route path="/admin/enrichment" component={AdminEnrichmentPage} />
+        <Route path="/admin/words/:id" component={AdminWordEditPage} />
         <Route path="/admin" component={AdminPage} />
         <Route component={NotFoundPage} />
       </Switch>
