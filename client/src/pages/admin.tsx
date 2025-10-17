@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
-import { Sparkles, Settings2, PenSquare, Trash2, Wand2 } from 'lucide-react';
+import { ListChecks, Sparkles, Settings2, PenSquare, Trash2, Wand2 } from 'lucide-react';
 import { Link } from 'wouter';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -378,6 +378,52 @@ const AdminWordsPage = () => {
     },
   });
 
+  const bulkApproveMutation = useMutation<{ updated: number }, Error, number[]>({
+    mutationFn: async (wordIds) => {
+      if (!wordIds.length) {
+        return { updated: 0 };
+      }
+
+      const response = await fetch('/api/admin/words/bulk-approve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ wordIds }),
+      });
+
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message || `Bulk approval failed (${response.status})`);
+      }
+
+      return (await response.json()) as { updated: number };
+    },
+    onSuccess: (data, wordIds) => {
+      queryClient.invalidateQueries({ queryKey });
+      queryClient.invalidateQueries({ queryKey: exportStatusQueryKey });
+      const { updated } = data;
+      if (updated > 0) {
+        toast({
+          title: updated === 1 ? 'Word approved' : 'Words approved',
+          description: `Marked ${updated.toLocaleString()} of ${wordIds.length.toLocaleString()} selected word${
+            updated === 1 ? '' : 's'
+          } as approved.`,
+        });
+      } else {
+        toast({
+          title: 'No words approved',
+          description: 'All selected words were already approved.',
+        });
+      }
+    },
+    onError: (error) => {
+      toast({
+        title: 'Bulk approval failed',
+        description: error instanceof Error ? error.message : String(error),
+        variant: 'destructive',
+      });
+    },
+  });
+
   const openEditor = (word: Word) => {
     setSelectedWord(word);
     setFormState(createFormState(word));
@@ -423,6 +469,9 @@ const AdminWordsPage = () => {
 
   const wordsError =
     wordsQuery.isError && wordsQuery.error instanceof Error ? wordsQuery.error : null;
+
+  const pendingWordsOnPage = useMemo(() => words.filter((word) => !word.approved), [words]);
+  const pendingWordCount = pendingWordsOnPage.length;
 
   const exportStatus = exportStatusQuery.data;
   const totalDirty = exportStatus?.totalDirty ?? 0;
@@ -697,6 +746,40 @@ const AdminWordsPage = () => {
                 {exportStatusError?.message ?? 'Failed to load export status.'}
               </div>
             )}
+          </div>
+          <div className="rounded-2xl border border-border/60 bg-muted/30 p-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="space-y-1">
+                <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Bulk approval
+                </div>
+                <div className="text-sm text-foreground">
+                  {pendingWordCount > 0
+                    ? `${pendingWordCount.toLocaleString()} pending word${pendingWordCount === 1 ? '' : 's'} on this page`
+                    : 'All visible words are approved'}
+                </div>
+              </div>
+              <Button
+                className="rounded-2xl"
+                variant={pendingWordCount > 0 ? 'default' : 'secondary'}
+                onClick={() => {
+                  if (pendingWordCount > 0) {
+                    bulkApproveMutation.mutate(pendingWordsOnPage.map((word) => word.id));
+                  }
+                }}
+                disabled={pendingWordCount === 0 || bulkApproveMutation.isPending}
+                debugId={`${pageDebugId}-bulk-approve-button`}
+              >
+                {bulkApproveMutation.isPending ? (
+                  'Approving…'
+                ) : (
+                  <>
+                    <ListChecks className="mr-2 h-4 w-4" aria-hidden />
+                    Approve visible pending
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="text-sm text-muted-foreground">Page {currentPage} of {displayTotalPages}</div>

@@ -7,7 +7,7 @@ import {
   type Word,
 } from "@db";
 import { z } from "zod";
-import { and, count, desc, eq, sql } from "drizzle-orm";
+import { and, count, desc, eq, inArray, sql } from "drizzle-orm";
 import {
   canonicalizeExamples,
   examplesEqual,
@@ -514,6 +514,12 @@ const exportBulkSchema = z
     limit: z.coerce.number().int().min(1).max(1000).optional(),
   })
   .partial();
+
+const bulkApproveSchema = z
+  .object({
+    wordIds: z.array(z.number().int().positive()).min(1).max(1000),
+  })
+  .strict();
 
 const enrichmentModeSchema = z.enum(["pending", "approved", "all"]);
 
@@ -1044,6 +1050,31 @@ export function registerRoutes(app: Express): void {
     } catch (error) {
       console.error("Failed to run bulk export", error);
       sendError(res, 500, "Failed to run bulk export", "EXPORT_BULK_FAILED");
+    }
+  });
+
+  app.post("/api/admin/words/bulk-approve", async (req, res) => {
+    const parsed = bulkApproveSchema.safeParse(req.body ?? {});
+    if (!parsed.success) {
+      return sendError(res, 400, "Invalid bulk approval request", "INVALID_BULK_APPROVE_REQUEST");
+    }
+
+    const { wordIds } = parsed.data;
+
+    try {
+      const updates = await db
+        .update(words)
+        .set({
+          approved: true,
+          updatedAt: sql`now()`,
+        })
+        .where(and(inArray(words.id, wordIds), eq(words.approved, false)))
+        .returning({ id: words.id });
+
+      res.json({ updated: updates.length });
+    } catch (error) {
+      console.error("Failed to bulk approve words", error);
+      sendError(res, 500, "Failed to approve words", "BULK_APPROVE_FAILED");
     }
   });
 
