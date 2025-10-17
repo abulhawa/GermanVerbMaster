@@ -145,10 +145,11 @@ const AdminQuickApprovalPage = () => {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, error } = wordsQuery;
 
   const allWords = useMemo(() => data?.pages.flatMap((page) => page.data) ?? [], [data]);
+  const completeWords = useMemo(() => allWords.filter((word) => word.complete), [allWords]);
   const processedSet = useMemo(() => new Set(processedWordIds), [processedWordIds]);
   const unprocessedWords = useMemo(
-    () => allWords.filter((word) => !processedSet.has(word.id)),
-    [allWords, processedSet],
+    () => completeWords.filter((word) => !processedSet.has(word.id)),
+    [completeWords, processedSet],
   );
   const activeWord = unprocessedWords[0] ?? null;
   const remainingCount = unprocessedWords.length;
@@ -340,7 +341,8 @@ const AdminQuickApprovalPage = () => {
     if (!activeWord) {
       return (
         <div className="rounded-3xl border border-border/60 bg-card/80 p-8 text-center text-sm text-muted-foreground">
-          No pending words match these filters. Try undoing an approval or widening the filters.
+          No complete pending words match these filters. Try undoing an approval or widening the
+          filters.
         </div>
       );
     }
