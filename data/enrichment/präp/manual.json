@@ -1,0 +1,796 @@
+{
+  "schemaVersion": 1,
+  "providerId": "manual",
+  "providerLabel": "Manual Apply",
+  "pos": "Präp",
+  "updatedAt": "2025-10-17T14:22:56.074Z",
+  "entries": {
+    "auf": {
+      "lemma": "auf",
+      "pos": "Präp",
+      "providerId": "manual",
+      "providerLabel": "Manual Apply",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T14:22:54.909Z",
+      "translations": [
+        {
+          "value": "[with dative] on, upon (positioned at the top of)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "[with accusative] on, onto, up (moving to the top of)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "[with accusative] on (indicating responsibility)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "Introduces a word, usually an adjective, acting as context or a condition for the whole sentence.",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "[with dative] in, at; used with certain nouns instead of bei or in",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "[with accusative] to; used with certain nouns instead of zu or in",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "in (see usage note below)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "in (of a word: ending with some sound or syllable)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "on (a day; usually of the week)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "[with accusative] for (during the continuation of)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "[with accusative] to, for (indicating purpose, goal or wish)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "[with accusative] by (used to separate dimensions when describing the size of something)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": [
+        {
+          "sentence": "Das Buch liegt auf dem Tisch.",
+          "translations": {
+            "en": "The book is lying on the table."
+          }
+        },
+        {
+          "sentence": "Ich lege das Buch auf den Tisch.",
+          "translations": {
+            "en": "I’m putting the book on the table."
+          }
+        },
+        {
+          "sentence": "Das erste Getränk geht aufs Haus.",
+          "translations": {
+            "en": "The first drink is on the house."
+          }
+        },
+        {
+          "sentence": "Das fällt nicht auf dich zurück, sondern auf mich. Ich hab's vermasselt.",
+          "translations": {
+            "en": "That's not on you but on me. I messed up."
+          }
+        },
+        {
+          "sentence": "auf süß",
+          "translations": {
+            "en": "all sweet, all nicely"
+          }
+        },
+        {
+          "sentence": "auf lock",
+          "translations": {
+            "en": "casually"
+          }
+        },
+        {
+          "sentence": "Ich hab so Hunger. Ich glaub, ich kauf mir auf desperate was beim Bäcker.",
+          "translations": {
+            "en": "I'm so hungry. I think I'll get something from the baker all desperate-like."
+          }
+        },
+        {
+          "sentence": "Niemand auf der Welt hätte das voraussehen können.",
+          "translations": {
+            "en": "No one in the world could have predicted that."
+          }
+        },
+        {
+          "sentence": "auf dem Stadtplatz",
+          "translations": {
+            "en": "in the town square"
+          }
+        },
+        {
+          "sentence": "Das Schiff ist auf See",
+          "translations": {
+            "en": "The ship is at sea."
+          }
+        },
+        {
+          "sentence": "auf der Kirmes",
+          "translations": {
+            "en": "at the fun fair"
+          }
+        },
+        {
+          "sentence": "auf der Post",
+          "translations": {
+            "en": "at the post office (also: bei der Post)"
+          }
+        },
+        {
+          "sentence": "auf die Kirmes",
+          "translations": {
+            "en": "to the fun fair"
+          }
+        },
+        {
+          "sentence": "auf die Post",
+          "translations": {
+            "en": "to the post office (also: zur Post)"
+          }
+        },
+        {
+          "sentence": "Was heißt das auf Deutsch?",
+          "translations": {
+            "en": "What’s this in German?"
+          }
+        },
+        {
+          "sentence": "Wörter auf -heit sind weiblich.",
+          "translations": {
+            "en": "Words in -heit are feminine."
+          }
+        },
+        {
+          "sentence": "Du kannst doch auf (’n) Sonntag nich’ den Rasen mähen!",
+          "translations": {
+            "en": "You can’t mow the lawn on a Sunday!"
+          }
+        },
+        {
+          "sentence": "auf Jahre hinaus",
+          "translations": {
+            "en": "for years to come"
+          }
+        },
+        {
+          "sentence": "Lasst uns auf deine Gesundheit trinken!",
+          "translations": {
+            "en": "Let's drink to your health!"
+          }
+        },
+        {
+          "sentence": "Sie spielen auf Zeit.",
+          "translations": {
+            "en": "They are playing for time."
+          }
+        },
+        {
+          "sentence": "X auf Y Meter groß",
+          "translations": {
+            "en": "X by Y meters large"
+          }
+        },
+        {
+          "sentence": "Im Inneren befindet sich eine 4 auf 6 Meter große und 5 Meter hohe Grabkamme . Vor der Pyramide standen vier Säulen , die vermutlich Bronzestatuen des Cestius trugen.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "word": {
+          "id": 2998,
+          "aux": null,
+          "pos": "Präp",
+          "lemma": "auf",
+          "gender": null,
+          "plural": null,
+          "english": "[with dative] on, upon (positioned at the top of)",
+          "perfekt": null,
+          "examples": [
+            {
+              "sentence": "Das Buch liegt auf dem Tisch.",
+              "translations": {
+                "en": "The book is lying on the table."
+              }
+            },
+            {
+              "sentence": "Ich lege das Buch auf den Tisch.",
+              "translations": {
+                "en": "I’m putting the book on the table."
+              }
+            },
+            {
+              "sentence": "Das erste Getränk geht aufs Haus.",
+              "translations": {
+                "en": "The first drink is on the house."
+              }
+            },
+            {
+              "sentence": "Das fällt nicht auf dich zurück, sondern auf mich. Ich hab's vermasselt.",
+              "translations": {
+                "en": "That's not on you but on me. I messed up."
+              }
+            },
+            {
+              "sentence": "auf süß",
+              "translations": {
+                "en": "all sweet, all nicely"
+              }
+            },
+            {
+              "sentence": "auf lock",
+              "translations": {
+                "en": "casually"
+              }
+            },
+            {
+              "sentence": "Ich hab so Hunger. Ich glaub, ich kauf mir auf desperate was beim Bäcker.",
+              "translations": {
+                "en": "I'm so hungry. I think I'll get something from the baker all desperate-like."
+              }
+            },
+            {
+              "sentence": "Niemand auf der Welt hätte das voraussehen können.",
+              "translations": {
+                "en": "No one in the world could have predicted that."
+              }
+            },
+            {
+              "sentence": "auf dem Stadtplatz",
+              "translations": {
+                "en": "in the town square"
+              }
+            },
+            {
+              "sentence": "Das Schiff ist auf See",
+              "translations": {
+                "en": "The ship is at sea."
+              }
+            },
+            {
+              "sentence": "auf der Kirmes",
+              "translations": {
+                "en": "at the fun fair"
+              }
+            },
+            {
+              "sentence": "auf der Post",
+              "translations": {
+                "en": "at the post office (also: bei der Post)"
+              }
+            },
+            {
+              "sentence": "auf die Kirmes",
+              "translations": {
+                "en": "to the fun fair"
+              }
+            },
+            {
+              "sentence": "auf die Post",
+              "translations": {
+                "en": "to the post office (also: zur Post)"
+              }
+            },
+            {
+              "sentence": "Was heißt das auf Deutsch?",
+              "translations": {
+                "en": "What’s this in German?"
+              }
+            },
+            {
+              "sentence": "Wörter auf -heit sind weiblich.",
+              "translations": {
+                "en": "Words in -heit are feminine."
+              }
+            },
+            {
+              "sentence": "Du kannst doch auf (’n) Sonntag nich’ den Rasen mähen!",
+              "translations": {
+                "en": "You can’t mow the lawn on a Sunday!"
+              }
+            },
+            {
+              "sentence": "auf Jahre hinaus",
+              "translations": {
+                "en": "for years to come"
+              }
+            },
+            {
+              "sentence": "Lasst uns auf deine Gesundheit trinken!",
+              "translations": {
+                "en": "Let's drink to your health!"
+              }
+            },
+            {
+              "sentence": "Sie spielen auf Zeit.",
+              "translations": {
+                "en": "They are playing for time."
+              }
+            },
+            {
+              "sentence": "X auf Y Meter groß",
+              "translations": {
+                "en": "X by Y meters large"
+              }
+            },
+            {
+              "sentence": "Im Inneren befindet sich eine 4 auf 6 Meter große und 5 Meter hohe Grabkamme . Vor der Pyramide standen vier Säulen , die vermutlich Bronzestatuen des Cestius trugen.",
+              "translations": null
+            }
+          ],
+          "exampleDe": "Das Buch liegt auf dem Tisch.",
+          "exampleEn": "The book is lying on the table.",
+          "partizipIi": null,
+          "comparative": null,
+          "praeteritum": null,
+          "superlative": null,
+          "translations": [
+            {
+              "value": "[with dative] on, upon (positioned at the top of)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "[with accusative] on, onto, up (moving to the top of)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "[with accusative] on (indicating responsibility)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "Introduces a word, usually an adjective, acting as context or a condition for the whole sentence.",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "[with dative] in, at; used with certain nouns instead of bei or in",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "[with accusative] to; used with certain nouns instead of zu or in",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "in (see usage note below)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "in (of a word: ending with some sound or syllable)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "on (a day; usually of the week)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "[with accusative] for (during the continuation of)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "[with accusative] to, for (indicating purpose, goal or wish)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "[with accusative] by (used to separate dimensions when describing the size of something)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            }
+          ],
+          "posAttributes": {
+            "pos": "prep",
+            "tags": [
+              "archaic",
+              "colloquial",
+              "germany",
+              "northern",
+              "regional",
+              "slang",
+              "western"
+            ],
+            "notes": [
+              "adjectives",
+              "adverbs",
+              "colloquialisms",
+              "de:Linguistics",
+              "interjections",
+              "Pages with 3 entries",
+              "Pages with entries",
+              "prepositions",
+              "Regional German",
+              "Requests for translations of German quotations",
+              "Rhymes:German/aʊ̯f",
+              "Rhymes:German/aʊ̯f/1 syllable",
+              "slang",
+              "terms inherited from Middle High German",
+              "terms inherited from Old High German",
+              "terms inherited from Proto-Germanic",
+              "terms with archaic senses",
+              "terms with collocations",
+              "terms with quotations",
+              "terms with usage examples",
+              "uncomparable adjectives"
+            ],
+            "preposition": {
+              "cases": [
+                "Akkusativ",
+                "Dativ"
+              ],
+              "notes": [
+                "archaic",
+                "colloquial",
+                "Germany",
+                "Northern",
+                "regional",
+                "slang",
+                "Western"
+              ]
+            }
+          },
+          "enrichmentMethod": "manual_api",
+          "enrichmentAppliedAt": "2025-10-17T14:22:55.933Z"
+        },
+        "patch": {
+          "english": "[with dative] on, upon (positioned at the top of)",
+          "complete": true,
+          "examples": [
+            {
+              "sentence": "Das Buch liegt auf dem Tisch.",
+              "translations": {
+                "en": "The book is lying on the table."
+              }
+            },
+            {
+              "sentence": "Ich lege das Buch auf den Tisch.",
+              "translations": {
+                "en": "I’m putting the book on the table."
+              }
+            },
+            {
+              "sentence": "Das erste Getränk geht aufs Haus.",
+              "translations": {
+                "en": "The first drink is on the house."
+              }
+            },
+            {
+              "sentence": "Das fällt nicht auf dich zurück, sondern auf mich. Ich hab's vermasselt.",
+              "translations": {
+                "en": "That's not on you but on me. I messed up."
+              }
+            },
+            {
+              "sentence": "auf süß",
+              "translations": {
+                "en": "all sweet, all nicely"
+              }
+            },
+            {
+              "sentence": "auf lock",
+              "translations": {
+                "en": "casually"
+              }
+            },
+            {
+              "sentence": "Ich hab so Hunger. Ich glaub, ich kauf mir auf desperate was beim Bäcker.",
+              "translations": {
+                "en": "I'm so hungry. I think I'll get something from the baker all desperate-like."
+              }
+            },
+            {
+              "sentence": "Niemand auf der Welt hätte das voraussehen können.",
+              "translations": {
+                "en": "No one in the world could have predicted that."
+              }
+            },
+            {
+              "sentence": "auf dem Stadtplatz",
+              "translations": {
+                "en": "in the town square"
+              }
+            },
+            {
+              "sentence": "Das Schiff ist auf See",
+              "translations": {
+                "en": "The ship is at sea."
+              }
+            },
+            {
+              "sentence": "auf der Kirmes",
+              "translations": {
+                "en": "at the fun fair"
+              }
+            },
+            {
+              "sentence": "auf der Post",
+              "translations": {
+                "en": "at the post office (also: bei der Post)"
+              }
+            },
+            {
+              "sentence": "auf die Kirmes",
+              "translations": {
+                "en": "to the fun fair"
+              }
+            },
+            {
+              "sentence": "auf die Post",
+              "translations": {
+                "en": "to the post office (also: zur Post)"
+              }
+            },
+            {
+              "sentence": "Was heißt das auf Deutsch?",
+              "translations": {
+                "en": "What’s this in German?"
+              }
+            },
+            {
+              "sentence": "Wörter auf -heit sind weiblich.",
+              "translations": {
+                "en": "Words in -heit are feminine."
+              }
+            },
+            {
+              "sentence": "Du kannst doch auf (’n) Sonntag nich’ den Rasen mähen!",
+              "translations": {
+                "en": "You can’t mow the lawn on a Sunday!"
+              }
+            },
+            {
+              "sentence": "auf Jahre hinaus",
+              "translations": {
+                "en": "for years to come"
+              }
+            },
+            {
+              "sentence": "Lasst uns auf deine Gesundheit trinken!",
+              "translations": {
+                "en": "Let's drink to your health!"
+              }
+            },
+            {
+              "sentence": "Sie spielen auf Zeit.",
+              "translations": {
+                "en": "They are playing for time."
+              }
+            },
+            {
+              "sentence": "X auf Y Meter groß",
+              "translations": {
+                "en": "X by Y meters large"
+              }
+            },
+            {
+              "sentence": "Im Inneren befindet sich eine 4 auf 6 Meter große und 5 Meter hohe Grabkamme . Vor der Pyramide standen vier Säulen , die vermutlich Bronzestatuen des Cestius trugen.",
+              "translations": null
+            }
+          ],
+          "exampleDe": "Das Buch liegt auf dem Tisch.",
+          "exampleEn": "The book is lying on the table.",
+          "translations": [
+            {
+              "value": "[with dative] on, upon (positioned at the top of)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "[with accusative] on, onto, up (moving to the top of)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "[with accusative] on (indicating responsibility)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "Introduces a word, usually an adjective, acting as context or a condition for the whole sentence.",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "[with dative] in, at; used with certain nouns instead of bei or in",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "[with accusative] to; used with certain nouns instead of zu or in",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "in (see usage note below)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "in (of a word: ending with some sound or syllable)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "on (a day; usually of the week)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "[with accusative] for (during the continuation of)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "[with accusative] to, for (indicating purpose, goal or wish)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "[with accusative] by (used to separate dimensions when describing the size of something)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            }
+          ],
+          "posAttributes": {
+            "pos": "prep",
+            "tags": [
+              "archaic",
+              "colloquial",
+              "germany",
+              "northern",
+              "regional",
+              "slang",
+              "western"
+            ],
+            "notes": [
+              "adjectives",
+              "adverbs",
+              "colloquialisms",
+              "de:Linguistics",
+              "interjections",
+              "Pages with 3 entries",
+              "Pages with entries",
+              "prepositions",
+              "Regional German",
+              "Requests for translations of German quotations",
+              "Rhymes:German/aʊ̯f",
+              "Rhymes:German/aʊ̯f/1 syllable",
+              "slang",
+              "terms inherited from Middle High German",
+              "terms inherited from Old High German",
+              "terms inherited from Proto-Germanic",
+              "terms with archaic senses",
+              "terms with collocations",
+              "terms with quotations",
+              "terms with usage examples",
+              "uncomparable adjectives"
+            ],
+            "preposition": {
+              "cases": [
+                "Akkusativ",
+                "Dativ"
+              ],
+              "notes": [
+                "archaic",
+                "colloquial",
+                "Germany",
+                "Northern",
+                "regional",
+                "slang",
+                "Western"
+              ]
+            }
+          }
+        },
+        "method": "manual_api",
+        "source": "manual_apply",
+        "appliedAt": "2025-10-17T14:22:55.933Z",
+        "appliedFields": [
+          "english",
+          "examples",
+          "exampleDe",
+          "exampleEn",
+          "translations",
+          "posAttributes",
+          "complete",
+          "enrichmentAppliedAt",
+          "enrichmentMethod"
+        ]
+      },
+      "wordId": 2998,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "all",
+        "snapshotId": 210,
+        "wordId": 2998,
+        "createdAt": "2025-10-17T14:22:54.909Z",
+        "enrichmentMethod": "manual_api",
+        "appliedAt": "2025-10-17T14:22:55.933Z",
+        "source": "manual_apply"
+      }
+    }
+  },
+  "meta": {
+    "createdAt": "2025-10-17T14:22:56.074Z"
+  }
+}
