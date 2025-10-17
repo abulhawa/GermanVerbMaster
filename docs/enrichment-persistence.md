@@ -15,7 +15,8 @@ places:
 Run the standard migration helper after provisioning a database to create the `enrichment`
 schema and its tables without touching the `public` schema owned by the core application. The
 `drizzle.config.ts` file now points Drizzle to `db/enrichment-schema.ts`, which only re-exports the
-enrichment tables, so either workflow below keeps the public tables untouched:
+enrichment tables, and the `schemaFilter` setting is pinned to `enrichment` so Drizzle ignores the
+`public` schema entirely. Either workflow below keeps the public tables untouched:
 
 ```bash
 npm run db:push
