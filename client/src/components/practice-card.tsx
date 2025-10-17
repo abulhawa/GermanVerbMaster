@@ -338,32 +338,6 @@ function renderHintText(
   return null;
 }
 
-function resolveCefrLevel(metadata: Record<string, unknown> | null | undefined): string | null {
-  if (!metadata) {
-    return null;
-  }
-
-  const { level } = metadata as { level?: unknown };
-  if (typeof level === 'string' && level.trim().length > 0) {
-    return level;
-  }
-
-  return null;
-}
-
-function renderMetadataRow(copy: PracticeCardMessages, task: PracticeTask, className?: string) {
-  const cefrLevel = resolveCefrLevel(task.lexeme.metadata) ?? 'A1';
-  return (
-    <div className={cn('flex flex-wrap items-center gap-3 text-xs font-medium text-primary-foreground/80', className)}>
-      <span>CEFR {cefrLevel}</span>
-      <span aria-hidden>•</span>
-      <span>
-        {copy.metadata.sourceLabel} {task.source}
-      </span>
-    </div>
-  );
-}
-
 interface PracticeCardScaffoldProps extends DebuggableComponentProps {
   copy: PracticeCardMessages;
   sessionProgress: PracticeCardSessionProgress;
@@ -884,22 +858,7 @@ function NounCaseDeclensionRenderer({
     </div>
   );
 
-  const supportSections: ReactNode[] = [
-    <div
-      key="context"
-      className="rounded-2xl border border-border/35 bg-card/20 px-4 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-primary-foreground/80 shadow-soft backdrop-blur"
-    >
-      <span>{caseLabel}</span>
-      <span aria-hidden>•</span>
-      <span>{numberLabel}</span>
-    </div>,
-    <div
-      key="metadata"
-      className="rounded-2xl border border-border/40 bg-card/25 px-5 py-3 shadow-soft backdrop-blur"
-    >
-      {renderMetadataRow(copy, task, 'justify-center text-primary-foreground/80')}
-    </div>,
-  ];
+  const supportSections: ReactNode[] = [];
 
   if (preferences.showExamples && exampleText) {
     supportSections.push(
@@ -1143,28 +1102,7 @@ function AdjectiveEndingRenderer({
     </div>
   );
 
-  const supportSections: ReactNode[] = [
-    <div
-      key="context"
-      className="rounded-2xl border border-border/35 bg-card/20 px-4 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-primary-foreground/80 shadow-soft backdrop-blur"
-    >
-      <span>{degreeLabel}</span>
-      {task.prompt.syntacticFrame ? (
-        <>
-          <span aria-hidden>•</span>
-          <span>
-            {copy.adjective.syntacticFrameLabel} {task.prompt.syntacticFrame}
-          </span>
-        </>
-      ) : null}
-    </div>,
-    <div
-      key="metadata"
-      className="rounded-2xl border border-border/40 bg-card/25 px-5 py-3 shadow-soft backdrop-blur"
-    >
-      {renderMetadataRow(copy, task, 'justify-center text-primary-foreground/80')}
-    </div>,
-  ];
+  const supportSections: ReactNode[] = [];
 
   if (preferences.showExamples && exampleText) {
     supportSections.push(
