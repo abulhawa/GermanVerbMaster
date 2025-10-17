@@ -1263,7 +1263,12 @@ export function isMissingSnapshotsTableError(error: unknown): boolean {
     code?: unknown;
     table?: unknown;
     message?: unknown;
+    cause?: unknown;
   };
+
+  if (details.cause && isMissingSnapshotsTableError(details.cause)) {
+    return true;
+  }
 
   if (typeof details.code === "string" && details.code.toUpperCase() === "42P01") {
     if (!details.table || details.table === "enrichment_provider_snapshots") {
