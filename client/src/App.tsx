@@ -8,6 +8,7 @@ import { ThemeProvider } from "next-themes";
 import { THEME_STORAGE_KEY } from "@/lib/theme";
 
 const AdminPage = lazy(() => import("@/pages/admin"));
+const AdminQuickApprovalPage = lazy(() => import("@/pages/admin-quick-approval"));
 const AdminEnrichmentPage = lazy(() => import("@/pages/admin-enrichment"));
 const AdminWordEditPage = lazy(() => import("@/pages/admin-word-edit"));
 const NotFoundPage = lazy(() => import("@/pages/not-found"));
@@ -18,6 +19,7 @@ function Router() {
       <Switch>
         <Route path="/" component={AdminEnrichmentPage} />
         <Route path="/admin/enrichment" component={AdminEnrichmentPage} />
+        <Route path="/admin/quick-approval" component={AdminQuickApprovalPage} />
         <Route path="/admin/words/:id" component={AdminWordEditPage} />
         <Route path="/admin" component={AdminPage} />
         <Route component={NotFoundPage} />

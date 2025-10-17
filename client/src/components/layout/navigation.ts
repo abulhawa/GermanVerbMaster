@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Settings2, Wand2 } from "lucide-react";
+import { ListChecks, Settings2, Wand2 } from "lucide-react";
 
 export interface AppNavigationItem {
   href: string;
@@ -14,6 +14,11 @@ const BASE_PRIMARY_NAVIGATION_ITEMS: AppNavigationItem[] = [
     label: "Admin tools",
     icon: Settings2,
     exact: true,
+  },
+  {
+    href: "/admin/quick-approval",
+    label: "Quick approval",
+    icon: ListChecks,
   },
   {
     href: "/admin/enrichment",
