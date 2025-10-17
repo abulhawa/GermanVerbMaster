@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { PracticeMode } from "@/lib/types";
+import { getTaskTypeLabel } from "@/lib/task-metadata";
 import type { AnsweredQuestion } from "@/lib/answer-history";
 import type { AnswerHistoryLexemeSnapshot } from "@shared";
 import { derivePromptLemmaFromEntry } from "@/lib/prompt-lemma";
@@ -110,7 +111,7 @@ export function AnsweredQuestionsPanel({
                     auxiliary: verb.auxiliary,
                   } satisfies AnswerHistoryLexemeSnapshot)
                 : undefined);
-            const mode = item.mode ?? item.legacyVerb?.mode ?? "präteritum";
+            const mode = item.mode ?? item.legacyVerb?.mode;
             const level = item.level ?? item.cefrLevel ?? "A1";
             const prompt = item.prompt ?? item.promptSummary;
             const attempted = item.attemptedAnswer ?? (typeof item.submittedResponse === "string" ? item.submittedResponse : "");
@@ -155,7 +156,7 @@ export function AnsweredQuestionsPanel({
                       {item.result === "correct" ? "Correct" : "Incorrect"}
                     </Badge>
                     <span className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                      {MODE_LABELS[mode as PracticeMode] ?? mode}
+                      {mode ? MODE_LABELS[mode] ?? mode : getTaskTypeLabel(item.taskType)}
                     </span>
                     <span className="text-xs text-muted-foreground">Level {level}</span>
                     <span className="text-xs text-muted-foreground">Answered at {answeredTime}</span>
