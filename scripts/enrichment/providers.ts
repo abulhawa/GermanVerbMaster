@@ -10,6 +10,7 @@ const REQUEST_HEADERS = {
 const KAIKKI_GERMAN_BASE = "https://kaikki.org/dictionary/German/meaning";
 const KAIKKI_ENGLISH_BASE = "https://kaikki.org/dictionary/English/meaning";
 const OPEN_THESAURUS_API = "https://www.openthesaurus.de/synonyme/search";
+const PIVOT_TARGET_LANGUAGES = new Set(["english"]);
 const MY_MEMORY_API = "https://api.mymemory.translated.net/get";
 const TATOEBA_API = "https://tatoeba.org/en/api_v0/search";
 const OPENAI_CHAT_COMPLETIONS = "https://api.openai.com/v1/chat/completions";
@@ -1038,6 +1039,11 @@ export async function lookupWiktextract(
   const synonyms = collectSynonyms(selectedEntry);
   const englishHints = collectGlosses(selectedEntry);
   const examples = collectExamples(selectedEntry);
+  const exampleKeys = new Set(
+    examples.map((entry) =>
+      JSON.stringify([(entry.exampleDe ?? "").toLowerCase(), (entry.exampleEn ?? "").toLowerCase()]),
+    ),
+  );
   const selectedEntryPoses = resolvePosAliases(selectedEntry.pos);
   const verbForms = selectedEntryPoses.includes("verb")
     ? extractVerbForms(selectedEntry)
@@ -1069,42 +1075,102 @@ export async function lookupWiktextract(
   for (const translation of translations) {
     addTranslation(translation.value, translation.language);
   }
-  const hadDirectTranslations = collectedTranslations.size > 0;
+  const addExample = (example: WiktextractExample) => {
+    const key = JSON.stringify([
+      (example.exampleDe ?? "").toLowerCase(),
+      (example.exampleEn ?? "").toLowerCase(),
+    ]);
+    if (exampleKeys.has(key)) {
+      return false;
+    }
+    exampleKeys.add(key);
+    examples.push(example);
+    return true;
+  };
+  const englishHeadwords = englishHints
+    .map((value) => value?.trim())
+    .filter((value): value is string => Boolean(value));
 
-  if (!collectedTranslations.size && englishHints.length) {
-    for (const headword of englishHints) {
+  let needsPivotTranslations = !collectedTranslations.size;
+  let needsPivotExamples = !examples.length;
+
+  if ((needsPivotTranslations || needsPivotExamples) && englishHeadwords.length) {
+    for (const headword of englishHeadwords) {
       if (!headword) continue;
-      const { entries: englishEntries } = await fetchKaikkiEntries(
-        KAIKKI_ENGLISH_BASE,
-        headword,
-      );
+      const { entries: englishEntries } = await fetchKaikkiEntries(KAIKKI_ENGLISH_BASE, headword);
 
-      let hasGermanTranslations = false;
+      if (needsPivotTranslations) {
+        let headwordAddedTranslation = false;
+        let headwordConfirmedBySourceLang = false;
 
-      for (const entry of englishEntries) {
-        if (entry.lang !== "English") continue;
-        for (const sense of toArray<KaikkiSenseEntry>(entry.senses)) {
-          for (const translation of toArray<KaikkiTranslationEntry>(sense.translations)) {
-            const language = translation.lang ?? translation.lang_code;
-            if (language && language.toLowerCase() === "german") {
-              hasGermanTranslations = true;
-              break;
+        for (const entry of englishEntries) {
+          if (entry.lang !== "English") continue;
+          for (const sense of toArray<KaikkiSenseEntry>(entry.senses)) {
+            for (const translation of toArray<KaikkiTranslationEntry>(sense.translations)) {
+              const word = translation.word?.trim();
+              if (!word) continue;
+              const language = translation.lang?.trim() ?? translation.lang_code?.trim();
+              if (!language) continue;
+              const languageLower = language.toLowerCase();
+              if (languageLower === "german" || languageLower === "de") {
+                headwordConfirmedBySourceLang = true;
+              }
+              if (PIVOT_TARGET_LANGUAGES.has(languageLower)) {
+                addTranslation(word, language);
+                headwordAddedTranslation = true;
+              }
             }
           }
-          if (hasGermanTranslations) break;
         }
-        if (hasGermanTranslations) break;
+
+        if (headwordAddedTranslation) {
+          pivotUsed = true;
+          needsPivotTranslations = false;
+        } else if (headwordConfirmedBySourceLang) {
+          pivotUsed = true;
+          needsPivotTranslations = false;
+        }
       }
 
-      if (hasGermanTranslations) {
-        addTranslation(headword, "en");
-        pivotUsed = true;
+      if (needsPivotExamples) {
+        let headwordExamplesAdded = false;
+
+        for (const entry of englishEntries) {
+          if (entry.lang !== "English") continue;
+          for (const sense of toArray<KaikkiSenseEntry>(entry.senses)) {
+            for (const example of toArray<KaikkiExampleEntry>(sense.examples)) {
+              const exampleEn = example.english?.trim() || example.text?.trim();
+              const exampleDe = example.translation?.trim();
+              if (!exampleEn && !exampleDe) {
+                continue;
+              }
+              const translationsMap = exampleEn ? { en: exampleEn } : undefined;
+              const added = addExample({
+                sentence: exampleDe || exampleEn || undefined,
+                translations: translationsMap,
+                exampleDe: exampleDe || undefined,
+                exampleEn: exampleEn || undefined,
+              });
+              if (added) {
+                headwordExamplesAdded = true;
+              }
+            }
+          }
+        }
+
+        if (headwordExamplesAdded) {
+          pivotUsed = true;
+          needsPivotExamples = false;
+        }
+      }
+
+      if (!needsPivotTranslations && !needsPivotExamples) {
         break;
       }
     }
   }
 
-  if (!hadDirectTranslations && englishHints.length) {
+  if (!collectedTranslations.size && englishHints.length) {
     for (const hint of englishHints) {
       addTranslation(hint, "en");
     }
