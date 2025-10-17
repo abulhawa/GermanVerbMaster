@@ -26,7 +26,7 @@ export interface UserMenuMessages {
 export interface PracticeCardMessages {
   offline: { title: string; description: string; announce: string };
   error: { title: string; generic: string };
-  status: { correct: string; incorrect: string; expectedAnswer: string };
+  status: { correct: string; incorrect: string; expectedAnswer: string; revealPrompt: string };
   header: {
     appName: string;
   };
@@ -40,7 +40,14 @@ export interface PracticeCardMessages {
   };
   exampleLabel: string;
   metadata: { sourceLabel: string };
-  actions: { submit: string; pronounceSrLabel: string };
+  actions: {
+    submit: string;
+    pronounceSrLabel: string;
+    revealAnswer: string;
+    hideAnswer: string;
+    nextQuestion: string;
+    retry: string;
+  };
   loadingNext: string;
   progress: {
     completedLabel: string;
@@ -328,6 +335,7 @@ const MESSAGES: Record<Locale, AppMessages> = {
         correct: 'Correct',
         incorrect: 'Try again',
         expectedAnswer: 'Expected answer:',
+        revealPrompt: 'Reveal the correct answer to review it before continuing.',
       },
       header: {
         appName: 'Wortschatz',
@@ -347,6 +355,10 @@ const MESSAGES: Record<Locale, AppMessages> = {
       actions: {
         submit: 'Check',
         pronounceSrLabel: 'Play pronunciation',
+        revealAnswer: 'Reveal answer',
+        hideAnswer: 'Hide answer',
+        nextQuestion: 'Next question',
+        retry: 'Try again',
       },
       loadingNext: 'Loading next task…',
       progress: {
@@ -574,6 +586,7 @@ const MESSAGES: Record<Locale, AppMessages> = {
         correct: 'Richtig',
         incorrect: 'Versuch es erneut',
         expectedAnswer: 'Erwartete Antwort:',
+        revealPrompt: 'Blende die Lösung ein, um deinen Fehler nachzuvollziehen.',
       },
       header: {
         appName: 'Wortschatz',
@@ -593,6 +606,10 @@ const MESSAGES: Record<Locale, AppMessages> = {
       actions: {
         submit: 'Prüfen',
         pronounceSrLabel: 'Aussprache abspielen',
+        revealAnswer: 'Antwort anzeigen',
+        hideAnswer: 'Antwort verbergen',
+        nextQuestion: 'Nächste Aufgabe',
+        retry: 'Nochmal versuchen',
       },
       loadingNext: 'Lädt nächste Aufgabe…',
       progress: {

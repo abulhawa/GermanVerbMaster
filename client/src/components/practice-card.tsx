@@ -49,6 +49,7 @@ interface RendererProps<T extends TaskType = TaskType> extends DebuggableCompone
   isLoadingNext?: boolean;
   className?: string;
   sessionProgress: PracticeCardSessionProgress;
+  onContinue?: () => void;
 }
 
 const DEFAULT_RENDERER_PREFS: PracticeSettingsRendererPreferences = {
@@ -266,10 +267,15 @@ function renderStatusBadge(
   copy: PracticeCardMessages,
   status: 'idle' | 'correct' | 'incorrect',
   expectedForms: string[],
-  displayAnswer?: string,
+  displayAnswer: string | undefined,
+  showAnswer: boolean,
 ) {
   const StatusIcon = status === 'correct' ? CheckCircle2 : status === 'incorrect' ? XCircle : null;
   const statusLabel = status === 'correct' ? copy.status.correct : status === 'incorrect' ? copy.status.incorrect : null;
+
+  const hasAnswerToReveal = Boolean(displayAnswer ?? expectedForms[0]);
+  const shouldShowAnswer = status === 'incorrect' && hasAnswerToReveal && showAnswer;
+  const shouldShowRevealPrompt = status === 'incorrect' && hasAnswerToReveal && !showAnswer;
 
   if (!StatusIcon || !statusLabel) {
     return null;
@@ -293,12 +299,15 @@ function renderStatusBadge(
       <StatusIcon className="h-5 w-5" aria-hidden />
       <div>
         <p className="text-sm font-semibold text-primary-foreground">{statusLabel}</p>
-        {status === 'incorrect' && (displayAnswer || expectedForms.length > 0) && (
+        {shouldShowAnswer ? (
           <p className="text-xs normal-case text-primary-foreground/80">
             {copy.status.expectedAnswer}{' '}
             <span className="font-medium text-primary-foreground">{displayAnswer ?? expectedForms[0]}</span>
           </p>
-        )}
+        ) : null}
+        {shouldShowRevealPrompt ? (
+          <p className="text-xs normal-case text-primary-foreground/80">{copy.status.revealPrompt}</p>
+        ) : null}
       </div>
     </motion.div>
   );
@@ -348,6 +357,69 @@ interface PracticeCardScaffoldProps extends DebuggableComponentProps {
   className?: string;
   isLoadingNext?: boolean;
   badgeLabel?: string;
+}
+
+interface PracticeCardReviewControlsProps {
+  copy: PracticeCardMessages;
+  status: 'idle' | 'correct' | 'incorrect';
+  canRevealAnswer: boolean;
+  isAnswerRevealed: boolean;
+  onToggleAnswer: () => void;
+  onRetry?: () => void;
+  onContinue?: () => void;
+}
+
+function PracticeCardReviewControls({
+  copy,
+  status,
+  canRevealAnswer,
+  isAnswerRevealed,
+  onToggleAnswer,
+  onRetry,
+  onContinue,
+}: PracticeCardReviewControlsProps) {
+  if (status === 'idle') {
+    return null;
+  }
+
+  const revealLabel = isAnswerRevealed ? copy.actions.hideAnswer : copy.actions.revealAnswer;
+
+  return (
+    <div className="flex w-full flex-col items-center gap-3 sm:flex-row sm:justify-center sm:gap-4">
+      {canRevealAnswer ? (
+        <Button
+          type="button"
+          variant="outline"
+          size="lg"
+          className="w-full max-w-[min(60vw,20rem)]"
+          onClick={onToggleAnswer}
+        >
+          {revealLabel}
+        </Button>
+      ) : null}
+      {status === 'incorrect' && onRetry ? (
+        <Button
+          type="button"
+          variant="secondary"
+          size="lg"
+          className="w-full max-w-[min(60vw,20rem)]"
+          onClick={onRetry}
+        >
+          {copy.actions.retry}
+        </Button>
+      ) : null}
+      {onContinue ? (
+        <Button
+          type="button"
+          size="lg"
+          className="w-full max-w-[min(60vw,20rem)]"
+          onClick={onContinue}
+        >
+          {copy.actions.nextQuestion}
+        </Button>
+      ) : null}
+    </div>
+  );
 }
 
 function PracticeCardScaffold({
@@ -420,6 +492,7 @@ function ConjugateFormRenderer({
   debugId,
   isLoadingNext,
   sessionProgress,
+  onContinue,
 }: RendererProps<'conjugate_form'>) {
   const { toast } = useToast();
   const { practiceCard: copy } = useTranslations();
@@ -427,7 +500,9 @@ function ConjugateFormRenderer({
   const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
   const [showHint, setShowHint] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAnswerRevealed, setIsAnswerRevealed] = useState(false);
   const startTimeRef = useRef(Date.now());
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const preferences = getRendererPreferences(settings, task.taskType);
   const instructionText = useMemo(() => getTaskInstructions(copy, task), [copy, task]);
   const partOfSpeechLabel = useMemo(() => formatPartOfSpeechLabel(task), [task.pos, task.taskType]);
@@ -437,6 +512,7 @@ function ConjugateFormRenderer({
     setStatus('idle');
     setShowHint(false);
     setIsSubmitting(false);
+    setIsAnswerRevealed(false);
     startTimeRef.current = Date.now();
   }, [task.taskId]);
 
@@ -477,6 +553,22 @@ function ConjugateFormRenderer({
     speak(formsToPronounce[formsToPronounce.length - 1] ?? task.lexeme.lemma);
   };
 
+  const handleToggleAnswerReveal = () => {
+    setIsAnswerRevealed((previous) => !previous);
+  };
+
+  const handleRetry = () => {
+    if (isSubmitting) {
+      return;
+    }
+
+    setStatus('idle');
+    setAnswer('');
+    setIsAnswerRevealed(false);
+    startTimeRef.current = Date.now();
+    inputRef.current?.focus();
+  };
+
   const handleSubmit = async () => {
     if (!answer.trim() || isSubmitting) {
       return;
@@ -489,6 +581,7 @@ function ConjugateFormRenderer({
     );
 
     setIsSubmitting(true);
+    setIsAnswerRevealed(false);
 
     try {
       const promptSummary = buildPromptSummary(copy, task);
@@ -541,6 +634,9 @@ function ConjugateFormRenderer({
     }
   };
 
+  const displayAnswer = task.expectedSolution?.form ?? undefined;
+  const canRevealAnswer = Boolean(displayAnswer || expectedForms.length > 0);
+
   const promptSection = (
     <>
       <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-semibold uppercase tracking-[0.35em] text-primary-foreground/70">
@@ -556,13 +652,26 @@ function ConjugateFormRenderer({
 
   const statusIndicator = (
     <AnimatePresence>
-      {renderStatusBadge(copy, status, expectedForms, task.expectedSolution?.form ?? undefined)}
+      {renderStatusBadge(copy, status, expectedForms, displayAnswer, isAnswerRevealed)}
     </AnimatePresence>
+  );
+
+  const reviewControls = (
+    <PracticeCardReviewControls
+      copy={copy}
+      status={status}
+      canRevealAnswer={canRevealAnswer}
+      isAnswerRevealed={isAnswerRevealed}
+      onToggleAnswer={handleToggleAnswerReveal}
+      onRetry={status === 'incorrect' ? handleRetry : undefined}
+      onContinue={onContinue}
+    />
   );
 
   const answerSection = (
     <div className="flex flex-col items-center gap-6">
       <Input
+        ref={inputRef}
         value={answer}
         onChange={(event) => setAnswer(event.target.value)}
         onKeyDown={handleKeyDown}
@@ -594,6 +703,7 @@ function ConjugateFormRenderer({
           <span className="sr-only">{copy.actions.pronounceSrLabel}</span>
         </Button>
       </div>
+      {reviewControls}
     </div>
   );
 
@@ -675,6 +785,7 @@ function NounCaseDeclensionRenderer({
   debugId,
   isLoadingNext,
   sessionProgress,
+  onContinue,
 }: RendererProps<'noun_case_declension'>) {
   const { toast } = useToast();
   const { practiceCard: copy } = useTranslations();
@@ -682,7 +793,9 @@ function NounCaseDeclensionRenderer({
   const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
   const [showHint, setShowHint] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAnswerRevealed, setIsAnswerRevealed] = useState(false);
   const startTimeRef = useRef(Date.now());
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const preferences = getRendererPreferences(settings, task.taskType);
   const instructionText = useMemo(() => getTaskInstructions(copy, task), [copy, task]);
   const partOfSpeechLabel = useMemo(() => formatPartOfSpeechLabel(task), [task.pos, task.taskType]);
@@ -692,6 +805,7 @@ function NounCaseDeclensionRenderer({
     setStatus('idle');
     setShowHint(false);
     setIsSubmitting(false);
+    setIsAnswerRevealed(false);
     startTimeRef.current = Date.now();
   }, [task.taskId]);
 
@@ -733,6 +847,22 @@ function NounCaseDeclensionRenderer({
     speak(status === 'idle' ? base : expected);
   };
 
+  const handleToggleAnswerReveal = () => {
+    setIsAnswerRevealed((previous) => !previous);
+  };
+
+  const handleRetry = () => {
+    if (isSubmitting) {
+      return;
+    }
+
+    setStatus('idle');
+    setAnswer('');
+    setIsAnswerRevealed(false);
+    startTimeRef.current = Date.now();
+    inputRef.current?.focus();
+  };
+
   const handleSubmit = async () => {
     if (!answer.trim() || isSubmitting) {
       return;
@@ -745,6 +875,7 @@ function NounCaseDeclensionRenderer({
     );
 
     setIsSubmitting(true);
+    setIsAnswerRevealed(false);
 
     try {
       const promptSummary = buildNounPromptSummary(copy, task);
@@ -798,6 +929,7 @@ function NounCaseDeclensionRenderer({
 
   const caseLabel = copy.caseLabels[task.prompt.requestedCase] ?? task.prompt.requestedCase;
   const numberLabel = copy.numberLabels[task.prompt.requestedNumber] ?? task.prompt.requestedNumber;
+  const canRevealAnswer = Boolean(displayAnswer || expectedForms.length > 0);
 
   const promptSection = (
     <>
@@ -817,13 +949,26 @@ function NounCaseDeclensionRenderer({
 
   const statusIndicator = (
     <AnimatePresence>
-      {renderStatusBadge(copy, status, expectedForms, displayAnswer ?? undefined)}
+      {renderStatusBadge(copy, status, expectedForms, displayAnswer ?? undefined, isAnswerRevealed)}
     </AnimatePresence>
+  );
+
+  const reviewControls = (
+    <PracticeCardReviewControls
+      copy={copy}
+      status={status}
+      canRevealAnswer={canRevealAnswer}
+      isAnswerRevealed={isAnswerRevealed}
+      onToggleAnswer={handleToggleAnswerReveal}
+      onRetry={status === 'incorrect' ? handleRetry : undefined}
+      onContinue={onContinue}
+    />
   );
 
   const answerSection = (
     <div className="flex flex-col items-center gap-6">
       <Input
+        ref={inputRef}
         value={answer}
         onChange={(event) => setAnswer(event.target.value)}
         onKeyDown={handleKeyDown}
@@ -855,6 +1000,7 @@ function NounCaseDeclensionRenderer({
           <span className="sr-only">{copy.actions.pronounceSrLabel}</span>
         </Button>
       </div>
+      {reviewControls}
     </div>
   );
 
@@ -936,6 +1082,7 @@ function AdjectiveEndingRenderer({
   debugId,
   isLoadingNext,
   sessionProgress,
+  onContinue,
 }: RendererProps<'adj_ending'>) {
   const { toast } = useToast();
   const { practiceCard: copy } = useTranslations();
@@ -943,7 +1090,9 @@ function AdjectiveEndingRenderer({
   const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
   const [showHint, setShowHint] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAnswerRevealed, setIsAnswerRevealed] = useState(false);
   const startTimeRef = useRef(Date.now());
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const preferences = getRendererPreferences(settings, task.taskType);
   const instructionText = useMemo(() => getTaskInstructions(copy, task), [copy, task]);
   const partOfSpeechLabel = useMemo(() => formatPartOfSpeechLabel(task), [task.pos, task.taskType]);
@@ -953,6 +1102,7 @@ function AdjectiveEndingRenderer({
     setStatus('idle');
     setShowHint(false);
     setIsSubmitting(false);
+    setIsAnswerRevealed(false);
     startTimeRef.current = Date.now();
   }, [task.taskId]);
 
@@ -980,6 +1130,22 @@ function AdjectiveEndingRenderer({
     speak(status === 'idle' ? task.lexeme.lemma : expected);
   };
 
+  const handleToggleAnswerReveal = () => {
+    setIsAnswerRevealed((previous) => !previous);
+  };
+
+  const handleRetry = () => {
+    if (isSubmitting) {
+      return;
+    }
+
+    setStatus('idle');
+    setAnswer('');
+    setIsAnswerRevealed(false);
+    startTimeRef.current = Date.now();
+    inputRef.current?.focus();
+  };
+
   const handleSubmit = async () => {
     if (!answer.trim() || isSubmitting) {
       return;
@@ -992,6 +1158,7 @@ function AdjectiveEndingRenderer({
     );
 
     setIsSubmitting(true);
+    setIsAnswerRevealed(false);
 
     try {
       const promptSummary = buildAdjectivePromptSummary(copy, task);
@@ -1044,6 +1211,7 @@ function AdjectiveEndingRenderer({
   };
 
   const degreeLabel = copy.degreeLabels[task.prompt.degree] ?? task.prompt.degree;
+  const canRevealAnswer = Boolean(displayAnswer || expectedForms.length > 0);
 
   const promptSection = (
     <>
@@ -1061,13 +1229,26 @@ function AdjectiveEndingRenderer({
 
   const statusIndicator = (
     <AnimatePresence>
-      {renderStatusBadge(copy, status, expectedForms, displayAnswer ?? undefined)}
+      {renderStatusBadge(copy, status, expectedForms, displayAnswer ?? undefined, isAnswerRevealed)}
     </AnimatePresence>
+  );
+
+  const reviewControls = (
+    <PracticeCardReviewControls
+      copy={copy}
+      status={status}
+      canRevealAnswer={canRevealAnswer}
+      isAnswerRevealed={isAnswerRevealed}
+      onToggleAnswer={handleToggleAnswerReveal}
+      onRetry={status === 'incorrect' ? handleRetry : undefined}
+      onContinue={onContinue}
+    />
   );
 
   const answerSection = (
     <div className="flex flex-col items-center gap-6">
       <Input
+        ref={inputRef}
         value={answer}
         onChange={(event) => setAnswer(event.target.value)}
         onKeyDown={handleKeyDown}
@@ -1099,6 +1280,7 @@ function AdjectiveEndingRenderer({
           <span className="sr-only">{copy.actions.pronounceSrLabel}</span>
         </Button>
       </div>
+      {reviewControls}
     </div>
   );
 
@@ -1232,4 +1414,5 @@ interface PracticeCardProps extends DebuggableComponentProps {
   isLoadingNext?: boolean;
   className?: string;
   sessionProgress?: PracticeCardSessionProgress;
+  onContinue?: () => void;
 }
