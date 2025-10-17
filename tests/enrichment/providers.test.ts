@@ -221,7 +221,7 @@ describe('lookupWiktextract', () => {
   it('extracts comparative and superlative forms for adjectives', async () => {
     const germanEntry = {
       lang: 'German',
-      pos: 'adjective',
+      pos: 'adj.',
       word: 'schnell',
       forms: [
         { form: 'schneller', tags: ['comparative'] },
@@ -263,6 +263,23 @@ describe('lookupWiktextract', () => {
     expect(result?.posLabel).toBe('prep');
     expect(result?.posTags).toEqual(expect.arrayContaining(['directional']));
     expect(result?.posNotes).toEqual(expect.arrayContaining(['two-way prepositions']));
+  });
+
+  it('handles dotted Kaikki POS abbreviations when matching entries', async () => {
+    const germanEntry = {
+      lang: 'German',
+      pos: 'Präp.',
+      word: 'auf',
+      categories: ['German Wechselpräpositionen'],
+    };
+
+    mockedFetch.mockResolvedValueOnce(createResponse(`${JSON.stringify(germanEntry)}\n`));
+
+    const result = await lookupWiktextract('auf', 'Präp');
+
+    expect(result).not.toBeNull();
+    expect(result?.posLabel).toBe('Präp.');
+    expect(result?.prepositionAttributes?.cases).toEqual(['Akkusativ', 'Dativ']);
   });
 
   it('collects POS tags and usage notes for verbs when available', async () => {

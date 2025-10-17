@@ -200,47 +200,114 @@ const GENDER_MAP: Record<string, string> = {
 const POS_MAP: Record<string, string[]> = {
   v: ["verb"],
   verb: ["verb"],
+  "verb form": ["verb"],
   n: ["noun", "proper noun"],
   noun: ["noun", "proper noun"],
+  "noun form": ["noun", "proper noun"],
   "proper noun": ["proper noun", "noun"],
   adj: ["adjective", "adj"],
+  "adj form": ["adjective", "adj"],
   adjective: ["adjective", "adj"],
+  "adjective form": ["adjective", "adj"],
   adv: ["adverb", "adv"],
+  "adv form": ["adverb", "adv"],
   adverb: ["adverb", "adv"],
+  "adverb form": ["adverb", "adv"],
   prep: ["preposition", "prep"],
+  "prep form": ["preposition", "prep"],
   preposition: ["preposition", "prep"],
+  "preposition form": ["preposition", "prep"],
   präp: ["preposition", "prep"],
   präposition: ["preposition", "prep"],
+  "präposition form": ["preposition", "prep"],
   praep: ["preposition", "prep"],
   prap: ["preposition", "prep"],
   pron: ["pronoun", "pron"],
+  "pron form": ["pronoun", "pron"],
   pronoun: ["pronoun", "pron"],
+  "pronoun form": ["pronoun", "pron"],
   det: ["determiner", "article", "det"],
   determiner: ["determiner", "article", "det"],
+  "determiner form": ["determiner", "article", "det"],
   artikel: ["article", "determiner", "det"],
   konj: ["conjunction", "konj"],
+  "konj form": ["conjunction", "konj"],
   conjunction: ["conjunction", "konj"],
+  "conjunction form": ["conjunction", "konj"],
   konjunktion: ["conjunction", "konj"],
   num: ["numeral", "num"],
+  "num form": ["numeral", "num"],
   numeral: ["numeral", "num"],
+  "numeral form": ["numeral", "num"],
   part: ["particle", "part", "interjection", "intj", "adverb", "adv"],
+  "part form": ["particle", "part", "interjection", "intj", "adverb", "adv"],
   particle: ["particle", "part", "interjection", "intj", "adverb", "adv"],
+  "particle form": ["particle", "part", "interjection", "intj", "adverb", "adv"],
   partikel: ["particle", "part", "interjection", "intj", "adverb", "adv"],
   intj: ["interjection", "intj"],
   interj: ["interjection", "intj"],
   interjection: ["interjection", "intj"],
+  "interjection form": ["interjection", "intj"],
 };
+
+const UMLAUT_MAP: Record<string, string> = {
+  ä: "ae",
+  ö: "oe",
+  ü: "ue",
+  ß: "ss",
+};
+
+function buildPosAliasKeys(value: string): string[] {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return [];
+  }
+
+  const lower = trimmed.toLowerCase();
+  const keys = new Set<string>();
+  const pushKey = (candidate: string | undefined | null) => {
+    const cleaned = candidate?.trim();
+    if (!cleaned) {
+      return;
+    }
+    keys.add(cleaned);
+  };
+
+  const withoutTrailingDots = lower.replace(/\.+$/g, "");
+  const ascii = lower.replace(/[äöüß]/g, (char) => UMLAUT_MAP[char] ?? char);
+  const asciiWithoutDots = ascii.replace(/\.+$/g, "");
+
+  pushKey(lower);
+  pushKey(withoutTrailingDots);
+  pushKey(ascii);
+  pushKey(asciiWithoutDots);
+
+  return Array.from(keys.values());
+}
 
 function resolvePosAliases(value: string | undefined): string[] {
   if (!value) {
     return [];
   }
-  const normalised = value.trim().toLowerCase();
-  if (!normalised) {
+
+  const candidates = buildPosAliasKeys(value);
+  if (!candidates.length) {
     return [];
   }
-  const direct = POS_MAP[normalised] ?? [];
-  return Array.from(new Set([normalised, ...direct]));
+
+  const resolved = new Set<string>();
+
+  for (const candidate of candidates) {
+    resolved.add(candidate);
+    const direct = POS_MAP[candidate];
+    if (direct) {
+      for (const alias of direct) {
+        resolved.add(alias);
+      }
+    }
+  }
+
+  return Array.from(resolved.values());
 }
 
 const CASE_PATTERNS: Array<{ matcher: RegExp; values: string[] }> = [
@@ -953,16 +1020,17 @@ export async function lookupWiktextract(
   const synonyms = collectSynonyms(selectedEntry);
   const englishHints = collectGlosses(selectedEntry);
   const examples = collectExamples(selectedEntry);
-  const verbForms = selectedEntry.pos?.toLowerCase().includes("verb")
+  const selectedEntryPoses = resolvePosAliases(selectedEntry.pos);
+  const verbForms = selectedEntryPoses.includes("verb")
     ? extractVerbForms(selectedEntry)
     : undefined;
-  const nounForms = selectedEntry.pos?.toLowerCase().includes("noun")
+  const nounForms = selectedEntryPoses.some((value) => value === "noun" || value === "proper noun")
     ? extractNounForms(selectedEntry)
     : undefined;
-  const adjectiveForms = selectedEntry.pos?.toLowerCase().includes("adjective")
+  const adjectiveForms = selectedEntryPoses.some((value) => value === "adjective" || value === "adj")
     ? extractAdjectiveForms(selectedEntry)
     : undefined;
-  const prepositionAttributes = selectedEntry.pos?.toLowerCase().includes("prep")
+  const prepositionAttributes = selectedEntryPoses.some((value) => value === "preposition" || value === "prep")
     ? extractPrepositionAttributes(selectedEntry)
     : undefined;
   const posLabel = selectedEntry.pos?.trim();
