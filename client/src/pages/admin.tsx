@@ -222,7 +222,6 @@ function humanizeEnrichmentMethod(method: Word['enrichmentMethod'] | null | unde
 }
 
 const AdminWordsPage = () => {
-  const [adminToken, setAdminToken] = useState(() => localStorage.getItem('gvm-admin-token') ?? '');
   const [search, setSearch] = useState('');
   const [pos, setPos] = useState<Word['pos'] | 'ALL'>('ALL');
   const [level, setLevel] = useState<string>('All');
@@ -240,12 +239,6 @@ const AdminWordsPage = () => {
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
-
-  const normalizedAdminToken = adminToken.trim();
-
-  useEffect(() => {
-    localStorage.setItem('gvm-admin-token', normalizedAdminToken);
-  }, [normalizedAdminToken]);
 
   useEffect(() => {
     setPage(1);
@@ -265,15 +258,9 @@ const AdminWordsPage = () => {
     [search, pos, level, approvalFilter, completeFilter, enrichmentFilter, page, perPage],
   );
 
-  const queryKey = useMemo(
-    () => ['words', filters, normalizedAdminToken],
-    [filters, normalizedAdminToken],
-  );
+  const queryKey = useMemo(() => ['words', filters], [filters]);
 
-  const exportStatusQueryKey = useMemo(
-    () => ['export-status', normalizedAdminToken],
-    [normalizedAdminToken],
-  );
+  const exportStatusQueryKey = useMemo(() => ['export-status'], []);
 
   const enrichmentDialogOpen = enrichmentWordId !== null;
 
@@ -291,17 +278,10 @@ const AdminWordsPage = () => {
       if (filters.enrichmentFilter === 'enriched') params.set('enriched', 'only');
       if (filters.enrichmentFilter === 'unenriched') params.set('enriched', 'non');
 
-      const headers: Record<string, string> = {};
-      if (normalizedAdminToken) {
-        headers['x-admin-token'] = normalizedAdminToken;
-      }
-
       params.set('page', String(filters.page));
       params.set('perPage', String(filters.perPage));
 
-      const response = await fetch(`/api/words?${params.toString()}`, {
-        headers,
-      });
+      const response = await fetch(`/api/words?${params.toString()}`);
 
       if (!response.ok) {
         throw new Error(`Failed to load words (${response.status})`);
@@ -316,12 +296,7 @@ const AdminWordsPage = () => {
   const exportStatusQuery = useQuery({
     queryKey: exportStatusQueryKey,
     queryFn: async () => {
-      const headers: Record<string, string> = {};
-      if (normalizedAdminToken) {
-        headers['x-admin-token'] = normalizedAdminToken;
-      }
-
-      const response = await fetch('/api/admin/export/status', { headers });
+      const response = await fetch('/api/admin/export/status');
       if (!response.ok) {
         const error = new Error(`Failed to load export status (${response.status})`);
         (error as Error & { status?: number }).status = response.status;
@@ -345,7 +320,6 @@ const AdminWordsPage = () => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          ...(normalizedAdminToken ? { 'x-admin-token': normalizedAdminToken } : {}),
         },
         body: JSON.stringify(payload),
       });
@@ -370,11 +344,6 @@ const AdminWordsPage = () => {
 
   const bulkExportMutation = useMutation({
     mutationFn: async () => {
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-      if (normalizedAdminToken) {
-        headers['x-admin-token'] = normalizedAdminToken;
-      }
-
       const body: Record<string, unknown> = {};
       if (filters.pos !== 'ALL') {
         body.pos = filters.pos;
@@ -382,7 +351,7 @@ const AdminWordsPage = () => {
 
       const response = await fetch('/api/admin/export/bulk', {
         method: 'POST',
-        headers,
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
 
@@ -452,18 +421,16 @@ const AdminWordsPage = () => {
   const pageStart = totalWords > 0 ? (currentPage - 1) * currentPerPage + 1 : 0;
   const pageEnd = totalWords > 0 ? pageStart + words.length - 1 : 0;
 
-  const isUnauthorized =
-    wordsQuery.isError &&
-    wordsQuery.error instanceof Error &&
-    wordsQuery.error.message.includes('(401)');
+  const wordsError =
+    wordsQuery.isError && wordsQuery.error instanceof Error ? wordsQuery.error : null;
 
   const exportStatus = exportStatusQuery.data;
   const totalDirty = exportStatus?.totalDirty ?? 0;
   const oldestDirty = exportStatus?.oldestDirtyUpdatedAt ?? null;
-  const exportStatusUnauthorized =
-    exportStatusQuery.isError
-    && exportStatusQuery.error instanceof Error
-    && exportStatusQuery.error.message.includes('(401)');
+  const exportStatusError =
+    exportStatusQuery.isError && exportStatusQuery.error instanceof Error
+      ? exportStatusQuery.error
+      : null;
 
   const columns = useMemo(() => {
     const base = [
@@ -573,16 +540,6 @@ const AdminWordsPage = () => {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid gap-4 lg:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="admin-token">Admin token (if configured)</Label>
-                <Input
-                  id="admin-token"
-                  type="password"
-                  value={adminToken}
-                  onChange={(event) => setAdminToken(event.target.value)}
-                  placeholder="Enter x-admin-token"
-                />
-              </div>
               <div className="space-y-2">
                 <Label htmlFor="search">Search</Label>
                 <Input
@@ -698,9 +655,8 @@ const AdminWordsPage = () => {
         <CardHeader>
           <CardTitle>Words</CardTitle>
           <CardDescription>
-            {isUnauthorized && 'Enter the admin token to load words.'}
             {wordsQuery.isLoading && 'Loading words…'}
-            {wordsQuery.isError && !isUnauthorized && 'Failed to load words. Check the token and try again.'}
+            {wordsError && !wordsQuery.isLoading && (wordsError.message || 'Failed to load words.')}
             {wordsQuery.isSuccess &&
               (totalWords
                 ? `Showing ${pageStart}–${pageEnd} of ${totalWords} words.`
@@ -738,9 +694,7 @@ const AdminWordsPage = () => {
               </div>
             ) : (
               <div className="text-sm text-muted-foreground">
-                {exportStatusUnauthorized
-                  ? 'Enter the admin token to check export status.'
-                  : 'Failed to load export status.'}
+                {exportStatusError?.message ?? 'Failed to load export status.'}
               </div>
             )}
           </div>
@@ -1044,14 +998,14 @@ const AdminWordsPage = () => {
                   </TableRow>
                 );
               })}
-              {isUnauthorized && (
+              {wordsError && !wordsQuery.isLoading && (
                 <TableRow>
                   <TableCell colSpan={columns.length} className="text-center text-muted-foreground">
-                    Enter the admin token to load words.
+                    {wordsError.message || 'Failed to load words.'}
                   </TableCell>
                 </TableRow>
               )}
-              {!isUnauthorized && !words.length && !wordsQuery.isLoading && (
+              {!wordsError && !words.length && !wordsQuery.isLoading && (
                 <TableRow>
                   <TableCell colSpan={columns.length} className="text-center text-muted-foreground">
                     No words match the current filters.
@@ -1112,9 +1066,6 @@ const AdminWordsPage = () => {
                 <WordEnrichmentDetailView
                   key={enrichmentWordId}
                   wordId={enrichmentWordId}
-                  adminToken={adminToken}
-                  normalizedAdminToken={normalizedAdminToken}
-                  onAdminTokenChange={setAdminToken}
                   toast={toast}
                   onClose={closeEnrichmentDialog}
                   wordConfig={wordConfig}

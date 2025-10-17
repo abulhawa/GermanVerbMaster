@@ -80,12 +80,6 @@ const AdminEnrichmentPage = () => {
   const [, navigate] = useLocation();
   const searchString = useSearch();
 
-  const [adminToken, setAdminToken] = useState(() => localStorage.getItem('gvm-admin-token') ?? '');
-  const normalizedAdminToken = adminToken.trim();
-  useEffect(() => {
-    localStorage.setItem('gvm-admin-token', normalizedAdminToken);
-  }, [normalizedAdminToken]);
-
   const searchParams = useMemo(() => new URLSearchParams(searchString ?? ''), [searchString]);
   const wordParam = searchParams.get('word');
   const parsedWordId = wordParam ? Number.parseInt(wordParam, 10) : NaN;
@@ -217,7 +211,7 @@ const AdminEnrichmentPage = () => {
         collectTranslations: bulkConfig.collectTranslations,
         collectWiktextract: bulkConfig.collectWiktextract,
       };
-      return runBulkEnrichment(payload, normalizedAdminToken);
+      return runBulkEnrichment(payload);
     },
     onSuccess: (data) => {
       setBulkResult(data);
@@ -250,11 +244,10 @@ const AdminEnrichmentPage = () => {
           collectWiktextract: summary.suggestionConfig?.collectWiktextract ?? true,
         };
 
-        const preview = await previewWordEnrichment(summary.id, options, normalizedAdminToken);
+        const preview = await previewWordEnrichment(summary.id, options);
         const response = await applyWordEnrichment(
           summary.id,
           preview.patch,
-          normalizedAdminToken,
           normalizeDraftId(preview.draftId) ?? normalizeDraftId(summary.draftId),
         );
 
@@ -325,18 +318,14 @@ const AdminEnrichmentPage = () => {
   });
 
   const searchQuery = useQuery<WordsResponse>({
-    queryKey: ['admin-enrichment', 'search', searchTerm, normalizedAdminToken],
+    queryKey: ['admin-enrichment', 'search', searchTerm],
     queryFn: async () => {
       const params = new URLSearchParams({
         search: searchTerm,
         perPage: String(WORDS_PER_SEARCH),
         page: '1',
       });
-      const headers: Record<string, string> = {};
-      if (normalizedAdminToken) {
-        headers['x-admin-token'] = normalizedAdminToken;
-      }
-      const response = await fetch(`/api/words?${params.toString()}`, { headers });
+      const response = await fetch(`/api/words?${params.toString()}`);
       if (!response.ok) {
         throw new Error(`Failed to load words (${response.status})`);
       }
@@ -347,11 +336,7 @@ const AdminEnrichmentPage = () => {
   });
 
   const missingWordsQuery = useQuery<WordsResponse>({
-    queryKey: [
-      'admin-enrichment',
-      'missing',
-      { page: missingPage, perPage: missingPerPage, token: normalizedAdminToken },
-    ],
+    queryKey: ['admin-enrichment', 'missing', { page: missingPage, perPage: missingPerPage }],
     queryFn: async () => {
       const params = new URLSearchParams({
         approved: 'false',
@@ -359,11 +344,7 @@ const AdminEnrichmentPage = () => {
         perPage: String(missingPerPage),
         page: String(missingPage),
       });
-      const headers: Record<string, string> = {};
-      if (normalizedAdminToken) {
-        headers['x-admin-token'] = normalizedAdminToken;
-      }
-      const response = await fetch(`/api/words?${params.toString()}`, { headers });
+      const response = await fetch(`/api/words?${params.toString()}`);
       if (!response.ok) {
         throw new Error(`Failed to load missing words (${response.status})`);
       }
@@ -379,10 +360,6 @@ const AdminEnrichmentPage = () => {
       setMissingPage(safePage);
     }
   }, [missingWordsQuery.data, missingPage]);
-
-  useEffect(() => {
-    setMissingPage(1);
-  }, [normalizedAdminToken]);
 
   const missingWords = missingWordsQuery.data?.data ?? [];
   const missingPagination = missingWordsQuery.data?.pagination;
@@ -419,7 +396,7 @@ const AdminEnrichmentPage = () => {
         allowOverwrite: wordConfig.allowOverwrite,
         collectWiktextract: wordConfig.collectWiktextract,
       };
-      const result = await previewWordEnrichment(word.id, options, normalizedAdminToken);
+        const result = await previewWordEnrichment(word.id, options);
       setPreviewData(result);
       return result;
     },
@@ -444,7 +421,6 @@ const AdminEnrichmentPage = () => {
       const result = await applyWordEnrichment(
         previewWord.id,
         previewData.patch,
-        normalizedAdminToken,
         normalizeDraftId(previewData.draftId),
       );
       setApplyResult(result);
@@ -525,9 +501,6 @@ const AdminEnrichmentPage = () => {
       >
         <WordEnrichmentDetailView
           wordId={selectedWordId}
-          adminToken={adminToken}
-          normalizedAdminToken={normalizedAdminToken}
-          onAdminTokenChange={setAdminToken}
           toast={toast}
           onClose={closeWordDetails}
           wordConfig={wordConfig}
@@ -562,20 +535,6 @@ const AdminEnrichmentPage = () => {
           open={isBulkOpen}
           onOpenChange={setIsBulkOpen}
           triggerId="bulk-enrichment"
-          headerActions={
-            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
-              <Label htmlFor="admin-token" className="text-sm text-muted-foreground">
-                Admin token
-              </Label>
-              <Input
-                id="admin-token"
-                placeholder="Optional API token"
-                value={adminToken}
-                onChange={(event) => setAdminToken(event.target.value)}
-                className="w-full sm:w-64"
-              />
-            </div>
-          }
         >
           <form
             className="grid gap-4 md:grid-cols-2"

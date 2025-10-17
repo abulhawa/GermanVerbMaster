@@ -82,9 +82,6 @@ export interface WordConfigState {
 
 interface WordEnrichmentDetailViewProps {
   wordId: number;
-  adminToken: string;
-  normalizedAdminToken: string;
-  onAdminTokenChange: (value: string) => void;
   toast: ToastFn;
   onClose: () => void;
   wordConfig: WordConfigState;
@@ -194,9 +191,6 @@ const buildAdjectiveOptionId = (
 
 const WordEnrichmentDetailView = ({
   wordId,
-  adminToken,
-  normalizedAdminToken,
-  onAdminTokenChange,
   toast,
   onClose,
   wordConfig,
@@ -234,13 +228,9 @@ const WordEnrichmentDetailView = ({
   const [applyResult, setApplyResult] = useState<ApplyEnrichmentResponse | null>(null);
 
   const wordQuery = useQuery({
-    queryKey: ['admin-enrichment', 'word-detail', wordId, normalizedAdminToken],
+    queryKey: ['admin-enrichment', 'word-detail', wordId],
     queryFn: async () => {
-      const headers: Record<string, string> = {};
-      if (normalizedAdminToken) {
-        headers['x-admin-token'] = normalizedAdminToken;
-      }
-      const response = await fetch(`/api/words/${wordId}`, { headers });
+      const response = await fetch(`/api/words/${wordId}`);
       if (!response.ok) {
         throw new Error(`Failed to load word (${response.status})`);
       }
@@ -253,13 +243,9 @@ const WordEnrichmentDetailView = ({
   const word = wordQuery.data;
 
   const historyQuery = useQuery<WordEnrichmentHistory>({
-    queryKey: ['admin-enrichment', 'word-history', wordId, normalizedAdminToken],
+    queryKey: ['admin-enrichment', 'word-history', wordId],
     queryFn: async () => {
-      const headers: Record<string, string> = {};
-      if (normalizedAdminToken) {
-        headers['x-admin-token'] = normalizedAdminToken;
-      }
-      const response = await fetch(`/api/enrichment/words/${wordId}/history`, { headers });
+      const response = await fetch(`/api/enrichment/words/${wordId}/history`);
       if (!response.ok) {
         throw new Error(`Failed to load enrichment history (${response.status})`);
       }
@@ -514,7 +500,7 @@ const WordEnrichmentDetailView = ({
         collectTranslations: wordConfig.collectTranslations,
         collectWiktextract: wordConfig.collectWiktextract,
       };
-      const result = await previewWordEnrichment(word.id, options, normalizedAdminToken);
+      const result = await previewWordEnrichment(word.id, options);
       return result;
     },
     onSuccess: (data) => {
@@ -658,7 +644,6 @@ const WordEnrichmentDetailView = ({
       const result = await applyWordEnrichment(
         word.id,
         patch,
-        normalizedAdminToken,
         previewData?.draftId ?? null,
       );
       return result;
@@ -1133,19 +1118,6 @@ const WordEnrichmentDetailView = ({
         <CardDescription>Control which sources run when generating suggestions for this word.</CardDescription>
       </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <Label htmlFor="detail-admin-token" className="text-sm text-muted-foreground">
-              Admin token
-            </Label>
-            <Input
-              id="detail-admin-token"
-              value={adminToken}
-              placeholder="Optional API token"
-              className="w-full sm:w-72"
-              onChange={(event) => onAdminTokenChange(event.target.value)}
-            />
-          </div>
-          <Separator />
           <div className="grid gap-3 md:grid-cols-2">
             <BooleanToggle
               label="Allow overwrite"

@@ -73,7 +73,7 @@ On Vercel, configure the project to run `npm install`, `npm run db:push`, and `n
 
 ### Serverless scheduler
 
-The adaptive scheduler relies on `POST /api/jobs/regenerate-queues` to recompute spaced-repetition queues. In Vercel, create a [Cron Job](https://vercel.com/docs/cron-jobs) with an interval that matches your release cadence (e.g. hourly) and set the target URL to `https://<your-app-domain>/api/jobs/regenerate-queues`. Authorise it with the same `ADMIN_API_TOKEN` used in production so the background job continues to run when the API is fully serverless.
+The adaptive scheduler relies on `POST /api/jobs/regenerate-queues` to recompute spaced-repetition queues. In Vercel, create a [Cron Job](https://vercel.com/docs/cron-jobs) with an interval that matches your release cadence (e.g. hourly) and set the target URL to `https://<your-app-domain>/api/jobs/regenerate-queues`. No additional headers are required, so infrastructure-level network rules should be used if you need to restrict access.
 
 ### Provisioning Supabase
 
@@ -158,9 +158,8 @@ Shut down the container with `docker stop gvm-postgres` when you are done.
 - Use `tsx scripts/enrich-pending-words.ts` for quick exports to `data/generated/pending-approval-enrichment.json` without mutating the database.
 
 ## Lexeme & content admin tools
-- Configure an `ADMIN_API_TOKEN` in your `.env` file (see `.env.example`) to protect ingestion routes. Restart the dev server after changing environment variables.
 - Visit `http://localhost:5000/admin` to access the words dashboard. Multi-select filters now support verbs, nouns, and adjectives plus CEFR level and pack membership.
-- Updates are issued via `PATCH /api/words/:id` with the `x-admin-token` header. Approval toggles and field edits immediately invalidate the admin cache; regenerate packs manually with the enrichment tooling because the legacy `npm run seed` stub no longer performs this automatically.
+- Updates are issued via `PATCH /api/words/:id` without additional headers. Approval toggles and field edits immediately invalidate the admin cache; regenerate packs manually with the enrichment tooling because the legacy `npm run seed` stub no longer performs this automatically.
 
 ## Partner integrations
 - Generate sandbox API keys with `npm run integration:create-key` and follow the workflow documented in [`docs/integration-api.md`](docs/integration-api.md).

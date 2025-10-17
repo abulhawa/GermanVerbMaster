@@ -4,12 +4,11 @@
 The admin dashboard at `/admin` now manages verbs, nouns, and adjectives from a single words table while the lexeme-based task system rolls out. This guide documents the controls content editors need to curate entries, trigger ETL updates, and verify pack readiness.
 
 ## Prerequisites
-- Set an `ADMIN_API_TOKEN` in your `.env` file and restart the server so protected routes accept updates.
 - Confirm the lexeme schema is enabled (`ENABLE_LEXEME_SCHEMA=true`). Toggle `ENABLE_NOUNS_BETA` or `ENABLE_ADJECTIVES_BETA` when you are ready to expose new queues to end users.
 - Run `npm install` followed by `npm run dev` so the React admin UI and Express API are available locally.
 
 ## Navigating the dashboard
-1. Open `http://localhost:5000/admin` and enter the admin token when prompted. The token is stored locally for the session.
+1. Open `http://localhost:5000/admin`. The dashboard is available without additional authentication; secure it via infrastructure controls if required for your deployment.
 2. Use the **Part of speech** filter to switch between verbs (`V`), nouns (`N`), adjectives (`Adj`), and the other supported categories imported from upstream sources.
 3. Combine filters for CEFR level, approval status, and completeness to focus on items that are ready for pack promotion.
 4. Click a row to edit: the drawer surfaces shared metadata (translations, examples, sources) along with POS-specific fields such as auxiliary verbs, noun plurals, or adjective degrees.
@@ -54,7 +53,7 @@ data/sync/
 When publishing to cloud storage, replicate the same hierarchy under `exports/latest` and `exports/versions/<timestamp>` so the seeding CLI can resolve manifests without code changes.
 
 ## Troubleshooting checklist
-- **Unauthorized responses**: confirm the admin token matches the `.env` value and that the request includes the `x-admin-token` header.
+- **Unauthorized responses**: ensure the server is running locally or that your deployment allows access to `/admin` and `/api/words` without extra headers. Reverse proxies or platform-level access controls can still block requests if misconfigured.
 - **Missing noun/adjective fields**: verify the lexeme schema feature flag remains enabled; falling back to the legacy stack hides the new form controls.
 - **Pack lint failures**: inspect the reported JSON path, fix the mismatched metadata or schema issue, rerun the JSONL sync helpers, then lint again.
 - **Need a clean slate**: run `npm run db:reset` to drop and recreate the `enrichment` schema, clear drizzle metadata, and wipe everything under `data/` except `data/pos/`. Follow up with `npm run db:push` to reapply migrations before restoring JSONL snapshots.

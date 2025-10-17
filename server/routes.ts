@@ -1,4 +1,4 @@
-import type { Express, NextFunction, Request, Response } from "express";
+import type { Express, Request, Response } from "express";
 import { db } from "@db";
 import {
   words,
@@ -579,26 +579,6 @@ function sendError(res: Response, status: number, message: string, code?: string
   return res.status(status).json({ error: message });
 }
 
-let adminTokenWarningLogged = false;
-
-function requireAdminAccess(req: Request, res: Response, next: NextFunction) {
-  const expectedToken = process.env.ADMIN_API_TOKEN?.trim();
-  if (!expectedToken) {
-    if (!adminTokenWarningLogged) {
-      console.warn("ADMIN_API_TOKEN is not configured; admin routes require the shared token header.");
-      adminTokenWarningLogged = true;
-    }
-    return sendError(res, 503, "Admin token is not configured", "ADMIN_TOKEN_MISSING");
-  }
-
-  const providedToken = normalizeStringParam(req.headers["x-admin-token"])?.trim();
-  if (providedToken === expectedToken) {
-    return next();
-  }
-
-  return sendError(res, 401, "Invalid admin token", "ADMIN_AUTH_FAILED");
-}
-
 function computeWordCompleteness(word: Pick<Word, "pos"> & Partial<Word>): boolean {
   const english = word.english;
   const examples = normalizeWordExamples(word.examples) ?? [];
@@ -643,7 +623,7 @@ function presentWord(word: Word): Omit<Word, "sourcesCsv" | "sourceNotes"> {
 export function registerRoutes(app: Express): void {
   app.use("/api/auth", authRouter);
 
-  app.get("/api/words", requireAdminAccess, async (req, res) => {
+  app.get("/api/words", async (req, res) => {
     try {
       const pos = normalizeStringParam(req.query.pos)?.trim();
       const level = normalizeStringParam(req.query.level)?.trim();
@@ -712,7 +692,7 @@ export function registerRoutes(app: Express): void {
     }
   });
 
-  app.get("/api/words/:id", requireAdminAccess, async (req, res) => {
+  app.get("/api/words/:id", async (req, res) => {
     try {
       const id = Number.parseInt(req.params.id, 10);
       if (!Number.isFinite(id) || id <= 0) {
@@ -732,7 +712,7 @@ export function registerRoutes(app: Express): void {
     }
   });
 
-  app.get("/api/enrichment/words/:id/history", requireAdminAccess, async (req, res) => {
+  app.get("/api/enrichment/words/:id/history", async (req, res) => {
     try {
       const id = Number.parseInt(req.params.id, 10);
       if (!Number.isFinite(id) || id <= 0) {
@@ -904,7 +884,7 @@ export function registerRoutes(app: Express): void {
     }
   });
 
-  app.patch("/api/words/:id", requireAdminAccess, async (req, res) => {
+  app.patch("/api/words/:id", async (req, res) => {
     try {
       const id = Number.parseInt(req.params.id, 10);
       if (!Number.isFinite(id) || id <= 0) {
@@ -1035,7 +1015,7 @@ export function registerRoutes(app: Express): void {
     }
   });
 
-  app.get("/api/admin/export/status", requireAdminAccess, async (_req, res) => {
+  app.get("/api/admin/export/status", async (_req, res) => {
     try {
       const summary = await getExportStatus();
       res.setHeader("Cache-Control", "no-store");
@@ -1049,7 +1029,7 @@ export function registerRoutes(app: Express): void {
     }
   });
 
-  app.post("/api/admin/export/bulk", requireAdminAccess, async (req, res) => {
+  app.post("/api/admin/export/bulk", async (req, res) => {
     const parsed = exportBulkSchema.safeParse(req.body ?? {});
     if (!parsed.success) {
       return sendError(res, 400, "Invalid bulk export request", "INVALID_EXPORT_REQUEST");
@@ -1067,7 +1047,7 @@ export function registerRoutes(app: Express): void {
     }
   });
 
-  app.post("/api/enrichment/run", requireAdminAccess, async (req, res) => {
+  app.post("/api/enrichment/run", async (req, res) => {
     try {
       const parsed = enrichmentRunSchema.safeParse(req.body ?? {});
       if (!parsed.success) {
@@ -1117,7 +1097,7 @@ export function registerRoutes(app: Express): void {
     }
   });
 
-  app.post("/api/enrichment/words/:id/preview", requireAdminAccess, async (req, res) => {
+  app.post("/api/enrichment/words/:id/preview", async (req, res) => {
     try {
       const id = Number.parseInt(req.params.id, 10);
       if (!Number.isFinite(id) || id <= 0) {
@@ -1204,7 +1184,7 @@ export function registerRoutes(app: Express): void {
     }
   });
 
-  app.post("/api/enrichment/words/:id/apply", requireAdminAccess, async (req, res) => {
+  app.post("/api/enrichment/words/:id/apply", async (req, res) => {
     try {
       const id = Number.parseInt(req.params.id, 10);
       if (!Number.isFinite(id) || id <= 0) {
@@ -1497,7 +1477,7 @@ export function registerRoutes(app: Express): void {
     }
   });
 
-  app.post("/api/admin/words/:id/save-to-files", requireAdminAccess, async (req, res) => {
+  app.post("/api/admin/words/:id/save-to-files", async (req, res) => {
     const id = Number.parseInt(req.params.id, 10);
     if (!Number.isFinite(id) || id <= 0) {
       return sendError(res, 400, "Invalid word id", "INVALID_WORD_ID");
