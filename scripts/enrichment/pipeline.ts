@@ -152,6 +152,7 @@ export interface PipelineConfig {
   collectTranslations: boolean;
   collectWiktextract: boolean;
   posFilters: string[];
+  persistSnapshotsToFile: boolean;
 }
 
 export interface PipelineRun {
@@ -185,6 +186,7 @@ export function resolveConfigFromEnv(overrides: Partial<PipelineConfig> = {}): P
   const envCollectExamples = parseBoolean(process.env.COLLECT_EXAMPLES, false);
   const envCollectTranslations = parseBoolean(process.env.COLLECT_TRANSLATIONS, false);
   const envCollectWiktextract = parseBoolean(process.env.COLLECT_WIKTEXTRACT, true);
+  const envPersistSnapshotsToFile = parseBoolean(process.env.PERSIST_SNAPSHOTS_TO_FILE, true);
   const envPosFilters = parsePosFilters(process.env.POS_FILTERS);
 
   const apply = overrides.apply ?? envApply;
@@ -221,6 +223,7 @@ export function resolveConfigFromEnv(overrides: Partial<PipelineConfig> = {}): P
     collectTranslations: overrides.collectTranslations ?? envCollectTranslations,
     collectWiktextract: overrides.collectWiktextract ?? envCollectWiktextract,
     posFilters: overridePosFilters ?? envPosFilters,
+    persistSnapshotsToFile: overrides.persistSnapshotsToFile ?? envPersistSnapshotsToFile,
   } satisfies PipelineConfig;
 }
 
@@ -1317,7 +1320,7 @@ async function persistProviderSnapshotsForWord(
     const currentSnapshot = buildProviderSnapshotFromRecord(insertedRecord);
     const previousSnapshot = previousRecord ? buildProviderSnapshotFromRecord(previousRecord) : null;
 
-    if (trigger === "apply") {
+    if (trigger === "apply" && config.persistSnapshotsToFile) {
       await persistProviderSnapshotToFile(currentSnapshot);
     }
     const hasChanges = previousSnapshot ? !areProviderSnapshotsEqual(previousSnapshot, currentSnapshot) : true;

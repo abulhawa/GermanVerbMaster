@@ -1070,6 +1070,7 @@ export function registerRoutes(app: Express): void {
         dryRun: false,
         emitReport: false,
         backup: false,
+        persistSnapshotsToFile: false,
       };
 
       const baseConfig = resolveEnrichmentConfigFromEnv(overrides);
@@ -1080,6 +1081,7 @@ export function registerRoutes(app: Express): void {
         emitReport: false,
         backup: false,
         delayMs: 0,
+        persistSnapshotsToFile: false,
       };
 
       const result = await runEnrichment(config);
@@ -1130,6 +1132,7 @@ export function registerRoutes(app: Express): void {
         dryRun: true,
         emitReport: false,
         backup: false,
+        persistSnapshotsToFile: false,
       };
 
       const baseConfig = resolveEnrichmentConfigFromEnv(overrides);
@@ -1140,6 +1143,7 @@ export function registerRoutes(app: Express): void {
         emitReport: false,
         backup: false,
         delayMs: 0,
+        persistSnapshotsToFile: false,
       };
 
       const openAiKey = config.enableAi ? process.env.OPENAI_API_KEY?.trim() || undefined : undefined;
