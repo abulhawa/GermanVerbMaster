@@ -191,6 +191,24 @@ const CASE_TAGS = new Set([
   "vocative",
 ]);
 
+const COMPARATIVE_TAGS = new Set([
+  "comparative",
+  "comparative form",
+  "comparative-form",
+  "komparativ",
+  "komparativ form",
+  "komparativ-form",
+]);
+
+const SUPERLATIVE_TAGS = new Set([
+  "superlative",
+  "superlative form",
+  "superlative-form",
+  "superlativ",
+  "superlativ form",
+  "superlativ-form",
+]);
+
 const GENDER_MAP: Record<string, string> = {
   masculine: "der",
   feminine: "die",
@@ -925,10 +943,10 @@ function extractAdjectiveForms(entry: KaikkiEntry): WiktextractAdjectiveForms | 
     if (!formValue) continue;
     const tags = normaliseTags(form.tags);
     if (!tags.length) continue;
-    if (tags.includes("comparative")) {
+    if (tags.some((tag) => COMPARATIVE_TAGS.has(tag))) {
       comparatives.add(formValue);
     }
-    if (tags.includes("superlative")) {
+    if (tags.some((tag) => SUPERLATIVE_TAGS.has(tag))) {
       superlatives.add(formValue);
     }
     records.push({ form: formValue, tags });

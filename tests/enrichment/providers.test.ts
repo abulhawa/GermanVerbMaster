@@ -240,6 +240,25 @@ describe('lookupWiktextract', () => {
     );
   });
 
+  it('normalises comparative and superlative tags when parsing adjective forms', async () => {
+    const germanEntry = {
+      lang: 'German',
+      pos: 'adj',
+      word: 'gesund',
+      forms: [
+        { form: 'gesünder', tags: ['Komparativ'] },
+        { form: 'am gesündesten', tags: ['Superlativ'] },
+      ],
+    };
+
+    mockedFetch.mockResolvedValueOnce(createResponse(`${JSON.stringify(germanEntry)}\n`));
+
+    const result = await lookupWiktextract('gesund', 'Adj');
+
+    expect(result?.adjectiveForms?.comparatives).toEqual(['gesünder']);
+    expect(result?.adjectiveForms?.superlatives).toEqual(['am gesündesten']);
+  });
+
   it('extracts governed cases and notes for prepositions', async () => {
     const germanEntry = {
       lang: 'German',
