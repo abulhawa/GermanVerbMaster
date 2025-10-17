@@ -100,6 +100,9 @@ const GENDER_OPTION_MAP: Record<string, string> = {
   n: 'das',
 };
 
+const normalizeDraftId = (value: number | null | undefined): number | undefined =>
+  typeof value === 'number' ? value : undefined;
+
 function normaliseGenderCandidateValue(value: string | undefined | null): string | null {
   if (!value) return null;
   const trimmed = value.trim().toLowerCase();
@@ -644,7 +647,7 @@ const WordEnrichmentDetailView = ({
       const result = await applyWordEnrichment(
         word.id,
         patch,
-        previewData?.draftId ?? null,
+        normalizeDraftId(previewData?.draftId),
       );
       return result;
     },

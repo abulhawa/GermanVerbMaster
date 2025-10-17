@@ -69,14 +69,14 @@ export interface ApplyEnrichmentResponse {
 export async function applyWordEnrichment(
   wordId: number,
   patch: EnrichmentPatch,
-  draftId?: number | null,
+  draftId?: number,
 ): Promise<ApplyEnrichmentResponse> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   const response = await fetch(`/api/enrichment/words/${wordId}/apply`, {
     method: 'POST',
     headers,
     body: JSON.stringify(
-      draftId !== undefined ? { patch, draftId } : { patch },
+      typeof draftId === 'number' ? { patch, draftId } : { patch },
     ),
   });
 
