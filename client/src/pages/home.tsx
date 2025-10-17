@@ -106,6 +106,7 @@ export default function Home() {
   const [progress, setProgress] = useState<PracticeProgressState>(() => loadPracticeProgress());
   const [session, setSession] = useState<PracticeSessionState>(() => loadPracticeSession());
   const [answerHistory, setAnswerHistory] = useState(() => loadAnswerHistory());
+  const [pendingResult, setPendingResult] = useState<PracticeCardResult | null>(null);
   const [tasksById, setTasksById] = useState<Record<string, PracticeTask>>({});
   const [isFetchingTasks, setIsFetchingTasks] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
@@ -156,6 +157,12 @@ export default function Home() {
   useEffect(() => {
     saveAnswerHistory(answerHistory);
   }, [answerHistory]);
+
+  useEffect(() => {
+    if (pendingResult && pendingResult.task.taskId !== session.activeTaskId) {
+      setPendingResult(null);
+    }
+  }, [pendingResult, session.activeTaskId]);
 
   const activeTask = session.activeTaskId ? tasksById[session.activeTaskId] : undefined;
   const queueSignature = useMemo(
@@ -314,16 +321,30 @@ export default function Home() {
         return appendAnswer(entry, prev);
       });
 
-      setSession((prev) => completeTask(prev, details.task.taskId));
-
-      setTasksById((prev) => {
-        const next = { ...prev };
-        delete next[details.task.taskId];
-        return next;
-      });
+      setPendingResult(details);
     },
     [],
   );
+
+  const handleContinueToNext = useCallback(() => {
+    setPendingResult((current) => {
+      const taskId = current?.task.taskId;
+
+      if (!taskId) {
+        return current;
+      }
+
+      setSession((prev) => completeTask(prev, taskId));
+
+      setTasksById((prev) => {
+        const next = { ...prev };
+        delete next[taskId];
+        return next;
+      });
+
+      return null;
+    });
+  }, []);
 
   const handleSkipTask = useCallback(() => {
     if (!activeTask) {
@@ -467,6 +488,7 @@ export default function Home() {
                     task={activeTask}
                     settings={settings}
                     onResult={handleTaskResult}
+                    onContinue={handleContinueToNext}
                     isLoadingNext={isFetchingTasks && session.queue.length === 0}
                     debugId="home-practice-card"
                     sessionProgress={{
@@ -532,7 +554,7 @@ export default function Home() {
               variant="secondary"
               className="flex-1 rounded-2xl text-base sm:h-12"
               onClick={handleSkipTask}
-              disabled={!activeTask}
+              disabled={!activeTask || Boolean(pendingResult)}
               debugId="practice-skip-button"
               id={HOME_SECTION_IDS.skipButton}
             >
