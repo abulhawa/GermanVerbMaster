@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "providerId": "manual",
-  "providerLabel": "Manual Apply",
+  "providerLabel": "Community Import",
   "pos": "Adj",
-  "updatedAt": "2025-10-17T13:01:04.196Z",
+  "updatedAt": "2025-10-18T08:58:31.532Z",
   "entries": {
     "freundlich": {
       "lemma": "freundlich",
@@ -173,6 +173,114 @@
         "enrichmentMethod": "manual_api",
         "appliedAt": "2025-10-17T13:01:04.100Z",
         "source": "manual_apply"
+      }
+    },
+    "abhängig": {
+      "lemma": "abhängig",
+      "pos": "Adj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-18T08:58:31.063Z",
+      "translations": [
+        {
+          "value": "dependent",
+          "source": "community",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": [
+        {
+          "sentence": "Er ist sehr von seiner Familie abhängig.",
+          "translations": {
+            "en": "He is very dependent on his family."
+          }
+        },
+        {
+          "sentence": "Sie ist noch abhängiger von ihrem Smartphone als ihr Bruder.",
+          "translations": {
+            "en": "She is even more dependent on her smartphone than her brother."
+          }
+        },
+        {
+          "sentence": "Von allen Mitarbeitern ist er am abhängigsten vom Chef.",
+          "translations": {
+            "en": "Of all the employees, he is the most dependent on the boss."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": [
+        {
+          "source": "community",
+          "comparatives": [
+            "abhängiger"
+          ],
+          "superlatives": [
+            "abhängigsten"
+          ]
+        }
+      ],
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adj",
+        "lemma": "abhängig",
+        "english": "dependent",
+        "examples": [
+          {
+            "sentence": "Er ist sehr von seiner Familie abhängig.",
+            "translations": {
+              "en": "He is very dependent on his family."
+            }
+          },
+          {
+            "sentence": "Sie ist noch abhängiger von ihrem Smartphone als ihr Bruder.",
+            "translations": {
+              "en": "She is even more dependent on her smartphone than her brother."
+            }
+          },
+          {
+            "sentence": "Von allen Mitarbeitern ist er am abhängigsten vom Chef.",
+            "translations": {
+              "en": "Of all the employees, he is the most dependent on the boss."
+            }
+          }
+        ],
+        "comparative": "abhängiger",
+        "superlative": "am abhängigsten",
+        "translations": [
+          {
+            "value": "dependent",
+            "source": "community",
+            "language": "en"
+          }
+        ],
+        "adjectiveForms": [
+          {
+            "source": "community",
+            "comparatives": [
+              "abhängiger"
+            ],
+            "superlatives": [
+              "abhängigsten"
+            ]
+          }
+        ]
+      },
+      "wordId": 2611,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 5935,
+        "wordId": 2611,
+        "createdAt": "2025-10-18T08:58:31.063Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-18T08:58:31.063Z"
       }
     }
   },
