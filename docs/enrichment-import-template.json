@@ -1,0 +1,94 @@
+{
+  "providerId": "manual",
+  "providerLabel": "Community Import",
+  "mode": "approved",
+  "entries": [
+    {
+      "lemma": "abholen",
+      "pos": "V",
+      "english": "to pick up",
+      "translations": [
+        {
+          "value": "to pick up",
+          "language": "en",
+          "source": "community"
+        }
+      ],
+      "examples": [
+        {
+          "sentence": "Ich hole dich am Bahnhof ab.",
+          "translations": {
+            "en": "I'll pick you up at the station."
+          }
+        }
+      ],
+      "verbForms": [
+        {
+          "source": "community",
+          "praeteritum": "holte ab",
+          "partizipIi": "abgeholt",
+          "perfekt": "hat abgeholt",
+          "aux": "haben"
+        }
+      ]
+    },
+    {
+      "lemma": "die Schule",
+      "pos": "N",
+      "english": "school",
+      "gender": "die",
+      "plural": "die Schulen",
+      "translations": [
+        {
+          "value": "school",
+          "language": "en",
+          "source": "community"
+        }
+      ],
+      "examples": [
+        {
+          "sentence": "Die Schule beginnt um acht Uhr.",
+          "translations": {
+            "en": "School starts at eight o'clock."
+          }
+        }
+      ],
+      "nounForms": [
+        {
+          "source": "community",
+          "genders": ["die"],
+          "plurals": ["Schulen"]
+        }
+      ]
+    },
+    {
+      "lemma": "freundlich",
+      "pos": "Adj",
+      "english": "friendly",
+      "comparative": "freundlicher",
+      "superlative": "am freundlichsten",
+      "translations": [
+        {
+          "value": "friendly",
+          "language": "en",
+          "source": "community"
+        }
+      ],
+      "examples": [
+        {
+          "sentence": "Die Nachbarn sind sehr freundlich.",
+          "translations": {
+            "en": "The neighbours are very friendly."
+          }
+        }
+      ],
+      "adjectiveForms": [
+        {
+          "source": "community",
+          "comparatives": ["freundlicher"],
+          "superlatives": ["freundlichsten"]
+        }
+      ]
+    }
+  ]
+}

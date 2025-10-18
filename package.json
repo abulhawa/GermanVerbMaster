@@ -28,6 +28,7 @@
     "analytics:export": "tsx scripts/export-pos-analytics.ts",
     "integration:create-key": "tsx scripts/create-partner-key.ts",
     "enrichment:export": "tsx scripts/enrichment/export-applied-snapshots.ts",
+    "enrichment:import": "tsx scripts/enrichment/import-manual.ts",
     "enrichment:restore": "tsx scripts/enrichment/restore-words-backup.ts"
   },
   "overrides": {
