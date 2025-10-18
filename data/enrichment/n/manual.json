@@ -3,7 +3,7 @@
   "providerId": "manual",
   "providerLabel": "Manual Apply",
   "pos": "N",
-  "updatedAt": "2025-10-15T19:53:37.726Z",
+  "updatedAt": "2025-10-18T07:00:23.444Z",
   "entries": {
     "leben": {
       "lemma": "Leben",
@@ -744,6 +744,230 @@
         "createdAt": "2025-10-15T19:53:39.670Z",
         "enrichmentMethod": "manual_api",
         "appliedAt": "2025-10-15T19:53:37.603Z",
+        "source": "manual_apply"
+      }
+    },
+    "abwartin": {
+      "lemma": "Abwartin",
+      "pos": "N",
+      "providerId": "manual",
+      "providerLabel": "Manual Apply",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-18T06:57:07.898Z",
+      "translations": [
+        {
+          "value": "Waitress",
+          "source": "mymemory.translated.net",
+          "language": "en",
+          "confidence": 85
+        }
+      ],
+      "examples": [
+        {
+          "sentence": "Die Abwartin sorgt dafür, dass das Schulgebäude immer sauber und ordentlich bleibt.",
+          "translations": {
+            "en": "The caretaker makes sure that the school building is always clean and tidy."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "word": {
+          "id": 1399,
+          "aux": null,
+          "pos": "N",
+          "lemma": "Abwartin",
+          "gender": "die",
+          "plural": "Abwartinnen",
+          "english": "caretaker, janitor (female)",
+          "perfekt": null,
+          "examples": [
+            {
+              "sentence": "Die Abwartin sorgt dafür, dass das Schulgebäude immer sauber und ordentlich bleibt.",
+              "translations": {
+                "en": "The caretaker makes sure that the school building is always clean and tidy."
+              }
+            }
+          ],
+          "exampleDe": "Die Abwartin sorgt dafür, dass das Schulgebäude immer sauber und ordentlich bleibt.",
+          "exampleEn": "The caretaker makes sure that the school building is always clean and tidy.",
+          "partizipIi": null,
+          "comparative": null,
+          "praeteritum": null,
+          "superlative": null,
+          "translations": [
+            {
+              "value": "Waitress",
+              "source": "mymemory.translated.net",
+              "language": "en",
+              "confidence": 85
+            }
+          ],
+          "posAttributes": {
+            "pos": "N"
+          },
+          "enrichmentMethod": "manual_api",
+          "enrichmentAppliedAt": "2025-10-18T06:57:07.993Z"
+        },
+        "patch": {
+          "english": "caretaker, janitor (female)",
+          "complete": true,
+          "translations": [
+            {
+              "value": "Waitress",
+              "source": "mymemory.translated.net",
+              "language": "en",
+              "confidence": 85
+            }
+          ]
+        },
+        "method": "manual_api",
+        "source": "manual_apply",
+        "appliedAt": "2025-10-18T06:57:07.993Z",
+        "appliedFields": [
+          "english",
+          "complete",
+          "enrichmentAppliedAt",
+          "enrichmentMethod"
+        ]
+      },
+      "wordId": 1399,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "all",
+        "snapshotId": 5932,
+        "wordId": 1399,
+        "createdAt": "2025-10-18T06:57:07.898Z",
+        "enrichmentMethod": "manual_api",
+        "appliedAt": "2025-10-18T06:57:07.993Z",
+        "source": "manual_apply"
+      }
+    },
+    "abwart": {
+      "lemma": "Abwart",
+      "pos": "N",
+      "providerId": "manual",
+      "providerLabel": "Manual Apply",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-18T07:00:23.248Z",
+      "translations": [
+        {
+          "value": "caretaker, janitor (male or of unspecified gender)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": [
+        {
+          "sentence": "Der Abwart kümmert sich um die Wartung und Reinigung des Wohnhauses.",
+          "translations": {
+            "en": "The caretaker is responsible for the maintenance and cleaning of the apartment building."
+          }
+        },
+        {
+          "sentence": "In Kairo hat jedes Haus seinen Abwart. Er kommt aus Assiut oder Assuan und besitzt einen oberägyptischen Dickschädel. Nur mit Bakschisch lassen sich die ägyptischen Hausmeister zähmen.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "word": {
+          "id": 1398,
+          "aux": null,
+          "pos": "N",
+          "lemma": "Abwart",
+          "gender": "der",
+          "plural": "Abwarte",
+          "english": "caretaker, janitor (male or of unspecified gender)",
+          "perfekt": null,
+          "examples": [
+            {
+              "sentence": "Der Abwart kümmert sich um die Wartung und Reinigung des Wohnhauses.",
+              "translations": {
+                "en": "The caretaker is responsible for the maintenance and cleaning of the apartment building."
+              }
+            },
+            {
+              "sentence": "In Kairo hat jedes Haus seinen Abwart. Er kommt aus Assiut oder Assuan und besitzt einen oberägyptischen Dickschädel. Nur mit Bakschisch lassen sich die ägyptischen Hausmeister zähmen.",
+              "translations": null
+            }
+          ],
+          "exampleDe": "Der Abwart kümmert sich um die Wartung und Reinigung des Wohnhauses.",
+          "exampleEn": "The caretaker is responsible for the maintenance and cleaning of the apartment building.",
+          "partizipIi": null,
+          "comparative": null,
+          "praeteritum": null,
+          "superlative": null,
+          "translations": [
+            {
+              "value": "caretaker, janitor (male or of unspecified gender)",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            }
+          ],
+          "posAttributes": {
+            "pos": "noun",
+            "tags": [
+              "strong",
+              "switzerland"
+            ],
+            "notes": [
+              "de:Occupations",
+              "masculine nouns",
+              "nouns",
+              "Pages with 2 entries",
+              "Pages with entries",
+              "Quotation templates to be cleaned",
+              "Requests for translations of German quotations",
+              "Switzerland German",
+              "terms with quotations"
+            ]
+          },
+          "enrichmentMethod": "manual_api",
+          "enrichmentAppliedAt": "2025-10-18T07:00:23.341Z"
+        },
+        "patch": {
+          "gender": "der",
+          "complete": true,
+          "exampleDe": "Der Abwart kümmert sich um die Wartung und Reinigung des Wohnhauses.",
+          "exampleEn": "The caretaker is responsible for the maintenance and cleaning of the apartment building."
+        },
+        "method": "manual_api",
+        "source": "manual_apply",
+        "appliedAt": "2025-10-18T07:00:23.341Z",
+        "appliedFields": [
+          "examples",
+          "exampleDe",
+          "exampleEn",
+          "gender",
+          "complete",
+          "enrichmentAppliedAt",
+          "enrichmentMethod"
+        ]
+      },
+      "wordId": 1398,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "all",
+        "snapshotId": 5933,
+        "wordId": 1398,
+        "createdAt": "2025-10-18T07:00:23.248Z",
+        "enrichmentMethod": "manual_api",
+        "appliedAt": "2025-10-18T07:00:23.341Z",
         "source": "manual_apply"
       }
     }

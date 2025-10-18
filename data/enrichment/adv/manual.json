@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "providerId": "manual",
+  "providerLabel": "Manual Apply",
+  "pos": "Adv",
+  "updatedAt": "2025-10-18T07:02:10.345Z",
+  "entries": {
+    "abwärts": {
+      "lemma": "abwärts",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Manual Apply",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-18T07:02:10.138Z",
+      "translations": [
+        {
+          "value": "downwards, downhill",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "downstream",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": [
+        {
+          "sentence": "Der Aufzug fährt auf- und abwärts.",
+          "translations": {
+            "en": "The elevator goes up and down."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "word": {
+          "id": 2927,
+          "aux": null,
+          "pos": "Adv",
+          "lemma": "abwärts",
+          "gender": null,
+          "plural": null,
+          "english": "downwards, downhill",
+          "perfekt": null,
+          "examples": [
+            {
+              "sentence": "Der Aufzug fährt auf- und abwärts.",
+              "translations": {
+                "en": "The elevator goes up and down."
+              }
+            }
+          ],
+          "exampleDe": "Der Aufzug fährt auf- und abwärts.",
+          "exampleEn": "The elevator goes up and down.",
+          "partizipIi": null,
+          "comparative": null,
+          "praeteritum": null,
+          "superlative": null,
+          "translations": [
+            {
+              "value": "downwards, downhill",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "downstream",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            }
+          ],
+          "posAttributes": {
+            "pos": "adv",
+            "notes": [
+              "adverbs",
+              "Pages with 1 entry",
+              "Pages with entries"
+            ]
+          },
+          "enrichmentMethod": "manual_api",
+          "enrichmentAppliedAt": "2025-10-18T07:02:10.229Z"
+        },
+        "patch": {
+          "complete": true,
+          "exampleEn": "The elevator goes up and down."
+        },
+        "method": "manual_api",
+        "source": "manual_apply",
+        "appliedAt": "2025-10-18T07:02:10.229Z",
+        "appliedFields": [
+          "examples",
+          "exampleDe",
+          "exampleEn",
+          "complete",
+          "enrichmentAppliedAt",
+          "enrichmentMethod"
+        ]
+      },
+      "wordId": 2927,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "all",
+        "snapshotId": 5934,
+        "wordId": 2927,
+        "createdAt": "2025-10-18T07:02:10.138Z",
+        "enrichmentMethod": "manual_api",
+        "appliedAt": "2025-10-18T07:02:10.229Z",
+        "source": "manual_apply"
+      }
+    }
+  },
+  "meta": {
+    "createdAt": "2025-10-18T07:02:10.345Z"
+  }
+}
