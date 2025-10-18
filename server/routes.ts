@@ -616,13 +616,27 @@ function computeWordCompleteness(word: Pick<Word, "pos"> & Partial<Word>): boole
 function presentWord(word: Word): Omit<Word, "sourcesCsv" | "sourceNotes"> {
   const { sourcesCsv: _sourcesCsv, sourceNotes: _sourceNotes, ...rest } = word;
   const normalizedExamples = canonicalizeExamples(rest.examples);
-  const primarySentence = getExampleSentence(normalizedExamples);
-  const primaryEnglish = getExampleTranslation(normalizedExamples, "en");
+  const matchingExample = normalizedExamples.find((entry) => {
+    const sentence = entry.sentence ?? null;
+    const englishTranslation = entry.translations?.en ?? null;
+    return Boolean(sentence && englishTranslation);
+  });
+
+  let exampleDe = rest.exampleDe ?? null;
+  let exampleEn = rest.exampleEn ?? null;
+
+  if (matchingExample) {
+    exampleDe = matchingExample.sentence ?? null;
+    exampleEn = matchingExample.translations?.en ?? null;
+  } else {
+    exampleDe = exampleDe ?? getExampleSentence(normalizedExamples);
+    exampleEn = exampleEn ?? getExampleTranslation(normalizedExamples, "en");
+  }
   return {
     ...rest,
     examples: normalizedExamples.length > 0 ? normalizedExamples : null,
-    exampleDe: primarySentence ?? rest.exampleDe ?? null,
-    exampleEn: primaryEnglish ?? rest.exampleEn ?? null,
+    exampleDe,
+    exampleEn,
   };
 }
 
