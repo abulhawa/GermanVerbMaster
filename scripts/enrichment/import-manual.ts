@@ -17,6 +17,7 @@ import type {
 import type { WordExample, WordPosAttributes, WordTranslation } from "@shared/types";
 import {
   canonicalizeExamples,
+  examplesEqual,
   normalizeWordExample,
   normalizeWordExamples,
 } from "@shared/examples";
@@ -52,6 +53,7 @@ type WordPatch = Partial<
 interface NormalizedEntry {
   lemma: string;
   pos: string;
+  applyMode: "merge" | "replace";
   english?: string;
   englishHints?: string[];
   synonyms?: string[];
@@ -194,6 +196,7 @@ const entrySchema = z
   .object({
     lemma: z.string().min(1),
     pos: z.string().min(1),
+    applyMode: z.enum(["merge", "replace"]).optional(),
     english: z.string().min(1).optional(),
     englishHints: z.array(z.string().min(1)).optional(),
     synonyms: z.array(z.string().min(1)).optional(),
@@ -220,19 +223,25 @@ const entrySchema = z
     ...value,
     lemma: value.lemma.trim(),
     pos: normalisePosValue(value.pos),
+    applyMode: value.applyMode ?? undefined,
   }));
+
+type ParsedEntry = z.infer<typeof entrySchema>;
+type EntryWithMode = ParsedEntry & { applyMode: "merge" | "replace" };
 
 const importSchema = z
   .object({
     providerId: z.string().min(1).default("manual"),
     providerLabel: z.string().min(1).default("Manual Import"),
     mode: z.enum(["approved", "pending", "all"]).default("approved"),
+    applyMode: z.enum(["merge", "replace"]).optional(),
     entries: z.array(entrySchema),
   })
   .or(z.array(entrySchema).transform((entries) => ({
     providerId: "manual",
     providerLabel: "Manual Import",
     mode: "approved" as const,
+    applyMode: undefined,
     entries,
   })));
 
@@ -503,7 +512,7 @@ function selectPrimaryExample(examples: WordExample[] | null | undefined): WordE
   return examples.length ? normalizeWordExample(examples[0]) : null;
 }
 
-function buildEntry(input: z.infer<typeof entrySchema>): NormalizedEntry {
+function buildEntry(input: EntryWithMode): NormalizedEntry {
   const translations = normaliseTranslations(input.translations ?? null);
   const exampleArray =
     input.examples?.map((entry) => ({
@@ -553,6 +562,7 @@ function buildEntry(input: z.infer<typeof entrySchema>): NormalizedEntry {
   return {
     lemma: input.lemma,
     pos: input.pos,
+    applyMode: input.applyMode,
     english: input.english?.trim(),
     englishHints: englishHints ?? undefined,
     synonyms: synonyms ?? undefined,
@@ -622,6 +632,107 @@ function normalizeStringArray(values: string[] | undefined): string[] | undefine
     new Set(values.map((entry) => entry.trim()).filter((entry) => entry.length > 0)),
   );
   return normalized.length ? normalized : undefined;
+}
+
+function translationKey(translation: WordTranslation): string {
+  const value = translation.value.trim().toLowerCase();
+  const language = translation.language?.trim().toLowerCase() ?? "";
+  const source = translation.source?.trim().toLowerCase() ?? "";
+  const confidence =
+    typeof translation.confidence === "number" && Number.isFinite(translation.confidence)
+      ? translation.confidence
+      : null;
+  return JSON.stringify([value, language, source, confidence]);
+}
+
+function areTranslationsEqual(
+  a: WordTranslation[] | null | undefined,
+  b: WordTranslation[] | null | undefined,
+): boolean {
+  const left = (a ?? []).map(translationKey);
+  const right = (b ?? []).map(translationKey);
+  if (left.length !== right.length) {
+    return false;
+  }
+  for (let index = 0; index < left.length; index += 1) {
+    if (left[index] !== right[index]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function mergeTranslations(
+  existing: WordTranslation[] | null | undefined,
+  additions: WordTranslation[],
+): WordTranslation[] {
+  const result: WordTranslation[] = [];
+  const seen = new Set<string>();
+
+  for (const translation of existing ?? []) {
+    const key = translationKey(translation);
+    if (seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+    result.push(translation);
+  }
+
+  for (const translation of additions) {
+    const key = translationKey(translation);
+    if (seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+    result.push(translation);
+  }
+
+  return result;
+}
+
+function exampleKey(example: WordExample): string {
+  const sentence = (example.sentence ?? "").trim().toLowerCase();
+  const translations = example.translations
+    ? Object.entries(example.translations)
+        .filter(
+          (entry): entry is [string, string] =>
+            typeof entry[0] === "string" && typeof entry[1] === "string" && entry[1].length > 0,
+        )
+        .map(([language, value]) => [language.trim().toLowerCase(), value.trim()])
+        .sort((a, b) => a[0].localeCompare(b[0]))
+    : [];
+  return JSON.stringify([sentence, translations]);
+}
+
+function mergeExamples(
+  existing: WordExample[] | null | undefined,
+  additions: WordExample[],
+): WordExample[] {
+  const existingCanonical = canonicalizeExamples(existing ?? []);
+  const additionsCanonical = canonicalizeExamples(additions ?? []);
+
+  const seen = new Set<string>();
+  const result: WordExample[] = [];
+
+  for (const example of existingCanonical) {
+    const key = exampleKey(example);
+    if (seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+    result.push(example);
+  }
+
+  for (const example of additionsCanonical) {
+    const key = exampleKey(example);
+    if (seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+    result.push(example);
+  }
+
+  return result;
 }
 
 function normaliseNounForms(forms: NounFormInput[] | undefined): EnrichmentNounFormSuggestion[] | null {
@@ -744,7 +855,13 @@ async function loadAndValidateEntries(filePath: string): Promise<{
   }
 
   const validated = importSchema.parse(parsed);
-  const entries = validated.entries.map((entry) => buildEntry(entry));
+  const defaultApplyMode = validated.applyMode ?? "merge";
+  const entries = validated.entries.map((entry) =>
+    buildEntry({
+      ...entry,
+      applyMode: entry.applyMode ?? defaultApplyMode,
+    }),
+  );
 
   return {
     providerId: validated.providerId,
@@ -768,56 +885,184 @@ async function enrichWord(
     throw new Error(`Word not found for lemma="${entry.lemma}" pos="${entry.pos}"`);
   }
 
-  const translations = entry.translations ?? null;
-  const examples = entry.examples ?? null;
-  const english = resolveEnglish(entry.english, translations);
+  const allowReplace = entry.applyMode === "replace";
+  const translationAdditions = entry.translations ?? null;
+  const exampleAdditions = entry.examples ?? null;
+  const englishCandidate = resolveEnglish(entry.english, translationAdditions);
 
   const patch: WordPatch = {};
-  if (english) {
-    patch.english = english;
-  }
-  if (entry.exampleDe) {
-    patch.exampleDe = entry.exampleDe;
-  }
-  if (entry.exampleEn) {
-    patch.exampleEn = entry.exampleEn;
-  }
-  if (examples) {
-    patch.examples = examples;
-  }
-  if (entry.praeteritum) {
-    patch.praeteritum = entry.praeteritum;
-  }
-  if (entry.partizipIi) {
-    patch.partizipIi = entry.partizipIi;
-  }
-  if (entry.perfekt) {
-    patch.perfekt = entry.perfekt;
-  }
-  if (entry.aux ?? null) {
-    patch.aux = entry.aux;
-  }
-  if (entry.gender) {
-    patch.gender = entry.gender;
-  }
-  if (entry.plural) {
-    patch.plural = entry.plural;
-  }
-  if (entry.comparative) {
-    patch.comparative = entry.comparative;
-  }
-  if (entry.superlative) {
-    patch.superlative = entry.superlative;
-  }
-  if (translations) {
-    patch.translations = translations;
-  }
-  if (entry.posAttributes) {
-    patch.posAttributes = entry.posAttributes;
+  let hasChanges = false;
+
+  if (translationAdditions && translationAdditions.length > 0) {
+    const existingTranslations = word.translations ?? [];
+    const mergedTranslations = allowReplace
+      ? translationAdditions
+      : mergeTranslations(existingTranslations, translationAdditions);
+    const normalizedMergedTranslations = mergedTranslations.length ? mergedTranslations : null;
+    if (!areTranslationsEqual(existingTranslations, normalizedMergedTranslations)) {
+      patch.translations = normalizedMergedTranslations;
+      hasChanges = true;
+    }
   }
 
-  // compute completeness before applying metadata
-  patch.complete = computeCompleteness(word, patch);
+  if (englishCandidate && (allowReplace || isBlank(word.english))) {
+    const currentEnglish = (word.english ?? "").trim();
+    if (currentEnglish !== englishCandidate) {
+      patch.english = englishCandidate;
+      hasChanges = true;
+    }
+  }
+
+  if (exampleAdditions && exampleAdditions.length > 0) {
+    const existingExamples = word.examples ?? [];
+    const mergedExamples = allowReplace ? exampleAdditions : mergeExamples(existingExamples, exampleAdditions);
+    const normalizedMergedExamples = mergedExamples.length ? mergedExamples : null;
+    if (!examplesEqual(existingExamples, normalizedMergedExamples)) {
+      patch.examples = normalizedMergedExamples;
+      hasChanges = true;
+    }
+  }
+
+  if (entry.exampleDe && (allowReplace || isBlank(word.exampleDe))) {
+    const currentExampleDe = (word.exampleDe ?? "").trim();
+    if (currentExampleDe !== entry.exampleDe) {
+      patch.exampleDe = entry.exampleDe;
+      hasChanges = true;
+    }
+  }
+
+  if (entry.exampleEn && (allowReplace || isBlank(word.exampleEn))) {
+    const currentExampleEn = (word.exampleEn ?? "").trim();
+    if (currentExampleEn !== entry.exampleEn) {
+      patch.exampleEn = entry.exampleEn;
+      hasChanges = true;
+    }
+  }
+
+  if (entry.praeteritum && (allowReplace || isBlank(word.praeteritum))) {
+    const currentValue = (word.praeteritum ?? "").trim();
+    if (currentValue !== entry.praeteritum) {
+      patch.praeteritum = entry.praeteritum;
+      hasChanges = true;
+    }
+  }
+
+  if (entry.partizipIi && (allowReplace || isBlank(word.partizipIi))) {
+    const currentValue = (word.partizipIi ?? "").trim();
+    if (currentValue !== entry.partizipIi) {
+      patch.partizipIi = entry.partizipIi;
+      hasChanges = true;
+    }
+  }
+
+  if (entry.perfekt && (allowReplace || isBlank(word.perfekt))) {
+    const currentValue = (word.perfekt ?? "").trim();
+    if (currentValue !== entry.perfekt) {
+      patch.perfekt = entry.perfekt;
+      hasChanges = true;
+    }
+  }
+
+  if (entry.aux && (allowReplace || isBlank(word.aux))) {
+    const currentValue = (word.aux ?? "").trim();
+    if (currentValue !== entry.aux) {
+      patch.aux = entry.aux;
+      hasChanges = true;
+    }
+  }
+
+  if (entry.gender && (allowReplace || isBlank(word.gender))) {
+    const currentValue = (word.gender ?? "").trim();
+    if (currentValue !== entry.gender) {
+      patch.gender = entry.gender;
+      hasChanges = true;
+    }
+  }
+
+  if (entry.plural && (allowReplace || isBlank(word.plural))) {
+    const currentValue = (word.plural ?? "").trim();
+    if (currentValue !== entry.plural) {
+      patch.plural = entry.plural;
+      hasChanges = true;
+    }
+  }
+
+  if (entry.comparative && (allowReplace || isBlank(word.comparative))) {
+    const currentValue = (word.comparative ?? "").trim();
+    if (currentValue !== entry.comparative) {
+      patch.comparative = entry.comparative;
+      hasChanges = true;
+    }
+  }
+
+  if (entry.superlative && (allowReplace || isBlank(word.superlative))) {
+    const currentValue = (word.superlative ?? "").trim();
+    if (currentValue !== entry.superlative) {
+      patch.superlative = entry.superlative;
+      hasChanges = true;
+    }
+  }
+
+  if (entry.posAttributes && (allowReplace || !word.posAttributes)) {
+    const currentValue = word.posAttributes ?? null;
+    const replacement = entry.posAttributes;
+    if (allowReplace || JSON.stringify(currentValue) !== JSON.stringify(replacement)) {
+      patch.posAttributes = replacement;
+      hasChanges = true;
+    }
+  }
+
+  const nextComplete = computeCompleteness(word, patch);
+  if (nextComplete !== word.complete) {
+    patch.complete = nextComplete;
+    hasChanges = true;
+  }
+
+  const summary: EnrichmentWordSummary = {
+    id: word.id,
+    lemma: word.lemma,
+    pos: word.pos,
+    missingFields: [],
+    translations: translationAdditions ?? undefined,
+    translation: translationAdditions?.[0]
+      ? {
+          value: translationAdditions[0].value,
+          source: translationAdditions[0].source ?? "",
+          language: translationAdditions[0].language ?? undefined,
+          confidence: translationAdditions[0].confidence ?? undefined,
+        }
+      : undefined,
+    englishHints: entry.englishHints ?? undefined,
+    synonyms: entry.synonyms ?? [],
+    example: exampleAdditions?.[0]
+      ? {
+          sentence: exampleAdditions[0].sentence ?? undefined,
+          translations: exampleAdditions[0].translations ?? undefined,
+          source: options.providerId,
+        }
+      : undefined,
+    examples: exampleAdditions ?? undefined,
+    verbForms: entry.verbForms?.[0],
+    nounForms: entry.nounForms?.[0],
+    adjectiveForms: entry.adjectiveForms?.[0],
+    prepositionAttributes: entry.prepositionAttributes?.[0],
+    posAttributes: entry.posAttributes ?? null,
+    updates: [],
+    applied: hasChanges,
+    sources: [options.providerId],
+    errors: [],
+    aiUsed: false,
+  };
+
+  if (!hasChanges) {
+    return {
+      wordId: word.id,
+      lemma: word.lemma,
+      pos: word.pos,
+      summary,
+    };
+  }
+
   const appliedAt = new Date();
   patch.enrichmentAppliedAt = appliedAt;
   patch.enrichmentMethod = "manual_entry";
@@ -832,8 +1077,8 @@ async function enrichWord(
     status: "success" as const,
     trigger: "apply" as const,
     mode: options.mode,
-    translations,
-    examples,
+    translations: translationAdditions,
+    examples: exampleAdditions,
     synonyms: entry.synonyms ?? null,
     englishHints: entry.englishHints ?? null,
     verbForms: entry.verbForms ?? null,
@@ -861,8 +1106,8 @@ async function enrichWord(
         error: null,
         trigger: "apply",
         mode: options.mode,
-        translations,
-        examples,
+        translations: snapshotPayload.translations,
+        examples: snapshotPayload.examples,
         synonyms: snapshotPayload.synonyms,
         englishHints: snapshotPayload.englishHints,
         verbForms: snapshotPayload.verbForms,
@@ -877,42 +1122,6 @@ async function enrichWord(
   });
 
   await persistProviderSnapshotToFile(result);
-
-  const summary: EnrichmentWordSummary = {
-    id: word.id,
-    lemma: word.lemma,
-    pos: word.pos,
-    missingFields: [],
-    translations: translations ?? undefined,
-    translation: translations?.[0]
-      ? {
-          value: translations[0].value,
-          source: translations[0].source ?? "",
-          language: translations[0].language ?? undefined,
-          confidence: translations[0].confidence ?? undefined,
-        }
-      : undefined,
-    englishHints: entry.englishHints ?? undefined,
-    synonyms: entry.synonyms ?? [],
-    example: examples?.[0]
-      ? {
-          sentence: examples[0].sentence ?? undefined,
-          translations: examples[0].translations ?? undefined,
-          source: options.providerId,
-        }
-      : undefined,
-    examples: examples ?? undefined,
-    verbForms: entry.verbForms?.[0],
-    nounForms: entry.nounForms?.[0],
-    adjectiveForms: entry.adjectiveForms?.[0],
-    prepositionAttributes: entry.prepositionAttributes?.[0],
-    posAttributes: entry.posAttributes ?? null,
-    updates: [],
-    applied: true,
-    sources: [options.providerId],
-    errors: [],
-    aiUsed: false,
-  };
 
   return {
     wordId: word.id,
@@ -949,7 +1158,11 @@ async function main(): Promise<void> {
       try {
         const result = await enrichWord(entry, resolvedOptions);
         results.push(result);
-        console.log(`Applied enrichment for ${entry.lemma} (${entry.pos}).`);
+        if (result.summary.applied) {
+          console.log(`Applied enrichment for ${entry.lemma} (${entry.pos}).`);
+        } else {
+          console.log(`No changes applied for ${entry.lemma} (${entry.pos}); entry already up to date.`);
+        }
       } catch (error) {
         failures.push({ entry, error });
         console.error(
@@ -960,7 +1173,10 @@ async function main(): Promise<void> {
       }
     }
 
-    if (results.length && !resolvedOptions.skipBackups) {
+    const appliedCount = results.filter((result) => result.summary.applied).length;
+    const skippedCount = results.length - appliedCount;
+
+    if (appliedCount > 0 && !resolvedOptions.skipBackups) {
       const backupResult = await writeWordsBackupToDisk();
       console.log(
         `Wrote words backup to ${backupResult.summary.relativePath} (latest alias: ${backupResult.summary.latestRelativePath}).`,
@@ -968,7 +1184,7 @@ async function main(): Promise<void> {
     }
 
     console.log(
-      `Import complete. Success: ${results.length}, Failed: ${failures.length}. Provider=${providerId} (${providerLabel}).`,
+      `Import complete. Applied: ${appliedCount}, Skipped: ${skippedCount}, Failed: ${failures.length}. Provider=${providerId} (${providerLabel}).`,
     );
 
     if (failures.length) {

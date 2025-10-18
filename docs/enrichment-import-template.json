@@ -2,6 +2,7 @@
   "providerId": "manual",
   "providerLabel": "Community Import",
   "mode": "approved",
+  "applyMode": "merge",
   "entries": [
     {
       "lemma": "abholen",
@@ -64,6 +65,7 @@
     {
       "lemma": "freundlich",
       "pos": "Adj",
+      "applyMode": "replace",
       "english": "friendly",
       "comparative": "freundlicher",
       "superlative": "am freundlichsten",
