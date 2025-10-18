@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { z } from 'zod';
-import { Sparkles, Settings2, PenSquare, Trash2, Wand2 } from 'lucide-react';
+import { ListChecks, Sparkles, Settings2, PenSquare, Trash2, Wand2 } from 'lucide-react';
 import { Link } from 'wouter';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -15,13 +14,10 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { useAuthSession } from '@/auth/session';
 import type { Word } from '@shared';
 import { exportStatusSchema, wordSchema, wordsResponseSchema } from './admin-word-schemas';
 import WordEnrichmentDetailView, {
@@ -64,156 +60,6 @@ const enrichmentOptions: Array<{ label: string; value: EnrichmentFilter }> = [
   { label: 'Needs enrichment', value: 'unenriched' },
 ];
 
-interface EditFieldConfig {
-  key:
-    | 'level'
-    | 'english'
-    | 'exampleDe'
-    | 'exampleEn'
-    | 'gender'
-    | 'plural'
-    | 'separable'
-    | 'aux'
-    | 'praesensIch'
-    | 'praesensEr'
-    | 'praeteritum'
-    | 'partizipIi'
-    | 'perfekt'
-    | 'comparative'
-    | 'superlative';
-  label: string;
-  type?: 'text' | 'textarea' | 'select' | 'boolean';
-  options?: Array<{ label: string; value: string }>;
-}
-
-const commonFields: EditFieldConfig[] = [
-  { key: 'level', label: 'Level' },
-  { key: 'english', label: 'English' },
-  { key: 'exampleDe', label: 'Example (DE)', type: 'textarea' },
-  { key: 'exampleEn', label: 'Example (EN)', type: 'textarea' },
-];
-
-const verbFields: EditFieldConfig[] = [
-  { key: 'aux', label: 'Auxiliary', type: 'select', options: [
-    { label: 'Unset', value: 'unset' },
-    { label: 'haben', value: 'haben' },
-    { label: 'sein', value: 'sein' },
-    { label: 'haben / sein', value: 'haben / sein' },
-  ] },
-  { key: 'separable', label: 'Separable', type: 'select', options: [
-    { label: 'Unset', value: 'unset' },
-    { label: 'Yes', value: 'true' },
-    { label: 'No', value: 'false' },
-  ] },
-  { key: 'praesensIch', label: 'Präsens (ich)' },
-  { key: 'praesensEr', label: 'Präsens (er/sie/es)' },
-  { key: 'praeteritum', label: 'Präteritum' },
-  { key: 'partizipIi', label: 'Partizip II' },
-  { key: 'perfekt', label: 'Perfekt' },
-];
-
-const nounFields: EditFieldConfig[] = [
-  { key: 'gender', label: 'Gender / Artikel' },
-  { key: 'plural', label: 'Plural' },
-];
-
-const adjectiveFields: EditFieldConfig[] = [
-  { key: 'comparative', label: 'Comparative' },
-  { key: 'superlative', label: 'Superlative' },
-];
-
-const wordFormSchema = z.object({
-  level: z.string(),
-  english: z.string(),
-  exampleDe: z.string(),
-  exampleEn: z.string(),
-  gender: z.string(),
-  plural: z.string(),
-  separable: z.string(),
-  aux: z.string(),
-  praesensIch: z.string(),
-  praesensEr: z.string(),
-  praeteritum: z.string(),
-  partizipIi: z.string(),
-  perfekt: z.string(),
-  comparative: z.string(),
-  superlative: z.string(),
-});
-
-type WordFormState = z.infer<typeof wordFormSchema>;
-
-function createFormState(word: Word): WordFormState {
-  return {
-    level: word.level ?? '',
-    english: word.english ?? '',
-    exampleDe: word.exampleDe ?? '',
-    exampleEn: word.exampleEn ?? '',
-    gender: word.gender ?? '',
-    plural: word.plural ?? '',
-    separable: word.separable === null ? 'unset' : word.separable ? 'true' : 'false',
-    aux: word.aux ?? 'unset',
-    praesensIch: word.praesensIch ?? '',
-    praesensEr: word.praesensEr ?? '',
-    praeteritum: word.praeteritum ?? '',
-    partizipIi: word.partizipIi ?? '',
-    perfekt: word.perfekt ?? '',
-    comparative: word.comparative ?? '',
-    superlative: word.superlative ?? '',
-  };
-}
-
-function preparePayload(form: WordFormState, pos: Word['pos']) {
-  const payload: Record<string, unknown> = {};
-
-  const assignText = (key: keyof WordFormState, column: keyof Word) => {
-    const raw = form[key].trim();
-    payload[column] = raw.length ? raw : null;
-  };
-
-  assignText('level', 'level');
-  assignText('english', 'english');
-  assignText('exampleDe', 'exampleDe');
-  assignText('exampleEn', 'exampleEn');
-
-  if (pos === 'V') {
-    if (form.aux === 'unset') {
-      payload.aux = null;
-    } else if (
-      form.aux === 'haben'
-      || form.aux === 'sein'
-      || form.aux === 'haben / sein'
-    ) {
-      payload.aux = form.aux;
-    }
-
-    if (form.separable === 'unset') {
-      payload.separable = null;
-    } else if (form.separable === 'true') {
-      payload.separable = true;
-    } else if (form.separable === 'false') {
-      payload.separable = false;
-    }
-
-    assignText('praesensIch', 'praesensIch');
-    assignText('praesensEr', 'praesensEr');
-    assignText('praeteritum', 'praeteritum');
-    assignText('partizipIi', 'partizipIi');
-    assignText('perfekt', 'perfekt');
-  }
-
-  if (pos === 'N') {
-    assignText('gender', 'gender');
-    assignText('plural', 'plural');
-  }
-
-  if (pos === 'Adj') {
-    assignText('comparative', 'comparative');
-    assignText('superlative', 'superlative');
-  }
-
-  return payload;
-}
-
 function humanizeEnrichmentMethod(method: Word['enrichmentMethod'] | null | undefined) {
   if (!method) return null;
   return method
@@ -223,7 +69,6 @@ function humanizeEnrichmentMethod(method: Word['enrichmentMethod'] | null | unde
 }
 
 const AdminWordsPage = () => {
-  const [adminToken, setAdminToken] = useState(() => localStorage.getItem('gvm-admin-token') ?? '');
   const [search, setSearch] = useState('');
   const [pos, setPos] = useState<Word['pos'] | 'ALL'>('ALL');
   const [level, setLevel] = useState<string>('All');
@@ -232,8 +77,6 @@ const AdminWordsPage = () => {
   const [enrichmentFilter, setEnrichmentFilter] = useState<EnrichmentFilter>('all');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState<number>(50);
-  const [selectedWord, setSelectedWord] = useState<Word | null>(null);
-  const [formState, setFormState] = useState<WordFormState | null>(null);
   const [wordConfig, setWordConfig] = useState<WordConfigState>(DEFAULT_WORD_CONFIG);
   const [enrichmentWordId, setEnrichmentWordId] = useState<number | null>(null);
 
@@ -241,12 +84,6 @@ const AdminWordsPage = () => {
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
-
-  const normalizedAdminToken = adminToken.trim();
-
-  useEffect(() => {
-    localStorage.setItem('gvm-admin-token', normalizedAdminToken);
-  }, [normalizedAdminToken]);
 
   useEffect(() => {
     setPage(1);
@@ -266,15 +103,9 @@ const AdminWordsPage = () => {
     [search, pos, level, approvalFilter, completeFilter, enrichmentFilter, page, perPage],
   );
 
-  const queryKey = useMemo(
-    () => ['words', filters, normalizedAdminToken],
-    [filters, normalizedAdminToken],
-  );
+  const queryKey = useMemo(() => ['words', filters], [filters]);
 
-  const exportStatusQueryKey = useMemo(
-    () => ['export-status', normalizedAdminToken],
-    [normalizedAdminToken],
-  );
+  const exportStatusQueryKey = useMemo(() => ['export-status'], []);
 
   const enrichmentDialogOpen = enrichmentWordId !== null;
 
@@ -292,17 +123,10 @@ const AdminWordsPage = () => {
       if (filters.enrichmentFilter === 'enriched') params.set('enriched', 'only');
       if (filters.enrichmentFilter === 'unenriched') params.set('enriched', 'non');
 
-      const headers: Record<string, string> = {};
-      if (normalizedAdminToken) {
-        headers['x-admin-token'] = normalizedAdminToken;
-      }
-
       params.set('page', String(filters.page));
       params.set('perPage', String(filters.perPage));
 
-      const response = await fetch(`/api/words?${params.toString()}`, {
-        headers,
-      });
+      const response = await fetch(`/api/words?${params.toString()}`);
 
       if (!response.ok) {
         throw new Error(`Failed to load words (${response.status})`);
@@ -317,12 +141,7 @@ const AdminWordsPage = () => {
   const exportStatusQuery = useQuery({
     queryKey: exportStatusQueryKey,
     queryFn: async () => {
-      const headers: Record<string, string> = {};
-      if (normalizedAdminToken) {
-        headers['x-admin-token'] = normalizedAdminToken;
-      }
-
-      const response = await fetch('/api/admin/export/status', { headers });
+      const response = await fetch('/api/admin/export/status');
       if (!response.ok) {
         const error = new Error(`Failed to load export status (${response.status})`);
         (error as Error & { status?: number }).status = response.status;
@@ -346,7 +165,6 @@ const AdminWordsPage = () => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          ...(normalizedAdminToken ? { 'x-admin-token': normalizedAdminToken } : {}),
         },
         body: JSON.stringify(payload),
       });
@@ -371,11 +189,6 @@ const AdminWordsPage = () => {
 
   const bulkExportMutation = useMutation({
     mutationFn: async () => {
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-      if (normalizedAdminToken) {
-        headers['x-admin-token'] = normalizedAdminToken;
-      }
-
       const body: Record<string, unknown> = {};
       if (filters.pos !== 'ALL') {
         body.pos = filters.pos;
@@ -383,7 +196,7 @@ const AdminWordsPage = () => {
 
       const response = await fetch('/api/admin/export/bulk', {
         method: 'POST',
-        headers,
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
 
@@ -410,15 +223,51 @@ const AdminWordsPage = () => {
     },
   });
 
-  const openEditor = (word: Word) => {
-    setSelectedWord(word);
-    setFormState(createFormState(word));
-  };
+  const bulkApproveMutation = useMutation<{ updated: number }, Error, number[]>({
+    mutationFn: async (wordIds) => {
+      if (!wordIds.length) {
+        return { updated: 0 };
+      }
 
-  const closeEditor = () => {
-    setSelectedWord(null);
-    setFormState(null);
-  };
+      const response = await fetch('/api/admin/words/bulk-approve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ wordIds }),
+      });
+
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message || `Bulk approval failed (${response.status})`);
+      }
+
+      return (await response.json()) as { updated: number };
+    },
+    onSuccess: (data, wordIds) => {
+      queryClient.invalidateQueries({ queryKey });
+      queryClient.invalidateQueries({ queryKey: exportStatusQueryKey });
+      const { updated } = data;
+      if (updated > 0) {
+        toast({
+          title: updated === 1 ? 'Word approved' : 'Words approved',
+          description: `Marked ${updated.toLocaleString()} of ${wordIds.length.toLocaleString()} selected word${
+            updated === 1 ? '' : 's'
+          } as approved.`,
+        });
+      } else {
+        toast({
+          title: 'No words approved',
+          description: 'All selected words were already approved.',
+        });
+      }
+    },
+    onError: (error) => {
+      toast({
+        title: 'Bulk approval failed',
+        description: error instanceof Error ? error.message : String(error),
+        variant: 'destructive',
+      });
+    },
+  });
 
   const openEnrichmentDialog = (word: Word) => {
     setEnrichmentWordId(word.id);
@@ -426,15 +275,6 @@ const AdminWordsPage = () => {
 
   const closeEnrichmentDialog = () => {
     setEnrichmentWordId(null);
-  };
-
-  const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!selectedWord || !formState) return;
-
-    const payload = preparePayload(formState, selectedWord.pos);
-    updateMutation.mutate({ id: selectedWord.id, payload });
-    closeEditor();
   };
 
   const toggleApproval = (word: Word) => {
@@ -453,18 +293,19 @@ const AdminWordsPage = () => {
   const pageStart = totalWords > 0 ? (currentPage - 1) * currentPerPage + 1 : 0;
   const pageEnd = totalWords > 0 ? pageStart + words.length - 1 : 0;
 
-  const isUnauthorized =
-    wordsQuery.isError &&
-    wordsQuery.error instanceof Error &&
-    wordsQuery.error.message.includes('(401)');
+  const wordsError =
+    wordsQuery.isError && wordsQuery.error instanceof Error ? wordsQuery.error : null;
+
+  const pendingWordsOnPage = useMemo(() => words.filter((word) => !word.approved), [words]);
+  const pendingWordCount = pendingWordsOnPage.length;
 
   const exportStatus = exportStatusQuery.data;
   const totalDirty = exportStatus?.totalDirty ?? 0;
   const oldestDirty = exportStatus?.oldestDirtyUpdatedAt ?? null;
-  const exportStatusUnauthorized =
-    exportStatusQuery.isError
-    && exportStatusQuery.error instanceof Error
-    && exportStatusQuery.error.message.includes('(401)');
+  const exportStatusError =
+    exportStatusQuery.isError && exportStatusQuery.error instanceof Error
+      ? exportStatusQuery.error
+      : null;
 
   const columns = useMemo(() => {
     const base = [
@@ -516,19 +357,15 @@ const AdminWordsPage = () => {
     [],
   );
 
-  const { data: authSession } = useAuthSession();
-  const navigationItems = useMemo(
-    () => getPrimaryNavigationItems(authSession?.user.role ?? null),
-    [authSession?.user.role],
-  );
+  const navigationItems = useMemo(() => getPrimaryNavigationItems(), []);
 
   const sidebar = (
     <div className="flex h-full flex-col justify-between gap-8">
-        <div className="space-y-6">
-          <div className="space-y-3">
-            <div className="grid gap-2">
-              {navigationItems.map((item) => (
-                <SidebarNavButton
+      <div className="space-y-6">
+        <div className="space-y-3">
+          <div className="grid gap-2">
+            {navigationItems.map((item) => (
+              <SidebarNavButton
                 key={item.href}
                 href={item.href}
                 icon={item.icon}
@@ -560,18 +397,13 @@ const AdminWordsPage = () => {
             </p>
           </div>
           <div className="flex flex-wrap items-center justify-start gap-2 sm:justify-end">
-            <Link href="/">
+            <Link href="/admin/enrichment">
               <Button
                 variant="secondary"
                 className="rounded-2xl px-5"
-                debugId={`${pageDebugId}-topbar-back-button`}
+                debugId={`${pageDebugId}-topbar-enrichment-button`}
               >
-                Back to practice
-              </Button>
-            </Link>
-            <Link href="/analytics">
-              <Button className="rounded-2xl px-5" debugId={`${pageDebugId}-topbar-analytics-button`}>
-                Open analytics
+                Go to enrichment
               </Button>
             </Link>
           </div>
@@ -583,16 +415,6 @@ const AdminWordsPage = () => {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid gap-4 lg:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="admin-token">Admin token (if configured)</Label>
-                <Input
-                  id="admin-token"
-                  type="password"
-                  value={adminToken}
-                  onChange={(event) => setAdminToken(event.target.value)}
-                  placeholder="Enter x-admin-token"
-                />
-              </div>
               <div className="space-y-2">
                 <Label htmlFor="search">Search</Label>
                 <Input
@@ -708,9 +530,8 @@ const AdminWordsPage = () => {
         <CardHeader>
           <CardTitle>Words</CardTitle>
           <CardDescription>
-            {isUnauthorized && 'Enter the admin token to load words.'}
             {wordsQuery.isLoading && 'Loading words…'}
-            {wordsQuery.isError && !isUnauthorized && 'Failed to load words. Check the token and try again.'}
+            {wordsError && !wordsQuery.isLoading && (wordsError.message || 'Failed to load words.')}
             {wordsQuery.isSuccess &&
               (totalWords
                 ? `Showing ${pageStart}–${pageEnd} of ${totalWords} words.`
@@ -748,11 +569,43 @@ const AdminWordsPage = () => {
               </div>
             ) : (
               <div className="text-sm text-muted-foreground">
-                {exportStatusUnauthorized
-                  ? 'Enter the admin token to check export status.'
-                  : 'Failed to load export status.'}
+                {exportStatusError?.message ?? 'Failed to load export status.'}
               </div>
             )}
+          </div>
+          <div className="rounded-2xl border border-border/60 bg-muted/30 p-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="space-y-1">
+                <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Bulk approval
+                </div>
+                <div className="text-sm text-foreground">
+                  {pendingWordCount > 0
+                    ? `${pendingWordCount.toLocaleString()} pending word${pendingWordCount === 1 ? '' : 's'} on this page`
+                    : 'All visible words are approved'}
+                </div>
+              </div>
+              <Button
+                className="rounded-2xl"
+                variant={pendingWordCount > 0 ? 'default' : 'secondary'}
+                onClick={() => {
+                  if (pendingWordCount > 0) {
+                    bulkApproveMutation.mutate(pendingWordsOnPage.map((word) => word.id));
+                  }
+                }}
+                disabled={pendingWordCount === 0 || bulkApproveMutation.isPending}
+                debugId={`${pageDebugId}-bulk-approve-button`}
+              >
+                {bulkApproveMutation.isPending ? (
+                  'Approving…'
+                ) : (
+                  <>
+                    <ListChecks className="mr-2 h-4 w-4" aria-hidden />
+                    Approve visible pending
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="text-sm text-muted-foreground">Page {currentPage} of {displayTotalPages}</div>
@@ -888,157 +741,19 @@ const AdminWordsPage = () => {
                           <Sparkles className="h-4 w-4" aria-hidden />
                         )}
                       </Button>
-                      <Drawer open={selectedWord?.id === word.id} onOpenChange={(open) => {
-                        if (open) {
-                          openEditor(word);
-                        } else {
-                          closeEditor();
-                        }
-                      }}>
-                        <DrawerTrigger asChild>
-                          <Button
-                            size="icon"
-                            variant="secondary"
-                            className="rounded-xl"
-                            onClick={() => openEditor(word)}
-                            title="Edit entry"
-                            aria-label="Edit entry"
-                            debugId={`${pageDebugId}-word-${word.id}-edit-button`}
-                          >
-                            <PenSquare className="h-4 w-4" aria-hidden />
-                          </Button>
-                        </DrawerTrigger>
-                        <DrawerContent className="max-h-[85vh] overflow-y-auto">
-                          <DrawerHeader>
-                            <DrawerTitle>Edit {word.lemma}</DrawerTitle>
-                          </DrawerHeader>
-                          <form onSubmit={submitForm} className="space-y-4 p-4">
-                          {[...commonFields,
-                            ...(word.pos === 'V' ? verbFields : []),
-                            ...(word.pos === 'N' ? nounFields : []),
-                            ...(word.pos === 'Adj' ? adjectiveFields : []),
-                          ].map((field) => (
-                            <div key={field.key} className="space-y-2">
-                              <Label className="text-sm font-medium">{field.label}</Label>
-                                {field.type === 'textarea' ? (
-                                  <Textarea
-                                    value={formState?.[field.key] ?? ''}
-                                    onChange={(event) =>
-                                      setFormState((state) =>
-                                        state ? { ...state, [field.key]: event.target.value } : state,
-                                      )
-                                    }
-                                  />
-                                ) : field.type === 'select' && field.options ? (
-                                  (() => {
-                                    const fallbackOption =
-                                      field.options.find((option) => option.value === 'unset')?.value ??
-                                      field.options[0]?.value ??
-                                      '';
-                                    const currentValue = formState?.[field.key] ?? fallbackOption;
-                                    return (
-                                      <Select
-                                        value={currentValue}
-                                        onValueChange={(value) =>
-                                          setFormState((state) =>
-                                            state ? { ...state, [field.key]: value } : state,
-                                          )
-                                        }
-                                      >
-                                        <SelectTrigger>
-                                          <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          {field.options.map((option) => (
-                                            <SelectItem key={option.value} value={option.value}>
-                                              {option.label}
-                                            </SelectItem>
-                                          ))}
-                                        </SelectContent>
-                                      </Select>
-                                    );
-                                  })()
-                                ) : (
-                                  <Input
-                                    value={formState?.[field.key] ?? ''}
-                                    onChange={(event) =>
-                                      setFormState((state) =>
-                                      state ? { ...state, [field.key]: event.target.value } : state,
-                                    )
-                                  }
-                                />
-                              )}
-                            </div>
-                          ))}
-                          {(word.translations?.length ?? 0) || (word.examples?.length ?? 0) ? (
-                            <div className="space-y-3 rounded-2xl border border-border/60 bg-muted/40 p-4">
-                              {word.translations?.length ? (
-                                <div>
-                                  <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                                    Stored translations
-                                  </div>
-                                  <ul className="mt-1 space-y-1 text-sm">
-                                    {word.translations.map((translation, index) => (
-                                      <li key={`${translation.value}-${translation.source ?? 'unknown'}-${index}`}>
-                                        <span className="font-medium">{translation.value}</span>
-                                        {translation.language ? (
-                                          <span className="text-muted-foreground"> ({translation.language})</span>
-                                        ) : null}
-                                        {translation.source ? (
-                                          <span className="text-muted-foreground"> · {translation.source}</span>
-                                        ) : null}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                </div>
-                              ) : null}
-                              {word.examples?.length ? (
-                                <div>
-                                  <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                                    Stored examples
-                                  </div>
-                                  <ul className="mt-1 space-y-2 text-sm">
-                                    {word.examples.map((example, index) => {
-                                      const sentence = example.sentence ?? example.exampleDe ?? '—';
-                                      const english = example.translations?.en ?? example.exampleEn ?? null;
-                                      return (
-                                        <li key={`${sentence}-${english ?? '—'}-${index}`} className="leading-snug">
-                                          <span className="font-medium text-foreground">{sentence}</span>
-                                          {english ? (
-                                            <span className="text-muted-foreground"> · {english}</span>
-                                          ) : null}
-                                        </li>
-                                      );
-                                    })}
-                                  </ul>
-                                </div>
-                              ) : null}
-                            </div>
-                          ) : word.enrichmentAppliedAt ? (
-                            <p className="text-sm text-muted-foreground">
-                              No stored translations or examples recorded yet.
-                            </p>
-                          ) : null}
-                          <DrawerFooter>
-                            <Button
-                              type="submit"
-                              disabled={updateMutation.isPending}
-                              debugId={`${pageDebugId}-word-${word.id}-save-button`}
-                            >
-                              Save changes
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              onClick={closeEditor}
-                              debugId={`${pageDebugId}-word-${word.id}-cancel-button`}
-                            >
-                              Cancel
-                            </Button>
-                          </DrawerFooter>
-                        </form>
-                      </DrawerContent>
-                    </Drawer>
+                      <Button
+                        size="icon"
+                        variant="secondary"
+                        className="rounded-xl"
+                        asChild
+                        title="Edit entry"
+                        aria-label="Edit entry"
+                        debugId={`${pageDebugId}-word-${word.id}-edit-button`}
+                      >
+                        <Link href={`/admin/words/${word.id}`}>
+                          <PenSquare className="h-4 w-4" aria-hidden />
+                        </Link>
+                      </Button>
                       <Button
                         size="icon"
                         variant="outline"
@@ -1054,14 +769,14 @@ const AdminWordsPage = () => {
                   </TableRow>
                 );
               })}
-              {isUnauthorized && (
+              {wordsError && !wordsQuery.isLoading && (
                 <TableRow>
                   <TableCell colSpan={columns.length} className="text-center text-muted-foreground">
-                    Enter the admin token to load words.
+                    {wordsError.message || 'Failed to load words.'}
                   </TableCell>
                 </TableRow>
               )}
-              {!isUnauthorized && !words.length && !wordsQuery.isLoading && (
+              {!wordsError && !words.length && !wordsQuery.isLoading && (
                 <TableRow>
                   <TableCell colSpan={columns.length} className="text-center text-muted-foreground">
                     No words match the current filters.
@@ -1122,9 +837,6 @@ const AdminWordsPage = () => {
                 <WordEnrichmentDetailView
                   key={enrichmentWordId}
                   wordId={enrichmentWordId}
-                  adminToken={adminToken}
-                  normalizedAdminToken={normalizedAdminToken}
-                  onAdminTokenChange={setAdminToken}
                   toast={toast}
                   onClose={closeEnrichmentDialog}
                   wordConfig={wordConfig}

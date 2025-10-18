@@ -1,0 +1,182 @@
+{
+  "schemaVersion": 1,
+  "providerId": "manual",
+  "providerLabel": "Manual Apply",
+  "pos": "Adj",
+  "updatedAt": "2025-10-17T13:01:04.196Z",
+  "entries": {
+    "freundlich": {
+      "lemma": "freundlich",
+      "pos": "Adj",
+      "providerId": "manual",
+      "providerLabel": "Manual Apply",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T13:01:03.139Z",
+      "translations": [
+        {
+          "value": "friendly, benign",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "nice, pleasant",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": [
+        {
+          "sentence": "Sie sind sehr freundlich.",
+          "translations": {
+            "en": "You/they are very nice."
+          }
+        },
+        {
+          "sentence": "Sie sind sehr freundlich.",
+          "translations": {
+            "en": "You/they are very nice."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "word": {
+          "id": 2427,
+          "aux": null,
+          "pos": "Adj",
+          "lemma": "freundlich",
+          "gender": null,
+          "plural": null,
+          "english": "friendly",
+          "perfekt": null,
+          "examples": [
+            {
+              "sentence": "Sie sind sehr freundlich.",
+              "translations": {
+                "en": "You/they are very nice."
+              }
+            },
+            {
+              "sentence": "Sie sind sehr freundlich.",
+              "translations": {
+                "en": "You/they are very nice."
+              }
+            }
+          ],
+          "exampleDe": "Sie sind sehr freundlich.",
+          "exampleEn": "You/they are very nice.",
+          "partizipIi": null,
+          "comparative": "freundlicher",
+          "praeteritum": null,
+          "superlative": "am freundlichsten",
+          "translations": [
+            {
+              "value": "friendly, benign",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "nice, pleasant",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            }
+          ],
+          "posAttributes": {
+            "pos": "adj",
+            "notes": [
+              "adjectives",
+              "Pages with 1 entry",
+              "Pages with entries",
+              "terms inherited from Middle High German",
+              "terms inherited from Old High German",
+              "terms inherited from Proto-Germanic",
+              "terms with usage examples"
+            ]
+          },
+          "enrichmentMethod": "manual_api",
+          "enrichmentAppliedAt": "2025-10-17T13:01:04.100Z"
+        },
+        "patch": {
+          "examples": [
+            {
+              "sentence": "Eine freundliche Person.",
+              "translations": {
+                "en": "A friendly person."
+              }
+            },
+            {
+              "sentence": "Sie sind sehr freundlich.",
+              "translations": {
+                "en": "You/they are very nice."
+              }
+            }
+          ],
+          "exampleDe": "Sie sind sehr freundlich.",
+          "exampleEn": "You/they are very nice.",
+          "translations": [
+            {
+              "value": "friendly, benign",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            },
+            {
+              "value": "nice, pleasant",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            }
+          ],
+          "posAttributes": {
+            "pos": "adj",
+            "notes": [
+              "adjectives",
+              "Pages with 1 entry",
+              "Pages with entries",
+              "terms inherited from Middle High German",
+              "terms inherited from Old High German",
+              "terms inherited from Proto-Germanic",
+              "terms with usage examples"
+            ]
+          }
+        },
+        "method": "manual_api",
+        "source": "manual_apply",
+        "appliedAt": "2025-10-17T13:01:04.100Z",
+        "appliedFields": [
+          "examples",
+          "exampleDe",
+          "exampleEn",
+          "translations",
+          "posAttributes",
+          "enrichmentAppliedAt",
+          "enrichmentMethod"
+        ]
+      },
+      "wordId": 2427,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "all",
+        "snapshotId": 5,
+        "wordId": 2427,
+        "createdAt": "2025-10-17T13:01:03.139Z",
+        "enrichmentMethod": "manual_api",
+        "appliedAt": "2025-10-17T13:01:04.100Z",
+        "source": "manual_apply"
+      }
+    }
+  },
+  "meta": {
+    "createdAt": "2025-10-17T13:01:04.196Z"
+  }
+}

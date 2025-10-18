@@ -18,13 +18,13 @@ export default function NotFound() {
         </CardHeader>
         <CardContent className="space-y-6 text-center">
           <p>
-            Return to the practice hub to continue mastering German verbs.
+            Return to the enrichment console to continue refining the lexicon.
           </p>
           <div className="flex justify-center">
-            <Link href="/">
+            <Link href="/admin/enrichment">
               <Button className="rounded-full px-6">
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to practice
+                Back to enrichment
               </Button>
             </Link>
           </div>
