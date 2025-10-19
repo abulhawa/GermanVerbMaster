@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "providerId": "manual",
-  "providerLabel": "Manual Apply",
+  "providerLabel": "Community Import",
   "pos": "Adv",
-  "updatedAt": "2025-10-18T07:02:10.345Z",
+  "updatedAt": "2025-10-19T09:49:47.343Z",
   "entries": {
     "abwärts": {
       "lemma": "abwärts",
@@ -116,6 +116,3030 @@
         "enrichmentMethod": "manual_api",
         "appliedAt": "2025-10-18T07:02:10.229Z",
         "source": "manual_apply"
+      }
+    },
+    "gradeaus": {
+      "lemma": "gradeaus",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:24.821Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Gehen Sie bitte gradeaus.",
+          "translations": {
+            "en": "Please go straight ahead."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "gradeaus",
+        "english": "straight ahead, straight on",
+        "applyMode": "replace",
+        "exampleDe": "Gehen Sie bitte gradeaus.",
+        "exampleEn": "Please go straight ahead."
+      },
+      "wordId": 2851,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7878,
+        "wordId": 2851,
+        "createdAt": "2025-10-19T09:49:24.821Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:24.821Z"
+      }
+    },
+    "ein mal": {
+      "lemma": "ein Mal",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:25.584Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Ich war nur ein Mal dort.",
+          "translations": {
+            "en": "I was only there one time."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "ein Mal",
+        "english": "once, one time",
+        "applyMode": "replace",
+        "exampleDe": "Ich war nur ein Mal dort.",
+        "exampleEn": "I was only there one time."
+      },
+      "wordId": 2892,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7879,
+        "wordId": 2892,
+        "createdAt": "2025-10-19T09:49:25.584Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:25.584Z"
+      }
+    },
+    "online": {
+      "lemma": "online",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:25.911Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Bist du online?",
+          "translations": {
+            "en": "Are you online?"
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "online",
+        "english": "online",
+        "applyMode": "replace",
+        "exampleDe": "Bist du online?",
+        "exampleEn": "Are you online?"
+      },
+      "wordId": 2909,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7880,
+        "wordId": 2909,
+        "createdAt": "2025-10-19T09:49:25.911Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:25.911Z"
+      }
+    },
+    "höchstens": {
+      "lemma": "höchstens",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:26.298Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Er hat höchstens 100 Dollar.",
+          "translations": {
+            "en": "He has at most 100 dollars."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "höchstens",
+        "english": "at most",
+        "applyMode": "replace",
+        "exampleDe": "Er hat höchstens 100 Dollar.",
+        "exampleEn": "He has at most 100 dollars."
+      },
+      "wordId": 2955,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7881,
+        "wordId": 2955,
+        "createdAt": "2025-10-19T09:49:26.298Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:26.298Z"
+      }
+    },
+    "noch mal": {
+      "lemma": "noch mal",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:26.627Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Kannst du das bitte noch mal sagen?",
+          "translations": {
+            "en": "Can you please say that once again?"
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "noch mal",
+        "english": "once again, again",
+        "applyMode": "replace",
+        "exampleDe": "Kannst du das bitte noch mal sagen?",
+        "exampleEn": "Can you please say that once again?"
+      },
+      "wordId": 2976,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7882,
+        "wordId": 2976,
+        "createdAt": "2025-10-19T09:49:26.627Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:26.627Z"
+      }
+    },
+    "leider": {
+      "lemma": "leider",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:26.929Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Ich kann heute leider nicht kommen.",
+          "translations": {
+            "en": "I'm afraid I can't come today."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "leider",
+        "english": "unfortunately",
+        "applyMode": "replace",
+        "exampleDe": "Ich kann heute leider nicht kommen.",
+        "exampleEn": "I'm afraid I can't come today."
+      },
+      "wordId": 2859,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7883,
+        "wordId": 2859,
+        "createdAt": "2025-10-19T09:49:26.929Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:26.929Z"
+      }
+    },
+    "neulich": {
+      "lemma": "neulich",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:27.371Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Neulich habe ich einen alten Freund im Supermarkt getroffen.",
+          "translations": {
+            "en": "Recently I ran into an old friend at the supermarket."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "neulich",
+        "english": "recently (in the recent past)",
+        "applyMode": "replace",
+        "exampleDe": "Neulich habe ich einen alten Freund im Supermarkt getroffen.",
+        "exampleEn": "Recently I ran into an old friend at the supermarket."
+      },
+      "wordId": 2974,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7884,
+        "wordId": 2974,
+        "createdAt": "2025-10-19T09:49:27.371Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:27.371Z"
+      }
+    },
+    "nirgendwo": {
+      "lemma": "nirgendwo",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:27.695Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Es gab nirgendwo einen freien Parkplatz.",
+          "translations": {
+            "en": "There was nowhere a free parking space."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "nirgendwo",
+        "english": "nowhere (in no place)",
+        "applyMode": "replace",
+        "exampleDe": "Es gab nirgendwo einen freien Parkplatz.",
+        "exampleEn": "There was nowhere a free parking space."
+      },
+      "wordId": 2975,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7885,
+        "wordId": 2975,
+        "createdAt": "2025-10-19T09:49:27.695Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:27.695Z"
+      }
+    },
+    "circa": {
+      "lemma": "circa",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:28.004Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Die Fahrt dauert circa zwei Stunden.",
+          "translations": {
+            "en": "The trip takes about two hours."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "circa",
+        "english": "circa",
+        "applyMode": "replace",
+        "exampleDe": "Die Fahrt dauert circa zwei Stunden.",
+        "exampleEn": "The trip takes about two hours."
+      },
+      "wordId": 2840,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7886,
+        "wordId": 2840,
+        "createdAt": "2025-10-19T09:49:28.004Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:28.004Z"
+      }
+    },
+    "dort": {
+      "lemma": "dort",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:28.327Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Wir treffen uns dort am Brunnen.",
+          "translations": {
+            "en": "We will meet there at the fountain."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "dort",
+        "english": "there, yonder",
+        "applyMode": "replace",
+        "exampleDe": "Wir treffen uns dort am Brunnen.",
+        "exampleEn": "We will meet there at the fountain."
+      },
+      "wordId": 2843,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7887,
+        "wordId": 2843,
+        "createdAt": "2025-10-19T09:49:28.327Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:28.327Z"
+      }
+    },
+    "draußen": {
+      "lemma": "draußen",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:28.607Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Die Kinder gingen zum Spielen nach draußen.",
+          "translations": {
+            "en": "The children went out to play."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "draußen",
+        "english": "outside",
+        "applyMode": "replace",
+        "exampleDe": "Die Kinder gingen zum Spielen nach draußen.",
+        "exampleEn": "The children went out to play."
+      },
+      "wordId": 2844,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7888,
+        "wordId": 2844,
+        "createdAt": "2025-10-19T09:49:28.607Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:28.607Z"
+      }
+    },
+    "geradeaus": {
+      "lemma": "geradeaus",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:28.881Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Fahren Sie immer geradeaus bis zur Ampel.",
+          "translations": {
+            "en": "Drive straight ahead until you reach the traffic light."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "geradeaus",
+        "english": "straight ahead, straightforward (in a forward direction)",
+        "applyMode": "replace",
+        "exampleDe": "Fahren Sie immer geradeaus bis zur Ampel.",
+        "exampleEn": "Drive straight ahead until you reach the traffic light."
+      },
+      "wordId": 2846,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7889,
+        "wordId": 2846,
+        "createdAt": "2025-10-19T09:49:28.881Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:28.881Z"
+      }
+    },
+    "gerne": {
+      "lemma": "gerne",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:29.170Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Ich helfe dir gerne beim Aufräumen.",
+          "translations": {
+            "en": "I am happy to help you tidy up."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "gerne",
+        "english": "alternative form of gern. (Both are roughly equally frequent.)",
+        "applyMode": "replace",
+        "exampleDe": "Ich helfe dir gerne beim Aufräumen.",
+        "exampleEn": "I am happy to help you tidy up."
+      },
+      "wordId": 2847,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7890,
+        "wordId": 2847,
+        "createdAt": "2025-10-19T09:49:29.170Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:29.170Z"
+      }
+    },
+    "gestern": {
+      "lemma": "gestern",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:29.474Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Gestern hat es den ganzen Tag geregnet.",
+          "translations": {
+            "en": "Yesterday it rained all day."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "gestern",
+        "english": "yesterday",
+        "applyMode": "replace",
+        "exampleDe": "Gestern hat es den ganzen Tag geregnet.",
+        "exampleEn": "Yesterday it rained all day."
+      },
+      "wordId": 2848,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7891,
+        "wordId": 2848,
+        "createdAt": "2025-10-19T09:49:29.474Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:29.474Z"
+      }
+    },
+    "grade": {
+      "lemma": "grade",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:29.769Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Ich bin grade erst nach Hause gekommen.",
+          "translations": {
+            "en": "I just got home a moment ago."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "grade",
+        "english": "alternative form of gerade",
+        "applyMode": "replace",
+        "exampleDe": "Ich bin grade erst nach Hause gekommen.",
+        "exampleEn": "I just got home a moment ago."
+      },
+      "wordId": 2850,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7892,
+        "wordId": 2850,
+        "createdAt": "2025-10-19T09:49:29.769Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:29.769Z"
+      }
+    },
+    "heut": {
+      "lemma": "heut",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:30.134Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Heut bleibe ich lieber zu Hause.",
+          "translations": {
+            "en": "Today I would rather stay at home."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "heut",
+        "english": "alternative form of heute",
+        "applyMode": "replace",
+        "exampleDe": "Heut bleibe ich lieber zu Hause.",
+        "exampleEn": "Today I would rather stay at home."
+      },
+      "wordId": 2852,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7893,
+        "wordId": 2852,
+        "createdAt": "2025-10-19T09:49:30.134Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:30.134Z"
+      }
+    },
+    "vorwärts": {
+      "lemma": "vorwärts",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:30.429Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Der Zug setzte sich wieder vorwärts in Bewegung.",
+          "translations": {
+            "en": "The train started moving forward again."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "vorwärts",
+        "english": "forwards, forward; onwards, onward",
+        "applyMode": "replace",
+        "exampleDe": "Der Zug setzte sich wieder vorwärts in Bewegung.",
+        "exampleEn": "The train started moving forward again."
+      },
+      "wordId": 2920,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7894,
+        "wordId": 2920,
+        "createdAt": "2025-10-19T09:49:30.429Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:30.429Z"
+      }
+    },
+    "oben": {
+      "lemma": "oben",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:30.707Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Oben auf dem Dachboden liegt noch eine alte Kiste.",
+          "translations": {
+            "en": "There is still an old box up in the attic."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "oben",
+        "english": "above",
+        "applyMode": "replace",
+        "exampleDe": "Oben auf dem Dachboden liegt noch eine alte Kiste.",
+        "exampleEn": "There is still an old box up in the attic."
+      },
+      "wordId": 2866,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7895,
+        "wordId": 2866,
+        "createdAt": "2025-10-19T09:49:30.707Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:30.707Z"
+      }
+    },
+    "oft": {
+      "lemma": "oft",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:31.008Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Ich gehe oft im Park spazieren.",
+          "translations": {
+            "en": "I often take a walk in the park."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "oft",
+        "english": "often",
+        "applyMode": "replace",
+        "exampleDe": "Ich gehe oft im Park spazieren.",
+        "exampleEn": "I often take a walk in the park."
+      },
+      "wordId": 2867,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7896,
+        "wordId": 2867,
+        "createdAt": "2025-10-19T09:49:31.008Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:31.008Z"
+      }
+    },
+    "andrerseits": {
+      "lemma": "andrerseits",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:31.352Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Ich mag die Stadt, andrerseits ist sie sehr laut.",
+          "translations": {
+            "en": "I like the city, but on the other hand it is very loud."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "andrerseits",
+        "english": "alternative form of andererseits",
+        "applyMode": "replace",
+        "exampleDe": "Ich mag die Stadt, andrerseits ist sie sehr laut.",
+        "exampleEn": "I like the city, but on the other hand it is very loud."
+      },
+      "wordId": 2931,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7897,
+        "wordId": 2931,
+        "createdAt": "2025-10-19T09:49:31.352Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:31.352Z"
+      }
+    },
+    "unten": {
+      "lemma": "unten",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:31.655Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Die Schuhe stehen unten im Flur.",
+          "translations": {
+            "en": "The shoes are downstairs in the hallway."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "unten",
+        "english": "below",
+        "applyMode": "replace",
+        "exampleDe": "Die Schuhe stehen unten im Flur.",
+        "exampleEn": "The shoes are downstairs in the hallway."
+      },
+      "wordId": 2872,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7898,
+        "wordId": 2872,
+        "createdAt": "2025-10-19T09:49:31.655Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:31.655Z"
+      }
+    },
+    "warum": {
+      "lemma": "warum",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:31.972Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Warum fragst du?",
+          "translations": {
+            "en": "Why are you asking?"
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "warum",
+        "english": "why; for what reason",
+        "applyMode": "replace",
+        "exampleDe": "Warum fragst du?",
+        "exampleEn": "Why are you asking?"
+      },
+      "wordId": 2875,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7899,
+        "wordId": 2875,
+        "createdAt": "2025-10-19T09:49:31.972Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:31.972Z"
+      }
+    },
+    "wie viel": {
+      "lemma": "wie viel",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:32.283Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Weißt du, wie viel das Ticket kostet?",
+          "translations": {
+            "en": "Do you know how much the ticket costs?"
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "wie viel",
+        "english": "how much; how often",
+        "applyMode": "replace",
+        "exampleDe": "Weißt du, wie viel das Ticket kostet?",
+        "exampleEn": "Do you know how much the ticket costs?"
+      },
+      "wordId": 2877,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7900,
+        "wordId": 2877,
+        "createdAt": "2025-10-19T09:49:32.283Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:32.283Z"
+      }
+    },
+    "zirka": {
+      "lemma": "zirka",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:32.584Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Wir brauchen zirka eine Woche für das Projekt.",
+          "translations": {
+            "en": "We will need about a week for the project."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "zirka",
+        "english": "circa",
+        "applyMode": "replace",
+        "exampleDe": "Wir brauchen zirka eine Woche für das Projekt.",
+        "exampleEn": "We will need about a week for the project."
+      },
+      "wordId": 2880,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7901,
+        "wordId": 2880,
+        "createdAt": "2025-10-19T09:49:32.584Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:32.584Z"
+      }
+    },
+    "zurzeit": {
+      "lemma": "zurzeit",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:32.910Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Zurzeit arbeite ich an einem neuen Projekt.",
+          "translations": {
+            "en": "At the moment I am working on a new project."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "zurzeit",
+        "english": "currently",
+        "applyMode": "replace",
+        "exampleDe": "Zurzeit arbeite ich an einem neuen Projekt.",
+        "exampleEn": "At the moment I am working on a new project."
+      },
+      "wordId": 2881,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7902,
+        "wordId": 2881,
+        "createdAt": "2025-10-19T09:49:32.910Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:32.910Z"
+      }
+    },
+    "zurück": {
+      "lemma": "zurück",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:33.202Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Wann wird er zurück sein?",
+          "translations": {
+            "en": "When will he be back?"
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "zurück",
+        "english": "back, backward, backwards, to the rear.",
+        "applyMode": "replace",
+        "exampleDe": "Wann wird er zurück sein?",
+        "exampleEn": "When will he be back?"
+      },
+      "wordId": 2882,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7903,
+        "wordId": 2882,
+        "createdAt": "2025-10-19T09:49:33.202Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:33.202Z"
+      }
+    },
+    "damals": {
+      "lemma": "damals",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:33.502Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Damals wohnte ich noch bei meinen Eltern.",
+          "translations": {
+            "en": "Back then I still lived with my parents."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "damals",
+        "english": "at that time (in the past); at the time, then",
+        "applyMode": "replace",
+        "exampleDe": "Damals wohnte ich noch bei meinen Eltern.",
+        "exampleEn": "Back then I still lived with my parents."
+      },
+      "wordId": 2888,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7904,
+        "wordId": 2888,
+        "createdAt": "2025-10-19T09:49:33.502Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:33.502Z"
+      }
+    },
+    "drinnen": {
+      "lemma": "drinnen",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:33.825Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Im Winter ist es drinnen besonders gemütlich.",
+          "translations": {
+            "en": "In winter it is especially cozy inside."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "drinnen",
+        "english": "inside (a room)",
+        "applyMode": "replace",
+        "exampleDe": "Im Winter ist es drinnen besonders gemütlich.",
+        "exampleEn": "In winter it is especially cozy inside."
+      },
+      "wordId": 2890,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7905,
+        "wordId": 2890,
+        "createdAt": "2025-10-19T09:49:33.825Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:33.825Z"
+      }
+    },
+    "gegenüber": {
+      "lemma": "gegenüber",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:34.131Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Das Café liegt direkt gegenüber vom Museum.",
+          "translations": {
+            "en": "The café is directly opposite the museum."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "gegenüber",
+        "english": "on the opposite side",
+        "applyMode": "replace",
+        "exampleDe": "Das Café liegt direkt gegenüber vom Museum.",
+        "exampleEn": "The café is directly opposite the museum."
+      },
+      "wordId": 2897,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7906,
+        "wordId": 2897,
+        "createdAt": "2025-10-19T09:49:34.131Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:34.131Z"
+      }
+    },
+    "heraus": {
+      "lemma": "heraus",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:34.410Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Komm bitte aus dem Zimmer heraus.",
+          "translations": {
+            "en": "Please come out of the room."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "heraus",
+        "english": "out of (in the direction of the speaker); out over here; out from there",
+        "applyMode": "replace",
+        "exampleDe": "Komm bitte aus dem Zimmer heraus.",
+        "exampleEn": "Please come out of the room."
+      },
+      "wordId": 2899,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7907,
+        "wordId": 2899,
+        "createdAt": "2025-10-19T09:49:34.410Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:34.410Z"
+      }
+    },
+    "herein": {
+      "lemma": "herein",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:34.715Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Komm ruhig herein, die Tür ist offen.",
+          "translations": {
+            "en": "Come on in, the door is open."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "herein",
+        "english": "in (in the direction of the speaker)",
+        "applyMode": "replace",
+        "exampleDe": "Komm ruhig herein, die Tür ist offen.",
+        "exampleEn": "Come on in, the door is open."
+      },
+      "wordId": 2900,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7908,
+        "wordId": 2900,
+        "createdAt": "2025-10-19T09:49:34.715Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:34.715Z"
+      }
+    },
+    "hoffentlich": {
+      "lemma": "hoffentlich",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:35.047Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Hoffentlich ist die Insel schön.",
+          "translations": {
+            "en": "Hopefully, the island is beautiful."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "hoffentlich",
+        "english": "hopefully (it is hoped that)",
+        "applyMode": "replace",
+        "exampleDe": "Hoffentlich ist die Insel schön.",
+        "exampleEn": "Hopefully, the island is beautiful."
+      },
+      "wordId": 2902,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7909,
+        "wordId": 2902,
+        "createdAt": "2025-10-19T09:49:35.047Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:35.047Z"
+      }
+    },
+    "manchmal": {
+      "lemma": "manchmal",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:35.346Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Sie schreibt manchmal ihrem Sohn.",
+          "translations": {
+            "en": "She sometimes writes to her son."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "manchmal",
+        "english": "sometimes",
+        "applyMode": "replace",
+        "exampleDe": "Sie schreibt manchmal ihrem Sohn.",
+        "exampleEn": "She sometimes writes to her son."
+      },
+      "wordId": 2904,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7910,
+        "wordId": 2904,
+        "createdAt": "2025-10-19T09:49:35.346Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:35.346Z"
+      }
+    },
+    "nirgends": {
+      "lemma": "nirgends",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:35.650Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Ich finde meinen Schlüssel nirgends.",
+          "translations": {
+            "en": "I cannot find my key anywhere."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "nirgends",
+        "english": "nowhere (in no place)",
+        "applyMode": "replace",
+        "exampleDe": "Ich finde meinen Schlüssel nirgends.",
+        "exampleEn": "I cannot find my key anywhere."
+      },
+      "wordId": 2908,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7911,
+        "wordId": 2908,
+        "createdAt": "2025-10-19T09:49:35.650Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:35.650Z"
+      }
+    },
+    "vorgestern": {
+      "lemma": "vorgestern",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:35.967Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Vorgestern waren wir im Kino.",
+          "translations": {
+            "en": "The day before yesterday we were at the cinema."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "vorgestern",
+        "english": "ereyesterday, the day before yesterday",
+        "applyMode": "replace",
+        "exampleDe": "Vorgestern waren wir im Kino.",
+        "exampleEn": "The day before yesterday we were at the cinema."
+      },
+      "wordId": 2916,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7912,
+        "wordId": 2916,
+        "createdAt": "2025-10-19T09:49:35.967Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:35.967Z"
+      }
+    },
+    "übermorgen": {
+      "lemma": "übermorgen",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:36.260Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Ich bleibe hier bis übermorgen.",
+          "translations": {
+            "en": "I am going to stay here till the day after tomorrow."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "übermorgen",
+        "english": "overmorrow, the day after tomorrow",
+        "applyMode": "replace",
+        "exampleDe": "Ich bleibe hier bis übermorgen.",
+        "exampleEn": "I am going to stay here till the day after tomorrow."
+      },
+      "wordId": 2926,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7913,
+        "wordId": 2926,
+        "createdAt": "2025-10-19T09:49:36.260Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:36.260Z"
+      }
+    },
+    "andererseits": {
+      "lemma": "andererseits",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:36.656Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Die Idee ist gut, andererseits fehlt das Budget.",
+          "translations": {
+            "en": "The idea is good, but on the other hand the budget is missing."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "andererseits",
+        "english": "on the other hand",
+        "applyMode": "replace",
+        "exampleDe": "Die Idee ist gut, andererseits fehlt das Budget.",
+        "exampleEn": "The idea is good, but on the other hand the budget is missing."
+      },
+      "wordId": 2929,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7914,
+        "wordId": 2929,
+        "createdAt": "2025-10-19T09:49:36.656Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:36.656Z"
+      }
+    },
+    "anderseits": {
+      "lemma": "anderseits",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:37.170Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Er wollte bleiben, andererseits zog es ihn in die Ferne.",
+          "translations": {
+            "en": "He wanted to stay, yet on the other hand he longed to travel."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "anderseits",
+        "english": "then again, on the other hand",
+        "applyMode": "replace",
+        "exampleDe": "Er wollte bleiben, andererseits zog es ihn in die Ferne.",
+        "exampleEn": "He wanted to stay, yet on the other hand he longed to travel."
+      },
+      "wordId": 2930,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7915,
+        "wordId": 2930,
+        "createdAt": "2025-10-19T09:49:37.170Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:37.170Z"
+      }
+    },
+    "aufwärts": {
+      "lemma": "aufwärts",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:37.467Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Aufwärts gehen wir zu Fuß.",
+          "translations": {
+            "en": "We're going up on foot."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "aufwärts",
+        "english": "upwards, uphill",
+        "applyMode": "replace",
+        "exampleDe": "Aufwärts gehen wir zu Fuß.",
+        "exampleEn": "We're going up on foot."
+      },
+      "wordId": 2933,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7916,
+        "wordId": 2933,
+        "createdAt": "2025-10-19T09:49:37.467Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:37.467Z"
+      }
+    },
+    "auseinander": {
+      "lemma": "auseinander",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:37.774Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Unsere Kinder sind drei Jahre auseinander.",
+          "translations": {
+            "en": "Our children are three years apart."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "auseinander",
+        "english": "apart",
+        "applyMode": "replace",
+        "exampleDe": "Unsere Kinder sind drei Jahre auseinander.",
+        "exampleEn": "Our children are three years apart."
+      },
+      "wordId": 2934,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7917,
+        "wordId": 2934,
+        "createdAt": "2025-10-19T09:49:37.774Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:37.774Z"
+      }
+    },
+    "ausschließlich": {
+      "lemma": "ausschließlich",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:38.130Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Der Raum ist ausschließlich für Mitglieder reserviert.",
+          "translations": {
+            "en": "The room is reserved exclusively for members."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "ausschließlich",
+        "english": "exclusively",
+        "applyMode": "replace",
+        "exampleDe": "Der Raum ist ausschließlich für Mitglieder reserviert.",
+        "exampleEn": "The room is reserved exclusively for members."
+      },
+      "wordId": 2935,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7918,
+        "wordId": 2935,
+        "createdAt": "2025-10-19T09:49:38.130Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:38.130Z"
+      }
+    },
+    "beinah": {
+      "lemma": "beinah",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:38.441Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Beinah wäre ich zu spät gekommen.",
+          "translations": {
+            "en": "I almost arrived too late."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "beinah",
+        "english": "alternative form of beinahe",
+        "applyMode": "replace",
+        "exampleDe": "Beinah wäre ich zu spät gekommen.",
+        "exampleEn": "I almost arrived too late."
+      },
+      "wordId": 2937,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7919,
+        "wordId": 2937,
+        "createdAt": "2025-10-19T09:49:38.441Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:38.441Z"
+      }
+    },
+    "beinahe": {
+      "lemma": "beinahe",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:38.727Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Ich hätte beinahe den Bus verpasst.",
+          "translations": {
+            "en": "I almost missed the bus."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "beinahe",
+        "english": "almost; nearly",
+        "applyMode": "replace",
+        "exampleDe": "Ich hätte beinahe den Bus verpasst.",
+        "exampleEn": "I almost missed the bus."
+      },
+      "wordId": 2938,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7920,
+        "wordId": 2938,
+        "createdAt": "2025-10-19T09:49:38.727Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:38.727Z"
+      }
+    },
+    "diesmal": {
+      "lemma": "diesmal",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:39.022Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Diesmal schaffst du es!",
+          "translations": {
+            "en": "You'll do it this time!"
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "diesmal",
+        "english": "this time",
+        "applyMode": "replace",
+        "exampleDe": "Diesmal schaffst du es!",
+        "exampleEn": "You'll do it this time!"
+      },
+      "wordId": 2942,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7921,
+        "wordId": 2942,
+        "createdAt": "2025-10-19T09:49:39.022Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:39.022Z"
+      }
+    },
+    "durcheinander": {
+      "lemma": "durcheinander",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:39.323Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Meine Papiere sind völlig durcheinander.",
+          "translations": {
+            "en": "My papers are all mixed up."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "durcheinander",
+        "english": "mixed up, in a mess",
+        "applyMode": "replace",
+        "exampleDe": "Meine Papiere sind völlig durcheinander.",
+        "exampleEn": "My papers are all mixed up."
+      },
+      "wordId": 2943,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7922,
+        "wordId": 2943,
+        "createdAt": "2025-10-19T09:49:39.323Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:39.323Z"
+      }
+    },
+    "nochmal": {
+      "lemma": "nochmal",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:39.640Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Sag das nochmal langsam.",
+          "translations": {
+            "en": "Say that again slowly."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "nochmal",
+        "english": "once again",
+        "applyMode": "replace",
+        "exampleDe": "Sag das nochmal langsam.",
+        "exampleEn": "Say that again slowly."
+      },
+      "wordId": 2977,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7923,
+        "wordId": 2977,
+        "createdAt": "2025-10-19T09:49:39.640Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:39.640Z"
+      }
+    },
+    "ebenso": {
+      "lemma": "ebenso",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:39.951Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Ebenso wichtig ist eine gute Vorbereitung.",
+          "translations": {
+            "en": "Equally important is good preparation."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "ebenso",
+        "english": "equally, as much",
+        "applyMode": "replace",
+        "exampleDe": "Ebenso wichtig ist eine gute Vorbereitung.",
+        "exampleEn": "Equally important is good preparation."
+      },
+      "wordId": 2945,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7924,
+        "wordId": 2945,
+        "createdAt": "2025-10-19T09:49:39.951Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:39.951Z"
+      }
+    },
+    "einerseits": {
+      "lemma": "einerseits",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:40.328Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Einerseits freue ich mich auf den Urlaub.",
+          "translations": {
+            "en": "On the one hand, I'm looking forward to the vacation."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "einerseits",
+        "english": "on the one hand",
+        "applyMode": "replace",
+        "exampleDe": "Einerseits freue ich mich auf den Urlaub.",
+        "exampleEn": "On the one hand, I'm looking forward to the vacation."
+      },
+      "wordId": 2946,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7925,
+        "wordId": 2946,
+        "createdAt": "2025-10-19T09:49:40.328Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:40.328Z"
+      }
+    },
+    "genauso": {
+      "lemma": "genauso",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:40.634Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Das funktioniert genauso wie beim letzten Mal.",
+          "translations": {
+            "en": "That works just the same as last time."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "genauso",
+        "english": "just as, just the same",
+        "applyMode": "replace",
+        "exampleDe": "Das funktioniert genauso wie beim letzten Mal.",
+        "exampleEn": "That works just the same as last time."
+      },
+      "wordId": 2950,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7926,
+        "wordId": 2950,
+        "createdAt": "2025-10-19T09:49:40.634Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:40.634Z"
+      }
+    },
+    "gratis": {
+      "lemma": "gratis",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:40.951Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Für Kinder ist der Eintritt gratis.",
+          "translations": {
+            "en": "Admission is free for children."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "gratis",
+        "english": "free, without charge",
+        "applyMode": "replace",
+        "exampleDe": "Für Kinder ist der Eintritt gratis.",
+        "exampleEn": "Admission is free for children."
+      },
+      "wordId": 2951,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7927,
+        "wordId": 2951,
+        "createdAt": "2025-10-19T09:49:40.951Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:40.951Z"
+      }
+    },
+    "nochmals": {
+      "lemma": "nochmals",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:41.250Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Vielen Dank nochmals für deine Hilfe.",
+          "translations": {
+            "en": "Many thanks again for your help."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "nochmals",
+        "english": "again, once more",
+        "applyMode": "replace",
+        "exampleDe": "Vielen Dank nochmals für deine Hilfe.",
+        "exampleEn": "Many thanks again for your help."
+      },
+      "wordId": 2978,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7928,
+        "wordId": 2978,
+        "createdAt": "2025-10-19T09:49:41.250Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:41.250Z"
+      }
+    },
+    "hinterher": {
+      "lemma": "hinterher",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:41.599Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Wir laufen dir gleich hinterher.",
+          "translations": {
+            "en": "We will run right after you."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "hinterher",
+        "english": "behind",
+        "applyMode": "replace",
+        "exampleDe": "Wir laufen dir gleich hinterher.",
+        "exampleEn": "We will run right after you."
+      },
+      "wordId": 2954,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7929,
+        "wordId": 2954,
+        "createdAt": "2025-10-19T09:49:41.599Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:41.599Z"
+      }
+    },
+    "innen": {
+      "lemma": "innen",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:41.926Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Innen ist der Laden komplett renoviert.",
+          "translations": {
+            "en": "Inside the shop has been completely renovated."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "innen",
+        "english": "within",
+        "applyMode": "replace",
+        "exampleDe": "Innen ist der Laden komplett renoviert.",
+        "exampleEn": "Inside the shop has been completely renovated."
+      },
+      "wordId": 2956,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7930,
+        "wordId": 2956,
+        "createdAt": "2025-10-19T09:49:41.926Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:41.926Z"
+      }
+    },
+    "irgendwann": {
+      "lemma": "irgendwann",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:42.419Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Irgendwann möchte ich nach Japan reisen.",
+          "translations": {
+            "en": "Someday I would like to travel to Japan."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "irgendwann",
+        "english": "sometime, somewhen, anytime",
+        "applyMode": "replace",
+        "exampleDe": "Irgendwann möchte ich nach Japan reisen.",
+        "exampleEn": "Someday I would like to travel to Japan."
+      },
+      "wordId": 2959,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7931,
+        "wordId": 2959,
+        "createdAt": "2025-10-19T09:49:42.419Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:42.419Z"
+      }
+    },
+    "jederzeit": {
+      "lemma": "jederzeit",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:42.746Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Du kannst mich jederzeit anrufen.",
+          "translations": {
+            "en": "You can call me at any time."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "jederzeit",
+        "english": "anytime",
+        "applyMode": "replace",
+        "exampleDe": "Du kannst mich jederzeit anrufen.",
+        "exampleEn": "You can call me at any time."
+      },
+      "wordId": 2960,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7932,
+        "wordId": 2960,
+        "createdAt": "2025-10-19T09:49:42.746Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:42.746Z"
+      }
+    },
+    "jedes mal": {
+      "lemma": "jedes Mal",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:43.066Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Es ist jedes Mal das Gleiche.",
+          "translations": {
+            "en": "It's the same every time."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "jedes Mal",
+        "english": "every time, each time",
+        "applyMode": "replace",
+        "exampleDe": "Es ist jedes Mal das Gleiche.",
+        "exampleEn": "It's the same every time."
+      },
+      "wordId": 2961,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7933,
+        "wordId": 2961,
+        "createdAt": "2025-10-19T09:49:43.066Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:43.066Z"
+      }
+    },
+    "jemals": {
+      "lemma": "jemals",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:43.383Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Hast du jemals so einen Sternenhimmel gesehen?",
+          "translations": {
+            "en": "Have you ever seen such a starry sky?"
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "jemals",
+        "english": "ever",
+        "applyMode": "replace",
+        "exampleDe": "Hast du jemals so einen Sternenhimmel gesehen?",
+        "exampleEn": "Have you ever seen such a starry sky?"
+      },
+      "wordId": 2962,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7934,
+        "wordId": 2962,
+        "createdAt": "2025-10-19T09:49:43.383Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:43.383Z"
+      }
+    },
+    "jeweils": {
+      "lemma": "jeweils",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:43.679Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Wir treffen uns jeweils montags um neun.",
+          "translations": {
+            "en": "We meet each Monday at nine o'clock."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "jeweils",
+        "english": "in each case",
+        "applyMode": "replace",
+        "exampleDe": "Wir treffen uns jeweils montags um neun.",
+        "exampleEn": "We meet each Monday at nine o'clock."
+      },
+      "wordId": 2963,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7935,
+        "wordId": 2963,
+        "createdAt": "2025-10-19T09:49:43.679Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:43.679Z"
+      }
+    },
+    "normalerweise": {
+      "lemma": "normalerweise",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:44.451Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Morgens bin ich normalerweise im Büro.",
+          "translations": {
+            "en": "I am normally in the office in the morning."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "normalerweise",
+        "english": "normally",
+        "applyMode": "replace",
+        "exampleDe": "Morgens bin ich normalerweise im Büro.",
+        "exampleEn": "I am normally in the office in the morning."
+      },
+      "wordId": 2979,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7936,
+        "wordId": 2979,
+        "createdAt": "2025-10-19T09:49:44.451Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:44.451Z"
+      }
+    },
+    "miteinander": {
+      "lemma": "miteinander",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:44.763Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Sie arbeiten gerne miteinander.",
+          "translations": {
+            "en": "They like working with one another."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "miteinander",
+        "english": "together (with)",
+        "applyMode": "replace",
+        "exampleDe": "Sie arbeiten gerne miteinander.",
+        "exampleEn": "They like working with one another."
+      },
+      "wordId": 2967,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7937,
+        "wordId": 2967,
+        "createdAt": "2025-10-19T09:49:44.763Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:44.763Z"
+      }
+    },
+    "mittlerweile": {
+      "lemma": "mittlerweile",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:45.067Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Mittlerweile sprechen alle von dem neuen Film.",
+          "translations": {
+            "en": "By now everyone is talking about the new movie."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "mittlerweile",
+        "english": "meanwhile, in the meantime",
+        "applyMode": "replace",
+        "exampleDe": "Mittlerweile sprechen alle von dem neuen Film.",
+        "exampleEn": "By now everyone is talking about the new movie."
+      },
+      "wordId": 2969,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7938,
+        "wordId": 2969,
+        "createdAt": "2025-10-19T09:49:45.067Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:45.067Z"
+      }
+    },
+    "möglicherweise": {
+      "lemma": "möglicherweise",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:45.417Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Möglicherweise regnet es heute Abend.",
+          "translations": {
+            "en": "It may possibly rain this evening."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "möglicherweise",
+        "english": "possibly, potentially",
+        "applyMode": "replace",
+        "exampleDe": "Möglicherweise regnet es heute Abend.",
+        "exampleEn": "It may possibly rain this evening."
+      },
+      "wordId": 2970,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7939,
+        "wordId": 2970,
+        "createdAt": "2025-10-19T09:49:45.417Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:45.417Z"
+      }
+    },
+    "möglichst": {
+      "lemma": "möglichst",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:45.730Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Komm möglichst früh zum Treffpunkt.",
+          "translations": {
+            "en": "Try to come to the meeting point as early as possible."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "möglichst",
+        "english": "as much as possible",
+        "applyMode": "replace",
+        "exampleDe": "Komm möglichst früh zum Treffpunkt.",
+        "exampleEn": "Try to come to the meeting point as early as possible."
+      },
+      "wordId": 2971,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7940,
+        "wordId": 2971,
+        "createdAt": "2025-10-19T09:49:45.730Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:45.730Z"
+      }
+    },
+    "rauf": {
+      "lemma": "rauf",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:46.040Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Klettern wir rauf auf den Turm.",
+          "translations": {
+            "en": "Let's climb up onto the tower."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "rauf",
+        "english": "up, up here, upstairs (towards the speaker)",
+        "applyMode": "replace",
+        "exampleDe": "Klettern wir rauf auf den Turm.",
+        "exampleEn": "Let's climb up onto the tower."
+      },
+      "wordId": 2982,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7941,
+        "wordId": 2982,
+        "createdAt": "2025-10-19T09:49:46.040Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:46.040Z"
+      }
+    },
+    "rückwärts": {
+      "lemma": "rückwärts",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:46.571Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Er fuhr rückwärts in die Parklücke.",
+          "translations": {
+            "en": "He drove backwards into the parking space."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "rückwärts",
+        "english": "backwards",
+        "applyMode": "replace",
+        "exampleDe": "Er fuhr rückwärts in die Parklücke.",
+        "exampleEn": "He drove backwards into the parking space."
+      },
+      "wordId": 2983,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7942,
+        "wordId": 2983,
+        "createdAt": "2025-10-19T09:49:46.571Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:46.571Z"
+      }
+    },
+    "spätestens": {
+      "lemma": "spätestens",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:46.881Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Bezahle die Rechnung spätestens morgen.",
+          "translations": {
+            "en": "Pay the bill by tomorrow at the latest."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "spätestens",
+        "english": "at the latest, not later than",
+        "applyMode": "replace",
+        "exampleDe": "Bezahle die Rechnung spätestens morgen.",
+        "exampleEn": "Pay the bill by tomorrow at the latest."
+      },
+      "wordId": 2985,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7943,
+        "wordId": 2985,
+        "createdAt": "2025-10-19T09:49:46.881Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:46.881Z"
+      }
+    },
+    "teilweise": {
+      "lemma": "teilweise",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:47.187Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Der Text ist nur teilweise verständlich.",
+          "translations": {
+            "en": "The text is only partially understandable."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "teilweise",
+        "english": "partially, to some extent",
+        "applyMode": "replace",
+        "exampleDe": "Der Text ist nur teilweise verständlich.",
+        "exampleEn": "The text is only partially understandable."
+      },
+      "wordId": 2986,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7944,
+        "wordId": 2986,
+        "createdAt": "2025-10-19T09:49:47.187Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:47.187Z"
+      }
+    },
+    "umsonst": {
+      "lemma": "umsonst",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:47.531Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Das Wasser ist für Gäste umsonst.",
+          "translations": {
+            "en": "The water is free for guests."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "umsonst",
+        "english": "free of charge, gratis",
+        "applyMode": "replace",
+        "exampleDe": "Das Wasser ist für Gäste umsonst.",
+        "exampleEn": "The water is free for guests."
+      },
+      "wordId": 2987,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7945,
+        "wordId": 2987,
+        "createdAt": "2025-10-19T09:49:47.531Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:47.531Z"
+      }
+    },
+    "voneinander": {
+      "lemma": "voneinander",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:47.827Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Wir lernen viel voneinander.",
+          "translations": {
+            "en": "We learn a lot from each other."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "voneinander",
+        "english": "from / of one another, from / of each other",
+        "applyMode": "replace",
+        "exampleDe": "Wir lernen viel voneinander.",
+        "exampleEn": "We learn a lot from each other."
+      },
+      "wordId": 2988,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7946,
+        "wordId": 2988,
+        "createdAt": "2025-10-19T09:49:47.827Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:47.827Z"
+      }
+    },
+    "voraus": {
+      "lemma": "voraus",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:48.131Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Sie ging ein paar Schritte voraus.",
+          "translations": {
+            "en": "She walked a few steps ahead."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "voraus",
+        "english": "in front, ahead",
+        "applyMode": "replace",
+        "exampleDe": "Sie ging ein paar Schritte voraus.",
+        "exampleEn": "She walked a few steps ahead."
+      },
+      "wordId": 2989,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7947,
+        "wordId": 2989,
+        "createdAt": "2025-10-19T09:49:48.131Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:48.131Z"
+      }
+    },
+    "vorhin": {
+      "lemma": "vorhin",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:48.440Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Vorhin hat er mich angerufen.",
+          "translations": {
+            "en": "He called me earlier."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "vorhin",
+        "english": "earlier (a short time ago, typically between minutes and a few hours ago)",
+        "applyMode": "replace",
+        "exampleDe": "Vorhin hat er mich angerufen.",
+        "exampleEn": "He called me earlier."
+      },
+      "wordId": 2990,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7948,
+        "wordId": 2990,
+        "createdAt": "2025-10-19T09:49:48.440Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:48.440Z"
+      }
+    },
+    "wieso": {
+      "lemma": "wieso",
+      "pos": "Adv",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:49:48.757Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Wieso bist du heute so früh aufgestanden?",
+          "translations": {
+            "en": "Why did you get up so early today?"
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Adv",
+        "lemma": "wieso",
+        "english": "why",
+        "applyMode": "replace",
+        "exampleDe": "Wieso bist du heute so früh aufgestanden?",
+        "exampleEn": "Why did you get up so early today?"
+      },
+      "wordId": 2992,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7949,
+        "wordId": 2992,
+        "createdAt": "2025-10-19T09:49:48.757Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:49:48.757Z"
       }
     }
   },

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "providerId": "manual",
-  "providerLabel": "Manual Apply",
+  "providerLabel": "Community Import",
   "pos": "V",
-  "updatedAt": "2025-10-18T11:32:39.115Z",
+  "updatedAt": "2025-10-19T09:22:38.489Z",
   "entries": {
     "abbiegen": {
       "lemma": "abbiegen",
@@ -941,7 +941,7 @@
       "providerLabel": "Community Import",
       "status": "success",
       "error": null,
-      "collectedAt": "2025-10-18T11:06:08.975Z",
+      "collectedAt": "2025-10-19T09:22:38.873Z",
       "translations": null,
       "examples": [
         {
@@ -961,19 +961,20 @@
         "pos": "V",
         "lemma": "kaputt machen",
         "english": "to break",
-        "applyMode": "merge",
+        "applyMode": "replace",
         "exampleDe": "Pass auf, dass du das Glas nicht kaputt machst.",
-        "exampleEn": "Be careful not to break the glass."
+        "exampleEn": "Be careful not to break the glass.",
+        "praeteritum": "machte kaputt"
       },
       "wordId": 499,
       "metadata": {
         "trigger": "apply",
         "mode": "approved",
-        "snapshotId": 5944,
+        "snapshotId": 7874,
         "wordId": 499,
-        "createdAt": "2025-10-18T11:06:08.975Z",
+        "createdAt": "2025-10-19T09:22:38.873Z",
         "enrichmentMethod": "bulk",
-        "appliedAt": "2025-10-18T11:06:08.975Z"
+        "appliedAt": "2025-10-19T09:22:38.873Z"
       }
     },
     "weg sein": {
@@ -983,7 +984,7 @@
       "providerLabel": "Community Import",
       "status": "success",
       "error": null,
-      "collectedAt": "2025-10-18T11:06:09.961Z",
+      "collectedAt": "2025-10-19T09:22:39.216Z",
       "translations": null,
       "examples": [
         {
@@ -1003,19 +1004,20 @@
         "pos": "V",
         "lemma": "weg sein",
         "english": "to be gone",
-        "applyMode": "merge",
+        "applyMode": "replace",
         "exampleDe": "Wenn wir ankommen, wird der Kuchen sicher schon weg sein.",
-        "exampleEn": "When we arrive, the cake will probably already be gone."
+        "exampleEn": "When we arrive, the cake will probably already be gone.",
+        "praeteritum": "war weg"
       },
       "wordId": 159,
       "metadata": {
         "trigger": "apply",
         "mode": "approved",
-        "snapshotId": 5945,
+        "snapshotId": 7875,
         "wordId": 159,
-        "createdAt": "2025-10-18T11:06:09.961Z",
+        "createdAt": "2025-10-19T09:22:39.216Z",
         "enrichmentMethod": "bulk",
-        "appliedAt": "2025-10-18T11:06:09.961Z"
+        "appliedAt": "2025-10-19T09:22:39.216Z"
       }
     },
     "wieder holen": {
@@ -1025,7 +1027,7 @@
       "providerLabel": "Community Import",
       "status": "success",
       "error": null,
-      "collectedAt": "2025-10-18T11:06:10.284Z",
+      "collectedAt": "2025-10-19T09:22:39.937Z",
       "translations": null,
       "examples": [
         {
@@ -1045,19 +1047,20 @@
         "pos": "V",
         "lemma": "wieder holen",
         "english": "to fetch again",
-        "applyMode": "merge",
+        "applyMode": "replace",
         "exampleDe": "Kannst du das Paket bitte noch einmal wieder holen?",
-        "exampleEn": "Could you please fetch the package again?"
+        "exampleEn": "Could you please fetch the package again?",
+        "praeteritum": "holte wieder"
       },
       "wordId": 162,
       "metadata": {
         "trigger": "apply",
         "mode": "approved",
-        "snapshotId": 5946,
+        "snapshotId": 7877,
         "wordId": 162,
-        "createdAt": "2025-10-18T11:06:10.284Z",
+        "createdAt": "2025-10-19T09:22:39.937Z",
         "enrichmentMethod": "bulk",
-        "appliedAt": "2025-10-18T11:06:10.284Z"
+        "appliedAt": "2025-10-19T09:22:39.937Z"
       }
     },
     "zu sein": {
@@ -1067,7 +1070,7 @@
       "providerLabel": "Community Import",
       "status": "success",
       "error": null,
-      "collectedAt": "2025-10-18T11:06:10.626Z",
+      "collectedAt": "2025-10-19T09:22:36.892Z",
       "translations": null,
       "examples": [
         {
@@ -1087,19 +1090,20 @@
         "pos": "V",
         "lemma": "zu sein",
         "english": "to be closed",
-        "applyMode": "merge",
+        "applyMode": "replace",
         "exampleDe": "Die Apotheke dürfte um diese Uhrzeit zu sein.",
-        "exampleEn": "The pharmacy is probably closed at this hour."
+        "exampleEn": "The pharmacy is probably closed at this hour.",
+        "praeteritum": "war zu"
       },
       "wordId": 166,
       "metadata": {
         "trigger": "apply",
         "mode": "approved",
-        "snapshotId": 5947,
+        "snapshotId": 7870,
         "wordId": 166,
-        "createdAt": "2025-10-18T11:06:10.626Z",
+        "createdAt": "2025-10-19T09:22:36.892Z",
         "enrichmentMethod": "bulk",
-        "appliedAt": "2025-10-18T11:06:10.626Z"
+        "appliedAt": "2025-10-19T09:22:36.892Z"
       }
     },
     "bekannt geben": {
@@ -1109,7 +1113,7 @@
       "providerLabel": "Community Import",
       "status": "success",
       "error": null,
-      "collectedAt": "2025-10-18T11:06:10.962Z",
+      "collectedAt": "2025-10-19T09:22:37.749Z",
       "translations": null,
       "examples": [
         {
@@ -1129,19 +1133,20 @@
         "pos": "V",
         "lemma": "bekannt geben",
         "english": "to announce",
-        "applyMode": "merge",
+        "applyMode": "replace",
         "exampleDe": "Die Schule wird morgen die Gewinner bekannt geben.",
-        "exampleEn": "The school will announce the winners tomorrow."
+        "exampleEn": "The school will announce the winners tomorrow.",
+        "praeteritum": "gab bekannt"
       },
       "wordId": 367,
       "metadata": {
         "trigger": "apply",
         "mode": "approved",
-        "snapshotId": 5948,
+        "snapshotId": 7871,
         "wordId": 367,
-        "createdAt": "2025-10-18T11:06:10.962Z",
+        "createdAt": "2025-10-19T09:22:37.749Z",
         "enrichmentMethod": "bulk",
-        "appliedAt": "2025-10-18T11:06:10.962Z"
+        "appliedAt": "2025-10-19T09:22:37.749Z"
       }
     },
     "runterwerfen": {
@@ -1151,7 +1156,7 @@
       "providerLabel": "Community Import",
       "status": "success",
       "error": null,
-      "collectedAt": "2025-10-18T11:06:11.310Z",
+      "collectedAt": "2025-10-19T09:22:38.092Z",
       "translations": null,
       "examples": [
         {
@@ -1171,19 +1176,20 @@
         "pos": "V",
         "lemma": "runterwerfen",
         "english": "to throw down",
-        "applyMode": "merge",
+        "applyMode": "replace",
         "exampleDe": "Wir dürfen den Müll nicht einfach aus dem Fenster runterwerfen.",
-        "exampleEn": "We must not just throw the trash out of the window."
+        "exampleEn": "We must not just throw the trash out of the window.",
+        "praeteritum": "warf runter"
       },
       "wordId": 557,
       "metadata": {
         "trigger": "apply",
         "mode": "approved",
-        "snapshotId": 5949,
+        "snapshotId": 7872,
         "wordId": 557,
-        "createdAt": "2025-10-18T11:06:11.310Z",
+        "createdAt": "2025-10-19T09:22:38.092Z",
         "enrichmentMethod": "bulk",
-        "appliedAt": "2025-10-18T11:06:11.310Z"
+        "appliedAt": "2025-10-19T09:22:38.092Z"
       }
     },
     "staub saugen": {
@@ -1193,7 +1199,7 @@
       "providerLabel": "Community Import",
       "status": "success",
       "error": null,
-      "collectedAt": "2025-10-18T11:06:11.671Z",
+      "collectedAt": "2025-10-19T09:22:38.427Z",
       "translations": null,
       "examples": [
         {
@@ -1213,19 +1219,20 @@
         "pos": "V",
         "lemma": "Staub saugen",
         "english": "to vacuum",
-        "applyMode": "merge",
+        "applyMode": "replace",
         "exampleDe": "Kannst du bitte im Flur Staub saugen?",
-        "exampleEn": "Could you vacuum the hallway, please?"
+        "exampleEn": "Could you vacuum the hallway, please?",
+        "praeteritum": "saugte Staub"
       },
       "wordId": 583,
       "metadata": {
         "trigger": "apply",
         "mode": "approved",
-        "snapshotId": 5950,
+        "snapshotId": 7873,
         "wordId": 583,
-        "createdAt": "2025-10-18T11:06:11.671Z",
+        "createdAt": "2025-10-19T09:22:38.427Z",
         "enrichmentMethod": "bulk",
-        "appliedAt": "2025-10-18T11:06:11.671Z"
+        "appliedAt": "2025-10-19T09:22:38.427Z"
       }
     },
     "spazieren": {
@@ -1536,7 +1543,7 @@
       "providerLabel": "Community Import",
       "status": "success",
       "error": null,
-      "collectedAt": "2025-10-18T11:27:44.550Z",
+      "collectedAt": "2025-10-19T09:22:39.573Z",
       "translations": null,
       "examples": [
         {
@@ -1556,19 +1563,20 @@
         "pos": "V",
         "lemma": "möchten",
         "english": "would like to",
-        "applyMode": "merge",
+        "applyMode": "replace",
         "exampleDe": "Bei der Bestellung sagte sie, sie möchte nur einen kleinen Salat.",
-        "exampleEn": "When ordering she said she would just like a small salad."
+        "exampleEn": "When ordering she said she would just like a small salad.",
+        "praeteritum": "No Präteritum (Use 'wollte' or 'mochte')"
       },
       "wordId": 693,
       "metadata": {
         "trigger": "apply",
         "mode": "approved",
-        "snapshotId": 5958,
+        "snapshotId": 7876,
         "wordId": 693,
-        "createdAt": "2025-10-18T11:27:44.550Z",
+        "createdAt": "2025-10-19T09:22:39.573Z",
         "enrichmentMethod": "bulk",
-        "appliedAt": "2025-10-18T11:27:44.550Z"
+        "appliedAt": "2025-10-19T09:22:39.573Z"
       }
     },
     "weh tun": {
