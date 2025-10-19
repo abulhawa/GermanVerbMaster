@@ -377,14 +377,14 @@ const AdminQuickApprovalPage = () => {
 
         <div
           className={cn(
-            'grid gap-6',
-            otherFields.length > 0 ? 'md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]' : '',
+            'grid gap-8',
+            otherFields.length > 0 ? 'lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]' : '',
           )}
         >
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-5">
             <div
               className={cn(
-                'flex w-full max-w-md flex-col gap-1 self-center rounded-2xl border border-border/60 bg-background/40 px-4 py-3 text-center',
+                'mx-auto flex w-full max-w-2xl flex-col gap-2 rounded-2xl border border-border/60 bg-background/40 px-6 py-4 text-center',
                 englishMissing ? 'border-destructive/60 ring-1 ring-destructive/30' : '',
               )}
             >
@@ -393,50 +393,52 @@ const AdminQuickApprovalPage = () => {
               </span>
               <span
                 className={cn(
-                  'whitespace-pre-wrap text-lg text-foreground',
-                  englishMissing ? 'font-semibold text-destructive' : 'font-medium',
+                  'whitespace-pre-wrap text-xl text-foreground',
+                  englishMissing ? 'font-semibold text-destructive' : 'font-semibold',
                 )}
               >
                 {englishValue}
               </span>
             </div>
 
-            <div
-              className={cn(
-                'flex flex-col gap-2 rounded-2xl border border-border/60 bg-background/40 p-4 text-left',
-                exampleDeMissing ? 'border-destructive/60 ring-1 ring-destructive/30' : '',
-              )}
-            >
-              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                {formatMissingField('exampleDe')}
-              </span>
-              <span
+            <div className="mx-auto flex w-full max-w-2xl flex-col gap-4">
+              <div
                 className={cn(
-                  'whitespace-pre-wrap text-base text-foreground',
-                  exampleDeMissing ? 'font-semibold text-destructive' : 'font-medium',
+                  'flex flex-col gap-2 rounded-2xl border border-border/60 bg-background/40 p-4 text-left',
+                  exampleDeMissing ? 'border-destructive/60 ring-1 ring-destructive/30' : '',
                 )}
               >
-                {exampleDeValue}
-              </span>
-            </div>
+                <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  {formatMissingField('exampleDe')}
+                </span>
+                <span
+                  className={cn(
+                    'whitespace-pre-wrap text-base text-foreground',
+                    exampleDeMissing ? 'font-semibold text-destructive' : 'font-medium',
+                  )}
+                >
+                  {exampleDeValue}
+                </span>
+              </div>
 
-            <div
-              className={cn(
-                'flex flex-col gap-2 rounded-2xl border border-border/60 bg-background/40 p-4 text-left',
-                exampleEnMissing ? 'border-destructive/60 ring-1 ring-destructive/30' : '',
-              )}
-            >
-              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                {formatMissingField('exampleEn')}
-              </span>
-              <span
+              <div
                 className={cn(
-                  'whitespace-pre-wrap text-base text-foreground',
-                  exampleEnMissing ? 'font-semibold text-destructive' : 'font-medium',
+                  'flex flex-col gap-2 rounded-2xl border border-border/60 bg-background/40 p-4 text-left',
+                  exampleEnMissing ? 'border-destructive/60 ring-1 ring-destructive/30' : '',
                 )}
               >
-                {exampleEnValue}
-              </span>
+                <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  {formatMissingField('exampleEn')}
+                </span>
+                <span
+                  className={cn(
+                    'whitespace-pre-wrap text-base text-foreground',
+                    exampleEnMissing ? 'font-semibold text-destructive' : 'font-medium',
+                  )}
+                >
+                  {exampleEnValue}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -558,7 +560,7 @@ const AdminQuickApprovalPage = () => {
         </div>
 
         <div className="flex justify-center">
-          <div className="w-full max-w-3xl">{renderWordCard()}</div>
+          <div className="w-full max-w-5xl">{renderWordCard()}</div>
         </div>
       </div>
     </AppShell>
