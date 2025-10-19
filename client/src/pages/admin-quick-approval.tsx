@@ -349,6 +349,14 @@ const AdminQuickApprovalPage = () => {
 
     const requiredFields = getRequiredFields(activeWord);
     const missingFields = new Set(getMissingFields(activeWord));
+    const translationFields: RequiredFieldKey[] = ['english', 'exampleDe', 'exampleEn'];
+    const otherFields = requiredFields.filter((field) => !translationFields.includes(field));
+    const englishValue = formatFieldValue(activeWord, 'english');
+    const exampleDeValue = formatFieldValue(activeWord, 'exampleDe');
+    const exampleEnValue = formatFieldValue(activeWord, 'exampleEn');
+    const englishMissing = missingFields.has('english');
+    const exampleDeMissing = missingFields.has('exampleDe');
+    const exampleEnMissing = missingFields.has('exampleEn');
 
     return (
       <div className="flex flex-col gap-6 rounded-[32px] border border-border/60 bg-card/90 p-8 shadow-soft">
@@ -365,31 +373,105 @@ const AdminQuickApprovalPage = () => {
               {Math.max(remainingCount - 1, 0)} more in queue
             </Badge>
           </div>
-          <p className="text-[13px] text-muted-foreground">← Skip &nbsp;•&nbsp; → Approve</p>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          {requiredFields.map((field) => {
-            const value = formatFieldValue(activeWord, field);
-            const isMissing = missingFields.has(field);
-            return (
-              <div
-                key={field}
+        <div
+          className={cn(
+            'grid gap-6',
+            otherFields.length > 0 ? 'md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]' : '',
+          )}
+        >
+          <div className="flex flex-col gap-4">
+            <div
+              className={cn(
+                'flex w-full max-w-md flex-col gap-1 self-center rounded-2xl border border-border/60 bg-background/40 px-4 py-3 text-center',
+                englishMissing ? 'border-destructive/60 ring-1 ring-destructive/30' : '',
+              )}
+            >
+              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                {formatMissingField('english')}
+              </span>
+              <span
                 className={cn(
-                  'flex flex-col gap-2 rounded-2xl border border-border/60 bg-background/40 p-4 text-left',
-                  isMissing ? 'border-destructive/60 ring-1 ring-destructive/30' : '',
+                  'whitespace-pre-wrap text-lg text-foreground',
+                  englishMissing ? 'font-semibold text-destructive' : 'font-medium',
                 )}
               >
-                <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                  {formatMissingField(field)}
-                </span>
-                <span className={cn('text-base text-foreground', isMissing ? 'font-semibold text-destructive' : 'font-medium')}>
-                  {value}
-                </span>
-              </div>
-            );
-          })}
+                {englishValue}
+              </span>
+            </div>
+
+            <div
+              className={cn(
+                'flex flex-col gap-2 rounded-2xl border border-border/60 bg-background/40 p-4 text-left',
+                exampleDeMissing ? 'border-destructive/60 ring-1 ring-destructive/30' : '',
+              )}
+            >
+              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                {formatMissingField('exampleDe')}
+              </span>
+              <span
+                className={cn(
+                  'whitespace-pre-wrap text-base text-foreground',
+                  exampleDeMissing ? 'font-semibold text-destructive' : 'font-medium',
+                )}
+              >
+                {exampleDeValue}
+              </span>
+            </div>
+
+            <div
+              className={cn(
+                'flex flex-col gap-2 rounded-2xl border border-border/60 bg-background/40 p-4 text-left',
+                exampleEnMissing ? 'border-destructive/60 ring-1 ring-destructive/30' : '',
+              )}
+            >
+              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                {formatMissingField('exampleEn')}
+              </span>
+              <span
+                className={cn(
+                  'whitespace-pre-wrap text-base text-foreground',
+                  exampleEnMissing ? 'font-semibold text-destructive' : 'font-medium',
+                )}
+              >
+                {exampleEnValue}
+              </span>
+            </div>
+          </div>
+
+          {otherFields.length > 0 ? (
+            <div className={cn('grid gap-4', otherFields.length > 1 ? 'sm:grid-cols-2' : '')}>
+              {otherFields.map((field) => {
+                const value = formatFieldValue(activeWord, field);
+                const isMissing = missingFields.has(field);
+                return (
+                  <div
+                    key={field}
+                    className={cn(
+                      'flex flex-col gap-2 rounded-2xl border border-border/60 bg-background/40 p-4 text-left',
+                      isMissing ? 'border-destructive/60 ring-1 ring-destructive/30' : '',
+                    )}
+                  >
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                      {formatMissingField(field)}
+                    </span>
+                    <span
+                      className={cn(
+                        'whitespace-pre-wrap text-base text-foreground',
+                        isMissing ? 'font-semibold text-destructive' : 'font-medium',
+                      )}
+                    >
+                      {value}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          ) : null}
         </div>
+
+        <p className="text-center text-[13px] text-muted-foreground">← Skip &nbsp;•&nbsp; → Approve</p>
 
         {missingFields.size > 0 ? (
           <div className="flex flex-wrap justify-center gap-2 text-xs">
