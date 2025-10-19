@@ -104,6 +104,8 @@ interface WordFormState {
   superlative: string;
 }
 
+type StoredExample = NonNullable<Word['examples']>[number];
+
 function createFormState(word: Word): WordFormState {
   return {
     level: word.level ?? '',
@@ -199,6 +201,7 @@ const AdminWordEditPage = () => {
   const isValidId = Number.isFinite(wordId) && wordId > 0;
 
   const [formState, setFormState] = useState<WordFormState | null>(null);
+  const [storedExampleSelectKey, setStoredExampleSelectKey] = useState(0);
 
   const goBack = useCallback(() => {
     if (window.history.length > 1) {
@@ -275,6 +278,26 @@ const AdminWordEditPage = () => {
   const updateField = (key: keyof WordFormState, value: string) => {
     setFormState((current) => (current ? { ...current, [key]: value } : current));
   };
+
+  const handleStoredExampleSelect = useCallback(
+    (example: StoredExample) => {
+      const german = example.sentence ?? example.exampleDe ?? '';
+      const english = example.translations?.en ?? example.exampleEn ?? '';
+
+      setFormState((current) => {
+        if (!current) return current;
+
+        return {
+          ...current,
+          exampleDe: german,
+          exampleEn: english.trim().length > 0 ? english : current.exampleEn,
+        };
+      });
+
+      setStoredExampleSelectKey((previous) => previous + 1);
+    },
+    [setFormState, setStoredExampleSelectKey]
+  );
 
   const formFields = useMemo(() => {
     if (!wordQuery.data) {
@@ -367,9 +390,47 @@ const AdminWordEditPage = () => {
               {formFields.map((field) => {
                 const value = formState[field.key];
                 if (field.type === 'textarea') {
+                  const isExampleField = field.key === 'exampleDe';
+                  const storedExamples = (word.examples ?? []) as StoredExample[];
                   return (
                     <div key={field.key} className="space-y-2 md:col-span-2">
-                      <Label className="text-sm font-medium">{field.label}</Label>
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <Label className="text-sm font-medium">{field.label}</Label>
+                        {isExampleField && storedExamples.length ? (
+                          <div className="w-full sm:w-auto">
+                            <Select
+                              key={storedExampleSelectKey}
+                              onValueChange={(selected) => {
+                                const index = Number.parseInt(selected, 10);
+                                const example = Number.isNaN(index) ? null : storedExamples[index];
+                                if (example) {
+                                  handleStoredExampleSelect(example);
+                                }
+                              }}
+                            >
+                              <SelectTrigger className="w-full sm:w-[280px]">
+                                <SelectValue placeholder="Load stored example" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {storedExamples.map((example, index) => {
+                                  const sentence = example.sentence ?? example.exampleDe ?? '—';
+                                  const english = example.translations?.en ?? example.exampleEn ?? '';
+                                  return (
+                                    <SelectItem key={`${sentence}-${english}-${index}`} value={String(index)}>
+                                      <div className="flex flex-col text-left">
+                                        <span className="font-medium text-foreground">{sentence}</span>
+                                        {english ? (
+                                          <span className="text-xs text-muted-foreground">{english}</span>
+                                        ) : null}
+                                      </div>
+                                    </SelectItem>
+                                  );
+                                })}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        ) : null}
+                      </div>
                       <Textarea value={value} onChange={(event) => updateField(field.key, event.target.value)} />
                     </div>
                   );
