@@ -1,0 +1,180 @@
+{
+  "schemaVersion": 1,
+  "providerId": "manual",
+  "providerLabel": "Community Import",
+  "pos": "Pron",
+  "updatedAt": "2025-10-19T09:59:25.574Z",
+  "entries": {
+    "dir": {
+      "lemma": "dir",
+      "pos": "Pron",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:21.841Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Ich sage dir später Bescheid.",
+          "translations": {
+            "en": "I will let you know later."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Pron",
+        "lemma": "dir",
+        "english": "to you (dative singular of du)",
+        "applyMode": "merge",
+        "exampleDe": "Ich sage dir später Bescheid.",
+        "exampleEn": "I will let you know later."
+      },
+      "wordId": 3069,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7961,
+        "wordId": 3069,
+        "createdAt": "2025-10-19T09:59:21.841Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:21.841Z"
+      }
+    },
+    "selbst": {
+      "lemma": "selbst",
+      "pos": "Pron",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:22.176Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Manchmal muss man sich selbst motivieren.",
+          "translations": {
+            "en": "Sometimes you have to motivate yourself."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Pron",
+        "lemma": "selbst",
+        "english": "self, oneself",
+        "applyMode": "merge",
+        "exampleDe": "Manchmal muss man sich selbst motivieren.",
+        "exampleEn": "Sometimes you have to motivate yourself."
+      },
+      "wordId": 3072,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7962,
+        "wordId": 3072,
+        "createdAt": "2025-10-19T09:59:22.176Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:22.176Z"
+      }
+    },
+    "dich": {
+      "lemma": "dich",
+      "pos": "Pron",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:24.325Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Ich rufe dich später an.",
+          "translations": {
+            "en": "I will call you later."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Pron",
+        "lemma": "dich",
+        "english": "you (accusative singular of du)",
+        "applyMode": "merge",
+        "exampleDe": "Ich rufe dich später an.",
+        "exampleEn": "I will call you later."
+      },
+      "wordId": 3068,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7969,
+        "wordId": 3068,
+        "createdAt": "2025-10-19T09:59:24.325Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:24.325Z"
+      }
+    },
+    "alle": {
+      "lemma": "alle",
+      "pos": "Pron",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:26.987Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Alle warten schon auf dich.",
+          "translations": {
+            "en": "Everyone is already waiting for you."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Pron",
+        "lemma": "alle",
+        "english": "everyone, all (people)",
+        "applyMode": "merge",
+        "exampleDe": "Alle warten schon auf dich.",
+        "exampleEn": "Everyone is already waiting for you."
+      },
+      "wordId": 3066,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7978,
+        "wordId": 3066,
+        "createdAt": "2025-10-19T09:59:26.987Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:26.987Z"
+      }
+    }
+  },
+  "meta": {
+    "createdAt": "2025-10-19T09:59:20.430Z"
+  }
+}

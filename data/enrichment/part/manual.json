@@ -1,0 +1,222 @@
+{
+  "schemaVersion": 1,
+  "providerId": "manual",
+  "providerLabel": "Community Import",
+  "pos": "Part",
+  "updatedAt": "2025-10-19T09:59:25.880Z",
+  "entries": {
+    "bitte": {
+      "lemma": "bitte",
+      "pos": "Part",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:22.476Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Bitte, setz dich doch.",
+          "translations": {
+            "en": "Please, have a seat."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Part",
+        "lemma": "bitte",
+        "english": "please; you're welcome",
+        "applyMode": "merge",
+        "exampleDe": "Bitte, setz dich doch.",
+        "exampleEn": "Please, have a seat."
+      },
+      "wordId": 3073,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7963,
+        "wordId": 3073,
+        "createdAt": "2025-10-19T09:59:22.476Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:22.476Z"
+      }
+    },
+    "danke": {
+      "lemma": "danke",
+      "pos": "Part",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:22.778Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Danke für deine Hilfe.",
+          "translations": {
+            "en": "Thanks for your help."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Part",
+        "lemma": "danke",
+        "english": "thanks, thank you",
+        "applyMode": "merge",
+        "exampleDe": "Danke für deine Hilfe.",
+        "exampleEn": "Thanks for your help."
+      },
+      "wordId": 3074,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7964,
+        "wordId": 3074,
+        "createdAt": "2025-10-19T09:59:22.778Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:22.778Z"
+      }
+    },
+    "halt": {
+      "lemma": "halt",
+      "pos": "Part",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:24.617Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Das ist halt so.",
+          "translations": {
+            "en": "That is just the way it is."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Part",
+        "lemma": "halt",
+        "english": "just, simply (modal particle)",
+        "applyMode": "merge",
+        "exampleDe": "Das ist halt so.",
+        "exampleEn": "That is just the way it is."
+      },
+      "wordId": 3077,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7970,
+        "wordId": 3077,
+        "createdAt": "2025-10-19T09:59:24.617Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:24.617Z"
+      }
+    },
+    "nochmal": {
+      "lemma": "nochmal",
+      "pos": "Part",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:24.892Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Danke nochmal für deine Hilfe.",
+          "translations": {
+            "en": "Thanks again for your help."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Part",
+        "lemma": "nochmal",
+        "english": "again (for emphasis)",
+        "applyMode": "merge",
+        "exampleDe": "Danke nochmal für deine Hilfe.",
+        "exampleEn": "Thanks again for your help."
+      },
+      "wordId": 3079,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7971,
+        "wordId": 3079,
+        "createdAt": "2025-10-19T09:59:24.892Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:24.892Z"
+      }
+    },
+    "noch mal": {
+      "lemma": "noch mal",
+      "pos": "Part",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:27.284Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Kannst du das noch mal erklären?",
+          "translations": {
+            "en": "Can you explain that once more?"
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Part",
+        "lemma": "noch mal",
+        "english": "again (repeat once more)",
+        "applyMode": "merge",
+        "exampleDe": "Kannst du das noch mal erklären?",
+        "exampleEn": "Can you explain that once more?"
+      },
+      "wordId": 3078,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7979,
+        "wordId": 3078,
+        "createdAt": "2025-10-19T09:59:27.284Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:27.284Z"
+      }
+    }
+  },
+  "meta": {
+    "createdAt": "2025-10-19T09:59:21.064Z"
+  }
+}

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "providerId": "manual",
-  "providerLabel": "Manual Apply",
+  "providerLabel": "Community Import",
   "pos": "Präp",
-  "updatedAt": "2025-10-17T14:22:56.074Z",
+  "updatedAt": "2025-10-19T09:59:29.081Z",
   "entries": {
     "auf": {
       "lemma": "auf",
@@ -787,6 +787,90 @@
         "enrichmentMethod": "manual_api",
         "appliedAt": "2025-10-17T14:22:55.933Z",
         "source": "manual_apply"
+      }
+    },
+    "hinter": {
+      "lemma": "hinter",
+      "pos": "Präp",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:30.278Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Der Garten liegt hinter dem Haus.",
+          "translations": {
+            "en": "The garden is behind the house."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Präp",
+        "lemma": "hinter",
+        "english": "behind, after",
+        "applyMode": "merge",
+        "exampleDe": "Der Garten liegt hinter dem Haus.",
+        "exampleEn": "The garden is behind the house."
+      },
+      "wordId": 3016,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7989,
+        "wordId": 3016,
+        "createdAt": "2025-10-19T09:59:30.278Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:30.278Z"
+      }
+    },
+    "statt": {
+      "lemma": "statt",
+      "pos": "Präp",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:30.485Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Statt des Autos nahm er das Fahrrad.",
+          "translations": {
+            "en": "Instead of the car he took the bicycle."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Präp",
+        "lemma": "statt",
+        "english": "instead of, in one's stead",
+        "applyMode": "merge",
+        "exampleDe": "Statt des Autos nahm er das Fahrrad.",
+        "exampleEn": "Instead of the car he took the bicycle."
+      },
+      "wordId": 3024,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7990,
+        "wordId": 3024,
+        "createdAt": "2025-10-19T09:59:30.485Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:30.485Z"
       }
     }
   },
