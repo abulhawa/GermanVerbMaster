@@ -405,12 +405,12 @@ const MESSAGES: Record<Locale, AppMessages> = {
         },
       },
       noun: {
-        placeholder: 'e.g. die Kinder',
+        placeholder: 'Enter your answer',
         ariaLabel: 'Enter plural form',
         instruction: 'Give the {caseLabel} {numberLabel} form of "{lemma}"',
       },
       adjective: {
-        placeholder: 'e.g. schneller',
+        placeholder: 'Enter your answer',
         ariaLabel: 'Enter adjective form',
         syntacticFrameLabel: 'Frame:',
         instruction: 'Give the {degreeLabel} form of "{lemma}"',
