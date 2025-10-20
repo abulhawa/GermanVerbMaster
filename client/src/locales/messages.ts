@@ -30,7 +30,7 @@ export interface PracticeCardMessages {
   header: {
     appName: string;
   };
-  hints: {
+  translations: {
     label: string;
     toggle: string;
     englishPrefix: string;
@@ -340,9 +340,9 @@ const MESSAGES: Record<Locale, AppMessages> = {
       header: {
         appName: 'Wortschatz',
       },
-      hints: {
-        label: 'Hint',
-        toggle: 'Tap to reveal the hint',
+      translations: {
+        label: 'Translation',
+        toggle: 'Tap to reveal the translation',
         englishPrefix: 'English:',
         expectedAnswerPrefix: 'Expected answer:',
         expectedFormPrefix: 'Expected form:',
@@ -591,9 +591,9 @@ const MESSAGES: Record<Locale, AppMessages> = {
       header: {
         appName: 'Wortschatz',
       },
-      hints: {
-        label: 'Hinweis',
-        toggle: 'Tippe, um den Hinweis anzuzeigen',
+      translations: {
+        label: 'Übersetzung',
+        toggle: 'Tippe, um die Übersetzung anzuzeigen',
         englishPrefix: 'Englisch:',
         expectedAnswerPrefix: 'Erwartete Antwort:',
         expectedFormPrefix: 'Erwartete Form:',

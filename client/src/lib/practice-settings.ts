@@ -15,7 +15,7 @@ interface LegacySettings {
 
 const DEFAULT_RENDERER_PREFS: PracticeSettingsRendererPreferences = {
   showHints: true,
-  showExamples: true,
+  showExamples: false,
 };
 
 export function createDefaultSettings(): PracticeSettingsState {

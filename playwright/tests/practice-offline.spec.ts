@@ -32,9 +32,9 @@ const practiceSettings = {
   preferredTaskTypes: ['noun_case_declension'],
   cefrLevelByPos: { verb: 'A1', noun: 'A2' },
   rendererPreferences: {
-    conjugate_form: { showHints: true, showExamples: true },
-    noun_case_declension: { showHints: true, showExamples: true },
-    adj_ending: { showHints: true, showExamples: true },
+    conjugate_form: { showHints: true, showExamples: false },
+    noun_case_declension: { showHints: true, showExamples: false },
+    adj_ending: { showHints: true, showExamples: false },
   },
   legacyVerbLevel: 'A1',
   migratedFromLegacy: true,

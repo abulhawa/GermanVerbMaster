@@ -54,7 +54,7 @@ interface RendererProps<T extends TaskType = TaskType> extends DebuggableCompone
 
 const DEFAULT_RENDERER_PREFS: PracticeSettingsRendererPreferences = {
   showHints: true,
-  showExamples: true,
+  showExamples: false,
 };
 
 function isTaskOfType<T extends TaskType>(task: PracticeTask, taskType: T): task is PracticeTask<T> {
@@ -320,7 +320,7 @@ function renderExamples(example?: { de?: string; en?: string } | null): string |
   return `${example.de} · ${example.en}`;
 }
 
-function renderHintText(
+function renderTranslationText(
   copy: PracticeCardMessages,
   preferences: PracticeSettingsRendererPreferences,
   exampleText: string | null,
@@ -333,7 +333,7 @@ function renderHintText(
 
   const english = metadata && typeof metadata.english === 'string' ? metadata.english : null;
   if (english) {
-    return `${copy.hints.englishPrefix} ${english}`;
+    return `${copy.translations.englishPrefix} ${english}`;
   }
 
   if (preferences.showExamples && exampleText) {
@@ -498,7 +498,7 @@ function ConjugateFormRenderer({
   const { practiceCard: copy } = useTranslations();
   const [answer, setAnswer] = useState('');
   const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
-  const [showHint, setShowHint] = useState(false);
+  const [showTranslation, setShowTranslation] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAnswerRevealed, setIsAnswerRevealed] = useState(false);
   const startTimeRef = useRef(Date.now());
@@ -510,7 +510,7 @@ function ConjugateFormRenderer({
   useEffect(() => {
     setAnswer('');
     setStatus('idle');
-    setShowHint(false);
+    setShowTranslation(false);
     setIsSubmitting(false);
     setIsAnswerRevealed(false);
     startTimeRef.current = Date.now();
@@ -535,12 +535,12 @@ function ConjugateFormRenderer({
   }, [task.expectedSolution]);
 
   const exampleText = preferences.showExamples ? renderExamples(task.prompt.example ?? null) : null;
-  const hintText = useMemo(() => {
+  const translationText = useMemo(() => {
     const fallback =
       expectedForms.length && task.expectedSolution?.form
-        ? `${copy.hints.expectedAnswerPrefix} ${task.expectedSolution.form}`
+        ? `${copy.translations.expectedAnswerPrefix} ${task.expectedSolution.form}`
         : null;
-    return renderHintText(copy, preferences, exampleText, task.lexeme.metadata, fallback);
+    return renderTranslationText(copy, preferences, exampleText, task.lexeme.metadata, fallback);
   }, [copy, preferences, exampleText, task.lexeme.metadata, expectedForms, task.expectedSolution]);
 
   const isLegacyTask = task.taskId.startsWith('legacy:verb:');
@@ -721,38 +721,38 @@ function ConjugateFormRenderer({
     );
   }
 
-  if (hintText) {
+  if (translationText) {
     supportSections.push(
       <button
-        key="hint"
+        key="translation"
         type="button"
         className="flex w-full items-start gap-3 rounded-2xl border border-border/40 bg-card/20 px-4 py-3 text-left text-sm text-primary-foreground/90 transition hover:bg-card/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
-        onClick={() => setShowHint((value) => !value)}
-        aria-expanded={showHint}
+        onClick={() => setShowTranslation((value) => !value)}
+        aria-expanded={showTranslation}
       >
         <HelpCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary-foreground" aria-hidden />
         <div className="space-y-1">
-          <p className="text-sm font-semibold text-primary-foreground">{copy.hints.label}</p>
+          <p className="text-sm font-semibold text-primary-foreground">{copy.translations.label}</p>
           <AnimatePresence initial={false}>
-            {showHint ? (
+            {showTranslation ? (
               <motion.p
-                key="hint-content"
+                key="translation-content"
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
                 className="text-sm text-primary-foreground/80"
               >
-                {hintText}
+                {translationText}
               </motion.p>
             ) : (
               <motion.span
-                key="hint-toggle"
+                key="translation-toggle"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className="text-xs text-primary-foreground/70"
               >
-                {copy.hints.toggle}
+                {copy.translations.toggle}
               </motion.span>
             )}
           </AnimatePresence>
@@ -791,7 +791,7 @@ function NounCaseDeclensionRenderer({
   const { practiceCard: copy } = useTranslations();
   const [answer, setAnswer] = useState('');
   const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
-  const [showHint, setShowHint] = useState(false);
+  const [showTranslation, setShowTranslation] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAnswerRevealed, setIsAnswerRevealed] = useState(false);
   const startTimeRef = useRef(Date.now());
@@ -803,7 +803,7 @@ function NounCaseDeclensionRenderer({
   useEffect(() => {
     setAnswer('');
     setStatus('idle');
-    setShowHint(false);
+    setShowTranslation(false);
     setIsSubmitting(false);
     setIsAnswerRevealed(false);
     startTimeRef.current = Date.now();
@@ -823,14 +823,14 @@ function NounCaseDeclensionRenderer({
   }, [task.expectedSolution]);
 
   const exampleText = preferences.showExamples ? renderExamples(task.prompt.example ?? null) : null;
-  const genderHint = task.prompt.gender ? `${copy.hints.articleLabel} ${task.prompt.gender}` : null;
-  const fallbackHint =
+  const genderTranslation = task.prompt.gender ? `${copy.translations.articleLabel} ${task.prompt.gender}` : null;
+  const fallbackTranslation =
     expectedForms.length && task.expectedSolution?.form
-      ? `${copy.hints.expectedFormPrefix} ${task.expectedSolution.form}`
-      : genderHint;
-  const hintText = useMemo(() => {
-    return renderHintText(copy, preferences, exampleText, task.lexeme.metadata, fallbackHint);
-  }, [copy, preferences, exampleText, task.lexeme.metadata, fallbackHint]);
+      ? `${copy.translations.expectedFormPrefix} ${task.expectedSolution.form}`
+      : genderTranslation;
+  const translationText = useMemo(() => {
+    return renderTranslationText(copy, preferences, exampleText, task.lexeme.metadata, fallbackTranslation);
+  }, [copy, preferences, exampleText, task.lexeme.metadata, fallbackTranslation]);
   const displayAnswer = useMemo(() => {
     if (!task.expectedSolution?.form) {
       return null;
@@ -1018,38 +1018,38 @@ function NounCaseDeclensionRenderer({
     );
   }
 
-  if (hintText) {
+  if (translationText) {
     supportSections.push(
       <button
-        key="hint"
+        key="translation"
         type="button"
         className="flex w-full items-start gap-3 rounded-2xl border border-border/40 bg-card/20 px-4 py-3 text-left text-sm text-primary-foreground/90 transition hover:bg-card/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
-        onClick={() => setShowHint((value) => !value)}
-        aria-expanded={showHint}
+        onClick={() => setShowTranslation((value) => !value)}
+        aria-expanded={showTranslation}
       >
         <HelpCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary-foreground" aria-hidden />
         <div className="space-y-1">
-          <p className="text-sm font-semibold text-primary-foreground">{copy.hints.label}</p>
+          <p className="text-sm font-semibold text-primary-foreground">{copy.translations.label}</p>
           <AnimatePresence initial={false}>
-            {showHint ? (
+            {showTranslation ? (
               <motion.p
-                key="hint-content"
+                key="translation-content"
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
                 className="text-sm text-primary-foreground/80"
               >
-                {hintText}
+                {translationText}
               </motion.p>
             ) : (
               <motion.span
-                key="hint-toggle"
+                key="translation-toggle"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className="text-xs text-primary-foreground/70"
               >
-                {copy.hints.toggle}
+                {copy.translations.toggle}
               </motion.span>
             )}
           </AnimatePresence>
@@ -1088,7 +1088,7 @@ function AdjectiveEndingRenderer({
   const { practiceCard: copy } = useTranslations();
   const [answer, setAnswer] = useState('');
   const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
-  const [showHint, setShowHint] = useState(false);
+  const [showTranslation, setShowTranslation] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAnswerRevealed, setIsAnswerRevealed] = useState(false);
   const startTimeRef = useRef(Date.now());
@@ -1100,7 +1100,7 @@ function AdjectiveEndingRenderer({
   useEffect(() => {
     setAnswer('');
     setStatus('idle');
-    setShowHint(false);
+    setShowTranslation(false);
     setIsSubmitting(false);
     setIsAnswerRevealed(false);
     startTimeRef.current = Date.now();
@@ -1116,13 +1116,13 @@ function AdjectiveEndingRenderer({
   }, [task.expectedSolution]);
 
   const exampleText = preferences.showExamples ? renderExamples(task.prompt.example ?? null) : null;
-  const fallbackHint =
+  const fallbackTranslation =
     expectedForms.length && task.expectedSolution?.form
-      ? `${copy.hints.expectedFormPrefix} ${task.expectedSolution.form}`
+      ? `${copy.translations.expectedFormPrefix} ${task.expectedSolution.form}`
       : task.prompt.syntacticFrame ?? null;
-  const hintText = useMemo(() => {
-    return renderHintText(copy, preferences, exampleText, task.lexeme.metadata, fallbackHint);
-  }, [copy, preferences, exampleText, task.lexeme.metadata, fallbackHint]);
+  const translationText = useMemo(() => {
+    return renderTranslationText(copy, preferences, exampleText, task.lexeme.metadata, fallbackTranslation);
+  }, [copy, preferences, exampleText, task.lexeme.metadata, fallbackTranslation]);
   const displayAnswer = task.expectedSolution?.form ?? null;
 
   const handlePronounce = () => {
@@ -1298,38 +1298,38 @@ function AdjectiveEndingRenderer({
     );
   }
 
-  if (hintText) {
+  if (translationText) {
     supportSections.push(
       <button
-        key="hint"
+        key="translation"
         type="button"
         className="flex w-full items-start gap-3 rounded-2xl border border-border/40 bg-card/20 px-4 py-3 text-left text-sm text-primary-foreground/90 transition hover:bg-card/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
-        onClick={() => setShowHint((value) => !value)}
-        aria-expanded={showHint}
+        onClick={() => setShowTranslation((value) => !value)}
+        aria-expanded={showTranslation}
       >
         <HelpCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary-foreground" aria-hidden />
         <div className="space-y-1">
-          <p className="text-sm font-semibold text-primary-foreground">{copy.hints.label}</p>
+          <p className="text-sm font-semibold text-primary-foreground">{copy.translations.label}</p>
           <AnimatePresence initial={false}>
-            {showHint ? (
+            {showTranslation ? (
               <motion.p
-                key="hint-content"
+                key="translation-content"
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
                 className="text-sm text-primary-foreground/80"
               >
-                {hintText}
+                {translationText}
               </motion.p>
             ) : (
               <motion.span
-                key="hint-toggle"
+                key="translation-toggle"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className="text-xs text-primary-foreground/70"
               >
-                {copy.hints.toggle}
+                {copy.translations.toggle}
               </motion.span>
             )}
           </AnimatePresence>
