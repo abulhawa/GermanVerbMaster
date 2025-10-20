@@ -77,13 +77,16 @@ export function savePracticeSession(state: PracticeSessionState): void {
 export function enqueueTasks(
   state: PracticeSessionState,
   tasks: PracticeTask[],
-  { replace = false }: { replace?: boolean } = {},
+  options: { replace?: boolean; ignoreRecent?: boolean } = {},
 ): PracticeSessionState {
+  const { replace = false, ignoreRecent = replace } = options;
   const nextQueue = replace ? [] : [...state.queue];
   const seen = new Set(nextQueue);
 
-  for (const taskId of state.recent) {
-    seen.add(taskId);
+  if (!ignoreRecent) {
+    for (const taskId of state.recent) {
+      seen.add(taskId);
+    }
   }
 
   for (const task of tasks) {

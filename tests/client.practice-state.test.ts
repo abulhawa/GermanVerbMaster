@@ -222,15 +222,24 @@ describe('practice state migrations', () => {
     expect(reset.queue).toHaveLength(0);
   });
 
-  it('avoids re-enqueueing recently completed tasks when refreshing the queue', () => {
+  it('avoids re-enqueueing recently completed tasks when topping up the queue', () => {
     const base = createEmptySessionState();
     const queued = enqueueTasks(base, [practiceTask]);
     const completed = completeTask(queued, practiceTask.taskId);
 
     expect(completed.recent).toContain(practiceTask.taskId);
 
+    const toppedUp = enqueueTasks(completed, [practiceTask]);
+    expect(toppedUp.queue).not.toContain(practiceTask.taskId);
+  });
+
+  it('re-enqueues recently completed tasks when replacing the queue', () => {
+    const base = createEmptySessionState();
+    const queued = enqueueTasks(base, [practiceTask]);
+    const completed = completeTask(queued, practiceTask.taskId);
+
     const refreshed = enqueueTasks(completed, [practiceTask], { replace: true });
-    expect(refreshed.queue).not.toContain(practiceTask.taskId);
+    expect(refreshed.queue).toContain(practiceTask.taskId);
   });
 
   it('preserves recent task history when clearing the session queue', () => {
