@@ -72,6 +72,53 @@ function normaliseAnswer(value: string): string {
   return value.trim().toLowerCase();
 }
 
+const UMLAUT_FALLBACK_MAPPINGS = [
+  ['ä', 'ae'],
+  ['ö', 'oe'],
+  ['ü', 'ue'],
+  ['ß', 'ss'],
+] as const;
+
+function expandWithUmlautFallbacks(value: string): string[] {
+  const normalized = normaliseAnswer(value);
+  if (!normalized) {
+    return [];
+  }
+
+  const variants = new Set<string>([normalized]);
+  const queue: string[] = [normalized];
+
+  while (queue.length > 0) {
+    const current = queue.pop();
+    if (!current) {
+      continue;
+    }
+    for (const [source, fallback] of UMLAUT_FALLBACK_MAPPINGS) {
+      if (!current.includes(source)) {
+        continue;
+      }
+
+      const replaced = current.replaceAll(source, fallback);
+      if (!variants.has(replaced)) {
+        variants.add(replaced);
+        queue.push(replaced);
+      }
+    }
+  }
+
+  return Array.from(variants);
+}
+
+function addExpectedForm(forms: Set<string>, value: unknown): void {
+  if (typeof value !== 'string') {
+    return;
+  }
+
+  for (const variant of expandWithUmlautFallbacks(value)) {
+    forms.add(variant);
+  }
+}
+
 function getConjugateTenseLabel(copy: PracticeCardMessages, task: PracticeTask<'conjugate_form'>): string {
   const tense = task.prompt.requestedForm.tense;
   const { tenseLabels } = copy.conjugate;
@@ -519,17 +566,13 @@ function ConjugateFormRenderer({
   const expectedForms = useMemo(() => {
     const forms = new Set<string>();
     const primary = task.expectedSolution && 'form' in task.expectedSolution ? task.expectedSolution.form : undefined;
-    if (typeof primary === 'string') {
-      forms.add(normaliseAnswer(primary));
-    }
+    addExpectedForm(forms, primary);
     const alternates =
       task.expectedSolution && 'alternateForms' in task.expectedSolution
         ? task.expectedSolution.alternateForms ?? []
         : [];
     for (const value of alternates ?? []) {
-      if (typeof value === 'string' && value.trim()) {
-        forms.add(normaliseAnswer(value));
-      }
+      addExpectedForm(forms, value);
     }
     return Array.from(forms.values());
   }, [task.expectedSolution]);
@@ -811,13 +854,13 @@ function NounCaseDeclensionRenderer({
 
   const expectedForms = useMemo(() => {
     const forms = new Set<string>();
-    const form = task.expectedSolution?.form;
-    if (typeof form === 'string' && form.trim()) {
-      forms.add(normaliseAnswer(form));
-    }
-    const article = task.expectedSolution?.article;
-    if (typeof article === 'string' && article.trim() && form) {
-      forms.add(normaliseAnswer(`${article} ${form}`));
+    const form = typeof task.expectedSolution?.form === 'string' ? task.expectedSolution.form : null;
+    if (form && form.trim()) {
+      addExpectedForm(forms, form);
+      const article = task.expectedSolution?.article;
+      if (typeof article === 'string' && article.trim()) {
+        addExpectedForm(forms, `${article} ${form}`);
+      }
     }
     return Array.from(forms.values());
   }, [task.expectedSolution]);
@@ -1108,10 +1151,7 @@ function AdjectiveEndingRenderer({
 
   const expectedForms = useMemo(() => {
     const forms = new Set<string>();
-    const form = task.expectedSolution?.form;
-    if (typeof form === 'string' && form.trim()) {
-      forms.add(normaliseAnswer(form));
-    }
+    addExpectedForm(forms, task.expectedSolution?.form);
     return Array.from(forms.values());
   }, [task.expectedSolution]);
 

@@ -125,6 +125,33 @@ function createAdjectiveTask(): PracticeTask<'adj_ending'> {
   } satisfies PracticeTask<'adj_ending'>;
 }
 
+function createEszettAdjectiveTask(): PracticeTask<'adj_ending'> {
+  const registry = clientTaskRegistry.adj_ending;
+  return {
+    taskId: 'adj-task-ss',
+    lexemeId: 'lex-adj-hot',
+    taskType: 'adj_ending',
+    pos: 'adjective',
+    renderer: registry.renderer,
+    prompt: {
+      lemma: 'heiß',
+      pos: 'adjective',
+      degree: 'comparative',
+      instructions: 'Bilde die Komparativform von „heiß“.',
+      syntacticFrame: 'Der Sommer ist ____ als der Frühling.',
+    },
+    expectedSolution: { form: 'heißer' },
+    queueCap: registry.defaultQueueCap,
+    lexeme: {
+      id: 'lex-adj-hot',
+      lemma: 'heiß',
+      metadata: { level: 'B1', english: 'hot' },
+    },
+    assignedAt: new Date('2024-02-01T00:00:00.000Z').toISOString(),
+    source: 'seed',
+  } satisfies PracticeTask<'adj_ending'>;
+}
+
 function getDefaultSettings(): PracticeSettingsState {
   return createDefaultSettings();
 }
@@ -239,6 +266,32 @@ describe('PracticeCard', () => {
     });
   });
 
+  it('accepts noun answers that use umlaut fallback spellings', async () => {
+    const onResult = vi.fn<(result: PracticeCardResult) => void>();
+    const task = createNounTask();
+    const settings = getDefaultSettings();
+
+    renderWithLocale(<PracticeCard task={task} settings={settings} onResult={onResult} />);
+
+    const input = screen.getByLabelText(/enter plural form/i);
+    await userEvent.type(input, 'Haeuser');
+    await userEvent.click(screen.getByRole('button', { name: /check/i }));
+
+    await waitFor(() => {
+      expect(submitPracticeAttempt).toHaveBeenCalledTimes(1);
+    });
+
+    const payload = vi.mocked(submitPracticeAttempt).mock.calls[0][0];
+    expect(payload.result).toBe('correct');
+    expect(payload.submittedResponse).toBe('Haeuser');
+
+    await waitFor(() => {
+      expect(onResult).toHaveBeenCalledWith(
+        expect.objectContaining({ result: 'correct', submittedResponse: 'Haeuser' }),
+      );
+    });
+  });
+
   it('accepts noun answers with definite article combinations', async () => {
     const onResult = vi.fn<(result: PracticeCardResult) => void>();
     const task = createDativeNounTask();
@@ -291,6 +344,32 @@ describe('PracticeCard', () => {
 
     await waitFor(() => {
       expect(onResult).toHaveBeenCalledWith(expect.objectContaining({ result: 'correct' }));
+    });
+  });
+
+  it('accepts adjective answers that use ss as a fallback for ß', async () => {
+    const onResult = vi.fn<(result: PracticeCardResult) => void>();
+    const task = createEszettAdjectiveTask();
+    const settings = getDefaultSettings();
+
+    renderWithLocale(<PracticeCard task={task} settings={settings} onResult={onResult} />);
+
+    const input = screen.getByLabelText(/enter adjective form/i);
+    await userEvent.type(input, 'heisser');
+    await userEvent.click(screen.getByRole('button', { name: /check/i }));
+
+    await waitFor(() => {
+      expect(submitPracticeAttempt).toHaveBeenCalledTimes(1);
+    });
+
+    const payload = vi.mocked(submitPracticeAttempt).mock.calls[0][0];
+    expect(payload.result).toBe('correct');
+    expect(payload.submittedResponse).toBe('heisser');
+
+    await waitFor(() => {
+      expect(onResult).toHaveBeenCalledWith(
+        expect.objectContaining({ result: 'correct', submittedResponse: 'heisser' }),
+      );
     });
   });
 
