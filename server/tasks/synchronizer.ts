@@ -17,10 +17,13 @@ export function resetTaskSpecSync(): void {
 
 export async function ensureTaskSpecsSynced(): Promise<void> {
   if (!syncPromise) {
-    syncPromise = syncAllTaskSpecs().catch((error) => {
-      syncPromise = null;
-      throw error;
-    });
+    syncPromise = (async () => {
+      try {
+        await syncAllTaskSpecs();
+      } finally {
+        syncPromise = null;
+      }
+    })();
   }
 
   await syncPromise;
