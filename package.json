@@ -4,7 +4,7 @@
   "type": "module",
   "license": "MIT",
   "engines": {
-    "node": ">=22.0.0",
+    "node": "22.x",
     "npm": ">=10"
   },
   "scripts": {
@@ -120,6 +120,8 @@
       "@esbuild-kit/core-utils": {
         "esbuild": "0.25.11"
       }
-    }
+    },
+    "glob": "9.3.5",
+    "sourcemap-codec": "npm:@jridgewell/sourcemap-codec@1.5.0"
   }
 }

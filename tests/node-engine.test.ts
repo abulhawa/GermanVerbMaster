@@ -16,7 +16,7 @@ const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8')) as Package
 describe('runtime requirements', () => {
   test('package.json advertises Node.js 22 compatibility', () => {
     expect(packageJson.engines?.node, 'package.json should define a Node engine range').toBeTruthy();
-    expect(packageJson.engines?.node).toMatch(/^>=22/);
+    expect(packageJson.engines?.node).toMatch(/^(>=22|22\.x)$/);
   });
 
   test('test environment runs on Node.js 22 or newer', () => {
