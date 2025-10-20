@@ -96,7 +96,14 @@ export function AnsweredQuestionsPanel({
         <div className="mt-5 space-y-4">
           {history.map((item) => {
             const answeredDate = new Date(item.answeredAt);
-            const answeredTime = answeredDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+            const answeredTimestamp = answeredDate.getTime();
+            const hasValidTimestamp = Number.isFinite(answeredTimestamp);
+            const answeredTime = hasValidTimestamp
+              ? answeredDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+              : null;
+            const answeredDateLabel = hasValidTimestamp
+              ? answeredDate.toLocaleDateString([], { year: "numeric", month: "short", day: "numeric" })
+              : null;
             const verb = item.verb ?? item.legacyVerb?.verb;
             const lexeme: AnswerHistoryLexemeSnapshot | undefined =
               item.lexeme ??
@@ -159,7 +166,13 @@ export function AnsweredQuestionsPanel({
                       {mode ? MODE_LABELS[mode] ?? mode : getTaskTypeLabel(item.taskType)}
                     </span>
                     <span className="text-xs text-muted-foreground">Level {level}</span>
-                    <span className="text-xs text-muted-foreground">Answered at {answeredTime}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {answeredDateLabel && answeredTime
+                        ? `Answered on ${answeredDateLabel} at ${answeredTime}`
+                        : answeredTime
+                          ? `Answered at ${answeredTime}`
+                          : 'Answer time unavailable'}
+                    </span>
                   </div>
                 </div>
 

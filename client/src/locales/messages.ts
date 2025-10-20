@@ -142,6 +142,10 @@ export interface HomeMessages {
     signedOutSubtitle: string;
     signedInSubtitle: string;
   };
+  reviewBanner: {
+    title: string;
+    description: string;
+  };
 }
 
 export interface AuthMessages {
@@ -250,6 +254,11 @@ const MESSAGES: Record<Locale, AppMessages> = {
         title: 'Continue your personalised session',
         signedOutSubtitle: 'Sign in to sync your progress and unlock analytics.',
         signedInSubtitle: 'Signed in as {name}.',
+      },
+      reviewBanner: {
+        title: 'Review mode',
+        description:
+          "You've completed every available prompt. We'll cycle them for spaced review so you keep reinforcing your memory.",
       },
     },
     auth: {
@@ -501,6 +510,11 @@ const MESSAGES: Record<Locale, AppMessages> = {
         title: 'Setze deine personalisierte Sitzung fort',
         signedOutSubtitle: 'Melde dich an, um deinen Fortschritt zu synchronisieren und Analysen freizuschalten.',
         signedInSubtitle: 'Angemeldet als {name}.',
+      },
+      reviewBanner: {
+        title: 'Wiederholungsmodus',
+        description:
+          'Du hast alle verfügbaren Aufgaben abgeschlossen. Wir wiederholen sie jetzt im zeitlich gestaffelten Rhythmus, damit du weiter üben kannst.',
       },
     },
     auth: {
