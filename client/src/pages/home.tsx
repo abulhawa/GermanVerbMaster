@@ -232,11 +232,18 @@ export default function Home() {
           return next;
         });
 
+        let nextSessionState: PracticeSessionState | null = null;
         setSession((prev) => {
           const baseState = replace ? clearSessionQueue(prev) : prev;
-          const nextState = enqueueTasks(baseState, tasks, { replace });
-          return nextState;
+          nextSessionState = enqueueTasks(baseState, tasks, { replace });
+          return nextSessionState;
         });
+
+        if (replace && nextSessionState && nextSessionState.queue.length === 0) {
+          lastFailedQueueSignatureRef.current = baseSignature;
+          setFetchError('No practice tasks are available for your current scope right now. Try adjusting your practice scope or check back later.');
+          return;
+        }
 
         lastFailedQueueSignatureRef.current = null;
         setFetchError(null);
