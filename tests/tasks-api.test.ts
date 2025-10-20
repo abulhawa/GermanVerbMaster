@@ -6,9 +6,9 @@ import { setupTestDatabase, type TestDatabaseContext } from './helpers/pg';
 import { createApiInvoker } from './helpers/vercel';
 
 describe('tasks API', () => {
-  let buildTaskInventory: typeof import('../scripts/etl/golden').buildTaskInventory;
-  let upsertTaskInventory: typeof import('../scripts/etl/golden').upsertTaskInventory;
   let seedLexemeInventoryForWords: typeof import('./helpers/task-fixtures').seedLexemeInventoryForWords;
+  let ensureTaskSpecsSynced: typeof import('../server/tasks/synchronizer.js').ensureTaskSpecsSynced;
+  let resetTaskSpecSync: typeof import('../server/tasks/synchronizer.js').resetTaskSpecSync;
   let invokeApi: ReturnType<typeof createApiInvoker>;
   let createVercelApiHandler: typeof import('../server/api/vercel-handler.js').createVercelApiHandler;
   let practiceHistoryTable: typeof import('../db/schema.js').practiceHistory;
@@ -126,12 +126,12 @@ describe('tasks API', () => {
     },
   ];
 
-    ({ buildTaskInventory, upsertTaskInventory } = await import('../scripts/etl/golden'));
     ({ seedLexemeInventoryForWords } = await import('./helpers/task-fixtures'));
+    ({ ensureTaskSpecsSynced, resetTaskSpecSync } = await import('../server/tasks/synchronizer.js'));
 
     await seedLexemeInventoryForWords(drizzleDb, sampleWords);
-    const taskInventory = buildTaskInventory(sampleWords);
-    await upsertTaskInventory(drizzleDb, taskInventory);
+    resetTaskSpecSync();
+    await ensureTaskSpecsSynced();
 
     ({ createVercelApiHandler } = await import('../server/api/vercel-handler.js'));
     const handler = createVercelApiHandler({ enableCors: false });

@@ -55,7 +55,7 @@ describe('seedDatabase', () => {
   });
 
   it(
-    'populates core lexeme and task tables',
+    'populates core lexeme and inflection tables only',
       async () => {
         const context: TestDatabaseContext = await setupTestDatabase();
         context.mock();
@@ -73,7 +73,6 @@ describe('seedDatabase', () => {
           expect(result.aggregatedCount).toBeGreaterThan(0);
           expect(result.lexemeCount).toBeGreaterThan(0);
           expect(result.inflectionCount).toBeGreaterThan(0);
-          expect(result.taskCount).toBeGreaterThan(0);
 
           const wordRows = await context.db.select({ value: count() }).from(words);
           expect(Number(wordRows[0]?.value ?? 0)).toBeGreaterThan(0);
@@ -85,7 +84,7 @@ describe('seedDatabase', () => {
           expect(Number(inflectionRows[0]?.value ?? 0)).toBeGreaterThan(0);
 
           const taskRows = await context.db.select({ value: count() }).from(taskSpecs);
-          expect(Number(taskRows[0]?.value ?? 0)).toBeGreaterThan(0);
+          expect(Number(taskRows[0]?.value ?? 0)).toBe(0);
 
         } finally {
           await context.cleanup();
