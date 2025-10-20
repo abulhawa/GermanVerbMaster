@@ -2,18 +2,15 @@ import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { inArray, sql } from 'drizzle-orm';
 
 import type { PartOfSpeech } from '@shared';
-import {
-  type LexemePos,
-  taskTypeRegistry,
-  validateTaskAgainstRegistry,
-  type TaskType,
-} from '@shared/task-registry';
+import { type LexemePos, type TaskType } from '@shared/task-registry';
 
 import {
   inflections as inflectionsTable,
   lexemes as lexemesTable,
   taskSpecs as taskSpecsTable,
 } from '@db/schema';
+
+import { generateTaskSpecs, type TaskTemplateSource } from '../../server/tasks/templates.ts';
 
 import type { AggregatedWord } from './types';
 import { buildAttributionSummary } from './attribution';
@@ -66,16 +63,6 @@ export interface TaskInventory {
   tasks: TaskSpecSeed[];
 }
 
-interface TaskTemplateDefinition {
-  key: string;
-  taskType: TaskType;
-  isAvailable(word: AggregatedWord): boolean;
-  buildPrompt(word: AggregatedWord, pos: LexemePos): Record<string, unknown>;
-  buildSolution(word: AggregatedWord): Record<string, unknown> & { form: string };
-  buildMetadata?(word: AggregatedWord): Record<string, unknown> | null | undefined;
-  buildHints?(word: AggregatedWord): unknown[];
-}
-
 export interface LexemeInventory {
   lexemes: LexemeSeed[];
   inflections: InflectionSeed[];
@@ -83,158 +70,6 @@ export interface LexemeInventory {
 }
 
 type DrizzleDatabase = NodePgDatabase<typeof import('@db/schema')>;
-
-const TASK_TEMPLATE_REGISTRY: Partial<Record<LexemePos, readonly TaskTemplateDefinition[]>> = {
-  verb: [
-    {
-      key: 'praesens_ich',
-      taskType: 'conjugate_form',
-      isAvailable: (word) => Boolean(word.praesensIch),
-      buildPrompt: (word, pos) => ({
-        lemma: word.lemma,
-        pos,
-        requestedForm: {
-          tense: 'present',
-          mood: 'indicative',
-          person: 1,
-          number: 'singular',
-        },
-        cefrLevel: word.level ?? undefined,
-        instructions: `Konjugiere "${word.lemma}" in der Präsensform (ich).`,
-        example: normaliseExample(word.exampleDe, word.exampleEn),
-      }),
-      buildSolution: (word) => ({ form: word.praesensIch! }),
-      buildMetadata: (word) => ({
-        aux: word.aux ?? undefined,
-        separable: word.separable ?? undefined,
-      }),
-    },
-    {
-      key: 'praesens_er',
-      taskType: 'conjugate_form',
-      isAvailable: (word) => Boolean(word.praesensEr),
-      buildPrompt: (word, pos) => ({
-        lemma: word.lemma,
-        pos,
-        requestedForm: {
-          tense: 'present',
-          mood: 'indicative',
-          person: 3,
-          number: 'singular',
-        },
-        cefrLevel: word.level ?? undefined,
-        instructions: `Konjugiere "${word.lemma}" in der Präsensform (er/sie/es).`,
-        example: normaliseExample(word.exampleDe, word.exampleEn),
-      }),
-      buildSolution: (word) => ({ form: word.praesensEr! }),
-      buildMetadata: (word) => ({
-        aux: word.aux ?? undefined,
-        separable: word.separable ?? undefined,
-      }),
-    },
-    {
-      key: 'praeteritum',
-      taskType: 'conjugate_form',
-      isAvailable: (word) => Boolean(word.praeteritum),
-      buildPrompt: (word, pos) => ({
-        lemma: word.lemma,
-        pos,
-        requestedForm: {
-          tense: 'past',
-          mood: 'indicative',
-          person: 3,
-          number: 'singular',
-        },
-        cefrLevel: word.level ?? undefined,
-        instructions: `Konjugiere "${word.lemma}" in der Präteritumform (er/sie/es).`,
-        example: normaliseExample(word.exampleDe, word.exampleEn),
-      }),
-      buildSolution: (word) => ({ form: word.praeteritum! }),
-      buildMetadata: (word) => ({
-        aux: word.aux ?? undefined,
-        separable: word.separable ?? undefined,
-      }),
-    },
-    {
-      key: 'partizip_ii',
-      taskType: 'conjugate_form',
-      isAvailable: (word) => Boolean(word.partizipIi),
-      buildPrompt: (word, pos) => ({
-        lemma: word.lemma,
-        pos,
-        requestedForm: {
-          tense: 'participle',
-          mood: 'indicative',
-          voice: 'active',
-        },
-        cefrLevel: word.level ?? undefined,
-        instructions: `Gib das Partizip II von "${word.lemma}" an.`,
-        example: normaliseExample(word.exampleDe, word.exampleEn),
-      }),
-      buildSolution: (word) => ({ form: word.partizipIi! }),
-      buildMetadata: (word) => ({
-        aux: word.aux ?? undefined,
-        separable: word.separable ?? undefined,
-      }),
-    },
-  ],
-  noun: [
-    {
-      key: 'accusative_plural',
-      taskType: 'noun_case_declension',
-      isAvailable: (word) => Boolean(word.plural),
-      buildPrompt: (word, pos) => ({
-        lemma: word.lemma,
-        pos,
-        gender: word.gender ?? undefined,
-        requestedCase: 'accusative',
-        requestedNumber: 'plural',
-        cefrLevel: word.level ?? undefined,
-        instructions: `Bilde die Akkusativ Plural-Form von "${word.lemma}".`,
-        example: normaliseExample(word.exampleDe, word.exampleEn),
-      }),
-      buildSolution: (word) => ({
-        form: word.plural!,
-        article: word.gender ?? undefined,
-      }),
-      buildMetadata: (word) => ({
-        article: word.gender ?? undefined,
-      }),
-    },
-  ],
-  adjective: [
-    {
-      key: 'comparative',
-      taskType: 'adj_ending',
-      isAvailable: (word) => Boolean(word.comparative),
-      buildPrompt: (word, pos) => ({
-        lemma: word.lemma,
-        pos,
-        degree: 'comparative',
-        cefrLevel: word.level ?? undefined,
-        instructions: `Bilde den Komparativ von "${word.lemma}".`,
-        example: normaliseExample(word.exampleDe, word.exampleEn),
-        syntacticFrame: 'Der ____ Wagen ist schneller.',
-      }),
-      buildSolution: (word) => ({ form: word.comparative! }),
-    },
-    {
-      key: 'superlative',
-      taskType: 'adj_ending',
-      isAvailable: (word) => Boolean(word.superlative),
-      buildPrompt: (word, pos) => ({
-        lemma: word.lemma,
-        pos,
-        degree: 'superlative',
-        cefrLevel: word.level ?? undefined,
-        instructions: `Bilde den Superlativ von "${word.lemma}".`,
-        example: normaliseExample(word.exampleDe, word.exampleEn),
-        syntacticFrame: 'Das ist der ____ Moment.',
-      }),
-      buildSolution: (word) => ({ form: word.superlative! }),
-    },
-  ],
-};
 
 export function buildTaskInventory(words: AggregatedWord[]): TaskInventory {
   const tasks: TaskSpecSeed[] = [];
@@ -248,8 +83,22 @@ export function buildTaskInventory(words: AggregatedWord[]): TaskInventory {
     }
 
     const lexeme = createLexemeSeed(word);
-    const lexemeTasks = createTasksForWord(word, lexeme.id);
-    tasks.push(...lexemeTasks);
+    const taskSource = createTaskSourceFromWord(word, lexeme.id);
+    const generatedTasks = generateTaskSpecs(taskSource);
+    for (const task of generatedTasks) {
+      tasks.push({
+        id: task.id,
+        lexemeId: task.lexemeId,
+        pos: task.pos,
+        taskType: task.taskType,
+        renderer: task.renderer,
+        prompt: task.prompt,
+        solution: task.solution,
+        hints: task.hints,
+        metadata: task.metadata,
+        revision: task.revision,
+      });
+    }
   }
 
   const ordered = tasks.sort((a, b) => {
@@ -631,45 +480,29 @@ function createInflectionsForWord(word: AggregatedWord, lexemeId: string): Infle
   return unique;
 }
 
-function createTasksForWord(word: AggregatedWord, lexemeId: string): TaskSpecSeed[] {
+function createTaskSourceFromWord(word: AggregatedWord, lexemeId: string): TaskTemplateSource {
   const pos = mapPos(word.pos);
-  const templates = TASK_TEMPLATE_REGISTRY[pos] ?? [];
-  const tasks: TaskSpecSeed[] = [];
 
-  let revision = 0;
-  for (const template of templates) {
-    if (!template.isAvailable(word)) {
-      continue;
-    }
-
-    const prompt = pruneUndefined(template.buildPrompt(word, pos));
-    const solution = template.buildSolution(word);
-    const renderer = taskTypeRegistry[template.taskType].renderer;
-
-    validateTaskAgainstRegistry(template.taskType, pos, renderer, prompt, solution);
-
-    revision += 1;
-    const taskId = createTaskId(lexemeId, template.taskType, revision, template.key);
-    const hints = template.buildHints ? template.buildHints(word) : buildHints(word);
-    const hintList = Array.isArray(hints) ? hints : buildHints(word);
-    const metadata = template.buildMetadata ? template.buildMetadata(word) : undefined;
-    const metadataPayload = metadata && Object.keys(metadata).length ? pruneUndefined(metadata) : null;
-
-    tasks.push({
-      id: taskId,
-      lexemeId,
-      pos,
-      taskType: template.taskType,
-      renderer,
-      prompt,
-      solution: pruneUndefined(solution),
-      hints: hintList.length ? hintList : null,
-      metadata: metadataPayload,
-      revision,
-    });
-  }
-
-  return tasks;
+  return {
+    lexemeId,
+    lemma: word.lemma,
+    pos,
+    level: word.level ?? null,
+    english: word.english ?? null,
+    exampleDe: word.exampleDe ?? null,
+    exampleEn: word.exampleEn ?? null,
+    gender: pos === 'noun' ? word.gender ?? null : null,
+    plural: word.plural ?? null,
+    separable: typeof word.separable === 'boolean' ? word.separable : null,
+    aux: word.aux ?? null,
+    praesensIch: word.praesensIch ?? null,
+    praesensEr: word.praesensEr ?? null,
+    praeteritum: word.praeteritum ?? null,
+    partizipIi: word.partizipIi ?? null,
+    perfekt: word.perfekt ?? null,
+    comparative: word.comparative ?? null,
+    superlative: word.superlative ?? null,
+  } satisfies TaskTemplateSource;
 }
 
 function createInflectionEntries(
@@ -714,36 +547,12 @@ function createInflectionId(
   return `inf:${lexemeId}:${hash}`;
 }
 
-function createTaskId(
-  lexemeId: string,
-  taskType: string,
-  revision: number,
-  discriminator: string,
-): string {
-  const hash = sha1(`${lexemeId}:${taskType}:${revision}:${discriminator}`).slice(0, 8);
-  return `task:${lexemeId}:${taskType}:${revision}:${hash}`;
-}
-
 function normaliseLemma(lemma: string): string {
   return lemma
     .normalize('NFKD')
     .replace(/[^\w\s-]/g, '')
     .replace(/\s+/g, '-')
     .toLowerCase();
-}
-
-function buildHints(word: AggregatedWord): unknown[] {
-  const hints: unknown[] = [];
-  if (word.exampleDe) {
-    hints.push({ type: 'example_de', value: word.exampleDe });
-  }
-  if (word.exampleEn) {
-    hints.push({ type: 'example_en', value: word.exampleEn });
-  }
-  if (word.perfekt && word.aux) {
-    hints.push({ type: 'auxiliary', value: word.aux });
-  }
-  return hints;
 }
 
 function normaliseExample(exampleDe: string | null, exampleEn: string | null):

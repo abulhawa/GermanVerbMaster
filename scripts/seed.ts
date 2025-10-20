@@ -4,18 +4,8 @@ import { fileURLToPath } from 'node:url';
 import { sql } from 'drizzle-orm';
 
 import { getDb, getPool } from '@db';
-import {
-  words,
-  lexemes as lexemesTable,
-  inflections as inflectionsTable,
-  taskSpecs as taskSpecsTable,
-} from '@db/schema';
-import {
-  buildLexemeInventory,
-  buildTaskInventory,
-  upsertLexemeInventory,
-  upsertTaskInventory,
-} from './etl/golden';
+import { words, lexemes as lexemesTable, inflections as inflectionsTable } from '@db/schema';
+import { buildLexemeInventory, upsertLexemeInventory } from './etl/golden';
 import type { AggregatedWord } from './etl/types';
 import type {
   EnrichmentMethod,
@@ -87,7 +77,6 @@ export function parseSeedOptions(argv: readonly string[]): SeedOptions {
 
 async function resetSeededContent(db: DatabaseClient): Promise<void> {
   await db.transaction(async (tx) => {
-    await tx.delete(taskSpecsTable);
     await tx.delete(inflectionsTable);
     await tx.delete(lexemesTable);
     await tx.delete(words);
@@ -1171,12 +1160,11 @@ export async function seedDatabase(
   aggregatedCount: number;
   lexemeCount: number;
   inflectionCount: number;
-  taskCount: number;
 }> {
   await ensureLegacySchema(db);
 
   if (options.reset) {
-    console.log('Resetting seeded lexemes, inflections, task specs, and legacy words before seeding…');
+    console.log('Resetting seeded lexemes, inflections, and legacy words before seeding…');
     await resetSeededContent(db);
   }
 
@@ -1186,18 +1174,13 @@ export async function seedDatabase(
   const inventory = buildLexemeInventory(aggregated);
   await upsertLexemeInventory(db, inventory);
 
-  const taskInventory = buildTaskInventory(aggregated);
-  await upsertTaskInventory(db, taskInventory);
-
   const lexemeCount = inventory.lexemes.length;
   const inflectionCount = inventory.inflections.length;
-  const taskCount = taskInventory.tasks.length;
 
   return {
     aggregatedCount: aggregated.length,
     lexemeCount,
     inflectionCount,
-    taskCount,
   };
 }
 
@@ -1211,22 +1194,20 @@ async function main(): Promise<void> {
 
   const options = parseSeedOptions(process.argv.slice(2));
   const database = ensureDatabase();
-  const { aggregatedCount, lexemeCount, inflectionCount, taskCount } = await seedDatabase(
+  const { aggregatedCount, lexemeCount, inflectionCount } = await seedDatabase(
     root,
     database,
     options,
   );
 
   console.log(`Seeded ${aggregatedCount} words into legacy table.`);
-  console.log(
-    `Upserted ${lexemeCount} lexemes, ${inflectionCount} inflections, and ${taskCount} reusable task specs.`,
-  );
+  console.log(`Upserted ${lexemeCount} lexemes and ${inflectionCount} inflections.`);
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
   main()
     .then(() => {
-      console.log('Word and task seeding completed');
+      console.log('Word seeding completed');
     })
     .catch((error) => {
       console.error('Failed to seed content', error);
