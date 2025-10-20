@@ -7,6 +7,7 @@ import {
   type TaskRegistryEntry,
   type TaskType,
 } from '@shared/task-registry';
+import type { CEFRLevel } from '@shared';
 import { getDeviceId } from '@/lib/device';
 const DEFAULT_TASK_LIMIT = 25;
 
@@ -37,6 +38,7 @@ export interface TaskFetchOptions {
   limit?: number;
   signal?: AbortSignal;
   deviceId?: string;
+  level?: CEFRLevel;
 }
 
 const rawTaskSchema = z.object({
@@ -98,6 +100,9 @@ function buildTasksQuery(options: TaskFetchOptions): string {
   }
   const limit = options.limit ?? DEFAULT_TASK_LIMIT;
   params.set('limit', String(limit));
+  if (options.level) {
+    params.set('level', options.level);
+  }
   const deviceId = options.deviceId?.trim() || getDeviceId();
   params.set('deviceId', deviceId);
   return params.toString();

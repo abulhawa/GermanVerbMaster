@@ -84,7 +84,7 @@ export function SettingsDialog({
 
   const prefs = settings.rendererPreferences[taskType] ?? {
     showHints: true,
-    showExamples: true,
+    showExamples: false,
   };
 
   const cefrLevel =
@@ -200,7 +200,7 @@ export function SettingsDialog({
             </p>
 
             <p className="text-sm text-foreground">
-              {activePresetLabel} · {activeTaskLabel}
+              {activePresetLabel} Â· {activeTaskLabel}
             </p>
           </div>
 
@@ -288,13 +288,13 @@ export function SettingsDialog({
           </div>
 
           <div className="flex items-center justify-between gap-4">
-            <Label debugId={`${resolvedDebugId}-hints-label`} htmlFor="hints">
-              Show hints
+            <Label debugId={`${resolvedDebugId}-translations-label`} htmlFor="translations">
+              Show translations
             </Label>
 
             <Switch
-              id="hints"
-              debugId={`${resolvedDebugId}-hints-switch`}
+              id="translations"
+              debugId={`${resolvedDebugId}-translations-switch`}
               checked={prefs.showHints}
               onCheckedChange={(checked) =>
                 handlePreferenceChange('showHints', checked)

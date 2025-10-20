@@ -951,7 +951,7 @@ export function registerRoutes(app: Express): void {
       await ensureTaskSpecsSynced();
 
       const { pos, taskType, limit, deviceId, level } = parsed.data;
-      const filters: Array<ReturnType<typeof eq>> = [];
+      const filters: SQL[] = [];
       let normalisedPos: LexemePos | null = null;
 
       res.setHeader("Cache-Control", "no-store");
@@ -977,6 +977,12 @@ export function registerRoutes(app: Express): void {
           });
         }
         filters.push(eq(taskSpecs.taskType, resolvedTaskType));
+      }
+
+      if (level) {
+        filters.push(
+          sql`upper(coalesce(${lexemes.metadata} ->> 'level', ${taskSpecs.prompt} ->> 'cefrLevel')) = ${level}`,
+        );
       }
 
       const baseQuery = db

@@ -186,16 +186,25 @@ export default function Home() {
         const perTypeLimit = Math.max(1, Math.ceil(FETCH_LIMIT / activeTaskTypes.length));
         const fetchedTasks: PracticeTask[][] = [];
 
+        const resolveLevelForPos = (pos: LexemePos): CEFRLevel | undefined => {
+          if (pos === 'verb') {
+            return settings.cefrLevelByPos.verb ?? settings.legacyVerbLevel ?? 'A1';
+          }
+          return settings.cefrLevelByPos[pos];
+        };
+
         for (const taskType of activeTaskTypes) {
           const entry = clientTaskRegistry[taskType];
           if (!entry) {
             continue;
           }
           const pos = entry.supportedPos[0];
+          const level = resolveLevelForPos(pos);
           const tasksForType = await fetchPracticeTasks({
             taskType,
             pos,
             limit: perTypeLimit,
+            level,
           });
           fetchedTasks.push(tasksForType);
         }
@@ -235,11 +244,13 @@ export default function Home() {
         let nextSessionState: PracticeSessionState | null = null;
         setSession((prev) => {
           const baseState = replace ? clearSessionQueue(prev) : prev;
-          nextSessionState = enqueueTasks(baseState, tasks, { replace });
-          return nextSessionState;
+          const updatedState = enqueueTasks(baseState, tasks, { replace });
+          nextSessionState = updatedState;
+          return updatedState;
         });
 
-        if (replace && nextSessionState && nextSessionState.queue.length === 0) {
+        const sessionAfterEnqueue = nextSessionState as PracticeSessionState | null;
+        if (replace && sessionAfterEnqueue && sessionAfterEnqueue.queue.length === 0) {
           lastFailedQueueSignatureRef.current = baseSignature;
           setFetchError('No practice tasks are available for your current scope right now. Try adjusting your practice scope or check back later.');
           return;
@@ -257,7 +268,7 @@ export default function Home() {
         setIsFetchingTasks(false);
       }
     },
-    [activeTaskTypes, session.queue],
+    [activeTaskTypes, session.queue, settings],
   );
 
   useEffect(() => {
