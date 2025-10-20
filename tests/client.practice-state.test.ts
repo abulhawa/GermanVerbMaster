@@ -217,39 +217,60 @@ describe('practice state migrations', () => {
 
     const reloaded = loadPracticeSession();
     expect(reloaded.queue).toContain('task-1');
+    expect(reloaded.leitner?.totalUnique).toBe(1);
+    expect(reloaded.isReviewSession).toBe(false);
 
     const reset = resetSession();
     expect(reset.queue).toHaveLength(0);
   });
 
-  it('avoids re-enqueueing recently completed tasks when topping up the queue', () => {
+  it('avoids duplicating tasks when topping up the queue', () => {
     const base = createEmptySessionState();
     const queued = enqueueTasks(base, [practiceTask]);
-    const completed = completeTask(queued, practiceTask.taskId);
+    const completed = completeTask(queued, practiceTask.taskId, 'correct');
 
     expect(completed.recent).toContain(practiceTask.taskId);
+    expect(completed.queue).toContain(practiceTask.taskId);
+    expect(completed.isReviewSession).toBe(true);
 
     const toppedUp = enqueueTasks(completed, [practiceTask]);
-    expect(toppedUp.queue).not.toContain(practiceTask.taskId);
+    expect(toppedUp.queue.filter((id) => id === practiceTask.taskId)).toHaveLength(1);
   });
 
   it('re-enqueues recently completed tasks when replacing the queue', () => {
     const base = createEmptySessionState();
     const queued = enqueueTasks(base, [practiceTask]);
-    const completed = completeTask(queued, practiceTask.taskId);
+    const completed = completeTask(queued, practiceTask.taskId, 'correct');
 
     const refreshed = enqueueTasks(completed, [practiceTask], { replace: true });
     expect(refreshed.queue).toContain(practiceTask.taskId);
+    expect(refreshed.isReviewSession).toBe(false);
   });
 
   it('preserves recent task history when clearing the session queue', () => {
     const base = createEmptySessionState();
     const queued = enqueueTasks(base, [practiceTask]);
-    const completed = completeTask(queued, practiceTask.taskId);
+    const completed = completeTask(queued, practiceTask.taskId, 'incorrect');
 
     const cleared = clearSessionQueue(completed);
     expect(cleared.queue).toHaveLength(0);
     expect(cleared.completed).toHaveLength(0);
     expect(cleared.recent).toContain(practiceTask.taskId);
+    expect(cleared.leitner).toBeNull();
+    expect(cleared.isReviewSession).toBe(false);
+  });
+
+  it('schedules tasks with a Leitner rotation after they are answered', () => {
+    const base = createEmptySessionState();
+    const queued = enqueueTasks(base, [practiceTask]);
+
+    const firstCompletion = completeTask(queued, practiceTask.taskId, 'correct');
+    expect(firstCompletion.queue).toContain(practiceTask.taskId);
+    expect(firstCompletion.leitner?.entries[practiceTask.taskId]?.seen).toBe(1);
+    expect(firstCompletion.isReviewSession).toBe(true);
+
+    const secondCompletion = completeTask(firstCompletion, practiceTask.taskId, 'incorrect');
+    expect(secondCompletion.leitner?.entries[practiceTask.taskId]?.box).toBe(0);
+    expect(secondCompletion.queue).toContain(practiceTask.taskId);
   });
 });

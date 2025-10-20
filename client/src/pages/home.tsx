@@ -26,6 +26,7 @@ import {
   completeTask,
   type PracticeSessionState,
   clearSessionQueue,
+  markLeitnerServerExhausted,
 } from '@/lib/practice-session';
 import {
   loadAnswerHistory,
@@ -229,6 +230,7 @@ export default function Home() {
         });
 
         if (!replace && !hasNewTasks) {
+          setSession((prev) => markLeitnerServerExhausted(prev));
           lastFailedQueueSignatureRef.current = baseSignature;
           return;
         }
@@ -290,6 +292,10 @@ export default function Home() {
       return;
     }
 
+    if (session.leitner?.serverExhausted && session.queue.length > 0) {
+      return;
+    }
+
     if (session.queue.length < MIN_QUEUE_THRESHOLD && !isFetchingTasks) {
       void fetchAndEnqueueTasks();
     }
@@ -301,6 +307,7 @@ export default function Home() {
     fetchAndEnqueueTasks,
     fetchError,
     queueSignature,
+    session.leitner?.serverExhausted,
   ]);
 
   useEffect(() => {
@@ -352,7 +359,7 @@ export default function Home() {
         return current;
       }
 
-      setSession((prev) => completeTask(prev, taskId));
+      setSession((prev) => completeTask(prev, taskId, current?.result));
 
       setTasksById((prev) => {
         const next = { ...prev };
@@ -501,6 +508,14 @@ export default function Home() {
                 </div>
               ) : activeTask ? (
                 <div id={HOME_SECTION_IDS.activeCardWrapper}>
+                  {session.isReviewSession ? (
+                    <div className="mb-4 rounded-2xl border border-primary/40 bg-primary/10 px-4 py-3 text-sm text-primary">
+                      <p className="text-xs font-semibold uppercase tracking-[0.22em]">
+                        {translations.home.reviewBanner.title}
+                      </p>
+                      <p className="mt-1 text-sm">{translations.home.reviewBanner.description}</p>
+                    </div>
+                  ) : null}
                   <PracticeCard
                     key={activeTask.taskId}
                     task={activeTask}
