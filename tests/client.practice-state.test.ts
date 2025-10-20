@@ -10,7 +10,15 @@ import {
   updateRendererPreferences,
   createDefaultSettings,
 } from '@/lib/practice-settings';
-import { enqueueTasks, loadPracticeSession, resetSession, savePracticeSession } from '@/lib/practice-session';
+import {
+  enqueueTasks,
+  loadPracticeSession,
+  resetSession,
+  savePracticeSession,
+  completeTask,
+  createEmptySessionState,
+  clearSessionQueue,
+} from '@/lib/practice-session';
 import type { PracticeTask, PracticeTaskQueueItem } from '@/lib/tasks';
 
 const legacyVerb = {
@@ -212,5 +220,27 @@ describe('practice state migrations', () => {
 
     const reset = resetSession();
     expect(reset.queue).toHaveLength(0);
+  });
+
+  it('avoids re-enqueueing recently completed tasks when refreshing the queue', () => {
+    const base = createEmptySessionState();
+    const queued = enqueueTasks(base, [practiceTask]);
+    const completed = completeTask(queued, practiceTask.taskId);
+
+    expect(completed.recent).toContain(practiceTask.taskId);
+
+    const refreshed = enqueueTasks(completed, [practiceTask], { replace: true });
+    expect(refreshed.queue).not.toContain(practiceTask.taskId);
+  });
+
+  it('preserves recent task history when clearing the session queue', () => {
+    const base = createEmptySessionState();
+    const queued = enqueueTasks(base, [practiceTask]);
+    const completed = completeTask(queued, practiceTask.taskId);
+
+    const cleared = clearSessionQueue(completed);
+    expect(cleared.queue).toHaveLength(0);
+    expect(cleared.completed).toHaveLength(0);
+    expect(cleared.recent).toContain(practiceTask.taskId);
   });
 });

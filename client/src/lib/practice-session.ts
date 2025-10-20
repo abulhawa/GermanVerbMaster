@@ -7,10 +7,13 @@ export interface PracticeSessionState {
   queue: string[];
   completed: string[];
   fetchedAt: string | null;
+  recent: string[];
 }
 
 const STORAGE_KEY = 'practice.session';
 const STORAGE_CONTEXT = 'practice session';
+
+const MAX_RECENT_HISTORY = 50;
 
 export function createEmptySessionState(): PracticeSessionState {
   return {
@@ -19,6 +22,7 @@ export function createEmptySessionState(): PracticeSessionState {
     queue: [],
     completed: [],
     fetchedAt: null,
+    recent: [],
   } satisfies PracticeSessionState;
 }
 
@@ -40,9 +44,15 @@ export function loadPracticeSession(): PracticeSessionState {
     if (!parsed || typeof parsed !== 'object') {
       return createEmptySessionState();
     }
+    const parsedRecent = Array.isArray((parsed as PracticeSessionState).recent)
+      ? (parsed as PracticeSessionState).recent.filter((value): value is string => typeof value === 'string')
+      : [];
+    const uniqueRecent = Array.from(new Set(parsedRecent));
+
     return {
       ...createEmptySessionState(),
       ...parsed,
+      recent: uniqueRecent.slice(0, MAX_RECENT_HISTORY),
     } satisfies PracticeSessionState;
   } catch (error) {
     console.warn('Failed to parse practice session state, resetting', error);
@@ -72,6 +82,10 @@ export function enqueueTasks(
   const nextQueue = replace ? [] : [...state.queue];
   const seen = new Set(nextQueue);
 
+  for (const taskId of state.recent) {
+    seen.add(taskId);
+  }
+
   for (const task of tasks) {
     if (seen.has(task.taskId)) {
       continue;
@@ -96,12 +110,16 @@ export function completeTask(state: PracticeSessionState, taskId: string): Pract
   const nextCompleted = state.completed.includes(taskId) ? state.completed : [...state.completed, taskId];
   const remainingQueue = state.queue.filter((id) => id !== taskId);
   const nextActive = remainingQueue[0] ?? null;
+  const filteredRecent = state.recent.filter((id) => id !== taskId);
+  filteredRecent.unshift(taskId);
+  const nextRecent = filteredRecent.slice(0, MAX_RECENT_HISTORY);
 
   return {
     ...state,
     completed: nextCompleted,
     queue: remainingQueue,
     activeTaskId: nextActive,
+    recent: nextRecent,
   };
 }
 
@@ -112,4 +130,17 @@ export function resetSession(): PracticeSessionState {
     storage.removeItem(STORAGE_KEY);
   }
   return state;
+}
+
+export function clearSessionQueue(
+  state: PracticeSessionState,
+  { preserveCompleted = false }: { preserveCompleted?: boolean } = {},
+): PracticeSessionState {
+  return {
+    ...state,
+    queue: [],
+    activeTaskId: null,
+    fetchedAt: null,
+    completed: preserveCompleted ? state.completed : [],
+  };
 }

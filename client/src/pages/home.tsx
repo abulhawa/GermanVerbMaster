@@ -24,8 +24,8 @@ import {
   savePracticeSession,
   enqueueTasks,
   completeTask,
-  resetSession,
   type PracticeSessionState,
+  clearSessionQueue,
 } from '@/lib/practice-session';
 import {
   loadAnswerHistory,
@@ -233,7 +233,7 @@ export default function Home() {
         });
 
         setSession((prev) => {
-          const baseState = replace ? resetSession() : prev;
+          const baseState = replace ? clearSessionQueue(prev) : prev;
           const nextState = enqueueTasks(baseState, tasks, { replace });
           return nextState;
         });
@@ -289,7 +289,7 @@ export default function Home() {
     if (shouldReloadTasks) {
       setShouldReloadTasks(false);
       setTasksById({});
-      setSession(resetSession());
+      setSession((prev) => clearSessionQueue(prev));
       lastFailedQueueSignatureRef.current = null;
       void fetchAndEnqueueTasks({ replace: true });
     }
