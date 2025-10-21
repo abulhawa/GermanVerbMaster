@@ -57,6 +57,25 @@ const practiceTask: PracticeTask = {
   source: 'seed',
 };
 
+const practiceTaskTwo: PracticeTask = {
+  taskId: 'task-2',
+  lexemeId: 'lex-2',
+  taskType: 'conjugate_form',
+  pos: 'verb',
+  renderer: 'conjugate_form',
+  prompt: {
+    lemma: 'kommen',
+    pos: 'verb',
+    requestedForm: { tense: 'present', person: '3s' },
+    instructions: 'Präsens er/sie/es angeben',
+  },
+  expectedSolution: { form: 'kommt' },
+  queueCap: 30,
+  lexeme: { id: 'lex-2', lemma: 'kommen', metadata: { level: 'A1' } },
+  assignedAt: new Date().toISOString(),
+  source: 'seed',
+};
+
 const queueItem: PracticeTaskQueueItem = {
   taskId: 'task-1',
   lexemeId: 'lex-1',
@@ -235,6 +254,20 @@ describe('practice state migrations', () => {
 
     const toppedUp = enqueueTasks(completed, [practiceTask]);
     expect(toppedUp.queue.filter((id) => id === practiceTask.taskId)).toHaveLength(1);
+  });
+
+  it('skips enqueuing tasks that are not due yet when new tasks are fetched', () => {
+    const base = createEmptySessionState();
+    const queued = enqueueTasks(base, [practiceTask, practiceTaskTwo]);
+    const completedFirst = completeTask(queued, practiceTask.taskId, 'correct');
+
+    expect(completedFirst.queue).not.toContain(practiceTask.taskId);
+    expect(completedFirst.queue).toContain(practiceTaskTwo.taskId);
+
+    const requeued = enqueueTasks(completedFirst, [practiceTask]);
+
+    expect(requeued.queue).not.toContain(practiceTask.taskId);
+    expect(requeued.queue).toContain(practiceTaskTwo.taskId);
   });
 
   it('re-enqueues recently completed tasks when replacing the queue', () => {
