@@ -17,6 +17,7 @@ interface AppShellProps extends DebuggableComponentProps {
   children: ReactNode;
   className?: string;
   mobileNav?: ReactNode;
+  topBarContent?: ReactNode;
 }
 
 export function AppShell({
@@ -25,6 +26,7 @@ export function AppShell({
   className,
   debugId,
   mobileNav,
+  topBarContent,
 }: AppShellProps) {
   const resolvedDebugId = debugId && debugId.trim().length > 0 ? debugId : "layout-app-shell";
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
@@ -90,7 +92,7 @@ export function AppShell({
                 className,
               )}
             >
-              <UserMenuControl className="mb-2" />
+              {topBarContent ? <div className="mb-2">{topBarContent}</div> : <UserMenuControl className="mb-2" />}
               {children}
             </main>
           </div>
