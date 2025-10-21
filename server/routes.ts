@@ -10,6 +10,7 @@ import { z } from "zod";
 import { and, count, desc, eq, inArray, sql } from "drizzle-orm";
 import {
   canonicalizeExamples,
+  detectExampleLanguage,
   examplesEqual,
   getExampleSentence,
   getExampleTranslation,
@@ -619,18 +620,28 @@ function presentWord(word: Word): Omit<Word, "sourcesCsv" | "sourceNotes"> {
   const matchingExample = normalizedExamples.find((entry) => {
     const sentence = entry.sentence ?? null;
     const englishTranslation = entry.translations?.en ?? null;
-    return Boolean(sentence && englishTranslation);
+    return Boolean(sentence) && detectExampleLanguage(englishTranslation) === "en";
   });
 
   let exampleDe = rest.exampleDe ?? null;
-  let exampleEn = rest.exampleEn ?? null;
+  if (matchingExample?.sentence) {
+    exampleDe = matchingExample.sentence;
+  } else if (!exampleDe) {
+    exampleDe = getExampleSentence(normalizedExamples);
+  }
 
-  if (matchingExample) {
-    exampleDe = matchingExample.sentence ?? null;
-    exampleEn = matchingExample.translations?.en ?? null;
-  } else {
-    exampleDe = exampleDe ?? getExampleSentence(normalizedExamples);
-    exampleEn = exampleEn ?? getExampleTranslation(normalizedExamples, "en");
+  const exampleEnCandidates: Array<string | null> = [
+    matchingExample?.translations?.en ?? null,
+    getExampleTranslation(normalizedExamples, "en"),
+    rest.exampleEn ?? null,
+  ];
+
+  let exampleEn: string | null = null;
+  for (const candidate of exampleEnCandidates) {
+    if (detectExampleLanguage(candidate) === "en") {
+      exampleEn = candidate;
+      break;
+    }
   }
   return {
     ...rest,
