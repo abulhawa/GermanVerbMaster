@@ -1,0 +1,202 @@
+{
+  "schemaVersion": 1,
+  "providerId": "tatoeba",
+  "providerLabel": "Tatoeba",
+  "pos": "Part",
+  "updatedAt": "2025-10-21T09:56:59.661Z",
+  "entries": {
+    "bitte": {
+      "lemma": "bitte",
+      "pos": "Part",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:45.099Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Bitte?",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Bitte?",
+        "exampleDe": "Bitte?"
+      },
+      "wordId": 3073,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 4001,
+        "wordId": 3073,
+        "createdAt": "2025-10-17T21:54:45.099Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:45.099Z"
+      }
+    },
+    "danke": {
+      "lemma": "danke",
+      "pos": "Part",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:46.006Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Danke.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Danke.",
+        "exampleDe": "Danke."
+      },
+      "wordId": 3074,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 4003,
+        "wordId": 3074,
+        "createdAt": "2025-10-17T21:54:46.006Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:46.006Z"
+      }
+    },
+    "halt": {
+      "lemma": "halt",
+      "pos": "Part",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:46.762Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Halt!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Halt!",
+        "exampleDe": "Halt!"
+      },
+      "wordId": 3077,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 4005,
+        "wordId": 3077,
+        "createdAt": "2025-10-17T21:54:46.762Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:46.762Z"
+      }
+    },
+    "noch mal": {
+      "lemma": "noch mal",
+      "pos": "Part",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:26:11.079Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Noch mal!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Noch mal!",
+        "exampleDe": "Noch mal!"
+      },
+      "wordId": 3078,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 575,
+        "wordId": 3078,
+        "createdAt": "2025-10-17T21:26:11.079Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:26:11.079Z"
+      }
+    },
+    "nochmal": {
+      "lemma": "nochmal",
+      "pos": "Part",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:47.864Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Nochmal.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Nochmal.",
+        "exampleDe": "Nochmal."
+      },
+      "wordId": 3079,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 4007,
+        "wordId": 3079,
+        "createdAt": "2025-10-17T21:54:47.864Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:47.864Z"
+      }
+    }
+  },
+  "meta": {
+    "createdAt": "2025-10-21T09:28:18.082Z"
+  }
+}

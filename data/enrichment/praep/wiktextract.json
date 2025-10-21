@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 1,
+  "providerId": "wiktextract",
+  "providerLabel": "Wiktextract",
+  "pos": "Präp",
+  "updatedAt": "2025-10-21T09:56:59.756Z",
+  "entries": {
+    "hinter": {
+      "lemma": "hinter",
+      "pos": "Präp",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:27.532Z",
+      "translations": [
+        {
+          "value": "behind, after",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "after (in pursuit of)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "beyond (further away than)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "behind, after",
+        "after (in pursuit of)",
+        "beyond (further away than)"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "prep",
+        "posNotes": [
+          "adverbs",
+          "Pages with 2 entries",
+          "Pages with entries",
+          "prepositions",
+          "terms inherited from Old High German",
+          "terms inherited from Proto-Germanic"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/h/hi/hinter.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "behind, after",
+          "after (in pursuit of)",
+          "beyond (further away than)"
+        ],
+        "translations": [
+          {
+            "value": "behind, after",
+            "language": "en"
+          },
+          {
+            "value": "after (in pursuit of)",
+            "language": "en"
+          },
+          {
+            "value": "beyond (further away than)",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 3016,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5911,
+        "wordId": 3016,
+        "createdAt": "2025-10-17T22:19:27.532Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:27.532Z"
+      }
+    },
+    "statt": {
+      "lemma": "statt",
+      "pos": "Präp",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:27.802Z",
+      "translations": [
+        {
+          "value": "instead of, in one's stead",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": [
+        "anstatt"
+      ],
+      "englishHints": [
+        "instead of, in one's stead"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "prep",
+        "posNotes": [
+          "conjunctions",
+          "Pages with 5 entries",
+          "Pages with entries",
+          "prepositions",
+          "Rhymes:German/at",
+          "Rhymes:German/at/1 syllable",
+          "terms with homophones"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/s/st/statt.jsonl",
+        "synonyms": [
+          "anstatt"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "instead of, in one's stead"
+        ],
+        "translations": [
+          {
+            "value": "instead of, in one's stead",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 3024,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5912,
+        "wordId": 3024,
+        "createdAt": "2025-10-17T22:19:27.802Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:27.802Z"
+      }
+    }
+  },
+  "meta": {
+    "createdAt": "2025-10-21T09:28:18.239Z"
+  }
+}

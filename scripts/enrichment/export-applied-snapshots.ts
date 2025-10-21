@@ -7,7 +7,11 @@ import { getDb, getPool } from "@db/client";
 import { enrichmentProviderSnapshots, words } from "@db/schema";
 import type { EnrichmentProviderSnapshot } from "@shared/enrichment";
 
-import { persistProviderSnapshotToFile } from "./storage";
+import {
+  persistProviderSnapshotToFile,
+  SupabaseStorageNotConfiguredError,
+  syncEnrichmentDirectoryToSupabase,
+} from "./storage";
 import { writeWordsBackupToDisk } from "./backup";
 
 function parseArgs(argv: string[]): { clean: boolean; purge: boolean } {
@@ -99,15 +103,20 @@ async function cleanOutputDir(rootDir: string): Promise<void> {
   await rm(outputDir, { force: true, recursive: true });
 }
 
-async function purgeAppliedSnapshots(snapshotIds: number[]): Promise<number> {
-  if (!snapshotIds.length) {
+async function purgeAppliedSnapshots(wordIds: number[]): Promise<number> {
+  if (!wordIds.length) {
     return 0;
   }
 
   const database = getDb();
   const deleted = await database
     .delete(enrichmentProviderSnapshots)
-    .where(inArray(enrichmentProviderSnapshots.id, snapshotIds))
+    .where(
+      and(
+        eq(enrichmentProviderSnapshots.trigger, "apply"),
+        inArray(enrichmentProviderSnapshots.wordId, wordIds),
+      ),
+    )
     .returning({ id: enrichmentProviderSnapshots.id });
 
   return deleted.length;
@@ -125,7 +134,13 @@ async function main(): Promise<void> {
 
     const loadedSnapshots = await loadAppliedSnapshots();
     const snapshots = loadedSnapshots.map((entry) => entry.snapshot);
-    const exportedSnapshotIds = loadedSnapshots.map((entry) => entry.id);
+    const exportedWordIds = Array.from(
+      new Set(
+        loadedSnapshots
+          .map((entry) => entry.snapshot.wordId)
+          .filter((value): value is number => typeof value === "number"),
+      ),
+    );
 
     if (snapshots.length) {
       snapshots.sort((a, b) => {
@@ -139,16 +154,44 @@ async function main(): Promise<void> {
       });
 
       let successCount = 0;
+      const changedFiles = new Set<string>();
       for (const snapshot of snapshots) {
-        await persistProviderSnapshotToFile(snapshot);
+        const { relativePath } = await persistProviderSnapshotToFile(snapshot, { skipUpload: true });
         successCount += 1;
+        if (relativePath) {
+          changedFiles.add(relativePath);
+        }
       }
 
       console.log(`Persisted ${successCount} provider snapshots to data/enrichment`);
 
+      if (changedFiles.size > 0) {
+        try {
+          const syncResult = await syncEnrichmentDirectoryToSupabase(rootDir, {
+            includeRelativePaths: Array.from(changedFiles),
+          });
+          console.log(
+            `Uploaded ${syncResult.uploaded}/${syncResult.totalFiles} provider files to Supabase Storage`,
+          );
+          if (syncResult.failed.length > 0) {
+            for (const failure of syncResult.failed) {
+              console.warn(`Failed to upload ${failure.path}: ${failure.error}`);
+            }
+          }
+        } catch (error) {
+          if (error instanceof SupabaseStorageNotConfiguredError) {
+            console.log("Supabase Storage is not configured; skipped uploading provider files.");
+          } else {
+            throw error;
+          }
+        }
+      }
+
       if (purge) {
-        const purgedCount = await purgeAppliedSnapshots(exportedSnapshotIds);
-        console.log(`Purged ${purgedCount} applied provider snapshots from the database`);
+        const purgedCount = await purgeAppliedSnapshots(exportedWordIds);
+        console.log(
+          `Purged ${purgedCount} applied provider snapshots from the database across ${exportedWordIds.length} words`,
+        );
       }
     } else {
       console.log("No applied enrichment snapshots found.");

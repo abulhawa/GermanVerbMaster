@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "providerId": "tatoeba",
+  "providerLabel": "Tatoeba",
+  "pos": "Pron",
+  "updatedAt": "2025-10-21T09:56:59.845Z",
+  "entries": {
+    "alle": {
+      "lemma": "alle",
+      "pos": "Pron",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:23:00.160Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Alles endet.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Alles endet.",
+        "exampleDe": "Alles endet."
+      },
+      "wordId": 3066,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 195,
+        "wordId": 3066,
+        "createdAt": "2025-10-17T21:23:00.160Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:23:00.160Z"
+      }
+    },
+    "dich": {
+      "lemma": "dich",
+      "pos": "Pron",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:42.130Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Ich!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Ich!",
+        "exampleDe": "Ich!"
+      },
+      "wordId": 3068,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3995,
+        "wordId": 3068,
+        "createdAt": "2025-10-17T21:54:42.130Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:42.130Z"
+      }
+    },
+    "dir": {
+      "lemma": "dir",
+      "pos": "Pron",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:43.211Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Ich!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Ich!",
+        "exampleDe": "Ich!"
+      },
+      "wordId": 3069,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3997,
+        "wordId": 3069,
+        "createdAt": "2025-10-17T21:54:43.211Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:43.211Z"
+      }
+    },
+    "selbst": {
+      "lemma": "selbst",
+      "pos": "Pron",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:43.654Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Urteilt selbst!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Urteilt selbst!",
+        "exampleDe": "Urteilt selbst!"
+      },
+      "wordId": 3072,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3999,
+        "wordId": 3072,
+        "createdAt": "2025-10-17T21:54:43.654Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:43.654Z"
+      }
+    }
+  },
+  "meta": {
+    "createdAt": "2025-10-21T09:28:18.309Z"
+  }
+}

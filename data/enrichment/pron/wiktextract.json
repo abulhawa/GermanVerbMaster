@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "providerId": "wiktextract",
+  "providerLabel": "Wiktextract",
+  "pos": "Pron",
+  "updatedAt": "2025-10-21T09:56:59.882Z",
+  "entries": {
+    "alle": {
+      "lemma": "alle",
+      "pos": "Pron",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:10:22.915Z",
+      "translations": null,
+      "examples": null,
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "wordId": 3066,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 4224,
+        "wordId": 3066,
+        "createdAt": "2025-10-17T22:10:22.915Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:10:22.915Z"
+      }
+    },
+    "dich": {
+      "lemma": "dich",
+      "pos": "Pron",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:09:50.999Z",
+      "translations": null,
+      "examples": null,
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "wordId": 3068,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 4148,
+        "wordId": 3068,
+        "createdAt": "2025-10-17T22:09:50.999Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:09:50.999Z"
+      }
+    },
+    "dir": {
+      "lemma": "dir",
+      "pos": "Pron",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:09:24.505Z",
+      "translations": null,
+      "examples": null,
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "wordId": 3069,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 4040,
+        "wordId": 3069,
+        "createdAt": "2025-10-17T22:09:24.505Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:09:24.505Z"
+      }
+    },
+    "selbst": {
+      "lemma": "selbst",
+      "pos": "Pron",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:09:24.699Z",
+      "translations": null,
+      "examples": null,
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "wordId": 3072,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 4041,
+        "wordId": 3072,
+        "createdAt": "2025-10-17T22:09:24.699Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:09:24.699Z"
+      }
+    }
+  },
+  "meta": {
+    "createdAt": "2025-10-21T09:28:18.352Z"
+  }
+}

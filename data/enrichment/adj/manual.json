@@ -3,7 +3,7 @@
   "providerId": "manual",
   "providerLabel": "Community Import",
   "pos": "Adj",
-  "updatedAt": "2025-10-19T00:11:11.208Z",
+  "updatedAt": "2025-10-21T09:49:15.375Z",
   "entries": {
     "freundlich": {
       "lemma": "freundlich",
@@ -12080,6 +12080,124 @@
         "createdAt": "2025-10-19T00:11:11.507Z",
         "enrichmentMethod": "bulk",
         "appliedAt": "2025-10-19T00:11:11.507Z"
+      }
+    },
+    "ähnlich": {
+      "lemma": "ähnlich",
+      "pos": "Adj",
+      "providerId": "manual",
+      "providerLabel": "Manual Apply",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T23:09:37.469Z",
+      "translations": [
+        {
+          "value": "similar, alike, resembling",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": [
+        {
+          "sentence": "auf ähnliche Weise",
+          "translations": null
+        },
+        {
+          "sentence": "auf ähnliche Weise",
+          "translations": {
+            "en": "in a similar manner"
+          }
+        },
+        {
+          "sentence": "Das ist ähnlich.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "word": {
+          "id": 2828,
+          "aux": null,
+          "pos": "Adj",
+          "lemma": "ähnlich",
+          "gender": null,
+          "plural": null,
+          "english": "similar, alike, resembling",
+          "perfekt": null,
+          "examples": [
+            {
+              "sentence": "auf ähnliche Weise",
+              "translations": null
+            },
+            {
+              "sentence": "auf ähnliche Weise",
+              "translations": {
+                "en": "in a similar manner"
+              }
+            },
+            {
+              "sentence": "Das ist ähnlich.",
+              "translations": null
+            }
+          ],
+          "exampleDe": "auf ähnliche Weise",
+          "exampleEn": "in a similar manner",
+          "partizipIi": null,
+          "comparative": "das ähnlichere",
+          "praeteritum": null,
+          "superlative": "am ähnlichsten",
+          "translations": [
+            {
+              "value": "similar, alike, resembling",
+              "source": "kaikki.org",
+              "language": "en",
+              "confidence": null
+            }
+          ],
+          "posAttributes": {
+            "pos": "adj",
+            "notes": [
+              "adjectives",
+              "Pages with 1 entry",
+              "Pages with entries",
+              "terms inherited from Middle High German",
+              "terms inherited from Old High German",
+              "terms inherited from Proto-Germanic",
+              "terms with collocations",
+              "terms with quotations"
+            ]
+          },
+          "enrichmentMethod": "manual_api",
+          "enrichmentAppliedAt": "2025-10-17T23:09:37.177Z"
+        },
+        "patch": {
+          "exampleDe": "auf ähnliche Weise"
+        },
+        "method": "manual_api",
+        "source": "manual_apply",
+        "appliedAt": "2025-10-17T23:09:37.177Z",
+        "appliedFields": [
+          "examples",
+          "enrichmentAppliedAt",
+          "enrichmentMethod"
+        ]
+      },
+      "wordId": 2828,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "all",
+        "snapshotId": 5926,
+        "wordId": 2828,
+        "createdAt": "2025-10-17T23:09:37.469Z",
+        "enrichmentMethod": "manual_api",
+        "appliedAt": "2025-10-17T23:09:37.177Z",
+        "source": "manual_apply"
       }
     }
   },
