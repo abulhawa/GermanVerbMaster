@@ -109,10 +109,9 @@ interface VerbLevelSelectProps {
   value: CEFRLevel;
   onChange: (level: CEFRLevel) => void;
   labelId: string;
-  placeholder: string;
 }
 
-function VerbLevelSelect({ value, onChange, labelId, placeholder }: VerbLevelSelectProps) {
+function VerbLevelSelect({ value, onChange, labelId }: VerbLevelSelectProps) {
   return (
     <Select
       value={value}
@@ -121,12 +120,11 @@ function VerbLevelSelect({ value, onChange, labelId, placeholder }: VerbLevelSel
     >
       <SelectTrigger
         aria-labelledby={labelId}
-        className="w-28 rounded-full border border-border/60 bg-background/90 px-4 py-2 text-sm font-medium text-foreground shadow-soft"
+        className="h-12 w-28 rounded-full border border-border/60 bg-background/90 px-5 text-sm font-medium text-foreground shadow-soft"
         debugId="home-verb-level-trigger"
       >
         <SelectValue
           debugId="home-verb-level-value"
-          placeholder={placeholder}
         />
       </SelectTrigger>
       <SelectContent debugId="home-verb-level-menu" align="start">
@@ -166,7 +164,6 @@ export default function Home() {
   );
   const translations = useTranslations();
   const homeTopBarCopy = translations.home.topBar;
-  const practiceControlsCopy = translations.home.practiceControls;
 
   const scope = computeScope(settings);
   const activeTaskTypes = useMemo(() => {
@@ -494,38 +491,27 @@ export default function Home() {
   const isInitialLoading = !activeTask && isFetchingTasks;
 
   const topBarControls = (
-    <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-border/60 bg-card/80 px-4 py-3 shadow-soft">
-      <div className="flex flex-wrap items-end gap-4" id={HOME_SECTION_IDS.modeSwitcher}>
-        <div className="space-y-1">
-          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-            {homeTopBarCopy.focusLabel}
-          </span>
-          <PracticeModeSwitcher
-            debugId="topbar-mode-switcher"
-            scope={scope}
-            onScopeChange={handleScopeChange}
-            selectedTaskTypes={activeTaskTypes}
-            onTaskTypesChange={handleCustomTaskTypesChange}
-            availableTaskTypes={AVAILABLE_TASK_TYPES}
-            scopeBadgeLabel={scopeBadgeLabel}
-          />
-        </div>
-        <div className="space-y-1">
-          <span
-            id={verbLevelLabelId}
-            className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground"
-          >
-            {practiceControlsCopy.levelLabel}
-          </span>
-          <VerbLevelSelect
-            value={verbLevel}
-            onChange={handleVerbLevelChange}
-            labelId={verbLevelLabelId}
-            placeholder={practiceControlsCopy.levelPlaceholder}
-          />
-        </div>
+    <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-border/60 bg-card/80 px-4 py-2 shadow-soft">
+      <div className="flex flex-wrap items-center gap-3" id={HOME_SECTION_IDS.modeSwitcher}>
+        <span id={verbLevelLabelId} className="sr-only">
+          {homeTopBarCopy.levelLabel}
+        </span>
+        <PracticeModeSwitcher
+          debugId="topbar-mode-switcher"
+          scope={scope}
+          onScopeChange={handleScopeChange}
+          selectedTaskTypes={activeTaskTypes}
+          onTaskTypesChange={handleCustomTaskTypesChange}
+          availableTaskTypes={AVAILABLE_TASK_TYPES}
+          scopeBadgeLabel={scopeBadgeLabel}
+        />
+        <VerbLevelSelect
+          value={verbLevel}
+          onChange={handleVerbLevelChange}
+          labelId={verbLevelLabelId}
+        />
       </div>
-      <UserMenuControl className="w-auto flex-none justify-end" />
+      <UserMenuControl className="w-auto flex-none" />
     </div>
   );
 
@@ -558,8 +544,6 @@ export default function Home() {
       >
       <div className="space-y-6" id={HOME_SECTION_IDS.content}>
         <section
-          className="flex min-h-[540px] flex-col gap-6 rounded-3xl border border-border/50 bg-card/80 p-6 shadow-xl shadow-primary/10"
-          id={HOME_SECTION_IDS.practiceSection}
         >
           <div className="flex flex-1 flex-col gap-6">
             <div

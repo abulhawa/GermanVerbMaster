@@ -125,7 +125,7 @@ export function PracticeModeSwitcher({
       <PopoverTrigger asChild debugId={`${resolvedDebugId}-trigger`}>
         <button
           type="button"
-          className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-sm font-medium text-primary transition hover:border-primary/50 hover:bg-primary/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          className="inline-flex h-12 items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-5 text-sm font-medium text-primary transition hover:border-primary/50 hover:bg-primary/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           aria-label="Adjust practice scope"
           {...getDevAttributes('practice-mode-switcher-trigger', `${resolvedDebugId}-trigger`)}
         >

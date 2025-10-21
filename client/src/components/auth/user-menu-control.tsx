@@ -166,7 +166,7 @@ export function UserMenuControl({ className }: UserMenuControlProps) {
     <Button
       type="button"
       variant="outline"
-      className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/95 px-4 py-2 text-sm font-semibold text-foreground shadow-soft transition hover:border-primary/60 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      className="inline-flex h-12 items-center gap-2 rounded-full border border-border/60 bg-background/95 px-5 text-sm font-semibold text-foreground shadow-soft transition hover:border-primary/60 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       onClick={() => setAuthDialogOpen(true)}
       disabled={isSessionLoading}
       aria-label={menuCopy.signInLabel}

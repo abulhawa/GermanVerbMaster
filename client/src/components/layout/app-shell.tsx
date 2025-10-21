@@ -88,7 +88,7 @@ export function AppShell({
           >
             <main
               className={cn(
-                "flex-1 rounded-app bg-card/60 px-4 pb-16 pt-4 ring-1 ring-inset ring-border/40 sm:px-6 lg:px-8 xl:px-10",
+                "flex-1 rounded-app bg-card/60 px-4 pb-16 pt-4  sm:px-6 lg:px-8 xl:px-10",
                 className,
               )}
             >
