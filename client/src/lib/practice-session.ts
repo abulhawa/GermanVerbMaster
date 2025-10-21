@@ -259,7 +259,9 @@ export function enqueueTasks(
   let reviewSession = replace ? false : state.isReviewSession;
 
   for (const task of tasks) {
-    if (nextLeitner && !nextLeitner.entries[task.taskId]) {
+    const existingEntry = nextLeitner?.entries[task.taskId];
+
+    if (nextLeitner && !existingEntry) {
       nextLeitner.entries[task.taskId] = {
         box: 0,
         dueStep: nextLeitner.step,
@@ -267,6 +269,12 @@ export function enqueueTasks(
       } satisfies LeitnerEntryState;
       nextLeitner.totalUnique += 1;
       nextLeitner.serverExhausted = false;
+    }
+
+    const entry = nextLeitner?.entries[task.taskId];
+
+    if (entry && nextLeitner && entry.dueStep > nextLeitner.step && !seen.has(task.taskId)) {
+      continue;
     }
 
     if (seen.has(task.taskId)) {
