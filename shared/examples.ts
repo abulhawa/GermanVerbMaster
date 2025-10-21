@@ -8,6 +8,314 @@ function normalizeString(value: string | null | undefined): string | null {
   return trimmed.length > 0 ? trimmed : null;
 }
 
+const GERMAN_CHAR_PATTERN = /[äöüßÄÖÜ]/u;
+
+const GERMAN_STOP_WORDS = new Set(
+  [
+    "aber",
+    "alle",
+    "alles",
+    "also",
+    "am",
+    "an",
+    "auch",
+    "auf",
+    "aus",
+    "bei",
+    "bitte",
+    "dabei",
+    "dann",
+    "darauf",
+    "darum",
+    "das",
+    "dass",
+    "dein",
+    "deine",
+    "dem",
+    "den",
+    "denn",
+    "der",
+    "des",
+    "dich",
+    "die",
+    "dies",
+    "dieser",
+    "dir",
+    "doch",
+    "dort",
+    "du",
+    "durch",
+    "ein",
+    "eine",
+    "einem",
+    "einen",
+    "einer",
+    "einfach",
+    "einmal",
+    "er",
+    "es",
+    "etwas",
+    "für",
+    "gegen",
+    "gern",
+    "gestern",
+    "gut",
+    "gute",
+    "guten",
+    "habe",
+    "haben",
+    "hat",
+    "heute",
+    "hier",
+    "ich",
+    "ihm",
+    "ihn",
+    "ihr",
+    "ihre",
+    "im",
+    "in",
+    "ja",
+    "jede",
+    "jedem",
+    "jeden",
+    "kein",
+    "keine",
+    "keinem",
+    "keinen",
+    "keiner",
+    "können",
+    "könnte",
+    "machen",
+    "man",
+    "mein",
+    "meine",
+    "mehr",
+    "mir",
+    "mit",
+    "muss",
+    "müssen",
+    "nach",
+    "nicht",
+    "noch",
+    "nun",
+    "nur",
+    "oder",
+    "ohne",
+    "schon",
+    "sein",
+    "seine",
+    "seit",
+    "sie",
+    "sind",
+    "so",
+    "soll",
+    "sollte",
+    "um",
+    "und",
+    "uns",
+    "unser",
+    "viel",
+    "vom",
+    "von",
+    "vor",
+    "war",
+    "waren",
+    "was",
+    "weg",
+    "weil",
+    "wenn",
+    "wer",
+    "wie",
+    "wieder",
+    "wir",
+    "wird",
+    "wirst",
+    "wo",
+    "wollen",
+    "würde",
+    "zuerst",
+    "zum",
+    "zur",
+    "zusammen",
+  ].map((entry) => entry.toLowerCase()),
+);
+
+const ENGLISH_STOP_WORDS = new Set(
+  [
+    "a",
+    "about",
+    "again",
+    "all",
+    "also",
+    "and",
+    "any",
+    "are",
+    "an",
+    "as",
+    "at",
+    "be",
+    "because",
+    "been",
+    "before",
+    "but",
+    "by",
+    "can",
+    "could",
+    "do",
+    "does",
+    "done",
+    "each",
+    "for",
+    "from",
+    "had",
+    "has",
+    "have",
+    "he",
+    "her",
+    "here",
+    "hers",
+    "him",
+    "his",
+    "how",
+    "i",
+    "if",
+    "in",
+    "into",
+    "is",
+    "it",
+    "its",
+    "just",
+    "may",
+    "me",
+    "might",
+    "more",
+    "most",
+    "my",
+    "no",
+    "not",
+    "now",
+    "of",
+    "off",
+    "on",
+    "one",
+    "only",
+    "or",
+    "other",
+    "our",
+    "out",
+    "over",
+    "said",
+    "she",
+    "should",
+    "so",
+    "some",
+    "than",
+    "that",
+    "the",
+    "their",
+    "them",
+    "then",
+    "there",
+    "these",
+    "they",
+    "this",
+    "those",
+    "through",
+    "to",
+    "too",
+    "under",
+    "up",
+    "very",
+    "was",
+    "we",
+    "were",
+    "what",
+    "when",
+    "where",
+    "which",
+    "who",
+    "why",
+    "will",
+    "with",
+    "would",
+    "you",
+    "your",
+    "yours",
+  ].map((entry) => entry.toLowerCase()),
+);
+
+function tokenizeForDetection(value: string): string[] {
+  return value
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[^a-zA-ZäöüÄÖÜß\s']/g, " ")
+    .split(/\s+/u)
+    .filter((token) => token.length > 0);
+}
+
+function countStopWordMatches(tokens: string[], dictionary: ReadonlySet<string>): number {
+  let matches = 0;
+  for (const token of tokens) {
+    if (dictionary.has(token)) {
+      matches += 1;
+    }
+  }
+  return matches;
+}
+
+export type DetectedExampleLanguage = "de" | "en" | "unknown";
+
+export function detectExampleLanguage(value: string | null | undefined): DetectedExampleLanguage {
+  const normalized = normalizeString(value ?? undefined);
+  if (!normalized) {
+    return "unknown";
+  }
+
+  const tokens = tokenizeForDetection(normalized);
+  if (tokens.length === 0) {
+    return "unknown";
+  }
+
+  const germanMatches = countStopWordMatches(tokens, GERMAN_STOP_WORDS);
+  const englishMatches = countStopWordMatches(tokens, ENGLISH_STOP_WORDS);
+
+  let germanScore = germanMatches;
+  const englishScore = englishMatches;
+
+  if (GERMAN_CHAR_PATTERN.test(normalized)) {
+    germanScore += 2;
+  }
+
+  const germanRatio = germanMatches / tokens.length;
+  const englishRatio = englishMatches / tokens.length;
+
+  if (germanScore >= 2 && germanRatio >= 0.2 && germanScore >= englishScore + 1) {
+    return "de";
+  }
+
+  if (englishScore >= 2 && englishRatio >= 0.2 && englishScore > germanScore) {
+    return "en";
+  }
+
+  if (germanScore >= 1 && englishScore === 0 && (germanRatio >= 0.3 || tokens.length <= 3)) {
+    return "de";
+  }
+
+  if (englishScore >= 1 && germanScore === 0 && (englishRatio >= 0.3 || tokens.length <= 3)) {
+    return "en";
+  }
+
+  return "unknown";
+}
+
+export function isLikelyGermanExample(value: string | null | undefined): boolean {
+  return detectExampleLanguage(value) === "de";
+}
+
+export function isLikelyEnglishExample(value: string | null | undefined): boolean {
+  return detectExampleLanguage(value) === "en";
+}
+
 function normalizeTranslations(
   translations: WordExampleTranslations | Record<string, string | null | undefined> | null | undefined,
 ):
@@ -21,6 +329,9 @@ function normalizeTranslations(
       const normalizedLanguage = normalizeString(language)?.toLowerCase();
       const normalizedText = normalizeString(text ?? undefined);
       if (!normalizedLanguage || !normalizedText) {
+        return undefined;
+      }
+      if (normalizedLanguage === "en" && isLikelyGermanExample(normalizedText)) {
         return undefined;
       }
       return [normalizedLanguage, normalizedText] as const;
@@ -40,8 +351,10 @@ export function normalizeWordExample(entry: WordExample | null | undefined): Wor
   }
 
   const sentence = normalizeString(entry.sentence ?? entry.exampleDe ?? undefined);
+  const fallbackEnglish = normalizeString(entry.exampleEn ?? undefined);
   const translations = normalizeTranslations(
-    entry.translations ?? (entry.exampleEn ? { en: entry.exampleEn } : null),
+    entry.translations ??
+      (fallbackEnglish && !isLikelyGermanExample(fallbackEnglish) ? { en: fallbackEnglish } : null),
   );
 
   if (!sentence && !translations) {
@@ -60,9 +373,71 @@ export function normalizeWordExamples(
   if (!examples || !Array.isArray(examples)) {
     return null;
   }
-  const normalized = examples
-    .map((entry) => normalizeWordExample(entry))
-    .filter((entry): entry is WordExample => entry !== null);
+  const normalized: WordExample[] = [];
+
+  for (const rawEntry of examples) {
+    if (!rawEntry || typeof rawEntry !== "object") {
+      continue;
+    }
+
+    const cloned: WordExample = {
+      ...rawEntry,
+      translations: rawEntry.translations
+        ? { ...rawEntry.translations }
+        : rawEntry.translations ?? null,
+    };
+
+    const reclassifiedSentences = new Set<string>();
+
+    const candidateEnglish = normalizeString(cloned.exampleEn ?? undefined);
+    if (candidateEnglish && isLikelyGermanExample(candidateEnglish)) {
+      cloned.exampleEn = null;
+      reclassifiedSentences.add(candidateEnglish);
+    }
+
+    if (cloned.translations && typeof cloned.translations === "object") {
+      for (const [language, value] of Object.entries(cloned.translations)) {
+        const normalizedLanguage = normalizeString(language)?.toLowerCase();
+        const normalizedValue = normalizeString(typeof value === "string" ? value : undefined);
+        if (
+          normalizedLanguage === "en" &&
+          normalizedValue &&
+          isLikelyGermanExample(normalizedValue)
+        ) {
+          delete (cloned.translations as Record<string, string | null | undefined>)[language];
+          reclassifiedSentences.add(normalizedValue);
+        }
+      }
+
+      if (cloned.translations && Object.keys(cloned.translations).length === 0) {
+        cloned.translations = null;
+      }
+    }
+
+    const normalizedEntry = normalizeWordExample(cloned);
+    if (normalizedEntry) {
+      normalized.push(normalizedEntry);
+    }
+
+    for (const sentence of reclassifiedSentences) {
+      if (!sentence) {
+        continue;
+      }
+      const duplicate = normalized.some((entry) => {
+        const normalizedSentence = entry.sentence ?? null;
+        return normalizedSentence
+          ? normalizedSentence.trim().toLowerCase() === sentence.trim().toLowerCase()
+          : false;
+      });
+      if (!duplicate) {
+        normalized.push({
+          sentence,
+          translations: null,
+        });
+      }
+    }
+  }
+
   return normalized.length > 0 ? normalized : null;
 }
 

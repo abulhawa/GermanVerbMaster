@@ -45,7 +45,7 @@ Refer to `db/schema.ts` for column-level details, indices, and relationships.
 - Renderers resolve by task type; adding a new type requires updating the shared registry, server registry, client renderer map, and `packs:lint` validation in the same pull request to maintain parity.
 
 ## Content pipeline & QA
-- `npm run seed` hydrates the lexeme tables and regenerates deterministic pack JSON under `data/packs/`. Copy the updated packs to `client/public/packs/` before building so offline clients stay in sync. Pass `--reset` (`npm run seed -- --reset`) when you need to wipe previously seeded `words`, `lexemes`, `inflections`, `task_specs`, `content_packs`, and `pack_lexeme_map` rows before re-importing updated POS JSONL files.
+- Deterministic pack JSON under `data/packs/` should be regenerated via the JSONL export helpers or enrichment tooling. The legacy `npm run seed` command now only logs a deprecation notice and no longer accepts the `--reset` flag.
 - `npm run packs:lint` (backed by `scripts/packs-lint.ts`) validates pack headers, license fields, lexeme membership, and task payloads against the shared registry. The command exits non-zero on any issue, making it safe to wire into CI.
 - Keep attribution notes and source tracking up to date in pack metadata; the lint script enforces license presence and highlights missing `packLexemeMap` entries.
 

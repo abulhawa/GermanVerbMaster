@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "providerId": "tatoeba",
+  "providerLabel": "Tatoeba",
+  "pos": "Präp",
+  "updatedAt": "2025-10-21T09:56:59.741Z",
+  "entries": {
+    "hinter": {
+      "lemma": "hinter",
+      "pos": "Präp",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:10.866Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Hinter dir!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Hinter dir!",
+        "exampleDe": "Hinter dir!"
+      },
+      "wordId": 3016,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3933,
+        "wordId": 3016,
+        "createdAt": "2025-10-17T21:54:10.866Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:10.866Z"
+      }
+    },
+    "statt": {
+      "lemma": "statt",
+      "pos": "Präp",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:11.733Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Taten statt Worte.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Taten statt Worte.",
+        "exampleDe": "Taten statt Worte."
+      },
+      "wordId": 3024,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3935,
+        "wordId": 3024,
+        "createdAt": "2025-10-17T21:54:11.733Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:11.733Z"
+      }
+    }
+  },
+  "meta": {
+    "createdAt": "2025-10-21T09:28:18.225Z"
+  }
+}

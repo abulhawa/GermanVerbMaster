@@ -61,9 +61,7 @@ export function createPool(options: DatabasePoolOptions = {}): Pool {
         mockDatabaseWarningLogged = true;
       }
 
-      const pool = createMockPool();
-      process.env.ADMIN_API_TOKEN = process.env.ADMIN_API_TOKEN ?? "dev-admin";
-      return pool;
+      return createMockPool();
     }
 
     throw new Error(

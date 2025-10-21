@@ -1,0 +1,4812 @@
+{
+  "schemaVersion": 1,
+  "providerId": "wiktextract",
+  "providerLabel": "Wiktextract",
+  "pos": "Adv",
+  "updatedAt": "2025-10-21T09:52:24.483Z",
+  "entries": {
+    "abwärts": {
+      "lemma": "abwärts",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:16.259Z",
+      "translations": [
+        {
+          "value": "downwards, downhill",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "downstream",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": [
+        "hinab",
+        "hinunter",
+        "nach unten"
+      ],
+      "englishHints": [
+        "downwards, downhill",
+        "downstream"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/a/ab/abw%C3%A4rts.jsonl",
+        "synonyms": [
+          "hinab",
+          "hinunter",
+          "nach unten"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "downwards, downhill",
+          "downstream"
+        ],
+        "translations": [
+          {
+            "value": "downwards, downhill",
+            "language": "en"
+          },
+          {
+            "value": "downstream",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2927,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5871,
+        "wordId": 2927,
+        "createdAt": "2025-10-17T22:19:16.259Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:16.259Z"
+      }
+    },
+    "andererseits": {
+      "lemma": "andererseits",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:16.492Z",
+      "translations": [
+        {
+          "value": "on the other hand",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "on the other hand"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries",
+          "Rhymes:German/aɪ̯t͡s",
+          "Rhymes:German/aɪ̯t͡s/4 syllables"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/a/an/andererseits.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "on the other hand"
+        ],
+        "translations": [
+          {
+            "value": "on the other hand",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2929,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5872,
+        "wordId": 2929,
+        "createdAt": "2025-10-17T22:19:16.492Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:16.492Z"
+      }
+    },
+    "anderseits": {
+      "lemma": "anderseits",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:16.754Z",
+      "translations": [
+        {
+          "value": "then again, on the other hand",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "then again, on the other hand"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/a/an/anderseits.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "then again, on the other hand"
+        ],
+        "translations": [
+          {
+            "value": "then again, on the other hand",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2930,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5873,
+        "wordId": 2930,
+        "createdAt": "2025-10-17T22:19:16.754Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:16.754Z"
+      }
+    },
+    "andrerseits": {
+      "lemma": "andrerseits",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:11.288Z",
+      "translations": [
+        {
+          "value": "alternative form of andererseits",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "alternative form of andererseits"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [
+          "alt-of",
+          "alternative"
+        ],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/a/an/andrerseits.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "alternative form of andererseits"
+        ],
+        "translations": [
+          {
+            "value": "alternative form of andererseits",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2931,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5852,
+        "wordId": 2931,
+        "createdAt": "2025-10-17T22:19:11.288Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:11.288Z"
+      }
+    },
+    "aufwärts": {
+      "lemma": "aufwärts",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:17.055Z",
+      "translations": [
+        {
+          "value": "upwards, uphill",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "upstream",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": [
+        "hinauf"
+      ],
+      "englishHints": [
+        "upwards, uphill",
+        "upstream"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries",
+          "terms inherited from Middle High German",
+          "terms inherited from Old High German"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/a/au/aufw%C3%A4rts.jsonl",
+        "synonyms": [
+          "hinauf"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "upwards, uphill",
+          "upstream"
+        ],
+        "translations": [
+          {
+            "value": "upwards, uphill",
+            "language": "en"
+          },
+          {
+            "value": "upstream",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2933,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5874,
+        "wordId": 2933,
+        "createdAt": "2025-10-17T22:19:17.055Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:17.055Z"
+      }
+    },
+    "auseinander": {
+      "lemma": "auseinander",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:17.283Z",
+      "translations": [
+        {
+          "value": "apart",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "apart"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/a/au/auseinander.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "apart"
+        ],
+        "translations": [
+          {
+            "value": "apart",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2934,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5875,
+        "wordId": 2934,
+        "createdAt": "2025-10-17T22:19:17.283Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:17.283Z"
+      }
+    },
+    "ausschließlich": {
+      "lemma": "ausschließlich",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:17.509Z",
+      "translations": [
+        {
+          "value": "exclusively",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "exclusively"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adjectives",
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries",
+          "prepositions",
+          "uncomparable adjectives"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/a/au/ausschlie%C3%9Flich.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "exclusively"
+        ],
+        "translations": [
+          {
+            "value": "exclusively",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2935,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5876,
+        "wordId": 2935,
+        "createdAt": "2025-10-17T22:19:17.509Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:17.509Z"
+      }
+    },
+    "beinah": {
+      "lemma": "beinah",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:17.776Z",
+      "translations": [
+        {
+          "value": "alternative form of beinahe",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "alternative form of beinahe"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [
+          "alt-of",
+          "alternative"
+        ],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/b/be/beinah.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "alternative form of beinahe"
+        ],
+        "translations": [
+          {
+            "value": "alternative form of beinahe",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2937,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5877,
+        "wordId": 2937,
+        "createdAt": "2025-10-17T22:19:17.776Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:17.776Z"
+      }
+    },
+    "beinahe": {
+      "lemma": "beinahe",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:18.048Z",
+      "translations": [
+        {
+          "value": "almost; nearly",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": [
+        "bald",
+        "fast",
+        "nahezu"
+      ],
+      "englishHints": [
+        "almost; nearly"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "compound terms",
+          "Pages with 1 entry",
+          "Pages with entries",
+          "terms inherited from Middle High German"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/b/be/beinahe.jsonl",
+        "synonyms": [
+          "bald",
+          "fast",
+          "nahezu"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "almost; nearly"
+        ],
+        "translations": [
+          {
+            "value": "almost; nearly",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2938,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5878,
+        "wordId": 2938,
+        "createdAt": "2025-10-17T22:19:18.048Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:18.048Z"
+      }
+    },
+    "circa": {
+      "lemma": "circa",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:07.978Z",
+      "translations": [
+        {
+          "value": "circa",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": [
+        "etwa",
+        "ungefähr"
+      ],
+      "englishHints": [
+        "circa"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 10 entries",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/c/ci/circa.jsonl",
+        "synonyms": [
+          "etwa",
+          "ungefähr"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "circa"
+        ],
+        "translations": [
+          {
+            "value": "circa",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2840,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5840,
+        "wordId": 2840,
+        "createdAt": "2025-10-17T22:19:07.978Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:07.978Z"
+      }
+    },
+    "damals": {
+      "lemma": "damals",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:13.158Z",
+      "translations": [
+        {
+          "value": "at that time (in the past); at the time, then",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "at that time (in the past); at the time, then"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "compound terms",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/d/da/damals.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "at that time (in the past); at the time, then"
+        ],
+        "translations": [
+          {
+            "value": "at that time (in the past); at the time, then",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2888,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5859,
+        "wordId": 2888,
+        "createdAt": "2025-10-17T22:19:13.158Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:13.158Z"
+      }
+    },
+    "diesmal": {
+      "lemma": "diesmal",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:18.283Z",
+      "translations": [
+        {
+          "value": "this time",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "this time"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/d/di/diesmal.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "this time"
+        ],
+        "translations": [
+          {
+            "value": "this time",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2942,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5879,
+        "wordId": 2942,
+        "createdAt": "2025-10-17T22:19:18.283Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:18.283Z"
+      }
+    },
+    "dort": {
+      "lemma": "dort",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:08.246Z",
+      "translations": [
+        {
+          "value": "there, yonder",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": [
+        "da"
+      ],
+      "englishHints": [
+        "there, yonder"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 5 entries",
+          "Pages with entries",
+          "terms inherited from Middle High German",
+          "terms inherited from Old High German"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/d/do/dort.jsonl",
+        "synonyms": [
+          "da"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "there, yonder"
+        ],
+        "translations": [
+          {
+            "value": "there, yonder",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2843,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5841,
+        "wordId": 2843,
+        "createdAt": "2025-10-17T22:19:08.246Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:08.246Z"
+      }
+    },
+    "draußen": {
+      "lemma": "draußen",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:08.521Z",
+      "translations": [
+        {
+          "value": "outside",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "out there",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "outside",
+        "out there"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/d/dr/drau%C3%9Fen.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "outside",
+          "out there"
+        ],
+        "translations": [
+          {
+            "value": "outside",
+            "language": "en"
+          },
+          {
+            "value": "out there",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2844,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5842,
+        "wordId": 2844,
+        "createdAt": "2025-10-17T22:19:08.521Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:08.521Z"
+      }
+    },
+    "drinnen": {
+      "lemma": "drinnen",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:13.419Z",
+      "translations": [
+        {
+          "value": "inside (a room)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "inside (a room)"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries",
+          "Rhymes:German/ɪnən",
+          "Rhymes:German/ɪnən/2 syllables"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/d/dr/drinnen.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "inside (a room)"
+        ],
+        "translations": [
+          {
+            "value": "inside (a room)",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2890,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5860,
+        "wordId": 2890,
+        "createdAt": "2025-10-17T22:19:13.419Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:13.419Z"
+      }
+    },
+    "durcheinander": {
+      "lemma": "durcheinander",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:18.477Z",
+      "translations": null,
+      "examples": null,
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "wordId": 2943,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5880,
+        "wordId": 2943,
+        "createdAt": "2025-10-17T22:19:18.477Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:18.477Z"
+      }
+    },
+    "ebenso": {
+      "lemma": "ebenso",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:19.528Z",
+      "translations": [
+        {
+          "value": "equally, as much",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "likewise",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": [
+        "genauso",
+        "auch",
+        "ebenfalls"
+      ],
+      "englishHints": [
+        "equally, as much",
+        "likewise"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [
+          "formal"
+        ],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "compound terms",
+          "formal terms",
+          "interjections",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/e/eb/ebenso.jsonl",
+        "synonyms": [
+          "genauso",
+          "auch",
+          "ebenfalls"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "equally, as much",
+          "likewise"
+        ],
+        "translations": [
+          {
+            "value": "equally, as much",
+            "language": "en"
+          },
+          {
+            "value": "likewise",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2945,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5884,
+        "wordId": 2945,
+        "createdAt": "2025-10-17T22:19:19.528Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:19.528Z"
+      }
+    },
+    "ein mal": {
+      "lemma": "ein Mal",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:09:48.547Z",
+      "translations": null,
+      "examples": null,
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "wordId": 2892,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 4139,
+        "wordId": 2892,
+        "createdAt": "2025-10-17T22:09:48.547Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:09:48.547Z"
+      }
+    },
+    "einerseits": {
+      "lemma": "einerseits",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:19.759Z",
+      "translations": [
+        {
+          "value": "on the one hand",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": [
+        "auf der einen Seite",
+        "einesteils",
+        "zum einen"
+      ],
+      "englishHints": [
+        "on the one hand"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/e/ei/einerseits.jsonl",
+        "synonyms": [
+          "auf der einen Seite",
+          "einesteils",
+          "zum einen"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "on the one hand"
+        ],
+        "translations": [
+          {
+            "value": "on the one hand",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2946,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5885,
+        "wordId": 2946,
+        "createdAt": "2025-10-17T22:19:19.759Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:19.759Z"
+      }
+    },
+    "gegenüber": {
+      "lemma": "gegenüber",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:13.688Z",
+      "translations": [
+        {
+          "value": "on the opposite side",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "on the opposite side"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "compound terms",
+          "Pages with 1 entry",
+          "Pages with entries",
+          "postpositions",
+          "prepositions"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/g/ge/gegen%C3%BCber.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "on the opposite side"
+        ],
+        "translations": [
+          {
+            "value": "on the opposite side",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2897,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5861,
+        "wordId": 2897,
+        "createdAt": "2025-10-17T22:19:13.688Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:13.688Z"
+      }
+    },
+    "genauso": {
+      "lemma": "genauso",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:20.025Z",
+      "translations": [
+        {
+          "value": "just as, just the same",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "just as, just the same"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "compound terms",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/g/ge/genauso.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "just as, just the same"
+        ],
+        "translations": [
+          {
+            "value": "just as, just the same",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2950,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5886,
+        "wordId": 2950,
+        "createdAt": "2025-10-17T22:19:20.025Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:20.025Z"
+      }
+    },
+    "geradeaus": {
+      "lemma": "geradeaus",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:08.792Z",
+      "translations": [
+        {
+          "value": "straight ahead, straightforward (in a forward direction)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "straight ahead, straightforward (in a forward direction)"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries",
+          "Rhymes:German/aʊ̯s",
+          "Rhymes:German/aʊ̯s/4 syllables",
+          "univerbations"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/g/ge/geradeaus.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "straight ahead, straightforward (in a forward direction)"
+        ],
+        "translations": [
+          {
+            "value": "straight ahead, straightforward (in a forward direction)",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2846,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5843,
+        "wordId": 2846,
+        "createdAt": "2025-10-17T22:19:08.792Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:08.792Z"
+      }
+    },
+    "gerne": {
+      "lemma": "gerne",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:09.098Z",
+      "translations": [
+        {
+          "value": "alternative form of gern. (Both are roughly equally frequent.)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "alternative form of gern. (Both are roughly equally frequent.)"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [
+          "alt-of",
+          "alternative"
+        ],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "interjections",
+          "Middle Dutch adverbs",
+          "Middle Dutch terms inherited from Old Dutch",
+          "Middle Dutch terms inherited from Proto-Germanic",
+          "Middle Dutch terms inherited from Proto-West Germanic",
+          "Pages with 3 entries",
+          "Pages with entries",
+          "phrasebook"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/g/ge/gerne.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "alternative form of gern. (Both are roughly equally frequent.)"
+        ],
+        "translations": [
+          {
+            "value": "alternative form of gern. (Both are roughly equally frequent.)",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2847,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5844,
+        "wordId": 2847,
+        "createdAt": "2025-10-17T22:19:09.098Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:09.098Z"
+      }
+    },
+    "gestern": {
+      "lemma": "gestern",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:09.332Z",
+      "translations": [
+        {
+          "value": "yesterday",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "yesterday"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "de:Past",
+          "Pages with 1 entry",
+          "Pages with entries",
+          "terms inherited from Middle High German",
+          "terms inherited from Old High German",
+          "terms inherited from Proto-West Germanic"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/g/ge/gestern.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "yesterday"
+        ],
+        "translations": [
+          {
+            "value": "yesterday",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2848,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5845,
+        "wordId": 2848,
+        "createdAt": "2025-10-17T22:19:09.332Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:09.332Z"
+      }
+    },
+    "grade": {
+      "lemma": "grade",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:09.600Z",
+      "translations": [
+        {
+          "value": "alternative form of gerade",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "alternative form of gerade"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [
+          "alt-of",
+          "alternative",
+          "colloquial"
+        ],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "colloquialisms",
+          "contractions",
+          "Pages with 11 entries",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/g/gr/grade.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "alternative form of gerade"
+        ],
+        "translations": [
+          {
+            "value": "alternative form of gerade",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2850,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5846,
+        "wordId": 2850,
+        "createdAt": "2025-10-17T22:19:09.600Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:09.600Z"
+      }
+    },
+    "gradeaus": {
+      "lemma": "gradeaus",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:09:47.907Z",
+      "translations": null,
+      "examples": null,
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "wordId": 2851,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 4137,
+        "wordId": 2851,
+        "createdAt": "2025-10-17T22:09:47.907Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:09:47.907Z"
+      }
+    },
+    "gratis": {
+      "lemma": "gratis",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:20.288Z",
+      "translations": [
+        {
+          "value": "free, without charge",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": [
+        "umsonst",
+        "kostenlos",
+        "kostenfrei",
+        "für lau",
+        "für umme"
+      ],
+      "englishHints": [
+        "free, without charge"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 21 entries",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/g/gr/gratis.jsonl",
+        "synonyms": [
+          "umsonst",
+          "kostenlos",
+          "kostenfrei",
+          "für lau",
+          "für umme"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "free, without charge"
+        ],
+        "translations": [
+          {
+            "value": "free, without charge",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2951,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5887,
+        "wordId": 2951,
+        "createdAt": "2025-10-17T22:19:20.288Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:20.288Z"
+      }
+    },
+    "heraus": {
+      "lemma": "heraus",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:13.952Z",
+      "translations": [
+        {
+          "value": "out of (in the direction of the speaker); out over here; out from there",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "out of (in the direction of the speaker); out over here; out from there"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries",
+          "Rhymes:German/aʊ̯s",
+          "Rhymes:German/aʊ̯s/2 syllables",
+          "terms inherited from Middle High German",
+          "terms inherited from Old High German"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/h/he/heraus.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "out of (in the direction of the speaker); out over here; out from there"
+        ],
+        "translations": [
+          {
+            "value": "out of (in the direction of the speaker); out over here; out from there",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2899,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5862,
+        "wordId": 2899,
+        "createdAt": "2025-10-17T22:19:13.952Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:13.952Z"
+      }
+    },
+    "herein": {
+      "lemma": "herein",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:14.594Z",
+      "translations": [
+        {
+          "value": "in (in the direction of the speaker)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "in (in the direction of the speaker)"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "compound terms",
+          "Pages with 3 entries",
+          "Pages with entries",
+          "Rhymes:German/aɪ̯n",
+          "Rhymes:German/aɪ̯n/2 syllables"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/h/he/herein.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "in (in the direction of the speaker)"
+        ],
+        "translations": [
+          {
+            "value": "in (in the direction of the speaker)",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2900,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5865,
+        "wordId": 2900,
+        "createdAt": "2025-10-17T22:19:14.594Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:14.594Z"
+      }
+    },
+    "heut": {
+      "lemma": "heut",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:10.053Z",
+      "translations": [
+        {
+          "value": "alternative form of heute",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "alternative form of heute"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [
+          "alt-of",
+          "alternative",
+          "colloquial",
+          "poetic"
+        ],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "colloquialisms",
+          "Pages with 2 entries",
+          "Pages with entries",
+          "poetic terms"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/h/he/heut.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "alternative form of heute"
+        ],
+        "translations": [
+          {
+            "value": "alternative form of heute",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2852,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5848,
+        "wordId": 2852,
+        "createdAt": "2025-10-17T22:19:10.053Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:10.053Z"
+      }
+    },
+    "hinterher": {
+      "lemma": "hinterher",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:20.948Z",
+      "translations": [
+        {
+          "value": "behind",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "afterwards",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "behind",
+        "afterwards"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/h/hi/hinterher.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "behind",
+          "afterwards"
+        ],
+        "translations": [
+          {
+            "value": "behind",
+            "language": "en"
+          },
+          {
+            "value": "afterwards",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2954,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5889,
+        "wordId": 2954,
+        "createdAt": "2025-10-17T22:19:20.948Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:20.948Z"
+      }
+    },
+    "höchstens": {
+      "lemma": "höchstens",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:09:48.961Z",
+      "translations": [
+        {
+          "value": "at most",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": [
+        "maximal"
+      ],
+      "englishHints": [
+        "at most"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/h/hö/h%C3%B6chstens.jsonl",
+        "synonyms": [
+          "maximal"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "at most"
+        ],
+        "translations": [
+          {
+            "value": "at most",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2955,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 4141,
+        "wordId": 2955,
+        "createdAt": "2025-10-17T22:09:48.961Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:09:48.961Z"
+      }
+    },
+    "hoffentlich": {
+      "lemma": "hoffentlich",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:14.858Z",
+      "translations": [
+        {
+          "value": "hopefully (it is hoped that)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "hopefully (it is hoped that)"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries",
+          "terms interfixed with -t-"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/h/ho/hoffentlich.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "hopefully (it is hoped that)"
+        ],
+        "translations": [
+          {
+            "value": "hopefully (it is hoped that)",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2902,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5866,
+        "wordId": 2902,
+        "createdAt": "2025-10-17T22:19:14.858Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:14.858Z"
+      }
+    },
+    "innen": {
+      "lemma": "innen",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:21.219Z",
+      "translations": [
+        {
+          "value": "within",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "inside",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "within",
+        "inside"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 7 entries",
+          "Pages with entries",
+          "Rhymes:German/ɪnən",
+          "Rhymes:German/ɪnən/2 syllables",
+          "terms inherited from Old High German"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/i/in/innen.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "within",
+          "inside"
+        ],
+        "translations": [
+          {
+            "value": "within",
+            "language": "en"
+          },
+          {
+            "value": "inside",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2956,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5890,
+        "wordId": 2956,
+        "createdAt": "2025-10-17T22:19:21.219Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:21.219Z"
+      }
+    },
+    "irgendwann": {
+      "lemma": "irgendwann",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:21.566Z",
+      "translations": [
+        {
+          "value": "sometime, somewhen, anytime",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "at some point, someday",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "sometime, somewhen, anytime",
+        "at some point, someday"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "de:Future",
+          "Pages with 1 entry",
+          "Pages with entries",
+          "Rhymes:German/an",
+          "Rhymes:German/an/3 syllables"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/i/ir/irgendwann.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "sometime, somewhen, anytime",
+          "at some point, someday"
+        ],
+        "translations": [
+          {
+            "value": "sometime, somewhen, anytime",
+            "language": "en"
+          },
+          {
+            "value": "at some point, someday",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2959,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5891,
+        "wordId": 2959,
+        "createdAt": "2025-10-17T22:19:21.566Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:21.566Z"
+      }
+    },
+    "jederzeit": {
+      "lemma": "jederzeit",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:21.795Z",
+      "translations": [
+        {
+          "value": "anytime",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "anytime"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "compound terms",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/j/je/jederzeit.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "anytime"
+        ],
+        "translations": [
+          {
+            "value": "anytime",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2960,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5892,
+        "wordId": 2960,
+        "createdAt": "2025-10-17T22:19:21.795Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:21.795Z"
+      }
+    },
+    "jedes mal": {
+      "lemma": "jedes Mal",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:22.068Z",
+      "translations": null,
+      "examples": null,
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "wordId": 2961,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5893,
+        "wordId": 2961,
+        "createdAt": "2025-10-17T22:19:22.068Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:22.068Z"
+      }
+    },
+    "jemals": {
+      "lemma": "jemals",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:22.299Z",
+      "translations": [
+        {
+          "value": "ever",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": [
+        "je"
+      ],
+      "englishHints": [
+        "ever"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/j/je/jemals.jsonl",
+        "synonyms": [
+          "je"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "ever"
+        ],
+        "translations": [
+          {
+            "value": "ever",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2962,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5894,
+        "wordId": 2962,
+        "createdAt": "2025-10-17T22:19:22.299Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:22.299Z"
+      }
+    },
+    "jeweils": {
+      "lemma": "jeweils",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:22.606Z",
+      "translations": [
+        {
+          "value": "in each case",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "each",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "in each case",
+        "each"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/j/je/jeweils.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "in each case",
+          "each"
+        ],
+        "translations": [
+          {
+            "value": "in each case",
+            "language": "en"
+          },
+          {
+            "value": "each",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2963,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5895,
+        "wordId": 2963,
+        "createdAt": "2025-10-17T22:19:22.606Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:22.606Z"
+      }
+    },
+    "leider": {
+      "lemma": "leider",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:10:05.085Z",
+      "translations": [
+        {
+          "value": "unfortunately",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": [
+        "unglücklicherweise"
+      ],
+      "englishHints": [
+        "unfortunately"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 6 entries",
+          "Pages with entries",
+          "terms inherited from Middle High German",
+          "terms inherited from Old High German"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/l/le/leider.jsonl",
+        "synonyms": [
+          "unglücklicherweise"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "unfortunately"
+        ],
+        "translations": [
+          {
+            "value": "unfortunately",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2859,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 4184,
+        "wordId": 2859,
+        "createdAt": "2025-10-17T22:10:05.085Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:10:05.085Z"
+      }
+    },
+    "manchmal": {
+      "lemma": "manchmal",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:15.086Z",
+      "translations": [
+        {
+          "value": "sometimes",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": [
+        "ab und an",
+        "ab und zu",
+        "bisweilen",
+        "dann und wann",
+        "das ein oder andere Mal",
+        "das eine oder andere Mal",
+        "des Öfteren",
+        "des Öftern",
+        "fallweise",
+        "Gelegenheits-",
+        "gelegentlich",
+        "gerne",
+        "hie und da",
+        "hier und da",
+        "hin und wieder",
+        "immer mal wieder",
+        "manches Mal",
+        "mitunter",
+        "nicht immer",
+        "aber immer öfter",
+        "okkasionell",
+        "öfter",
+        "öfters",
+        "schon einmal",
+        "schon mal",
+        "sporadisch",
+        "stellenweise",
+        "streckenweise",
+        "unregelmäßig",
+        "vereinzelt",
+        "verschiedentlich",
+        "von Zeit zu Zeit",
+        "zeitweilig",
+        "zeitweise",
+        "zuweilen",
+        "zuzeiten",
+        "zwischendrin"
+      ],
+      "englishHints": [
+        "sometimes"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "compound terms",
+          "de:Card games",
+          "Pages with 2 entries",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/m/ma/manchmal.jsonl",
+        "synonyms": [
+          "ab und an",
+          "ab und zu",
+          "bisweilen",
+          "dann und wann",
+          "das ein oder andere Mal",
+          "das eine oder andere Mal",
+          "des Öfteren",
+          "des Öftern",
+          "fallweise",
+          "Gelegenheits-",
+          "gelegentlich",
+          "gerne",
+          "hie und da",
+          "hier und da",
+          "hin und wieder",
+          "immer mal wieder",
+          "manches Mal",
+          "mitunter",
+          "nicht immer",
+          "aber immer öfter",
+          "okkasionell",
+          "öfter",
+          "öfters",
+          "schon einmal",
+          "schon mal",
+          "sporadisch",
+          "stellenweise",
+          "streckenweise",
+          "unregelmäßig",
+          "vereinzelt",
+          "verschiedentlich",
+          "von Zeit zu Zeit",
+          "zeitweilig",
+          "zeitweise",
+          "zuweilen",
+          "zuzeiten",
+          "zwischendrin"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "sometimes"
+        ],
+        "translations": [
+          {
+            "value": "sometimes",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2904,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5867,
+        "wordId": 2904,
+        "createdAt": "2025-10-17T22:19:15.086Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:15.086Z"
+      }
+    },
+    "miteinander": {
+      "lemma": "miteinander",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:23.180Z",
+      "translations": [
+        {
+          "value": "together (with)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "with each other",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": [
+        "miteinand",
+        "miteinand'"
+      ],
+      "englishHints": [
+        "together (with)",
+        "with each other"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries",
+          "terms inherited from Middle High German"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/m/mi/miteinander.jsonl",
+        "synonyms": [
+          "miteinand",
+          "miteinand'"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "together (with)",
+          "with each other"
+        ],
+        "translations": [
+          {
+            "value": "together (with)",
+            "language": "en"
+          },
+          {
+            "value": "with each other",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2967,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5897,
+        "wordId": 2967,
+        "createdAt": "2025-10-17T22:19:23.180Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:23.180Z"
+      }
+    },
+    "mittlerweile": {
+      "lemma": "mittlerweile",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:23.448Z",
+      "translations": [
+        {
+          "value": "meanwhile, in the meantime",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": [
+        "inzwischen",
+        "zwischenzeitlich"
+      ],
+      "englishHints": [
+        "meanwhile, in the meantime"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries",
+          "Rhymes:German/aɪ̯lə",
+          "Rhymes:German/aɪ̯lə/4 syllables"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/m/mi/mittlerweile.jsonl",
+        "synonyms": [
+          "inzwischen",
+          "zwischenzeitlich"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "meanwhile, in the meantime"
+        ],
+        "translations": [
+          {
+            "value": "meanwhile, in the meantime",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2969,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5898,
+        "wordId": 2969,
+        "createdAt": "2025-10-17T22:19:23.448Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:23.448Z"
+      }
+    },
+    "möglicherweise": {
+      "lemma": "möglicherweise",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:23.807Z",
+      "translations": [
+        {
+          "value": "possibly, potentially",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "perhaps",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "conceivably",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "possibly, potentially",
+        "perhaps",
+        "conceivably"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/m/mö/m%C3%B6glicherweise.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "possibly, potentially",
+          "perhaps",
+          "conceivably"
+        ],
+        "translations": [
+          {
+            "value": "possibly, potentially",
+            "language": "en"
+          },
+          {
+            "value": "perhaps",
+            "language": "en"
+          },
+          {
+            "value": "conceivably",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2970,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5899,
+        "wordId": 2970,
+        "createdAt": "2025-10-17T22:19:23.807Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:23.807Z"
+      }
+    },
+    "möglichst": {
+      "lemma": "möglichst",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:24.072Z",
+      "translations": [
+        {
+          "value": "as much as possible",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "preferably",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "as much as possible",
+        "preferably"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/m/mö/m%C3%B6glichst.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "as much as possible",
+          "preferably"
+        ],
+        "translations": [
+          {
+            "value": "as much as possible",
+            "language": "en"
+          },
+          {
+            "value": "preferably",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2971,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5900,
+        "wordId": 2971,
+        "createdAt": "2025-10-17T22:19:24.072Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:24.072Z"
+      }
+    },
+    "neulich": {
+      "lemma": "neulich",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:18:45.207Z",
+      "translations": [
+        {
+          "value": "recently (in the recent past)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": [
+        "kürzlich",
+        "letztens",
+        "letzthin",
+        "jüngst",
+        "unlängst",
+        "vor kurzem"
+      ],
+      "englishHints": [
+        "recently (in the recent past)"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries",
+          "point-in-time adverbs"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/n/ne/neulich.jsonl",
+        "synonyms": [
+          "kürzlich",
+          "letztens",
+          "letzthin",
+          "jüngst",
+          "unlängst",
+          "vor kurzem"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "recently (in the recent past)"
+        ],
+        "translations": [
+          {
+            "value": "recently (in the recent past)",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2974,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5781,
+        "wordId": 2974,
+        "createdAt": "2025-10-17T22:18:45.207Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:18:45.207Z"
+      }
+    },
+    "nirgends": {
+      "lemma": "nirgends",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:15.427Z",
+      "translations": [
+        {
+          "value": "nowhere (in no place)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "never (at no time)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": [
+        "nirgendwo",
+        "nirgend"
+      ],
+      "englishHints": [
+        "nowhere (in no place)",
+        "never (at no time)"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries",
+          "terms inherited from Middle High German"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/n/ni/nirgends.jsonl",
+        "synonyms": [
+          "nirgendwo",
+          "nirgend"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "nowhere (in no place)",
+          "never (at no time)"
+        ],
+        "translations": [
+          {
+            "value": "nowhere (in no place)",
+            "language": "en"
+          },
+          {
+            "value": "never (at no time)",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2908,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5868,
+        "wordId": 2908,
+        "createdAt": "2025-10-17T22:19:15.427Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:15.427Z"
+      }
+    },
+    "nirgendwo": {
+      "lemma": "nirgendwo",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:18:50.800Z",
+      "translations": [
+        {
+          "value": "nowhere (in no place)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": [
+        "nirgends",
+        "nirgend"
+      ],
+      "englishHints": [
+        "nowhere (in no place)"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/n/ni/nirgendwo.jsonl",
+        "synonyms": [
+          "nirgends",
+          "nirgend"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "nowhere (in no place)"
+        ],
+        "translations": [
+          {
+            "value": "nowhere (in no place)",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2975,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5795,
+        "wordId": 2975,
+        "createdAt": "2025-10-17T22:18:50.800Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:18:50.800Z"
+      }
+    },
+    "noch mal": {
+      "lemma": "noch mal",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:09:49.185Z",
+      "translations": null,
+      "examples": null,
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "wordId": 2976,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 4142,
+        "wordId": 2976,
+        "createdAt": "2025-10-17T22:09:49.185Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:09:49.185Z"
+      }
+    },
+    "nochmal": {
+      "lemma": "nochmal",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:18.846Z",
+      "translations": [
+        {
+          "value": "once again",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "again, one more time",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": [
+        "noch einmal",
+        "nochmals"
+      ],
+      "englishHints": [
+        "once again",
+        "again, one more time"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [
+          "informal"
+        ],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "informal terms",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/n/no/nochmal.jsonl",
+        "synonyms": [
+          "noch einmal",
+          "nochmals"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "once again",
+          "again, one more time"
+        ],
+        "translations": [
+          {
+            "value": "once again",
+            "language": "en"
+          },
+          {
+            "value": "again, one more time",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2977,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5881,
+        "wordId": 2977,
+        "createdAt": "2025-10-17T22:19:18.846Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:18.846Z"
+      }
+    },
+    "nochmals": {
+      "lemma": "nochmals",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:20.553Z",
+      "translations": [
+        {
+          "value": "again, once more",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": [
+        "noch einmal",
+        "nochmal"
+      ],
+      "englishHints": [
+        "again, once more"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/n/no/nochmals.jsonl",
+        "synonyms": [
+          "noch einmal",
+          "nochmal"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "again, once more"
+        ],
+        "translations": [
+          {
+            "value": "again, once more",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2978,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5888,
+        "wordId": 2978,
+        "createdAt": "2025-10-17T22:19:20.553Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:20.553Z"
+      }
+    },
+    "normalerweise": {
+      "lemma": "normalerweise",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:22.836Z",
+      "translations": [
+        {
+          "value": "normally",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": [
+        "üblicherweise"
+      ],
+      "englishHints": [
+        "normally"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/n/no/normalerweise.jsonl",
+        "synonyms": [
+          "üblicherweise"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "normally"
+        ],
+        "translations": [
+          {
+            "value": "normally",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2979,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5896,
+        "wordId": 2979,
+        "createdAt": "2025-10-17T22:19:22.836Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:22.836Z"
+      }
+    },
+    "oben": {
+      "lemma": "oben",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:10.707Z",
+      "translations": [
+        {
+          "value": "above",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "north",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "upstairs",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "at an earlier point in a text",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "above",
+        "north",
+        "upstairs",
+        "at an earlier point in a text"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 2 entries",
+          "Pages with entries",
+          "Rhymes:German/oːbən",
+          "terms inherited from Middle High German",
+          "terms inherited from Old High German",
+          "terms inherited from Proto-Germanic",
+          "terms inherited from Proto-West Germanic"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/o/ob/oben.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "above",
+          "north",
+          "upstairs",
+          "at an earlier point in a text"
+        ],
+        "translations": [
+          {
+            "value": "above",
+            "language": "en"
+          },
+          {
+            "value": "north",
+            "language": "en"
+          },
+          {
+            "value": "upstairs",
+            "language": "en"
+          },
+          {
+            "value": "at an earlier point in a text",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2866,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5850,
+        "wordId": 2866,
+        "createdAt": "2025-10-17T22:19:10.707Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:10.707Z"
+      }
+    },
+    "oft": {
+      "lemma": "oft",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:10.939Z",
+      "translations": [
+        {
+          "value": "often",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": [
+        "dutzendfach",
+        "dutzendmal",
+        "hundertmal",
+        "tausendmal",
+        "millionenmal",
+        "dauernd",
+        "des Öfteren",
+        "fortgesetzt",
+        "gehäuft",
+        "häufig",
+        "immer wieder",
+        "laufend",
+        "mehrfach",
+        "mehrmalig",
+        "mehrmals",
+        "öfter",
+        "öfters",
+        "oftmalig",
+        "oftmals",
+        "regelmäßig",
+        "ständig",
+        "vielfach",
+        "vielmals"
+      ],
+      "englishHints": [
+        "often"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "de:Card games",
+          "Pages with 12 entries",
+          "Pages with entries",
+          "terms inherited from Middle High German",
+          "terms inherited from Old High German",
+          "terms inherited from Proto-Germanic"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/o/of/oft.jsonl",
+        "synonyms": [
+          "dutzendfach",
+          "dutzendmal",
+          "hundertmal",
+          "tausendmal",
+          "millionenmal",
+          "dauernd",
+          "des Öfteren",
+          "fortgesetzt",
+          "gehäuft",
+          "häufig",
+          "immer wieder",
+          "laufend",
+          "mehrfach",
+          "mehrmalig",
+          "mehrmals",
+          "öfter",
+          "öfters",
+          "oftmalig",
+          "oftmals",
+          "regelmäßig",
+          "ständig",
+          "vielfach",
+          "vielmals"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "often"
+        ],
+        "translations": [
+          {
+            "value": "often",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2867,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5851,
+        "wordId": 2867,
+        "createdAt": "2025-10-17T22:19:10.939Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:10.939Z"
+      }
+    },
+    "online": {
+      "lemma": "online",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:09:48.734Z",
+      "translations": null,
+      "examples": null,
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "wordId": 2909,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 4140,
+        "wordId": 2909,
+        "createdAt": "2025-10-17T22:09:48.734Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:09:48.734Z"
+      }
+    },
+    "rauf": {
+      "lemma": "rauf",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:24.603Z",
+      "translations": [
+        {
+          "value": "up, up here, upstairs (towards the speaker)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "up, up there, upstairs (away from the speaker)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": [
+        {
+          "sentence": "Er kommt jetzt rauf. -- He's coming upstairs now.",
+          "translations": null
+        },
+        {
+          "sentence": "Er geht rauf zu den andern. -- He's going upstairs to the other people.",
+          "translations": null
+        }
+      ],
+      "synonyms": [
+        "herauf",
+        "hinauf"
+      ],
+      "englishHints": [
+        "up, up here, upstairs (towards the speaker)",
+        "up, up there, upstairs (away from the speaker)"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [
+          "colloquial"
+        ],
+        "examples": [
+          {
+            "sentence": "Er kommt jetzt rauf. -- He's coming upstairs now.",
+            "exampleDe": "Er kommt jetzt rauf. -- He's coming upstairs now."
+          },
+          {
+            "sentence": "Er geht rauf zu den andern. -- He's going upstairs to the other people.",
+            "exampleDe": "Er geht rauf zu den andern. -- He's going upstairs to the other people."
+          }
+        ],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "colloquialisms",
+          "Pages with 4 entries",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/r/ra/rauf.jsonl",
+        "synonyms": [
+          "herauf",
+          "hinauf"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "up, up here, upstairs (towards the speaker)",
+          "up, up there, upstairs (away from the speaker)"
+        ],
+        "translations": [
+          {
+            "value": "up, up here, upstairs (towards the speaker)",
+            "language": "en"
+          },
+          {
+            "value": "up, up there, upstairs (away from the speaker)",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2982,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5902,
+        "wordId": 2982,
+        "createdAt": "2025-10-17T22:19:24.603Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:24.603Z"
+      }
+    },
+    "rückwärts": {
+      "lemma": "rückwärts",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:24.834Z",
+      "translations": [
+        {
+          "value": "backwards",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "backwards"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/r/rü/r%C3%BCckw%C3%A4rts.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "backwards"
+        ],
+        "translations": [
+          {
+            "value": "backwards",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2983,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5903,
+        "wordId": 2983,
+        "createdAt": "2025-10-17T22:19:24.834Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:24.834Z"
+      }
+    },
+    "spätestens": {
+      "lemma": "spätestens",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:25.178Z",
+      "translations": [
+        {
+          "value": "at the latest, not later than",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "if not before",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "at the latest, not later than",
+        "if not before"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/s/sp/sp%C3%A4testens.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "at the latest, not later than",
+          "if not before"
+        ],
+        "translations": [
+          {
+            "value": "at the latest, not later than",
+            "language": "en"
+          },
+          {
+            "value": "if not before",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2985,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5904,
+        "wordId": 2985,
+        "createdAt": "2025-10-17T22:19:25.178Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:25.178Z"
+      }
+    },
+    "teilweise": {
+      "lemma": "teilweise",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:25.602Z",
+      "translations": [
+        {
+          "value": "partially, to some extent",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "sometimes, occasionally",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "in part, in some cases",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": [
+        "partiell",
+        "teils"
+      ],
+      "englishHints": [
+        "partially, to some extent",
+        "sometimes, occasionally",
+        "in part, in some cases"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adjectives",
+          "adjectives without predicate",
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries",
+          "uncomparable adjectives"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/t/te/teilweise.jsonl",
+        "synonyms": [
+          "partiell",
+          "teils"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "partially, to some extent",
+          "sometimes, occasionally",
+          "in part, in some cases"
+        ],
+        "translations": [
+          {
+            "value": "partially, to some extent",
+            "language": "en"
+          },
+          {
+            "value": "sometimes, occasionally",
+            "language": "en"
+          },
+          {
+            "value": "in part, in some cases",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2986,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5905,
+        "wordId": 2986,
+        "createdAt": "2025-10-17T22:19:25.602Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:25.602Z"
+      }
+    },
+    "übermorgen": {
+      "lemma": "übermorgen",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:15.956Z",
+      "translations": [
+        {
+          "value": "overmorrow, the day after tomorrow",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "overmorrow, the day after tomorrow"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "de:Day",
+          "de:Future",
+          "Pages with 1 entry",
+          "Pages with entries",
+          "terms inherited from Middle High German",
+          "terms inherited from Old High German"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/ü/üb/%C3%BCbermorgen.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "overmorrow, the day after tomorrow"
+        ],
+        "translations": [
+          {
+            "value": "overmorrow, the day after tomorrow",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2926,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5870,
+        "wordId": 2926,
+        "createdAt": "2025-10-17T22:19:15.956Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:15.956Z"
+      }
+    },
+    "umsonst": {
+      "lemma": "umsonst",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:26.029Z",
+      "translations": [
+        {
+          "value": "free of charge, gratis",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "in vain, without success",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "for nothing; for the sake of doing it (without expecting reply)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": [
+        "gratis",
+        "kostenlos",
+        "kostenfrei",
+        "vergebens",
+        "vergeblich",
+        "erfolglos"
+      ],
+      "englishHints": [
+        "free of charge, gratis",
+        "in vain, without success",
+        "for nothing; for the sake of doing it (without expecting reply)"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "compound terms",
+          "Pages with 2 entries",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/u/um/umsonst.jsonl",
+        "synonyms": [
+          "gratis",
+          "kostenlos",
+          "kostenfrei",
+          "vergebens",
+          "vergeblich",
+          "erfolglos"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "free of charge, gratis",
+          "in vain, without success",
+          "for nothing; for the sake of doing it (without expecting reply)"
+        ],
+        "translations": [
+          {
+            "value": "free of charge, gratis",
+            "language": "en"
+          },
+          {
+            "value": "in vain, without success",
+            "language": "en"
+          },
+          {
+            "value": "for nothing; for the sake of doing it (without expecting reply)",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2987,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5906,
+        "wordId": 2987,
+        "createdAt": "2025-10-17T22:19:26.029Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:26.029Z"
+      }
+    },
+    "unten": {
+      "lemma": "unten",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:11.637Z",
+      "translations": [
+        {
+          "value": "below",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "south",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "at a later point in a text",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "below",
+        "south",
+        "at a later point in a text"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [
+          "colloquial"
+        ],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "colloquialisms",
+          "Pages with 6 entries",
+          "Pages with entries",
+          "terms inherited from Middle High German",
+          "terms inherited from Old High German"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/u/un/unten.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "below",
+          "south",
+          "at a later point in a text"
+        ],
+        "translations": [
+          {
+            "value": "below",
+            "language": "en"
+          },
+          {
+            "value": "south",
+            "language": "en"
+          },
+          {
+            "value": "at a later point in a text",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2872,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5853,
+        "wordId": 2872,
+        "createdAt": "2025-10-17T22:19:11.637Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:11.637Z"
+      }
+    },
+    "voneinander": {
+      "lemma": "voneinander",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:26.297Z",
+      "translations": [
+        {
+          "value": "from / of one another, from / of each other",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "from / of one another, from / of each other"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "compound terms",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/v/vo/voneinander.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "from / of one another, from / of each other"
+        ],
+        "translations": [
+          {
+            "value": "from / of one another, from / of each other",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2988,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5907,
+        "wordId": 2988,
+        "createdAt": "2025-10-17T22:19:26.297Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:26.297Z"
+      }
+    },
+    "voraus": {
+      "lemma": "voraus",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:26.568Z",
+      "translations": [
+        {
+          "value": "in front, ahead",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "in front, ahead"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries",
+          "terms inherited from Middle High German",
+          "univerbations"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/v/vo/voraus.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "in front, ahead"
+        ],
+        "translations": [
+          {
+            "value": "in front, ahead",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2989,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5908,
+        "wordId": 2989,
+        "createdAt": "2025-10-17T22:19:26.568Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:26.568Z"
+      }
+    },
+    "vorgestern": {
+      "lemma": "vorgestern",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:15.691Z",
+      "translations": [
+        {
+          "value": "ereyesterday, the day before yesterday",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": [
+        "vor zwei Tagen"
+      ],
+      "englishHints": [
+        "ereyesterday, the day before yesterday"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "de:Past",
+          "de:Time",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/v/vo/vorgestern.jsonl",
+        "synonyms": [
+          "vor zwei Tagen"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "ereyesterday, the day before yesterday"
+        ],
+        "translations": [
+          {
+            "value": "ereyesterday, the day before yesterday",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2916,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5869,
+        "wordId": 2916,
+        "createdAt": "2025-10-17T22:19:15.691Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:15.691Z"
+      }
+    },
+    "vorhin": {
+      "lemma": "vorhin",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:26.832Z",
+      "translations": [
+        {
+          "value": "earlier (a short time ago, typically between minutes and a few hours ago)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": [
+        "vor Kurzem"
+      ],
+      "englishHints": [
+        "earlier (a short time ago, typically between minutes and a few hours ago)"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries",
+          "univerbations"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/v/vo/vorhin.jsonl",
+        "synonyms": [
+          "vor Kurzem"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "earlier (a short time ago, typically between minutes and a few hours ago)"
+        ],
+        "translations": [
+          {
+            "value": "earlier (a short time ago, typically between minutes and a few hours ago)",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2990,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5909,
+        "wordId": 2990,
+        "createdAt": "2025-10-17T22:19:26.832Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:26.832Z"
+      }
+    },
+    "vorwärts": {
+      "lemma": "vorwärts",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:10.318Z",
+      "translations": [
+        {
+          "value": "forwards, forward; onwards, onward",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "forwards, forward; onwards, onward"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/v/vo/vorw%C3%A4rts.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "forwards, forward; onwards, onward"
+        ],
+        "translations": [
+          {
+            "value": "forwards, forward; onwards, onward",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2920,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5849,
+        "wordId": 2920,
+        "createdAt": "2025-10-17T22:19:10.318Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:10.318Z"
+      }
+    },
+    "warum": {
+      "lemma": "warum",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:11.902Z",
+      "translations": [
+        {
+          "value": "why; for what reason",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": [
+        {
+          "sentence": "warum ist die Banane krumm? – why is the banana bent?",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": [
+        "why; for what reason"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [
+          {
+            "sentence": "warum ist die Banane krumm? – why is the banana bent?",
+            "exampleDe": "warum ist die Banane krumm? – why is the banana bent?"
+          }
+        ],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "doublets",
+          "interrogative adverbs",
+          "Pages with 2 entries",
+          "Pages with entries",
+          "Rhymes:German/ʊm",
+          "terms inherited from Middle High German",
+          "terms inherited from Old High German",
+          "univerbations"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/w/wa/warum.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "why; for what reason"
+        ],
+        "translations": [
+          {
+            "value": "why; for what reason",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2875,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5854,
+        "wordId": 2875,
+        "createdAt": "2025-10-17T22:19:11.902Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:11.902Z"
+      }
+    },
+    "wie viel": {
+      "lemma": "wie viel",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:12.172Z",
+      "translations": [
+        {
+          "value": "how much; how often",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "how much; how often"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "determiners",
+          "multiword terms",
+          "Pages with 1 entry",
+          "Pages with entries",
+          "terms with rare senses"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/w/wi/wie%20viel.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "how much; how often"
+        ],
+        "translations": [
+          {
+            "value": "how much; how often",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2877,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5855,
+        "wordId": 2877,
+        "createdAt": "2025-10-17T22:19:12.172Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:12.172Z"
+      }
+    },
+    "wieso": {
+      "lemma": "wieso",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:27.108Z",
+      "translations": [
+        {
+          "value": "why",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "how so",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "why",
+        "how so"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "compound terms",
+          "Pages with 1 entry",
+          "Pages with entries",
+          "Rhymes:German/oː",
+          "Rhymes:German/oː/2 syllables"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/w/wi/wieso.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "why",
+          "how so"
+        ],
+        "translations": [
+          {
+            "value": "why",
+            "language": "en"
+          },
+          {
+            "value": "how so",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2992,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5910,
+        "wordId": 2992,
+        "createdAt": "2025-10-17T22:19:27.108Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:27.108Z"
+      }
+    },
+    "zirka": {
+      "lemma": "zirka",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:12.401Z",
+      "translations": [
+        {
+          "value": "circa",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "circa"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/z/zi/zirka.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "circa"
+        ],
+        "translations": [
+          {
+            "value": "circa",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2880,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5856,
+        "wordId": 2880,
+        "createdAt": "2025-10-17T22:19:12.401Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:12.401Z"
+      }
+    },
+    "zurück": {
+      "lemma": "zurück",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:12.892Z",
+      "translations": [
+        {
+          "value": "back, backward, backwards, to the rear.",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "back, backward, backwards, to the rear."
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "interjections",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/z/zu/zur%C3%BCck.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "back, backward, backwards, to the rear."
+        ],
+        "translations": [
+          {
+            "value": "back, backward, backwards, to the rear.",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2882,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5858,
+        "wordId": 2882,
+        "createdAt": "2025-10-17T22:19:12.892Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:12.892Z"
+      }
+    },
+    "zurzeit": {
+      "lemma": "zurzeit",
+      "pos": "Adv",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:19:12.628Z",
+      "translations": [
+        {
+          "value": "currently",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "currently"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "Pages with 1 entry",
+          "Pages with entries",
+          "univerbations"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/z/zu/zurzeit.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "currently"
+        ],
+        "translations": [
+          {
+            "value": "currently",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 2881,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 5857,
+        "wordId": 2881,
+        "createdAt": "2025-10-17T22:19:12.628Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:19:12.628Z"
+      }
+    }
+  },
+  "meta": {
+    "createdAt": "2025-10-21T09:16:43.896Z"
+  }
+}

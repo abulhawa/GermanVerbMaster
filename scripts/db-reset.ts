@@ -14,16 +14,20 @@ async function resetDatabase(): Promise<void> {
     console.log("Dropping drizzle metadata schema (if present)...");
     await pool.query("DROP SCHEMA IF EXISTS drizzle CASCADE;");
 
-    console.log("Recreating public schema...");
-    await pool.query("DROP SCHEMA IF EXISTS public CASCADE;");
-    await pool.query("CREATE SCHEMA public;");
-    await pool.query("ALTER SCHEMA public OWNER TO CURRENT_USER;");
-    await pool.query("GRANT ALL ON SCHEMA public TO public;");
+    console.log("Dropping enrichment schema (if present)...");
+    await pool.query("DROP SCHEMA IF EXISTS enrichment CASCADE;");
+
+    console.log("Recreating enrichment schema...");
+    await pool.query("CREATE SCHEMA IF NOT EXISTS enrichment;");
+    await pool.query("ALTER SCHEMA enrichment OWNER TO CURRENT_USER;");
+    await pool.query("GRANT ALL ON SCHEMA enrichment TO CURRENT_USER;");
   } finally {
     await pool.end();
   }
 
-  console.log("Database reset complete. All tables will be recreated on the next migration run.");
+  console.log(
+    "Database reset complete. Enrichment tables will be recreated on the next migration run.",
+  );
 }
 
 async function cleanDataDirectory(): Promise<void> {

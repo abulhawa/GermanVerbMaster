@@ -15,9 +15,9 @@
 
 ## Slide 3 – Daily workflow overview
 1. Pull latest `main` and install dependencies.
-2. Run `npm run seed` to refresh packs and QA fixtures.
+2. Regenerate packs with the JSONL export helpers (the legacy `npm run seed` CLI now only logs a deprecation notice).
 3. Open `/admin` to review candidate entries (filters by POS, level, completeness).
-4. Edit entries inline; reseed if you adjust approval flags or metadata.
+4. Edit entries inline; rerun the pack regeneration tooling if you adjust approval flags or metadata.
 5. Execute `npm run packs:lint` to validate packs before handing off to QA.
 
 ## Slide 4 – Authoring guidelines

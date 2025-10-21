@@ -29,7 +29,7 @@ function SettingsLevelSelect() {
       <DialogContent>
         <DialogTitle>Settings</DialogTitle>
         <DialogDescription>
-          Update your language practice preferences.
+          Update your enrichment preferences.
         </DialogDescription>
         <Select defaultValue="A1">
           <SelectTrigger className="w-32" aria-label="Language level">
