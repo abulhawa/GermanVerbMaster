@@ -155,7 +155,9 @@ function refillQueueFromLeitner(
   let reviewStarted = false;
   if (nextQueue.length === 0 && forceAtLeastOne && earliestFuture) {
     const entry = leitner.entries[earliestFuture.taskId];
-    entry.dueStep = leitner.step;
+    if (entry && leitner.step < earliestFuture.dueStep) {
+      leitner.step = earliestFuture.dueStep;
+    }
     queueSet.add(earliestFuture.taskId);
     nextQueue.push(earliestFuture.taskId);
     reviewStarted = true;
