@@ -1,17 +1,20 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { Link } from 'wouter';
 import { History, Loader2 } from 'lucide-react';
 
 import { AppShell } from '@/components/layout/app-shell';
+import { UserMenuControl } from '@/components/auth/user-menu-control';
 import { MobileNavBar } from '@/components/layout/mobile-nav-bar';
 import { getPrimaryNavigationItems } from '@/components/layout/navigation';
 import { PracticeCard, type PracticeCardResult } from '@/components/practice-card';
 import { PracticeModeSwitcher, type PracticeScope } from '@/components/practice-mode-switcher';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { SidebarNavButton } from '@/components/layout/sidebar-nav-button';
 import { useAuthSession } from '@/auth/session';
 import {
+  updateCefrLevel,
   updatePreferredTaskTypes,
 } from '@/lib/practice-settings';
 import {
@@ -39,14 +42,12 @@ import {
   type PracticeTask,
   clientTaskRegistry,
 } from '@/lib/tasks';
-import { getTaskTypeCopy } from '@/lib/task-metadata';
 import { useTranslations } from '@/locales';
 import { usePracticeSettings } from '@/contexts/practice-settings-context';
 import type { CEFRLevel, PracticeProgressState, TaskType, LexemePos } from '@shared';
 import {
   AVAILABLE_TASK_TYPES,
   SCOPE_LABELS,
-  buildCefrLabel,
   computeScope,
   getVerbLevel,
   normalisePreferredTaskTypes,
@@ -102,6 +103,47 @@ function createQueueSignature(queue: string[], taskTypes: TaskType[]): string {
   return `${taskTypes.join(',')}|${queue.join(',')}`;
 }
 
+const CEFR_LEVELS: CEFRLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+
+interface VerbLevelSelectProps {
+  value: CEFRLevel;
+  onChange: (level: CEFRLevel) => void;
+  labelId: string;
+  placeholder: string;
+}
+
+function VerbLevelSelect({ value, onChange, labelId, placeholder }: VerbLevelSelectProps) {
+  return (
+    <Select
+      value={value}
+      onValueChange={(next) => onChange(next as CEFRLevel)}
+      debugId="home-verb-level-select"
+    >
+      <SelectTrigger
+        aria-labelledby={labelId}
+        className="w-28 rounded-full border border-border/60 bg-background/90 px-4 py-2 text-sm font-medium text-foreground shadow-soft"
+        debugId="home-verb-level-trigger"
+      >
+        <SelectValue
+          debugId="home-verb-level-value"
+          placeholder={placeholder}
+        />
+      </SelectTrigger>
+      <SelectContent debugId="home-verb-level-menu" align="start">
+        {CEFR_LEVELS.map((level) => (
+          <SelectItem
+            key={level}
+            value={level}
+            debugId={`home-verb-level-${level.toLowerCase()}`}
+          >
+            {level}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
 export default function Home() {
   const { settings, updateSettings } = usePracticeSettings();
   const [progress, setProgress] = useState<PracticeProgressState>(() => loadPracticeProgress());
@@ -115,6 +157,7 @@ export default function Home() {
   const [isRecapOpen, setIsRecapOpen] = useState(false);
   const pendingFetchRef = useRef(false);
   const lastFailedQueueSignatureRef = useRef<string | null>(null);
+  const verbLevelLabelId = useId();
 
   const authSession = useAuthSession();
   const navigationItems = useMemo(
@@ -123,11 +166,7 @@ export default function Home() {
   );
   const translations = useTranslations();
   const homeTopBarCopy = translations.home.topBar;
-  const unknownUserLabel = translations.auth.dialog.unknownUser;
-  const topBarDisplayName = authSession.data?.user.name?.trim() || authSession.data?.user.email || unknownUserLabel;
-  const topBarSubtitle = authSession.data
-    ? homeTopBarCopy.signedInSubtitle.replace('{name}', topBarDisplayName)
-    : homeTopBarCopy.signedOutSubtitle;
+  const practiceControlsCopy = translations.home.practiceControls;
 
   const scope = computeScope(settings);
   const activeTaskTypes = useMemo(() => {
@@ -431,13 +470,13 @@ export default function Home() {
     setShouldReloadTasks(true);
   }, [updateSettings]);
 
+  const handleVerbLevelChange = useCallback((level: CEFRLevel) => {
+    updateSettings((prev) => updateCefrLevel(prev, { pos: 'verb', level }));
+  }, [updateSettings]);
+
   const scopeBadgeLabel = scope === 'custom'
     ? `${SCOPE_LABELS[scope]} (${activeTaskTypes.length})`
     : SCOPE_LABELS[scope];
-  const cefrLabel = buildCefrLabel(activeTaskTypes, settings);
-  const taskTypeCopy = getTaskTypeCopy(activeTaskType);
-  const cefrLevelForDisplay = scope === 'verbs' ? verbLevel : undefined;
-  const levelSummary = cefrLabel ?? (cefrLevelForDisplay ? `Level ${cefrLevelForDisplay}` : 'Mixed levels');
 
   const sessionCompleted = session.completed.length;
   const milestoneTarget = useMemo(() => {
@@ -453,6 +492,42 @@ export default function Home() {
 
 
   const isInitialLoading = !activeTask && isFetchingTasks;
+
+  const topBarControls = (
+    <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-border/60 bg-card/80 px-4 py-3 shadow-soft">
+      <div className="flex flex-wrap items-end gap-4" id={HOME_SECTION_IDS.modeSwitcher}>
+        <div className="space-y-1">
+          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+            {homeTopBarCopy.focusLabel}
+          </span>
+          <PracticeModeSwitcher
+            debugId="topbar-mode-switcher"
+            scope={scope}
+            onScopeChange={handleScopeChange}
+            selectedTaskTypes={activeTaskTypes}
+            onTaskTypesChange={handleCustomTaskTypesChange}
+            availableTaskTypes={AVAILABLE_TASK_TYPES}
+            scopeBadgeLabel={scopeBadgeLabel}
+          />
+        </div>
+        <div className="space-y-1">
+          <span
+            id={verbLevelLabelId}
+            className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground"
+          >
+            {practiceControlsCopy.levelLabel}
+          </span>
+          <VerbLevelSelect
+            value={verbLevel}
+            onChange={handleVerbLevelChange}
+            labelId={verbLevelLabelId}
+            placeholder={practiceControlsCopy.levelPlaceholder}
+          />
+        </div>
+      </div>
+      <UserMenuControl className="w-auto flex-none justify-end" />
+    </div>
+  );
 
   const sidebar = (
     <div className="flex h-full flex-col justify-between gap-8">
@@ -477,6 +552,7 @@ export default function Home() {
     <div id={HOME_SECTION_IDS.page}>
       <AppShell
         sidebar={sidebar}
+        topBarContent={topBarControls}
         mobileNav={<MobileNavBar items={navigationItems} />}
         debugId="home-app-shell"
       >
@@ -485,23 +561,6 @@ export default function Home() {
           className="flex min-h-[540px] flex-col gap-6 rounded-3xl border border-border/50 bg-card/80 p-6 shadow-xl shadow-primary/10"
           id={HOME_SECTION_IDS.practiceSection}
         >
-          <div className="space-y-6 text-left">
-            <div
-              className="flex flex-wrap items-center justify-between gap-3"
-              id={HOME_SECTION_IDS.modeSwitcher}
-            >
-              <PracticeModeSwitcher
-                debugId="topbar-mode-switcher"
-                scope={scope}
-                onScopeChange={handleScopeChange}
-                selectedTaskTypes={activeTaskTypes}
-                onTaskTypesChange={handleCustomTaskTypesChange}
-                availableTaskTypes={AVAILABLE_TASK_TYPES}
-                scopeBadgeLabel={scopeBadgeLabel}
-              />
-            </div>
-          </div>
-
           <div className="flex flex-1 flex-col gap-6">
             <div
               className="w-full xl:max-w-none"

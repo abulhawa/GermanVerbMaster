@@ -142,6 +142,10 @@ export interface HomeMessages {
     signedOutSubtitle: string;
     signedInSubtitle: string;
   };
+  practiceControls: {
+    levelLabel: string;
+    levelPlaceholder: string;
+  };
   reviewBanner: {
     title: string;
     description: string;
@@ -254,6 +258,10 @@ const MESSAGES: Record<Locale, AppMessages> = {
         title: 'Continue your personalised session',
         signedOutSubtitle: 'Sign in to sync your progress and unlock analytics.',
         signedInSubtitle: 'Signed in as {name}.',
+      },
+      practiceControls: {
+        levelLabel: 'Verb level (CEFR)',
+        levelPlaceholder: 'Select level',
       },
       reviewBanner: {
         title: 'Review mode',
@@ -510,6 +518,10 @@ const MESSAGES: Record<Locale, AppMessages> = {
         title: 'Setze deine personalisierte Sitzung fort',
         signedOutSubtitle: 'Melde dich an, um deinen Fortschritt zu synchronisieren und Analysen freizuschalten.',
         signedInSubtitle: 'Angemeldet als {name}.',
+      },
+      practiceControls: {
+        levelLabel: 'Verb-Niveau (GER)',
+        levelPlaceholder: 'Niveau auswählen',
       },
       reviewBanner: {
         title: 'Wiederholungsmodus',
