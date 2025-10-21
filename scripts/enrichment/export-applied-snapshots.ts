@@ -1,7 +1,7 @@
 import { rm } from "node:fs/promises";
 import path from "node:path";
 
-import { and, eq, isNotNull } from "drizzle-orm";
+import { and, eq, inArray, isNotNull } from "drizzle-orm";
 
 import { getDb, getPool } from "@db/client";
 import { enrichmentProviderSnapshots, words } from "@db/schema";
@@ -10,9 +10,10 @@ import type { EnrichmentProviderSnapshot } from "@shared/enrichment";
 import { persistProviderSnapshotToFile } from "./storage";
 import { writeWordsBackupToDisk } from "./backup";
 
-function parseArgs(argv: string[]): { clean: boolean } {
+function parseArgs(argv: string[]): { clean: boolean; purge: boolean } {
   return {
     clean: argv.includes("--clean") || argv.includes("-c"),
+    purge: argv.includes("--purge") || argv.includes("-p"),
   };
 }
 
@@ -53,7 +54,12 @@ function serialiseDate(value: Date | string | null): string {
   return new Date(value).toISOString();
 }
 
-async function loadAppliedSnapshots(): Promise<EnrichmentProviderSnapshot[]> {
+interface LoadedSnapshot {
+  id: number;
+  snapshot: EnrichmentProviderSnapshot;
+}
+
+async function loadAppliedSnapshots(): Promise<LoadedSnapshot[]> {
   const database = getDb();
   const rows = await database
     .select({ snapshot: enrichmentProviderSnapshots })
@@ -82,7 +88,10 @@ async function loadAppliedSnapshots(): Promise<EnrichmentProviderSnapshot[]> {
     }
   }
 
-  return Array.from(latestByProvider.values()).map(toSnapshot);
+  return Array.from(latestByProvider.values()).map((record) => ({
+    id: record.id,
+    snapshot: toSnapshot(record),
+  }));
 }
 
 async function cleanOutputDir(rootDir: string): Promise<void> {
@@ -90,9 +99,23 @@ async function cleanOutputDir(rootDir: string): Promise<void> {
   await rm(outputDir, { force: true, recursive: true });
 }
 
+async function purgeAppliedSnapshots(snapshotIds: number[]): Promise<number> {
+  if (!snapshotIds.length) {
+    return 0;
+  }
+
+  const database = getDb();
+  const deleted = await database
+    .delete(enrichmentProviderSnapshots)
+    .where(inArray(enrichmentProviderSnapshots.id, snapshotIds))
+    .returning({ id: enrichmentProviderSnapshots.id });
+
+  return deleted.length;
+}
+
 async function main(): Promise<void> {
   const pool = getPool();
-  const { clean } = parseArgs(process.argv.slice(2));
+  const { clean, purge } = parseArgs(process.argv.slice(2));
   const rootDir = process.cwd();
 
   try {
@@ -100,7 +123,10 @@ async function main(): Promise<void> {
       await cleanOutputDir(rootDir);
     }
 
-    const snapshots = await loadAppliedSnapshots();
+    const loadedSnapshots = await loadAppliedSnapshots();
+    const snapshots = loadedSnapshots.map((entry) => entry.snapshot);
+    const exportedSnapshotIds = loadedSnapshots.map((entry) => entry.id);
+
     if (snapshots.length) {
       snapshots.sort((a, b) => {
         if (a.pos !== b.pos) {
@@ -119,6 +145,11 @@ async function main(): Promise<void> {
       }
 
       console.log(`Persisted ${successCount} provider snapshots to data/enrichment`);
+
+      if (purge) {
+        const purgedCount = await purgeAppliedSnapshots(exportedSnapshotIds);
+        console.log(`Purged ${purgedCount} applied provider snapshots from the database`);
+      }
     } else {
       console.log("No applied enrichment snapshots found.");
     }

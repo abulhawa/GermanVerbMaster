@@ -48,6 +48,12 @@ npm run enrichment:export -- --clean
 Passing `--clean` (or `-c`) removes the existing `data/enrichment` directory before the export so
 stale entries are cleared. Omit the flag to merge with whatever is already on disk.
 
+When you want to trim the database history after capturing the latest files, add `--purge` (or
+`-p`). The flag deletes the exported `apply` snapshots from `enrichment.enrichment_provider_snapshots`
+once the JSON files have been written so the next export only processes snapshots created after the
+purge. Each snapshot is still preserved in the generated files, so commit the updated
+`data/enrichment` directory first if you need to keep an audit trail.
+
 After running the command, review the changes under `data/enrichment` and commit them to persist the
 new enrichment data in git. The local filesystem continues to be the canonical source for
 bootstrap/seed data, so expect to find the snapshots under `data/enrichment/<pos>/<provider>.json`.
