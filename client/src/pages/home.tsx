@@ -359,12 +359,21 @@ export default function Home() {
         return current;
       }
 
-      setSession((prev) => completeTask(prev, taskId, current?.result));
+      setSession((prev) => {
+        const updated = completeTask(prev, taskId, current?.result);
 
-      setTasksById((prev) => {
-        const next = { ...prev };
-        delete next[taskId];
-        return next;
+        if (!updated.queue.includes(taskId)) {
+          setTasksById((prev) => {
+            if (!(taskId in prev)) {
+              return prev;
+            }
+            const next = { ...prev };
+            delete next[taskId];
+            return next;
+          });
+        }
+
+        return updated;
       });
 
       return null;
