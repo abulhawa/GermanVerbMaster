@@ -84,10 +84,15 @@ export default defineConfig({
     },
     watch: {
       /**
-       * Bulk exports append to data/sync/*.jsonl files. Ignoring that subtree keeps Vite
-       * from reprocessing CSS/JS on every append while the admin runs “Export all”.
+       * Bulk exports append to data/sync/*.jsonl (and related manifest directories).
+       * Use globs instead of absolute paths so chokidar ignores every matching folder
+       * across platforms (Windows paths with backslashes, etc.).
        */
-      ignored: [path.resolve(__dirname, "data", "sync", "**")],
+      ignored: [
+        "**/data/sync/**",
+        "**/data/enrichment/**",
+        "**/data/generated/enrichment/**",
+      ],
     },
   },
   test: {
