@@ -578,7 +578,7 @@ function ConjugateFormRenderer({
   const { practiceCard: copy } = useTranslations();
   const [answer, setAnswer] = useState('');
   const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
-  const [showTranslation, setShowTranslation] = useState(false);
+  const [showExample, setShowExample] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAnswerRevealed, setIsAnswerRevealed] = useState(false);
   const startTimeRef = useRef(Date.now());
@@ -592,7 +592,7 @@ function ConjugateFormRenderer({
   useEffect(() => {
     setAnswer('');
     setStatus('idle');
-    setShowTranslation(false);
+    setShowExample(false);
     setIsSubmitting(false);
     setIsAnswerRevealed(false);
     startTimeRef.current = Date.now();
@@ -787,50 +787,53 @@ function ConjugateFormRenderer({
 
   const supportSections: ReactNode[] = [];
 
-  if (preferences.showExamples && exampleText) {
-    supportSections.push(
-      <div
-        key="example"
-        className="rounded-2xl border border-border/30 bg-card/20 px-5 py-4 text-left text-sm text-primary-foreground/90 shadow-soft backdrop-blur"
-      >
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary-foreground/70">{copy.exampleLabel}</p>
-        <p className="mt-2 text-base font-medium text-primary-foreground">{exampleText}</p>
-      </div>,
-    );
-  }
-
   if (translationText) {
     supportSections.push(
-      <button
+      <div
         key="translation"
-        type="button"
-        className="flex w-full items-start gap-3 rounded-2xl border border-border/40 bg-card/20 px-4 py-3 text-left text-sm text-primary-foreground/90 transition hover:bg-card/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
-        onClick={() => setShowTranslation((value) => !value)}
-        aria-expanded={showTranslation}
+        className="flex w-full items-start gap-3 rounded-2xl border border-border/40 bg-card/20 px-4 py-3 text-left text-sm text-primary-foreground/90 shadow-soft backdrop-blur"
       >
         <HelpCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary-foreground" aria-hidden />
         <div className="space-y-1">
           <p className="text-sm font-semibold text-primary-foreground">{copy.translations.label}</p>
+          <p className="text-sm text-primary-foreground/80">{translationText}</p>
+        </div>
+      </div>,
+    );
+  }
+
+  if (preferences.showExamples && exampleText) {
+    supportSections.push(
+      <button
+        key="example"
+        type="button"
+        className="flex w-full items-start gap-3 rounded-2xl border border-border/40 bg-card/20 px-4 py-3 text-left text-sm text-primary-foreground/90 transition hover:bg-card/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+        onClick={() => setShowExample((value) => !value)}
+        aria-expanded={showExample}
+      >
+        <HelpCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary-foreground" aria-hidden />
+        <div className="space-y-1">
+          <p className="text-sm font-semibold text-primary-foreground">{copy.exampleLabel}</p>
           <AnimatePresence initial={false}>
-            {showTranslation ? (
+            {showExample ? (
               <motion.p
-                key="translation-content"
+                key="example-content"
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
                 className="text-sm text-primary-foreground/80"
               >
-                {translationText}
+                {exampleText}
               </motion.p>
             ) : (
               <motion.span
-                key="translation-toggle"
+                key="example-toggle"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className="text-xs text-primary-foreground/70"
               >
-                {copy.translations.toggle}
+                {copy.exampleToggle}
               </motion.span>
             )}
           </AnimatePresence>
@@ -869,7 +872,7 @@ function NounCaseDeclensionRenderer({
   const { practiceCard: copy } = useTranslations();
   const [answer, setAnswer] = useState('');
   const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
-  const [showTranslation, setShowTranslation] = useState(false);
+  const [showExample, setShowExample] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAnswerRevealed, setIsAnswerRevealed] = useState(false);
   const startTimeRef = useRef(Date.now());
@@ -883,7 +886,7 @@ function NounCaseDeclensionRenderer({
   useEffect(() => {
     setAnswer('');
     setStatus('idle');
-    setShowTranslation(false);
+    setShowExample(false);
     setIsSubmitting(false);
     setIsAnswerRevealed(false);
     startTimeRef.current = Date.now();
@@ -1086,50 +1089,53 @@ function NounCaseDeclensionRenderer({
 
   const supportSections: ReactNode[] = [];
 
-  if (preferences.showExamples && exampleText) {
-    supportSections.push(
-      <div
-        key="example"
-        className="rounded-2xl border border-border/30 bg-card/20 px-5 py-4 text-left text-sm text-primary-foreground/90 shadow-soft backdrop-blur"
-      >
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary-foreground/70">{copy.exampleLabel}</p>
-        <p className="mt-2 text-base font-medium text-primary-foreground">{exampleText}</p>
-      </div>,
-    );
-  }
-
   if (translationText) {
     supportSections.push(
-      <button
+      <div
         key="translation"
-        type="button"
-        className="flex w-full items-start gap-3 rounded-2xl border border-border/40 bg-card/20 px-4 py-3 text-left text-sm text-primary-foreground/90 transition hover:bg-card/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
-        onClick={() => setShowTranslation((value) => !value)}
-        aria-expanded={showTranslation}
+        className="flex w-full items-start gap-3 rounded-2xl border border-border/40 bg-card/20 px-4 py-3 text-left text-sm text-primary-foreground/90 shadow-soft backdrop-blur"
       >
         <HelpCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary-foreground" aria-hidden />
         <div className="space-y-1">
           <p className="text-sm font-semibold text-primary-foreground">{copy.translations.label}</p>
+          <p className="text-sm text-primary-foreground/80">{translationText}</p>
+        </div>
+      </div>,
+    );
+  }
+
+  if (preferences.showExamples && exampleText) {
+    supportSections.push(
+      <button
+        key="example"
+        type="button"
+        className="flex w-full items-start gap-3 rounded-2xl border border-border/40 bg-card/20 px-4 py-3 text-left text-sm text-primary-foreground/90 transition hover:bg-card/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+        onClick={() => setShowExample((value) => !value)}
+        aria-expanded={showExample}
+      >
+        <HelpCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary-foreground" aria-hidden />
+        <div className="space-y-1">
+          <p className="text-sm font-semibold text-primary-foreground">{copy.exampleLabel}</p>
           <AnimatePresence initial={false}>
-            {showTranslation ? (
+            {showExample ? (
               <motion.p
-                key="translation-content"
+                key="example-content"
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
                 className="text-sm text-primary-foreground/80"
               >
-                {translationText}
+                {exampleText}
               </motion.p>
             ) : (
               <motion.span
-                key="translation-toggle"
+                key="example-toggle"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className="text-xs text-primary-foreground/70"
               >
-                {copy.translations.toggle}
+                {copy.exampleToggle}
               </motion.span>
             )}
           </AnimatePresence>
@@ -1168,7 +1174,7 @@ function AdjectiveEndingRenderer({
   const { practiceCard: copy } = useTranslations();
   const [answer, setAnswer] = useState('');
   const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
-  const [showTranslation, setShowTranslation] = useState(false);
+  const [showExample, setShowExample] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAnswerRevealed, setIsAnswerRevealed] = useState(false);
   const startTimeRef = useRef(Date.now());
@@ -1182,7 +1188,7 @@ function AdjectiveEndingRenderer({
   useEffect(() => {
     setAnswer('');
     setStatus('idle');
-    setShowTranslation(false);
+    setShowExample(false);
     setIsSubmitting(false);
     setIsAnswerRevealed(false);
     startTimeRef.current = Date.now();
@@ -1365,50 +1371,53 @@ function AdjectiveEndingRenderer({
 
   const supportSections: ReactNode[] = [];
 
-  if (preferences.showExamples && exampleText) {
-    supportSections.push(
-      <div
-        key="example"
-        className="rounded-2xl border border-border/30 bg-card/20 px-5 py-4 text-left text-sm text-primary-foreground/90 shadow-soft backdrop-blur"
-      >
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary-foreground/70">{copy.exampleLabel}</p>
-        <p className="mt-2 text-base font-medium text-primary-foreground">{exampleText}</p>
-      </div>,
-    );
-  }
-
   if (translationText) {
     supportSections.push(
-      <button
+      <div
         key="translation"
-        type="button"
-        className="flex w-full items-start gap-3 rounded-2xl border border-border/40 bg-card/20 px-4 py-3 text-left text-sm text-primary-foreground/90 transition hover:bg-card/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
-        onClick={() => setShowTranslation((value) => !value)}
-        aria-expanded={showTranslation}
+        className="flex w-full items-start gap-3 rounded-2xl border border-border/40 bg-card/20 px-4 py-3 text-left text-sm text-primary-foreground/90 shadow-soft backdrop-blur"
       >
         <HelpCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary-foreground" aria-hidden />
         <div className="space-y-1">
           <p className="text-sm font-semibold text-primary-foreground">{copy.translations.label}</p>
+          <p className="text-sm text-primary-foreground/80">{translationText}</p>
+        </div>
+      </div>,
+    );
+  }
+
+  if (preferences.showExamples && exampleText) {
+    supportSections.push(
+      <button
+        key="example"
+        type="button"
+        className="flex w-full items-start gap-3 rounded-2xl border border-border/40 bg-card/20 px-4 py-3 text-left text-sm text-primary-foreground/90 transition hover:bg-card/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+        onClick={() => setShowExample((value) => !value)}
+        aria-expanded={showExample}
+      >
+        <HelpCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary-foreground" aria-hidden />
+        <div className="space-y-1">
+          <p className="text-sm font-semibold text-primary-foreground">{copy.exampleLabel}</p>
           <AnimatePresence initial={false}>
-            {showTranslation ? (
+            {showExample ? (
               <motion.p
-                key="translation-content"
+                key="example-content"
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
                 className="text-sm text-primary-foreground/80"
               >
-                {translationText}
+                {exampleText}
               </motion.p>
             ) : (
               <motion.span
-                key="translation-toggle"
+                key="example-toggle"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className="text-xs text-primary-foreground/70"
               >
-                {copy.translations.toggle}
+                {copy.exampleToggle}
               </motion.span>
             )}
           </AnimatePresence>
