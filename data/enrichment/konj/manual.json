@@ -1,0 +1,1650 @@
+{
+  "schemaVersion": 1,
+  "providerId": "manual",
+  "providerLabel": "Community Import",
+  "pos": "Konj",
+  "updatedAt": "2025-10-21T09:52:25.030Z",
+  "entries": {
+    "jedoch": {
+      "lemma": "jedoch",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:17.929Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Sie wollte kommen, jedoch war der Zug verspätet.",
+          "translations": {
+            "en": "She wanted to come, however the train was delayed."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "jedoch",
+        "english": "however, nevertheless",
+        "applyMode": "merge",
+        "exampleDe": "Sie wollte kommen, jedoch war der Zug verspätet.",
+        "exampleEn": "She wanted to come, however the train was delayed."
+      },
+      "wordId": 3048,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7950,
+        "wordId": 3048,
+        "createdAt": "2025-10-19T09:59:17.929Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:17.929Z"
+      }
+    },
+    "nachdem": {
+      "lemma": "nachdem",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:18.740Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Wir gingen spazieren, nachdem es aufgehört hatte zu regnen.",
+          "translations": {
+            "en": "We went for a walk after it had stopped raining."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "nachdem",
+        "english": "after (once something has happened)",
+        "applyMode": "merge",
+        "exampleDe": "Wir gingen spazieren, nachdem es aufgehört hatte zu regnen.",
+        "exampleEn": "We went for a walk after it had stopped raining."
+      },
+      "wordId": 3049,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7951,
+        "wordId": 3049,
+        "createdAt": "2025-10-19T09:59:18.740Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:18.740Z"
+      }
+    },
+    "nämlich": {
+      "lemma": "nämlich",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:19.089Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Ich habe nämlich gestern noch angerufen.",
+          "translations": {
+            "en": "I called yesterday, you see."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "nämlich",
+        "english": "namely, you see",
+        "applyMode": "merge",
+        "exampleDe": "Ich habe nämlich gestern noch angerufen.",
+        "exampleEn": "I called yesterday, you see."
+      },
+      "wordId": 3050,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7952,
+        "wordId": 3050,
+        "createdAt": "2025-10-19T09:59:19.089Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:19.089Z"
+      }
+    },
+    "ob": {
+      "lemma": "ob",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:19.447Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Er fragte, ob du mitkommst.",
+          "translations": {
+            "en": "He asked whether you are coming along."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "ob",
+        "english": "whether, if",
+        "applyMode": "merge",
+        "exampleDe": "Er fragte, ob du mitkommst.",
+        "exampleEn": "He asked whether you are coming along."
+      },
+      "wordId": 3051,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7953,
+        "wordId": 3051,
+        "createdAt": "2025-10-19T09:59:19.447Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:19.447Z"
+      }
+    },
+    "obwohl": {
+      "lemma": "obwohl",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:19.730Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Obwohl es spät war, arbeitete sie weiter.",
+          "translations": {
+            "en": "Although it was late, she kept working."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "obwohl",
+        "english": "although",
+        "applyMode": "merge",
+        "exampleDe": "Obwohl es spät war, arbeitete sie weiter.",
+        "exampleEn": "Although it was late, she kept working."
+      },
+      "wordId": 3052,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7954,
+        "wordId": 3052,
+        "createdAt": "2025-10-19T09:59:19.730Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:19.730Z"
+      }
+    },
+    "so dass": {
+      "lemma": "so dass",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:20.036Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Er sprach laut, so dass alle ihn hören konnten.",
+          "translations": {
+            "en": "He spoke loudly so that everyone could hear him."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "so dass",
+        "english": "so that (with the result that)",
+        "applyMode": "merge",
+        "exampleDe": "Er sprach laut, so dass alle ihn hören konnten.",
+        "exampleEn": "He spoke loudly so that everyone could hear him."
+      },
+      "wordId": 3053,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7955,
+        "wordId": 3053,
+        "createdAt": "2025-10-19T09:59:20.036Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:20.036Z"
+      }
+    },
+    "so viel": {
+      "lemma": "so viel",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:20.394Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Du kannst so viel nehmen, wie du brauchst.",
+          "translations": {
+            "en": "You can take as much as you need."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "so viel",
+        "english": "as much as",
+        "applyMode": "merge",
+        "exampleDe": "Du kannst so viel nehmen, wie du brauchst.",
+        "exampleEn": "You can take as much as you need."
+      },
+      "wordId": 3054,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7956,
+        "wordId": 3054,
+        "createdAt": "2025-10-19T09:59:20.394Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:20.394Z"
+      }
+    },
+    "sobald": {
+      "lemma": "sobald",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:20.688Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Sobald ich fertig bin, rufe ich dich an.",
+          "translations": {
+            "en": "As soon as I am finished, I will call you."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "sobald",
+        "english": "as soon as",
+        "applyMode": "merge",
+        "exampleDe": "Sobald ich fertig bin, rufe ich dich an.",
+        "exampleEn": "As soon as I am finished, I will call you."
+      },
+      "wordId": 3055,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7957,
+        "wordId": 3055,
+        "createdAt": "2025-10-19T09:59:20.688Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:20.688Z"
+      }
+    },
+    "sodass": {
+      "lemma": "sodass",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:20.982Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Es regnete stark, sodass die Straße überflutet wurde.",
+          "translations": {
+            "en": "It rained heavily, so that the street was flooded."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "sodass",
+        "english": "so that (resulting in)",
+        "applyMode": "merge",
+        "exampleDe": "Es regnete stark, sodass die Straße überflutet wurde.",
+        "exampleEn": "It rained heavily, so that the street was flooded."
+      },
+      "wordId": 3056,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7958,
+        "wordId": 3056,
+        "createdAt": "2025-10-19T09:59:20.982Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:20.982Z"
+      }
+    },
+    "solange": {
+      "lemma": "solange",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:21.283Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Solange du lernst, bleibt es ruhig.",
+          "translations": {
+            "en": "As long as you are studying, it stays quiet."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "solange",
+        "english": "as long as",
+        "applyMode": "merge",
+        "exampleDe": "Solange du lernst, bleibt es ruhig.",
+        "exampleEn": "As long as you are studying, it stays quiet."
+      },
+      "wordId": 3057,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7959,
+        "wordId": 3057,
+        "createdAt": "2025-10-19T09:59:21.283Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:21.283Z"
+      }
+    },
+    "sondern": {
+      "lemma": "sondern",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:21.549Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Das ist kein Fehler, sondern Absicht.",
+          "translations": {
+            "en": "That is not a mistake but rather intentional."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "sondern",
+        "english": "but rather",
+        "applyMode": "merge",
+        "exampleDe": "Das ist kein Fehler, sondern Absicht.",
+        "exampleEn": "That is not a mistake but rather intentional."
+      },
+      "wordId": 3058,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7960,
+        "wordId": 3058,
+        "createdAt": "2025-10-19T09:59:21.549Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:21.549Z"
+      }
+    },
+    "aber": {
+      "lemma": "aber",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:23.055Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Aber natürlich!",
+          "translations": {
+            "en": "But of course!"
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "aber",
+        "english": "but",
+        "applyMode": "merge",
+        "exampleDe": "Aber natürlich!",
+        "exampleEn": "But of course!"
+      },
+      "wordId": 3026,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7965,
+        "wordId": 3026,
+        "createdAt": "2025-10-19T09:59:23.055Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:23.055Z"
+      }
+    },
+    "also": {
+      "lemma": "also",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:23.350Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Also, fangen wir an.",
+          "translations": {
+            "en": "So, let us get started."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "also",
+        "english": "so, therefore; well then",
+        "applyMode": "merge",
+        "exampleDe": "Also, fangen wir an.",
+        "exampleEn": "So, let us get started."
+      },
+      "wordId": 3027,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7966,
+        "wordId": 3027,
+        "createdAt": "2025-10-19T09:59:23.350Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:23.350Z"
+      }
+    },
+    "auch": {
+      "lemma": "auch",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:23.673Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Sie kommt auch zur Feier.",
+          "translations": {
+            "en": "She is also coming to the party."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "auch",
+        "english": "also, too",
+        "applyMode": "merge",
+        "exampleDe": "Sie kommt auch zur Feier.",
+        "exampleEn": "She is also coming to the party."
+      },
+      "wordId": 3028,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7967,
+        "wordId": 3028,
+        "createdAt": "2025-10-19T09:59:23.673Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:23.673Z"
+      }
+    },
+    "da": {
+      "lemma": "da",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:23.969Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Da es regnet, bleiben wir drinnen.",
+          "translations": {
+            "en": "Since it is raining, we are staying inside."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "da",
+        "english": "since, because",
+        "applyMode": "merge",
+        "exampleDe": "Da es regnet, bleiben wir drinnen.",
+        "exampleEn": "Since it is raining, we are staying inside."
+      },
+      "wordId": 3029,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7968,
+        "wordId": 3029,
+        "createdAt": "2025-10-19T09:59:23.969Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:23.969Z"
+      }
+    },
+    "soviel": {
+      "lemma": "soviel",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:25.191Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Soviel ich weiß, hat er schon bezahlt.",
+          "translations": {
+            "en": "As far as I know, he has already paid."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "soviel",
+        "english": "as far as, so much as",
+        "applyMode": "merge",
+        "exampleDe": "Soviel ich weiß, hat er schon bezahlt.",
+        "exampleEn": "As far as I know, he has already paid."
+      },
+      "wordId": 3059,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7972,
+        "wordId": 3059,
+        "createdAt": "2025-10-19T09:59:25.191Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:25.191Z"
+      }
+    },
+    "sowohl": {
+      "lemma": "sowohl",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:25.486Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Sowohl der Chef als auch die Kollegen waren da.",
+          "translations": {
+            "en": "Both the boss and the colleagues were there."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "sowohl",
+        "english": "both (in paired construction)",
+        "applyMode": "merge",
+        "exampleDe": "Sowohl der Chef als auch die Kollegen waren da.",
+        "exampleEn": "Both the boss and the colleagues were there."
+      },
+      "wordId": 3060,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7973,
+        "wordId": 3060,
+        "createdAt": "2025-10-19T09:59:25.486Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:25.486Z"
+      }
+    },
+    "trotzdem": {
+      "lemma": "trotzdem",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:25.788Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Es regnete, trotzdem gingen wir spazieren.",
+          "translations": {
+            "en": "It was raining; nevertheless we went for a walk."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "trotzdem",
+        "english": "nevertheless, in spite of that",
+        "applyMode": "merge",
+        "exampleDe": "Es regnete, trotzdem gingen wir spazieren.",
+        "exampleEn": "It was raining; nevertheless we went for a walk."
+      },
+      "wordId": 3061,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7974,
+        "wordId": 3061,
+        "createdAt": "2025-10-19T09:59:25.788Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:25.788Z"
+      }
+    },
+    "umso": {
+      "lemma": "umso",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:26.085Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Je ruhiger du bleibst, umso besser klappt es.",
+          "translations": {
+            "en": "The calmer you stay, the better it works."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "umso",
+        "english": "all the more",
+        "applyMode": "merge",
+        "exampleDe": "Je ruhiger du bleibst, umso besser klappt es.",
+        "exampleEn": "The calmer you stay, the better it works."
+      },
+      "wordId": 3062,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7975,
+        "wordId": 3062,
+        "createdAt": "2025-10-19T09:59:26.085Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:26.085Z"
+      }
+    },
+    "weder": {
+      "lemma": "weder",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:26.381Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Er will weder essen noch trinken.",
+          "translations": {
+            "en": "He wants neither to eat nor to drink."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "weder",
+        "english": "neither (in weder ... noch ...)",
+        "applyMode": "merge",
+        "exampleDe": "Er will weder essen noch trinken.",
+        "exampleEn": "He wants neither to eat nor to drink."
+      },
+      "wordId": 3063,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7976,
+        "wordId": 3063,
+        "createdAt": "2025-10-19T09:59:26.381Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:26.381Z"
+      }
+    },
+    "zwar": {
+      "lemma": "zwar",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:26.676Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Es ist zwar kalt, aber sonnig.",
+          "translations": {
+            "en": "It is indeed cold but sunny."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "zwar",
+        "english": "indeed, admittedly",
+        "applyMode": "merge",
+        "exampleDe": "Es ist zwar kalt, aber sonnig.",
+        "exampleEn": "It is indeed cold but sunny."
+      },
+      "wordId": 3064,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7977,
+        "wordId": 3064,
+        "createdAt": "2025-10-19T09:59:26.676Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:26.676Z"
+      }
+    },
+    "damit": {
+      "lemma": "damit",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:27.583Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Ich schreibe es auf, damit ich es nicht vergesse.",
+          "translations": {
+            "en": "I am writing it down so that I do not forget it."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "damit",
+        "english": "so that, in order that",
+        "applyMode": "merge",
+        "exampleDe": "Ich schreibe es auf, damit ich es nicht vergesse.",
+        "exampleEn": "I am writing it down so that I do not forget it."
+      },
+      "wordId": 3039,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7980,
+        "wordId": 3039,
+        "createdAt": "2025-10-19T09:59:27.583Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:27.583Z"
+      }
+    },
+    "desto": {
+      "lemma": "desto",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:27.845Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Je länger wir warten, desto schwieriger wird es.",
+          "translations": {
+            "en": "The longer we wait, the harder it becomes."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "desto",
+        "english": "the (comparative) part of \"je ... desto ...\"",
+        "applyMode": "merge",
+        "exampleDe": "Je länger wir warten, desto schwieriger wird es.",
+        "exampleEn": "The longer we wait, the harder it becomes."
+      },
+      "wordId": 3040,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7981,
+        "wordId": 3040,
+        "createdAt": "2025-10-19T09:59:27.845Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:27.845Z"
+      }
+    },
+    "deswegen": {
+      "lemma": "deswegen",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:28.145Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Ich habe verschlafen, deswegen kam ich zu spät.",
+          "translations": {
+            "en": "I overslept; that is why I was late."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "deswegen",
+        "english": "therefore, for that reason",
+        "applyMode": "merge",
+        "exampleDe": "Ich habe verschlafen, deswegen kam ich zu spät.",
+        "exampleEn": "I overslept; that is why I was late."
+      },
+      "wordId": 3041,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7982,
+        "wordId": 3041,
+        "createdAt": "2025-10-19T09:59:28.145Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:28.145Z"
+      }
+    },
+    "ebenfalls": {
+      "lemma": "ebenfalls",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:28.443Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Vielen Dank, ebenfalls alles Gute!",
+          "translations": {
+            "en": "Many thanks, and likewise all the best!"
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "ebenfalls",
+        "english": "likewise, as well",
+        "applyMode": "merge",
+        "exampleDe": "Vielen Dank, ebenfalls alles Gute!",
+        "exampleEn": "Many thanks, and likewise all the best!"
+      },
+      "wordId": 3042,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7983,
+        "wordId": 3042,
+        "createdAt": "2025-10-19T09:59:28.443Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:28.443Z"
+      }
+    },
+    "entweder": {
+      "lemma": "entweder",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:28.723Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Du kannst entweder Tee oder Kaffee nehmen.",
+          "translations": {
+            "en": "You can take either tea or coffee."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "entweder",
+        "english": "either",
+        "applyMode": "merge",
+        "exampleDe": "Du kannst entweder Tee oder Kaffee nehmen.",
+        "exampleEn": "You can take either tea or coffee."
+      },
+      "wordId": 3043,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7984,
+        "wordId": 3043,
+        "createdAt": "2025-10-19T09:59:28.723Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:28.723Z"
+      }
+    },
+    "falls": {
+      "lemma": "falls",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:29.025Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Ruf mich an, falls du Fragen hast.",
+          "translations": {
+            "en": "Call me if you have questions."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "falls",
+        "english": "in case, if",
+        "applyMode": "merge",
+        "exampleDe": "Ruf mich an, falls du Fragen hast.",
+        "exampleEn": "Call me if you have questions."
+      },
+      "wordId": 3044,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7985,
+        "wordId": 3044,
+        "createdAt": "2025-10-19T09:59:29.025Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:29.025Z"
+      }
+    },
+    "gleichfalls": {
+      "lemma": "gleichfalls",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:29.353Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Schönes Wochenende! – Danke, gleichfalls!",
+          "translations": {
+            "en": "Have a nice weekend! – Thanks, same to you!"
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "gleichfalls",
+        "english": "likewise",
+        "applyMode": "merge",
+        "exampleDe": "Schönes Wochenende! – Danke, gleichfalls!",
+        "exampleEn": "Have a nice weekend! – Thanks, same to you!"
+      },
+      "wordId": 3045,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7986,
+        "wordId": 3045,
+        "createdAt": "2025-10-19T09:59:29.353Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:29.353Z"
+      }
+    },
+    "indem": {
+      "lemma": "indem",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:29.665Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Sie löste das Problem, indem sie den Rechner neu startete.",
+          "translations": {
+            "en": "She solved the problem by restarting the computer."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "indem",
+        "english": "by (doing something)",
+        "applyMode": "merge",
+        "exampleDe": "Sie löste das Problem, indem sie den Rechner neu startete.",
+        "exampleEn": "She solved the problem by restarting the computer."
+      },
+      "wordId": 3046,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7987,
+        "wordId": 3046,
+        "createdAt": "2025-10-19T09:59:29.665Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:29.665Z"
+      }
+    },
+    "je": {
+      "lemma": "je",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:29.947Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Je früher du kommst, desto mehr Zeit haben wir.",
+          "translations": {
+            "en": "The earlier you arrive, the more time we have."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "je",
+        "english": "the (comparative) part of \"je ... desto ...\"",
+        "applyMode": "merge",
+        "exampleDe": "Je früher du kommst, desto mehr Zeit haben wir.",
+        "exampleEn": "The earlier you arrive, the more time we have."
+      },
+      "wordId": 3047,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7988,
+        "wordId": 3047,
+        "createdAt": "2025-10-19T09:59:29.947Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:29.947Z"
+      }
+    },
+    "denn": {
+      "lemma": "denn",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:30.701Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Komm pünktlich, denn der Vortrag beginnt um acht.",
+          "translations": {
+            "en": "Arrive on time, for the talk begins at eight."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "denn",
+        "english": "for, because",
+        "applyMode": "merge",
+        "exampleDe": "Komm pünktlich, denn der Vortrag beginnt um acht.",
+        "exampleEn": "Arrive on time, for the talk begins at eight."
+      },
+      "wordId": 3030,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7991,
+        "wordId": 3030,
+        "createdAt": "2025-10-19T09:59:30.701Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:30.701Z"
+      }
+    },
+    "oder": {
+      "lemma": "oder",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:31.101Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Möchtest du Tee oder Kaffee?",
+          "translations": {
+            "en": "Would you like tea or coffee?"
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "oder",
+        "english": "or",
+        "applyMode": "merge",
+        "exampleDe": "Möchtest du Tee oder Kaffee?",
+        "exampleEn": "Would you like tea or coffee?"
+      },
+      "wordId": 3031,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7992,
+        "wordId": 3031,
+        "createdAt": "2025-10-19T09:59:31.101Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:31.101Z"
+      }
+    },
+    "und": {
+      "lemma": "und",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:31.400Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Sie kocht und er deckt den Tisch.",
+          "translations": {
+            "en": "She cooks and he sets the table."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "und",
+        "english": "and",
+        "applyMode": "merge",
+        "exampleDe": "Sie kocht und er deckt den Tisch.",
+        "exampleEn": "She cooks and he sets the table."
+      },
+      "wordId": 3032,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7993,
+        "wordId": 3032,
+        "createdAt": "2025-10-19T09:59:31.400Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:31.400Z"
+      }
+    },
+    "als": {
+      "lemma": "als",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:31.690Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Als ich klein war, spielte ich gern draußen.",
+          "translations": {
+            "en": "When I was little, I liked playing outside."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "als",
+        "english": "when (past events), as",
+        "applyMode": "merge",
+        "exampleDe": "Als ich klein war, spielte ich gern draußen.",
+        "exampleEn": "When I was little, I liked playing outside."
+      },
+      "wordId": 3033,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7994,
+        "wordId": 3033,
+        "createdAt": "2025-10-19T09:59:31.690Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:31.690Z"
+      }
+    },
+    "dass": {
+      "lemma": "dass",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:31.989Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Ich hoffe, dass du kommst.",
+          "translations": {
+            "en": "I hope that you are coming."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "dass",
+        "english": "that (introducing a clause)",
+        "applyMode": "merge",
+        "exampleDe": "Ich hoffe, dass du kommst.",
+        "exampleEn": "I hope that you are coming."
+      },
+      "wordId": 3034,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7995,
+        "wordId": 3034,
+        "createdAt": "2025-10-19T09:59:31.989Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:31.989Z"
+      }
+    },
+    "deshalb": {
+      "lemma": "deshalb",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:32.815Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Es war laut, deshalb konnte ich nicht schlafen.",
+          "translations": {
+            "en": "It was loud; therefore I could not sleep."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "deshalb",
+        "english": "therefore, that is why",
+        "applyMode": "merge",
+        "exampleDe": "Es war laut, deshalb konnte ich nicht schlafen.",
+        "exampleEn": "It was loud; therefore I could not sleep."
+      },
+      "wordId": 3035,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7996,
+        "wordId": 3035,
+        "createdAt": "2025-10-19T09:59:32.815Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:32.815Z"
+      }
+    },
+    "weil": {
+      "lemma": "weil",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:33.124Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Wir bleiben drin, weil es schneit.",
+          "translations": {
+            "en": "We are staying inside because it is snowing."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "weil",
+        "english": "because",
+        "applyMode": "merge",
+        "exampleDe": "Wir bleiben drin, weil es schneit.",
+        "exampleEn": "We are staying inside because it is snowing."
+      },
+      "wordId": 3036,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7997,
+        "wordId": 3036,
+        "createdAt": "2025-10-19T09:59:33.124Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:33.124Z"
+      }
+    },
+    "wenn": {
+      "lemma": "wenn",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:33.424Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Wenn du Hilfe brauchst, sag Bescheid.",
+          "translations": {
+            "en": "If you need help, let me know."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "wenn",
+        "english": "if, whenever",
+        "applyMode": "merge",
+        "exampleDe": "Wenn du Hilfe brauchst, sag Bescheid.",
+        "exampleEn": "If you need help, let me know."
+      },
+      "wordId": 3037,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7998,
+        "wordId": 3037,
+        "createdAt": "2025-10-19T09:59:33.424Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:33.424Z"
+      }
+    },
+    "bevor": {
+      "lemma": "bevor",
+      "pos": "Konj",
+      "providerId": "manual",
+      "providerLabel": "Community Import",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-19T09:59:33.784Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Bevor wir gehen, schließe die Fenster.",
+          "translations": {
+            "en": "Before we leave, close the windows."
+          }
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "pos": "Konj",
+        "lemma": "bevor",
+        "english": "before",
+        "applyMode": "merge",
+        "exampleDe": "Bevor wir gehen, schließe die Fenster.",
+        "exampleEn": "Before we leave, close the windows."
+      },
+      "wordId": 3038,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "approved",
+        "snapshotId": 7999,
+        "wordId": 3038,
+        "createdAt": "2025-10-19T09:59:33.784Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-19T09:59:33.784Z"
+      }
+    }
+  },
+  "meta": {
+    "createdAt": "2025-10-19T09:59:16.554Z"
+  }
+}

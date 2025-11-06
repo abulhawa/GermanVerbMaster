@@ -82,6 +82,18 @@ export default defineConfig({
         path.resolve(__dirname, "data"),
       ],
     },
+    watch: {
+      /**
+       * Bulk exports append to data/sync/*.jsonl (and related manifest directories).
+       * Use globs instead of absolute paths so chokidar ignores every matching folder
+       * across platforms (Windows paths with backslashes, etc.).
+       */
+      ignored: [
+        "**/data/sync/**",
+        "**/data/enrichment/**",
+        "**/data/generated/enrichment/**",
+      ],
+    },
   },
   test: {
     globals: true,

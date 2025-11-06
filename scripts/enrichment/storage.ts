@@ -43,7 +43,31 @@ function toPosSegment(pos: string | number | null | undefined): string {
   if (!pos) {
     return "unknown";
   }
-  return String(pos).toLowerCase();
+  const raw = String(pos).trim().toLowerCase();
+  if (!raw.length) {
+    return "unknown";
+  }
+
+  const transliterations: Array<[RegExp, string]> = [
+    [/ä/g, "ae"],
+    [/ö/g, "oe"],
+    [/ü/g, "ue"],
+    [/ß/g, "ss"],
+  ];
+
+  let segment = transliterations.reduce(
+    (value, [pattern, replacement]) => value.replace(pattern, replacement),
+    raw,
+  );
+
+  segment = segment
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9_-]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  return segment.length ? segment : "unknown";
 }
 
 function providerFilePath(providerId: string | number, pos: string | number | null | undefined): string {
@@ -159,6 +183,9 @@ async function uploadProviderFileToSupabase(
 async function readJsonFile<T>(filePath: string): Promise<T | null> {
   try {
     const raw = await readFile(filePath, "utf8");
+    if (!raw.trim().length) {
+      return null;
+    }
     return JSON.parse(raw) as T;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") {
@@ -300,9 +327,21 @@ function buildPersistedEntry(snapshot: EnrichmentProviderSnapshot): PersistedPro
   } satisfies PersistedProviderEntry;
 }
 
+export interface PersistProviderSnapshotOptions {
+  skipUpload?: boolean;
+}
+
+export interface PersistProviderSnapshotResult {
+  filePath: string;
+  relativePath: string;
+  payload: PersistedProviderFile;
+}
+
 export async function persistProviderSnapshotToFile(
   snapshot: EnrichmentProviderSnapshot,
-): Promise<void> {
+  options: PersistProviderSnapshotOptions = {},
+): Promise<PersistProviderSnapshotResult> {
+  const { skipUpload = false } = options;
   const filePath = providerFilePath(snapshot.providerId, snapshot.pos);
   await mkdir(path.dirname(filePath), { recursive: true });
 
@@ -318,7 +357,17 @@ export async function persistProviderSnapshotToFile(
   const fileContents = JSON.stringify(payload, null, 2);
 
   await writeFile(filePath, fileContents, "utf8");
-  await uploadProviderFileToSupabase(filePath, fileContents);
+  if (!skipUpload) {
+    await uploadProviderFileToSupabase(filePath, fileContents);
+  }
+
+  return {
+    filePath,
+    relativePath: path
+      .relative(resolveEnrichmentDataDir(), filePath)
+      .replace(/\\/g, "/"),
+    payload,
+  };
 }
 
 async function safeReaddir(dirPath: string): Promise<string[]> {

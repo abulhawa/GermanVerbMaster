@@ -1,0 +1,350 @@
+{
+  "schemaVersion": 1,
+  "providerId": "wiktextract",
+  "providerLabel": "Wiktextract",
+  "pos": "Part",
+  "updatedAt": "2025-10-21T09:56:59.716Z",
+  "entries": {
+    "bitte": {
+      "lemma": "bitte",
+      "pos": "Part",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:09:25.190Z",
+      "translations": [
+        {
+          "value": "you're welcome (acknowledgement of thanks)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "excuse me, sorry (request to repeat information)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "here you are (when handing something over to someone)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "OK then, well then, all right (indication of mock acquiescence to someone's apparent demanding attitude)",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": [
+        "bitte schön",
+        "gern geschehen",
+        "Entschuldigung"
+      ],
+      "englishHints": [
+        "you're welcome (acknowledgement of thanks)",
+        "excuse me, sorry (request to repeat information)",
+        "here you are (when handing something over to someone)",
+        "OK then, well then, all right (indication of mock acquiescence to someone's apparent demanding attitude)"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [
+          "sarcastic"
+        ],
+        "examples": [],
+        "posLabel": "intj",
+        "posNotes": [
+          "adverbs",
+          "ellipses",
+          "interjections",
+          "Pages with 5 entries",
+          "Pages with entries",
+          "phrasebook",
+          "sarcastic terms",
+          "verb forms"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/b/bi/bitte.jsonl",
+        "synonyms": [
+          "bitte schön",
+          "gern geschehen",
+          "Entschuldigung"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "you're welcome (acknowledgement of thanks)",
+          "excuse me, sorry (request to repeat information)",
+          "here you are (when handing something over to someone)",
+          "OK then, well then, all right (indication of mock acquiescence to someone's apparent demanding attitude)"
+        ],
+        "translations": [
+          {
+            "value": "you're welcome (acknowledgement of thanks)",
+            "language": "en"
+          },
+          {
+            "value": "excuse me, sorry (request to repeat information)",
+            "language": "en"
+          },
+          {
+            "value": "here you are (when handing something over to someone)",
+            "language": "en"
+          },
+          {
+            "value": "OK then, well then, all right (indication of mock acquiescence to someone's apparent demanding attitude)",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 3073,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 4042,
+        "wordId": 3073,
+        "createdAt": "2025-10-17T22:09:25.190Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:09:25.190Z"
+      }
+    },
+    "danke": {
+      "lemma": "danke",
+      "pos": "Part",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:09:25.461Z",
+      "translations": [
+        {
+          "value": "thanks, thank you",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "thanks, thank you"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "intj",
+        "posNotes": [
+          "interjections",
+          "Pages with 5 entries",
+          "Pages with entries",
+          "phrasebook",
+          "verb forms"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/d/da/danke.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "thanks, thank you"
+        ],
+        "translations": [
+          {
+            "value": "thanks, thank you",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 3074,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 4043,
+        "wordId": 3074,
+        "createdAt": "2025-10-17T22:09:25.461Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:09:25.461Z"
+      }
+    },
+    "halt": {
+      "lemma": "halt",
+      "pos": "Part",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:09:51.281Z",
+      "translations": [
+        {
+          "value": "stop!, wait!",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": null,
+      "englishHints": [
+        "stop!, wait!"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [],
+        "examples": [],
+        "posLabel": "intj",
+        "posNotes": [
+          "adverbs",
+          "interjections",
+          "modal particles",
+          "Pages with 14 entries",
+          "Pages with entries",
+          "terms inherited from Middle High German",
+          "terms inherited from Proto-Germanic",
+          "verb forms"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/h/ha/halt.jsonl",
+        "synonyms": [],
+        "pivotUsed": false,
+        "englishHints": [
+          "stop!, wait!"
+        ],
+        "translations": [
+          {
+            "value": "stop!, wait!",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 3077,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 4149,
+        "wordId": 3077,
+        "createdAt": "2025-10-17T22:09:51.281Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:09:51.281Z"
+      }
+    },
+    "noch mal": {
+      "lemma": "noch mal",
+      "pos": "Part",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:11:10.523Z",
+      "translations": null,
+      "examples": null,
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "wordId": 3078,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 4349,
+        "wordId": 3078,
+        "createdAt": "2025-10-17T22:11:10.523Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:11:10.523Z"
+      }
+    },
+    "nochmal": {
+      "lemma": "nochmal",
+      "pos": "Part",
+      "providerId": "wiktextract",
+      "providerLabel": "Wiktextract",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T22:09:51.584Z",
+      "translations": [
+        {
+          "value": "once again",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        },
+        {
+          "value": "again, one more time",
+          "source": "kaikki.org",
+          "language": "en",
+          "confidence": null
+        }
+      ],
+      "examples": null,
+      "synonyms": [
+        "noch einmal",
+        "nochmals"
+      ],
+      "englishHints": [
+        "once again",
+        "again, one more time"
+      ],
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "posTags": [
+          "informal"
+        ],
+        "examples": [],
+        "posLabel": "adv",
+        "posNotes": [
+          "adverbs",
+          "informal terms",
+          "Pages with 1 entry",
+          "Pages with entries"
+        ],
+        "sourceDe": "https://kaikki.org/dictionary/German/meaning/n/no/nochmal.jsonl",
+        "synonyms": [
+          "noch einmal",
+          "nochmals"
+        ],
+        "pivotUsed": false,
+        "englishHints": [
+          "once again",
+          "again, one more time"
+        ],
+        "translations": [
+          {
+            "value": "once again",
+            "language": "en"
+          },
+          {
+            "value": "again, one more time",
+            "language": "en"
+          }
+        ]
+      },
+      "wordId": 3079,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 4150,
+        "wordId": 3079,
+        "createdAt": "2025-10-17T22:09:51.584Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T22:09:51.584Z"
+      }
+    }
+  },
+  "meta": {
+    "createdAt": "2025-10-21T09:28:18.138Z"
+  }
+}

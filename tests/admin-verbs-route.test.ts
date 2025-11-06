@@ -65,7 +65,6 @@ vi.mock('../db/schema.js', async () => {
 describe('Admin words API', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.stubEnv('ADMIN_API_TOKEN', 'secret');
 
     const dataSelectChain = { from: fromMock };
     const countSelectChain = { from: countFromMock };
@@ -95,15 +94,6 @@ describe('Admin words API', () => {
     const { createVercelApiHandler } = await import('../server/api/vercel-handler.js');
     return createApiInvoker(createVercelApiHandler({ enableCors: false }));
   }
-
-  it('rejects GET /api/words without the admin token', async () => {
-    const invokeApi = await createTestInvoker();
-
-    const response = await invokeApi('/api/words');
-
-    expect(response.status).toBe(401);
-    expect(response.bodyJson).toMatchObject({ code: 'ADMIN_AUTH_FAILED' });
-  });
 
   it('returns words for GET /api/words when authorised', async () => {
     const rows = [
@@ -151,11 +141,7 @@ describe('Admin words API', () => {
 
     const invokeApi = await createTestInvoker();
 
-    const response = await invokeApi('/api/words', {
-      headers: {
-        'x-admin-token': 'secret',
-      },
-    });
+    const response = await invokeApi('/api/words');
 
     expect(response.status).toBe(200);
     const body = response.bodyJson as any;
@@ -186,11 +172,7 @@ describe('Admin words API', () => {
 
     const invokeApi = await createTestInvoker();
 
-    const response = await invokeApi('/api/words?enriched=only', {
-      headers: {
-        'x-admin-token': 'secret',
-      },
-    });
+    const response = await invokeApi('/api/words?enriched=only');
 
     expect(response.status).toBe(200);
     expect(whereMock).toHaveBeenCalledTimes(1);
@@ -220,11 +202,7 @@ describe('Admin words API', () => {
 
     const invokeApi = await createTestInvoker();
 
-    const response = await invokeApi('/api/words?enriched=non', {
-      headers: {
-        'x-admin-token': 'secret',
-      },
-    });
+    const response = await invokeApi('/api/words?enriched=non');
 
     expect(response.status).toBe(200);
     expect(whereMock).toHaveBeenCalledTimes(1);
@@ -286,9 +264,6 @@ describe('Admin words API', () => {
 
     const response = await invokeApi('/api/words/3', {
       method: 'PATCH',
-      headers: {
-        'x-admin-token': 'secret',
-      },
       body: {
         praeteritum: 'lief',
         partizipIi: 'gelaufen',

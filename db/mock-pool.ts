@@ -315,7 +315,7 @@ function seedMockData(mem: IMemoryDb): void {
   );
 
   mem.public.none(
-    `INSERT INTO enrichment_provider_snapshots (
+    `INSERT INTO enrichment.enrichment_provider_snapshots (
       id,
       word_id,
       lemma,
@@ -404,6 +404,7 @@ function seedMockData(mem: IMemoryDb): void {
 
 function ensureDatabase(mem: IMemoryDb): void {
   mem.public.none("create schema if not exists drizzle");
+  mem.public.none("create schema if not exists enrichment");
   mem.public.registerFunction({
     name: "random",
     returns: "double precision",

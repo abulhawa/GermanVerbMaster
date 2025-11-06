@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { KeyboardEvent } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Wand2,
@@ -18,11 +19,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { useAuthSession } from '@/auth/session';
 import { wordsResponseSchema, type AdminWord, type WordsResponse } from './admin-word-schemas';
 import type { BulkEnrichmentResponse, WordEnrichmentPreview } from '@shared/enrichment';
 import {
@@ -74,21 +74,11 @@ const DEFAULT_BULK_CONFIG: BulkConfigState = {
 };
 
 const AdminEnrichmentPage = () => {
-  const { data: session } = useAuthSession();
-  const navigationItems = useMemo(
-    () => getPrimaryNavigationItems(session?.user?.role),
-    [session?.user?.role],
-  );
+  const navigationItems = useMemo(() => getPrimaryNavigationItems(), []);
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const searchString = useSearch();
-
-  const [adminToken, setAdminToken] = useState(() => localStorage.getItem('gvm-admin-token') ?? '');
-  const normalizedAdminToken = adminToken.trim();
-  useEffect(() => {
-    localStorage.setItem('gvm-admin-token', normalizedAdminToken);
-  }, [normalizedAdminToken]);
 
   const searchParams = useMemo(() => new URLSearchParams(searchString ?? ''), [searchString]);
   const wordParam = searchParams.get('word');
@@ -115,9 +105,6 @@ const AdminEnrichmentPage = () => {
 
   const [bulkConfig, setBulkConfig] = useState<BulkConfigState>(DEFAULT_BULK_CONFIG);
   const [bulkResult, setBulkResult] = useState<BulkEnrichmentResponse | null>(null);
-  const [bulkReportDownload, setBulkReportDownload] = useState<
-    { url: string; filename: string } | null
-  >(null);
   const [isBulkOpen, setIsBulkOpen] = useState(true);
   const [isReviewOpen, setIsReviewOpen] = useState(true);
   const [isMissingOpen, setIsMissingOpen] = useState(true);
@@ -130,26 +117,6 @@ const AdminEnrichmentPage = () => {
   const [applyResult, setApplyResult] = useState<ApplyEnrichmentResponse | null>(null);
   const [missingPage, setMissingPage] = useState(1);
   const [missingPerPage, setMissingPerPage] = useState(DEFAULT_MISSING_PER_PAGE);
-
-  useEffect(() => () => {
-    if (bulkReportDownload?.url) {
-      URL.revokeObjectURL(bulkReportDownload.url);
-    }
-  }, [bulkReportDownload]);
-
-  const prepareBulkReportDownload = useCallback((data: BulkEnrichmentResponse) => {
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const timestamp = new Date().toISOString().replace(/[:]/g, '-');
-    const filename = `bulk-enrichment-${timestamp}.json`;
-
-    setBulkReportDownload((previous) => {
-      if (previous?.url) {
-        URL.revokeObjectURL(previous.url);
-      }
-      const url = URL.createObjectURL(blob);
-      return { url, filename };
-    });
-  }, []);
 
   const bulkMutation = useMutation({
     mutationFn: async () => {
@@ -164,15 +131,18 @@ const AdminEnrichmentPage = () => {
         collectTranslations: bulkConfig.collectTranslations,
         collectWiktextract: bulkConfig.collectWiktextract,
       };
-      return runBulkEnrichment(payload, normalizedAdminToken);
+      return runBulkEnrichment(payload);
     },
     onSuccess: (data) => {
       setBulkResult(data);
-      prepareBulkReportDownload(data);
       toast({
         title: 'Enrichment complete',
-        description: `Proposed updates for ${data.updated} of ${data.scanned} scanned words`,
+        description:
+          data.applied > 0
+            ? `Applied updates to ${data.applied.toLocaleString()} of ${data.scanned.toLocaleString()} scanned words.`
+            : `No updates were applied after scanning ${data.scanned.toLocaleString()} words.`,
       });
+      queryClient.invalidateQueries({ queryKey: ['admin-enrichment'] });
     },
     onError: (error) => {
       toast({
@@ -184,18 +154,14 @@ const AdminEnrichmentPage = () => {
   });
 
   const searchQuery = useQuery<WordsResponse>({
-    queryKey: ['admin-enrichment', 'search', searchTerm, normalizedAdminToken],
+    queryKey: ['admin-enrichment', 'search', searchTerm],
     queryFn: async () => {
       const params = new URLSearchParams({
         search: searchTerm,
         perPage: String(WORDS_PER_SEARCH),
         page: '1',
       });
-      const headers: Record<string, string> = {};
-      if (normalizedAdminToken) {
-        headers['x-admin-token'] = normalizedAdminToken;
-      }
-      const response = await fetch(`/api/words?${params.toString()}`, { headers });
+      const response = await fetch(`/api/words?${params.toString()}`);
       if (!response.ok) {
         throw new Error(`Failed to load words (${response.status})`);
       }
@@ -206,11 +172,7 @@ const AdminEnrichmentPage = () => {
   });
 
   const missingWordsQuery = useQuery<WordsResponse>({
-    queryKey: [
-      'admin-enrichment',
-      'missing',
-      { page: missingPage, perPage: missingPerPage, token: normalizedAdminToken },
-    ],
+    queryKey: ['admin-enrichment', 'missing', { page: missingPage, perPage: missingPerPage }],
     queryFn: async () => {
       const params = new URLSearchParams({
         approved: 'false',
@@ -218,11 +180,7 @@ const AdminEnrichmentPage = () => {
         perPage: String(missingPerPage),
         page: String(missingPage),
       });
-      const headers: Record<string, string> = {};
-      if (normalizedAdminToken) {
-        headers['x-admin-token'] = normalizedAdminToken;
-      }
-      const response = await fetch(`/api/words?${params.toString()}`, { headers });
+      const response = await fetch(`/api/words?${params.toString()}`);
       if (!response.ok) {
         throw new Error(`Failed to load missing words (${response.status})`);
       }
@@ -238,10 +196,6 @@ const AdminEnrichmentPage = () => {
       setMissingPage(safePage);
     }
   }, [missingWordsQuery.data, missingPage]);
-
-  useEffect(() => {
-    setMissingPage(1);
-  }, [normalizedAdminToken]);
 
   const missingWords = missingWordsQuery.data?.data ?? [];
   const missingPagination = missingWordsQuery.data?.pagination;
@@ -275,7 +229,7 @@ const AdminEnrichmentPage = () => {
         allowOverwrite: wordConfig.allowOverwrite,
         collectWiktextract: wordConfig.collectWiktextract,
       };
-      const result = await previewWordEnrichment(word.id, options, normalizedAdminToken);
+        const result = await previewWordEnrichment(word.id, options);
       setPreviewData(result);
       return result;
     },
@@ -289,12 +243,19 @@ const AdminEnrichmentPage = () => {
     },
   });
 
+  const normalizeDraftId = (value: number | null | undefined): number | undefined =>
+    typeof value === 'number' ? value : undefined;
+
   const applyMutation = useMutation({
     mutationFn: async () => {
       if (!previewWord || !previewData) {
         throw new Error('No enrichment preview available');
       }
-      const result = await applyWordEnrichment(previewWord.id, previewData.patch, normalizedAdminToken);
+      const result = await applyWordEnrichment(
+        previewWord.id,
+        previewData.patch,
+        normalizeDraftId(previewData.draftId),
+      );
       setApplyResult(result);
       toast({
         title: 'Enrichment applied',
@@ -373,9 +334,6 @@ const AdminEnrichmentPage = () => {
       >
         <WordEnrichmentDetailView
           wordId={selectedWordId}
-          adminToken={adminToken}
-          normalizedAdminToken={normalizedAdminToken}
-          onAdminTokenChange={setAdminToken}
           toast={toast}
           onClose={closeWordDetails}
           wordConfig={wordConfig}
@@ -410,20 +368,6 @@ const AdminEnrichmentPage = () => {
           open={isBulkOpen}
           onOpenChange={setIsBulkOpen}
           triggerId="bulk-enrichment"
-          headerActions={
-            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
-              <Label htmlFor="admin-token" className="text-sm text-muted-foreground">
-                Admin token
-              </Label>
-              <Input
-                id="admin-token"
-                placeholder="Optional API token"
-                value={adminToken}
-                onChange={(event) => setAdminToken(event.target.value)}
-                className="w-full sm:w-64"
-              />
-            </div>
-          }
         >
           <form
             className="grid gap-4 md:grid-cols-2"
@@ -438,12 +382,12 @@ const AdminEnrichmentPage = () => {
                 id="bulk-limit"
                 type="number"
                 min={1}
-                max={200}
+                max={2000}
                 value={bulkConfig.limit}
                 onChange={(event) =>
                   setBulkConfig((config) => ({
                     ...config,
-                    limit: Math.max(1, Math.min(200, Number.parseInt(event.target.value, 10) || config.limit)),
+                    limit: Math.max(1, Math.min(2000, Number.parseInt(event.target.value, 10) || config.limit)),
                   }))
                 }
               />
@@ -529,92 +473,22 @@ const AdminEnrichmentPage = () => {
             </div>
           </form>
 
-          {bulkResult && (
-            <div className="space-y-4">
+          {bulkResult ? (
+            <>
               <Separator />
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Sparkles className="h-4 w-4" />
-                  Suggested updates for {bulkResult.updated} of {bulkResult.scanned} scanned words
-                </div>
-                {bulkReportDownload ? (
-                  <Button variant="outline" size="sm" asChild>
-                    <a
-                      href={bulkReportDownload.url}
-                      download={bulkReportDownload.filename}
-                      aria-label="Download bulk enrichment results as JSON"
-                    >
-                      Download JSON report
-                    </a>
-                  </Button>
-                ) : null}
+              <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-4 text-sm text-muted-foreground">
+                <Sparkles className="h-4 w-4 text-primary" aria-hidden />
+                <span>
+                  {bulkResult.applied > 0
+                    ? `Applied updates to ${bulkResult.applied.toLocaleString()} of ${bulkResult.scanned.toLocaleString()} scanned words.`
+                    : `No updates were applied after scanning ${bulkResult.scanned.toLocaleString()} words.`}{' '}
+                  {bulkResult.updated > 0
+                    ? `Suggestions were generated for ${bulkResult.updated.toLocaleString()} words.`
+                    : 'No suggestions were generated.'}
+                </span>
               </div>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Word</TableHead>
-                    <TableHead>Missing fields</TableHead>
-                    <TableHead>Proposed updates</TableHead>
-                    <TableHead>Sources</TableHead>
-                    <TableHead className="text-right">Review</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {bulkResult.words.map((summary) => (
-                    <TableRow key={summary.id}>
-                      <TableCell className="space-y-1">
-                        <div className="font-semibold">{summary.lemma}</div>
-                        <div className="text-xs text-muted-foreground">{summary.pos}</div>
-                        {summary.translation && (
-                          <div className="text-xs text-muted-foreground">
-                            ↦ {summary.translation.value}
-                            {summary.translation.source ? ` · ${summary.translation.source}` : ''}
-                          </div>
-                        )}
-                        {(summary.example?.sentence || summary.example?.exampleDe) && (
-                          <div className="text-xs text-muted-foreground">
-                            Example: {summary.example?.sentence ?? summary.example?.exampleDe}
-                          </div>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {summary.missingFields.length ? (
-                          <div className="flex flex-wrap gap-1">
-                            {summary.missingFields.map((field) => (
-                              <Badge key={field} variant="secondary">
-                                {field}
-                              </Badge>
-                            ))}
-                          </div>
-                        ) : (
-                          <span className="text-xs text-muted-foreground">None</span>
-                        )}
-                      </TableCell>
-                      <TableCell>{renderUpdateSummary(summary)}</TableCell>
-                      <TableCell>
-                        <div className="text-xs text-muted-foreground space-y-1">
-                          {summary.sources.length ? (
-                            <div>Sources: {summary.sources.join(', ')}</div>
-                          ) : (
-                            <div>No sources recorded</div>
-                          )}
-                          {summary.errors?.length ? (
-                            <div className="text-destructive">Errors: {summary.errors.join('; ')}</div>
-                          ) : null}
-                          {summary.aiUsed ? <div>Used AI assistance</div> : null}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="sm" onClick={() => openWordDetails(summary.id)}>
-                          Review details
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
+            </>
+          ) : null}
         </CollapsibleSection>
 
         <CollapsibleSection
@@ -727,6 +601,18 @@ const AdminEnrichmentPage = () => {
                     </Badge>
                   ))}
                 </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                <span>
+                  Fetched {formatDisplayDate(previewData.suggestionsFetchedAt ?? new Date().toISOString())}
+                </span>
+                <Badge variant={previewData.reusedSuggestions ? 'outline' : 'secondary'}>
+                  {previewData.reusedSuggestions ? 'Cached result' : 'Fresh fetch'}
+                </Badge>
+                {previewData.draftAppliedAt ? (
+                  <span>Last applied {formatDisplayDate(previewData.draftAppliedAt)}</span>
+                ) : null}
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
@@ -865,7 +751,7 @@ const AdminEnrichmentPage = () => {
                       role="button"
                       tabIndex={0}
                       onClick={() => handleWordClick(word)}
-                      onKeyDown={(event) => {
+                      onKeyDown={(event: KeyboardEvent<HTMLTableRowElement>) => {
                         if (event.key === 'Enter' || event.key === ' ') {
                           event.preventDefault();
                           handleWordClick(word);

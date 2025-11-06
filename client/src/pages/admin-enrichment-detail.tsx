@@ -38,6 +38,7 @@ import type {
   EnrichmentVerbFormSuggestion,
   EnrichmentNounFormSuggestion,
   EnrichmentAdjectiveFormSuggestion,
+  StoredWordEnrichment,
   WordEnrichmentHistory,
   WordEnrichmentPreview,
 } from '@shared/enrichment';
@@ -81,9 +82,6 @@ export interface WordConfigState {
 
 interface WordEnrichmentDetailViewProps {
   wordId: number;
-  adminToken: string;
-  normalizedAdminToken: string;
-  onAdminTokenChange: (value: string) => void;
   toast: ToastFn;
   onClose: () => void;
   wordConfig: WordConfigState;
@@ -101,6 +99,9 @@ const GENDER_OPTION_MAP: Record<string, string> = {
   f: 'die',
   n: 'das',
 };
+
+const normalizeDraftId = (value: number | null | undefined): number | undefined =>
+  typeof value === 'number' ? value : undefined;
 
 function normaliseGenderCandidateValue(value: string | undefined | null): string | null {
   if (!value) return null;
@@ -193,9 +194,6 @@ const buildAdjectiveOptionId = (
 
 const WordEnrichmentDetailView = ({
   wordId,
-  adminToken,
-  normalizedAdminToken,
-  onAdminTokenChange,
   toast,
   onClose,
   wordConfig,
@@ -233,13 +231,9 @@ const WordEnrichmentDetailView = ({
   const [applyResult, setApplyResult] = useState<ApplyEnrichmentResponse | null>(null);
 
   const wordQuery = useQuery({
-    queryKey: ['admin-enrichment', 'word-detail', wordId, normalizedAdminToken],
+    queryKey: ['admin-enrichment', 'word-detail', wordId],
     queryFn: async () => {
-      const headers: Record<string, string> = {};
-      if (normalizedAdminToken) {
-        headers['x-admin-token'] = normalizedAdminToken;
-      }
-      const response = await fetch(`/api/words/${wordId}`, { headers });
+      const response = await fetch(`/api/words/${wordId}`);
       if (!response.ok) {
         throw new Error(`Failed to load word (${response.status})`);
       }
@@ -252,13 +246,9 @@ const WordEnrichmentDetailView = ({
   const word = wordQuery.data;
 
   const historyQuery = useQuery<WordEnrichmentHistory>({
-    queryKey: ['admin-enrichment', 'word-history', wordId, normalizedAdminToken],
+    queryKey: ['admin-enrichment', 'word-history', wordId],
     queryFn: async () => {
-      const headers: Record<string, string> = {};
-      if (normalizedAdminToken) {
-        headers['x-admin-token'] = normalizedAdminToken;
-      }
-      const response = await fetch(`/api/enrichment/words/${wordId}/history`, { headers });
+      const response = await fetch(`/api/enrichment/words/${wordId}/history`);
       if (!response.ok) {
         throw new Error(`Failed to load enrichment history (${response.status})`);
       }
@@ -271,12 +261,16 @@ const WordEnrichmentDetailView = ({
         snapshots: parsed.snapshots as unknown as EnrichmentProviderSnapshot[],
         translations: parsed.translations,
         examples: parsed.examples,
+        drafts: parsed.drafts as unknown as StoredWordEnrichment[],
       } satisfies WordEnrichmentHistory;
     },
     enabled: Number.isFinite(wordId) && wordId > 0,
   });
 
   const history: WordEnrichmentHistory | null = historyQuery.data ?? null;
+  const historyTranslations = history?.translations ?? [];
+  const historyExamples = history?.examples ?? [];
+  const historyDrafts = history?.drafts ?? [];
   const historyErrorMessage =
     historyQuery.error instanceof Error
       ? historyQuery.error.message
@@ -509,7 +503,7 @@ const WordEnrichmentDetailView = ({
         collectTranslations: wordConfig.collectTranslations,
         collectWiktextract: wordConfig.collectWiktextract,
       };
-      const result = await previewWordEnrichment(word.id, options, normalizedAdminToken);
+      const result = await previewWordEnrichment(word.id, options);
       return result;
     },
     onSuccess: (data) => {
@@ -650,7 +644,11 @@ const WordEnrichmentDetailView = ({
       if (!hasPatchChanges(patch)) {
         throw new Error('No changes to apply');
       }
-      const result = await applyWordEnrichment(word.id, patch, normalizedAdminToken);
+      const result = await applyWordEnrichment(
+        word.id,
+        patch,
+        normalizeDraftId(previewData?.draftId),
+      );
       return result;
     },
     onSuccess: (result) => {
@@ -999,13 +997,13 @@ const WordEnrichmentDetailView = ({
             <p className="text-sm text-muted-foreground">Loading stored enrichment data…</p>
           ) : historyQuery.isError ? (
             <p className="text-sm text-destructive">Failed to load stored enrichment data: {historyErrorMessage}</p>
-          ) : history && (history.translations.length || history.examples.length) ? (
+          ) : history && (historyTranslations.length || historyExamples.length || historyDrafts.length) ? (
             <>
-              {history.translations.length ? (
+              {historyTranslations.length ? (
                 <div>
                   <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Translations</div>
                   <ul className="mt-1 space-y-1 text-sm">
-                    {history.translations.map((entry, index) => (
+                    {historyTranslations.map((entry, index) => (
                       <li key={`${entry.value}-${entry.source ?? 'unknown'}-${index}`}>
                         <span className="font-medium">{entry.value}</span>
                         {entry.language ? <span className="text-muted-foreground"> ({entry.language})</span> : null}
@@ -1015,11 +1013,11 @@ const WordEnrichmentDetailView = ({
                   </ul>
                 </div>
               ) : null}
-              {history.examples.length ? (
+              {historyExamples.length ? (
                 <div>
                   <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Examples</div>
                   <ul className="mt-1 space-y-2 text-sm">
-                    {history.examples.map((example, index) => {
+                    {historyExamples.map((example, index) => {
                       const sentence = example.sentence ?? example.exampleDe ?? '—';
                       const english = example.translations?.en ?? example.exampleEn ?? null;
                       return (
@@ -1035,9 +1033,80 @@ const WordEnrichmentDetailView = ({
                   </ul>
                 </div>
               ) : null}
+              {historyDrafts.length ? (
+                <div className="space-y-2">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Stored drafts</div>
+                  <div className="grid gap-3">
+                    {historyDrafts.map((draft) => {
+                      const translations = (draft.suggestions?.translations ?? []) as EnrichmentTranslationCandidate[];
+                      const examples = (draft.suggestions?.examples ?? []) as EnrichmentExampleCandidate[];
+                      return (
+                        <div key={`${draft.id}-${draft.configHash}`} className="rounded-md border border-border p-3 text-xs">
+                          <div className="flex flex-wrap items-center gap-2 text-muted-foreground">
+                            <span className="font-medium text-foreground">
+                              Fetched {formatDisplayDate(draft.fetchedAt)}
+                            </span>
+                            {draft.appliedAt ? (
+                              <Badge variant="outline">Applied {formatDisplayDate(draft.appliedAt)}</Badge>
+                            ) : (
+                              <Badge variant="secondary">Not applied</Badge>
+                            )}
+                            <span className="text-muted-foreground">
+                              Config {draft.configHash.slice(0, 8)}…
+                            </span>
+                          </div>
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {draft.config.collectWiktextract ? <Badge variant="outline">Wiktextract</Badge> : null}
+                            {draft.config.collectTranslations ? <Badge variant="outline">Translations</Badge> : null}
+                            {draft.config.collectExamples ? <Badge variant="outline">Examples</Badge> : null}
+                            {draft.config.collectSynonyms ? <Badge variant="outline">Synonyms</Badge> : null}
+                            {draft.config.enableAi ? <Badge variant="outline">AI assistance</Badge> : null}
+                          </div>
+                          {(translations.length || examples.length) ? (
+                            <div className="mt-3 space-y-2 text-muted-foreground">
+                              {translations.length ? (
+                                <div>
+                                  <div className="font-medium text-foreground">Translations</div>
+                                  <ul className="mt-1 space-y-1">
+                                    {translations.map((candidate, index) => (
+                                      <li key={`${candidate.value}-${candidate.source ?? 'unknown'}-${index}`}>
+                                        <span>{candidate.value}</span>
+                                        {candidate.source ? <span> · {candidate.source}</span> : null}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              ) : null}
+                              {examples.length ? (
+                                <div>
+                                  <div className="font-medium text-foreground">Examples</div>
+                                  <ul className="mt-1 space-y-1">
+                                    {examples.map((candidate, index) => {
+                                      const sentence = candidate.exampleDe ?? candidate.sentence ?? '—';
+                                      return (
+                                        <li key={`${sentence}-${candidate.exampleEn ?? '—'}-${index}`}>
+                                          <span>{sentence}</span>
+                                          {candidate.exampleEn ? <span className="text-xs"> · {candidate.exampleEn}</span> : null}
+                                        </li>
+                                      );
+                                    })}
+                                  </ul>
+                                </div>
+                              ) : null}
+                            </div>
+                          ) : null}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : null}
               <p className="text-xs text-muted-foreground">
                 Pulled from {history.snapshots.length.toLocaleString()} stored snapshot
-                {history.snapshots.length === 1 ? '' : 's'}.
+                {history.snapshots.length === 1 ? '' : 's'}
+                {historyDrafts.length
+                  ? ` · ${historyDrafts.length.toLocaleString()} cached draft${historyDrafts.length === 1 ? '' : 's'}`
+                  : ''}.
               </p>
             </>
           ) : (
@@ -1052,19 +1121,6 @@ const WordEnrichmentDetailView = ({
         <CardDescription>Control which sources run when generating suggestions for this word.</CardDescription>
       </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <Label htmlFor="detail-admin-token" className="text-sm text-muted-foreground">
-              Admin token
-            </Label>
-            <Input
-              id="detail-admin-token"
-              value={adminToken}
-              placeholder="Optional API token"
-              className="w-full sm:w-72"
-              onChange={(event) => onAdminTokenChange(event.target.value)}
-            />
-          </div>
-          <Separator />
           <div className="grid gap-3 md:grid-cols-2">
             <BooleanToggle
               label="Allow overwrite"
@@ -1133,15 +1189,35 @@ const WordEnrichmentDetailView = ({
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+              <div>
+                Fetched {formatDisplayDate(previewData.suggestionsFetchedAt ?? new Date().toISOString())}
+              </div>
+              <Badge variant={previewData.reusedSuggestions ? 'outline' : 'secondary'}>
+                {previewData.reusedSuggestions ? 'Cached result' : 'Fresh fetch'}
+              </Badge>
+              {previewData.draftAppliedAt ? (
+                <div>Last applied {formatDisplayDate(previewData.draftAppliedAt)}</div>
+              ) : null}
+            </div>
             <div className="space-y-2 text-sm">
               <div className="font-medium">Sources consulted</div>
-              <div className="flex flex-wrap gap-2">
-                {previewData.summary.sources.map((source) => (
-                  <Badge key={source} variant="secondary">
-                    {source}
-                  </Badge>
-                ))}
-              </div>
+              {previewData.summary.sources.length ? (
+                <div className="flex flex-wrap gap-2">
+                  {previewData.summary.sources.map((source) => (
+                    <Badge key={source} variant="secondary">
+                      {source}
+                    </Badge>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground">No sources recorded.</p>
+              )}
+              {previewData.summary.errors?.length ? (
+                <div className="text-xs text-destructive">
+                  Issues: {previewData.summary.errors.join('; ')}
+                </div>
+              ) : null}
               {previewData.suggestions.synonyms.length ? (
                 <div>
                   <span className="font-medium">Synonyms:</span>{' '}
@@ -1935,7 +2011,8 @@ function buildTranslationOptions(
   };
 
   if (history) {
-    for (const record of history.translations) {
+    const storedTranslations = history.translations ?? [];
+    for (const record of storedTranslations) {
       addCandidate(
         {
           value: record.value,
@@ -1948,6 +2025,12 @@ function buildTranslationOptions(
         },
         'history',
       );
+    }
+
+    const storedDrafts = history.drafts ?? [];
+    for (const draft of storedDrafts) {
+      const draftTranslations = (draft.suggestions?.translations ?? []) as EnrichmentTranslationCandidate[];
+      draftTranslations.forEach((candidate) => addCandidate(candidate, 'history'));
     }
   }
 
@@ -1993,7 +2076,8 @@ function buildExampleOptions(
   };
 
   if (history) {
-    for (const record of history.examples) {
+    const storedExamples = history.examples ?? [];
+    for (const record of storedExamples) {
       addCandidate(
         {
           source: 'stored',
@@ -2002,6 +2086,12 @@ function buildExampleOptions(
         },
         'history',
       );
+    }
+
+    const storedDrafts = history.drafts ?? [];
+    for (const draft of storedDrafts) {
+      const draftExamples = (draft.suggestions?.examples ?? []) as EnrichmentExampleCandidate[];
+      draftExamples.forEach((candidate) => addCandidate(candidate, 'history'));
     }
   }
 

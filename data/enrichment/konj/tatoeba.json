@@ -1,0 +1,1456 @@
+{
+  "schemaVersion": 1,
+  "providerId": "tatoeba",
+  "providerLabel": "Tatoeba",
+  "pos": "Konj",
+  "updatedAt": "2025-10-21T09:52:25.562Z",
+  "entries": {
+    "als": {
+      "lemma": "als",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:15.718Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Besser als nichts.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Besser als nichts.",
+        "exampleDe": "Besser als nichts."
+      },
+      "wordId": 3033,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3943,
+        "wordId": 3033,
+        "createdAt": "2025-10-17T21:54:15.718Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:15.718Z"
+      }
+    },
+    "also": {
+      "lemma": "also",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:26:07.012Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Also?",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Also?",
+        "exampleDe": "Also?"
+      },
+      "wordId": 3027,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 567,
+        "wordId": 3027,
+        "createdAt": "2025-10-17T21:26:07.012Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:26:07.012Z"
+      }
+    },
+    "auch": {
+      "lemma": "auch",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:26:08.073Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Mir auch.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Mir auch.",
+        "exampleDe": "Mir auch."
+      },
+      "wordId": 3028,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 569,
+        "wordId": 3028,
+        "createdAt": "2025-10-17T21:26:08.073Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:26:08.073Z"
+      }
+    },
+    "bevor": {
+      "lemma": "bevor",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:20.652Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Neujahr steht bevor.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Neujahr steht bevor.",
+        "exampleDe": "Neujahr steht bevor."
+      },
+      "wordId": 3038,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3953,
+        "wordId": 3038,
+        "createdAt": "2025-10-17T21:54:20.652Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:20.652Z"
+      }
+    },
+    "da": {
+      "lemma": "da",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:26:09.057Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Warte da!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Warte da!",
+        "exampleDe": "Warte da!"
+      },
+      "wordId": 3029,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 571,
+        "wordId": 3029,
+        "createdAt": "2025-10-17T21:26:09.057Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:26:09.057Z"
+      }
+    },
+    "damit": {
+      "lemma": "damit",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:21.639Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Schluss damit!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Schluss damit!",
+        "exampleDe": "Schluss damit!"
+      },
+      "wordId": 3039,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3955,
+        "wordId": 3039,
+        "createdAt": "2025-10-17T21:54:21.639Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:21.639Z"
+      }
+    },
+    "dass": {
+      "lemma": "dass",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:16.740Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Nicht dass ich wüsste.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Nicht dass ich wüsste.",
+        "exampleDe": "Nicht dass ich wüsste."
+      },
+      "wordId": 3034,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3945,
+        "wordId": 3034,
+        "createdAt": "2025-10-17T21:54:16.740Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:16.740Z"
+      }
+    },
+    "denn": {
+      "lemma": "denn",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:12.681Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Warum denn?",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Warum denn?",
+        "exampleDe": "Warum denn?"
+      },
+      "wordId": 3030,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3937,
+        "wordId": 3030,
+        "createdAt": "2025-10-17T21:54:12.681Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:12.681Z"
+      }
+    },
+    "deshalb": {
+      "lemma": "deshalb",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:17.677Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Wahrscheinlich deshalb.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Wahrscheinlich deshalb.",
+        "exampleDe": "Wahrscheinlich deshalb."
+      },
+      "wordId": 3035,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3947,
+        "wordId": 3035,
+        "createdAt": "2025-10-17T21:54:17.677Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:17.677Z"
+      }
+    },
+    "desto": {
+      "lemma": "desto",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:22.668Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Je schneller, desto besser.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Je schneller, desto besser.",
+        "exampleDe": "Je schneller, desto besser."
+      },
+      "wordId": 3040,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3957,
+        "wordId": 3040,
+        "createdAt": "2025-10-17T21:54:22.668Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:22.668Z"
+      }
+    },
+    "deswegen": {
+      "lemma": "deswegen",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:23.637Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Deswegen schrie Tom.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Deswegen schrie Tom.",
+        "exampleDe": "Deswegen schrie Tom."
+      },
+      "wordId": 3041,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3959,
+        "wordId": 3041,
+        "createdAt": "2025-10-17T21:54:23.637Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:23.637Z"
+      }
+    },
+    "ebenfalls": {
+      "lemma": "ebenfalls",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:24.645Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Ebenfalls.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Ebenfalls.",
+        "exampleDe": "Ebenfalls."
+      },
+      "wordId": 3042,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3961,
+        "wordId": 3042,
+        "createdAt": "2025-10-17T21:54:24.645Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:24.645Z"
+      }
+    },
+    "entweder": {
+      "lemma": "entweder",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:25.633Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Entweder Käse oder Nachtisch!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Entweder Käse oder Nachtisch!",
+        "exampleDe": "Entweder Käse oder Nachtisch!"
+      },
+      "wordId": 3043,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3963,
+        "wordId": 3043,
+        "createdAt": "2025-10-17T21:54:25.633Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:25.633Z"
+      }
+    },
+    "falls": {
+      "lemma": "falls",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:26.678Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Ich falle.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Ich falle.",
+        "exampleDe": "Ich falle."
+      },
+      "wordId": 3044,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3965,
+        "wordId": 3044,
+        "createdAt": "2025-10-17T21:54:26.678Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:26.678Z"
+      }
+    },
+    "gleichfalls": {
+      "lemma": "gleichfalls",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:27.670Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Gleichfalls.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Gleichfalls.",
+        "exampleDe": "Gleichfalls."
+      },
+      "wordId": 3045,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3967,
+        "wordId": 3045,
+        "createdAt": "2025-10-17T21:54:27.670Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:27.670Z"
+      }
+    },
+    "indem": {
+      "lemma": "indem",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:28.631Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Man lernt, indem man lehrt.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Man lernt, indem man lehrt.",
+        "exampleDe": "Man lernt, indem man lehrt."
+      },
+      "wordId": 3046,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3969,
+        "wordId": 3046,
+        "createdAt": "2025-10-17T21:54:28.631Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:28.631Z"
+      }
+    },
+    "je": {
+      "lemma": "je",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:29.638Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Je schneller, desto besser.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Je schneller, desto besser.",
+        "exampleDe": "Je schneller, desto besser."
+      },
+      "wordId": 3047,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3971,
+        "wordId": 3047,
+        "createdAt": "2025-10-17T21:54:29.638Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:29.638Z"
+      }
+    },
+    "jedoch": {
+      "lemma": "jedoch",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:30.648Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Es gibt jedoch Ausnahmen.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Es gibt jedoch Ausnahmen.",
+        "exampleDe": "Es gibt jedoch Ausnahmen."
+      },
+      "wordId": 3048,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3973,
+        "wordId": 3048,
+        "createdAt": "2025-10-17T21:54:30.648Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:30.648Z"
+      }
+    },
+    "nachdem": {
+      "lemma": "nachdem",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:31.639Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Tom kam, nachdem du gegangen warst.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Tom kam, nachdem du gegangen warst.",
+        "exampleDe": "Tom kam, nachdem du gegangen warst."
+      },
+      "wordId": 3049,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3975,
+        "wordId": 3049,
+        "createdAt": "2025-10-17T21:54:31.639Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:31.639Z"
+      }
+    },
+    "nämlich": {
+      "lemma": "nämlich",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:32.649Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Die Kinder sind vor allem eines, nämlich laut.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Die Kinder sind vor allem eines, nämlich laut.",
+        "exampleDe": "Die Kinder sind vor allem eines, nämlich laut."
+      },
+      "wordId": 3050,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3977,
+        "wordId": 3050,
+        "createdAt": "2025-10-17T21:54:32.649Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:32.649Z"
+      }
+    },
+    "ob": {
+      "lemma": "ob",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:33.678Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Na und ob!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Na und ob!",
+        "exampleDe": "Na und ob!"
+      },
+      "wordId": 3051,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3979,
+        "wordId": 3051,
+        "createdAt": "2025-10-17T21:54:33.678Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:33.678Z"
+      }
+    },
+    "obwohl": {
+      "lemma": "obwohl",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:34.663Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Tom kam, obwohl es regnete.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Tom kam, obwohl es regnete.",
+        "exampleDe": "Tom kam, obwohl es regnete."
+      },
+      "wordId": 3052,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3981,
+        "wordId": 3052,
+        "createdAt": "2025-10-17T21:54:34.663Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:34.663Z"
+      }
+    },
+    "oder": {
+      "lemma": "oder",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:13.697Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Oder?",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Oder?",
+        "exampleDe": "Oder?"
+      },
+      "wordId": 3031,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3939,
+        "wordId": 3031,
+        "createdAt": "2025-10-17T21:54:13.697Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:13.697Z"
+      }
+    },
+    "so dass": {
+      "lemma": "so dass",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:35.695Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Erklär’s so, dass man es versteht!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Erklär’s so, dass man es versteht!",
+        "exampleDe": "Erklär’s so, dass man es versteht!"
+      },
+      "wordId": 3053,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3983,
+        "wordId": 3053,
+        "createdAt": "2025-10-17T21:54:35.695Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:35.695Z"
+      }
+    },
+    "so viel": {
+      "lemma": "so viel",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:36.675Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Warum so viel Lärm?",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Warum so viel Lärm?",
+        "exampleDe": "Warum so viel Lärm?"
+      },
+      "wordId": 3054,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3985,
+        "wordId": 3054,
+        "createdAt": "2025-10-17T21:54:36.675Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:36.675Z"
+      }
+    },
+    "sobald": {
+      "lemma": "sobald",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:37.643Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Komm, sobald du kannst.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Komm, sobald du kannst.",
+        "exampleDe": "Komm, sobald du kannst."
+      },
+      "wordId": 3055,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3987,
+        "wordId": 3055,
+        "createdAt": "2025-10-17T21:54:37.643Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:37.643Z"
+      }
+    },
+    "sodass": {
+      "lemma": "sodass",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:38.648Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Lerne gründlich, sodass du nicht durchfällst.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Lerne gründlich, sodass du nicht durchfällst.",
+        "exampleDe": "Lerne gründlich, sodass du nicht durchfällst."
+      },
+      "wordId": 3056,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3989,
+        "wordId": 3056,
+        "createdAt": "2025-10-17T21:54:38.648Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:38.648Z"
+      }
+    },
+    "solange": {
+      "lemma": "solange",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:39.639Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Bleibt, solange ihr wollt!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Bleibt, solange ihr wollt!",
+        "exampleDe": "Bleibt, solange ihr wollt!"
+      },
+      "wordId": 3057,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3991,
+        "wordId": 3057,
+        "createdAt": "2025-10-17T21:54:39.639Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:39.639Z"
+      }
+    },
+    "sondern": {
+      "lemma": "sondern",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:40.654Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Der singt nicht, sondern brüllt.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Der singt nicht, sondern brüllt.",
+        "exampleDe": "Der singt nicht, sondern brüllt."
+      },
+      "wordId": 3058,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3993,
+        "wordId": 3058,
+        "createdAt": "2025-10-17T21:54:40.654Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:40.654Z"
+      }
+    },
+    "soviel": {
+      "lemma": "soviel",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:22:37.719Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Nicht soviel Senf.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Nicht soviel Senf.",
+        "exampleDe": "Nicht soviel Senf."
+      },
+      "wordId": 3059,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 151,
+        "wordId": 3059,
+        "createdAt": "2025-10-17T21:22:37.719Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:22:37.719Z"
+      }
+    },
+    "sowohl": {
+      "lemma": "sowohl",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:22:38.716Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Sowohl Tom wie Mary sind Einzelkinder.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Sowohl Tom wie Mary sind Einzelkinder.",
+        "exampleDe": "Sowohl Tom wie Mary sind Einzelkinder."
+      },
+      "wordId": 3060,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 153,
+        "wordId": 3060,
+        "createdAt": "2025-10-17T21:22:38.716Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:22:38.716Z"
+      }
+    },
+    "trotzdem": {
+      "lemma": "trotzdem",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:22:39.736Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Danke trotzdem!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Danke trotzdem!",
+        "exampleDe": "Danke trotzdem!"
+      },
+      "wordId": 3061,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 155,
+        "wordId": 3061,
+        "createdAt": "2025-10-17T21:22:39.736Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:22:39.736Z"
+      }
+    },
+    "umso": {
+      "lemma": "umso",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:22:49.735Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Umso besser!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Umso besser!",
+        "exampleDe": "Umso besser!"
+      },
+      "wordId": 3062,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 175,
+        "wordId": 3062,
+        "createdAt": "2025-10-17T21:22:49.735Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:22:49.735Z"
+      }
+    },
+    "und": {
+      "lemma": "und",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:14.818Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Und?",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Und?",
+        "exampleDe": "Und?"
+      },
+      "wordId": 3032,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3941,
+        "wordId": 3032,
+        "createdAt": "2025-10-17T21:54:14.818Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:14.818Z"
+      }
+    },
+    "weder": {
+      "lemma": "weder",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:22:50.747Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Weder Gott noch Herr.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Weder Gott noch Herr.",
+        "exampleDe": "Weder Gott noch Herr."
+      },
+      "wordId": 3063,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 177,
+        "wordId": 3063,
+        "createdAt": "2025-10-17T21:22:50.747Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:22:50.747Z"
+      }
+    },
+    "weil": {
+      "lemma": "weil",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:18.703Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "\"Warum?\" \"Weil halt.\"",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "\"Warum?\" \"Weil halt.\"",
+        "exampleDe": "\"Warum?\" \"Weil halt.\""
+      },
+      "wordId": 3036,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3949,
+        "wordId": 3036,
+        "createdAt": "2025-10-17T21:54:18.703Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:18.703Z"
+      }
+    },
+    "wenn": {
+      "lemma": "wenn",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:19.696Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Und wenn?",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Und wenn?",
+        "exampleDe": "Und wenn?"
+      },
+      "wordId": 3037,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3951,
+        "wordId": 3037,
+        "createdAt": "2025-10-17T21:54:19.696Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:19.696Z"
+      }
+    },
+    "zwar": {
+      "lemma": "zwar",
+      "pos": "Konj",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:22:59.059Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Komm her, und zwar sofort!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Komm her, und zwar sofort!",
+        "exampleDe": "Komm her, und zwar sofort!"
+      },
+      "wordId": 3064,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 193,
+        "wordId": 3064,
+        "createdAt": "2025-10-17T21:22:59.059Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:22:59.059Z"
+      }
+    }
+  },
+  "meta": {
+    "createdAt": "2025-10-21T09:17:03.283Z"
+  }
+}

@@ -35,13 +35,8 @@ async function handleResponse<T>(response: Response): Promise<T> {
 
 export async function runBulkEnrichment(
   payload: RunEnrichmentPayload,
-  adminToken?: string,
 ): Promise<BulkEnrichmentResponse> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-  if (adminToken?.trim()) {
-    headers['x-admin-token'] = adminToken.trim();
-  }
-
   const response = await fetch('/api/enrichment/run', {
     method: 'POST',
     headers,
@@ -54,13 +49,8 @@ export async function runBulkEnrichment(
 export async function previewWordEnrichment(
   wordId: number,
   options: WordEnrichmentOptions,
-  adminToken?: string,
 ): Promise<WordEnrichmentPreview> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-  if (adminToken?.trim()) {
-    headers['x-admin-token'] = adminToken.trim();
-  }
-
   const response = await fetch(`/api/enrichment/words/${wordId}/preview`, {
     method: 'POST',
     headers,
@@ -73,22 +63,21 @@ export async function previewWordEnrichment(
 export interface ApplyEnrichmentResponse {
   word: unknown;
   appliedFields: string[];
+  draftId?: number;
 }
 
 export async function applyWordEnrichment(
   wordId: number,
   patch: EnrichmentPatch,
-  adminToken?: string,
+  draftId?: number,
 ): Promise<ApplyEnrichmentResponse> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-  if (adminToken?.trim()) {
-    headers['x-admin-token'] = adminToken.trim();
-  }
-
   const response = await fetch(`/api/enrichment/words/${wordId}/apply`, {
     method: 'POST',
     headers,
-    body: JSON.stringify({ patch }),
+    body: JSON.stringify(
+      typeof draftId === 'number' ? { patch, draftId } : { patch },
+    ),
   });
 
   return handleResponse<ApplyEnrichmentResponse>(response);

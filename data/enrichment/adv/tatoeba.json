@@ -1,0 +1,2753 @@
+{
+  "schemaVersion": 1,
+  "providerId": "tatoeba",
+  "providerLabel": "Tatoeba",
+  "pos": "Adv",
+  "updatedAt": "2025-10-21T09:52:23.256Z",
+  "entries": {
+    "abwärts": {
+      "lemma": "abwärts",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:29.739Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Der Aufzug fährt auf- und abwärts.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Der Aufzug fährt auf- und abwärts.",
+        "exampleDe": "Der Aufzug fährt auf- und abwärts."
+      },
+      "wordId": 2927,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3851,
+        "wordId": 2927,
+        "createdAt": "2025-10-17T21:53:29.739Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:29.739Z"
+      }
+    },
+    "andererseits": {
+      "lemma": "andererseits",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:30.673Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Andererseits gibt es einige Nachteile.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Andererseits gibt es einige Nachteile.",
+        "exampleDe": "Andererseits gibt es einige Nachteile."
+      },
+      "wordId": 2929,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3853,
+        "wordId": 2929,
+        "createdAt": "2025-10-17T21:53:30.673Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:30.673Z"
+      }
+    },
+    "anderseits": {
+      "lemma": "anderseits",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:31.712Z",
+      "translations": null,
+      "examples": null,
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "wordId": 2930,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3855,
+        "wordId": 2930,
+        "createdAt": "2025-10-17T21:53:31.712Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:31.712Z"
+      }
+    },
+    "andrerseits": {
+      "lemma": "andrerseits",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:10.684Z",
+      "translations": null,
+      "examples": null,
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "wordId": 2931,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3813,
+        "wordId": 2931,
+        "createdAt": "2025-10-17T21:53:10.684Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:10.684Z"
+      }
+    },
+    "aufwärts": {
+      "lemma": "aufwärts",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:32.758Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Aufwärts!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Aufwärts!",
+        "exampleDe": "Aufwärts!"
+      },
+      "wordId": 2933,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3857,
+        "wordId": 2933,
+        "createdAt": "2025-10-17T21:53:32.758Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:32.758Z"
+      }
+    },
+    "auseinander": {
+      "lemma": "auseinander",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:33.672Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Es fiel auseinander.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Es fiel auseinander.",
+        "exampleDe": "Es fiel auseinander."
+      },
+      "wordId": 2934,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3859,
+        "wordId": 2934,
+        "createdAt": "2025-10-17T21:53:33.672Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:33.672Z"
+      }
+    },
+    "ausschließlich": {
+      "lemma": "ausschließlich",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:34.675Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Tom isst ausschließlich Obst.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Tom isst ausschließlich Obst.",
+        "exampleDe": "Tom isst ausschließlich Obst."
+      },
+      "wordId": 2935,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3861,
+        "wordId": 2935,
+        "createdAt": "2025-10-17T21:53:34.675Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:34.675Z"
+      }
+    },
+    "beinah": {
+      "lemma": "beinah",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:35.715Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Wir sind beinah wie Brüder.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Wir sind beinah wie Brüder.",
+        "exampleDe": "Wir sind beinah wie Brüder."
+      },
+      "wordId": 2937,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3863,
+        "wordId": 2937,
+        "createdAt": "2025-10-17T21:53:35.715Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:35.715Z"
+      }
+    },
+    "beinahe": {
+      "lemma": "beinahe",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:36.723Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Beinahe.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Beinahe.",
+        "exampleDe": "Beinahe."
+      },
+      "wordId": 2938,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3865,
+        "wordId": 2938,
+        "createdAt": "2025-10-17T21:53:36.723Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:36.723Z"
+      }
+    },
+    "circa": {
+      "lemma": "circa",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:52:58.675Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "In circa zwei Wochen.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "In circa zwei Wochen.",
+        "exampleDe": "In circa zwei Wochen."
+      },
+      "wordId": 2840,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3789,
+        "wordId": 2840,
+        "createdAt": "2025-10-17T21:52:58.675Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:52:58.675Z"
+      }
+    },
+    "damals": {
+      "lemma": "damals",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:17.711Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Wo war sie damals?",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Wo war sie damals?",
+        "exampleDe": "Wo war sie damals?"
+      },
+      "wordId": 2888,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3827,
+        "wordId": 2888,
+        "createdAt": "2025-10-17T21:53:17.711Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:17.711Z"
+      }
+    },
+    "diesmal": {
+      "lemma": "diesmal",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:37.701Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Diesmal gewinnen wir!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Diesmal gewinnen wir!",
+        "exampleDe": "Diesmal gewinnen wir!"
+      },
+      "wordId": 2942,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3867,
+        "wordId": 2942,
+        "createdAt": "2025-10-17T21:53:37.701Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:37.701Z"
+      }
+    },
+    "dort": {
+      "lemma": "dort",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:52:59.746Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Schau dort!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Schau dort!",
+        "exampleDe": "Schau dort!"
+      },
+      "wordId": 2843,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3791,
+        "wordId": 2843,
+        "createdAt": "2025-10-17T21:52:59.746Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:52:59.746Z"
+      }
+    },
+    "draußen": {
+      "lemma": "draußen",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:00.798Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Heiß draußen?",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Heiß draußen?",
+        "exampleDe": "Heiß draußen?"
+      },
+      "wordId": 2844,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3793,
+        "wordId": 2844,
+        "createdAt": "2025-10-17T21:53:00.798Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:00.798Z"
+      }
+    },
+    "drinnen": {
+      "lemma": "drinnen",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:18.700Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Bleib heute drinnen!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Bleib heute drinnen!",
+        "exampleDe": "Bleib heute drinnen!"
+      },
+      "wordId": 2890,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3829,
+        "wordId": 2890,
+        "createdAt": "2025-10-17T21:53:18.700Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:18.700Z"
+      }
+    },
+    "durcheinander": {
+      "lemma": "durcheinander",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:38.642Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Tom ist durcheinander.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Tom ist durcheinander.",
+        "exampleDe": "Tom ist durcheinander."
+      },
+      "wordId": 2943,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3869,
+        "wordId": 2943,
+        "createdAt": "2025-10-17T21:53:38.642Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:38.642Z"
+      }
+    },
+    "ebenso": {
+      "lemma": "ebenso",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:40.765Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Ebenso.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Ebenso.",
+        "exampleDe": "Ebenso."
+      },
+      "wordId": 2945,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3873,
+        "wordId": 2945,
+        "createdAt": "2025-10-17T21:53:40.765Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:40.765Z"
+      }
+    },
+    "ein mal": {
+      "lemma": "ein Mal",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:19.743Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Ich war ein Mal verheiratet.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Ich war ein Mal verheiratet.",
+        "exampleDe": "Ich war ein Mal verheiratet."
+      },
+      "wordId": 2892,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3831,
+        "wordId": 2892,
+        "createdAt": "2025-10-17T21:53:19.743Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:19.743Z"
+      }
+    },
+    "einerseits": {
+      "lemma": "einerseits",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:41.689Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Einerseits will ich Tom vergessen, andererseits wieder nicht.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Einerseits will ich Tom vergessen, andererseits wieder nicht.",
+        "exampleDe": "Einerseits will ich Tom vergessen, andererseits wieder nicht."
+      },
+      "wordId": 2946,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3875,
+        "wordId": 2946,
+        "createdAt": "2025-10-17T21:53:41.689Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:41.689Z"
+      }
+    },
+    "gegenüber": {
+      "lemma": "gegenüber",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:20.741Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Wohnt sie gegenüber?",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Wohnt sie gegenüber?",
+        "exampleDe": "Wohnt sie gegenüber?"
+      },
+      "wordId": 2897,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3833,
+        "wordId": 2897,
+        "createdAt": "2025-10-17T21:53:20.741Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:20.741Z"
+      }
+    },
+    "genauso": {
+      "lemma": "genauso",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:42.728Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Wer denkt genauso?",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Wer denkt genauso?",
+        "exampleDe": "Wer denkt genauso?"
+      },
+      "wordId": 2950,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3877,
+        "wordId": 2950,
+        "createdAt": "2025-10-17T21:53:42.728Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:42.728Z"
+      }
+    },
+    "geradeaus": {
+      "lemma": "geradeaus",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:01.732Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Fahr geradeaus!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Fahr geradeaus!",
+        "exampleDe": "Fahr geradeaus!"
+      },
+      "wordId": 2846,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3795,
+        "wordId": 2846,
+        "createdAt": "2025-10-17T21:53:01.732Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:01.732Z"
+      }
+    },
+    "gerne": {
+      "lemma": "gerne",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:02.819Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Gerne.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Gerne.",
+        "exampleDe": "Gerne."
+      },
+      "wordId": 2847,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3797,
+        "wordId": 2847,
+        "createdAt": "2025-10-17T21:53:02.819Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:02.819Z"
+      }
+    },
+    "gestern": {
+      "lemma": "gestern",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:03.794Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Gestern?",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Gestern?",
+        "exampleDe": "Gestern?"
+      },
+      "wordId": 2848,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3799,
+        "wordId": 2848,
+        "createdAt": "2025-10-17T21:53:03.794Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:03.794Z"
+      }
+    },
+    "grade": {
+      "lemma": "grade",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:04.729Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Ich schreibe grad.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Ich schreibe grad.",
+        "exampleDe": "Ich schreibe grad."
+      },
+      "wordId": 2850,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3801,
+        "wordId": 2850,
+        "createdAt": "2025-10-17T21:53:04.729Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:04.729Z"
+      }
+    },
+    "gradeaus": {
+      "lemma": "gradeaus",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:05.656Z",
+      "translations": null,
+      "examples": null,
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "wordId": 2851,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3803,
+        "wordId": 2851,
+        "createdAt": "2025-10-17T21:53:05.656Z",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:05.656Z"
+      }
+    },
+    "gratis": {
+      "lemma": "gratis",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:43.753Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Sind die gratis?",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Sind die gratis?",
+        "exampleDe": "Sind die gratis?"
+      },
+      "wordId": 2951,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3879,
+        "wordId": 2951,
+        "createdAt": "2025-10-17T21:53:43.753Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:43.753Z"
+      }
+    },
+    "heraus": {
+      "lemma": "heraus",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:21.739Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Rage heraus!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Rage heraus!",
+        "exampleDe": "Rage heraus!"
+      },
+      "wordId": 2899,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3835,
+        "wordId": 2899,
+        "createdAt": "2025-10-17T21:53:21.739Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:21.739Z"
+      }
+    },
+    "herein": {
+      "lemma": "herein",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:22.840Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Herein!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Herein!",
+        "exampleDe": "Herein!"
+      },
+      "wordId": 2900,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3837,
+        "wordId": 2900,
+        "createdAt": "2025-10-17T21:53:22.840Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:22.840Z"
+      }
+    },
+    "heut": {
+      "lemma": "heut",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:06.747Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Nicht heute.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Nicht heute.",
+        "exampleDe": "Nicht heute."
+      },
+      "wordId": 2852,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3805,
+        "wordId": 2852,
+        "createdAt": "2025-10-17T21:53:06.747Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:06.747Z"
+      }
+    },
+    "hinterher": {
+      "lemma": "hinterher",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:45.758Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Er kam hinterher.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Er kam hinterher.",
+        "exampleDe": "Er kam hinterher."
+      },
+      "wordId": 2954,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3883,
+        "wordId": 2954,
+        "createdAt": "2025-10-17T21:53:45.758Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:45.758Z"
+      }
+    },
+    "höchstens": {
+      "lemma": "höchstens",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:46.684Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Tom ist höchstens dreißig.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Tom ist höchstens dreißig.",
+        "exampleDe": "Tom ist höchstens dreißig."
+      },
+      "wordId": 2955,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3885,
+        "wordId": 2955,
+        "createdAt": "2025-10-17T21:53:46.684Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:46.684Z"
+      }
+    },
+    "hoffentlich": {
+      "lemma": "hoffentlich",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:23.719Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Hoffentlich!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Hoffentlich!",
+        "exampleDe": "Hoffentlich!"
+      },
+      "wordId": 2902,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3839,
+        "wordId": 2902,
+        "createdAt": "2025-10-17T21:53:23.719Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:23.719Z"
+      }
+    },
+    "innen": {
+      "lemma": "innen",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:47.713Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Wir sind innen.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Wir sind innen.",
+        "exampleDe": "Wir sind innen."
+      },
+      "wordId": 2956,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3887,
+        "wordId": 2956,
+        "createdAt": "2025-10-17T21:53:47.713Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:47.713Z"
+      }
+    },
+    "irgendwann": {
+      "lemma": "irgendwann",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:48.794Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Plastik zerbröckelt irgendwann.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Plastik zerbröckelt irgendwann.",
+        "exampleDe": "Plastik zerbröckelt irgendwann."
+      },
+      "wordId": 2959,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3889,
+        "wordId": 2959,
+        "createdAt": "2025-10-17T21:53:48.794Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:48.794Z"
+      }
+    },
+    "jederzeit": {
+      "lemma": "jederzeit",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:49.700Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Jederzeit.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Jederzeit.",
+        "exampleDe": "Jederzeit."
+      },
+      "wordId": 2960,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3891,
+        "wordId": 2960,
+        "createdAt": "2025-10-17T21:53:49.700Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:49.700Z"
+      }
+    },
+    "jedes mal": {
+      "lemma": "jedes Mal",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:50.711Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Fehler macht jeder mal.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Fehler macht jeder mal.",
+        "exampleDe": "Fehler macht jeder mal."
+      },
+      "wordId": 2961,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3893,
+        "wordId": 2961,
+        "createdAt": "2025-10-17T21:53:50.711Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:50.711Z"
+      }
+    },
+    "jemals": {
+      "lemma": "jemals",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:51.681Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Lächelt Tom jemals?",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Lächelt Tom jemals?",
+        "exampleDe": "Lächelt Tom jemals?"
+      },
+      "wordId": 2962,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3895,
+        "wordId": 2962,
+        "createdAt": "2025-10-17T21:53:51.681Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:51.681Z"
+      }
+    },
+    "jeweils": {
+      "lemma": "jeweils",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:52.764Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Die Kinder bekamen jeweils fünf Äpfel.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Die Kinder bekamen jeweils fünf Äpfel.",
+        "exampleDe": "Die Kinder bekamen jeweils fünf Äpfel."
+      },
+      "wordId": 2963,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3897,
+        "wordId": 2963,
+        "createdAt": "2025-10-17T21:53:52.764Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:52.764Z"
+      }
+    },
+    "leider": {
+      "lemma": "leider",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:22:06.530Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Leider!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Leider!",
+        "exampleDe": "Leider!"
+      },
+      "wordId": 2859,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 89,
+        "wordId": 2859,
+        "createdAt": "2025-10-17T21:22:06.530Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:22:06.530Z"
+      }
+    },
+    "manchmal": {
+      "lemma": "manchmal",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:24.688Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Manchmal schon.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Manchmal schon.",
+        "exampleDe": "Manchmal schon."
+      },
+      "wordId": 2904,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3841,
+        "wordId": 2904,
+        "createdAt": "2025-10-17T21:53:24.688Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:24.688Z"
+      }
+    },
+    "miteinander": {
+      "lemma": "miteinander",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:54.814Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Wir essen miteinander.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Wir essen miteinander.",
+        "exampleDe": "Wir essen miteinander."
+      },
+      "wordId": 2967,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3901,
+        "wordId": 2967,
+        "createdAt": "2025-10-17T21:53:54.814Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:54.814Z"
+      }
+    },
+    "mittlerweile": {
+      "lemma": "mittlerweile",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:55.712Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Tom müsste mittlerweile schlafen.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Tom müsste mittlerweile schlafen.",
+        "exampleDe": "Tom müsste mittlerweile schlafen."
+      },
+      "wordId": 2969,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3903,
+        "wordId": 2969,
+        "createdAt": "2025-10-17T21:53:55.712Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:55.712Z"
+      }
+    },
+    "möglicherweise": {
+      "lemma": "möglicherweise",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:56.797Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Möglicherweise.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Möglicherweise.",
+        "exampleDe": "Möglicherweise."
+      },
+      "wordId": 2970,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3905,
+        "wordId": 2970,
+        "createdAt": "2025-10-17T21:53:56.797Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:56.797Z"
+      }
+    },
+    "möglichst": {
+      "lemma": "möglichst",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:57.723Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Bitte antworte möglichst bald.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Bitte antworte möglichst bald.",
+        "exampleDe": "Bitte antworte möglichst bald."
+      },
+      "wordId": 2971,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3907,
+        "wordId": 2971,
+        "createdAt": "2025-10-17T21:53:57.723Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:57.723Z"
+      }
+    },
+    "neulich": {
+      "lemma": "neulich",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:58.698Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "War das neulich?",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "War das neulich?",
+        "exampleDe": "War das neulich?"
+      },
+      "wordId": 2974,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3909,
+        "wordId": 2974,
+        "createdAt": "2025-10-17T21:53:58.698Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:58.698Z"
+      }
+    },
+    "nirgends": {
+      "lemma": "nirgends",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:25.773Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Tom ist nirgends.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Tom ist nirgends.",
+        "exampleDe": "Tom ist nirgends."
+      },
+      "wordId": 2908,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3843,
+        "wordId": 2908,
+        "createdAt": "2025-10-17T21:53:25.773Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:25.773Z"
+      }
+    },
+    "nirgendwo": {
+      "lemma": "nirgendwo",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:59.723Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Es ist nirgendwo sicher.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Es ist nirgendwo sicher.",
+        "exampleDe": "Es ist nirgendwo sicher."
+      },
+      "wordId": 2975,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3911,
+        "wordId": 2975,
+        "createdAt": "2025-10-17T21:53:59.723Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:59.723Z"
+      }
+    },
+    "noch mal": {
+      "lemma": "noch mal",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:00.789Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Noch mal!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Noch mal!",
+        "exampleDe": "Noch mal!"
+      },
+      "wordId": 2976,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3913,
+        "wordId": 2976,
+        "createdAt": "2025-10-17T21:54:00.789Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:00.789Z"
+      }
+    },
+    "nochmal": {
+      "lemma": "nochmal",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:39.817Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Nochmal.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Nochmal.",
+        "exampleDe": "Nochmal."
+      },
+      "wordId": 2977,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3871,
+        "wordId": 2977,
+        "createdAt": "2025-10-17T21:53:39.817Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:39.817Z"
+      }
+    },
+    "nochmals": {
+      "lemma": "nochmals",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:44.720Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Nochmals danke!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Nochmals danke!",
+        "exampleDe": "Nochmals danke!"
+      },
+      "wordId": 2978,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3881,
+        "wordId": 2978,
+        "createdAt": "2025-10-17T21:53:44.720Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:44.720Z"
+      }
+    },
+    "normalerweise": {
+      "lemma": "normalerweise",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:53.700Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Tom gewinnt normalerweise.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Tom gewinnt normalerweise.",
+        "exampleDe": "Tom gewinnt normalerweise."
+      },
+      "wordId": 2979,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3899,
+        "wordId": 2979,
+        "createdAt": "2025-10-17T21:53:53.700Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:53.700Z"
+      }
+    },
+    "oben": {
+      "lemma": "oben",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:08.881Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Siehe oben!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Siehe oben!",
+        "exampleDe": "Siehe oben!"
+      },
+      "wordId": 2866,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3809,
+        "wordId": 2866,
+        "createdAt": "2025-10-17T21:53:08.881Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:08.881Z"
+      }
+    },
+    "oft": {
+      "lemma": "oft",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:09.681Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Das passierte oft.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Das passierte oft.",
+        "exampleDe": "Das passierte oft."
+      },
+      "wordId": 2867,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3811,
+        "wordId": 2867,
+        "createdAt": "2025-10-17T21:53:09.681Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:09.681Z"
+      }
+    },
+    "online": {
+      "lemma": "online",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:26.725Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Ich chatte online.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Ich chatte online.",
+        "exampleDe": "Ich chatte online."
+      },
+      "wordId": 2909,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3845,
+        "wordId": 2909,
+        "createdAt": "2025-10-17T21:53:26.725Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:26.725Z"
+      }
+    },
+    "rauf": {
+      "lemma": "rauf",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:01.783Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Beamen Sie mich rauf!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Beamen Sie mich rauf!",
+        "exampleDe": "Beamen Sie mich rauf!"
+      },
+      "wordId": 2982,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3915,
+        "wordId": 2982,
+        "createdAt": "2025-10-17T21:54:01.783Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:01.783Z"
+      }
+    },
+    "rückwärts": {
+      "lemma": "rückwärts",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:02.701Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Tom sprang rückwärts.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Tom sprang rückwärts.",
+        "exampleDe": "Tom sprang rückwärts."
+      },
+      "wordId": 2983,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3917,
+        "wordId": 2983,
+        "createdAt": "2025-10-17T21:54:02.701Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:02.701Z"
+      }
+    },
+    "spätestens": {
+      "lemma": "spätestens",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:03.790Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Komm spätestens sechs Uhr!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Komm spätestens sechs Uhr!",
+        "exampleDe": "Komm spätestens sechs Uhr!"
+      },
+      "wordId": 2985,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3919,
+        "wordId": 2985,
+        "createdAt": "2025-10-17T21:54:03.790Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:03.790Z"
+      }
+    },
+    "teilweise": {
+      "lemma": "teilweise",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:04.854Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Du liegst teilweise richtig.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Du liegst teilweise richtig.",
+        "exampleDe": "Du liegst teilweise richtig."
+      },
+      "wordId": 2986,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3921,
+        "wordId": 2986,
+        "createdAt": "2025-10-17T21:54:04.854Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:04.854Z"
+      }
+    },
+    "übermorgen": {
+      "lemma": "übermorgen",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:28.745Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Komm übermorgen.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Komm übermorgen.",
+        "exampleDe": "Komm übermorgen."
+      },
+      "wordId": 2926,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3849,
+        "wordId": 2926,
+        "createdAt": "2025-10-17T21:53:28.745Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:28.745Z"
+      }
+    },
+    "umsonst": {
+      "lemma": "umsonst",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:05.862Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Sie arbeiten umsonst.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Sie arbeiten umsonst.",
+        "exampleDe": "Sie arbeiten umsonst."
+      },
+      "wordId": 2987,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3923,
+        "wordId": 2987,
+        "createdAt": "2025-10-17T21:54:05.862Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:05.862Z"
+      }
+    },
+    "unten": {
+      "lemma": "unten",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:11.795Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Bleib unten.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Bleib unten.",
+        "exampleDe": "Bleib unten."
+      },
+      "wordId": 2872,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3815,
+        "wordId": 2872,
+        "createdAt": "2025-10-17T21:53:11.795Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:11.795Z"
+      }
+    },
+    "voneinander": {
+      "lemma": "voneinander",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:06.722Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Sie sind voneinander enttäuscht.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Sie sind voneinander enttäuscht.",
+        "exampleDe": "Sie sind voneinander enttäuscht."
+      },
+      "wordId": 2988,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3925,
+        "wordId": 2988,
+        "createdAt": "2025-10-17T21:54:06.722Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:06.722Z"
+      }
+    },
+    "voraus": {
+      "lemma": "voraus",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:07.747Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Gefahr voraus.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Gefahr voraus.",
+        "exampleDe": "Gefahr voraus."
+      },
+      "wordId": 2989,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3927,
+        "wordId": 2989,
+        "createdAt": "2025-10-17T21:54:07.747Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:07.747Z"
+      }
+    },
+    "vorgestern": {
+      "lemma": "vorgestern",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:27.725Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Kamst du vorgestern?",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Kamst du vorgestern?",
+        "exampleDe": "Kamst du vorgestern?"
+      },
+      "wordId": 2916,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3847,
+        "wordId": 2916,
+        "createdAt": "2025-10-17T21:53:27.725Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:27.725Z"
+      }
+    },
+    "vorhin": {
+      "lemma": "vorhin",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:08.741Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "War Tom vorhin hier?",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "War Tom vorhin hier?",
+        "exampleDe": "War Tom vorhin hier?"
+      },
+      "wordId": 2990,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3929,
+        "wordId": 2990,
+        "createdAt": "2025-10-17T21:54:08.741Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:08.741Z"
+      }
+    },
+    "vorwärts": {
+      "lemma": "vorwärts",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:07.711Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Vorwärts.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Vorwärts.",
+        "exampleDe": "Vorwärts."
+      },
+      "wordId": 2920,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3807,
+        "wordId": 2920,
+        "createdAt": "2025-10-17T21:53:07.711Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:07.711Z"
+      }
+    },
+    "warum": {
+      "lemma": "warum",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:12.845Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "warum",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "warum",
+        "exampleDe": "warum"
+      },
+      "wordId": 2875,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3817,
+        "wordId": 2875,
+        "createdAt": "2025-10-17T21:53:12.845Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:12.845Z"
+      }
+    },
+    "wie viel": {
+      "lemma": "wie viel",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:13.758Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Wie viel?",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Wie viel?",
+        "exampleDe": "Wie viel?"
+      },
+      "wordId": 2877,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3819,
+        "wordId": 2877,
+        "createdAt": "2025-10-17T21:53:13.758Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:13.758Z"
+      }
+    },
+    "wieso": {
+      "lemma": "wieso",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:54:09.799Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Wieso?",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Wieso?",
+        "exampleDe": "Wieso?"
+      },
+      "wordId": 2992,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3931,
+        "wordId": 2992,
+        "createdAt": "2025-10-17T21:54:09.799Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:54:09.799Z"
+      }
+    },
+    "zirka": {
+      "lemma": "zirka",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:14.669Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Maria war zirka hundert Jahre alt.",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Maria war zirka hundert Jahre alt.",
+        "exampleDe": "Maria war zirka hundert Jahre alt."
+      },
+      "wordId": 2880,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3821,
+        "wordId": 2880,
+        "createdAt": "2025-10-17T21:53:14.669Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:14.669Z"
+      }
+    },
+    "zurück": {
+      "lemma": "zurück",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:16.766Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Kehrt zurück!",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Kehrt zurück!",
+        "exampleDe": "Kehrt zurück!"
+      },
+      "wordId": 2882,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3825,
+        "wordId": 2882,
+        "createdAt": "2025-10-17T21:53:16.766Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:16.766Z"
+      }
+    },
+    "zurzeit": {
+      "lemma": "zurzeit",
+      "pos": "Adv",
+      "providerId": "tatoeba",
+      "providerLabel": "Tatoeba",
+      "status": "success",
+      "error": null,
+      "collectedAt": "2025-10-17T21:53:15.694Z",
+      "translations": null,
+      "examples": [
+        {
+          "sentence": "Was macht John zurzeit?",
+          "translations": null
+        }
+      ],
+      "synonyms": null,
+      "englishHints": null,
+      "verbForms": null,
+      "nounForms": null,
+      "adjectiveForms": null,
+      "prepositionAttributes": null,
+      "rawPayload": {
+        "source": "tatoeba.org",
+        "sentence": "Was macht John zurzeit?",
+        "exampleDe": "Was macht John zurzeit?"
+      },
+      "wordId": 2881,
+      "metadata": {
+        "trigger": "apply",
+        "mode": "pending",
+        "snapshotId": 3823,
+        "wordId": 2881,
+        "createdAt": "2025-10-17T21:53:15.694Z",
+        "source": "tatoeba.org",
+        "enrichmentMethod": "bulk",
+        "appliedAt": "2025-10-17T21:53:15.694Z"
+      }
+    }
+  },
+  "meta": {
+    "createdAt": "2025-10-21T09:16:32.129Z"
+  }
+}

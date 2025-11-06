@@ -10,6 +10,8 @@ import type {
   EnrichmentNounFormSuggestion,
   EnrichmentPrepositionSuggestion,
   EnrichmentVerbFormSuggestion,
+  WordEnrichmentSuggestionConfig,
+  WordEnrichmentSuggestions,
 } from "@shared/enrichment";
 import { sql } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
@@ -20,6 +22,7 @@ import {
   integer,
   jsonb,
   pgEnum,
+  pgSchema,
   pgTable,
   pgView,
   primaryKey,
@@ -39,6 +42,8 @@ export const enrichmentMethodEnum = pgEnum("enrichment_method", [
   "manual_entry",
   "preexisting",
 ]);
+
+export const enrichmentSchema = pgSchema("enrichment");
 
 export const integrationPartners = pgTable("integration_partners", {
   id: serial("id").primaryKey(),
@@ -232,7 +237,7 @@ export const wordsExportQueue = pgView("words_export_queue", {
   needsExport: boolean("needs_export"),
 });
 
-export const enrichmentProviderSnapshots = pgTable(
+export const enrichmentProviderSnapshots = enrichmentSchema.table(
   "enrichment_provider_snapshots",
   {
     id: serial("id").primaryKey(),
@@ -262,6 +267,30 @@ export const enrichmentProviderSnapshots = pgTable(
   (table) => [
     index("enrichment_snapshots_word_provider_idx").on(table.wordId, table.providerId),
     index("enrichment_snapshots_provider_collected_idx").on(table.providerId, table.collectedAt),
+  ],
+);
+
+export const wordEnrichmentDrafts = enrichmentSchema.table(
+  "word_enrichment_drafts",
+  {
+    id: serial("id").primaryKey(),
+    wordId: integer("word_id")
+      .notNull()
+      .references(() => words.id, { onDelete: "cascade" }),
+    lemma: text("lemma").notNull(),
+    pos: text("pos").notNull(),
+    configHash: text("config_hash").notNull(),
+    config: jsonb("config").$type<WordEnrichmentSuggestionConfig>().notNull(),
+    suggestions: jsonb("suggestions").$type<WordEnrichmentSuggestions>().notNull(),
+    fetchedAt: timestamp("fetched_at", { withTimezone: true }).defaultNow().notNull(),
+    appliedAt: timestamp("applied_at", { withTimezone: true }),
+    appliedMethod: enrichmentMethodEnum("applied_method"),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex("word_enrichment_drafts_word_config_idx").on(table.wordId, table.configHash),
+    index("word_enrichment_drafts_word_idx").on(table.wordId),
   ],
 );
 

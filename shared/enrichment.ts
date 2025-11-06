@@ -244,6 +244,31 @@ export interface WordEnrichmentSuggestions {
   posNotes: string[];
   providerDiagnostics: EnrichmentProviderDiagnostic[];
   snapshots: EnrichmentProviderSnapshotComparison[];
+  sources: string[];
+  errors: string[];
+  aiUsed: boolean;
+}
+
+export interface WordEnrichmentSuggestionConfig {
+  collectSynonyms: boolean;
+  collectExamples: boolean;
+  collectTranslations: boolean;
+  collectWiktextract: boolean;
+  enableAi: boolean;
+  openAiModel?: string | null;
+}
+
+export interface StoredWordEnrichment {
+  id: number;
+  wordId: number;
+  lemma: string;
+  pos: PartOfSpeech | string;
+  configHash: string;
+  config: WordEnrichmentSuggestionConfig;
+  suggestions: WordEnrichmentSuggestions;
+  fetchedAt: string;
+  appliedAt?: string | null;
+  appliedMethod?: EnrichmentMethod | null;
 }
 
 export interface WordEnrichmentHistory {
@@ -253,6 +278,7 @@ export interface WordEnrichmentHistory {
   snapshots: EnrichmentProviderSnapshot[];
   translations: WordTranslation[];
   examples: WordExample[];
+  drafts: StoredWordEnrichment[];
 }
 
 export interface EnrichmentWordSummary {
@@ -276,6 +302,12 @@ export interface EnrichmentWordSummary {
   sources: string[];
   errors?: string[];
   aiUsed: boolean;
+  draftId?: number;
+  suggestionsFetchedAt?: string;
+  reusedSuggestions?: boolean;
+  suggestionConfigHash?: string;
+  suggestionConfig?: WordEnrichmentSuggestionConfig;
+  draftAppliedAt?: string | null;
 }
 
 export type EnrichmentPatch = Partial<{
@@ -303,11 +335,18 @@ export interface WordEnrichmentPreview {
   patch: EnrichmentPatch;
   hasUpdates: boolean;
   suggestions: WordEnrichmentSuggestions;
+  draftId?: number;
+  suggestionsFetchedAt?: string;
+  reusedSuggestions?: boolean;
+  suggestionConfigHash?: string;
+  suggestionConfig?: WordEnrichmentSuggestionConfig;
+  draftAppliedAt?: string | null;
 }
 
 export interface BulkEnrichmentResponse {
   scanned: number;
   updated: number;
+  applied: number;
   words: EnrichmentWordSummary[];
 }
 
