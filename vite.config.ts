@@ -82,6 +82,13 @@ export default defineConfig({
         path.resolve(__dirname, "data"),
       ],
     },
+    watch: {
+      /**
+       * Bulk exports append to data/sync/*.jsonl files. Ignoring that subtree keeps Vite
+       * from reprocessing CSS/JS on every append while the admin runs “Export all”.
+       */
+      ignored: [path.resolve(__dirname, "data", "sync", "**")],
+    },
   },
   test: {
     globals: true,
