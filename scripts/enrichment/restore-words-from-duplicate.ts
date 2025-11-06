@@ -4,7 +4,8 @@ import { sql } from "drizzle-orm";
 
 // 'node --env-file=.env --import tsx scripts/enrichment/restore-words-from-duplicate.ts'
 
-const DUPLICATE_TABLE = "words_duplicate_21_10_2025";
+// const DUPLICATE_TABLE = "words_duplicate_21_10_2025";
+const DUPLICATE_TABLE = "words_duplicate_06_11_2025";
 
 async function main(): Promise<void> {
   const db = getDb();
