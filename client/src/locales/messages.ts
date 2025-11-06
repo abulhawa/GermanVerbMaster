@@ -39,6 +39,7 @@ export interface PracticeCardMessages {
     articleLabel: string;
   };
   exampleLabel: string;
+  exampleToggle: string;
   metadata: { sourceLabel: string };
   actions: {
     submit: string;
@@ -360,6 +361,7 @@ const MESSAGES: Record<Locale, AppMessages> = {
         articleLabel: 'Article:',
       },
       exampleLabel: 'Example',
+      exampleToggle: 'Tap to reveal the hint',
       metadata: {
         sourceLabel: 'Source:',
       },
@@ -617,6 +619,7 @@ const MESSAGES: Record<Locale, AppMessages> = {
         articleLabel: 'Artikel:',
       },
       exampleLabel: 'Beispiel',
+      exampleToggle: 'Tippe, um den Hinweis anzuzeigen',
       metadata: {
         sourceLabel: 'Quelle:',
       },
