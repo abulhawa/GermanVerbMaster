@@ -109,6 +109,39 @@ function expandWithUmlautFallbacks(value: string): string[] {
   return Array.from(variants);
 }
 
+function useNextQuestionHotkey(
+  status: 'idle' | 'correct' | 'incorrect',
+  onContinue?: () => void,
+): void {
+  useEffect(() => {
+    if (status === 'idle' || !onContinue) {
+      return undefined;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (
+        event.defaultPrevented ||
+        event.repeat ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey
+      ) {
+        return;
+      }
+
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        onContinue();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [status, onContinue]);
+}
+
 function addExpectedForm(forms: Set<string>, value: unknown): void {
   if (typeof value !== 'string') {
     return;
@@ -554,6 +587,8 @@ function ConjugateFormRenderer({
   const instructionText = useMemo(() => getTaskInstructions(copy, task), [copy, task]);
   const partOfSpeechLabel = useMemo(() => formatPartOfSpeechLabel(task), [task.pos, task.taskType]);
 
+  useNextQuestionHotkey(status, onContinue);
+
   useEffect(() => {
     setAnswer('');
     setStatus('idle');
@@ -842,6 +877,8 @@ function NounCaseDeclensionRenderer({
   const preferences = getRendererPreferences(settings, task.taskType);
   const instructionText = useMemo(() => getTaskInstructions(copy, task), [copy, task]);
   const partOfSpeechLabel = useMemo(() => formatPartOfSpeechLabel(task), [task.pos, task.taskType]);
+
+  useNextQuestionHotkey(status, onContinue);
 
   useEffect(() => {
     setAnswer('');
@@ -1139,6 +1176,8 @@ function AdjectiveEndingRenderer({
   const preferences = getRendererPreferences(settings, task.taskType);
   const instructionText = useMemo(() => getTaskInstructions(copy, task), [copy, task]);
   const partOfSpeechLabel = useMemo(() => formatPartOfSpeechLabel(task), [task.pos, task.taskType]);
+
+  useNextQuestionHotkey(status, onContinue);
 
   useEffect(() => {
     setAnswer('');
