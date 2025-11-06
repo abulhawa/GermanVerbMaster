@@ -6,6 +6,7 @@ const QUEUE_STORAGE_KEY = 'practice.tasks.queue';
 const LEGACY_QUEUE_KEY = 'focus-review-queue';
 const MIGRATION_MARKER_KEY = 'practice.tasks.queue.migrated';
 const STORAGE_CONTEXT = 'review queue';
+const MAX_QUEUE_ITEM_AGE_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 interface EnqueueOptions {
   randomize?: boolean;
@@ -127,14 +128,49 @@ function writeQueue(storage: Storage, queue: PracticeTaskQueueItem[]): void {
 
 function ensureQueue(storage: Storage): PracticeTaskQueueItem[] {
   const marker = storage.getItem(MIGRATION_MARKER_KEY);
+  let queue: PracticeTaskQueueItem[];
+
   if (marker !== '1') {
     const migrated = migrateLegacyQueue(storage);
-    if (migrated.length) {
-      return migrated;
-    }
+    queue = migrated.length ? migrated : readQueue(storage);
+  } else {
+    queue = readQueue(storage);
   }
 
-  return readQueue(storage);
+  const { queue: prunedQueue, changed } = pruneExpiredQueueItems(queue);
+  if (changed) {
+    writeQueue(storage, prunedQueue);
+  }
+
+  return prunedQueue;
+}
+
+function pruneExpiredQueueItems(
+  queue: PracticeTaskQueueItem[],
+): { queue: PracticeTaskQueueItem[]; changed: boolean } {
+  const now = Date.now();
+  const cutoff = now - MAX_QUEUE_ITEM_AGE_MS;
+  let changed = false;
+  const result: PracticeTaskQueueItem[] = [];
+
+  for (const item of queue) {
+    const parsed = typeof item.enqueuedAt === 'string' ? Date.parse(item.enqueuedAt) : Number.NaN;
+
+    if (Number.isNaN(parsed)) {
+      result.push({ ...item, enqueuedAt: new Date(now).toISOString() });
+      changed = true;
+      continue;
+    }
+
+    if (parsed < cutoff) {
+      changed = true;
+      continue;
+    }
+
+    result.push(item);
+  }
+
+  return { queue: result, changed };
 }
 
 function shuffle<T>(items: T[]): T[] {
