@@ -416,10 +416,6 @@ function renderTranslationText(
     return `${copy.translations.englishPrefix} ${english}`;
   }
 
-  if (preferences.showExamples && exampleText) {
-    return exampleText;
-  }
-
   if (fallback) {
     return fallback;
   }
