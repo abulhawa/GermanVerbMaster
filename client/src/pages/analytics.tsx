@@ -23,6 +23,7 @@ import {
   buildCefrLabel,
   computePracticeSummary,
   computeScope,
+  buildPracticeSessionScopeKey,
   getVerbLevel,
   normalisePreferredTaskTypes,
 } from "@/lib/practice-overview";
@@ -78,8 +79,14 @@ const ANALYTICS_IDS = {
 
 export default function Analytics() {
   const { settings } = usePracticeSettings();
+  const { data: authSession } = useAuthSession();
+  const sessionScopeKey = useMemo(() => buildPracticeSessionScopeKey(settings), [settings]);
+  const userId = authSession?.user.id ?? null;
   const progress = useMemo(() => loadPracticeProgress(), []);
-  const practiceSession = useMemo(() => loadPracticeSession(), []);
+  const practiceSession = useMemo(
+    () => loadPracticeSession({ scopeKey: sessionScopeKey, userId }),
+    [sessionScopeKey, userId],
+  );
   const answerHistory = useMemo(() => loadAnswerHistory(), []);
 
   const scope = computeScope(settings);
@@ -176,7 +183,6 @@ export default function Analytics() {
       </div>
     </div>
   );
-  const { data: authSession } = useAuthSession();
   const navigationItems = useMemo(
     () => getPrimaryNavigationItems(authSession?.user.role ?? null),
     [authSession?.user.role],

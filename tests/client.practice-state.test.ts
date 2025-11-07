@@ -243,6 +243,58 @@ describe('practice state migrations', () => {
     expect(reset.queue).toHaveLength(0);
   });
 
+  it('stores per-scope metadata and expires stale sessions', () => {
+    const base = createEmptySessionState();
+    const queued = enqueueTasks(base, [practiceTask]);
+    const savedAt = new Date('2024-01-01T00:00:00.000Z');
+
+    savePracticeSession(queued, {
+      scopeKey: 'verb-A1__noun-A2',
+      userId: 'user-123',
+      now: savedAt,
+    });
+
+    const stored = localStorage.getItem('practice.session.verb-A1_noun-A2');
+    expect(stored).not.toBeNull();
+    if (stored) {
+      const parsed = JSON.parse(stored) as Record<string, unknown>;
+      expect(parsed.version).toBe(1);
+      expect(parsed.scopeKey).toBe('verb-A1_noun-A2');
+      expect(parsed.userId).toBe('user-123');
+      expect(typeof parsed.savedAt).toBe('string');
+    }
+
+    const reloaded = loadPracticeSession({
+      scopeKey: 'verb-A1__noun-A2',
+      userId: 'user-123',
+      now: new Date('2024-01-01T12:00:00.000Z'),
+    });
+    expect(reloaded.queue).toContain('task-1');
+
+    const expired = loadPracticeSession({
+      scopeKey: 'verb-A1__noun-A2',
+      userId: 'user-123',
+      now: new Date('2024-01-03T00:00:00.000Z'),
+    });
+    expect(expired.queue).toHaveLength(0);
+    expect(localStorage.getItem('practice.session.verb-A1_noun-A2')).toBeNull();
+
+    // Re-save to verify user-specific sessions do not leak across accounts.
+    savePracticeSession(queued, {
+      scopeKey: 'verb-A1__noun-A2',
+      userId: 'user-123',
+      now: savedAt,
+    });
+
+    const otherUser = loadPracticeSession({
+      scopeKey: 'verb-A1__noun-A2',
+      userId: 'other-user',
+      now: new Date('2024-01-01T12:00:00.000Z'),
+    });
+    expect(otherUser.queue).toHaveLength(0);
+    expect(localStorage.getItem('practice.session.verb-A1_noun-A2')).toBeNull();
+  });
+
   it('avoids duplicating tasks when topping up the queue', () => {
     const base = createEmptySessionState();
     const queued = enqueueTasks(base, [practiceTask]);
