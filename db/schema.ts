@@ -276,6 +276,36 @@ export const practiceHistory = pgTable(
   ],
 );
 
+export const practiceLog = pgTable(
+  "practice_log",
+  {
+    id: serial("id").primaryKey(),
+    taskId: text("task_id")
+      .notNull()
+      .references(() => taskSpecs.id, { onDelete: "cascade" }),
+    lexemeId: text("lexeme_id")
+      .notNull()
+      .references(() => lexemes.id, { onDelete: "cascade" }),
+    pos: text("pos").notNull(),
+    taskType: text("task_type").notNull(),
+    deviceId: text("device_id"),
+    userId: text("user_id").references(() => authUsers.id, { onDelete: "cascade" }),
+    cefrLevel: text("cefr_level").notNull().default("__"),
+    attemptedAt: timestamp("attempted_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("practice_log_task_idx").on(table.taskId),
+    index("practice_log_pos_idx").on(table.pos),
+    index("practice_log_attempted_idx").on(table.attemptedAt),
+    index("practice_log_device_idx").on(table.deviceId),
+    index("practice_log_user_idx").on(table.userId),
+    uniqueIndex("practice_log_user_task_idx").on(table.taskId, table.userId, table.cefrLevel),
+    uniqueIndex("practice_log_device_task_idx").on(table.taskId, table.deviceId, table.cefrLevel),
+  ],
+);
+
 export const insertWordSchema = createInsertSchema(words);
 export const selectWordSchema = createSelectSchema(words);
 export type InsertWord = typeof words.$inferInsert;
@@ -283,4 +313,7 @@ export type Word = typeof words.$inferSelect;
 
 export type PracticeHistory = typeof practiceHistory.$inferSelect;
 export type InsertPracticeHistory = typeof practiceHistory.$inferInsert;
+
+export type PracticeLog = typeof practiceLog.$inferSelect;
+export type InsertPracticeLog = typeof practiceLog.$inferInsert;
 
