@@ -147,8 +147,8 @@ export default function Home() {
   const { settings, updateSettings } = usePracticeSettings();
   const sessionScopeKey = useMemo(() => buildPracticeSessionScopeKey(settings), [settings]);
   const authSession = useAuthSession();
-  const userId =
-    authSession.data === undefined ? undefined : authSession.data?.user.id ?? null;
+  const authSessionUserId = authSession.data?.user?.id ?? null;
+  const userId = authSession.status === 'pending' ? undefined : authSessionUserId;
   const [progress, setProgress] = useState<PracticeProgressState>(() => loadPracticeProgress());
   const [session, setSession] = useState<PracticeSessionState>(() =>
     loadPracticeSession({ scopeKey: sessionScopeKey, userId }),
@@ -191,6 +191,10 @@ export default function Home() {
   }, [sessionScopeKey]);
 
   useEffect(() => {
+    if (authSession.status === 'pending') {
+      return;
+    }
+
     const previous = sessionHydrationRef.current;
     if (previous.scopeKey === sessionScopeKey && previous.userId === userId) {
       return;
@@ -198,7 +202,7 @@ export default function Home() {
 
     sessionHydrationRef.current = { scopeKey: sessionScopeKey, userId };
     setSession(loadPracticeSession({ scopeKey: sessionScopeKey, userId }));
-  }, [sessionScopeKey, userId]);
+  }, [authSession.status, sessionScopeKey, userId]);
 
   useEffect(() => {
     savePracticeProgress(progress);

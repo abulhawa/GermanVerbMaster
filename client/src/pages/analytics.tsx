@@ -79,9 +79,10 @@ const ANALYTICS_IDS = {
 
 export default function Analytics() {
   const { settings } = usePracticeSettings();
-  const { data: authSession } = useAuthSession();
+  const authSessionQuery = useAuthSession();
   const sessionScopeKey = useMemo(() => buildPracticeSessionScopeKey(settings), [settings]);
-  const userId = authSession === undefined ? undefined : authSession?.user.id ?? null;
+  const authSessionUserId = authSessionQuery.data?.user?.id ?? null;
+  const userId = authSessionQuery.status === "pending" ? undefined : authSessionUserId;
   const progress = useMemo(() => loadPracticeProgress(), []);
   const practiceSession = useMemo(
     () => loadPracticeSession({ scopeKey: sessionScopeKey, userId }),
@@ -184,8 +185,8 @@ export default function Analytics() {
     </div>
   );
   const navigationItems = useMemo(
-    () => getPrimaryNavigationItems(authSession?.user.role ?? null),
-    [authSession?.user.role],
+    () => getPrimaryNavigationItems(authSessionQuery.data?.user.role ?? null),
+    [authSessionQuery.data?.user.role],
   );
 
   const sidebar = (
