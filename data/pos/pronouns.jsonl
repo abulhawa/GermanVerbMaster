@@ -1,8 +1,8 @@
-{"lemma": "ich", "approved": true, "level": "A1", "english": "I", "examples": [{"de": "Ich bin hier.", "en": "I am here."}]}
-{"lemma": "alle", "approved": false, "level": "A1"}
-{"lemma": "alles", "approved": false, "level": "A1"}
-{"lemma": "dich", "approved": false, "level": "A1"}
-{"lemma": "dir", "approved": false, "level": "A1"}
-{"lemma": "was", "approved": false, "level": "A1"}
-{"lemma": "wer", "approved": false, "level": "A1"}
-{"lemma": "selbst", "approved": false, "level": "A2"}
+{"lemma":"alle","approved":true,"level":"A1","english":"everyone, all (people)","examples":[{"de":"Alle warten schon auf dich.","en":"Everyone is already waiting for you."},{"de":"Alles endet.","en":"Everything ends."}]}
+{"lemma":"alles","approved":true,"level":"A1","english":"everything; all","examples":[{"de":"Alles ist gut.","en":"All is well."},{"de":"Die Politiker haben alles keine Ahnung.","en":"The politicians all don’t have a clue."}]}
+{"lemma":"dich","approved":true,"level":"A1","english":"you (accusative singular of du)","examples":[{"de":"Ich!"},{"de":"Ich rufe dich später an.","en":"I will call you later."}]}
+{"lemma":"dir","approved":true,"level":"A1","english":"to you (dative singular of du)","examples":[{"de":"Ich!"},{"de":"Ich sage dir später Bescheid.","en":"I will let you know later."}]}
+{"lemma":"ich","approved":true,"level":"A1","english":"I","examples":[{"de":"Ich bin hier.","en":"I am here."}]}
+{"lemma":"selbst","approved":true,"level":"A2","english":"self, oneself","examples":[{"de":"Manchmal muss man sich selbst motivieren.","en":"Sometimes you have to motivate yourself."},{"de":"Urteilt selbst!","en":"Judge for yourselves!"}]}
+{"lemma":"was","approved":true,"level":"A1","english":"what","examples":[{"de":"Was machst du heute?","en":"What are you doing today?"},{"de":"Siehst du das weiße Haus, was renoviert wird?","en":"Do you see that white house, which is being renovated?"}]}
+{"lemma":"wer","approved":true,"level":"A1","english":"who (what person or people)","examples":[{"de":"Wer hat das gesagt?","en":"Who said that?"},{"de":"Wer im Glashaus sitzt, soll nicht mit Steinen werfen.","en":"People who live in glass houses shouldn't throw stones."}]}

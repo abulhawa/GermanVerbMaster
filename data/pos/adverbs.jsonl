@@ -1,160 +1,160 @@
-{"lemma": "gern", "level": "A1", "english": "gladly", "approved": true, "examples": [{"de": "Ich lese gern.", "en": "I like to read."}]}
-{"lemma": "an", "level": "A1", "approved": false}
-{"lemma": "bald", "level": "A1", "approved": false}
-{"lemma": "bisschen", "level": "A1", "approved": false}
-{"lemma": "circa", "level": "A1", "approved": false}
-{"lemma": "da", "level": "A1", "approved": false}
-{"lemma": "dann", "level": "A1", "approved": false}
-{"lemma": "dort", "level": "A1", "approved": false}
-{"lemma": "draußen", "level": "A1", "approved": false}
-{"lemma": "gerade", "level": "A1", "approved": false}
-{"lemma": "geradeaus", "level": "A1", "approved": false}
-{"lemma": "gerne", "level": "A1", "approved": false}
-{"lemma": "gestern", "level": "A1", "approved": false}
-{"lemma": "gleich", "level": "A1", "approved": false}
-{"lemma": "grade", "level": "A1", "approved": false}
-{"lemma": "gradeaus", "level": "A1", "approved": false}
-{"lemma": "heut", "level": "A1", "approved": false}
-{"lemma": "heute", "level": "A1", "approved": false}
-{"lemma": "hier", "level": "A1", "approved": false}
-{"lemma": "hinten", "level": "A1", "approved": false}
-{"lemma": "immer", "level": "A1", "approved": false}
-{"lemma": "jetzt", "level": "A1", "approved": false}
-{"lemma": "lange", "level": "A1", "approved": false}
-{"lemma": "leider", "level": "A1", "approved": false}
-{"lemma": "links", "level": "A1", "approved": false}
-{"lemma": "morgen", "level": "A1", "approved": false}
-{"lemma": "nicht", "level": "A1", "approved": false}
-{"lemma": "nie", "level": "A1", "approved": false}
-{"lemma": "noch", "level": "A1", "approved": false}
-{"lemma": "nur", "level": "A1", "approved": false}
-{"lemma": "oben", "level": "A1", "approved": false}
-{"lemma": "oft", "level": "A1", "approved": false}
-{"lemma": "rechts", "level": "A1", "approved": false}
-{"lemma": "schon", "level": "A1", "approved": false}
-{"lemma": "sehr", "level": "A1", "approved": false}
-{"lemma": "sofort", "level": "A1", "approved": false}
-{"lemma": "unten", "level": "A1", "approved": false}
-{"lemma": "vielleicht", "level": "A1", "approved": false}
-{"lemma": "wann", "level": "A1", "approved": false}
-{"lemma": "warum", "level": "A1", "approved": false}
-{"lemma": "wie", "level": "A1", "approved": false}
-{"lemma": "wie viel", "level": "A1", "approved": false}
-{"lemma": "wieder", "level": "A1", "approved": false}
-{"lemma": "wo", "level": "A1", "approved": false}
-{"lemma": "zirka", "level": "A1", "approved": false}
-{"lemma": "zurzeit", "level": "A1", "approved": false}
-{"lemma": "zurück", "level": "A1", "approved": false}
-{"lemma": "zusammen", "level": "A1", "approved": false}
-{"lemma": "anders", "level": "A2", "approved": false}
-{"lemma": "außerdem", "level": "A2", "approved": false}
-{"lemma": "außerhalb", "level": "A2", "approved": false}
-{"lemma": "besonders", "level": "A2", "approved": false}
-{"lemma": "damals", "level": "A2", "approved": false}
-{"lemma": "doch", "level": "A2", "approved": false}
-{"lemma": "drinnen", "level": "A2", "approved": false}
-{"lemma": "drüben", "level": "A2", "approved": false}
-{"lemma": "ein Mal", "level": "A2", "approved": false}
-{"lemma": "einmal", "level": "A2", "approved": false}
-{"lemma": "endlich", "level": "A2", "approved": false}
-{"lemma": "erst", "level": "A2", "approved": false}
-{"lemma": "fast", "level": "A2", "approved": false}
-{"lemma": "gegenüber", "level": "A2", "approved": false}
-{"lemma": "her", "level": "A2", "approved": false}
-{"lemma": "heraus", "level": "A2", "approved": false}
-{"lemma": "herein", "level": "A2", "approved": false}
-{"lemma": "hin", "level": "A2", "approved": false}
-{"lemma": "hoffentlich", "level": "A2", "approved": false}
-{"lemma": "mal", "level": "A2", "approved": false}
-{"lemma": "manchmal", "level": "A2", "approved": false}
-{"lemma": "meistens", "level": "A2", "approved": false}
-{"lemma": "mindestens", "level": "A2", "approved": false}
-{"lemma": "nebenan", "level": "A2", "approved": false}
-{"lemma": "nirgends", "level": "A2", "approved": false}
-{"lemma": "online", "level": "A2", "approved": false}
-{"lemma": "raus", "level": "A2", "approved": false}
-{"lemma": "rein", "level": "A2", "approved": false}
-{"lemma": "sogar", "level": "A2", "approved": false}
-{"lemma": "sonst", "level": "A2", "approved": false}
-{"lemma": "unterwegs", "level": "A2", "approved": false}
-{"lemma": "vorbei", "level": "A2", "approved": false}
-{"lemma": "vorgestern", "level": "A2", "approved": false}
-{"lemma": "vorher", "level": "A2", "approved": false}
-{"lemma": "vorn", "level": "A2", "approved": false}
-{"lemma": "vorne", "level": "A2", "approved": false}
-{"lemma": "vorwärts", "level": "A2", "approved": false}
-{"lemma": "weg", "level": "A2", "approved": false}
-{"lemma": "wenigstens", "level": "A2", "approved": false}
-{"lemma": "zuerst", "level": "A2", "approved": false}
-{"lemma": "zuletzt", "level": "A2", "approved": false}
-{"lemma": "überall", "level": "A2", "approved": false}
-{"lemma": "übermorgen", "level": "A2", "approved": false}
-{"lemma": "abwärts", "level": "B1", "approved": false}
-{"lemma": "allerdings", "level": "B1", "approved": false}
-{"lemma": "andererseits", "level": "B1", "approved": false}
-{"lemma": "anderseits", "level": "B1", "approved": false}
-{"lemma": "andrerseits", "level": "B1", "approved": false}
-{"lemma": "anfangs", "level": "B1", "approved": false}
-{"lemma": "aufwärts", "level": "B1", "approved": false}
-{"lemma": "auseinander", "level": "B1", "approved": false}
-{"lemma": "ausschließlich", "level": "B1", "approved": false}
-{"lemma": "außen", "level": "B1", "approved": false}
-{"lemma": "beinah", "level": "B1", "approved": false}
-{"lemma": "beinahe", "level": "B1", "approved": false}
-{"lemma": "bereits", "level": "B1", "approved": false}
-{"lemma": "bisher", "level": "B1", "approved": false}
-{"lemma": "bloß", "level": "B1", "approved": false}
-{"lemma": "diesmal", "level": "B1", "approved": false}
-{"lemma": "durcheinander", "level": "B1", "approved": false}
-{"lemma": "eben", "level": "B1", "approved": false}
-{"lemma": "ebenso", "level": "B1", "approved": false}
-{"lemma": "einerseits", "level": "B1", "approved": false}
-{"lemma": "etwa", "level": "B1", "approved": false}
-{"lemma": "extra", "level": "B1", "approved": false}
-{"lemma": "gar", "level": "B1", "approved": false}
-{"lemma": "genauso", "level": "B1", "approved": false}
-{"lemma": "gratis", "level": "B1", "approved": false}
-{"lemma": "halbtags", "level": "B1", "approved": false}
-{"lemma": "heim", "level": "B1", "approved": false}
-{"lemma": "hinterher", "level": "B1", "approved": false}
-{"lemma": "höchstens", "level": "B1", "approved": false}
-{"lemma": "innen", "level": "B1", "approved": false}
-{"lemma": "insgesamt", "level": "B1", "approved": false}
-{"lemma": "inzwischen", "level": "B1", "approved": false}
-{"lemma": "irgendwann", "level": "B1", "approved": false}
-{"lemma": "jederzeit", "level": "B1", "approved": false}
-{"lemma": "jedes Mal", "level": "B1", "approved": false}
-{"lemma": "jemals", "level": "B1", "approved": false}
-{"lemma": "jeweils", "level": "B1", "approved": false}
-{"lemma": "kaum", "level": "B1", "approved": false}
-{"lemma": "los", "level": "B1", "approved": false}
-{"lemma": "längst", "level": "B1", "approved": false}
-{"lemma": "miteinander", "level": "B1", "approved": false}
-{"lemma": "mitten", "level": "B1", "approved": false}
-{"lemma": "mittlerweile", "level": "B1", "approved": false}
-{"lemma": "möglicherweise", "level": "B1", "approved": false}
-{"lemma": "möglichst", "level": "B1", "approved": false}
-{"lemma": "nachher", "level": "B1", "approved": false}
-{"lemma": "nebenbei", "level": "B1", "approved": false}
-{"lemma": "neulich", "level": "B1", "approved": false}
-{"lemma": "nirgendwo", "level": "B1", "approved": false}
-{"lemma": "noch mal", "level": "B1", "approved": false}
-{"lemma": "nochmal", "level": "B1", "approved": false}
-{"lemma": "nochmals", "level": "B1", "approved": false}
-{"lemma": "normalerweise", "level": "B1", "approved": false}
-{"lemma": "nun", "level": "B1", "approved": false}
-{"lemma": "quer", "level": "B1", "approved": false}
-{"lemma": "rauf", "level": "B1", "approved": false}
-{"lemma": "rückwärts", "level": "B1", "approved": false}
-{"lemma": "schließlich", "level": "B1", "approved": false}
-{"lemma": "spätestens", "level": "B1", "approved": false}
-{"lemma": "teilweise", "level": "B1", "approved": false}
-{"lemma": "umsonst", "level": "B1", "approved": false}
-{"lemma": "voneinander", "level": "B1", "approved": false}
-{"lemma": "voraus", "level": "B1", "approved": false}
-{"lemma": "vorhin", "level": "B1", "approved": false}
-{"lemma": "weshalb", "level": "B1", "approved": false}
-{"lemma": "wieso", "level": "B1", "approved": false}
-{"lemma": "zumindest", "level": "B1", "approved": false}
-{"lemma": "überhaupt", "level": "B1", "approved": false}
-{"lemma": "übrigens", "level": "B1", "approved": false}
+{"lemma":"abwärts","approved":true,"level":"B1","english":"downwards, downhill","examples":[{"de":"Der Aufzug fährt auf- und abwärts.","en":"The elevator goes up and down."}]}
+{"lemma":"allerdings","approved":true,"level":"B1","english":"but, however","examples":[{"de":"Es wird allerdings die Vermutung ausgesprochen...","en":"It is, however, conjectured..."},{"de":"Ich würde gerne zu deiner Party kommen, allerdings habe ich keine Zeit.","en":"I would love to come to your party, but I don't have time."}]}
+{"lemma":"an","approved":true,"level":"A1","english":"onward; on","examples":[{"de":"von heute an","en":"from today on"}]}
+{"lemma":"andererseits","approved":true,"level":"B1","english":"on the other hand","examples":[{"de":"Die Idee ist gut, andererseits fehlt das Budget.","en":"The idea is good, but on the other hand the budget is missing."}]}
+{"lemma":"anders","approved":true,"level":"A2","english":"different, differently","examples":[{"de":"Ich sehe das anders.","en":"I see that differently."},{"de":"Natürlich ist jeder Mensch und jede Situation anders.","en":"Of course every person and every situation are different."}]}
+{"lemma":"anderseits","approved":true,"level":"B1","english":"then again, on the other hand","examples":[{"de":"Er wollte bleiben, andererseits zog es ihn in die Ferne.","en":"He wanted to stay, yet on the other hand he longed to travel."}]}
+{"lemma":"andrerseits","approved":true,"level":"B1","english":"alternative form of andererseits","examples":[{"de":"Ich mag die Stadt, andrerseits ist sie sehr laut.","en":"I like the city, but on the other hand it is very loud."}]}
+{"lemma":"anfangs","approved":true,"level":"B1","english":"initially, at the beginning","examples":[{"de":"Anfangs war es schwer, aber mit der Zeit wurde es leichter.","en":"At first it was difficult, but over time it became easier."}]}
+{"lemma":"aufwärts","approved":true,"level":"B1","english":"upwards, uphill","examples":[{"de":"Aufwärts gehen wir zu Fuß.","en":"We're going up on foot."}]}
+{"lemma":"auseinander","approved":true,"level":"B1","english":"apart","examples":[{"de":"Unsere Kinder sind drei Jahre auseinander.","en":"Our children are three years apart."}]}
+{"lemma":"ausschließlich","approved":true,"level":"B1","english":"exclusively","examples":[{"de":"Der Raum ist ausschließlich für Mitglieder reserviert.","en":"The room is reserved exclusively for members."}]}
+{"lemma":"außen","approved":true,"level":"B1","english":"outside","examples":[{"de":"außen hui und innen pfui","en":"outside astonishing and inside disappointing"}]}
+{"lemma":"außerdem","approved":true,"level":"A2","english":"in addition; furthermore, besides","examples":[{"de":"Die Lohnstückkosten steigen ausserdem seit 2011 deutlich schneller als im Rest des Euro-Raums, worunter die preisliche Wettbewerbsfähigkeit deutscher Produkte leidet.","en":"In addition, unit labor costs have risen significantly faster than in the rest of the eurozone since 2011, which adversely affects the price competitiveness of German products."}]}
+{"lemma":"außerhalb","approved":true,"level":"A2","english":"outside, beyond","examples":[{"de":"außerhalb von München","en":"outside of Munich."},{"de":"außerhalb von der Kirche","en":"outside of the church."}]}
+{"lemma":"bald","approved":true,"level":"A1","english":"soon (near in time)","examples":[{"de":"Bald ist der Urlaub vorbei.","en":"The vacation will soon be over."},{"de":"Mit bald 80 Jahren ist mein Vater noch auf Apfelbäume geklettert.","en":"At almost 80 years, my father still used to climb on apple trees."}]}
+{"lemma":"beinah","approved":true,"level":"B1","english":"alternative form of beinahe","examples":[{"de":"Beinah wäre ich zu spät gekommen.","en":"I almost arrived too late."}]}
+{"lemma":"beinahe","approved":true,"level":"B1","english":"almost; nearly","examples":[{"de":"Ich hätte beinahe den Bus verpasst.","en":"I almost missed the bus."}]}
+{"lemma":"bereits","approved":true,"level":"B1","english":"already","examples":[{"de":"Ich weiß das bereits.","en":"I already know that."},{"de":"Wir müssen aufstehen: Es ist bereits 8 Uhr.","en":"We have to get up: it’s already 8 o'clock"}]}
+{"lemma":"besonders","approved":true,"level":"A2","english":"especially, particularly","examples":[{"de":"Ich mag Musik, besonders Rock.","en":"I love music, especially rock."},{"de":"Sei besonders leise.","en":"Be very quiet."}]}
+{"lemma":"bisher","approved":true,"level":"B1","english":"so far, until now, as yet","examples":[{"de":"Wir wissen bisher noch nichts.","en":"As yet, we still don't know anything."}]}
+{"lemma":"bisschen","approved":true,"level":"A1","english":"(a) bit; (a) little","examples":[{"de":"Er spricht nur ein bisschen Englisch.","en":"He only speaks a little English."},{"de":"Es hat keinen Sinn zu warten bis es besser wird / Das bisschen besser wär das warten nicht wert","en":"It makes no sense to wait for things to get better / That little bit better isn't worth the wait"}]}
+{"lemma":"bloß","approved":true,"level":"B1","english":"merely, only","examples":[{"de":"K. hatte sich entschlossen, mehr zu beobachten als zu reden, infolgedessen verzichtete er auf die Verteidigung wegen seines angeblichen Zuspätkommens und sagte bloß: „Mag ich zu spät gekommen sein, jetzt bin ich hier.“","en":"K. had decided to observe more than speak, consequently he abstained from the defense about his alleged coming late and only said: „May I have come too late, now I am here.“"},{"de":"Pass bloß auf!","en":"Just watch out!"}]}
+{"lemma":"circa","approved":true,"level":"A1","english":"circa","examples":[{"de":"Die Fahrt dauert circa zwei Stunden.","en":"The trip takes about two hours."}]}
+{"lemma":"da","approved":true,"level":"A1","english":"there","examples":[{"de":"Am liebsten entfloh sie dem allem in den großen Garten. Da verbrachte sie ihre schönsten Stunden.","en":"She liked best to escape from all of that into the big garden. There she spent her most pleasant hours."},{"de":"Ich wollte eigentlich Linsensuppe machen, aber da (= dafür, dazu) hatte ich das Rezept nicht.","en":"I was actually going to make lentil soup, but I didn’t have the recipe for it."}]}
+{"lemma":"damals","approved":true,"level":"A2","english":"at that time (in the past); at the time, then","examples":[{"de":"Damals wohnte ich noch bei meinen Eltern.","en":"Back then I still lived with my parents."}]}
+{"lemma":"dann","approved":true,"level":"A1","english":"then, after that","examples":[{"de":"Ich ziehe mich erst an, dann frühstücke ich.","en":"First I'm getting dressed, then I'll have breakfast."},{"de":"Wenn du dich anstrengst, dann schaffst du es.","en":"If you make an effort, then you'll be able to do it."}]}
+{"lemma":"diesmal","approved":true,"level":"B1","english":"this time","examples":[{"de":"Diesmal schaffst du es!","en":"You'll do it this time!"}]}
+{"lemma":"doch","approved":true,"level":"A2","english":"yes; surely; really; on the contrary","examples":[{"de":"Das darfst du nicht sagen. — Doch!","en":"You can’t say that. — Yes, I can!"},{"de":"Du wirst nicht kommen? — Doch!","en":"You're not going to come? — Yes, I am!"}]}
+{"lemma":"dort","approved":true,"level":"A1","english":"there, yonder","examples":[{"de":"Wir treffen uns dort am Brunnen.","en":"We will meet there at the fountain."}]}
+{"lemma":"draußen","approved":true,"level":"A1","english":"outside","examples":[{"de":"Die Kinder gingen zum Spielen nach draußen.","en":"The children went out to play."}]}
+{"lemma":"drinnen","approved":true,"level":"A2","english":"inside (a room)","examples":[{"de":"Im Winter ist es drinnen besonders gemütlich.","en":"In winter it is especially cozy inside."}]}
+{"lemma":"drüben","approved":true,"level":"A2","english":"over (implying some distance from the listener)","examples":[{"de":"Ich bin's. Hier drüben!","en":"It's me. Over here!"},{"de":"Drüben auf dem Hügel möchte ich warten / Im nassen Gras in unserem Schrebergarten","en":"Over on the hill I want to wait / In the wet grass in our allotment garden"}]}
+{"lemma":"durcheinander","approved":true,"level":"B1","english":"mixed up, in a mess","examples":[{"de":"Meine Papiere sind völlig durcheinander.","en":"My papers are all mixed up."}]}
+{"lemma":"eben","approved":true,"level":"B1","english":"just, simply, indicating that something is generally known or cannot be changed, and is therefore to be accepted; often equivalent to a shrug","examples":[{"de":"Er ist eben ein Idiot...","en":"He's an idiot, that's just how he is..."},{"de":"Es sollte eben diese Entscheidung sein, die ihn in den Bankrott treiben würde.","en":"It would be this very decision that drove him into bankruptcy."}]}
+{"lemma":"ebenso","approved":true,"level":"B1","english":"equally, as much","examples":[{"de":"Ebenso wichtig ist eine gute Vorbereitung.","en":"Equally important is good preparation."}]}
+{"lemma":"ein Mal","approved":true,"level":"A2","english":"once, one time","examples":[{"de":"Ich war nur ein Mal dort.","en":"I was only there one time."}]}
+{"lemma":"einerseits","approved":true,"level":"B1","english":"on the one hand","examples":[{"de":"Einerseits freue ich mich auf den Urlaub.","en":"On the one hand, I'm looking forward to the vacation."}]}
+{"lemma":"einmal","approved":true,"level":"A2","english":"once, one time (one and only one time)","examples":[{"de":"Ich werde das nur einmal sagen.","en":"I'm only going to say it once."},{"de":"Es war einmal eine schöne Prinzessin.","en":"There was once a beautiful princess."}]}
+{"lemma":"endlich","approved":true,"level":"A2","english":"eventually, at last, finally","examples":[{"de":"Sie schwiegen lange. Als er endlich etwas sagen wollte, wehrte sie leise ab. „Heute nichts mehr, ich bitte dich darum“","en":"They were silent for a long time. When he finally wanted to say something, she softly refused. „Nothing more today, I beg you for that“"}]}
+{"lemma":"erst","approved":true,"level":"A2","english":"first, at first","examples":[{"de":"Sie ist erst 28 Jahre alt.","en":"She is only 28 years old."},{"de":"Es ist kalt im Süden. Und im Norden erst!","en":"It is cold in the South. And especially in the North."}]}
+{"lemma":"etwa","approved":true,"level":"B1","english":"approximately","examples":[{"de":"Das Gebäude ist etwa 30 Meter hoch.","en":"The height of the building is approximately 30 metres."},{"de":"Etwa AfD-Politikerin Beatrix von Storch twitterte: »Das linke woke Paralleluniversum wackelt.«","en":"For instance, AfD politician Beatrix von Storch tweeted: \"The woke left's parallel universe is crumbling.\""}]}
+{"lemma":"extra","approved":true,"level":"B1","english":"specifically (for a given purpose)","examples":[{"de":"Das Wrack wurde mit extra entworfenen Bergungskränen gehoben.","en":"The wreck was lifted with specifically designed salvage cranes."},{"de":"Können Sie mir die Fritten und die Wurst extra abpacken?","en":"Could you wrap the fries and the sausage separately?"}]}
+{"lemma":"fast","approved":true,"level":"A2","english":"almost; nearly","examples":[{"de":"Fast 60 Spielfilme sind zu sehen.","en":"There are almost 60 feature films to see."},{"de":"ALs nu Abram in Egypten kam / sahen die Egypter das Weib / das sie fast schön war.","en":"Now as Abram came into Egypt, the Egyptians saw the woman, that she was extremely beautiful."}]}
+{"lemma":"gar","approved":true,"level":"B1","english":"at all; even","examples":[{"de":"Sie hat gar kein Geld.","en":"She has no money at all."},{"de":"Wenn er gar zu frech wird, geben Sie ihm eine kräftige Ohrfeige.","en":"If he becomes all too impertinent, give him a sturdy slap."}]}
+{"lemma":"gegenüber","approved":true,"level":"A2","english":"on the opposite side","examples":[{"de":"Das Café liegt direkt gegenüber vom Museum.","en":"The café is directly opposite the museum."}]}
+{"lemma":"genauso","approved":true,"level":"B1","english":"just as, just the same","examples":[{"de":"Das funktioniert genauso wie beim letzten Mal.","en":"That works just the same as last time."}]}
+{"lemma":"gerade","approved":true,"level":"A1","english":"now (at the moment)","examples":[{"de":"Ich bin gerade in der Küche.","en":"I'm in the kitchen right now."},{"de":"Gerade das Modell ist aber gerade ausverkauft.","en":"But that exact model, of all things, is currently out of stock."}]}
+{"lemma":"geradeaus","approved":true,"level":"A1","english":"straight ahead, straightforward (in a forward direction)","examples":[{"de":"Fahren Sie immer geradeaus bis zur Ampel.","en":"Drive straight ahead until you reach the traffic light."}]}
+{"lemma":"gern","approved":true,"level":"A1","english":"gladly","examples":[{"de":"Ich lese gern.","en":"I like to read."}]}
+{"lemma":"gerne","approved":true,"level":"A1","english":"alternative form of gern. (Both are roughly equally frequent.)","examples":[{"de":"Ich helfe dir gerne beim Aufräumen.","en":"I am happy to help you tidy up."}]}
+{"lemma":"gestern","approved":true,"level":"A1","english":"yesterday","examples":[{"de":"Gestern hat es den ganzen Tag geregnet.","en":"Yesterday it rained all day."}]}
+{"lemma":"gleich","approved":true,"level":"A1","english":"alike","examples":[{"de":"Er malt alle seine Bilder gleich.","en":"He paints all of his pictures alike."},{"de":"Entdeckung im All: Gleich zwei erdähnliche Planeten kreisen um den Zwergstern Gliese 581.","en":"Discovery in the universe: two Earth-like planets at once revolve around the dwarf star Gliese 581."}]}
+{"lemma":"grade","approved":true,"level":"A1","english":"alternative form of gerade","examples":[{"de":"Ich bin grade erst nach Hause gekommen.","en":"I just got home a moment ago."}]}
+{"lemma":"gradeaus","approved":true,"level":"A1","english":"straight ahead, straight on","examples":[{"de":"Gehen Sie bitte gradeaus.","en":"Please go straight ahead."}]}
+{"lemma":"gratis","approved":true,"level":"B1","english":"free, without charge","examples":[{"de":"Für Kinder ist der Eintritt gratis.","en":"Admission is free for children."}]}
+{"lemma":"halbtags","approved":true,"level":"B1","english":"half-time","examples":[{"de":"Ich arbeite nur halbtags.","en":"I only work half-time."}]}
+{"lemma":"heim","approved":true,"level":"B1","english":"home, to the house; always as a direction, thus never in the sense of at home","examples":[{"de":"Am Abend komm' ich dann auch gerne wieder heim.","en":"In the evening, I like to get back home again."}]}
+{"lemma":"her","approved":true,"level":"A2","english":"hither, to this place, to here, to me/us","examples":[{"de":"Komm her!","en":"Come here!"},{"de":"Es ist zehn Jahre her, dass ich das letzte Mal Auto gefahren bin.","en":"Ten years ago was the last time I drove a car."}]}
+{"lemma":"heraus","approved":true,"level":"A2","english":"out of (in the direction of the speaker); out over here; out from there","examples":[{"de":"Komm bitte aus dem Zimmer heraus.","en":"Please come out of the room."}]}
+{"lemma":"herein","approved":true,"level":"A2","english":"in (in the direction of the speaker)","examples":[{"de":"Komm ruhig herein, die Tür ist offen.","en":"Come on in, the door is open."}]}
+{"lemma":"heut","approved":true,"level":"A1","english":"alternative form of heute","examples":[{"de":"Heut bleibe ich lieber zu Hause.","en":"Today I would rather stay at home."}]}
+{"lemma":"heute","approved":true,"level":"A1","english":"today","examples":[{"de":"Heute ist Montag","en":"Today is monday"},{"de":"Das war heute und nicht gestern?","en":"That was today and not yesterday?"}]}
+{"lemma":"hier","approved":true,"level":"A1","english":"here; in this place; refers to an environment one is currently in, or to something within reach","examples":[{"de":"Ich bin hier in diesem Dorf geboren.","en":"I was born here in this village."},{"de":"Siehst du die Wolke hier neben der Bergspitze?","en":"Can you see that cloud there next to the mountain top?"}]}
+{"lemma":"hin","approved":true,"level":"A2","english":"there, thither; denotes direction towards a place that is not the speaker’s current location.","examples":[{"de":"Book of John XIII. 36. Spricht Simon Petrus zu ihm: HERR, wo gehst du hin? Jesus antwortete ihm: Wo ich hin gehe, kannst du mir diesmal nicht folgen; aber du wirst mir nachmals folgen","en":"Simon Peter said unto him, Lord, whither goest thou? Jesus answered him, Whither I go, thou canst not follow me now; but thou shalt follow me afterwards."},{"de":"Ich sehe mal nach, wo die Pakete hin sind.","en":"I'll check where the packages went."}]}
+{"lemma":"hinten","approved":true,"level":"A1","english":"behind; in the back","examples":[{"de":"Das Kind sitzt hinten im Auto.","en":"The child is sitting in the back of the car."},{"de":"Du kannst doch hinten beim Kreisverkehr wenden.","en":"Why don’t you turn around over at the traffic circle."}]}
+{"lemma":"hinterher","approved":true,"level":"B1","english":"behind","examples":[{"de":"Wir laufen dir gleich hinterher.","en":"We will run right after you."}]}
+{"lemma":"höchstens","approved":true,"level":"B1","english":"at most","examples":[{"de":"Er hat höchstens 100 Dollar.","en":"He has at most 100 dollars."}]}
+{"lemma":"hoffentlich","approved":true,"level":"A2","english":"hopefully (it is hoped that)","examples":[{"de":"Hoffentlich ist die Insel schön.","en":"Hopefully, the island is beautiful."}]}
+{"lemma":"immer","approved":true,"level":"A1","english":"always","examples":[{"de":"Irgendwo scheint immer die Sonne.","en":"The sun is always shining somewhere."},{"de":"Manchmal hab ich immer das Gefühl, dass...","en":"Sometimes I get the feeling that..."}]}
+{"lemma":"innen","approved":true,"level":"B1","english":"within","examples":[{"de":"Innen ist der Laden komplett renoviert.","en":"Inside the shop has been completely renovated."}]}
+{"lemma":"insgesamt","approved":true,"level":"B1","english":"overall, altogether, in total, all in all, by and large, on the whole","examples":[{"de":"In der Gruppe waren drei Männer und sieben Frauen, insgesamt zehn Menschen.","en":"In the group were three men and seven women, ten people altogether. / Three men and seven women were in the group, out of a total of ten people."},{"de":"Von den insgesamt acht Kapiteln...","en":"Of the (in all) eight chapters..."}]}
+{"lemma":"inzwischen","approved":true,"level":"B1","english":"meanwhile, in the meantime, now, by now, since","examples":[{"de":"Inzwischen hat sie ihr Studium abgeschlossen.","en":"In the meantime, she has completed her studies."},{"de":"Die Unterlagen sind noch nicht fertig, bitte warten Sie inzwischen draußen.","en":"The documents are not ready yet, please wait outside in the meantime."}]}
+{"lemma":"irgendwann","approved":true,"level":"B1","english":"sometime, somewhen, anytime","examples":[{"de":"Irgendwann möchte ich nach Japan reisen.","en":"Someday I would like to travel to Japan."}]}
+{"lemma":"jederzeit","approved":true,"level":"B1","english":"anytime","examples":[{"de":"Du kannst mich jederzeit anrufen.","en":"You can call me at any time."}]}
+{"lemma":"jedes Mal","approved":true,"level":"B1","english":"every time, each time","examples":[{"de":"Es ist jedes Mal das Gleiche.","en":"It's the same every time."}]}
+{"lemma":"jemals","approved":true,"level":"B1","english":"ever","examples":[{"de":"Hast du jemals so einen Sternenhimmel gesehen?","en":"Have you ever seen such a starry sky?"}]}
+{"lemma":"jetzt","approved":true,"level":"A1","english":"now (at this moment, right now)","examples":[{"de":"Ich bin jetzt da.","en":"I’m here now."},{"de":"Was bedeuten jetzt die geschilderten Entwicklungen für unser Land?","en":"Now what do the aforementioned developments mean for our country?"}]}
+{"lemma":"jeweils","approved":true,"level":"B1","english":"in each case","examples":[{"de":"Wir treffen uns jeweils montags um neun.","en":"We meet each Monday at nine o'clock."}]}
+{"lemma":"kaum","approved":true,"level":"B1","english":"barely, hardly","examples":[{"de":"Ich kann das kaum lesen.","en":"I can barely read this."},{"de":"Die Handschrift ist kaum lesbar.","en":"The handwriting is barely legible."}]}
+{"lemma":"lange","approved":true,"level":"A1","english":"long, for a long time","examples":[{"de":"Sie schwiegen lange. Als er endlich etwas sagen wollte, wehrte sie leise ab. „Heute nichts mehr, ich bitte dich darum“","en":"They were silent for a long time. When he finally wanted to say something, she softly refused. „Nothing more today, I beg you for that“"},{"de":"1903, Fanny zu Reventlow, Ellen Olestjerne, in Franziska Gräfin zu Reventlow: Gesammelte Werke, Albert Langen, page 674","en":"Late at night, when it was long dark, they finally found a night's lodging in a remote village."}]}
+{"lemma":"längst","approved":true,"level":"B1","english":"long ago, long","examples":[{"de":"[...] sie bat ihn, den gemeinsamen, dort längst erwarteten Besuch nicht länger hinauszuschieben, und so setzten sie ihn gleich für den nächsten Tag fest.","en":"… she asked him not to postpone the visit by the two of them, which was long-expected there, any longer, and so they immediately set the date for it for the next day."}]}
+{"lemma":"leider","approved":true,"level":"A1","english":"unfortunately","examples":[{"de":"Ich kann heute leider nicht kommen.","en":"I'm afraid I can't come today."}]}
+{"lemma":"links","approved":true,"level":"A1","english":"on the left","examples":[{"de":"Siehst du das Auto links?","en":"Do you see the car on the left?"},{"de":"An der nächsten Ampel links abbiegen.","en":"Turn left at the next traffic light."}]}
+{"lemma":"los","approved":true,"level":"B1","english":"rid of, free of","examples":[{"de":"Ich bin meine Erkältung los.","en":"I've gotten rid of my cold."},{"de":"Morgen fahren wir los.","en":"Tomorrow we head out."}]}
+{"lemma":"mal","approved":true,"level":"A2","english":"times (indicating multiplication of two numbers)","examples":[{"de":"sechs mal sieben ist zweiundvierzig","en":"six times seven is forty-two"},{"de":"Wenn du in Köln bist, musst du mal bei deiner Tante anrufen.","en":"When you’re in Cologne, you must call your aunt sometime."}]}
+{"lemma":"manchmal","approved":true,"level":"A2","english":"sometimes","examples":[{"de":"Sie schreibt manchmal ihrem Sohn.","en":"She sometimes writes to her son."}]}
+{"lemma":"meistens","approved":true,"level":"A2","english":"mostly (for the most part)","examples":[{"de":"Meistens stehe ich zeitig auf.","en":"I usually get up early."}]}
+{"lemma":"mindestens","approved":true,"level":"A2","english":"at least (at a lower limit)","examples":[{"de":"Du brauchst mindestens drei Personen, um den Schrank zu tragen.","en":"You need at least three people to carry that cupboard."}]}
+{"lemma":"miteinander","approved":true,"level":"B1","english":"together (with)","examples":[{"de":"Sie arbeiten gerne miteinander.","en":"They like working with one another."}]}
+{"lemma":"mitten","approved":true,"level":"B1","english":"In the middle.","examples":[{"de":"Mitten auf der Straße lag ein toter Hund.","en":"In the middle of the street lay a dead dog."}]}
+{"lemma":"mittlerweile","approved":true,"level":"B1","english":"meanwhile, in the meantime","examples":[{"de":"Mittlerweile sprechen alle von dem neuen Film.","en":"By now everyone is talking about the new movie."}]}
+{"lemma":"möglicherweise","approved":true,"level":"B1","english":"possibly, potentially","examples":[{"de":"Möglicherweise regnet es heute Abend.","en":"It may possibly rain this evening."}]}
+{"lemma":"möglichst","approved":true,"level":"B1","english":"as much as possible","examples":[{"de":"Komm möglichst früh zum Treffpunkt.","en":"Try to come to the meeting point as early as possible."}]}
+{"lemma":"morgen","approved":true,"level":"A1","english":"tomorrow","examples":[{"de":"morgen früh","en":"tomorrow morning"},{"de":"morgen Abend","en":"tomorrow evening"}]}
+{"lemma":"nachher","approved":true,"level":"B1","english":"in a short while (in the near future, but not more than a few hours)","examples":[{"de":"So hatte Dorothee über ihr Leben entschieden. Denn was nachher daraus wurde, war ja nur die weitere Folge dieses Entschlusses.","en":"So Dorothee had decided her future life. Because what became of it later, was only the further consequence of this decision."}]}
+{"lemma":"nebenan","approved":true,"level":"A2","english":"next door","examples":[{"de":"Mein Lehrer wohnt gleich nebenan.","en":"My teacher lives right next door."}]}
+{"lemma":"nebenbei","approved":true,"level":"B1","english":"besides, additionally, along the way","examples":[{"de":"Und so ganz nebenbei: Ich find dich super!","en":"And by the way: I think you’re awesome!"}]}
+{"lemma":"neulich","approved":true,"level":"B1","english":"recently (in the recent past)","examples":[{"de":"Neulich habe ich einen alten Freund im Supermarkt getroffen.","en":"Recently I ran into an old friend at the supermarket."}]}
+{"lemma":"nicht","approved":true,"level":"A1","english":"not, non- (negates the meaning of a verb, adjective, or adverb)","examples":[{"de":"Bitte nicht stören!","en":"Please do not disturb!"},{"de":"Das ist nicht wahr.","en":"That is not true."}]}
+{"lemma":"nie","approved":true,"level":"A1","english":"never, never at all (referring to an indefinite period of time)","examples":[{"de":"Das ist nie passiert!","en":"That has never happened!"},{"de":"Er hat sich in zwei Wochen nie die Haare gewaschen.","en":"He never washed his hair for two weeks."}]}
+{"lemma":"nirgends","approved":true,"level":"A2","english":"nowhere (in no place)","examples":[{"de":"Ich finde meinen Schlüssel nirgends.","en":"I cannot find my key anywhere."}]}
+{"lemma":"nirgendwo","approved":true,"level":"B1","english":"nowhere (in no place)","examples":[{"de":"Es gab nirgendwo einen freien Parkplatz.","en":"There was nowhere a free parking space."}]}
+{"lemma":"noch","approved":true,"level":"A1","english":"still, yet (up to and including a given time)","examples":[{"de":"Magst du mich noch?","en":"Do you still like me?"},{"de":"Diese Straßenschilder sind noch aus der Kaiserzeit.","en":"These street signs go all the way back to the Kaiser’s days."}]}
+{"lemma":"noch mal","approved":true,"level":"B1","english":"once again, again","examples":[{"de":"Kannst du das bitte noch mal sagen?","en":"Can you please say that once again?"}]}
+{"lemma":"nochmal","approved":true,"level":"B1","english":"once again","examples":[{"de":"Sag das nochmal langsam.","en":"Say that again slowly."}]}
+{"lemma":"nochmals","approved":true,"level":"B1","english":"again, once more","examples":[{"de":"Vielen Dank nochmals für deine Hilfe.","en":"Many thanks again for your help."}]}
+{"lemma":"normalerweise","approved":true,"level":"B1","english":"normally","examples":[{"de":"Morgens bin ich normalerweise im Büro.","en":"I am normally in the office in the morning."}]}
+{"lemma":"nun","approved":true,"level":"B1","english":"now, at this moment","examples":[{"de":"Wir haben abgewaschen, nun müssen wir noch abtrocknen.","en":"We've washed up, now we must dry [the dishes]."},{"de":"Was bedeuten nun die geschilderten Entwicklungen für unser Land?","en":"Now what do the aforementioned developments mean for our country?"}]}
+{"lemma":"nur","approved":true,"level":"A1","english":"only, just, merely, simply","examples":[{"de":"Nur reife Kirschen dürfen auf den Kuchen.","en":"Only ripe cherries may go on the cake."},{"de":"Du musst nur die Werte eingeben und den Rest macht der Computer.","en":"You just have to enter the values and the computer will do the rest."}]}
+{"lemma":"oben","approved":true,"level":"A1","english":"above","examples":[{"de":"Oben auf dem Dachboden liegt noch eine alte Kiste.","en":"There is still an old box up in the attic."}]}
+{"lemma":"oft","approved":true,"level":"A1","english":"often","examples":[{"de":"Ich gehe oft im Park spazieren.","en":"I often take a walk in the park."}]}
+{"lemma":"online","approved":true,"level":"A2","english":"online","examples":[{"de":"Bist du online?","en":"Are you online?"}]}
+{"lemma":"quer","approved":true,"level":"B1","english":"crosswise, across","examples":[{"de":"Das Blut transportiert die Nährstoffe quer durch den Körper.","en":"The blood transports nutrients throughout the body."}]}
+{"lemma":"rauf","approved":true,"level":"B1","english":"up, up here, upstairs (towards the speaker)","examples":[{"de":"Klettern wir rauf auf den Turm.","en":"Let's climb up onto the tower."}]}
+{"lemma":"raus","approved":true,"level":"A2","english":"out, out of there, outta there","examples":[{"de":"Er kommt jetzt raus.","en":"He's coming outside now."},{"de":"Er geht raus zu den andern.","en":"He's going outside to the other people."}]}
+{"lemma":"rechts","approved":true,"level":"A1","english":"on the right","examples":[{"de":"Siehst du das Auto rechts?","en":"Do you see the car on the right?"},{"de":"An der nächsten Ampel rechts abbiegen.","en":"Turn right at the next traffic light."}]}
+{"lemma":"rein","approved":true,"level":"A2","english":"purely","examples":[{"de":"Unsere Beziehung ist rein platonisch.","en":"Our relationship is purely platonic."}]}
+{"lemma":"rückwärts","approved":true,"level":"B1","english":"backwards","examples":[{"de":"Er fuhr rückwärts in die Parklücke.","en":"He drove backwards into the parking space."}]}
+{"lemma":"schließlich","approved":true,"level":"B1","english":"in the end, finally, eventually","examples":[{"de":"Es freut mich, Sie schließlich zu treffen.","en":"I'm glad to finally meet you."},{"de":"2017, Blick am Abend, Leben in Zahlen von…Jessica Chastain, 24 March","en":"She didn't particularly like school as a child and teenager, and she finally gave up high school at 17."}]}
+{"lemma":"schon","approved":true,"level":"A1","english":"already (happening rather early, continuing rather long)","examples":[{"de":"Es ist erst 11 Uhr und schon über 30 Grad im Schatten.","en":"It’s only 11 a.m. and already more than 30 degrees (°C) in the shade."},{"de":"Man sollte Kinder nicht bestrafen. — Man sollte Kinder schon bestrafen, nur eben sinnvoll.","en":"One shouldn’t punish children. — One should definitely punish children, but wisely."}]}
+{"lemma":"sehr","approved":true,"level":"A1","english":"very","examples":[{"de":"Ich bin sehr glücklich.","en":"I am very happy."},{"de":"Ich vermisse dich sehr.","en":"I miss you a lot."}]}
+{"lemma":"sofort","approved":true,"level":"A1","english":"immediately, at once","examples":[{"de":"Das Programm fiel ihr aus der Hand. Anton nahm sofort das glatte Heftchen auf.","en":"The programme fell from her hand. Anton picked the glossy pamphlet up immediately."}]}
+{"lemma":"sogar","approved":true,"level":"A2","english":"even, actually, in fact","examples":[{"de":"Sogar Karl kann es verstehen.","en":"Even Karl can understand it."},{"de":"Wir könnten sogar etwas Hilfe gebrauchen.","en":"We could actually use some help here."}]}
+{"lemma":"sonst","approved":true,"level":"A2","english":"otherwise (under different circumstances)","examples":[{"de":"Beeil dich, sonst kommen wir zu spät.","en":"Hurry up, otherwise we'll be late."},{"de":"Wenn wir jetzt losgehen, sind wir eh zu spät. Sonst lass uns morgen noch mal wiederkommen.","en":"If we go there now, we’ll be late anyway. So [let’s not do that but instead] let’s come back again tomorrow."}]}
+{"lemma":"spätestens","approved":true,"level":"B1","english":"at the latest, not later than","examples":[{"de":"Bezahle die Rechnung spätestens morgen.","en":"Pay the bill by tomorrow at the latest."}]}
+{"lemma":"teilweise","approved":true,"level":"B1","english":"partially, to some extent","examples":[{"de":"Der Text ist nur teilweise verständlich.","en":"The text is only partially understandable."}]}
+{"lemma":"überall","approved":true,"level":"A2","english":"everywhere","examples":[{"de":"Wir haben überall nach dem Ball gesucht.","en":"We've looked for the ball everywhere."},{"de":"Ich hab’s überall mit probiert, aber der Fleck geht nicht raus.","en":"I’ve tried it with everything, but the stain won’t come out."}]}
+{"lemma":"überhaupt","approved":true,"level":"B1","english":"overall, in general","examples":[{"de":"1812, the Brothers Grimm, Kinder- und Haus-Märchen, Berlin, die Realschulbuchhandlung, page VIII","en":"One will easily notice besides, that it has only held on, where overall there has been an active receptiveness for poetry or a phantasy still not extinguished by the vicissitudes of life."},{"de":"Hört ihr mir überhaupt zu?","en":"Are you listening to me at all?"}]}
+{"lemma":"übermorgen","approved":true,"level":"A2","english":"overmorrow, the day after tomorrow","examples":[{"de":"Ich bleibe hier bis übermorgen.","en":"I am going to stay here till the day after tomorrow."}]}
+{"lemma":"übrigens","approved":true,"level":"B1","english":"apart from that, else, for the rest, for everything else","examples":[{"de":"Der westliche Lotus oder Zürbelbaum wächst in der Provinz Neuyork zu einem Baum von 40–50 Fuß hoch und 2 Fuß im Durchschnitte dik. Er steht in flachliegenden Gegenden auf kleinen Hügeln, oder an den Ufern der frischen Bäche und Flüsse, doch jederzeit in einer geschützten Lage. Der Boden für ihn muß trocken und leicht, aus viel Sand mit etwas Leimen, fetter Erde oder andern Erdarten gemischt sein. Celtis occidentalis. The American Nettle-Tree. Micocoulier de Virginie. Die eine Hälfte der Blätter ist länger als die andere; sie sind übrigens eirund, scharf zugespitzt und mit Ausschluß der Spitze und des untern Theils nur an den Seiten gezahnt.","en":"The western lotus or hackberry grows in the State of New York to a tree 40–50 feet high and 2 feet in diameter thick. He stands in flat-lying areas on small mounds, or on shores of the fresh becks and rivers, but always in a protected site. The ground must be dry and light, of much sand with a bit of loam, fat earth or other types of earths mixed together. Celtis occidentalis. The American Nettle-Tree. Micocoulier de Virginie. One half of the leaves is longer than the other; apart from that they are ovate, sharply pointed and bar the point and the lower part jagged at the sides."}]}
+{"lemma":"umsonst","approved":true,"level":"B1","english":"free of charge, gratis","examples":[{"de":"Das Wasser ist für Gäste umsonst.","en":"The water is free for guests."}]}
+{"lemma":"unten","approved":true,"level":"A1","english":"below","examples":[{"de":"Die Schuhe stehen unten im Flur.","en":"The shoes are downstairs in the hallway."}]}
+{"lemma":"unterwegs","approved":true,"level":"A2","english":"on one’s way, underway, en route, in transit, going, travelling","examples":[{"de":"Sie ist unterwegs.","en":"She’s on her way."},{"de":"Es gibt noch viel zu tun, aber wir sind unterwegs.","en":"There’s still a lot to do, but we’re getting there."}]}
+{"lemma":"vielleicht","approved":true,"level":"A1","english":"perhaps, maybe","examples":[{"de":"Vielleicht hat er einen Unfall gehabt.","en":"Maybe he’s had an accident."},{"de":"Könnten Sie vielleicht das Fenster aufmachen?","en":"Could you perhaps open the window?"}]}
+{"lemma":"voneinander","approved":true,"level":"B1","english":"from / of one another, from / of each other","examples":[{"de":"Wir lernen viel voneinander.","en":"We learn a lot from each other."}]}
+{"lemma":"voraus","approved":true,"level":"B1","english":"in front, ahead","examples":[{"de":"Sie ging ein paar Schritte voraus.","en":"She walked a few steps ahead."}]}
+{"lemma":"vorbei","approved":true,"level":"A2","english":"past","examples":[{"de":"vorbei an der Ampel","en":"past the traffic light"},{"de":"Am Efeu, am Rasen, an der kleinen Tanne vorbei erreichte ich die Haustür, fand das Schlüsselloch, fand den Drücker für das Licht, schlich an den Glastüren, an den polierten Schränken und Topfpflanzen vorüber und schloß meine Stube auf, meine kleine Scheinheimat.","en":"Passing the ivy and the grass and the little fir tree I reached the door of the house, found the keyhole and the switch, slipped past the glazed doors, and the polished cupboards and the potted plants and unlocked the door of my room, my little pretence of a home."}]}
+{"lemma":"vorgestern","approved":true,"level":"A2","english":"ereyesterday, the day before yesterday","examples":[{"de":"Vorgestern waren wir im Kino.","en":"The day before yesterday we were at the cinema."}]}
+{"lemma":"vorher","approved":true,"level":"A2","english":"beforehand, previously, before (a previously mentioned point or action)","examples":[{"de":"Der Dieb ist über einen Hintereingang ins Haus gekommen, den er vorher ausgekundschaftet hat.","en":"The thief entered the house by way of a back entrance that he scouted beforehand."}]}
+{"lemma":"vorhin","approved":true,"level":"B1","english":"earlier (a short time ago, typically between minutes and a few hours ago)","examples":[{"de":"Vorhin hat er mich angerufen.","en":"He called me earlier."}]}
+{"lemma":"vorn","approved":true,"level":"A2","english":"in front","examples":[{"de":"Und das Ganze beginnt von vorn.","en":"And the whole thing starts all over again."},{"de":"Heute haben wir den 28. Juli, der Pariser Autobusführer sitzt vorn am Steuerrad und wendet den schweren, langen Wagen, als ob es ein kleiner Zweisitzer wäre.","en":"Today is the 28th of July, the Parisian autobus driver is sitting in front at the steering wheel and turning around the heavy, long vehicle as if it were a small two-seater."}]}
+{"lemma":"vorne","approved":true,"level":"A2","english":"at the front","examples":[{"de":"Es fängt immer wieder von vorne an.","en":"It just keeps starting over and over."}]}
+{"lemma":"vorwärts","approved":true,"level":"A2","english":"forwards, forward; onwards, onward","examples":[{"de":"Der Zug setzte sich wieder vorwärts in Bewegung.","en":"The train started moving forward again."}]}
+{"lemma":"wann","approved":true,"level":"A1","english":"when","examples":[{"de":"Wann kommt er?","en":"When will he arrive?"},{"de":"Das sollten wir mal wann besprechen, wenn alle da sind.","en":"We should discuss this sometime that everybody’s present."}]}
+{"lemma":"warum","approved":true,"level":"A1","english":"why; for what reason","examples":[{"de":"Warum fragst du?","en":"Why are you asking?"}]}
+{"lemma":"weg","approved":true,"level":"A2","english":"away","examples":[{"de":"Geh weg!","en":"Go away!"},{"de":"Das Rezept ist mit Knoblauch, aber du kannst ihn auch weglassen.","en":"The recipe is with garlic, but you can also do it without."}]}
+{"lemma":"wenigstens","approved":true,"level":"A2","english":"at least","examples":[{"de":"Wenigstens war es nicht langweilig.","en":"At least it wasn't boring."}]}
+{"lemma":"weshalb","approved":true,"level":"B1","english":"why","examples":[{"de":"Dar war nicht der einzige Grund, weshalb das kleine Gespenst den Schlüsselbund ständig mit sich herumtrug.","en":"That was not the only reason why the little ghost always carried the bunch of keys around with him."}]}
+{"lemma":"wie","approved":true,"level":"A1","english":"how","examples":[{"de":"Wie groß bist du?","en":"How tall are you?"},{"de":"Ich weiß nicht, wie die Katze hereingekommen ist.","en":"I don't know how the cat got in."}]}
+{"lemma":"wie viel","approved":true,"level":"A1","english":"how much; how often","examples":[{"de":"Weißt du, wie viel das Ticket kostet?","en":"Do you know how much the ticket costs?"}]}
+{"lemma":"wieder","approved":true,"level":"A1","english":"again; indicates that the action taking place has happened before","examples":[{"de":"Siehst du, jetzt hast du’s schon wieder gesagt!","en":"See, now you’ve said it again!"},{"de":"Schalte das Licht wieder aus.","en":"Turn the light back off."}]}
+{"lemma":"wieso","approved":true,"level":"B1","english":"why","examples":[{"de":"Wieso bist du heute so früh aufgestanden?","en":"Why did you get up so early today?"}]}
+{"lemma":"wo","approved":true,"level":"A1","english":"where (at what place)","examples":[{"de":"Wo bist du?","en":"Where are you?"},{"de":"Ich kenne einen Laden, wo solche Sachen verkauft werden.","en":"I know a shop where such things are sold."}]}
+{"lemma":"zirka","approved":true,"level":"A1","english":"circa","examples":[{"de":"Wir brauchen zirka eine Woche für das Projekt.","en":"We will need about a week for the project."}]}
+{"lemma":"zuerst","approved":true,"level":"A2","english":"first, firstly","examples":[{"de":"Reinigen Sie immer zuerst die Räder.","en":"Always clean the wheels first."}]}
+{"lemma":"zuletzt","approved":true,"level":"A2","english":"finally; lastly; in the end","examples":[{"de":"Ich war zuerst in Aachen, dann in Düsseldorf und zuletzt in Köln.","en":"I was in Aachen first, then in Düsseldorf, and finally in Cologne."},{"de":"Ich war zuletzt in Aachen, Düsseldorf und Köln.","en":"I was in Aachen, Düsseldorf, and Cologne the other day."}]}
+{"lemma":"zumindest","approved":true,"level":"B1","english":"at least","examples":[{"de":"Du brauchst zumindest einen Führerschein, um Auto zu fahren.","en":"You need at least a driving license to drive a car."},{"de":"Geleistet hast du nichts, aber zumindest bist du überhaupt gekommen.","en":"You haven’t contributed anything, but at least you’ve shown up."}]}
+{"lemma":"zurück","approved":true,"level":"A1","english":"back, backward, backwards, to the rear.","examples":[{"de":"Wann wird er zurück sein?","en":"When will he be back?"}]}
+{"lemma":"zurzeit","approved":true,"level":"A1","english":"currently","examples":[{"de":"Zurzeit arbeite ich an einem neuen Projekt.","en":"At the moment I am working on a new project."}]}
+{"lemma":"zusammen","approved":true,"level":"A1","english":"together, jointly","examples":[{"de":"Zusammen bilden wir ein gutes Team.","en":"Together we make a good team."},{"de":"1903, Fanny zu Reventlow, Ellen Olestjerne, in Franziska Gräfin zu Reventlow: Gesammelte Werke, Albert Langen, page 526","en":"Despite all these bitter feelings, it was yet a wonderfully beautiful summer, which the three friends spent together."}]}

@@ -1,8 +1,8 @@
-{"lemma": "bitte", "approved": false, "level": "A1"}
-{"lemma": "danke", "approved": false, "level": "A1"}
-{"lemma": "nein", "approved": false, "level": "A1"}
-{"lemma": "zu", "approved": false, "level": "A1"}
-{"lemma": "halt", "approved": false, "level": "B1"}
-{"lemma": "noch mal", "approved": false, "level": "B1"}
-{"lemma": "nochmal", "approved": false, "level": "B1"}
-{"lemma": "sowieso", "approved": false, "level": "B1"}
+{"lemma":"bitte","approved":true,"level":"A1","english":"you're welcome (acknowledgement of thanks)","examples":[{"de":"Bitte?"},{"de":"Bitte, setz dich doch.","en":"Please, have a seat."}]}
+{"lemma":"danke","approved":true,"level":"A1","english":"thanks, thank you","examples":[{"de":"Danke."},{"de":"Danke für deine Hilfe.","en":"Thanks for your help."}]}
+{"lemma":"halt","approved":true,"level":"B1","english":"stop!, wait!","examples":[{"de":"Halt!"},{"de":"Das ist halt so.","en":"That is just the way it is."}]}
+{"lemma":"nein","approved":true,"level":"A1","english":"no","examples":[{"de":"Hast du morgen Abend Zeit? — Nein, leider nicht.","en":"“Do you have time tomorrow night?” — “No, unfortunately not.”"}]}
+{"lemma":"noch mal","approved":true,"level":"B1","english":"again (repeat once more)","examples":[{"de":"Kannst du das noch mal erklären?","en":"Can you explain that once more?"},{"de":"Noch mal!","en":"Again!"}]}
+{"lemma":"nochmal","approved":true,"level":"B1","english":"once again","examples":[{"de":"Nochmal."},{"de":"Danke nochmal für deine Hilfe.","en":"Thanks again for your help."}]}
+{"lemma":"sowieso","approved":true,"level":"B1","english":"something; replaces unknown or unimportant words","examples":[{"de":"Das Nummernschild war K sowieso 132. Ich hab’s nicht genau gesehen.","en":"The number plate was K something 132. I couldn’t really see it."},{"de":"Männer sind halt alle gleich. — Sowieso.","en":"Men are all the same. — Of course."}]}
+{"lemma":"zu","approved":true,"level":"A1","english":"to","examples":[{"de":"etwas zu essen","en":"something to eat"}]}

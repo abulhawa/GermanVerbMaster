@@ -1,410 +1,410 @@
-{"lemma": "schnell", "level": "A1", "english": "fast", "approved": true, "examples": [{"de": "Ein schneller Zug.", "en": "A fast train."}], "adjective": {"comparative": "schneller", "superlative": "am schnellsten"}}
-{"lemma": "freundlich", "level": "A2", "english": "friendly", "approved": true, "examples": [{"de": "Eine freundliche Person.", "en": "A friendly person."}], "adjective": {"comparative": "freundlicher", "superlative": "am freundlichsten"}}
-{"lemma": "alt", "level": "A1", "approved": false}
-{"lemma": "arbeitslos", "level": "A1", "approved": false}
-{"lemma": "ausländisch", "level": "A1", "approved": false}
-{"lemma": "automatisch", "level": "A1", "approved": false}
-{"lemma": "bar", "level": "A1", "approved": false}
-{"lemma": "billig", "level": "A1", "approved": false}
-{"lemma": "bitter", "level": "A1", "approved": false}
-{"lemma": "blau", "level": "A1", "approved": false}
-{"lemma": "braun", "level": "A1", "approved": false}
-{"lemma": "breit", "level": "A1", "approved": false}
-{"lemma": "bös", "level": "A1", "approved": false}
-{"lemma": "böse", "level": "A1", "approved": false}
-{"lemma": "deutsch", "level": "A1", "approved": false}
-{"lemma": "eilig", "level": "A1", "approved": false}
-{"lemma": "einfach", "level": "A1", "approved": false}
-{"lemma": "europäisch", "level": "A1", "approved": false}
-{"lemma": "falsch", "level": "A1", "approved": false}
-{"lemma": "fertig", "level": "A1", "approved": false}
-{"lemma": "frei", "level": "A1", "approved": false}
-{"lemma": "fremd", "level": "A1", "approved": false}
-{"lemma": "früher", "level": "A1", "approved": false}
-{"lemma": "gelb", "level": "A1", "approved": false}
-{"lemma": "gleich", "level": "A1", "approved": false}
-{"lemma": "glücklich", "level": "A1", "approved": false}
-{"lemma": "grau", "level": "A1", "approved": false}
-{"lemma": "groß", "level": "A1", "approved": false}
-{"lemma": "grün", "level": "A1", "approved": false}
-{"lemma": "gut", "level": "A1", "approved": false}
-{"lemma": "gültig", "level": "A1", "approved": false}
-{"lemma": "günstig", "level": "A1", "approved": false}
-{"lemma": "halb", "level": "A1", "approved": false}
-{"lemma": "hell", "level": "A1", "approved": false}
-{"lemma": "herzlich", "level": "A1", "approved": false}
-{"lemma": "hoch", "level": "A1", "approved": false}
-{"lemma": "international", "level": "A1", "approved": false}
-{"lemma": "jung", "level": "A1", "approved": false}
-{"lemma": "kaputt", "level": "A1", "approved": false}
-{"lemma": "klar", "level": "A1", "approved": false}
-{"lemma": "klein", "level": "A1", "approved": false}
-{"lemma": "krank", "level": "A1", "approved": false}
-{"lemma": "kulturell", "level": "A1", "approved": false}
-{"lemma": "kurz", "level": "A1", "approved": false}
-{"lemma": "lang", "level": "A1", "approved": false}
-{"lemma": "langsam", "level": "A1", "approved": false}
-{"lemma": "laut", "level": "A1", "approved": false}
-{"lemma": "ledig", "level": "A1", "approved": false}
-{"lemma": "leicht", "level": "A1", "approved": false}
-{"lemma": "leise", "level": "A1", "approved": false}
-{"lemma": "letzt", "level": "A1", "approved": false}
-{"lemma": "lieb", "level": "A1", "approved": false}
-{"lemma": "lustig", "level": "A1", "approved": false}
-{"lemma": "männlich", "level": "A1", "approved": false}
-{"lemma": "möglich", "level": "A1", "approved": false}
-{"lemma": "müde", "level": "A1", "approved": false}
-{"lemma": "neu", "level": "A1", "approved": false}
-{"lemma": "normal", "level": "A1", "approved": false}
-{"lemma": "pünktlich", "level": "A1", "approved": false}
-{"lemma": "richtig", "level": "A1", "approved": false}
-{"lemma": "rot", "level": "A1", "approved": false}
-{"lemma": "ruhig", "level": "A1", "approved": false}
-{"lemma": "schlecht", "level": "A1", "approved": false}
-{"lemma": "schwarz", "level": "A1", "approved": false}
-{"lemma": "schwer", "level": "A1", "approved": false}
-{"lemma": "schön", "level": "A1", "approved": false}
-{"lemma": "selbstständig", "level": "A1", "approved": false}
-{"lemma": "selbständig", "level": "A1", "approved": false}
-{"lemma": "spät", "level": "A1", "approved": false}
-{"lemma": "später", "level": "A1", "approved": false}
-{"lemma": "teuer", "level": "A1", "approved": false}
-{"lemma": "tot", "level": "A1", "approved": false}
-{"lemma": "viel", "level": "A1", "approved": false}
-{"lemma": "weiblich", "level": "A1", "approved": false}
-{"lemma": "weit", "level": "A1", "approved": false}
-{"lemma": "weiter", "level": "A1", "approved": false}
-{"lemma": "weiß", "level": "A1", "approved": false}
-{"lemma": "wenig", "level": "A1", "approved": false}
-{"lemma": "wichtig", "level": "A1", "approved": false}
-{"lemma": "willkommen", "level": "A1", "approved": false}
-{"lemma": "wunderbar", "level": "A1", "approved": false}
-{"lemma": "zufrieden", "level": "A1", "approved": false}
-{"lemma": "aktiv", "level": "A2", "approved": false}
-{"lemma": "aktuell", "level": "A2", "approved": false}
-{"lemma": "arm", "level": "A2", "approved": false}
-{"lemma": "bequem", "level": "A2", "approved": false}
-{"lemma": "blond", "level": "A2", "approved": false}
-{"lemma": "blöd", "level": "A2", "approved": false}
-{"lemma": "blöde", "level": "A2", "approved": false}
-{"lemma": "bunt", "level": "A2", "approved": false}
-{"lemma": "deutlich", "level": "A2", "approved": false}
-{"lemma": "dick", "level": "A2", "approved": false}
-{"lemma": "direkt", "level": "A2", "approved": false}
-{"lemma": "dumm", "level": "A2", "approved": false}
-{"lemma": "dunkel", "level": "A2", "approved": false}
-{"lemma": "dünn", "level": "A2", "approved": false}
-{"lemma": "echt", "level": "A2", "approved": false}
-{"lemma": "egal", "level": "A2", "approved": false}
-{"lemma": "eigen", "level": "A2", "approved": false}
-{"lemma": "eigentlich", "level": "A2", "approved": false}
-{"lemma": "einzeln", "level": "A2", "approved": false}
-{"lemma": "eng", "level": "A2", "approved": false}
-{"lemma": "fantastisch", "level": "A2", "approved": false}
-{"lemma": "faul", "level": "A2", "approved": false}
-{"lemma": "fett", "level": "A2", "approved": false}
-{"lemma": "fit", "level": "A2", "approved": false}
-{"lemma": "fleißig", "level": "A2", "approved": false}
-{"lemma": "freiwillig", "level": "A2", "approved": false}
-{"lemma": "frisch", "level": "A2", "approved": false}
-{"lemma": "froh", "level": "A2", "approved": false}
-{"lemma": "früh", "level": "A2", "approved": false}
-{"lemma": "furchtbar", "level": "A2", "approved": false}
-{"lemma": "ganz", "level": "A2", "approved": false}
-{"lemma": "gefährlich", "level": "A2", "approved": false}
-{"lemma": "genau", "level": "A2", "approved": false}
-{"lemma": "gesund", "level": "A2", "approved": false}
-{"lemma": "hart", "level": "A2", "approved": false}
-{"lemma": "heiß", "level": "A2", "approved": false}
-{"lemma": "hässlich", "level": "A2", "approved": false}
-{"lemma": "intelligent", "level": "A2", "approved": false}
-{"lemma": "kalt", "level": "A2", "approved": false}
-{"lemma": "klug", "level": "A2", "approved": false}
-{"lemma": "komisch", "level": "A2", "approved": false}
-{"lemma": "kostenlos", "level": "A2", "approved": false}
-{"lemma": "kühl", "level": "A2", "approved": false}
-{"lemma": "langweilig", "level": "A2", "approved": false}
-{"lemma": "leer", "level": "A2", "approved": false}
-{"lemma": "modern", "level": "A2", "approved": false}
-{"lemma": "nass", "level": "A2", "approved": false}
-{"lemma": "natürlich", "level": "A2", "approved": false}
-{"lemma": "nebelig", "level": "A2", "approved": false}
-{"lemma": "neblig", "level": "A2", "approved": false}
-{"lemma": "nervös", "level": "A2", "approved": false}
-{"lemma": "nett", "level": "A2", "approved": false}
-{"lemma": "notwendig", "level": "A2", "approved": false}
-{"lemma": "nützlich", "level": "A2", "approved": false}
-{"lemma": "offen", "level": "A2", "approved": false}
-{"lemma": "phantastisch", "level": "A2", "approved": false}
-{"lemma": "plötzlich", "level": "A2", "approved": false}
-{"lemma": "praktisch", "level": "A2", "approved": false}
-{"lemma": "preiswert", "level": "A2", "approved": false}
-{"lemma": "privat", "level": "A2", "approved": false}
-{"lemma": "recht", "level": "A2", "approved": false}
-{"lemma": "reich", "level": "A2", "approved": false}
-{"lemma": "romantisch", "level": "A2", "approved": false}
-{"lemma": "rund", "level": "A2", "approved": false}
-{"lemma": "sauber", "level": "A2", "approved": false}
-{"lemma": "sauer", "level": "A2", "approved": false}
-{"lemma": "schade", "level": "A2", "approved": false}
-{"lemma": "scharf", "level": "A2", "approved": false}
-{"lemma": "schlimm", "level": "A2", "approved": false}
-{"lemma": "schmutzig", "level": "A2", "approved": false}
-{"lemma": "schrecklich", "level": "A2", "approved": false}
-{"lemma": "schriftlich", "level": "A2", "approved": false}
-{"lemma": "schwach", "level": "A2", "approved": false}
-{"lemma": "schwanger", "level": "A2", "approved": false}
-{"lemma": "schwierig", "level": "A2", "approved": false}
-{"lemma": "schädlich", "level": "A2", "approved": false}
-{"lemma": "sonnig", "level": "A2", "approved": false}
-{"lemma": "sportlich", "level": "A2", "approved": false}
-{"lemma": "stark", "level": "A2", "approved": false}
-{"lemma": "streng", "level": "A2", "approved": false}
-{"lemma": "stressig", "level": "A2", "approved": false}
-{"lemma": "super", "level": "A2", "approved": false}
-{"lemma": "sympathisch", "level": "A2", "approved": false}
-{"lemma": "süß", "level": "A2", "approved": false}
-{"lemma": "tief", "level": "A2", "approved": false}
-{"lemma": "toll", "level": "A2", "approved": false}
-{"lemma": "total", "level": "A2", "approved": false}
-{"lemma": "traurig", "level": "A2", "approved": false}
-{"lemma": "trocken", "level": "A2", "approved": false}
-{"lemma": "typisch", "level": "A2", "approved": false}
-{"lemma": "unbedingt", "level": "A2", "approved": false}
-{"lemma": "verschieden", "level": "A2", "approved": false}
-{"lemma": "voll", "level": "A2", "approved": false}
-{"lemma": "wach", "level": "A2", "approved": false}
-{"lemma": "wahr", "level": "A2", "approved": false}
-{"lemma": "wahrscheinlich", "level": "A2", "approved": false}
-{"lemma": "warm", "level": "A2", "approved": false}
-{"lemma": "weich", "level": "A2", "approved": false}
-{"lemma": "windig", "level": "A2", "approved": false}
-{"lemma": "wirklich", "level": "A2", "approved": false}
-{"lemma": "witzig", "level": "A2", "approved": false}
-{"lemma": "wurscht", "level": "A2", "approved": false}
-{"lemma": "wurst", "level": "A2", "approved": false}
-{"lemma": "abhängig", "level": "B1", "approved": false}
-{"lemma": "absolut", "level": "B1", "approved": false}
-{"lemma": "abwesend", "level": "B1", "approved": false}
-{"lemma": "allerbest", "level": "B1", "approved": false}
-{"lemma": "allerschönst", "level": "B1", "approved": false}
-{"lemma": "allgemein", "level": "B1", "approved": false}
-{"lemma": "alltäglich", "level": "B1", "approved": false}
-{"lemma": "alternativ", "level": "B1", "approved": false}
-{"lemma": "angenehm", "level": "B1", "approved": false}
-{"lemma": "anwesend", "level": "B1", "approved": false}
-{"lemma": "aufmerksam", "level": "B1", "approved": false}
-{"lemma": "bereit", "level": "B1", "approved": false}
-{"lemma": "beruflich", "level": "B1", "approved": false}
-{"lemma": "berufstätig", "level": "B1", "approved": false}
-{"lemma": "besonder", "level": "B1", "approved": false}
-{"lemma": "bio", "level": "B1", "approved": false}
-{"lemma": "biologisch", "level": "B1", "approved": false}
-{"lemma": "blass", "level": "B1", "approved": false}
-{"lemma": "blind", "level": "B1", "approved": false}
-{"lemma": "chic", "level": "B1", "approved": false}
-{"lemma": "dankbar", "level": "B1", "approved": false}
-{"lemma": "dicht", "level": "B1", "approved": false}
-{"lemma": "digital", "level": "B1", "approved": false}
-{"lemma": "doppelt", "level": "B1", "approved": false}
-{"lemma": "durchschnittlich", "level": "B1", "approved": false}
-{"lemma": "durstig", "level": "B1", "approved": false}
-{"lemma": "eckig", "level": "B1", "approved": false}
-{"lemma": "ehrlich", "level": "B1", "approved": false}
-{"lemma": "eindeutig", "level": "B1", "approved": false}
-{"lemma": "einheitlich", "level": "B1", "approved": false}
-{"lemma": "einsam", "level": "B1", "approved": false}
-{"lemma": "einzig", "level": "B1", "approved": false}
-{"lemma": "elegant", "level": "B1", "approved": false}
-{"lemma": "elektrisch", "level": "B1", "approved": false}
-{"lemma": "elektronisch", "level": "B1", "approved": false}
-{"lemma": "endgültig", "level": "B1", "approved": false}
-{"lemma": "erfolgreich", "level": "B1", "approved": false}
-{"lemma": "erforderlich", "level": "B1", "approved": false}
-{"lemma": "ernst", "level": "B1", "approved": false}
-{"lemma": "ernsthaft", "level": "B1", "approved": false}
-{"lemma": "eventuell", "level": "B1", "approved": false}
-{"lemma": "ewig", "level": "B1", "approved": false}
-{"lemma": "extrem", "level": "B1", "approved": false}
-{"lemma": "fair", "level": "B1", "approved": false}
-{"lemma": "farbig", "level": "B1", "approved": false}
-{"lemma": "fest", "level": "B1", "approved": false}
-{"lemma": "feucht", "level": "B1", "approved": false}
-{"lemma": "finanziell", "level": "B1", "approved": false}
-{"lemma": "flach", "level": "B1", "approved": false}
-{"lemma": "flexibel", "level": "B1", "approved": false}
-{"lemma": "frech", "level": "B1", "approved": false}
-{"lemma": "fröhlich", "level": "B1", "approved": false}
-{"lemma": "fällig", "level": "B1", "approved": false}
-{"lemma": "färbig", "level": "B1", "approved": false}
-{"lemma": "gar", "level": "B1", "approved": false}
-{"lemma": "geheim", "level": "B1", "approved": false}
-{"lemma": "gemeinsam", "level": "B1", "approved": false}
-{"lemma": "gemütlich", "level": "B1", "approved": false}
-{"lemma": "gerecht", "level": "B1", "approved": false}
-{"lemma": "gering", "level": "B1", "approved": false}
-{"lemma": "gesamt", "level": "B1", "approved": false}
-{"lemma": "gewöhnlich", "level": "B1", "approved": false}
-{"lemma": "giftig", "level": "B1", "approved": false}
-{"lemma": "glatt", "level": "B1", "approved": false}
-{"lemma": "gleichberechtigt", "level": "B1", "approved": false}
-{"lemma": "gleichzeitig", "level": "B1", "approved": false}
-{"lemma": "gründlich", "level": "B1", "approved": false}
-{"lemma": "haltbar", "level": "B1", "approved": false}
-{"lemma": "heimlich", "level": "B1", "approved": false}
-{"lemma": "historisch", "level": "B1", "approved": false}
-{"lemma": "hungrig", "level": "B1", "approved": false}
-{"lemma": "häufig", "level": "B1", "approved": false}
-{"lemma": "höflich", "level": "B1", "approved": false}
-{"lemma": "hübsch", "level": "B1", "approved": false}
-{"lemma": "ideal", "level": "B1", "approved": false}
-{"lemma": "illegal", "level": "B1", "approved": false}
-{"lemma": "individuell", "level": "B1", "approved": false}
-{"lemma": "inner", "level": "B1", "approved": false}
-{"lemma": "intensiv", "level": "B1", "approved": false}
-{"lemma": "interessant", "level": "B1", "approved": false}
-{"lemma": "interkulturell", "level": "B1", "approved": false}
-{"lemma": "klasse", "level": "B1", "approved": false}
-{"lemma": "knapp", "level": "B1", "approved": false}
-{"lemma": "komplett", "level": "B1", "approved": false}
-{"lemma": "korrekt", "level": "B1", "approved": false}
-{"lemma": "kreativ", "level": "B1", "approved": false}
-{"lemma": "kritisch", "level": "B1", "approved": false}
-{"lemma": "kräftig", "level": "B1", "approved": false}
-{"lemma": "körperlich", "level": "B1", "approved": false}
-{"lemma": "künstlich", "level": "B1", "approved": false}
-{"lemma": "kürzlich", "level": "B1", "approved": false}
-{"lemma": "lecker", "level": "B1", "approved": false}
-{"lemma": "link", "level": "B1", "approved": false}
-{"lemma": "locker", "level": "B1", "approved": false}
-{"lemma": "mager", "level": "B1", "approved": false}
-{"lemma": "maximal", "level": "B1", "approved": false}
-{"lemma": "menschlich", "level": "B1", "approved": false}
-{"lemma": "merkwürdig", "level": "B1", "approved": false}
-{"lemma": "mild", "level": "B1", "approved": false}
-{"lemma": "minimal", "level": "B1", "approved": false}
-{"lemma": "mittler", "level": "B1", "approved": false}
-{"lemma": "mobil", "level": "B1", "approved": false}
-{"lemma": "musikalisch", "level": "B1", "approved": false}
-{"lemma": "mutig", "level": "B1", "approved": false}
-{"lemma": "mündlich", "level": "B1", "approved": false}
-{"lemma": "nah", "level": "B1", "approved": false}
-{"lemma": "nahe", "level": "B1", "approved": false}
-{"lemma": "national", "level": "B1", "approved": false}
-{"lemma": "negativ", "level": "B1", "approved": false}
-{"lemma": "neugierig", "level": "B1", "approved": false}
-{"lemma": "niedrig", "level": "B1", "approved": false}
-{"lemma": "nötig", "level": "B1", "approved": false}
-{"lemma": "offenbar", "level": "B1", "approved": false}
-{"lemma": "offiziell", "level": "B1", "approved": false}
-{"lemma": "optimistisch", "level": "B1", "approved": false}
-{"lemma": "ordentlich", "level": "B1", "approved": false}
-{"lemma": "original", "level": "B1", "approved": false}
-{"lemma": "parallel", "level": "B1", "approved": false}
-{"lemma": "passiv", "level": "B1", "approved": false}
-{"lemma": "pauschal", "level": "B1", "approved": false}
-{"lemma": "peinlich", "level": "B1", "approved": false}
-{"lemma": "perfekt", "level": "B1", "approved": false}
-{"lemma": "persönlich", "level": "B1", "approved": false}
-{"lemma": "politisch", "level": "B1", "approved": false}
-{"lemma": "populär", "level": "B1", "approved": false}
-{"lemma": "positiv", "level": "B1", "approved": false}
-{"lemma": "prima", "level": "B1", "approved": false}
-{"lemma": "realistisch", "level": "B1", "approved": false}
-{"lemma": "rechtlich", "level": "B1", "approved": false}
-{"lemma": "rechtzeitig", "level": "B1", "approved": false}
-{"lemma": "regelmäßig", "level": "B1", "approved": false}
-{"lemma": "regional", "level": "B1", "approved": false}
-{"lemma": "reif", "level": "B1", "approved": false}
-{"lemma": "relativ", "level": "B1", "approved": false}
-{"lemma": "riesig", "level": "B1", "approved": false}
-{"lemma": "roh", "level": "B1", "approved": false}
-{"lemma": "salzig", "level": "B1", "approved": false}
-{"lemma": "satt", "level": "B1", "approved": false}
-{"lemma": "schick", "level": "B1", "approved": false}
-{"lemma": "schief", "level": "B1", "approved": false}
-{"lemma": "schlank", "level": "B1", "approved": false}
-{"lemma": "schmal", "level": "B1", "approved": false}
-{"lemma": "schuld", "level": "B1", "approved": false}
-{"lemma": "schuldig", "level": "B1", "approved": false}
-{"lemma": "selbstverständlich", "level": "B1", "approved": false}
-{"lemma": "selten", "level": "B1", "approved": false}
-{"lemma": "seltsam", "level": "B1", "approved": false}
-{"lemma": "senkrecht", "level": "B1", "approved": false}
-{"lemma": "sicher", "level": "B1", "approved": false}
-{"lemma": "sichtbar", "level": "B1", "approved": false}
-{"lemma": "sinnlos", "level": "B1", "approved": false}
-{"lemma": "sinnvoll", "level": "B1", "approved": false}
-{"lemma": "so genannt", "level": "B1", "approved": false}
-{"lemma": "sogenannt", "level": "B1", "approved": false}
-{"lemma": "sozial", "level": "B1", "approved": false}
-{"lemma": "sparsam", "level": "B1", "approved": false}
-{"lemma": "speziell", "level": "B1", "approved": false}
-{"lemma": "spitz", "level": "B1", "approved": false}
-{"lemma": "statistisch", "level": "B1", "approved": false}
-{"lemma": "steil", "level": "B1", "approved": false}
-{"lemma": "stilistisch", "level": "B1", "approved": false}
-{"lemma": "still", "level": "B1", "approved": false}
-{"lemma": "stolz", "level": "B1", "approved": false}
-{"lemma": "strafbar", "level": "B1", "approved": false}
-{"lemma": "stumm", "level": "B1", "approved": false}
-{"lemma": "städtisch", "level": "B1", "approved": false}
-{"lemma": "ständig", "level": "B1", "approved": false}
-{"lemma": "süchtig", "level": "B1", "approved": false}
-{"lemma": "tatsächlich", "level": "B1", "approved": false}
-{"lemma": "taub", "level": "B1", "approved": false}
-{"lemma": "technisch", "level": "B1", "approved": false}
-{"lemma": "teilweise", "level": "B1", "approved": false}
-{"lemma": "theoretisch", "level": "B1", "approved": false}
-{"lemma": "tolerant", "level": "B1", "approved": false}
-{"lemma": "traditionell", "level": "B1", "approved": false}
-{"lemma": "treu", "level": "B1", "approved": false}
-{"lemma": "tödlich", "level": "B1", "approved": false}
-{"lemma": "unentschieden", "level": "B1", "approved": false}
-{"lemma": "ungefähr", "level": "B1", "approved": false}
-{"lemma": "ungewöhnlich", "level": "B1", "approved": false}
-{"lemma": "unglaublich", "level": "B1", "approved": false}
-{"lemma": "unheimlich", "level": "B1", "approved": false}
-{"lemma": "unterschiedlich", "level": "B1", "approved": false}
-{"lemma": "ursprünglich", "level": "B1", "approved": false}
-{"lemma": "vegetarisch", "level": "B1", "approved": false}
-{"lemma": "verantwortlich", "level": "B1", "approved": false}
-{"lemma": "verdächtig", "level": "B1", "approved": false}
-{"lemma": "vergeblich", "level": "B1", "approved": false}
-{"lemma": "vermutlich", "level": "B1", "approved": false}
-{"lemma": "vernünftig", "level": "B1", "approved": false}
-{"lemma": "verständlich", "level": "B1", "approved": false}
-{"lemma": "verwandt", "level": "B1", "approved": false}
-{"lemma": "virtuell", "level": "B1", "approved": false}
-{"lemma": "voraussichtlich", "level": "B1", "approved": false}
-{"lemma": "vorder", "level": "B1", "approved": false}
-{"lemma": "vorläufig", "level": "B1", "approved": false}
-{"lemma": "völlig", "level": "B1", "approved": false}
-{"lemma": "waagerecht", "level": "B1", "approved": false}
-{"lemma": "waagrecht", "level": "B1", "approved": false}
-{"lemma": "wahnsinnig", "level": "B1", "approved": false}
-{"lemma": "weltenweit", "level": "B1", "approved": false}
-{"lemma": "weltweit", "level": "B1", "approved": false}
-{"lemma": "wert", "level": "B1", "approved": false}
-{"lemma": "wertlos", "level": "B1", "approved": false}
-{"lemma": "wertvoll", "level": "B1", "approved": false}
-{"lemma": "wild", "level": "B1", "approved": false}
-{"lemma": "wohl", "level": "B1", "approved": false}
-{"lemma": "wunderschön", "level": "B1", "approved": false}
-{"lemma": "zahlreich", "level": "B1", "approved": false}
-{"lemma": "zentral", "level": "B1", "approved": false}
-{"lemma": "ziemlich", "level": "B1", "approved": false}
-{"lemma": "zufällig", "level": "B1", "approved": false}
-{"lemma": "zugänglich", "level": "B1", "approved": false}
-{"lemma": "zukünftig", "level": "B1", "approved": false}
-{"lemma": "zuständig", "level": "B1", "approved": false}
-{"lemma": "zusätzlich", "level": "B1", "approved": false}
-{"lemma": "zuverlässig", "level": "B1", "approved": false}
-{"lemma": "ähnlich", "level": "B1", "approved": false}
-{"lemma": "ängstlich", "level": "B1", "approved": false}
-{"lemma": "ärgerlich", "level": "B1", "approved": false}
-{"lemma": "äußerlich", "level": "B1", "approved": false}
-{"lemma": "öffentlich", "level": "B1", "approved": false}
-{"lemma": "ökologisch", "level": "B1", "approved": false}
-{"lemma": "üblich", "level": "B1", "approved": false}
-{"lemma": "übrig", "level": "B1", "approved": false}
+{"lemma":"abhängig","approved":true,"level":"B1","english":"dependent","examples":[{"de":"Er ist sehr von seiner Familie abhängig.","en":"He is very dependent on his family."},{"de":"Die Wirtschaft ist heute abhängiger von Technologie als je zuvor.","en":"The economy is now more dependent on technology than ever before."}],"adjective":{"comparative":"abhängiger","superlative":"am abhängigsten"}}
+{"lemma":"absolut","approved":true,"level":"B1","english":"absolute","examples":[{"de":"Das ist ein absoluter Unsinn.","en":"That is absolute nonsense."},{"de":"Das ist absoluter Quatsch.","en":"That's absolute nonsense."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"abwesend","approved":true,"level":"B1","english":"absent (being away from a place)","examples":[{"de":"Sie war bei der Besprechung abwesend.","en":"She was absent from the meeting."},{"de":"Er war abwesend.","en":"He was absent."}],"adjective":{"comparative":"abwesender","superlative":"abwesendste"}}
+{"lemma":"ähnlich","approved":true,"level":"B1","english":"similar, alike, resembling","examples":[{"de":"auf ähnliche Weise","en":"in a similar manner"},{"de":"Das ist ähnlich.","en":"It's similar."}],"adjective":{"comparative":"das ähnlichere","superlative":"am ähnlichsten"}}
+{"lemma":"aktiv","approved":true,"level":"A2","english":"active","examples":[{"de":"stark aktiv","en":"very active"}],"adjective":{"comparative":"aktiver","superlative":"aktivste"}}
+{"lemma":"aktuell","approved":true,"level":"A2","english":"current, currently in action, live (in the sense of broadcasting)","examples":[{"de":"Das ist die aktuelle Wettervorhersage.","en":"This is the current weather forecast."}],"adjective":{"comparative":"aktueller","superlative":"aktuellste"}}
+{"lemma":"allerbest","approved":true,"level":"B1","english":"very best; absolute best","examples":[{"de":"Du bist die allerbeste Mama, die man sich nur wünschen kann.","en":"You are the very best mom that anyone could ever ask for."},{"de":"Das schmeckt am allerbesten.","en":"That tastes the absolute best."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"allerschönst","approved":true,"level":"B1","english":"most beautiful; absolute most beautiful","examples":[{"de":"Das ist der allerschönste Tag meines Lebens.","en":"This is the most beautiful day of my life."},{"de":"Es herrscht das allerschönste Wetter.","en":"The weather is absolutely beautiful."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"allgemein","approved":true,"level":"B1","english":"general (common, basic, usual), universal","examples":[{"de":"die allgemeine Relativitätstheorie","en":"general relativity"},{"de":"Das ist allgemein bekannt.","en":"That is common knowledge."}],"adjective":{"comparative":"allgemeiner","superlative":"allgemeinste"}}
+{"lemma":"alltäglich","approved":true,"level":"B1","english":"everyday","examples":[{"de":"Das ist eine alltägliche Sache.","en":"That is an everyday thing."},{"de":"Wunder sind alltäglich.","en":"Miracles are commonplace."}],"adjective":{"comparative":"alltäglicher","superlative":"alltäglichste"}}
+{"lemma":"alt","approved":true,"level":"A1","english":"old","examples":[{"de":"Wie alt bist du?","en":"How old are you?"},{"de":"ältere Menschen","en":"the elderly"}],"adjective":{"comparative":"das ältere","superlative":"am ältesten"}}
+{"lemma":"alternativ","approved":true,"level":"B1","english":"alternative","examples":[{"de":"Es gibt keine alternative Lösung.","en":"There is no alternative solution."},{"de":"Alternative Medizin tötet.","en":"Alternative medicine kills."}],"adjective":{"comparative":"alternativer","superlative":"alternativste"}}
+{"lemma":"angenehm","approved":true,"level":"B1","english":"pleasant, pleasing","examples":[{"de":"Angenehm, Ihre Bekanntschaft zu machen.","en":"([It is] pleasant to make your acquaintance."},{"de":"Angenehm."}],"adjective":{"comparative":"angenehmer","superlative":"am angenehmsten"}}
+{"lemma":"ängstlich","approved":true,"level":"B1","english":"fearful, anxious","examples":[{"de":"Er ist ein ängstliches Kind.","en":"He is an anxious child."},{"de":"Ich bin ängstlich.","en":"I am anxious."}],"adjective":{"comparative":"das ängstlichere","superlative":"am ängstlichsten"}}
+{"lemma":"anwesend","approved":true,"level":"B1","english":"present (in the immediate vicinity)","examples":[{"de":"Wie viele Personen sind anwesend?","en":"How many people are present?"},{"de":"Sei anwesend.","en":"Be present."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"arbeitslos","approved":true,"level":"A1","english":"unemployed (having no work despite being willing to work)","examples":[{"de":"Sie ist seit einem Jahr arbeitslos.","en":"She has been unemployed for a year."},{"de":"Ich war arbeitslos.","en":"I was unemployed."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"ärgerlich","approved":true,"level":"B1","english":"annoying (causing annoyance)","examples":[{"de":"Der unerwartete Kurseinbruch war sehr ärgerlich für die Anleger.","en":"The unexpected decline in share prices was very annoying for investors."},{"de":"Die Kundin wurde sehr ärgerlich, als sie den Betrugsversuch bemerkte.","en":"The client became very annoyed when she detected the attempted deceit."}],"adjective":{"comparative":"das ärgerlichere","superlative":"am ärgerlichsten"}}
+{"lemma":"arm","approved":true,"level":"A2","english":"poor (having little money)","examples":[{"de":"Er ist sehr arm und hat kaum genug zum Leben.","en":"He is very poor and hardly has enough to live on."},{"de":"lieber arm dran als Arm ab","en":"better to have bad luck than to lose an arm [the play on words is lost in translation]"}],"adjective":{"comparative":"das ärmere","superlative":"am ärmsten"}}
+{"lemma":"aufmerksam","approved":true,"level":"B1","english":"attentive, alert, observant","examples":[{"de":"Danke, das ist sehr aufmerksam von dir.","en":"Thank you, that's very thoughtful of you."},{"de":"Sei aufmerksamer.","en":"Be more attentive."}],"adjective":{"comparative":"aufmerksamer","superlative":"am aufmerksamsten"}}
+{"lemma":"ausländisch","approved":true,"level":"A1","english":"foreign","examples":[{"de":"Ich mag ausländische Filme.","en":"I like foreign films."},{"de":"Ich sammle ausländische Münzen.","en":"I collect foreign coins."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"äußerlich","approved":true,"level":"B1","english":"external, outward, extrinsic","examples":[{"de":"Das ist nur ein äußerlicher Schaden.","en":"That is only an external damage."},{"de":"Nur äußerlich anwenden.","en":"For external use only."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"automatisch","approved":true,"level":"A1","english":"automatic","examples":[{"de":"Die Drohne fliegt automatisch weiter.","en":"The drone continued to fly automatically."},{"de":"Es passiert automatisch.","en":"It happens automatically."}],"adjective":{"comparative":"automatischer","superlative":"am automatischsten"}}
+{"lemma":"bar","approved":true,"level":"A1","english":"bare","examples":[{"de":"Er ist bar jeglicher Gefühle.","en":"He is bare of all feelings."},{"de":"Ich brauche Bares.","en":"I need cash."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"bequem","approved":true,"level":"A2","english":"comfortable, convenient","examples":[{"de":"sich es bequem machen","en":"to get comfortable; to sit comfortably."}],"adjective":{"comparative":"bequemer","superlative":"am bequemsten"}}
+{"lemma":"bereit","approved":true,"level":"B1","english":"ready","examples":[{"de":"bereit und fähig","en":"ready and able"},{"de":"Sind alle bereit?","en":"Is everyone ready?"}],"adjective":{"comparative":"bereiter","superlative":"am bereitesten"}}
+{"lemma":"beruflich","approved":true,"level":"B1","english":"professional","examples":[{"de":"Das ist mein beruflicher Werdegang.","en":"This is my professional career path."},{"de":"Was macht Tony beruflich?","en":"What does Tony do for a living?"}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"berufstätig","approved":true,"level":"B1","english":"employed","examples":[{"de":"Sie ist berufstätig und hat drei Kinder.","en":"She is employed and has three children."},{"de":"Maria ist eine berufstätige Mutter.","en":"Maria is a working mother."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"besonder","approved":true,"level":"B1","english":"special, particular","examples":[{"de":"Er hat besondere Fähigkeiten.","en":"He has special abilities."},{"de":"Nichts Besonderes.","en":"Nothing special."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"billig","approved":true,"level":"A1","english":"appropriate, meet, fair","examples":[{"de":"Die Strafe ist billig und recht.","en":"The punishment is appropriate and just."},{"de":"In Deutschland sind Lebensmittel billiger als in andern europäischen Ländern.","en":"In Germany, groceries are cheaper than in other European countries."}],"adjective":{"comparative":"billiger","superlative":"am billigsten"}}
+{"lemma":"bio","approved":true,"level":"B1","english":"organic","examples":[{"de":"Kaufen wir Bio-Gemüse.","en":"Let's buy organic vegetables."},{"de":"Bio-Hühnermist ist stickstoffreich.","en":"Organic chicken manure is rich in nitrogen."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"biologisch","approved":true,"level":"B1","english":"biological (of biology)","examples":[{"de":"Sie studiert biologische Wissenschaften.","en":"She studies biological sciences."},{"de":"Ist das biologisch abbaubar?","en":"Is this biodegradable?"}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"bitter","approved":true,"level":"A1","english":"bitter","examples":[{"de":"Der Kaffee schmeckt sehr bitter.","en":"The coffee tastes very bitter."},{"de":"Liebe schmeckt bitter.","en":"Love tastes bitter."}],"adjective":{"comparative":"bitterer","superlative":"am bittersten"}}
+{"lemma":"blass","approved":true,"level":"B1","english":"pale","examples":[{"de":"Nach der Krankheit war sie sehr blass.","en":"After the illness, she was very pale."},{"de":"Er war blass.","en":"He was pale."}],"adjective":{"comparative":"blasser","superlative":"am blassesten"}}
+{"lemma":"blau","approved":true,"level":"A1","english":"blue (color/colour)","examples":[{"de":"blauer Fleck","en":"bruise"},{"de":"Sind Rosen blau?","en":"Are roses blue?"}],"adjective":{"comparative":"blauer","superlative":"am blauesten"}}
+{"lemma":"blind","approved":true,"level":"B1","english":"blind","examples":[{"de":"blind für Realität","en":"blind to reality"},{"de":"Leidenschaften machen blind.","en":"Passions make you blind."}],"adjective":{"comparative":"blinder","superlative":"am blindesten"}}
+{"lemma":"blöd","approved":true,"level":"A2","english":"stupid, dim-witted","examples":[{"de":"Was für eine blöde Idee!","en":"What a stupid idea!"},{"de":"Wie blöd!","en":"How stupid!"}],"adjective":{"comparative":"blöder","superlative":"am blödesten"}}
+{"lemma":"blöde","approved":true,"level":"A2","english":"alternative form of blöd","examples":[{"de":"Das war eine blöde Situation.","en":"That was a stupid situation."},{"de":"Wie blöd!","en":"How stupid!"}],"adjective":{"comparative":"blöder","superlative":"am blödesten"}}
+{"lemma":"blond","approved":true,"level":"A2","english":"blond; fair; unlike English, not commonly used of anything other than hair (except beer, see hereunder)","examples":[{"de":"Blonde Haare sind vor allem bei den Völkern germanischer und slawischer Abstammung verbreitet.","en":"Blond hair is primarily common among the peoples of Germanic and Slavic descent."},{"de":"Das war so blond von mir!","en":"That was so stupid of me!"}],"adjective":{"comparative":"blonder","superlative":"am blondesten"}}
+{"lemma":"bös","approved":true,"level":"A1","english":"alternative form of böse","examples":[{"de":"Sie hat ihm einen böser Blick zugeworfen.","en":"She threw an evil look at him."},{"de":"Nicht böse sein!","en":"Do not be angry!"}],"adjective":{"comparative":"böser","superlative":"am bösesten"}}
+{"lemma":"böse","approved":true,"level":"A1","english":"evil; malicious; wicked","examples":[{"de":"Unsere Taten können schlimme Folgen haben, selbst wenn wir keine bösen Absichten hatten.","en":"Our actions can have terrible consequences even if we didn’t have any evil intentions."},{"de":"Böse Kinder kriegen nichts vom Sankt Nikolaus.","en":"Naughty children don’t get anything from St. Nicholas."}],"adjective":{"comparative":"böser","superlative":"am bösesten"}}
+{"lemma":"braun","approved":true,"level":"A1","english":"brown","examples":[{"de":"brauner Zucker","en":"brown sugar"},{"de":"Sie sind braun.","en":"They are brown."}],"adjective":{"comparative":"brauner","superlative":"am braunsten"}}
+{"lemma":"breit","approved":true,"level":"A1","english":"broad, wide","examples":[{"de":"eine breite Straße","en":"a wide street"},{"de":"Die Universität bietet ein breites Spektrum von Fächern an.","en":"The university offers a wide variety of subjects."}],"adjective":{"comparative":"breiter","superlative":"am breitesten"}}
+{"lemma":"bunt","approved":true,"level":"A2","english":"spotted, speckled","examples":[{"de":"ein bunter Haufen","en":"a motley crew"},{"de":"Die Blätter werden bunt.","en":"The leaves are turning colorful."}],"adjective":{"comparative":"bunter","superlative":"am buntesten"}}
+{"lemma":"chic","approved":true,"level":"B1","english":"alternative spelling of schick","examples":[{"de":"Sie sieht heute sehr chic aus.","en":"She looks very chic today."},{"de":"Ich finde dich chic.","en":"I think you look chic."}],"adjective":{"comparative":"chicer","superlative":"am chicsten"}}
+{"lemma":"dankbar","approved":true,"level":"B1","english":"grateful, thankful","examples":[{"de":"Johann Sebastian Bach, Christ lag in Todes Banden (BWV 4)","en":"Praise God and be thankful to him, and sing hallelujah, hallelujah!\n(literally, “God praise and to him thankful be, and sing hallelujah, hallelujah!”)"},{"de":"Ich bin sicher, er war dir dafür dankbar.","en":"I'm sure he's grateful to you."}],"adjective":{"comparative":"dankbarer","superlative":"am dankbarsten"}}
+{"lemma":"deutlich","approved":true,"level":"A2","english":"articulate, clear","examples":[{"de":"deutlicher Fortschritt.","en":"significant progress."},{"de":"Sprich deutlicher.","en":"Speak more clearly."}],"adjective":{"comparative":"das deutlichere","superlative":"am deutlichsten"}}
+{"lemma":"deutsch","approved":true,"level":"A1","english":"German (of or pertaining to the German people)","examples":[{"de":"Meine Mutter ist deutscher Herkunft, aber mein Vater ist Schwede.","en":"My mother is of German origin, but my father is a Swede."},{"de":"der deutsche Außenminister — das deutsche Patentamt","en":"the German foreign minister — the German patent office"}],"adjective":{"comparative":"das deutschere","superlative":"am deutschesten"}}
+{"lemma":"dicht","approved":true,"level":"B1","english":"thick, tight, dense","examples":[{"de":"Baschir trägt einen dichten Bart, der einzig die Partie zwischen der Oberlippe und seiner großen Nase ausspart.","en":"Baschir wears a dense beard, which only leaves out the part between the upper lip and his big nose."},{"de":"Allen ist Dichter.","en":"All is a poet."}],"adjective":{"comparative":"das dichtere","superlative":"am dichtesten"}}
+{"lemma":"dick","approved":true,"level":"A2","english":"thick","examples":[{"de":"Das Buch ist sehr dick.","en":"The book is very thick."},{"de":"Er wurde dick.","en":"He got fat."}],"adjective":{"comparative":"das dickere","superlative":"am dicksten"}}
+{"lemma":"digital","approved":true,"level":"B1","english":"digital","examples":[{"de":"Die Welt wird immer digitaler.","en":"The world is becoming more and more digital."},{"de":"Deine Uhr ist digital.","en":"Your watch is digital."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"direkt","approved":true,"level":"A2","english":"direct, straight, without deviation or interruption","examples":[{"de":"direkte Demokratie","en":"Direct democracy"},{"de":"direkter Kontakt","en":"Direct contact"}],"adjective":{"comparative":"das direktere","superlative":"am direktesten"}}
+{"lemma":"doppelt","approved":true,"level":"B1","english":"double (made up of two matching or complementary elements)","examples":[{"de":"Ich sehe alles doppelt.","en":"I see everything double."},{"de":"Doppelt oder nichts.","en":"Double or nothing."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"dumm","approved":true,"level":"A2","english":"dumb, stupid","examples":[{"de":"Fühle mich heute etwas dumm.","en":"Feel a bit stupid today."},{"de":"Dumm gelaufen!","en":"Gone stupid!"}],"adjective":{"comparative":"das dümmere","superlative":"am dümmsten"}}
+{"lemma":"dunkel","approved":true,"level":"A2","english":"dark","examples":[{"de":"Im Winter wird es früher dunkel.","en":"In the winter, it gets dark earlier."},{"de":"Ich habe nur dunkle Erinnerungen an meine Großmutter.","en":"I have only faint memories of my grandmother."}],"adjective":{"comparative":"das dunkelere","superlative":"am dunkelsten"}}
+{"lemma":"dünn","approved":true,"level":"A2","english":"thin, slender, slim","examples":[{"de":"dünner Kaffee","en":"weak coffee"},{"de":"eine dünne Ausrede","en":"a flimsy pretext"}],"adjective":{"comparative":"das dünnere","superlative":"am dünnsten"}}
+{"lemma":"durchschnittlich","approved":true,"level":"B1","english":"average, ordinary, mean, medium","examples":[{"de":"die durchschnittliche Anzahl.","en":"the average number."},{"de":"Tom ist durchschnittlich.","en":"Tom is average."}],"adjective":{"comparative":"das durchschnittlichere","superlative":"am durchschnittlichsten"}}
+{"lemma":"durstig","approved":true,"level":"B1","english":"thirsty","examples":[{"de":"Er ist sehr durstig.","en":"He is very thirsty."},{"de":"Seid ihr durstig?","en":"Are you thirsty?"}],"adjective":{"comparative":"das durstigere","superlative":"am durstigsten"}}
+{"lemma":"echt","approved":true,"level":"A2","english":"authentic, genuine, true","examples":[{"de":"Die Jacke ist aus echtem Leder.","en":"The jacket is made of genuine leather."},{"de":"Hallo Lexikon, erklär mir wie das funktioniert / Es möchte echt sein / Echt","en":"Hello lexicon, explain to me how this works / It wants to be real / Real"}],"adjective":{"comparative":"das echtere","superlative":"am echtesten"}}
+{"lemma":"eckig","approved":true,"level":"B1","english":"angular","examples":[{"de":"Wir brauchen einen eckigen Tisch.","en":"We need an angular table."},{"de":"Das Runde muss ins Eckige.","en":"The round thing has to go into the square thing."}],"adjective":{"comparative":"das eckigere","superlative":"am eckigsten"}}
+{"lemma":"egal","approved":true,"level":"A2","english":"all the same, unimportant","examples":[{"de":"Das ist mir egal.","en":"That's all the same to me."},{"de":"Es könnte mir gar nicht egaler sein.","en":"I couldn't care less."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"ehrlich","approved":true,"level":"B1","english":"decent, honorable, honest","examples":[{"de":"Er hat sich sein Vermögen mit ehrlicher Arbeit verdient.","en":"He earned his wealth by honest work."},{"de":"Um ehrlich zu sein, mag ich dieses Gericht nicht.","en":"To be honest, I don't like this dish."}],"adjective":{"comparative":"das ehrlichere","superlative":"am ehrlichsten"}}
+{"lemma":"eigen","approved":true,"level":"A2","english":"own, peculiar or private to someone, idiosyncratic, proper or proprietary","examples":[{"de":"Das ist mein eigenes Auto.","en":"That is my own car."},{"de":"Nimm deinen eigenen.","en":"Take your own."}],"adjective":{"comparative":"das eigenere","superlative":"am eigensten"}}
+{"lemma":"eigentlich","approved":true,"level":"A2","english":"actual, proper","examples":[{"de":"Wer ist der eigentliche Gewinner?","en":"Who is the actual winner?"},{"de":"Eigentlich nicht.","en":"Actually not."}],"adjective":{"comparative":"das eigentlichere","superlative":"am eigentlichsten"}}
+{"lemma":"eilig","approved":true,"level":"A1","english":"speedy, hasty","examples":[{"de":"eine eilige Abreise","en":"a hasty departure"},{"de":"eine eilige Nachricht","en":"an urgent message"}],"adjective":{"comparative":"das eiligere","superlative":"am eiligsten"}}
+{"lemma":"eindeutig","approved":true,"level":"B1","english":"unambiguous, unequivocal, explicit, unique","examples":[{"de":"Das ist eine eindeutige Antwort.","en":"That is an unambiguous answer."},{"de":"Tom braucht eindeutig Hilfe.","en":"Tom clearly needs help."}],"adjective":{"comparative":"das eindeutigere","superlative":"am eindeutigsten"}}
+{"lemma":"einfach","approved":true,"level":"A1","english":"easy","examples":[{"de":"Die Hausaufgabe war sehr einfach.","en":"The homework was very easy."},{"de":"Ich führe ein einfaches Leben.","en":"I lead a simple life."}],"adjective":{"comparative":"das einfachere","superlative":"am einfachsten"}}
+{"lemma":"einheitlich","approved":true,"level":"B1","english":"uniform, unified","examples":[{"de":"Sie haben eine einheitliche Kleidung.","en":"They have a uniform attire."},{"de":"Diese Städte haben einheitliche Verkehrsregeln.","en":"These cities have uniform traffic rules."}],"adjective":{"comparative":"das einheitlichere","superlative":"am einheitlichsten"}}
+{"lemma":"einsam","approved":true,"level":"B1","english":"lonely, lone","examples":[{"de":"Sie fühlt sich sehr einsam.","en":"She feels very lonely."},{"de":"Sie wirkt einsam.","en":"She seems lonely."}],"adjective":{"comparative":"das einsamere","superlative":"am einsamsten"}}
+{"lemma":"einzeln","approved":true,"level":"A2","english":"single; lone","examples":[{"de":"Ein Wald ist mehr als nur eine Menge einzelner Bäume.","en":"A forest is more than just a collection of individual trees."},{"de":"Einzeln bitte.","en":"One at a time, please."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"einzig","approved":true,"level":"B1","english":"only, sole","examples":[{"de":"Du bist mein einziger Freund.","en":"You are my only friend."},{"de":"Ich lachte als einzige.","en":"I was the only one who laughed."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"elegant","approved":true,"level":"B1","english":"elegant","examples":[{"de":"Sie trug ein elegantes Kleid.","en":"She wore an elegant dress."},{"de":"Laura tanzt elegant.","en":"Laura dances elegantly."}],"adjective":{"comparative":"das elegantere","superlative":"am elegantesten"}}
+{"lemma":"elektrisch","approved":true,"level":"B1","english":"electric","examples":[{"de":"Wir haben einen elektrischen Herd.","en":"We have an electric stove."},{"de":"Meine ist elektrisch.","en":"Mine is electric."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"elektronisch","approved":true,"level":"B1","english":"electronic","examples":[{"de":"Ich lese die elektronische Ausgabe der Zeitung.","en":"I am reading the electronic edition of the newspaper."},{"de":"Tom hört gerne elektronische Tanzmusik.","en":"Tom likes listening to electronic dance music."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"endgültig","approved":true,"level":"B1","english":"final, ultimate","examples":[{"de":"Seine Außengrenzen werden die Grenzen der Bundesrepublik Deutschland und der Deutschen Demokratischen Republik sein und werden am Tage des Inkrafttretens dieses Vertrags endgültig sein.","en":"Its external borders shall be the borders of the Federal Republic of Germany and the German Democratic Republic and shall be definitive from the date on which the present Treaty comes into force."},{"de":"Unsere Entscheidung ist endgültig.","en":"Our decision is final."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"eng","approved":true,"level":"A2","english":"narrow, tight","examples":[{"de":"enge Hosen","en":"tight trousers"},{"de":"Es is zu eng.","en":"It's too narrow."}],"adjective":{"comparative":"das engere","superlative":"am engsten"}}
+{"lemma":"erfolgreich","approved":true,"level":"B1","english":"successful","examples":[{"de":"Der Start war erfolgreich.","en":"The launch was successful."},{"de":"Du bist erfolgreich.","en":"You are successful."}],"adjective":{"comparative":"das erfolgreichere","superlative":"am erfolgreichsten"}}
+{"lemma":"erforderlich","approved":true,"level":"B1","english":"necessary, required, essential","examples":[{"de":"Die Zahlung ist sofort erforderlich.","en":"The payment is required immediately."},{"de":"Baustelle: Schutzhelme erforderlich.","en":"Construction site: Hard hats required."}],"adjective":{"comparative":"das erforderlichere","superlative":"am erforderlichsten"}}
+{"lemma":"ernst","approved":true,"level":"B1","english":"serious, severe, grave","examples":[{"de":"Das ist eine ernste Situation.","en":"That is a serious situation."},{"de":"Sei ernst.","en":"Be serious."}],"adjective":{"comparative":"das ernstere","superlative":"am ernstesten"}}
+{"lemma":"ernsthaft","approved":true,"level":"B1","english":"serious (important, weighty)","examples":[{"de":"ernsthafte Zweifel","en":"serious doubt"},{"de":"ernsthafte Anstrengung","en":"serious effort"}],"adjective":{"comparative":"das ernsthaftere","superlative":"am ernsthaftesten"}}
+{"lemma":"europäisch","approved":true,"level":"A1","english":"European","examples":[{"de":"Sie arbeitet für eine europäische Firma.","en":"She works for a European company."},{"de":"Ihr seht europäisch aus.","en":"You look European."}],"adjective":{"comparative":"das europäischere","superlative":"am europäischsten"}}
+{"lemma":"eventuell","approved":true,"level":"B1","english":"potential, possible, contingent, liable","examples":[{"de":"Das ist ein eventuelles Problem.","en":"That is a potential problem."},{"de":"Eventuell müssen wir warten.","en":"We may have to wait."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"ewig","approved":true,"level":"B1","english":"eternal, everlasting","examples":[{"de":"Wahrlich, wahrlich, ich sage euch: Wer an mich glaubt, der hat das ewige Leben.","en":"Verily, verily, I say unto you, He that believeth on me hath everlasting life."},{"de":"seine ewigen Vorwürfe","en":"his constant reproaches"}],"adjective":{"comparative":"das ewigere","superlative":"am ewigsten"}}
+{"lemma":"extrem","approved":true,"level":"B1","english":"extreme","examples":[{"de":"Eine weitere wichtige und unter dem Gesichtspunkt der Luzidität besonders progressive Form des Nihilismus ist der extremste Nihilismus.","en":"Another important and, from the viewpoint of lucidity, particularly progressive form of nihilism is the most extreme nihilism."},{"de":"Es war zu extrem.","en":"It was too extreme."}],"adjective":{"comparative":"das extremere","superlative":"am extremsten"}}
+{"lemma":"fair","approved":true,"level":"B1","english":"fair (just, honest, equitable, adequate)","examples":[{"de":"ein faires Spiel","en":"an honest game, a fairly played game"},{"de":"Unsere einzige Möglichkeit, fair zu sein, besteht darin, alle gleich schlecht zu behandeln.","en":"The only way we can be fair is by treating everybody equally badly."}],"adjective":{"comparative":"das fairere","superlative":"am fairsten"}}
+{"lemma":"fällig","approved":true,"level":"B1","english":"due (payable or supposed to occur at the current time)","examples":[{"de":"fällige Gebühr.","en":"due fee."},{"de":"Diese Rechnung ist heute fällig.","en":"This invoice is due today."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"falsch","approved":true,"level":"A1","english":"false, unfactual, untrue","examples":[{"de":"eine falsche Beschuldigung","en":"a false accusation"},{"de":"Es ist falsch, sowas zu tun.","en":"It is wrong to do such a thing."}],"adjective":{"comparative":"das falschere","superlative":"am falschesten"}}
+{"lemma":"fantastisch","approved":true,"level":"A2","english":"fantastic","examples":[{"de":"Fantastisch."},{"de":"Die Party war fantastisch.","en":"The party was fantastic."}],"adjective":{"comparative":"das fantastischere","superlative":"am fantastischsten"}}
+{"lemma":"farbig","approved":true,"level":"B1","english":"colored","examples":[{"de":"Sie trägt immer farbige Kleidung.","en":"She always wears colored clothes."},{"de":"Die Amazonen kämpfen mit farbigen Waffen.","en":"The Amazons fight with colored weapons."}],"adjective":{"comparative":"das farbigere","superlative":"am farbigsten"}}
+{"lemma":"färbig","approved":true,"level":"B1","english":"colored (Austrian/South German variant of *farbig*)","examples":[{"de":"Sie malt mit färbigen Stiften.","en":"She draws with colored pencils."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"faul","approved":true,"level":"A2","english":"foul, rotten, rancid","examples":[{"de":"Das Fleisch ist faul.","en":"The meat is rotten."},{"de":"Ihr seid faul!","en":"You're lazy!"}],"adjective":{"comparative":"das faulere","superlative":"am faulsten"}}
+{"lemma":"fertig","approved":true,"level":"A1","english":"ready for use; done; fully prepared","examples":[{"de":"Der Kaffee ist fertig.","en":"The coffee’s ready."},{"de":"Ich bin fertig mit dem Laufen.","en":"I’m done (with) running."}],"adjective":{"comparative":"das fertigere","superlative":"am fertigsten"}}
+{"lemma":"fest","approved":true,"level":"B1","english":"firm; compact; hard","examples":[{"de":"Ein One-Night-Stand ist mir genug, ich möchte gerade noch nichts Festes.","en":"A one-night stand is enough for me, I'm not looking for anything long-term right now."},{"de":"Sie sitzen fest.","en":"They are stuck."}],"adjective":{"comparative":"das festere","superlative":"am festesten"}}
+{"lemma":"fett","approved":true,"level":"A2","english":"fat","examples":[{"de":"Fette Menschen sind oft ungesund.","en":"Fat people are often unhealthy."},{"de":"In diesem Satz ist nur das Wort „fett“ fett geschrieben.","en":"In this sentence, only the word “bold” is written in bold."}],"adjective":{"comparative":"das fettere","superlative":"am fettesten"}}
+{"lemma":"feucht","approved":true,"level":"B1","english":"wet, humid, moist, soggy, dank","examples":[{"de":"ein feuchtes Tuch","en":"a damp cloth"},{"de":"Ich bin schon ganz feucht.","en":"I am so wet already."}],"adjective":{"comparative":"das feuchtere","superlative":"am feuchtesten"}}
+{"lemma":"finanziell","approved":true,"level":"B1","english":"financial","examples":[{"de":"Er hat finanzielle Probleme.","en":"He has financial problems."},{"de":"Die bekommen finanzielle Unterstützung.","en":"They receive financial support."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"fit","approved":true,"level":"A2","english":"fit (in good physical condition)","examples":[{"de":"Er hält sich mit Sport fit.","en":"He stays fit with sports."},{"de":"Tanzen hält fit.","en":"Dancing keeps you fit."}],"adjective":{"comparative":"das fittere","superlative":"am fittesten"}}
+{"lemma":"flach","approved":true,"level":"B1","english":"shallow (wide and not deep)","examples":[{"de":"flaches Wasser","en":"shallow water"},{"de":"ein flacher Witz / ein Flachwitz","en":"a shallow joke"}],"adjective":{"comparative":"das flachere","superlative":"am flachsten"}}
+{"lemma":"fleißig","approved":true,"level":"A2","english":"diligent, hard-working, industrious, busy, assiduous, sedulous","examples":[{"de":"Sie ist eine fleißige Studentin.","en":"She is a diligent student."},{"de":"Lerne fleißig!","en":"Study hard!"}],"adjective":{"comparative":"das fleißigere","superlative":"am fleißigsten"}}
+{"lemma":"flexibel","approved":true,"level":"B1","english":"flexible (easily bent without breaking)","examples":[{"de":"Die Arbeitszeiten sind sehr flexibel.","en":"The working hours are very flexible."},{"de":"Seid flexibler.","en":"Be more flexible."}],"adjective":{"comparative":"das flexiblere","superlative":"am flexibelsten"}}
+{"lemma":"frech","approved":true,"level":"B1","english":"cheeky, barefaced, rude, saucy","examples":[{"de":"eine freche Bemerkung","en":"a cheeky remark"},{"de":"ein frecher Kommentar","en":"a saucy comment"}],"adjective":{"comparative":"das frechere","superlative":"am frechsten"}}
+{"lemma":"frei","approved":true,"level":"A1","english":"free; unenslaved; unimprisoned","examples":[{"de":"Wer schläft und ist von Sorgen freier?\nDer Tod belauscht die stille Nacht\nSo wie des Nilstroms Ungeheuer","en":"(please add an English translation of this quotation)"},{"de":"Feuer frei!","en":"Fire free!"}],"adjective":{"comparative":"das freiere","superlative":"am freiesten"}}
+{"lemma":"freiwillig","approved":true,"level":"A2","english":"voluntary","examples":[{"de":"Das war eine freiwillige Spende.","en":"That was a voluntary donation."},{"de":"Brauchen Sie Freiwillige?","en":"Do you need volunteers?"}],"adjective":{"comparative":"das freiwilligere","superlative":"am freiwilligsten"}}
+{"lemma":"fremd","approved":true,"level":"A1","english":"strange","examples":[{"de":"Fast alle Amerikaner können ihre Wurzeln in fremde Länder zurückverfolgen, und deshalb ist Einwanderung ein Thema, das die Identität der USA auf besondere Weise berührt.","en":"Nearly all Americans can trace back their roots into foreign countries, and therefore immigration is an issue that touches the identity of the US in a special way."},{"de":"Grüße, Fremder!","en":"Greetings, stranger!"}],"adjective":{"comparative":"das fremdere","superlative":"am fremdesten"}}
+{"lemma":"freundlich","approved":true,"level":"A2","english":"friendly","examples":[{"de":"Sie sind sehr freundlich.","en":"You/they are very nice."},{"de":"Sie sind sehr freundlich.","en":"You/they are very nice."}],"adjective":{"comparative":"freundlicher","superlative":"am freundlichsten"}}
+{"lemma":"frisch","approved":true,"level":"A2","english":"fresh","examples":[{"de":"Die Brötchen sind noch ganz frisch.","en":"The rolls are still very fresh."},{"de":"Frisch verheiratet.","en":"Newly married."}],"adjective":{"comparative":"das frischere","superlative":"am frischesten"}}
+{"lemma":"froh","approved":true,"level":"A2","english":"glad; (momentarily) happy; (momentarily) cheerful","examples":[{"de":"Ich bin froh über alles, was ich erreicht habe.","en":"I am happy about everything I've achieved."},{"de":"Du wirst deines Lebens nicht mehr froh.","en":"You will no longer be happy with your life."}],"adjective":{"comparative":"das frohere","superlative":"am frohesten"}}
+{"lemma":"fröhlich","approved":true,"level":"B1","english":"merry; cheerful; either as a character trait or fleetingly","examples":[{"de":"Des laßt uns alle fröhlich sein, / Und mit den Hirten gehn hinein [...]","en":"(please add an English translation of this quotation)"},{"de":"Seid fröhlich.","en":"Be joyful."}],"adjective":{"comparative":"das fröhlichere","superlative":"am fröhlichsten"}}
+{"lemma":"früh","approved":true,"level":"A2","english":"early","examples":[{"de":"ein früher Wintereinbruch","en":"an early onset of winter"},{"de":"Ich ging früh.","en":"I left early."}],"adjective":{"comparative":"das frühere","superlative":"am frühesten"}}
+{"lemma":"früher","approved":true,"level":"A1","english":"former, erstwhile, previous (that which once was, but no longer is)","examples":[{"de":"der frühere Präsident","en":"the former president"},{"de":"Ich ging früh.","en":"I left early."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"furchtbar","approved":true,"level":"A2","english":"terrible","examples":[{"de":"Das Wetter ist furchtbar.","en":"The weather is terrible."},{"de":"Das riecht furchtbar.","en":"That smells awful."}],"adjective":{"comparative":"das furchtbarere","superlative":"am furchtbarsten"}}
+{"lemma":"ganz","approved":true,"level":"A2","english":"entire, whole, complete","examples":[{"de":"Er hat ein ganzes Hähnchen gegessen.","en":"He ate a whole chicken."},{"de":"Ich hab meine ganzen Freunde eingeladen.","en":"I’ve invited all my friends."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"gar","approved":true,"level":"B1","english":"cooked, done (of food such as meat or vegetables: ready for consumption)","examples":[{"de":"Das Hähnchen ist noch nicht gar.","en":"The chicken is not yet cooked."},{"de":"Sag gar nichts.","en":"Say nothing."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"gefährlich","approved":true,"level":"A2","english":"dangerous, hazardous","examples":[{"de":"Das ist eine gefährliche Situation.","en":"That is a dangerous situation."},{"de":"Pornographie ist gefährlich.","en":"Pornography is dangerous."}],"adjective":{"comparative":"das gefährlichere","superlative":"am gefährlichsten"}}
+{"lemma":"geheim","approved":true,"level":"B1","english":"secret, clandestine","examples":[{"de":"Das ist ein geheimes Dokument.","en":"That is a secret document."},{"de":"Halte das geheim.","en":"Keep it a secret."}],"adjective":{"comparative":"das geheimere","superlative":"am geheimsten"}}
+{"lemma":"gelb","approved":true,"level":"A1","english":"yellow","examples":[{"de":"Sein gelbes Haar war immer kurz geschoren und stand borstig in die Höhe.","en":"His blond hair was always close-cropped and stuck out bristly."},{"de":"Krokusse sind gelb.","en":"Crocuses are yellow."}],"adjective":{"comparative":"das gelbere","superlative":"am gelbsten"}}
+{"lemma":"gemeinsam","approved":true,"level":"B1","english":"common, mutual, shared","examples":[{"de":"Wir haben ein gemeinsames Ziel.","en":"We have a common goal."},{"de":"Wir studieren gemeinsam.","en":"We study together."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"gemütlich","approved":true,"level":"B1","english":"cosy, gemütlich","examples":[{"de":"Die neue Couch ist sehr gemütlich.","en":"The new couch is very cosy."},{"de":"Das Bett ist gemütlich.","en":"The bed is comfortable."}],"adjective":{"comparative":"das gemütlichere","superlative":"am gemütlichsten"}}
+{"lemma":"genau","approved":true,"level":"A2","english":"exact","examples":[{"de":"Genau."},{"de":"Das ist die genaue Uhrzeit.","en":"That is the exact time."}],"adjective":{"comparative":"das genauere","superlative":"am genauesten"}}
+{"lemma":"gerecht","approved":true,"level":"B1","english":"just, fair","examples":[{"de":"Er ist ein gerechter Richter.","en":"He is a just judge."},{"de":"Handle gerecht!","en":"Act fairly!"}],"adjective":{"comparative":"das gerechtere","superlative":"am gerechtesten"}}
+{"lemma":"gering","approved":true,"level":"B1","english":"little, low","examples":[{"de":"geringer Wert.","en":"low value."},{"de":"Das Infektionsrisiko ist gering.","en":"The risk of infection is low."}],"adjective":{"comparative":"das geringere","superlative":"am geringsten"}}
+{"lemma":"gesamt","approved":true,"level":"B1","english":"total, whole, entire, overall, big","examples":[{"de":"Die gesamte Familie war da.","en":"The entire family was there."},{"de":"Früchte enthalten Samen.","en":"Fruits contain seeds."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"gesund","approved":true,"level":"A2","english":"healthy (enjoying health)","examples":[{"de":"Er ist wieder gesund.","en":"He is healthy again."},{"de":"Bleibe gesund!","en":"Stay healthy!"}],"adjective":{"comparative":"das gesündere","superlative":"am gesündesten"}}
+{"lemma":"gewöhnlich","approved":true,"level":"B1","english":"usual, normal, ordinary, everyday","examples":[{"de":"Das ist eine gewöhnliche Sache.","en":"That is an ordinary thing."},{"de":"Frühstückt ihr gewöhnlich?","en":"Do you usually eat breakfast?"}],"adjective":{"comparative":"das gewöhnlichere","superlative":"am gewöhnlichsten"}}
+{"lemma":"giftig","approved":true,"level":"B1","english":"poisonous","examples":[{"de":"Die Pflanze ist giftig.","en":"The plant is poisonous."},{"de":"Ist Hexan giftig?","en":"Is hexane poisonous?"}],"adjective":{"comparative":"das giftigere","superlative":"am giftigsten"}}
+{"lemma":"glatt","approved":true,"level":"B1","english":"without roughness or unevenness: smooth; sleek, slick; even; clean (of a shave or cut); straight (of hair)","examples":[{"de":"ein glatter Bruch","en":"a clean break"},{"de":"Alles ging glatt.","en":"Everything went smoothly."}],"adjective":{"comparative":"das glattere","superlative":"am glattesten"}}
+{"lemma":"gleich","approved":true,"level":"A1","english":"equal","examples":[{"de":"Zwei plus zwei ist gleich vier.","en":"Two plus two is equal to four."},{"de":"Zufälligerweise hatten wir beide die gleiche Idee.","en":"Coincidentally, we both had the same idea."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"gleichberechtigt","approved":true,"level":"B1","english":"having equal rights","examples":[{"de":"Sie sind gleichberechtigt.","en":"They have equal rights."},{"de":"Wir wurden nicht gleichberechtigt behandelt.","en":"We were not treated equally."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"gleichzeitig","approved":true,"level":"B1","english":"simultaneous, concurrent, coincident, concomitant","examples":[{"de":"Die beiden Ereignisse fanden gleichzeitig statt.","en":"The two events happened simultaneously."},{"de":"Jeder sprach gleichzeitig.","en":"Everyone spoke at the same time."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"glücklich","approved":true,"level":"A1","english":"happy; both momentarily and generally in life","examples":[{"de":"Man braucht nicht viel davon um glücklich zu sein / Wir küssen uns im Sonnenschein","en":"You don't need much of it / To make you feel fine / We kiss in the sunshine"},{"de":"Glückliches Frühlingsfest.","en":"Happy Spring Festival."}],"adjective":{"comparative":"das glücklichere","superlative":"am glücklichsten"}}
+{"lemma":"grau","approved":true,"level":"A1","english":"grey, gray","examples":[{"de":"Er hat graue Haare.","en":"He has grey hair."},{"de":"Wir sind grau.","en":"We are grey."}],"adjective":{"comparative":"das grauere","superlative":"am grauesten"}}
+{"lemma":"groß","approved":true,"level":"A1","english":"big, large, large-scale","examples":[{"de":"Das ist ein großes Problem.","en":"That is a big problem."},{"de":"Ich lebe in einem großen Haus.","en":"I live in a large house."}],"adjective":{"comparative":"das grössere","superlative":"am grössesten"}}
+{"lemma":"grün","approved":true,"level":"A1","english":"green (in colour)","examples":[{"de":"Die Wiese ist grün.","en":"The meadow is green."},{"de":"Dasselbe in Grün.","en":"The same thing, but in green."}],"adjective":{"comparative":"das grünere","superlative":"am grünsten"}}
+{"lemma":"gründlich","approved":true,"level":"B1","english":"thorough, in-depth","examples":[{"de":"Wir haben gestern [anlässlich meines Geburtstages] so gründlich gefeiert, dass ich heute nicht nur ein, sondern gleich drei bis vier Jahre älter geworden bin.","en":"We have partied so hard yesterday [on the occasion of my birthday] that today I have not become only one year but even three to four years older."},{"de":"Sei gründlich.","en":"Be thorough."}],"adjective":{"comparative":"das gründlichere","superlative":"am gründlichsten"}}
+{"lemma":"gültig","approved":true,"level":"A1","english":"valid, validated, legal","examples":[{"de":"Das Ticket ist noch gültig.","en":"The ticket is still valid."},{"de":"Ist Ihr Angebot noch gültig?","en":"Is your offer still valid?"}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"günstig","approved":true,"level":"A1","english":"favourable, propitious, opportune","examples":[{"de":"Ich werde sie fragen, aber ich warte auf einen günstigen Moment.","en":"I'll ask her, but I'm waiting for an opportune moment."},{"de":"Es gibt keine günstige und einfache Lösung für dieses Problem.","en":"There is no cheap and easy solution to this problem."}],"adjective":{"comparative":"das günstigere","superlative":"am günstigsten"}}
+{"lemma":"gut","approved":true,"level":"A1","english":"good (acting in the interest of what is beneficial, ethical, or moral)","examples":[{"de":"Wir müssen gut sein, um uns gut zu fühlen.","en":"We must be good to feel good."},{"de":"Mmmh, das schmeckt gut.","en":"Yum, that's tasty."}],"adjective":{"comparative":"besser","superlative":"am besten"}}
+{"lemma":"halb","approved":true,"level":"A1","english":"half, halfway","examples":[{"de":"Er ist seit einem halben Monat nicht mehr hier gewesen.","en":"He hasn’t been here for half a month."},{"de":"Halbe-halbe?","en":"Half and half?"}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"haltbar","approved":true,"level":"B1","english":"durable, lasting","examples":[{"de":"Dieses Produkt ist sehr haltbar.","en":"This product is very durable."},{"de":"Das ist nicht besonders haltbar.","en":"That's not very durable."}],"adjective":{"comparative":"das haltbarere","superlative":"am haltbarsten"}}
+{"lemma":"hart","approved":true,"level":"A2","english":"hard","examples":[{"de":"Die harten Einschnitte zum Schuldenabbau standen in vielen EU-Ländern im Zentrum der Kritik der Demonstranten.","en":"The severe cuts for the reduction of debt were in many EU countries at the center of criticism by the protesters."},{"de":"Sie rauchen \"Milde Sorte\" / Weil–das Leben ist doch hart genug","en":"They smoke \"mild\" cigarettes / Because life is hard enough as it is."}],"adjective":{"comparative":"das härtere","superlative":"am härtesten"}}
+{"lemma":"hässlich","approved":true,"level":"A2","english":"ugly","examples":[{"de":"Das ist ein hässliches Gebäude.","en":"That is an ugly building."},{"de":"Menschen sind hässlich.","en":"People are ugly."}],"adjective":{"comparative":"das hässlichere","superlative":"am hässlichsten"}}
+{"lemma":"häufig","approved":true,"level":"B1","english":"frequent","examples":[{"de":"Das kommt häufig vor.","en":"That happens frequently."},{"de":"Tom übertreibt häufig.","en":"Tom often exaggerates."}],"adjective":{"comparative":"das häufigere","superlative":"am häufigsten"}}
+{"lemma":"heimlich","approved":true,"level":"B1","english":"secret, clandestine (done or kept in secret)","examples":[{"de":"Er hat eine heimliche Affäre.","en":"He has a secret affair."},{"de":"Die haben heimlich geheiratet.","en":"They got married in secret."}],"adjective":{"comparative":"das heimlichere","superlative":"am heimlichsten"}}
+{"lemma":"heiß","approved":true,"level":"A2","english":"hot (having a high temperature)","examples":[{"de":"Der Tee ist sehr heiß.","en":"The tea is very hot."},{"de":"Vorsicht! Heiß!","en":"Caution! Hot!"}],"adjective":{"comparative":"das heißere","superlative":"am heißesten"}}
+{"lemma":"hell","approved":true,"level":"A1","english":"clear, bright, light","examples":[{"de":"1918, Elisabeth von Heyking, Die Orgelpfeifen, in: Zwei Erzählungen, Phillipp Reclam jun. Verlag, page 9","en":"Just as dark and eerie the crypt looked like, if one looked in it through the cloudy, dusted little panes of the small windows, as bright and friendly was the church above."},{"de":"Das ist hell.","en":"That's bright."}],"adjective":{"comparative":"das hellere","superlative":"am hellsten"}}
+{"lemma":"herzlich","approved":true,"level":"A1","english":"warm, warmhearted, friendly, affectionate, cordial","examples":[{"de":"Er empfing mich herzlich.","en":"He received me cordially."},{"de":"Herzliche Grüße.","en":"Warm regards."}],"adjective":{"comparative":"das herzlichere","superlative":"am herzlichsten"}}
+{"lemma":"historisch","approved":true,"level":"B1","english":"historical, historic","examples":[{"de":"Das ist ein historisches Ereignis.","en":"That is a historic event."},{"de":"Es war eine historische Entscheidung.","en":"It was a historic decision."}],"adjective":{"comparative":"das historischere","superlative":"am historischsten"}}
+{"lemma":"hoch","approved":true,"level":"A1","english":"high, tall","examples":[{"de":"Dieses Rätsel ist mir zu hoch.","en":"This riddle beats me."},{"de":"Beine hoch!","en":"Legs up!"}],"adjective":{"comparative":"das höhere","superlative":"am höchsten"}}
+{"lemma":"höflich","approved":true,"level":"B1","english":"polite (well-mannered)","examples":[{"de":"Sie ist eine sehr höfliche Person.","en":"She is a very polite person."},{"de":"Seiet höflich!","en":"Be polite!"}],"adjective":{"comparative":"das höflichere","superlative":"am höflichsten"}}
+{"lemma":"hübsch","approved":true,"level":"B1","english":"pretty, handsome","examples":[{"de":"Das wäre doch hübsch, wenn…","en":"It would be great if…"},{"de":"Es iſt gar huͤbſch von einem großen Herrn / So menſchlich mit dem Teufel ſelbſt zu ſprechen.","en":"It's very good of such a great lord to speak man-to-man like this with the Devil."}],"adjective":{"comparative":"das hübschere","superlative":"am hübschesten"}}
+{"lemma":"hungrig","approved":true,"level":"B1","english":"hungry (desirous of food)","examples":[{"de":"Hungrig?"},{"de":"Ich bin hungrig.","en":"I am hungry."}],"adjective":{"comparative":"das hungrigere","superlative":"am hungrigsten"}}
+{"lemma":"ideal","approved":true,"level":"B1","english":"ideal (optimal, perfect)","examples":[{"de":"Das ist die ideale Lösung.","en":"That is the ideal solution."},{"de":"Das war ideal.","en":"That was ideal."}],"adjective":{"comparative":"das idealere","superlative":"am idealsten"}}
+{"lemma":"illegal","approved":true,"level":"B1","english":"illegal","examples":[{"de":"Das ist illegal.","en":"That is illegal."},{"de":"Kinderarbeit ist illegal.","en":"Child labor is illegal."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"individuell","approved":true,"level":"B1","english":"individual","examples":[{"de":"Sie bietet individuelle Beratung an.","en":"She offers individual consulting."},{"de":"Du bist individuell.","en":"You are unique."}],"adjective":{"comparative":"das individuellere","superlative":"am individuellsten"}}
+{"lemma":"inner","approved":true,"level":"B1","english":"inner","examples":[{"de":"Das größte innerstädtische Einkaufszentrum in Deutschland.","en":"The largest inner city shopping center in Germany."},{"de":"Dies ist der innere Ring, nicht der äußere Ring.","en":"This is the inner ring road, not the outer one."}],"adjective":{"comparative":"keine Steigerung","superlative":"-"}}
+{"lemma":"intelligent","approved":true,"level":"A2","english":"intelligent","examples":[{"de":"Delphine sind die mit Abstand intelligentesten aller Tiere.","en":"Dolphins are by far the most intelligent of all animals."},{"de":"Sie sind intelligenter.","en":"They are more intelligent."}],"adjective":{"comparative":"das intelligentere","superlative":"am intelligentesten"}}
+{"lemma":"intensiv","approved":true,"level":"B1","english":"intense","examples":[{"de":"Er hat intensive Schmerzen.","en":"He has intense pain."},{"de":"Ich träume intensiv.","en":"I have vivid dreams."}],"adjective":{"comparative":"das intensivere","superlative":"am intensivsten"}}
+{"lemma":"interessant","approved":true,"level":"B1","english":"interesting","examples":[{"de":"Interessant!"},{"de":"Das Buch ist sehr interessant.","en":"The book is very interesting."}],"adjective":{"comparative":"das interessantere","superlative":"am interessantesten"}}
+{"lemma":"interkulturell","approved":true,"level":"B1","english":"intercultural","examples":[{"de":"Wir fördern interkulturelle Kommunikation.","en":"We promote intercultural communication."},{"de":"Interkulturelle Verständigung ist sehr schwer.","en":"Intercultural understanding is very difficult."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"international","approved":true,"level":"A1","english":"international","examples":[{"de":"Er arbeitet für eine internationale Organisation.","en":"He works for an international organization."},{"de":"Meine Hochschule ist international.","en":"My university is international."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"jung","approved":true,"level":"A1","english":"young","examples":[{"de":"Der Junge ist jung.","en":"The boy is young."},{"de":"Welcher Junge?","en":"Which boy?"}],"adjective":{"comparative":"das jüngere","superlative":"am jüngsten"}}
+{"lemma":"kalt","approved":true,"level":"A2","english":"cold, chilly; the physical perception of something (objects, weather, body etc.) to have a low temperature","examples":[{"de":"Mir ist kalt.","en":"I am cold."},{"de":"Ihm ist kalt.","en":"He is cold."}],"adjective":{"comparative":"das kältere","superlative":"am kältesten"}}
+{"lemma":"kaputt","approved":true,"level":"A1","english":"destroyed, broken, out of order","examples":[{"de":"Das Auto ist kaputt.","en":"The car is broken."},{"de":"Mach es kaputt.","en":"Break it."}],"adjective":{"comparative":"das kaputtere","superlative":"am kaputtesten"}}
+{"lemma":"klar","approved":true,"level":"A1","english":"clear; transparent; bright","examples":[{"de":"War meine Frage nicht klar genug?","en":"Was my question not clear enough?"},{"de":"Klar!"}],"adjective":{"comparative":"das klarere","superlative":"am klarsten"}}
+{"lemma":"klasse","approved":true,"level":"B1","english":"great, awesome","examples":[{"de":"Ich fand das Spiel klasse.","en":"I thought the game was great."},{"de":"Klasse!"}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"klein","approved":true,"level":"A1","english":"small, little, tiny, wee, small-scale","examples":[{"de":"Hänschen klein / ging allein / in die weite Welt hinein. [nominative neuter]","en":"(please add an English translation of this quotation)"},{"de":"So klein!","en":"So small!"}],"adjective":{"comparative":"das kleinere","superlative":"am kleinsten"}}
+{"lemma":"klug","approved":true,"level":"A2","english":"intelligent, prudent, wise, smart, clever","examples":[{"de":"Sie ist eine kluge Frau.","en":"She is a clever woman."},{"de":"Wie klug!","en":"How clever!"}],"adjective":{"comparative":"das klügere","superlative":"am klügsten"}}
+{"lemma":"knapp","approved":true,"level":"B1","english":"scarce","examples":[{"de":"ein knappes Jahr","en":"a little less than a year"},{"de":"Das war knapp. Wir wären fast abgestürzt!","en":"That was close. We nearly crashed!"}],"adjective":{"comparative":"das knappere","superlative":"am knappsten"}}
+{"lemma":"komisch","approved":true,"level":"A2","english":"comedic, comic, pertaining to comedy","examples":[{"de":"Sie spielt selten komische Rollen.","en":"She rarely plays comedic roles."},{"de":"Das war sowieso ein sehr komischer Kompromiss.","en":"It was a very weird compromise anyway."}],"adjective":{"comparative":"das komischere","superlative":"am komischsten"}}
+{"lemma":"komplett","approved":true,"level":"B1","english":"complete (with everything included)","examples":[{"de":"Das Set ist komplett.","en":"The set is complete."},{"de":"Alles ist komplett.","en":"Everything is complete."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"körperlich","approved":true,"level":"B1","english":"bodily, physical","examples":[{"de":"Sie hat keine körperlichen Beschwerden.","en":"She has no physical complaints."},{"de":"Körperlich fehlt Ihnen nichts.","en":"There is nothing physically wrong with you."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"korrekt","approved":true,"level":"B1","english":"correct","examples":[{"de":"Korrekt!"},{"de":"Seine Antwort war korrekt.","en":"His answer was correct."}],"adjective":{"comparative":"das korrektere","superlative":"am korrektesten"}}
+{"lemma":"kostenlos","approved":true,"level":"A2","english":"without cost, free","examples":[{"de":"Der Eintritt ist kostenlos.","en":"Admission is free."},{"de":"Kostenlose Kinder!","en":"Free for children!"}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"kräftig","approved":true,"level":"B1","english":"bold, intense, powerful, robust, strong, sturdy, vigorous, vivid","examples":[{"de":"Er gab mir einen kräftigen Händedruck.","en":"He gave me a strong handshake."},{"de":"kräftiger Geschmack (intense flavor)","en":"strong flavor"}],"adjective":{"comparative":"das kräftigere","superlative":"am kräftigsten"}}
+{"lemma":"krank","approved":true,"level":"A1","english":"ill, sick (in bad health)","examples":[{"de":"Mein Kind ist krank.","en":"My child is sick."},{"de":"Sie wurde krank.","en":"She became ill."}],"adjective":{"comparative":"das krankere","superlative":"am krankesten"}}
+{"lemma":"kreativ","approved":true,"level":"B1","english":"creative","examples":[{"de":"Wir brauchen eine kreative Lösung.","en":"We need a creative solution."},{"de":"Sei kreativ.","en":"Be creative."}],"adjective":{"comparative":"das kreativere","superlative":"am kreativsten"}}
+{"lemma":"kritisch","approved":true,"level":"B1","english":"critical","examples":[{"de":"Für alles hatte Tante Sonja ein kritisches Naserümpfen, nur Dorothee schien ihre volle Billigung zu finden.","en":"For everything Aunt Sonja had a critical look down her nose, only Dorothee seemed to find her full approval."},{"de":"Das ist kritisch.","en":"This is critical."}],"adjective":{"comparative":"das kritischere","superlative":"am kritischsten"}}
+{"lemma":"kühl","approved":true,"level":"A2","english":"cool (of temperature)","examples":[{"de":"Das Zimmer ist angenehm kühl.","en":"The room is pleasantly cool."},{"de":"Kühle es!","en":"Cool it!"}],"adjective":{"comparative":"das kühlere","superlative":"am kühlsten"}}
+{"lemma":"kulturell","approved":true,"level":"A1","english":"cultural","examples":[{"de":"Das ist ein kulturelles Ereignis.","en":"That is a cultural event."},{"de":"Sie besucht kulturelle Zusammenkünfte.","en":"She attends cultural gatherings."}],"adjective":{"comparative":"das kulturellere","superlative":"am kulturellsten"}}
+{"lemma":"künstlich","approved":true,"level":"B1","english":"artificial","examples":[{"de":"Die Blumen sind künstlich.","en":"The flowers are artificial."},{"de":"Das ist künstlich.","en":"That's artificial."}],"adjective":{"comparative":"das künstlichere","superlative":"am künstlichsten"}}
+{"lemma":"kurz","approved":true,"level":"A1","english":"short, quick, brief","examples":[{"de":"Ich brauche eine kurze Pause.","en":"I need a short break."},{"de":"Warte kurz!","en":"Wait a minute!"}],"adjective":{"comparative":"das kürzere","superlative":"am kürzesten"}}
+{"lemma":"kürzlich","approved":true,"level":"B1","english":"recent","examples":[{"de":"die kürzlichen Erfolge","en":"the recent successes"},{"de":"Kürzlich."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"lang","approved":true,"level":"A1","english":"long; lengthy (in space or time)","examples":[{"de":"Er hat lange Jahre damit verbracht, diese Frage zu erörtern.","en":"He spent many years reasoning about this question."},{"de":"Wie lange?","en":"How long?"}],"adjective":{"comparative":"das längere","superlative":"am längsten"}}
+{"lemma":"langsam","approved":true,"level":"A1","english":"slow (taking a long time to move or travel; not happening in a short time)","examples":[{"de":"Schnecken sind sehr langsam.","en":"Snails are very slow."},{"de":"Langsam!"}],"adjective":{"comparative":"das langsamere","superlative":"am langsamsten"}}
+{"lemma":"langweilig","approved":true,"level":"A2","english":"boring, dull, tedious","examples":[{"de":"Das ist langweilig.","en":"That's boring."},{"de":"Mir ist langweilig.","en":"I'm bored."}],"adjective":{"comparative":"das langweiligere","superlative":"am langweiligsten"}}
+{"lemma":"laut","approved":true,"level":"A1","english":"loud, noisy","examples":[{"de":"Lauter."},{"de":"Die Musik ist zu laut.","en":"The music is too loud."}],"adjective":{"comparative":"das lautere","superlative":"am lautesten"}}
+{"lemma":"lecker","approved":true,"level":"B1","english":"yummy, tasty","examples":[{"de":"Das ist ein sehr leckerer Keks.","en":"This is a very tasty biscuit."},{"de":"Sie ist ein lecker Mädchen.","en":"She's an attractive girl."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"ledig","approved":true,"level":"A1","english":"unmarried","examples":[{"de":"aller Sorgen ledig","en":"free of all concerns"},{"de":"Sie ist ledig.","en":"She is single."}],"adjective":{"comparative":"das ledigere","superlative":"am ledigsten"}}
+{"lemma":"leer","approved":true,"level":"A2","english":"empty","examples":[{"de":"Die Flasche ist leer.","en":"The bottle is empty."},{"de":"Leere es.","en":"Empty it."}],"adjective":{"comparative":"das leerere","superlative":"am leersten"}}
+{"lemma":"leicht","approved":true,"level":"A1","english":"light (not heavy)","examples":[{"de":"Nur leichte Autos sollten diese Brücke befahren.","en":"Only light cars should drive on this bridge."},{"de":"Schwimmenlernen ist leicht.","en":"Learning to swim is easy."}],"adjective":{"comparative":"das leichtere","superlative":"am leichtesten"}}
+{"lemma":"leise","approved":true,"level":"A1","english":"quiet, soft, low","examples":[{"de":"Du hast nicht die leiseste Ahnung / Kennst das alles nur vom Hörensagen","en":"You don't have the slightest clue / You only know all that from hearsay"},{"de":"Leiser!"}],"adjective":{"comparative":"das leisere","superlative":"am leisesten"}}
+{"lemma":"letzt","approved":true,"level":"A1","english":"last, final","examples":[{"de":"Das ist die letzte Warnung.","en":"That is the last warning."},{"de":"Letzter Aufruf!","en":"Last call!"}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"lieb","approved":true,"level":"A1","english":"lovable; dear; darling; sweet; good-hearted; kind","examples":[{"de":"Danke! Das ist sehr lieb von dir.","en":"Thank you! That's very sweet of you."},{"de":"Aufwachen, Liebes!","en":"Wake up, love!"}],"adjective":{"comparative":"das liebere","superlative":"am liebsten"}}
+{"lemma":"link","approved":true,"level":"B1","english":"left","examples":[{"de":"auf der linken Seite","en":"on the left"},{"de":"Ich bin Linker.","en":"I am a leftist."}],"adjective":{"comparative":"das linkere","superlative":"am linkesten"}}
+{"lemma":"locker","approved":true,"level":"B1","english":"loose","examples":[{"de":"Der Knoten ist locker.","en":"The knot is loose."},{"de":"Lockere die Schraube!","en":"Loosen the screw!"}],"adjective":{"comparative":"das lockerere","superlative":"am lockersten"}}
+{"lemma":"lustig","approved":true,"level":"A1","english":"funny, humorous","examples":[{"de":"Der Film war lustig.","en":"The film was funny."},{"de":"Die können doch nicht einfach hier hereinspazieren, wie sie lustig sind.","en":"They can't just walk in here as they please."}],"adjective":{"comparative":"das lustigere","superlative":"am lustigsten"}}
+{"lemma":"mager","approved":true,"level":"B1","english":"lean, without fat","examples":[{"de":"Ich esse nur mageres Fleisch.","en":"I only eat lean meat."},{"de":"Ihr seid mager.","en":"You are thin."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"männlich","approved":true,"level":"A1","english":"male","examples":[{"de":"Das ist das männliche Modell.","en":"That is the male model."},{"de":"Wir sind männlich.","en":"We are male."}],"adjective":{"comparative":"das männlichere","superlative":"am männlichsten"}}
+{"lemma":"maximal","approved":true,"level":"B1","english":"maximal","examples":[{"de":"Das ist die maximale Größe.","en":"That is the maximal size."},{"de":"Maximale Länge: 200 Wörter.","en":"Maximum length: 200 words."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"menschlich","approved":true,"level":"B1","english":"human, manlike","examples":[{"de":"Irren ist menschlich.","en":"To err is human."},{"de":"Du bist menschlich.","en":"You are human."}],"adjective":{"comparative":"das menschlichere","superlative":"am menschlichsten"}}
+{"lemma":"merkwürdig","approved":true,"level":"B1","english":"strange, odd","examples":[{"de":"Meine übung, alle Dinge, wie sie sind, zu sehen und abzulesen, meine Treue, das Auge licht sein zu lassen, meine völlige Entäußerung von aller Prätention kommen mir einmal wieder recht zustatten und machen mich im stillen höchst glücklich. Alle Tage ein neuer merkwürdiger Gegenstand, täglich frische, große, seltsame Bilder und ein Ganzes, das man sich lange denkt und träumt, nie mit der Einbildungskraft erreicht.","en":"Italian Journey"},{"de":"Merkwürdig."}],"adjective":{"comparative":"das merkwürdigere","superlative":"am merkwürdigsten"}}
+{"lemma":"mild","approved":true,"level":"B1","english":"mild (in all of its common senses)","examples":[{"de":"Wir hatten einen milden Winter.","en":"We had a mild winter."},{"de":"Das Wetter war mild.","en":"The weather was mild."}],"adjective":{"comparative":"das mildere","superlative":"am mildesten"}}
+{"lemma":"minimal","approved":true,"level":"B1","english":"minimal","examples":[{"de":"Das ist der minimale Aufwand.","en":"That is the minimal effort."},{"de":"Das Risiko ist minimal.","en":"The risk is minimal."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"mittler","approved":true,"level":"B1","english":"middle, central","examples":[{"de":"Das mittlere Kind.","en":"The middle child."},{"de":"Jedes erdenkliche Mittel.","en":"Any means imaginable."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"mobil","approved":true,"level":"B1","english":"mobile","examples":[{"de":"Ich bin sehr mobil.","en":"I am very mobile."},{"de":"Ich mag die mobilen Androidtelefone.","en":"I like Android mobile phones."}],"adjective":{"comparative":"das mobilere","superlative":"am mobilsten"}}
+{"lemma":"modern","approved":true,"level":"A2","english":"modern","examples":[{"de":"Sie wohnt in einem modernen Haus.","en":"She lives in a modern house."},{"de":"Ihr Haus ist modern.","en":"Her house is modern."}],"adjective":{"comparative":"das modernere","superlative":"am modernsten"}}
+{"lemma":"möglich","approved":true,"level":"A1","english":"possible (what can be done or achieved)","examples":[{"de":"Es ist möglich, ungesund zu essen und trotzdem gesund zu bleiben.","en":"It is possible to eat unhealthily and stay healthy nonetheless."},{"de":"Mein Freund hat mir gestern alle möglichen Reggaesongs vorgespielt.","en":"My boyfriend made me listen to a whole bunch of reggae songs yesterday."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"müde","approved":true,"level":"A1","english":"tired","examples":[{"de":"Die müden Kinder gingen ins Bett.","en":"The tired children went to bed."},{"de":"Ich bin (es) müde, mich immer wieder erklären zu müssen.","en":"I am tired of having to explain myself again and again."}],"adjective":{"comparative":"das müdere","superlative":"am müdesten"}}
+{"lemma":"mündlich","approved":true,"level":"B1","english":"oral","examples":[{"de":"Die Prüfung war mündlich.","en":"The exam was oral."},{"de":"Er hatte eine mündliche Prüfung.","en":"He had an oral exam."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"musikalisch","approved":true,"level":"B1","english":"musical","examples":[{"de":"Er ist sehr musikalisch.","en":"He is very musical."},{"de":"Ich bin musikalisch.","en":"I am musical."}],"adjective":{"comparative":"das musikalischere","superlative":"am musikalischsten"}}
+{"lemma":"mutig","approved":true,"level":"B1","english":"courageous","examples":[{"de":"Das war eine mutige Entscheidung.","en":"That was a courageous decision."},{"de":"Bleib mutig!","en":"Stay brave!"}],"adjective":{"comparative":"das mutigere","superlative":"am mutigsten"}}
+{"lemma":"nah","approved":true,"level":"B1","english":"near (in space or time or in an abstract sense), close, nearby","examples":[{"de":"Ich plane in naher Zukunft eine Reise nach Deutschland.","en":"I'm planning a trip to Germany in the near future."},{"de":"Komm näher!","en":"Come closer!"}],"adjective":{"comparative":"das nähere","superlative":"am nächsten"}}
+{"lemma":"nahe","approved":true,"level":"B1","english":"alternative form of nah","examples":[{"de":"Der Bahnhof ist ganz nahe.","en":"The train station is very near."},{"de":"Komm näher!","en":"Come closer!"}],"adjective":{"comparative":"das nähere","superlative":"am nächsten"}}
+{"lemma":"nass","approved":true,"level":"A2","english":"wet (soaked with liquid)","examples":[{"de":"Zieh die nassen Schuhe aus, du machst ja den ganzen Boden nass.","en":"Put off your wet shoes, you’re getting the whole floor wet."},{"de":"Ich bin schon ganz nass.","en":"I am so wet already."}],"adjective":{"comparative":"das nassere","superlative":"am nassesten"}}
+{"lemma":"national","approved":true,"level":"B1","english":"national (being part of a nation's identity or character)","examples":[{"de":"eine nationale Tradition","en":"a national tradition"},{"de":"Europa hat nationale Souveränität aufgegeben.","en":"Europe has relinquished national sovereignty."}],"adjective":{"comparative":"das nationalere","superlative":"am nationalsten"}}
+{"lemma":"natürlich","approved":true,"level":"A2","english":"natural, normal","examples":[{"de":"Natürlich!"},{"de":"Das ist ein natürliches Phänomen.","en":"That is a natural phenomenon."}],"adjective":{"comparative":"das natürlichere","superlative":"am natürlichsten"}}
+{"lemma":"nebelig","approved":true,"level":"A2","english":"foggy","examples":[{"de":"Der Morgen war nebelig.","en":"The morning was foggy."},{"de":"Es ist nebelig.","en":"It's foggy."}],"adjective":{"comparative":"das nebeligere","superlative":"am nebeligsten"}}
+{"lemma":"neblig","approved":true,"level":"A2","english":"foggy","examples":[{"de":"Wir fuhren durch eine neblige Landschaft.","en":"We drove through a foggy landscape."},{"de":"Es ist neblig.","en":"It's foggy."}],"adjective":{"comparative":"das nebligere","superlative":"am nebligsten"}}
+{"lemma":"negativ","approved":true,"level":"B1","english":"negative (undesirable)","examples":[{"de":"Die negativen Folgen dieses Vorgehens werden jetzt deutlich.","en":"The negative consequences of this course of action are now becoming apparent."},{"de":"Die Multiplikation von zwei negativen Zahlen ergibt eine positive Zahl.","en":"Multiplying two negative numbers produces a positive number."}],"adjective":{"comparative":"das negativere","superlative":"am negativsten"}}
+{"lemma":"nervös","approved":true,"level":"A2","english":"nervous (anxious)","examples":[{"de":"Ich bin vor Prüfungen immer nervös.","en":"I am always nervous before exams."},{"de":"Ihr wirkt nervös.","en":"She seems nervous."}],"adjective":{"comparative":"das nervösere","superlative":"am nervösesten"}}
+{"lemma":"nett","approved":true,"level":"A2","english":"nice; friendly; likable","examples":[{"de":"Sie ist eine sehr nette Nachbarin.","en":"She is a very nice neighbor."},{"de":"Seid nett!","en":"Be nice!"}],"adjective":{"comparative":"das nettere","superlative":"am nettesten"}}
+{"lemma":"neu","approved":true,"level":"A1","english":"new","examples":[{"de":"neue Mode","en":"new fashion"},{"de":"die neue Geschichte","en":"modern history, recent history"}],"adjective":{"comparative":"das neuere","superlative":"am neuesten"}}
+{"lemma":"neugierig","approved":true,"level":"B1","english":"nosy, curious, inquisitive, prying","examples":[{"de":"neugierige Zuschauer.","en":"curious spectators."},{"de":"Ich bin besonders neugierig auf die Sitten und Gebräuche anderer Kulturen.","en":"I am very curious and keen to discover the customs and traditions of other cultures."}],"adjective":{"comparative":"das neugierigere","superlative":"am neugierigsten"}}
+{"lemma":"niedrig","approved":true,"level":"B1","english":"low","examples":[{"de":"Der Wasserstand ist niedrig.","en":"The water level is low."},{"de":"Ich bevorzuge niedrige Absätze.","en":"I prefer low heels."}],"adjective":{"comparative":"das niedrigere","superlative":"am niedrigsten"}}
+{"lemma":"normal","approved":true,"level":"A1","english":"ordinary, normal","examples":[{"de":"völlig normal.","en":"completely normal."},{"de":"Atmet normal.","en":"Breathes normally."}],"adjective":{"comparative":"das normalere","superlative":"am normalsten"}}
+{"lemma":"nötig","approved":true,"level":"B1","english":"necessary","examples":[{"de":"Das ist ein nötiger Schritt.","en":"That is a necessary step."},{"de":"Ist das nötig?","en":"Is that necessary?"}],"adjective":{"comparative":"das nötigere","superlative":"am nötigsten"}}
+{"lemma":"notwendig","approved":true,"level":"A2","english":"necessary; essential; indispensable","examples":[{"de":"Welche Schritte sind dafür notwendig?","en":"What steps are necessary for this?"},{"de":"Ist das notwendig?","en":"Is that necessary?"}],"adjective":{"comparative":"das notwendigere","superlative":"am notwendigsten"}}
+{"lemma":"nützlich","approved":true,"level":"A2","english":"useful; helpful","examples":[{"de":"Das war eine nützliche Information.","en":"That was a useful piece of information."},{"de":"Beide sind nützlich.","en":"Both are useful."}],"adjective":{"comparative":"das nützlichere","superlative":"am nützlichsten"}}
+{"lemma":"offen","approved":true,"level":"A2","english":"open","examples":[{"de":"Die Tür ist offen.","en":"The door is open."},{"de":"Immer offen.","en":"Always open."}],"adjective":{"comparative":"das offenere","superlative":"am offensten"}}
+{"lemma":"offenbar","approved":true,"level":"B1","english":"apparent (evident)","examples":[{"de":"Sein Fehler war offenbar.","en":"His mistake was apparent."},{"de":"Tom lügt offenbar.","en":"Tom is apparently lying."}],"adjective":{"comparative":"das offenbarere","superlative":"am offenbarsten"}}
+{"lemma":"öffentlich","approved":true,"level":"B1","english":"public","examples":[{"de":"Das ist ein öffentliches Geheimnis.","en":"That is a public secret."},{"de":"Was ist öffentliches Eigentum?","en":"What is public property?"}],"adjective":{"comparative":"das öffentlichere","superlative":"am öffentlichsten"}}
+{"lemma":"offiziell","approved":true,"level":"B1","english":"official","examples":[{"de":"Das ist eine offizielle Bekanntmachung.","en":"That is an official announcement."},{"de":"Ist das offiziell?","en":"Is this official?"}],"adjective":{"comparative":"das offiziellere","superlative":"am offiziellsten"}}
+{"lemma":"ökologisch","approved":true,"level":"B1","english":"ecologic, ecological","examples":[{"de":"Wir müssen ökologischer leben.","en":"We must live more ecologically."},{"de":"Kannst du uns etwas über die ökologischen Merkmale dieser Gegend sagen?","en":"Can you tell us something about the ecological characteristics of this area?"}],"adjective":{"comparative":"das ökologischere","superlative":"am ökologischsten"}}
+{"lemma":"optimistisch","approved":true,"level":"B1","english":"optimistic","examples":[{"de":"Ich bin optimistisch für die Zukunft.","en":"I am optimistic about the future."},{"de":"Bleibt optimistisch!","en":"Stay optimistic!"}],"adjective":{"comparative":"das optimistischere","superlative":"am optimistischsten"}}
+{"lemma":"ordentlich","approved":true,"level":"B1","english":"tidy, orderly","examples":[{"de":"Da ist ordentlich Profit drin.","en":"There's considerable profit in it."},{"de":"Ordentlich!"}],"adjective":{"comparative":"das ordentlichere","superlative":"am ordentlichsten"}}
+{"lemma":"original","approved":true,"level":"B1","english":"original","examples":[{"de":"Ist das das originale Kunstwerk?","en":"Is that the original artwork?"},{"de":"Das ist original.","en":"This is original."}],"adjective":{"comparative":"das originalere","superlative":"am originalsten"}}
+{"lemma":"parallel","approved":true,"level":"B1","english":"parallel","examples":[{"de":"Die beiden Straßen verlaufen parallel.","en":"The two roads run parallel."},{"de":"Die Autobahn verläuft parallel zur Eisenbahn aber in ganz unterschiedlichen Biegungen und Kurven.","en":"The motorway runs parallel to the railway but in very different bends and curves."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"passiv","approved":true,"level":"B1","english":"passive","examples":[{"de":"Frankfurt/M: Blonder Boy 19/174/76, sexy blaue Augen, passiver Typ, gibt Dir erotische Kicks gegen Taschengeld!","en":"Frankfurt/m[ale]: Blonde Boy 19[ years]/174[ cm]/76[ kg], sexy blue eyes, bottom, will give you erotic kicks in exchange for pocket money!"},{"de":"Frankfurt: Flag passiver Mann, schlank, 54, sucht Flag aktiven, strengen Mann.","en":"Frankfurt: Flag[?] bottom, slender, 54, looking for flag[?] autoritär top."},{"de":"Tom ist passiv-aggressiv."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"pauschal","approved":true,"level":"B1","english":"in total, in a lump sum, all-inclusive, flat (with units of time, distance, etc.: not exceeding)","examples":[{"de":"Das ist ein pauschaler Betrag.","en":"That is a lump sum amount."}],"adjective":{"comparative":"das pauschalere","superlative":"am pauschalsten"}}
+{"lemma":"peinlich","approved":true,"level":"B1","english":"woeful, hurtful","examples":[{"de":"ein peinliches Verhör","en":"a painful interrogation"},{"de":"Mir unterlief ein peinlicher Fehler.","en":"I made an embarrassing mistake."}],"adjective":{"comparative":"das peinlichere","superlative":"am peinlichsten"}}
+{"lemma":"perfekt","approved":true,"level":"B1","english":"perfect","examples":[{"de":"Perfekt!"},{"de":"Das ist der perfekte Zeitpunkt.","en":"That is the perfect time."}],"adjective":{"comparative":"das perfektere","superlative":"am perfektesten"}}
+{"lemma":"persönlich","approved":true,"level":"B1","english":"personal","examples":[{"de":"1918, Elisabeth von Heyking, Die Orgelpfeifen, in: Zwei Erzählungen, Phillipp Reclam jun. Verlag, page 19","en":"The grandchildren had furnished their own rooms according to their personal taste."},{"de":"Das ist persönlich.","en":"That's personal."}],"adjective":{"comparative":"das persönlichere","superlative":"am persönlichsten"}}
+{"lemma":"phantastisch","approved":true,"level":"A2","english":"alternative spelling of fantastisch","examples":[{"de":"Die Aussicht ist phantastisch.","en":"The view is fantastic."},{"de":"Phantastisch, oder?","en":"Fantastic, isn't it?"}],"adjective":{"comparative":"das phantastischere","superlative":"am phantastischsten"}}
+{"lemma":"plötzlich","approved":true,"level":"A2","english":"sudden, abrupt, brusque","examples":[{"de":"Er hatte einen plötzlichen Einfall.","en":"He had a sudden idea."},{"de":"Plötzlich stürzte er.","en":"Suddenly he fell."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"politisch","approved":true,"level":"B1","english":"political (concerning or related to politics)","examples":[{"de":"1932, Carl von Ossietzky, Rückkehr, in: Die Weltbühne, volume 28, no. 52, Verlag der Weltbühne, page 925","en":"Having been in prison, that is a great experience that no political man can eliminate from his existence."},{"de":"Das braucht politisches Handeln.","en":"This requires political action."}],"adjective":{"comparative":"das politischere","superlative":"am politischsten"}}
+{"lemma":"populär","approved":true,"level":"B1","english":"popular","examples":[{"de":"Um populär zu werden, kann man seine eigene Meinung behalten. Um populär zu bleiben, weniger.","en":"To become popular, one can keep one's own opinion. To stay popular, less so."},{"de":"Es wird populärer.","en":"It's becoming more popular."}],"adjective":{"comparative":"das populärere","superlative":"am populärsten"}}
+{"lemma":"positiv","approved":true,"level":"B1","english":"positive","examples":[{"de":"Das Testergebnis ist positiv.","en":"The test result is positive."},{"de":"Sei positiv.","en":"Be positive."}],"adjective":{"comparative":"das positivere","superlative":"am positivsten"}}
+{"lemma":"praktisch","approved":true,"level":"A2","english":"practical","examples":[{"de":"Das ist eine praktische Lösung.","en":"That is a practical solution."},{"de":"So praktisch!","en":"So convenient!"}],"adjective":{"comparative":"das praktischere","superlative":"am praktischsten"}}
+{"lemma":"preiswert","approved":true,"level":"A2","english":"worth its price","examples":[{"de":"Sportwagen sind teuer, aber preiswert.","en":"Sports cars are expensive, but worth their price."},{"de":"Kleinwagen sind preiswerter als Sportwagen.","en":"Compact cars are cheaper than sports cars."}],"adjective":{"comparative":"das preiswertere","superlative":"am preiswertesten"}}
+{"lemma":"prima","approved":true,"level":"B1","english":"great, super","examples":[{"de":"Prima!"},{"de":"Das ist eine prima Idee.","en":"That is a great idea."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"privat","approved":true,"level":"A2","english":"private","examples":[{"de":"Das ist meine private Nummer.","en":"That is my private number."},{"de":"Das ist privat.","en":"This is private."}],"adjective":{"comparative":"das privatere","superlative":"am privatesten"}}
+{"lemma":"pünktlich","approved":true,"level":"A1","english":"punctual, on time","examples":[{"de":"Sie ist immer pünktlich.","en":"She is always punctual."},{"de":"Bezahlt pünktlich!","en":"Paid on time!"}],"adjective":{"comparative":"das pünktlichere","superlative":"am pünktlichsten"}}
+{"lemma":"realistisch","approved":true,"level":"B1","english":"realistic","examples":[{"de":"Das ist eine realistische Einschätzung.","en":"That is a realistic assessment."},{"de":"Sei realistisch!","en":"Be realistic!"}],"adjective":{"comparative":"das realistischere","superlative":"am realistischsten"}}
+{"lemma":"recht","approved":true,"level":"A2","english":"right (direction)","examples":[{"de":"Die rechte Tür ist verschlossen.","en":"The right door is locked."},{"de":"Rechts abbiegen!","en":"Turn right!"}],"adjective":{"comparative":"das rechtere","superlative":"am rechtesten"}}
+{"lemma":"rechtlich","approved":true,"level":"B1","english":"legal","examples":[{"de":"Wir müssen die rechtliche Lage prüfen.","en":"We must check the legal situation."},{"de":"Das ist eine rechtliche Grauzone.","en":"This is a legal gray area."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"rechtzeitig","approved":true,"level":"B1","english":"punctual","examples":[{"de":"Die Lieferung kam rechtzeitig an.","en":"The delivery arrived on time."},{"de":"Ihr kommt rechtzeitig.","en":"You'll arrive on time."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"regelmäßig","approved":true,"level":"B1","english":"regular; according to the rule; expected; not forming an exception","examples":[{"de":"in regelmäßigen Abständen","en":"at regular intervals"},{"de":"Tom trainiert regelmäßig.","en":"Tom trains regularly."}],"adjective":{"comparative":"das regelmäßigere","superlative":"am regelmäßigsten"}}
+{"lemma":"regional","approved":true,"level":"B1","english":"regional","examples":[{"de":"Das ist ein regionales Gericht.","en":"That is a regional dish."},{"de":"Regionale Dialekte sollten erhalten bleiben.","en":"Regional dialects should be preserved."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"reich","approved":true,"level":"A2","english":"rich, wealthy (having a lot of money and possessions)","examples":[{"de":"Sie ist sehr reich.","en":"She’s very rich."},{"de":"Es ist reich an Ballaststoffen.","en":"It’s rich in fiber."}],"adjective":{"comparative":"das reichere","superlative":"am reichsten"}}
+{"lemma":"reif","approved":true,"level":"B1","english":"ripe","examples":[{"de":"Die Rüben sind reif zum Ernten.","en":"The turnips are ripe/ready to harvest."},{"de":"Sie ist für ihr Alter sehr reif.","en":"She's very mature for her age."}],"adjective":{"comparative":"das reifere","superlative":"am reifsten"}}
+{"lemma":"relativ","approved":true,"level":"B1","english":"relative","examples":[{"de":"Der Preis ist relativ hoch.","en":"The price is relatively high."},{"de":"Zeit ist relativ.","en":"Time is relative."}],"adjective":{"comparative":"das relativere","superlative":"am relativsten"}}
+{"lemma":"richtig","approved":true,"level":"A1","english":"correct, accurate, right","examples":[{"de":"eine richtige Antwort","en":"a correct answer"},{"de":"ein richtiger Job, ein richtiger Mann","en":"a proper job, a real man"}],"adjective":{"comparative":"das richtigere","superlative":"am richtigsten"}}
+{"lemma":"riesig","approved":true,"level":"B1","english":"gigantic, huge","examples":[{"de":"Das Haus ist riesig.","en":"The house is huge."},{"de":"Elche sind riesig.","en":"Moose are huge."}],"adjective":{"comparative":"das riesigere","superlative":"am riesigsten"}}
+{"lemma":"roh","approved":true,"level":"B1","english":"raw (uncooked)","examples":[{"de":"Isst du rohe Zwiebeln?","en":"Do you eat raw onions?"},{"de":"Nicht roh essen!","en":"Do not eat raw!"}],"adjective":{"comparative":"das rohere","superlative":"am rohesten"}}
+{"lemma":"romantisch","approved":true,"level":"A2","english":"romantic","examples":[{"de":"Das ist eine romantische Komödie.","en":"That is a romantic comedy."},{"de":"Wie romantisch!","en":"How romantic!"}],"adjective":{"comparative":"das romantischere","superlative":"am romantischsten"}}
+{"lemma":"rot","approved":true,"level":"A1","english":"red (colour)","examples":[{"de":"Die roten Schuhe sind schön.","en":"The red shoes are beautiful."},{"de":"Roter Alarm!","en":"Red alert!"}],"adjective":{"comparative":"das rotere","superlative":"am rotesten"}}
+{"lemma":"ruhig","approved":true,"level":"A1","english":"quiet","examples":[{"de":"ruhige Gegend","en":"quiet area"},{"de":"ruhiger Gemütszustand","en":"calm state of mind"}],"adjective":{"comparative":"das ruhigere","superlative":"am ruhigsten"}}
+{"lemma":"rund","approved":true,"level":"A2","english":"round, rounded, similar as in English, especially:","examples":[{"de":"Der Tisch ist rund.","en":"The table is round."},{"de":"Bälle sind rund.","en":"Balls are round."}],"adjective":{"comparative":"das rundere","superlative":"am rundesten"}}
+{"lemma":"salzig","approved":true,"level":"B1","english":"briny, salty","examples":[{"de":"Das Meerwasser ist salzig.","en":"The sea water is salty."},{"de":"Meerwasser schmeckt salzig.","en":"Seawater tastes salty."}],"adjective":{"comparative":"das salzigere","superlative":"am salzigsten"}}
+{"lemma":"satt","approved":true,"level":"B1","english":"not hungry, satiated, full, done","examples":[{"de":"Willst du noch was? − Nein danke, ich bin satt.","en":"Do you want some more? – No thanks, I'm done."},{"de":"Sogar die Zahl der Millionäre wuchs 2009 um satte 17 Prozent.","en":"Even the number of millionaires grew in 2009 by a full 17 percent."}],"adjective":{"comparative":"das sattere","superlative":"am sattesten"}}
+{"lemma":"sauber","approved":true,"level":"A2","english":"clean","examples":[{"de":"Das Zimmer ist sauber.","en":"The room is clean."},{"de":"Ist es sauber?","en":"Is it clean?"}],"adjective":{"comparative":"das sauberere","superlative":"am saubersten"}}
+{"lemma":"sauer","approved":true,"level":"A2","english":"sour; acid; acidic","examples":[{"de":"[...] diese Butter ist einfach ein Product der gewöhnlichen Kuhmilch, unterscheidet sich aber hauptsächlich von der gewöhnlich producirten saueren Butter durch größere Haltbarkeit und feineren Geschmack.","en":"(please add an English translation of this quotation)"},{"de":"Warum sollen wir uns das Leben noch sauerer machen, als es schon ist?","en":"Why should we make life even more bitter than it already is?"}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"schade","approved":true,"level":"A2","english":"a pity; bummer; unfortunate; disappointing","examples":[{"de":"Schade!","en":"What a pity!"},{"de":"Meine neuen Schuhe sind zu schade, um damit durch den Wald zu laufen.","en":"My new shoes are too good to wear them for a walk through the forest."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"schädlich","approved":true,"level":"A2","english":"harmful","examples":[{"de":"Rauchen ist schädlich für die Gesundheit.","en":"Smoking is harmful to health."},{"de":"Ist Fingerknacken schädlich?","en":"Is cracking your knuckles harmful?"}],"adjective":{"comparative":"das schädlichere","superlative":"am schädlichsten"}}
+{"lemma":"scharf","approved":true,"level":"A2","english":"sharp; able to cut (of a knife, edge)","examples":[{"de":"Das Messer ist sehr scharf.","en":"The knife is very sharp."},{"de":"Ich bremste scharf.","en":"I braked sharply."}],"adjective":{"comparative":"das schärfere","superlative":"am schärfsten"}}
+{"lemma":"schick","approved":true,"level":"B1","english":"elegant, dressy","examples":[{"de":"Sie trägt eine schicke Mütze.","en":"She is wearing a chic hat."},{"de":"Wie geschickt!","en":"How clever!"}],"adjective":{"comparative":"das schickere","superlative":"am schicksten"}}
+{"lemma":"schief","approved":true,"level":"B1","english":"skew, oblique, askew, leaning, slanting, aslant, inclined (neither parallel nor perpendicular)","examples":[{"de":"Der Turm von Pisa ist schief.","en":"The Leaning Tower of Pisa is oblique."},{"de":"Nichts ging schief.","en":"Nothing went wrong."}],"adjective":{"comparative":"das schiefere","superlative":"am schiefsten"}}
+{"lemma":"schlank","approved":true,"level":"B1","english":"slim, svelte","examples":[{"de":"Sie ist eine schlanke Tänzerin.","en":"She is a slim dancer."},{"de":"Tom ist schlank.","en":"Tom is slim."}],"adjective":{"comparative":"das schlankere","superlative":"am schlankesten"}}
+{"lemma":"schlecht","approved":true,"level":"A1","english":"bad, evil, wicked (the opposite of good; immoral)","examples":[{"de":"ein schlechter Mensch","en":"a bad person"},{"de":"schlecht für jemanden sein","en":"to be bad for someone"}],"adjective":{"comparative":"das schlechtere","superlative":"am schlechtesten"}}
+{"lemma":"schlimm","approved":true,"level":"A2","english":"bad, terrible, serious (seriously bad), dire, horrible, awful","examples":[{"de":"noch schlimmer","en":"even worse"},{"de":"Das Schlimmste an...","en":"The worst thing about..."}],"adjective":{"comparative":"das schlimmere","superlative":"am schlimmsten"}}
+{"lemma":"schmal","approved":true,"level":"B1","english":"narrow, slender (not wide, comparatively long), small","examples":[{"de":"Die Brücke ist zu schmal.","en":"The bridge is too narrow."},{"de":"Die Straße ist schmal.","en":"The road is narrow."}],"adjective":{"comparative":"das schmalere","superlative":"am schmalsten"}}
+{"lemma":"schmutzig","approved":true,"level":"A2","english":"dirty, filthy, grimy","examples":[{"de":"Schmutziger Donnerstag","en":"Fat Thursday"},{"de":"Du bist schmutzig.","en":"You are dirty."}],"adjective":{"comparative":"das schmutzigere","superlative":"am schmutzigsten"}}
+{"lemma":"schnell","approved":true,"level":"A1","english":"fast","examples":[{"de":"Ein schneller Zug.","en":"A fast train."}],"adjective":{"comparative":"schneller","superlative":"am schnellsten"}}
+{"lemma":"schön","approved":true,"level":"A1","english":"beautiful, lovely, pretty, handsome","examples":[{"de":"Der Sonnenuntergang am Strand war wirklich schön.","en":"The sunset on the beach was really beautiful."},{"de":"Am liebsten entfloh sie dem allem in den großen Garten. Da verbrachte sie ihre schönsten Stunden.","en":"She liked best to escape from all of that into the big garden. There she spent her most pleasant hours."}],"adjective":{"comparative":"das schönere","superlative":"am schönsten"}}
+{"lemma":"schrecklich","approved":true,"level":"A2","english":"awful, terrible, horrible","examples":[{"de":"schrecklicher Lärm","en":"awful noise"},{"de":"Schrecklich!"}],"adjective":{"comparative":"das schrecklichere","superlative":"am schrecklichsten"}}
+{"lemma":"schriftlich","approved":true,"level":"A2","english":"written","examples":[{"de":"Ich brauche das schriftlich.","en":"I need that in writing."},{"de":"Gib mir das schriftlich.","en":"Give me that in writing."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"schuld","approved":true,"level":"B1","english":"only used in schuld sein (“to be at fault”)","examples":[{"de":"Du bist nicht schuld an der Situation.","en":"You are not at fault for the situation."},{"de":"Meine Schuld.","en":"My fault."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"schuldig","approved":true,"level":"B1","english":"[with genitive] guilty (of), culpable","examples":[{"de":"Er wurde des Mordes schuldig befunden und zum Tode verurteilt.","en":"He was found guilty of murder and sentenced to death."},{"de":"Egal was er sagt, bist du ihm keine Erklärung schuldig.","en":"No matter what he says, you don't owe him an explanation."}],"adjective":{"comparative":"das schuldigere","superlative":"am schuldigsten"}}
+{"lemma":"schwach","approved":true,"level":"A2","english":"weak, lacking in strength","examples":[{"de":"Er ist zu schwach zum Laufen.","en":"He is too weak to walk."},{"de":"Batterie schwach.","en":"Low battery."}],"adjective":{"comparative":"das schwächere","superlative":"am schwächsten"}}
+{"lemma":"schwanger","approved":true,"level":"A2","english":"pregnant (of humans)","examples":[{"de":"Sie ist schwanger von ihrem Mann Peter mit ihrem dritten Kind.","en":"She is pregnant from her husband Peter with her third child."},{"de":"Tanina ist schwanger.","en":"Tanina is pregnant."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"schwarz","approved":true,"level":"A1","english":"black, reflecting little or no light","examples":[{"de":"Ich trinke meinen Kaffee schwarz.","en":"I drink my coffee black."},{"de":"Schwarz gewinnt.","en":"Black wins."}],"adjective":{"comparative":"das schwarzere","superlative":"am schwarzesten"}}
+{"lemma":"schwer","approved":true,"level":"A1","english":"heavy, weighty","examples":[{"de":"Und sie ging gebückt, als trage sie eine schwere Last, […]","en":"And she walked bowed as if she carried a heavy load, […]"},{"de":"schwer ist leicht was (colloquially)","en":"A task quickly becomes difficult"}],"adjective":{"comparative":"das schwerere","superlative":"am schwersten"}}
+{"lemma":"schwierig","approved":true,"level":"A2","english":"difficult, hard, challenging, tough","examples":[{"de":"Das ist eine schwierige Aufgabe.","en":"That is a difficult task."},{"de":"Griechisch ist schwierig.","en":"Greek is difficult."}],"adjective":{"comparative":"das schwierigere","superlative":"am schwierigsten"}}
+{"lemma":"selbständig","approved":true,"level":"A1","english":"alternative form of selbstständig","examples":[{"de":"Er arbeitet jetzt selbständig.","en":"He now works independently."},{"de":"Sie ist selbständig.","en":"She is self-employed."}],"adjective":{"comparative":"das selbständigere","superlative":"am selbständigsten"}}
+{"lemma":"selbstständig","approved":true,"level":"A1","english":"independent","examples":[{"de":"Sie ist selbstständig und hat ihre eigene Firma.","en":"She is independent and has her own company."},{"de":"Ich bin Selbstständiger.","en":"I am self-employed."}],"adjective":{"comparative":"das selbstständigere","superlative":"am selbstständigsten"}}
+{"lemma":"selbstverständlich","approved":true,"level":"B1","english":"natural, self-evident","examples":[{"de":"Ihre Hilfe war selbstverständlich.","en":"Her help was self-evident."},{"de":"Selbstverständlich.","en":"Of course."}],"adjective":{"comparative":"das selbstverständlichere","superlative":"am selbstverständlichsten"}}
+{"lemma":"selten","approved":true,"level":"B1","english":"rare, infrequent, uncommon, scarce","examples":[{"de":"1924, Friedrich Bernhard Störzner, Das weiße Männchen auf dem Kirchberge, in: Reinhardtswalder Sagenbüchlein, Buchhandlung Otto Schmidt, page 11","en":"Up in the sky the stars sparkled in unusual magnificence."},{"de":"Er besucht uns nur noch sehr selten.","en":"He only visits us very rarely now."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"seltsam","approved":true,"level":"B1","english":"strange, weird, odd, funny, curious","examples":[{"de":"Seltsam."},{"de":"Das ist eine seltsame Sache.","en":"That is a strange thing."}],"adjective":{"comparative":"das seltsamere","superlative":"am seltsamsten"}}
+{"lemma":"senkrecht","approved":true,"level":"B1","english":"vertical (perpendicular to some roughly horizontal line, e.g. the surface of the earth)","examples":[{"de":"Die Stange steht senkrecht.","en":"The pole stands vertical."},{"de":"Der Auftrieb steht senkrecht zur Flugrichtung.","en":"The lift is perpendicular to the direction of flight."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"sicher","approved":true,"level":"B1","english":"safe, secure (not dangerous or in danger)","examples":[{"de":"Ich bin (mir) sicher, dass es heute regnen wird.","en":"I am sure that it will rain today."},{"de":"Sie ist sich des Sieges sicher.","en":"She is certain of victory."}],"adjective":{"comparative":"das sicherere","superlative":"am sichersten"}}
+{"lemma":"sichtbar","approved":true,"level":"B1","english":"visible","examples":[{"de":"Der Unterschied ist sichtbar.","en":"The difference is visible."},{"de":"Die Planetenoberfläche ist sichtbar.","en":"The planet's surface is visible."}],"adjective":{"comparative":"das sichtbarere","superlative":"am sichtbarsten"}}
+{"lemma":"sinnlos","approved":true,"level":"B1","english":"meaningless, pointless, senseless","examples":[{"de":"Das war eine sinnlose Diskussion.","en":"That was a pointless discussion."},{"de":"Es ist sinnlos.","en":"It's pointless."}],"adjective":{"comparative":"das sinnlosere","superlative":"am sinnlosesten"}}
+{"lemma":"sinnvoll","approved":true,"level":"B1","english":"meaningful","examples":[{"de":"Das ist ein sinnvoller Vorschlag.","en":"That is a meaningful suggestion."},{"de":"Ist das sinnvoll?","en":"Does that make sense?"}],"adjective":{"comparative":"das sinnvollere","superlative":"am sinnvollsten"}}
+{"lemma":"so genannt","approved":true,"level":"B1","english":"so-called, alternative form of sogenannt","examples":[{"de":"Die so genannten Experten lagen falsch.","en":"The so-called experts were wrong."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"sogenannt","approved":true,"level":"B1","english":"so-called","examples":[{"de":"Das gewöhnlichste Mittel, welches der Asket und Heilige anwendet, um sich das Leben doch noch erträglich und unterhaltend zu machen, besteht in gelegentlichem Kriegführen und in dem Wechsel von Sieg und Niederlage. Dazu braucht er einen Gegner und findet ihn in dem sogenannten \"inneren Feinde\".","en":"The most typical way in which the ascetic or saint manages to keep life bearable and entertaining is occasional warfare and alternation between victory and defeat. To do that, he needs an opponent, and that he finds in his so-called \"inner enemy\"."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"sonnig","approved":true,"level":"A2","english":"sunny","examples":[{"de":"Es war ein sonniger Tag.","en":"It was a sunny day."},{"de":"Es ist sonnig.","en":"It is sunny."}],"adjective":{"comparative":"das sonnigere","superlative":"am sonnigsten"}}
+{"lemma":"sozial","approved":true,"level":"B1","english":"social","examples":[{"de":"Wir brauchen mehr soziale Gerechtigkeit.","en":"We need more social justice."}],"adjective":{"comparative":"das sozialere","superlative":"am sozialsten"}}
+{"lemma":"sparsam","approved":true,"level":"B1","english":"economical, thrifty, frugal","examples":[{"de":"Er ist sehr sparsam mit seinem Geld.","en":"He is very frugal with his money."}],"adjective":{"comparative":"das sparsamere","superlative":"am sparsamsten"}}
+{"lemma":"spät","approved":true,"level":"A1","english":"late","examples":[{"de":"Es ist schon sehr spät.","en":"It is already very late."}],"adjective":{"comparative":"das spätere","superlative":"am spätesten"}}
+{"lemma":"später","approved":true,"level":"A1","english":"later, subsequent","examples":[{"de":"Wir können uns später treffen.","en":"We can meet later."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"speziell","approved":true,"level":"B1","english":"special","examples":[{"de":"Das ist ein spezielles Angebot.","en":"That is a special offer."}],"adjective":{"comparative":"das speziellere","superlative":"am speziellsten"}}
+{"lemma":"spitz","approved":true,"level":"B1","english":"pointed, pointy","examples":[{"de":"Der Bleistift ist sehr spitz.","en":"The pencil is very pointy."}],"adjective":{"comparative":"das spitzere","superlative":"am spitzesten"}}
+{"lemma":"sportlich","approved":true,"level":"A2","english":"sport; sporting, athletic (of or pertaining to sports)","examples":[{"de":"Sie ist eine sehr sportliche Person.","en":"She is a very athletic person."}],"adjective":{"comparative":"das sportlichere","superlative":"am sportlichsten"}}
+{"lemma":"städtisch","approved":true,"level":"B1","english":"urban","examples":[{"de":"Wir sind in einem städtischen Gebiet.","en":"We are in an urban area."}],"adjective":{"comparative":"das städtischere","superlative":"am städtischsten"}}
+{"lemma":"ständig","approved":true,"level":"B1","english":"permanent, constant","examples":[{"de":"Er ist ein ständiger Gast im Hotel.","en":"He's a permanent guest at the hotel."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"stark","approved":true,"level":"A2","english":"strong (intense, powerful, unyielding)","examples":[{"de":"Nun, es sind Eheleute, in Gottes Namen, soweit ist die Sache in Ordnung. Aber am hellen Morgen, das ist doch stark.","en":"The Magic Mountain"},{"de":"ein starkes Stück","en":"a powerful piece"}],"adjective":{"comparative":"das stärkere","superlative":"am stärksten"}}
+{"lemma":"statistisch","approved":true,"level":"B1","english":"statistical","examples":[{"de":"Das ist ein statistischer Fehler.","en":"That is a statistical error."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"steil","approved":true,"level":"B1","english":"steep","examples":[{"de":"Der Berg ist sehr steil.","en":"The mountain is very steep."}],"adjective":{"comparative":"das steilere","superlative":"am steilsten"}}
+{"lemma":"stilistisch","approved":true,"level":"B1","english":"stylistic","examples":[{"de":"Der Text ist stilistisch anspruchsvoll.","en":"The text is stylistically demanding."}],"adjective":{"comparative":"das stilistischere","superlative":"am stilistischsten"}}
+{"lemma":"still","approved":true,"level":"B1","english":"quiet, silent","examples":[{"de":"stiller Alarm.","en":"silent alarm."},{"de":"Stilles Mineralwasser.","en":"Still mineral water."}],"adjective":{"comparative":"das stillere","superlative":"am stillsten"}}
+{"lemma":"stolz","approved":true,"level":"B1","english":"proud","examples":[{"de":"Ich bin stolz auf dich.","en":"I am proud of you."},{"de":"Er war stolz.","en":"He was proud."}],"adjective":{"comparative":"das stolzere","superlative":"am stolzesten"}}
+{"lemma":"strafbar","approved":true,"level":"B1","english":"liable to criminal prosecution; criminal (for which the law provides a criminal punishment)","examples":[{"de":"Einbruch ist eine strafbare Handlung.","en":"Burglary is a criminal offence."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"streng","approved":true,"level":"A2","english":"strict, rigorous","examples":[{"de":"1787 CE: Johann Wolfgang von Goethe, Egmont\nIch sehe kein Mittel, weder strenges noch gelindes, dem Übel zu steuern.","en":"I see no means, neither severe nor mild, by which to stem the evil."},{"de":"Streng verboten.","en":"Strictly forbidden."}],"adjective":{"comparative":"das strengere","superlative":"am strengsten"}}
+{"lemma":"stressig","approved":true,"level":"A2","english":"stressful","examples":[{"de":"Mein Job ist sehr stressig.","en":"My job is very stressful."}],"adjective":{"comparative":"das stressigere","superlative":"am stressigsten"}}
+{"lemma":"stumm","approved":true,"level":"B1","english":"mute; dumb (unable to speak)","examples":[{"de":"Der Junge war stumm und schwachsinnig.","en":"The boy was mute and imbecile."},{"de":"Das h im englischen Wort „honour“ ist stumm.","en":"The h in the English word “honour” is silent."}],"adjective":{"comparative":"das stummere","superlative":"am stummsten"}}
+{"lemma":"süchtig","approved":true,"level":"B1","english":"addicted","examples":[{"de":"Er ist seit Jahren süchtig nach Tabletten.","en":"He's been addicted to pills for years."},{"de":"Sind Sie süchtig?","en":"Are you addicted?"}],"adjective":{"comparative":"das süchtigere","superlative":"am süchtigsten"}}
+{"lemma":"super","approved":true,"level":"A2","english":"super, great, awesome","examples":[{"de":"Der Film war super!","en":"The movie was great!"}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"süß","approved":true,"level":"A2","english":"sweet","examples":[{"de":"ein süßes Gebäck","en":"a sweet pastry"},{"de":"ein süßer Hund","en":"a cute dog"}],"adjective":{"comparative":"das süßere","superlative":"am süßesten"}}
+{"lemma":"sympathisch","approved":true,"level":"A2","english":"friendly, likable even at a first impression","examples":[{"de":"Ich finde ihn sehr sympathisch.","en":"I find him very likable."}],"adjective":{"comparative":"das sympathischere","superlative":"am sympathischsten"}}
+{"lemma":"tatsächlich","approved":true,"level":"B1","english":"actual, real, factual","examples":[{"de":"Das war der tatsächliche Grund.","en":"That was the actual reason."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"taub","approved":true,"level":"B1","english":"deaf (not hearing)","examples":[{"de":"taub auf einem Ohr","en":"deaf in one ear"},{"de":"Er wird taub.","en":"He will become deaf."}],"adjective":{"comparative":"das taubere","superlative":"am taubsten"}}
+{"lemma":"technisch","approved":true,"level":"B1","english":"technical","examples":[{"de":"Er arbeitet im technischen Bereich.","en":"He works in the technical field."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"teilweise","approved":true,"level":"B1","english":"partial","examples":[{"de":"Die Rechnung ist nur teilweise bezahlt.","en":"The bill is only partially paid."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"teuer","approved":true,"level":"A1","english":"expensive, dear (high in price)","examples":[{"de":"Dieses Auto ist mir zu teuer.","en":"This car is too expensive for me."},{"de":"Wie teuer ist der Hut?","en":"How much is the hat?"}],"adjective":{"comparative":"das teurere","superlative":"am teuersten"}}
+{"lemma":"theoretisch","approved":true,"level":"B1","english":"theoretical","examples":[{"de":"Theoretisch ist das möglich.","en":"Theoretically, that is possible."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"tief","approved":true,"level":"A2","english":"deep (having a long distance to the bottom; of bodies of water, wells, etc.)","examples":[{"de":"Wie tief ist das Wasser?","en":"How deep is the water?"},{"de":"Sie hat ein tiefes Verständnis der russischen Kultur.","en":"She has a deep understanding of Russian culture."}],"adjective":{"comparative":"das tiefere","superlative":"am tiefsten"}}
+{"lemma":"tödlich","approved":true,"level":"B1","english":"deadly, mortal, lethal, fatal","examples":[{"de":"Das ist eine tödliche Krankheit.","en":"That is a fatal disease."}],"adjective":{"comparative":"das tödlichere","superlative":"am tödlichsten"}}
+{"lemma":"tolerant","approved":true,"level":"B1","english":"tolerant","examples":[{"de":"Wir müssen tolerant sein.","en":"We must be tolerant."}],"adjective":{"comparative":"das tolerantere","superlative":"am tolerantesten"}}
+{"lemma":"toll","approved":true,"level":"A2","english":"great, nice, wonderful","examples":[{"de":"‚Katjuscha‘ ist ein tolles Lied.","en":"‘Katyusha’ is a great song."},{"de":"Laß uns aus dem Gedräng’ entweichen; / Es ist zu toll, sogar für meines gleichen.","en":"Faust, Part One"}],"adjective":{"comparative":"das tollere","superlative":"am tollsten"}}
+{"lemma":"tot","approved":true,"level":"A1","english":"dead, deceased","examples":[{"de":"Er ist seit gestern tot.","en":"He has been dead since yesterday."}],"adjective":{"comparative":"das totere","superlative":"am totesten"}}
+{"lemma":"total","approved":true,"level":"A2","english":"total, absolute, complete, utter (not used in the sense of “entire”)","examples":[{"de":"Es ist kein totales, sondern nur ein partielles Verbot.","en":"It is not an absolute ban, but merely a partial one."},{"de":"Sie spinnt total.","en":"She's completely crazy."}],"adjective":{"comparative":"das totalere","superlative":"am totalsten"}}
+{"lemma":"traditionell","approved":true,"level":"B1","english":"traditional","examples":[{"de":"Wir essen ein traditionelles Gericht.","en":"We are eating a traditional dish."}],"adjective":{"comparative":"das traditionellere","superlative":"am traditionellsten"}}
+{"lemma":"traurig","approved":true,"level":"A2","english":"sad","examples":[{"de":"Sie ist sehr traurig über den Verlust.","en":"She is very sad about the loss."}],"adjective":{"comparative":"das traurigere","superlative":"am traurigsten"}}
+{"lemma":"treu","approved":true,"level":"B1","english":"loyal; faithful; true","examples":[{"de":"Willst du deinen eigenen Worten nicht treu bleiben?","en":"Aren't you going to be true to your own words?"},{"de":"Bleibet Gott mein treuer Schatz, achte ich nicht Menschenkreuz.","en":"If God remains my faithful treasure, I give no care to man’s cruelty."}],"adjective":{"comparative":"das treuere","superlative":"am treuesten"}}
+{"lemma":"trocken","approved":true,"level":"A2","english":"dry (not wet; lacking water)","examples":[{"de":"Ein Bier, bitte, meine Kehle ist ganz trocken.","en":"A beer, please, my throat is really dry."},{"de":"Es ist trocken.","en":"It is dry."}],"adjective":{"comparative":"das trockenere","superlative":"am trockensten"}}
+{"lemma":"typisch","approved":true,"level":"A2","english":"typical","examples":[{"de":"Das ist typisch für ihn.","en":"That is typical for him."}],"adjective":{"comparative":"das typischere","superlative":"am typischsten"}}
+{"lemma":"üblich","approved":true,"level":"B1","english":"usual","examples":[{"de":"Es ist üblich, dass...","en":"It is customary for..."},{"de":"Übersetzungsfunktionen werden üblich.","en":"Translation functions are becoming common."}],"adjective":{"comparative":"das üblichere","superlative":"am üblichsten"}}
+{"lemma":"übrig","approved":true,"level":"B1","english":"rest of, remaining","examples":[{"de":"Hast du noch etwas übrig?","en":"Do you have anything remaining?"}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"unbedingt","approved":true,"level":"A2","english":"absolute","examples":[{"de":"Sie wurde zu zwei Jahren unbedingt verurteilt.","en":"She was sentenced to two years without probation."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"unentschieden","approved":true,"level":"B1","english":"undecided, undetermined; drawn (in sports, e.g. a tie)","examples":[{"de":"Das Spiel endete unentschieden.","en":"The game ended in a draw (tie)."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"ungefähr","approved":true,"level":"B1","english":"approximate","examples":[{"de":"Die ungefähre Dauer beträgt eine Stunde.","en":"The approximate duration is one hour."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"ungewöhnlich","approved":true,"level":"B1","english":"uncommon, unusual, unordinary","examples":[{"de":"Das war ein ungewöhnlicher Fall.","en":"That was an unusual case."}],"adjective":{"comparative":"das ungewöhnlichere","superlative":"am ungewöhnlichsten"}}
+{"lemma":"unglaublich","approved":true,"level":"B1","english":"unbelievable, incredible","examples":[{"de":"Der Film war unglaublich gut.","en":"The movie was incredibly good."}],"adjective":{"comparative":"das unglaublichere","superlative":"am unglaublichsten"}}
+{"lemma":"unheimlich","approved":true,"level":"B1","english":"uncanny","examples":[{"de":"Ich finde das unheimlich.","en":"I find that uncanny/creepy."}],"adjective":{"comparative":"das unheimlichere","superlative":"am unheimlichsten"}}
+{"lemma":"unterschiedlich","approved":true,"level":"B1","english":"different; differing, varying","examples":[{"de":"Was diese speziellen Listen angeht, kommen die vier genannten Parteien zu unterschiedlichen Schlüssen.","en":"As far as the special lists are concerned, the four parties specified come to different conclusions."},{"de":"Unterschiedliches wird geschehen.","en":"Different things will happen."}],"adjective":{"comparative":"das unterschiedlichere","superlative":"am unterschiedlichsten"}}
+{"lemma":"ursprünglich","approved":true,"level":"B1","english":"original, initial, first","examples":[{"de":"Die ursprüngliche Idee war anders.","en":"The original idea was different."}],"adjective":{"comparative":"das ursprünglichere","superlative":"am ursprünglichsten"}}
+{"lemma":"vegetarisch","approved":true,"level":"B1","english":"vegetarian","examples":[{"de":"Ich koche ein vegetarisches Gericht.","en":"I am cooking a vegetarian dish."}],"adjective":{"comparative":"das vegetarischere","superlative":"am vegetarischsten"}}
+{"lemma":"verantwortlich","approved":true,"level":"B1","english":"responsible","examples":[{"de":"Ich bin dafür verantwortlich, den Fortschritt zu bewerten.","en":"I have the responsibility to evaluate its progress."},{"de":"Sie ist verantwortlich.","en":"She is responsible."}],"adjective":{"comparative":"das verantwortlichere","superlative":"am verantwortlichsten"}}
+{"lemma":"verdächtig","approved":true,"level":"B1","english":"suspicious, suspect","examples":[{"de":"Er machte sich verdächtig.","en":"He made himself suspicious."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"vergeblich","approved":true,"level":"B1","english":"unavailing, in vain, futile, useless","examples":[{"de":"ein vergeblicher Versuch","en":"a futile attempt"}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"vermutlich","approved":true,"level":"B1","english":"suspected, presumable, assumed","examples":[{"de":"Das ist der vermutliche Täter.","en":"That is the presumed culprit."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"vernünftig","approved":true,"level":"B1","english":"reasonable, sensible","examples":[{"de":"Das ist eine vernünftige Entscheidung.","en":"That is a sensible decision."}],"adjective":{"comparative":"das vernünftigere","superlative":"am vernünftigsten"}}
+{"lemma":"verschieden","approved":true,"level":"A2","english":"deceased","examples":[{"de":"«Prävention darf nie zur Ideologie werden, wir dürfen nicht meinen, wir wüssten, was gutes Leben ist», sagt er, um eine grundlegende Erkenntnis aus seiner Arbeit anzufügen: «Es ist normal, verschieden zu sein.»","en":"“Prevention must never become an ideology; we must never think that we know what a good life is”, he says, adding a fundamental insight from his work: “It’s normal to be different.”"},{"de":"Tom verschied.","en":"Tom died."}],"adjective":{"comparative":"das verschiedenere","superlative":"am verschiedensten"}}
+{"lemma":"verständlich","approved":true,"level":"B1","english":"understandable, comprehensible","examples":[{"de":"Seine Erklärung war sehr verständlich.","en":"His explanation was very understandable."}],"adjective":{"comparative":"das verständlichere","superlative":"am verständlichsten"}}
+{"lemma":"verwandt","approved":true,"level":"B1","english":"related (connected by blood, adoption, or marriage)","examples":[{"de":"Wir sind miteinander verwandt.","en":"We are related to each other."}],"adjective":{"comparative":"das verwandtere","superlative":"am verwandtesten"}}
+{"lemma":"viel","approved":true,"level":"A1","english":"much, a lot, many","examples":[{"de":"Wir haben viel Arbeit.","en":"We have a lot of work."}],"adjective":{"comparative":"mehr","superlative":"am meisten"}}
+{"lemma":"virtuell","approved":true,"level":"B1","english":"virtual (in effect; not fact)","examples":[{"de":"Das ist ein virtueller Rundgang.","en":"That is a virtual tour."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"voll","approved":true,"level":"A2","english":"full; filled","examples":[{"de":"[...] Mich faßt Erstaunen an, / Daß zwar so reiche, auserles'ne Speisen, / Doch für den durstgequälten Jägersmann / Nicht auch des Weines volle Beche kreisen!","en":"(please add an English translation of this quotation)"},{"de":"Volle Fahrt voraus!","en":"Full speed ahead!"}],"adjective":{"comparative":"das vollere","superlative":"am vollsten"}}
+{"lemma":"völlig","approved":true,"level":"B1","english":"complete, total, utter","examples":[{"de":"Das ist mir völlig egal.","en":"That is completely irrelevant to me."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"voraussichtlich","approved":true,"level":"B1","english":"expected, anticipated, prospected","examples":[{"de":"Der voraussichtliche Geburtstermin ist der 14. August.","en":"The expected date of birth is the 14th of August."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"vorder","approved":true,"level":"B1","english":"front, forward, leading","examples":[{"de":"Die vordere Tür ist verschlossen.","en":"The front door is locked."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"vorläufig","approved":true,"level":"B1","english":"preliminary","examples":[{"de":"vorläufige Ergebnisse.","en":"preliminary results."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"waagerecht","approved":true,"level":"B1","english":"horizontal (parallel to the plane of the horizon)","examples":[{"de":"Die Linie ist waagerecht.","en":"The line is horizontal."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"waagrecht","approved":true,"level":"B1","english":"alternative form of waagerecht","examples":[{"de":"Die Bretter liegen waagrecht.","en":"The boards are lying horizontally."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"wach","approved":true,"level":"A2","english":"awake","examples":[{"de":"Ich bin noch wach.","en":"I am still awake."}],"adjective":{"comparative":"das wachere","superlative":"am wachsten"}}
+{"lemma":"wahnsinnig","approved":true,"level":"B1","english":"mad, insane","examples":[{"de":"Sind Sie wahnsinnig?","en":"Are you insane?"},{"de":"Er ist wahnsinnig.","en":"He's insane."}],"adjective":{"comparative":"das wahnsinnigere","superlative":"am wahnsinnigsten"}}
+{"lemma":"wahr","approved":true,"level":"A2","english":"true, real","examples":[{"de":"Das ist wahre Liebe.","en":"This is true love."},{"de":"Das ist ein wahres Wort.","en":"This is a truthful statement"}],"adjective":{"comparative":"das wahrere","superlative":"am wahrsten"}}
+{"lemma":"wahrscheinlich","approved":true,"level":"A2","english":"likely, probable, plausible","examples":[{"de":"Die wahrscheinliche Ursache des Fehlers wurde heute ermittelt.","en":"The probable cause of the failure was determined today."},{"de":"Wahrscheinlich."}],"adjective":{"comparative":"das wahrscheinlichere","superlative":"am wahrscheinlichsten"}}
+{"lemma":"warm","approved":true,"level":"A2","english":"warm; mildly hot","examples":[{"de":"Ich zahle 800 € warm für meine Wohnung.","en":"I pay €800 for my apartment, including utilities."},{"de":"Warm draußen?","en":"It's warm outside?"}],"adjective":{"comparative":"das wärmere","superlative":"am wärmsten"}}
+{"lemma":"weiblich","approved":true,"level":"A1","english":"female","examples":[{"de":"Sie gehört dem weiblichen Geschlecht an.","en":"She belongs to the female sex."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"weich","approved":true,"level":"A2","english":"soft","examples":[{"de":"Das Kissen ist sehr weich.","en":"The pillow is very soft."}],"adjective":{"comparative":"das weichere","superlative":"am weichsten"}}
+{"lemma":"weiß","approved":true,"level":"A1","english":"white","examples":[{"de":"Die Wände sind weiß.","en":"The walls are white."}],"adjective":{"comparative":"das weißere","superlative":"am weißesten"}}
+{"lemma":"weit","approved":true,"level":"A1","english":"wide","examples":[{"de":"Seit Ende Juli hat der Monsunregen die Flüsse in weiten Teilen Pakistans über die Ufer treten lassen und ganze Provinzen in Seen verwandelt.","en":"Since the end of July, the monsoon rain has made the rivers overflow their banks in large parts of Pakistan and turned whole provinces into lakes."},{"de":"Computer sind so weit fortgeschritten, dass sie Sprache verstehen.","en":"Computers have advanced enough to understand language."}],"adjective":{"comparative":"das weitere","superlative":"am weitesten"}}
+{"lemma":"weiter","approved":true,"level":"A1","english":"further, more distant; other (remaining, additional)","examples":[{"de":"Wir gehen weiter.","en":"We are going further."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"weltenweit","approved":true,"level":"B1","english":"worldwide (literary/archaic form of weltweit)","examples":[{"de":"Die Geschichte verbreitete sich weltenweit.","en":"The story spread worldwide."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"weltweit","approved":true,"level":"B1","english":"worldwide","examples":[{"de":"Das ist ein weltweites Problem.","en":"That is a worldwide problem."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"wenig","approved":true,"level":"A1","english":"little, few (a small amount, a small number)","examples":[{"de":"Er hat nur wenig Zeit.","en":"He has only little time."}],"adjective":{"comparative":"minder","superlative":"am mindesten"}}
+{"lemma":"wert","approved":true,"level":"B1","english":"worth, worthy of","examples":[{"de":"Gold(es) wert sein","en":"to be worth gold/worth its weight in gold"},{"de":"Er ist die ganze Aufmerksamkeit nicht wert, die er bekommt.","en":"He's not worthy of all the attention he gets."}],"adjective":{"comparative":"das wertere","superlative":"am wertesten"}}
+{"lemma":"wertlos","approved":true,"level":"B1","english":"worthless","examples":[{"de":"Der Schmuck ist leider wertlos.","en":"The jewelry is unfortunately worthless."}],"adjective":{"comparative":"das wertlosere","superlative":"am wertlosesten"}}
+{"lemma":"wertvoll","approved":true,"level":"B1","english":"valuable","examples":[{"de":"Das ist ein wertvolles Geschenk.","en":"That is a valuable gift."}],"adjective":{"comparative":"das wertvollere","superlative":"am wertvollsten"}}
+{"lemma":"wichtig","approved":true,"level":"A1","english":"important, relevant, significant, weighty","examples":[{"de":"Das ist eine wichtige Nachricht.","en":"That is an important message."}],"adjective":{"comparative":"das wichtigere","superlative":"am wichtigsten"}}
+{"lemma":"wild","approved":true,"level":"B1","english":"wild (of animals, etc.)","examples":[{"de":"Wir sahen wilde Tiere im Wald.","en":"We saw wild animals in the forest."}],"adjective":{"comparative":"das wildere","superlative":"am wildesten"}}
+{"lemma":"willkommen","approved":true,"level":"A1","english":"welcome (received with gladness)","examples":[{"de":"Du bist mir immer willkommen.","en":"You’re always welcome to my house."},{"de":"Das ist eine willkommene Gelegenheit.","en":"This is a welcome opportunity."}],"adjective":{"comparative":"das willkommenere","superlative":"am willkommensten"}}
+{"lemma":"windig","approved":true,"level":"A2","english":"windy","examples":[{"de":"Es ist sehr windig heute.","en":"It is very windy today."}],"adjective":{"comparative":"das windigere","superlative":"am windigsten"}}
+{"lemma":"wirklich","approved":true,"level":"A2","english":"real","examples":[{"de":"Ist das wirklich wahr?","en":"Is that really true?"}],"adjective":{"comparative":"das wirklichere","superlative":"am wirklichsten"}}
+{"lemma":"witzig","approved":true,"level":"A2","english":"funny, humorous","examples":[{"de":"Er hat einen witzigen Witz erzählt.","en":"He told a funny joke."}],"adjective":{"comparative":"das witzigere","superlative":"am witzigsten"}}
+{"lemma":"wohl","approved":true,"level":"B1","english":"well, good, comfortable (in good condition)","examples":[{"de":"Er ist mir wohlgesonnen.","en":"He is well-disposed towards me."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"wunderbar","approved":true,"level":"A1","english":"wonderful","examples":[{"de":"Das Essen war wunderbar.","en":"The food was wonderful."}],"adjective":{"comparative":"das wunderbarere","superlative":"am wunderbarsten"}}
+{"lemma":"wunderschön","approved":true,"level":"B1","english":"gorgeous, very beautiful","examples":[{"de":"1822-1823, Heinrich Heine, Lyrisches Intermezzo\nIm wundershönen Monat Mai","en":"In the beautiful month of May"},{"de":"So wunderschön!","en":"So beautiful!"}],"adjective":{"comparative":"das wunderschönere","superlative":"am wunderschönsten"}}
+{"lemma":"wurscht","approved":true,"level":"A2","english":"irrelevant, meaningless (colloquial, mainly South German/Austrian)","examples":[{"de":"Das ist mir wurscht.","en":"That is irrelevant to me (I don't care)."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"wurst","approved":true,"level":"A2","english":"alternative form of wurscht","examples":[{"de":"Das ist mir total wurst.","en":"That is totally irrelevant to me."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"zahlreich","approved":true,"level":"B1","english":"numerous","examples":[{"de":"Es gab zahlreiche Beschwerden.","en":"There were numerous complaints."}],"adjective":{"comparative":"das zahlreichere","superlative":"am zahlreichsten"}}
+{"lemma":"zentral","approved":true,"level":"B1","english":"central","examples":[{"de":"Die Wohnung liegt sehr zentral.","en":"The apartment is very centrally located."}],"adjective":{"comparative":"das zentralere","superlative":"am zentralsten"}}
+{"lemma":"ziemlich","approved":true,"level":"B1","english":"considerable, quite a bit of","examples":[{"de":"Das ist eine ziemliche Leistung.","en":"That is quite an achievement."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"zufällig","approved":true,"level":"B1","english":"random, by chance or stochastic","examples":[{"de":"Das war nur ein zufälliges Treffen.","en":"That was just a chance meeting."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"zufrieden","approved":true,"level":"A1","english":"content, satisfied","examples":[{"de":"zufrieden stellen.","en":"to satisfy, to please."},{"de":"Man kann nicht alle Menschen zufrieden stellen.","en":"You can't please everyone."}],"adjective":{"comparative":"das zufriedenere","superlative":"am zufriedensten"}}
+{"lemma":"zugänglich","approved":true,"level":"B1","english":"accessible, open, able to be factually or legally reached or accessed","examples":[{"de":"Die Informationen sind zugänglich.","en":"The information is accessible."}],"adjective":{"comparative":"das zugänglichere","superlative":"am zugänglichsten"}}
+{"lemma":"zukünftig","approved":true,"level":"B1","english":"future","examples":[{"de":"Das ist unser zukünftiges Zuhause.","en":"That is our future home."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"zusätzlich","approved":true,"level":"B1","english":"additional, extra, supplementary","examples":[{"de":"Das Unternehmen muss nun die zusätzlichen Kosten bezahlen.","en":"The company must now pay the additional costs."}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"zuständig","approved":true,"level":"B1","english":"competent, cognizant (having jurisdiction or authority over a particular issue or question)","examples":[{"de":"Wer ist dafür zuständig?","en":"Who is responsible for that?"}],"adjective":{"comparative":"keine Steigerung","superlative":"keine Steigerung"}}
+{"lemma":"zuverlässig","approved":true,"level":"B1","english":"reliable, dependable, trustworthy","examples":[{"de":"zuverlässige Quellen","en":"reliable sources"},{"de":"Ich bin zuverlässig.","en":"I am reliable."}],"adjective":{"comparative":"das zuverlässigere","superlative":"am zuverlässigsten"}}
