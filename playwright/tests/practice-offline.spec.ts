@@ -46,7 +46,9 @@ test.describe('noun practice offline queue', () => {
 await page.addInitScript((settings) => {
   localStorage.setItem('practice.settings', JSON.stringify(settings));
   localStorage.setItem('practice.settings.migrated', '1');
-  localStorage.removeItem('practice.session');
+  Object.keys(localStorage)
+    .filter((key) => key.startsWith('practice.session'))
+    .forEach((key) => localStorage.removeItem(key));
   localStorage.removeItem('practice.progress');
   localStorage.removeItem('practice.answers');
 }, practiceSettings);
@@ -95,7 +97,9 @@ await page.addInitScript((task) => {
     await page.addInitScript((settings) => {
       localStorage.setItem('practice.settings', JSON.stringify(settings));
       localStorage.setItem('practice.settings.migrated', '1');
-      localStorage.removeItem('practice.session');
+      Object.keys(localStorage)
+        .filter((key) => key.startsWith('practice.session'))
+        .forEach((key) => localStorage.removeItem(key));
       localStorage.removeItem('practice.progress');
       localStorage.removeItem('practice.answers');
     }, practiceSettings);

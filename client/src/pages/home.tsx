@@ -49,6 +49,7 @@ import {
   AVAILABLE_TASK_TYPES,
   SCOPE_LABELS,
   computeScope,
+  buildPracticeSessionScopeKey,
   getVerbLevel,
   normalisePreferredTaskTypes,
   scopeToTaskTypes,
@@ -144,8 +145,13 @@ function VerbLevelSelect({ value, onChange, labelId }: VerbLevelSelectProps) {
 
 export default function Home() {
   const { settings, updateSettings } = usePracticeSettings();
+  const sessionScopeKey = useMemo(() => buildPracticeSessionScopeKey(settings), [settings]);
+  const authSession = useAuthSession();
+  const userId = authSession.data?.user.id ?? null;
   const [progress, setProgress] = useState<PracticeProgressState>(() => loadPracticeProgress());
-  const [session, setSession] = useState<PracticeSessionState>(() => loadPracticeSession());
+  const [session, setSession] = useState<PracticeSessionState>(() =>
+    loadPracticeSession({ scopeKey: sessionScopeKey, userId }),
+  );
   const [answerHistory, setAnswerHistory] = useState(() => loadAnswerHistory());
   const [pendingResult, setPendingResult] = useState<PracticeCardResult | null>(null);
   const [tasksById, setTasksById] = useState<Record<string, PracticeTask>>({});
@@ -154,10 +160,10 @@ export default function Home() {
   const [shouldReloadTasks, setShouldReloadTasks] = useState(false);
   const [isRecapOpen, setIsRecapOpen] = useState(false);
   const pendingFetchRef = useRef(false);
+  const sessionHydrationRef = useRef({ scopeKey: sessionScopeKey, userId });
   const lastFailedQueueSignatureRef = useRef<string | null>(null);
   const verbLevelLabelId = useId();
 
-  const authSession = useAuthSession();
   const navigationItems = useMemo(
     () => getPrimaryNavigationItems(authSession.data?.user.role ?? null),
     [authSession.data?.user.role],
@@ -174,22 +180,32 @@ export default function Home() {
   }, [settings.preferredTaskTypes, settings.defaultTaskType]);
   const activeTaskType = activeTaskTypes[0] ?? 'conjugate_form';
   const verbLevel = getVerbLevel(settings);
-  const previousVerbLevelRef = useRef(verbLevel);
+  const previousScopeKeyRef = useRef(sessionScopeKey);
 
   useEffect(() => {
-    if (previousVerbLevelRef.current !== verbLevel) {
-      previousVerbLevelRef.current = verbLevel;
+    if (previousScopeKeyRef.current !== sessionScopeKey) {
+      previousScopeKeyRef.current = sessionScopeKey;
       setShouldReloadTasks(true);
     }
-  }, [verbLevel]);
+  }, [sessionScopeKey]);
+
+  useEffect(() => {
+    const previous = sessionHydrationRef.current;
+    if (previous.scopeKey === sessionScopeKey && previous.userId === userId) {
+      return;
+    }
+
+    sessionHydrationRef.current = { scopeKey: sessionScopeKey, userId };
+    setSession(loadPracticeSession({ scopeKey: sessionScopeKey, userId }));
+  }, [sessionScopeKey, userId]);
 
   useEffect(() => {
     savePracticeProgress(progress);
   }, [progress]);
 
   useEffect(() => {
-    savePracticeSession(session);
-  }, [session]);
+    savePracticeSession(session, { scopeKey: sessionScopeKey, userId });
+  }, [session, sessionScopeKey, userId]);
 
   useEffect(() => {
     saveAnswerHistory(answerHistory);

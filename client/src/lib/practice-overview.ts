@@ -158,3 +158,28 @@ export function buildCefrLabel(
 export function getVerbLevel(settings: PracticeSettingsState): CEFRLevel {
   return settings.cefrLevelByPos.verb ?? settings.legacyVerbLevel ?? 'A1';
 }
+
+const PRACTICE_SCOPE_KEY_ORDER: LexemePos[] = ['verb', 'noun', 'adjective'];
+
+export function buildPracticeSessionScopeKey(settings: PracticeSettingsState): string {
+  const levels: Partial<Record<LexemePos, CEFRLevel>> = {
+    ...settings.cefrLevelByPos,
+  };
+  if (!levels.verb && settings.legacyVerbLevel) {
+    levels.verb = settings.legacyVerbLevel;
+  }
+
+  const segments = PRACTICE_SCOPE_KEY_ORDER.map((pos) => {
+    const level = levels[pos];
+    if (!level) {
+      return null;
+    }
+    return `${pos}-${level}`;
+  }).filter((value): value is string => Boolean(value));
+
+  if (!segments.length) {
+    return 'default';
+  }
+
+  return segments.join('__');
+}
