@@ -1,4 +1,4 @@
-import './helpers/mock-auth';
+import { getSessionFromRequestMock } from './helpers/mock-auth';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { AggregatedWord } from '../scripts/etl/types';
@@ -18,6 +18,9 @@ describe('tasks API', () => {
     const context = await setupTestDatabase();
     dbContext = context;
     context.mock();
+
+    getSessionFromRequestMock.mockReset();
+    getSessionFromRequestMock.mockResolvedValue(null);
 
     const schemaModule = await import('../db/schema.js');
     practiceHistoryTable = schemaModule.practiceHistory;
@@ -139,6 +142,7 @@ describe('tasks API', () => {
   });
 
   afterEach(async () => {
+    getSessionFromRequestMock.mockReset();
     if (dbContext) {
       await dbContext.cleanup();
       dbContext = undefined;
@@ -210,5 +214,80 @@ describe('tasks API', () => {
     expect(historyResult.rows[0]!.metadata).toMatchObject({
       queueCap: submissionBody.queueCap,
     });
+
+    const logResult = await dbContext.pool.query(
+      'select task_id, device_id, user_id, cefr_level, attempted_at from practice_log where task_id = $1 and device_id = $2',
+      [task.taskId, 'device-123'],
+    );
+
+    expect(logResult.rows[0]).toBeDefined();
+    expect(logResult.rows[0]!.user_id).toBeNull();
+    expect(logResult.rows[0]!.cefr_level).toBe('__');
+    expect(new Date(logResult.rows[0]!.attempted_at).getTime()).toBeGreaterThan(0);
+  });
+
+  it('omits recently practiced tasks for the same device', async () => {
+    const deviceId = 'device-queue-123';
+
+    const firstResponse = await invokeApi(`/api/tasks?pos=verb&limit=1&deviceId=${deviceId}`);
+    expect(firstResponse.status).toBe(200);
+    const firstTask = (firstResponse.bodyJson as any).tasks[0];
+    expect(firstTask).toBeDefined();
+
+    const submission = await invokeApi('/api/submission', {
+      method: 'POST',
+      body: {
+        taskId: firstTask.taskId,
+        lexemeId: firstTask.lexeme.id,
+        taskType: firstTask.taskType,
+        pos: firstTask.pos,
+        renderer: firstTask.renderer,
+        deviceId,
+        result: 'correct',
+        timeSpentMs: 900,
+      },
+    });
+
+    expect(submission.status).toBe(200);
+
+    const nextResponse = await invokeApi(`/api/tasks?pos=verb&limit=1&deviceId=${deviceId}`);
+    expect(nextResponse.status).toBe(200);
+    const nextTask = (nextResponse.bodyJson as any).tasks[0];
+    expect(nextTask).toBeDefined();
+    expect(nextTask.taskId).not.toBe(firstTask.taskId);
+  });
+
+  it('uses user history when available to avoid repeats', async () => {
+    getSessionFromRequestMock.mockResolvedValue({
+      session: { id: 'session-1', expiresAt: new Date().toISOString() },
+      user: { id: 'user-123', role: 'standard' },
+    } as any);
+
+    const firstResponse = await invokeApi('/api/tasks?pos=verb&limit=1');
+    expect(firstResponse.status).toBe(200);
+    const firstTask = (firstResponse.bodyJson as any).tasks[0];
+    expect(firstTask).toBeDefined();
+
+    const submission = await invokeApi('/api/submission', {
+      method: 'POST',
+      body: {
+        taskId: firstTask.taskId,
+        lexemeId: firstTask.lexeme.id,
+        taskType: firstTask.taskType,
+        pos: firstTask.pos,
+        renderer: firstTask.renderer,
+        deviceId: 'user-device-1',
+        result: 'correct',
+        timeSpentMs: 600,
+      },
+    });
+
+    expect(submission.status).toBe(200);
+
+    const nextResponse = await invokeApi('/api/tasks?pos=verb&limit=1');
+    expect(nextResponse.status).toBe(200);
+    const nextTask = (nextResponse.bodyJson as any).tasks[0];
+    expect(nextTask).toBeDefined();
+    expect(nextTask.taskId).not.toBe(firstTask.taskId);
   });
 });

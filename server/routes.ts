@@ -1,8 +1,8 @@
 import type { Express, NextFunction, Request, RequestHandler, Response } from "express";
 import { db, getPool } from "@db";
-import { words, taskSpecs, lexemes, practiceHistory, type Word } from "@db";
+import { words, taskSpecs, lexemes, practiceHistory, practiceLog, type Word } from "@db";
 import { z } from "zod";
-import { and, asc, count, desc, eq, inArray, or, sql, type SQL } from "drizzle-orm";
+import { and, asc, count, desc, eq, gte, inArray, or, sql, type SQL } from "drizzle-orm";
 import type {
   AnswerHistoryLexemeSnapshot,
   CEFRLevel,
@@ -71,6 +71,8 @@ function toIsoString(value: Date | string): string {
 
 const levelSchema = z.enum(["A1", "A2", "B1", "B2", "C1", "C2"]);
 const LEVEL_ORDER = ["A1", "A2", "B1", "B2", "C1", "C2"] as const;
+const UNSPECIFIED_CEFR_LEVEL = "__";
+const RECENT_ATTEMPT_WINDOW_MS = 1000 * 60 * 60 * 6;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value && typeof value === "object");
@@ -212,6 +214,29 @@ function normaliseString(value: unknown): string | undefined {
   }
   const trimmed = value.trim();
   return trimmed.length > 0 ? trimmed : undefined;
+}
+
+function serialisePracticeLogLevel(level: CEFRLevel | null | undefined): string {
+  return level ?? UNSPECIFIED_CEFR_LEVEL;
+}
+
+function normalisePracticeLogLevel(value: string | null | undefined): CEFRLevel | null {
+  if (!value || value === UNSPECIFIED_CEFR_LEVEL) {
+    return null;
+  }
+  return normaliseCefrLevel(value) ?? null;
+}
+
+function combineFilters(filters: Array<SQL | null>): SQL | null {
+  const active = filters.filter((entry): entry is SQL => Boolean(entry));
+  if (!active.length) {
+    return null;
+  }
+  if (active.length === 1) {
+    return active[0]!;
+  }
+  const combined = and(...(active as [SQL, SQL, ...SQL[]]));
+  return combined ?? null;
 }
 
 function buildLexemeSnapshotFromRow(
@@ -985,6 +1010,9 @@ export function registerRoutes(app: Express): void {
         );
       }
 
+      const sessionUserId = getSessionUserId(req.authSession);
+      const hasIdentity = Boolean(sessionUserId || deviceId);
+
       const baseQuery = db
         .select({
           taskId: taskSpecs.id,
@@ -1004,22 +1032,45 @@ export function registerRoutes(app: Express): void {
 
       let fetchLimit = limit;
 
-      const orderedQuery = deviceId
+      const orderedQuery = hasIdentity
         ? (() => {
-            const historyFilters: SQL[] = [eq(practiceHistory.deviceId, deviceId)];
+            const identityExpressions: SQL[] = [];
+            if (sessionUserId) {
+              identityExpressions.push(eq(practiceHistory.userId, sessionUserId));
+            }
+            if (deviceId) {
+              identityExpressions.push(eq(practiceHistory.deviceId, deviceId));
+            }
 
+            let identityFilter: SQL | null = null;
+            if (identityExpressions.length === 1) {
+              identityFilter = identityExpressions[0]!;
+            } else if (identityExpressions.length > 1) {
+              const combinedIdentity = or(
+                ...(identityExpressions as [SQL, SQL, ...SQL[]]),
+              );
+              identityFilter = combinedIdentity ?? null;
+            }
+
+            const historyFilters: SQL[] = [];
+            if (identityFilter) {
+              historyFilters.push(identityFilter);
+            }
             if (normalisedPos) {
               historyFilters.push(eq(practiceHistory.pos, normalisedPos));
             }
-
             if (resolvedTaskType) {
               historyFilters.push(eq(practiceHistory.taskType, resolvedTaskType));
             }
 
-            const historyWhere =
-              historyFilters.length > 1 ? and(...historyFilters) : historyFilters[0]!;
+            const historyWhere = combineFilters(historyFilters);
+            fetchLimit = Math.max(limit * 3, limit + 10);
 
-            const deviceHistory = db
+            if (!historyWhere) {
+              return taskQuery.orderBy(desc(taskSpecs.updatedAt), asc(taskSpecs.id));
+            }
+
+            const attemptHistory = db
               .select({
                 taskId: practiceHistory.taskId,
                 lastPracticedAt: sql<Date | null>`max(${practiceHistory.submittedAt})`.as(
@@ -1029,14 +1080,12 @@ export function registerRoutes(app: Express): void {
               .from(practiceHistory)
               .where(historyWhere)
               .groupBy(practiceHistory.taskId)
-              .as("device_history");
-
-            fetchLimit = Math.max(limit * 2, limit + 5);
+              .as("practice_history");
 
             return taskQuery
-              .leftJoin(deviceHistory, eq(taskSpecs.id, deviceHistory.taskId))
+              .leftJoin(attemptHistory, eq(taskSpecs.id, attemptHistory.taskId))
               .orderBy(
-                asc(deviceHistory.lastPracticedAt),
+                asc(attemptHistory.lastPracticedAt),
                 desc(taskSpecs.updatedAt),
                 asc(taskSpecs.id),
               );
@@ -1047,7 +1096,94 @@ export function registerRoutes(app: Express): void {
       const rowsRaw = await executeSelectRaw<Record<string, unknown>>(compiledQuery);
       const mappedRows = rowsRaw.map((row) => mapTaskRow(row as Record<string, any>));
 
-      const rows = mappedRows.slice(0, limit);
+      const identityLogExpressions: SQL[] = [];
+      if (sessionUserId) {
+        identityLogExpressions.push(eq(practiceLog.userId, sessionUserId));
+      }
+      if (deviceId) {
+        identityLogExpressions.push(eq(practiceLog.deviceId, deviceId));
+      }
+
+      let identityLogFilter: SQL | null = null;
+      if (identityLogExpressions.length === 1) {
+        identityLogFilter = identityLogExpressions[0]!;
+      } else if (identityLogExpressions.length > 1) {
+        const combinedIdentity = or(...(identityLogExpressions as [SQL, SQL, ...SQL[]]));
+        identityLogFilter = combinedIdentity ?? null;
+      }
+
+      const recencyThreshold = new Date(Date.now() - RECENT_ATTEMPT_WINDOW_MS);
+      const recencyFilters: SQL[] = [];
+      if (identityLogFilter) {
+        recencyFilters.push(identityLogFilter);
+        recencyFilters.push(gte(practiceLog.attemptedAt, recencyThreshold));
+      }
+
+      const recencyWhere = combineFilters(recencyFilters);
+      const recentAttemptMap = new Map<string, Date>();
+      const recentlyAttempted = new Set<string>();
+
+      if (recencyWhere) {
+        const recentRows = await db
+          .select({
+            taskId: practiceLog.taskId,
+            cefrLevel: practiceLog.cefrLevel,
+            attemptedAt: practiceLog.attemptedAt,
+          })
+          .from(practiceLog)
+          .where(recencyWhere);
+
+        for (const entry of recentRows) {
+          const taskId = normaliseString(entry.taskId);
+          if (!taskId) {
+            continue;
+          }
+
+          const rowLevel = normalisePracticeLogLevel(entry.cefrLevel);
+          const attemptTimestamp =
+            entry.attemptedAt instanceof Date ? entry.attemptedAt : new Date(entry.attemptedAt);
+
+          const existing = recentAttemptMap.get(taskId);
+          if (!existing || attemptTimestamp > existing) {
+            recentAttemptMap.set(taskId, attemptTimestamp);
+          }
+
+          if (!level || !rowLevel || rowLevel === level) {
+            recentlyAttempted.add(taskId);
+          }
+        }
+      }
+
+      const prioritizedRows: typeof mappedRows = [];
+      const fallbackRows: typeof mappedRows = [];
+
+      for (const row of mappedRows) {
+        const taskId = normaliseString(row.taskId);
+        if (!taskId) {
+          continue;
+        }
+
+        if (recentlyAttempted.has(taskId)) {
+          fallbackRows.push(row);
+        } else {
+          prioritizedRows.push(row);
+        }
+      }
+
+      let rows = prioritizedRows.slice(0, limit);
+
+      if (rows.length < limit && fallbackRows.length) {
+        fallbackRows.sort((a, b) => {
+          const aId = normaliseString(a.taskId);
+          const bId = normaliseString(b.taskId);
+          const aTime = aId ? recentAttemptMap.get(aId)?.getTime() ?? 0 : 0;
+          const bTime = bId ? recentAttemptMap.get(bId)?.getTime() ?? 0 : 0;
+          return aTime - bTime;
+        });
+
+        const needed = limit - rows.length;
+        rows = rows.concat(fallbackRows.slice(0, needed));
+      }
 
       const payload: Array<{
         taskId: string;
@@ -1245,6 +1381,7 @@ export function registerRoutes(app: Express): void {
 
     const payload = parsed.data;
     res.setHeader("Cache-Control", "no-store");
+    const sessionUserId = getSessionUserId(req.authSession);
 
     const selectTaskRowById = async (
       taskId: string,
@@ -1362,6 +1499,9 @@ export function registerRoutes(app: Express): void {
     const answeredAt = payload.answeredAt ? new Date(payload.answeredAt) : undefined;
     const queuedAt = payload.queuedAt ? new Date(payload.queuedAt) : undefined;
     const responseMs = payload.responseMs ?? payload.timeSpentMs ?? 0;
+    const resolvedCefrLevel = normaliseCefrLevel(payload.cefrLevel) ?? null;
+    const attemptTimestamp = submittedAt ?? new Date();
+    const serialisedLevel = serialisePracticeLogLevel(resolvedCefrLevel);
 
     try {
       const queueCap = registryEntry.queueCap;
@@ -1373,13 +1513,13 @@ export function registerRoutes(app: Express): void {
         taskType: taskRow.taskType!,
         renderer: taskRow.renderer!,
         deviceId: payload.deviceId,
-        userId: getSessionUserId(req.authSession),
+        userId: sessionUserId,
         result: payload.result,
         responseMs,
-        submittedAt: submittedAt ?? new Date(),
+        submittedAt: attemptTimestamp,
         answeredAt: answeredAt ?? submittedAt ?? null,
         queuedAt: queuedAt ?? null,
-        cefrLevel: payload.cefrLevel ?? null,
+        cefrLevel: resolvedCefrLevel,
         hintsUsed: payload.hintsUsed ?? false,
         metadata: {
           submittedResponse: payload.submittedResponse ?? payload.answer ?? null,
@@ -1390,6 +1530,60 @@ export function registerRoutes(app: Express): void {
           legacyVerb: payload.legacyVerb ?? null,
         },
       });
+
+      const logUpserts: Promise<unknown>[] = [
+        db
+          .insert(practiceLog)
+          .values({
+            taskId: resolvedTaskId,
+            lexemeId: taskRow.lexemeId!,
+            pos: taskRow.pos!,
+            taskType: taskRow.taskType!,
+            deviceId: payload.deviceId,
+            userId: null,
+            cefrLevel: serialisedLevel,
+            attemptedAt: attemptTimestamp,
+          })
+          .onConflictDoUpdate({
+            target: [practiceLog.taskId, practiceLog.deviceId, practiceLog.cefrLevel],
+            set: {
+              lexemeId: taskRow.lexemeId!,
+              pos: taskRow.pos!,
+              taskType: taskRow.taskType!,
+              attemptedAt: attemptTimestamp,
+              updatedAt: sql`now()`,
+            },
+          }),
+      ];
+
+      if (sessionUserId) {
+        logUpserts.push(
+          db
+            .insert(practiceLog)
+            .values({
+              taskId: resolvedTaskId,
+              lexemeId: taskRow.lexemeId!,
+              pos: taskRow.pos!,
+              taskType: taskRow.taskType!,
+              deviceId: null,
+              userId: sessionUserId,
+              cefrLevel: serialisedLevel,
+              attemptedAt: attemptTimestamp,
+            })
+            .onConflictDoUpdate({
+              target: [practiceLog.taskId, practiceLog.userId, practiceLog.cefrLevel],
+              set: {
+                lexemeId: taskRow.lexemeId!,
+                pos: taskRow.pos!,
+                taskType: taskRow.taskType!,
+                attemptedAt: attemptTimestamp,
+                updatedAt: sql`now()`,
+              },
+            }),
+        );
+      }
+
+      await Promise.all(logUpserts);
 
       res.json({
         status: "recorded",
