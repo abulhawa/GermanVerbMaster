@@ -209,6 +209,10 @@ export default function Home() {
   }, [progress]);
 
   useEffect(() => {
+    if (userId === undefined) {
+      return;
+    }
+
     savePracticeSession(session, { scopeKey: sessionScopeKey, userId });
   }, [session, sessionScopeKey, userId]);
 
