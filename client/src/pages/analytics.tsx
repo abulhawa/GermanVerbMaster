@@ -81,7 +81,7 @@ export default function Analytics() {
   const { settings } = usePracticeSettings();
   const { data: authSession } = useAuthSession();
   const sessionScopeKey = useMemo(() => buildPracticeSessionScopeKey(settings), [settings]);
-  const userId = authSession?.user.id ?? null;
+  const userId = authSession === undefined ? undefined : authSession?.user.id ?? null;
   const progress = useMemo(() => loadPracticeProgress(), []);
   const practiceSession = useMemo(
     () => loadPracticeSession({ scopeKey: sessionScopeKey, userId }),

@@ -147,7 +147,8 @@ export default function Home() {
   const { settings, updateSettings } = usePracticeSettings();
   const sessionScopeKey = useMemo(() => buildPracticeSessionScopeKey(settings), [settings]);
   const authSession = useAuthSession();
-  const userId = authSession.data?.user.id ?? null;
+  const userId =
+    authSession.data === undefined ? undefined : authSession.data?.user.id ?? null;
   const [progress, setProgress] = useState<PracticeProgressState>(() => loadPracticeProgress());
   const [session, setSession] = useState<PracticeSessionState>(() =>
     loadPracticeSession({ scopeKey: sessionScopeKey, userId }),
