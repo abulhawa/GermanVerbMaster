@@ -106,4 +106,31 @@ describe("request logger middleware", () => {
 
     payloadConfigSpy.mockRestore();
   });
+
+  it("strips query strings from logged routes", () => {
+    const payloadConfigSpy = vi
+      .spyOn(config, "isRequestPayloadLoggingEnabled")
+      .mockReturnValue(false);
+
+    const requestLogger = createRequestLogger();
+
+    const req = {
+      method: "GET",
+      originalUrl: "/api/reset?token=abc123",
+      url: "/api/reset?token=abc123",
+    } as Request;
+    const res = createResponse();
+    const next = vi.fn<Parameters<NextFunction>, void>();
+
+    requestLogger(req, res, next);
+    (res.json as unknown as (body: unknown) => void)({ ok: true });
+
+    expect(next).toHaveBeenCalled();
+    expect(logSpy).toHaveBeenCalledTimes(1);
+    const [logLine] = logSpy.mock.calls[0];
+    expect(logLine).toContain("GET /api/reset 200");
+    expect(logLine).not.toContain("?token=");
+
+    payloadConfigSpy.mockRestore();
+  });
 });
