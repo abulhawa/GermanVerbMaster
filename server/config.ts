@@ -23,3 +23,15 @@ export function parseBooleanFlag(value: string | undefined, defaultValue: boolea
 export function isLexemeSchemaEnabled(): boolean {
   return parseBooleanFlag(process.env.ENABLE_LEXEME_SCHEMA, true);
 }
+
+export function isRequestPayloadLoggingEnabled(): boolean {
+  const requested = parseBooleanFlag(process.env.ENABLE_REQUEST_PAYLOAD_LOGGING, false);
+  if (!requested) {
+    return false;
+  }
+
+  const defaultNodeEnv = process.env.VERCEL ? "production" : "development";
+  const nodeEnv = process.env.NODE_ENV ?? defaultNodeEnv;
+
+  return nodeEnv !== "production";
+}
