@@ -153,11 +153,11 @@ function usePracticeCardHotkeys({
       );
       const isButtonTarget = Boolean(target?.closest('button, [role="button"]'));
 
-      if (isEditableTarget) {
+      const key = event.key;
+
+      if (isEditableTarget && key !== 'Escape') {
         return;
       }
-
-      const key = event.key;
 
       if (status !== 'idle' && onContinue && key === 'ArrowRight') {
         event.preventDefault();
