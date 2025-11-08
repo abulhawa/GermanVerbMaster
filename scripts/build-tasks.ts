@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { getPool } from '@db';
 
 import { applyMigrations } from './db-push';
-import { ensureTaskSpecsSynced, resetTaskSpecSync } from '../server/tasks/synchronizer';
+import { ensureTaskSpecsSynced, resetTaskSpecSync } from '../server/tasks/synchronizer.js';
 
 async function rebuildTaskSpecs(): Promise<void> {
   const pool = getPool();

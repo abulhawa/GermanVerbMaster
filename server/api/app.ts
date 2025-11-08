@@ -2,6 +2,7 @@ import express, { type Express, type NextFunction, type Request, type Response }
 import cors, { type CorsOptions } from "cors";
 
 import { registerRoutes } from "../routes.js";
+import { logError } from "../logger.js";
 
 export interface CreateApiAppOptions {
   /**
@@ -13,8 +14,8 @@ export interface CreateApiAppOptions {
    */
   allowedOrigins?: readonly string[];
   /**
-   * Rethrow errors after sending the JSON payload. Enabled by default so the
-   * dev server logs unhandled failures.
+   * Rethrow errors after sending the JSON payload. Disabled by default so
+   * handlers cannot crash the server.
    */
   rethrowErrors?: boolean;
 }
@@ -39,6 +40,7 @@ export function createApiApp(options: CreateApiAppOptions = {}): Express {
   const app = express();
 
   const enableCors = options.enableCors ?? true;
+  const rethrowErrors = options.rethrowErrors ?? false;
   if (enableCors) {
     const configuredOrigins = options.allowedOrigins ?? (process.env.APP_ORIGIN ?? "")
       .split(",")
@@ -57,13 +59,20 @@ export function createApiApp(options: CreateApiAppOptions = {}): Express {
     const status = error?.status ?? error?.statusCode ?? 500;
     const message = error?.message ?? "Internal Server Error";
 
+    if (!rethrowErrors && error) {
+      logError(error);
+    }
+
     if (res.headersSent) {
+      if (rethrowErrors && error) {
+        throw error;
+      }
       return res.end();
     }
 
     res.status(status).json({ error: message });
 
-    if (options.rethrowErrors !== false && error) {
+    if (rethrowErrors && error) {
       throw error;
     }
   });
