@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { CheckCircle2, HelpCircle, Loader2, Volume2, XCircle } from 'lucide-react';
+import { CheckCircle2, CornerDownLeft, HelpCircle, Loader2, Space as SpaceIcon, Volume2, XCircle } from 'lucide-react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -218,35 +218,55 @@ function usePracticeCardHotkeys({
     onToggleExample,
     canToggleExample,
     onSkip,
-    canSkip,
-  ]);
+  canSkip,
+]); 
 }
 
-interface KeyboardShortcutHint {
-  label: string;
-  keys: string[];
+function useAnswerInputFocus(
+  status: 'idle' | 'correct' | 'incorrect',
+  isSubmitting: boolean,
+  inputRef: React.RefObject<HTMLInputElement | null>,
+) {
+  useEffect(() => {
+    if (status === 'idle' && !isSubmitting) {
+      inputRef.current?.focus();
+    }
+  }, [status, isSubmitting]);
 }
 
-interface KeyboardShortcutHintsProps {
-  heading: string;
-  sections: { title: string; hints: KeyboardShortcutHint[] }[];
-}
+function formatShortcutKey(key: string): ReactNode {
+  const renderArrow = (symbol: string, description: string) => (
+    <>
+      <span aria-hidden className="text-xl leading-none">
+        {symbol}
+      </span>
+      <span className="sr-only">{description}</span>
+    </>
+  );
 
-function formatShortcutKey(key: string): string {
+  if (key === 'Enter') {
+    return (
+      <>
+        <CornerDownLeft className="h-6 w-6" aria-hidden />
+        <span className="sr-only">Enter</span>
+      </>
+    );
+  }
+
   if (key === 'ArrowRight') {
-    return '→';
+    return renderArrow('→', 'Arrow Right');
   }
 
   if (key === 'ArrowLeft') {
-    return '←';
+    return renderArrow('←', 'Arrow Left');
   }
 
   if (key === 'ArrowUp') {
-    return '↑';
+    return renderArrow('↑', 'Arrow Up');
   }
 
   if (key === 'ArrowDown') {
-    return '↓';
+    return renderArrow('↓', 'Arrow Down');
   }
 
   if (key === 'Escape') {
@@ -254,61 +274,25 @@ function formatShortcutKey(key: string): string {
   }
 
   if (key === 'Space' || key === ' ') {
-    return 'Space';
+    return (
+      <>
+        <SpaceIcon className="h-6 w-6" aria-hidden />
+        <span className="sr-only">Space</span>
+      </>
+    );
   }
 
   return key.length === 1 ? key.toUpperCase() : key;
 }
 
-function KeyboardShortcutHints({ heading, sections }: KeyboardShortcutHintsProps) {
-  const hasHints = sections.some((section) => section.hints.length > 0);
-  if (!hasHints) {
-    return null;
-  }
-
+function ActionButtonContent({ label, hint }: { label: ReactNode; hint?: ReactNode }) {
   return (
-    <div className="w-full max-w-[min(80vw,32rem)] rounded-2xl border border-border/40 bg-card/20 px-4 py-3 text-left text-sm text-primary-foreground/90 shadow-soft shadow-primary/20">
-      <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary-foreground/60">{heading}</p>
-      <div className="mt-2 flex flex-col gap-3">
-        {sections.map((section) =>
-          section.hints.length > 0 ? (
-            <div key={section.title} className="space-y-1">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground/70">
-                {section.title}
-              </p>
-              <ul className="flex flex-col gap-1 text-sm">
-                {section.hints.map((hint) => (
-                  <li key={`${section.title}-${hint.label}`} className="flex items-center justify-between gap-3">
-                    <span>{hint.label}</span>
-                    <span className="flex items-center gap-1 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-primary-foreground/80">
-                      {hint.keys.map((keyValue) => (
-                        <kbd
-                          key={keyValue}
-                          className="rounded-md border border-primary/40 bg-primary/20 px-2 py-1 text-[0.65rem] font-semibold text-primary-foreground shadow-sm"
-                        >
-                          {formatShortcutKey(keyValue)}
-                        </kbd>
-                      ))}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null,
-        )}
-      </div>
-    </div>
-  );
-}
-
-function ActionButtonContent({ label, hint }: { label: ReactNode; hint?: string }) {
-  return (
-    <span className="flex w-full flex-col items-center leading-tight">
-      <span className="flex items-center justify-center gap-2 text-base font-semibold text-inherit">
+    <span className="flex w-full items-center justify-center gap-3 text-base font-semibold leading-tight text-inherit">
+      <span className="flex items-center gap-2">
         {label}
       </span>
       {hint ? (
-        <span className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-primary-foreground/70">
+        <span className="inline-flex min-h-[1.5rem] min-w-[1.5rem] items-center justify-center text-xl leading-none text-primary-foreground/80">
           {hint}
         </span>
       ) : null}
@@ -809,7 +793,7 @@ function PracticeCardScaffold({
             </span>
           </header>
           <div className="flex w-full flex-col items-center gap-4 text-center">{prompt}</div>
-          {statusBadge ? <div className="w-full">{statusBadge}</div> : null}
+          {statusBadge ? <div className="flex w-full justify-center">{statusBadge}</div> : null}
           <div className="w-full">{answerSection}</div>
           {supplementarySections.length > 0 ? <div className="w-full space-y-3">{supplementarySections}</div> : null}
           <footer className="flex w-full flex-col gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-primary-foreground/80 sm:flex-row sm:items-center sm:justify-between">
@@ -996,31 +980,7 @@ function ConjugateFormRenderer({
     onSkip,
     canSkip,
   });
-
-  const whileAnsweringShortcuts: KeyboardShortcutHint[] = [
-    { label: copy.shortcuts.submit, keys: ['Enter'] },
-    { label: copy.shortcuts.pronounce, keys: ['Space'] },
-  ];
-  if (canToggleExample) {
-    whileAnsweringShortcuts.push({ label: copy.shortcuts.example, keys: ['ArrowUp'] });
-  }
-  if (onSkip) {
-    whileAnsweringShortcuts.push({ label: copy.shortcuts.skip, keys: ['Escape'] });
-  }
-
-  const afterCheckingShortcuts: KeyboardShortcutHint[] = [];
-  if (status !== 'idle' && canRevealAnswer) {
-    afterCheckingShortcuts.push({ label: copy.shortcuts.reveal, keys: ['ArrowDown'] });
-  }
-  if (status === 'incorrect') {
-    afterCheckingShortcuts.push({ label: copy.shortcuts.retry, keys: ['ArrowLeft'] });
-  }
-  if (status !== 'idle' && onContinue) {
-    afterCheckingShortcuts.push({ label: copy.shortcuts.next, keys: ['ArrowRight'] });
-  }
-  if (canToggleExample) {
-    afterCheckingShortcuts.push({ label: copy.shortcuts.example, keys: ['ArrowUp'] });
-  }
+  useAnswerInputFocus(status, isSubmitting, inputRef);
 
   const promptSection = (
     <>
@@ -1109,13 +1069,6 @@ function ConjugateFormRenderer({
         </Button>
       </div>
       {reviewControls}
-      <KeyboardShortcutHints
-        heading={copy.shortcuts.heading}
-        sections={[
-          { title: copy.shortcuts.whileAnswering, hints: whileAnsweringShortcuts },
-          { title: copy.shortcuts.afterChecking, hints: afterCheckingShortcuts },
-        ]}
-      />
       {onSkip ? (
         <Button
           type="button"
@@ -1389,31 +1342,7 @@ function NounCaseDeclensionRenderer({
     onSkip,
     canSkip,
   });
-
-  const whileAnsweringShortcuts: KeyboardShortcutHint[] = [
-    { label: copy.shortcuts.submit, keys: ['Enter'] },
-    { label: copy.shortcuts.pronounce, keys: ['Space'] },
-  ];
-  if (canToggleExample) {
-    whileAnsweringShortcuts.push({ label: copy.shortcuts.example, keys: ['ArrowUp'] });
-  }
-  if (onSkip) {
-    whileAnsweringShortcuts.push({ label: copy.shortcuts.skip, keys: ['Escape'] });
-  }
-
-  const afterCheckingShortcuts: KeyboardShortcutHint[] = [];
-  if (status !== 'idle' && canRevealAnswer) {
-    afterCheckingShortcuts.push({ label: copy.shortcuts.reveal, keys: ['ArrowDown'] });
-  }
-  if (status === 'incorrect') {
-    afterCheckingShortcuts.push({ label: copy.shortcuts.retry, keys: ['ArrowLeft'] });
-  }
-  if (status !== 'idle' && onContinue) {
-    afterCheckingShortcuts.push({ label: copy.shortcuts.next, keys: ['ArrowRight'] });
-  }
-  if (canToggleExample) {
-    afterCheckingShortcuts.push({ label: copy.shortcuts.example, keys: ['ArrowUp'] });
-  }
+  useAnswerInputFocus(status, isSubmitting, inputRef);
 
   const promptSection = (
     <>
@@ -1505,13 +1434,6 @@ function NounCaseDeclensionRenderer({
         </Button>
       </div>
       {reviewControls}
-      <KeyboardShortcutHints
-        heading={copy.shortcuts.heading}
-        sections={[
-          { title: copy.shortcuts.whileAnswering, hints: whileAnsweringShortcuts },
-          { title: copy.shortcuts.afterChecking, hints: afterCheckingShortcuts },
-        ]}
-      />
       {onSkip ? (
         <Button
           type="button"
@@ -1767,31 +1689,7 @@ function AdjectiveEndingRenderer({
     onSkip,
     canSkip,
   });
-
-  const whileAnsweringShortcuts: KeyboardShortcutHint[] = [
-    { label: copy.shortcuts.submit, keys: ['Enter'] },
-    { label: copy.shortcuts.pronounce, keys: ['Space'] },
-  ];
-  if (canToggleExample) {
-    whileAnsweringShortcuts.push({ label: copy.shortcuts.example, keys: ['ArrowUp'] });
-  }
-  if (onSkip) {
-    whileAnsweringShortcuts.push({ label: copy.shortcuts.skip, keys: ['Escape'] });
-  }
-
-  const afterCheckingShortcuts: KeyboardShortcutHint[] = [];
-  if (status !== 'idle' && canRevealAnswer) {
-    afterCheckingShortcuts.push({ label: copy.shortcuts.reveal, keys: ['ArrowDown'] });
-  }
-  if (status === 'incorrect') {
-    afterCheckingShortcuts.push({ label: copy.shortcuts.retry, keys: ['ArrowLeft'] });
-  }
-  if (status !== 'idle' && onContinue) {
-    afterCheckingShortcuts.push({ label: copy.shortcuts.next, keys: ['ArrowRight'] });
-  }
-  if (canToggleExample) {
-    afterCheckingShortcuts.push({ label: copy.shortcuts.example, keys: ['ArrowUp'] });
-  }
+  useAnswerInputFocus(status, isSubmitting, inputRef);
 
   const promptSection = (
     <>
@@ -1881,13 +1779,6 @@ function AdjectiveEndingRenderer({
         </Button>
       </div>
       {reviewControls}
-      <KeyboardShortcutHints
-        heading={copy.shortcuts.heading}
-        sections={[
-          { title: copy.shortcuts.whileAnswering, hints: whileAnsweringShortcuts },
-          { title: copy.shortcuts.afterChecking, hints: afterCheckingShortcuts },
-        ]}
-      />
       {onSkip ? (
         <Button
           type="button"
