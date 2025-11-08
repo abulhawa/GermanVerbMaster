@@ -2,6 +2,7 @@ import { createApiApp } from "./api/app.js";
 import { registerRoutes } from "./routes.js";
 import { createServer } from "http";
 import { serveStatic } from "./serve-static.js";
+import { log } from "./logger.js";
 
 const defaultNodeEnv = process.env.VERCEL ? "production" : "development";
 process.env.NODE_ENV = process.env.NODE_ENV ?? defaultNodeEnv;
@@ -11,17 +12,6 @@ registerRoutes(app);
 
 const nodeEnv = process.env.NODE_ENV ?? defaultNodeEnv;
 app.set("env", nodeEnv);
-
-function log(message: string, source = "express") {
-  const formattedTime = new Date().toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: true,
-  });
-
-  console.log(`${formattedTime} [${source}] ${message}`);
-}
 
 app.use((req, res, next) => {
   const start = Date.now();
