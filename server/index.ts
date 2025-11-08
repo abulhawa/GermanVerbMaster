@@ -1,5 +1,4 @@
 import { createApiApp } from "./api/app.js";
-import { registerRoutes } from "./routes.js";
 import { createServer } from "http";
 import { serveStatic } from "./serve-static.js";
 import { log } from "./logger.js";
@@ -8,7 +7,6 @@ const defaultNodeEnv = process.env.VERCEL ? "production" : "development";
 process.env.NODE_ENV = process.env.NODE_ENV ?? defaultNodeEnv;
 
 const app = createApiApp();
-registerRoutes(app);
 
 const nodeEnv = process.env.NODE_ENV ?? defaultNodeEnv;
 app.set("env", nodeEnv);
