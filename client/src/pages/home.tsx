@@ -493,8 +493,19 @@ export default function Home() {
   }, [updateSettings]);
 
   const handleVerbLevelChange = useCallback((level: CEFRLevel) => {
-    updateSettings((prev) => updateCefrLevel(prev, { pos: 'verb', level }));
-  }, [updateSettings]);
+    let didChangeLevel = false;
+    updateSettings((prev) => {
+      const currentLevel = getVerbLevel(prev);
+      if (currentLevel === level) {
+        return prev;
+      }
+      didChangeLevel = true;
+      return updateCefrLevel(prev, { pos: 'verb', level });
+    });
+    if (didChangeLevel) {
+      setShouldReloadTasks(true);
+    }
+  }, [updateSettings, setShouldReloadTasks]);
 
   const scopeBadgeLabel = scope === 'custom'
     ? `${SCOPE_LABELS[scope]} (${activeTaskTypes.length})`

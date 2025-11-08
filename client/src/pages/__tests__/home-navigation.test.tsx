@@ -238,6 +238,18 @@ describe('Home navigation controls', () => {
         dispatchEvent: vi.fn(),
       }),
     });
+    Object.defineProperty(Element.prototype, 'hasPointerCapture', {
+      configurable: true,
+      value: () => false,
+    });
+    Object.defineProperty(Element.prototype, 'releasePointerCapture', {
+      configurable: true,
+      value: () => undefined,
+    });
+    Object.defineProperty(Element.prototype, 'scrollIntoView', {
+      configurable: true,
+      value: vi.fn(),
+    });
     Object.defineProperty(window, 'navigator', {
       value: { ...window.navigator, clipboard: { writeText: vi.fn(), readText: vi.fn() } },
       configurable: true,
@@ -277,6 +289,45 @@ describe('Home navigation controls', () => {
     await waitFor(() => {
       const updatedCard = screen.getByTestId('practice-card');
       expect(within(updatedCard).getByText('kommen')).toBeInTheDocument();
+    });
+  });
+
+  it('reloads practice tasks for the selected verb level', async () => {
+    seedPracticeSettings();
+
+    mockFetchPracticeTasks.mockImplementation(async ({ level }: TaskFetchOptions = {}) => {
+      if (level === 'B2') {
+        return [createTask('task-b2', 'reisen')];
+      }
+      return [createTask('task-a1', 'gehen')];
+    });
+
+    renderHome();
+
+    await waitFor(() => {
+      expect(mockFetchPracticeTasks).toHaveBeenCalledWith(
+        expect.objectContaining({ level: 'A1', taskType: 'conjugate_form' }),
+      );
+    });
+
+    const practiceCard = await screen.findByTestId('practice-card');
+    expect(within(practiceCard).getByText('gehen')).toBeInTheDocument();
+
+    const levelTrigger = await screen.findByRole('combobox', { name: /verb level/i });
+    await userEvent.click(levelTrigger);
+    const b2Option = await screen.findByRole('option', { name: 'B2' });
+    await userEvent.click(b2Option);
+
+    await waitFor(() => {
+      expect(mockFetchPracticeTasks).toHaveBeenCalledWith(
+        expect.objectContaining({ level: 'B2', taskType: 'conjugate_form' }),
+      );
+    });
+
+    await waitFor(() => {
+      const updatedCard = screen.queryByTestId('practice-card');
+      expect(updatedCard).not.toBeNull();
+      expect(within(updatedCard!).getByText('reisen')).toBeInTheDocument();
     });
   });
 
