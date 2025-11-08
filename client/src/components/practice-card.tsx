@@ -151,6 +151,7 @@ function usePracticeCardHotkeys({
       const isEditableTarget = Boolean(
         target && (target.isContentEditable || (target.tagName && EDITABLE_TAGS.has(target.tagName))),
       );
+      const isButtonTarget = Boolean(target?.closest('button, [role="button"]'));
 
       if (isEditableTarget) {
         return;
@@ -181,6 +182,9 @@ function usePracticeCardHotkeys({
         onPronounce &&
         (key === ' ' || key === 'Spacebar' || key === 'Space')
       ) {
+        if (isButtonTarget) {
+          return;
+        }
         event.preventDefault();
         onPronounce();
         return;
