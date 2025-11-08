@@ -250,32 +250,33 @@ function createBaseRecord(row: WordRow): Record<string, unknown> {
 
 function buildExamples(row: WordRow): Array<{ de?: string; en?: string }> {
   const examples: Array<{ de?: string; en?: string }> = [];
+  const seen = new Set<string>();
+
+  const pushExample = (de: string | null | undefined, en: string | null | undefined) => {
+    const normalizedDe = trimValue(de ?? null);
+    const normalizedEn = trimValue(en ?? null);
+    if (!normalizedDe && !normalizedEn) {
+      return;
+    }
+    const key = `${normalizedDe ?? ''}::${normalizedEn ?? ''}`;
+    if (seen.has(key)) {
+      return;
+    }
+    seen.add(key);
+    examples.push({
+      de: normalizedDe ?? undefined,
+      en: normalizedEn ?? undefined,
+    });
+  };
+
+  pushExample(row.exampleDe, row.exampleEn);
 
   if (Array.isArray(row.examples)) {
     for (const entry of row.examples as WordExample[]) {
       if (!entry) {
         continue;
       }
-      const deValue = trimValue(entry.sentence ?? entry.exampleDe ?? null);
-      const enValue = trimValue(entry.translations?.en ?? entry.exampleEn ?? null);
-      if (!deValue && !enValue) {
-        continue;
-      }
-      examples.push({
-        de: deValue ?? undefined,
-        en: enValue ?? undefined,
-      });
-    }
-  }
-
-  if (examples.length === 0) {
-    const fallbackDe = trimValue(row.exampleDe);
-    const fallbackEn = trimValue(row.exampleEn);
-    if (fallbackDe || fallbackEn) {
-      examples.push({
-        de: fallbackDe ?? undefined,
-        en: fallbackEn ?? undefined,
-      });
+      pushExample(entry.sentence ?? entry.exampleDe ?? null, entry.translations?.en ?? entry.exampleEn ?? null);
     }
   }
 

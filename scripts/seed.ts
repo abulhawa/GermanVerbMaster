@@ -173,6 +173,31 @@ interface BasePosJsonRecord {
   example_en?: unknown;
 }
 
+function createExampleFallback(record: BasePosJsonRecord | null): FallbackExampleInput | null {
+  if (!record) {
+    return null;
+  }
+
+  const raw = record as Record<string, unknown>;
+  const exampleDe = raw['example_de'] ?? raw.exampleDe;
+  const exampleEn = raw['example_en'] ?? raw.exampleEn;
+  const exampleValue = raw.example;
+
+  if (
+    (typeof exampleDe === 'string' && exampleDe.trim()) ||
+    (typeof exampleEn === 'string' && exampleEn.trim()) ||
+    (exampleValue && typeof exampleValue === 'object')
+  ) {
+    return {
+      exampleDe,
+      exampleEn,
+      example: exampleValue,
+    } satisfies FallbackExampleInput;
+  }
+
+  return null;
+}
+
 interface VerbJsonRecord extends BasePosJsonRecord {
   verb?: {
     separable?: unknown;
@@ -256,76 +281,82 @@ function normaliseExamples(
   fallback: FallbackExampleInput | null = null,
 ): { exampleDe: string | null; exampleEn: string | null; examples: WordExample[] | null } {
   const fallbackExample = resolveFallbackExample(fallback);
+  const normalizedEntries: WordExample[] = Array.isArray(rawExamples)
+    ? (rawExamples as unknown[])
+        .map((entry) => normalizeWordExample(entry as WordExample))
+        .filter((entry): entry is WordExample => Boolean(entry))
+    : [];
 
-  if (!Array.isArray(rawExamples)) {
-    return {
-      exampleDe: fallbackExample.de,
-      exampleEn: fallbackExample.en,
-      examples:
-        fallbackExample.de || fallbackExample.en
-          ? [
-              {
-                sentence: fallbackExample.de ?? undefined,
-                translations: fallbackExample.en ? { en: fallbackExample.en } : null,
-              },
-            ]
-          : null,
-    };
-  }
+  const canonical = fallbackExample ?? normalizedEntries[0] ?? null;
+  const deduped: WordExample[] = [];
+  const seen = new Set<string>();
 
-  const examples: WordExample[] = [];
-
-  for (const entry of rawExamples) {
-    if (!entry || typeof entry !== 'object') {
-      continue;
+  const pushExample = (entry: WordExample | null): void => {
+    if (!entry) {
+      return;
     }
 
-    const candidate = entry as PosJsonExample;
-    const exampleDe = normaliseString(candidate.de ?? candidate.exampleDe ?? null);
-    const exampleEn = normaliseString(candidate.en ?? candidate.exampleEn ?? null);
-    if (exampleDe === null && exampleEn === null) {
-      continue;
+    const sentence = normaliseString(entry.sentence ?? null);
+    const english = normaliseString(entry.translations?.en ?? null);
+    const key = `${sentence ?? ''}::${english ?? ''}`;
+    if (seen.has(key)) {
+      return;
+    }
+    seen.add(key);
+
+    const nextTranslations = entry.translations ? { ...entry.translations } : english ? { en: english } : null;
+    if (nextTranslations && english) {
+      nextTranslations.en = english;
     }
 
-    examples.push({
-      sentence: exampleDe,
-      translations: exampleEn ? { en: exampleEn } : null,
+    deduped.push({
+      sentence: sentence ?? entry.sentence ?? null,
+      translations: nextTranslations,
     });
+  };
+
+  pushExample(fallbackExample);
+  for (const entry of normalizedEntries) {
+    pushExample(entry);
   }
 
-  const [first] = examples;
-
-  const exampleDe = first?.sentence ?? fallbackExample.de ?? null;
-  const exampleEn = first?.translations?.en ?? fallbackExample.en ?? null;
-
-  if (!examples.length && (fallbackExample.de || fallbackExample.en)) {
-    examples.push({
-      sentence: fallbackExample.de ?? undefined,
-      translations: fallbackExample.en ? { en: fallbackExample.en } : null,
-    });
-  }
+  const resolvedCanonical = canonical ?? deduped[0] ?? null;
 
   return {
-    exampleDe,
-    exampleEn,
-    examples: examples.length ? examples : null,
+    exampleDe: resolvedCanonical?.sentence ?? null,
+    exampleEn: resolvedCanonical?.translations?.en ?? null,
+    examples: deduped.length ? deduped : null,
   };
 }
 
-function resolveFallbackExample(input: FallbackExampleInput | null): { de: string | null; en: string | null } {
+function resolveFallbackExample(input: FallbackExampleInput | null): WordExample | null {
   if (!input) {
-    return { de: null, en: null };
+    return null;
   }
 
   const exampleRecord = isRecord(input.example) ? (input.example as Record<string, unknown>) : null;
-  const deValue = pickFirstString(
-    [input.exampleDe, exampleRecord?.exampleDe, exampleRecord?.example_de, exampleRecord?.de],
-  );
-  const enValue = pickFirstString(
-    [input.exampleEn, exampleRecord?.exampleEn, exampleRecord?.example_en, exampleRecord?.en],
-  );
+  const deValue = pickFirstString([
+    input.exampleDe,
+    exampleRecord?.exampleDe,
+    exampleRecord?.example_de,
+    exampleRecord?.de,
+    exampleRecord?.sentence,
+  ]);
+  const enValue = pickFirstString([
+    input.exampleEn,
+    exampleRecord?.exampleEn,
+    exampleRecord?.example_en,
+    exampleRecord?.en,
+  ]);
 
-  return { de: deValue, en: enValue };
+  if (!deValue && !enValue) {
+    return null;
+  }
+
+  return {
+    sentence: deValue ?? null,
+    translations: enValue ? { en: enValue } : null,
+  } satisfies WordExample;
 }
 
 function pickFirstString(values: Array<unknown>): string | null {
@@ -636,11 +667,7 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
       const lemma = normaliseString(data.lemma);
       if (!lemma) return null;
 
-      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples, {
-        exampleDe: 'example_de' in data ? (data as Record<string, unknown>).example_de : (data as Record<string, unknown>).exampleDe,
-        exampleEn: 'example_en' in data ? (data as Record<string, unknown>).example_en : (data as Record<string, unknown>).exampleEn,
-        example: 'example' in data ? (data as Record<string, unknown>).example : undefined,
-      });
+      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples, createExampleFallback(data));
       const verb = (data.verb ?? {}) as NonNullable<VerbJsonRecord['verb']>;
       const praesens = (verb.praesens ?? {}) as { ich?: unknown; er?: unknown };
 
@@ -679,11 +706,7 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
       const lemma = normaliseString(data.lemma);
       if (!lemma) return null;
 
-      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples, {
-        exampleDe: (data as Record<string, unknown>).example_de ?? (data as Record<string, unknown>).exampleDe,
-        exampleEn: (data as Record<string, unknown>).example_en ?? (data as Record<string, unknown>).exampleEn,
-        example: (data as Record<string, unknown>).example,
-      });
+      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples, createExampleFallback(data));
       const noun = (data.noun ?? {}) as NonNullable<NounJsonRecord['noun']>;
 
       return {
@@ -721,11 +744,7 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
       const lemma = normaliseString(data.lemma);
       if (!lemma) return null;
 
-      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples, {
-        exampleDe: (data as Record<string, unknown>).example_de ?? (data as Record<string, unknown>).exampleDe,
-        exampleEn: (data as Record<string, unknown>).example_en ?? (data as Record<string, unknown>).exampleEn,
-        example: (data as Record<string, unknown>).example,
-      });
+      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples, createExampleFallback(data));
       const adjective = (data.adjective ?? {}) as NonNullable<AdjectiveJsonRecord['adjective']>;
 
       return {
@@ -763,11 +782,7 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
       const lemma = normaliseString(data.lemma);
       if (!lemma) return null;
 
-      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples, {
-        exampleDe: (data as Record<string, unknown>).example_de ?? (data as Record<string, unknown>).exampleDe,
-        exampleEn: (data as Record<string, unknown>).example_en ?? (data as Record<string, unknown>).exampleEn,
-        example: (data as Record<string, unknown>).example,
-      });
+      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples, createExampleFallback(data));
       const adverb = (data.adverb ?? {}) as NonNullable<AdverbJsonRecord['adverb']>;
 
       return {
@@ -805,11 +820,7 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
       const lemma = normaliseString(data.lemma);
       if (!lemma) return null;
 
-      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples, {
-        exampleDe: (data as Record<string, unknown>).example_de ?? (data as Record<string, unknown>).exampleDe,
-        exampleEn: (data as Record<string, unknown>).example_en ?? (data as Record<string, unknown>).exampleEn,
-        example: (data as Record<string, unknown>).example,
-      });
+      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples, createExampleFallback(data));
       const preposition = (data.preposition ?? {}) as NonNullable<PrepositionJsonRecord['preposition']>;
 
       const caseValues = normalizeStringArray(
@@ -873,11 +884,7 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
       const lemma = normaliseString(data.lemma);
       if (!lemma) return null;
 
-      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples, {
-        exampleDe: (data as Record<string, unknown>).example_de ?? (data as Record<string, unknown>).exampleDe,
-        exampleEn: (data as Record<string, unknown>).example_en ?? (data as Record<string, unknown>).exampleEn,
-        example: (data as Record<string, unknown>).example,
-      });
+      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples, createExampleFallback(data));
 
       return {
         lemma,
@@ -914,11 +921,7 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
       const lemma = normaliseString(data.lemma);
       if (!lemma) return null;
 
-      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples, {
-        exampleDe: (data as Record<string, unknown>).example_de ?? (data as Record<string, unknown>).exampleDe,
-        exampleEn: (data as Record<string, unknown>).example_en ?? (data as Record<string, unknown>).exampleEn,
-        example: (data as Record<string, unknown>).example,
-      });
+      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples, createExampleFallback(data));
 
       return {
         lemma,
@@ -955,7 +958,7 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
       const lemma = normaliseString(data.lemma);
       if (!lemma) return null;
 
-      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples);
+      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples, createExampleFallback(data));
 
       return {
         lemma,
