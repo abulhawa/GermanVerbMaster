@@ -393,17 +393,104 @@ function renderStatusBadge(
   );
 }
 
-function renderExamples(example?: { de?: string; en?: string } | null): string | null {
-  if (!example?.de || !example?.en) {
+interface ExampleContent {
+  de: string;
+  en: string;
+}
+
+function resolveExampleContent(task: PracticeTask): ExampleContent | null {
+  return (
+    extractExampleFromCandidate(task.prompt?.example) ??
+    extractExampleFromMetadata(task.lexeme?.metadata ?? null)
+  );
+}
+
+function extractExampleFromMetadata(metadata: Record<string, unknown> | null | undefined): ExampleContent | null {
+  if (!metadata) {
     return null;
   }
-  return `${example.de} · ${example.en}`;
+
+  const record = metadata as Record<string, unknown>;
+  const direct = extractExampleFromCandidate(record.example as Record<string, unknown>);
+  if (direct) {
+    return direct;
+  }
+
+  const examples = record.examples;
+  if (Array.isArray(examples)) {
+    for (const entry of examples) {
+      const resolved = extractExampleFromCandidate(entry as Record<string, unknown>);
+      if (resolved) {
+        return resolved;
+      }
+    }
+  }
+
+  const fallback = extractExampleFromCandidate({
+    de: record.exampleDe ?? record.example_de,
+    en: record.exampleEn ?? record.example_en,
+  });
+  if (fallback) {
+    return fallback;
+  }
+
+  return null;
+}
+
+function extractExampleFromCandidate(candidate: unknown): ExampleContent | null {
+  const record = toRecord(candidate);
+  if (!record) {
+    return null;
+  }
+
+  const german = pickFirstString(record, ['de', 'exampleDe', 'example_de', 'sentence']);
+  const english =
+    pickFirstString(record, ['en', 'exampleEn', 'example_en', 'translation']) ??
+    pickFromTranslations(record.translations);
+
+  if (german && english) {
+    return { de: german, en: english };
+  }
+
+  return null;
+}
+
+function pickFromTranslations(value: unknown): string | null {
+  const record = toRecord(value);
+  if (!record) {
+    return null;
+  }
+  return pickFirstString(record, ['en', 'english']);
+}
+
+function pickFirstString(source: Record<string, unknown>, keys: readonly string[]): string | null {
+  for (const key of keys) {
+    const candidate = normalizeSentence(source[key]);
+    if (candidate) {
+      return candidate;
+    }
+  }
+  return null;
+}
+
+function toRecord(value: unknown): Record<string, unknown> | null {
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
+  return value as Record<string, unknown>;
+}
+
+function normalizeSentence(value: unknown): string | null {
+  if (typeof value !== 'string') {
+    return null;
+  }
+  const trimmed = value.trim();
+  return trimmed.length ? trimmed : null;
 }
 
 function renderTranslationText(
   copy: PracticeCardMessages,
   preferences: PracticeSettingsRendererPreferences,
-  exampleText: string | null,
   metadata: Record<string, unknown> | null,
   fallback?: string | null,
 ): string | null {
@@ -608,14 +695,14 @@ function ConjugateFormRenderer({
     return Array.from(forms.values());
   }, [task.expectedSolution]);
 
-  const exampleText = preferences.showExamples ? renderExamples(task.prompt.example ?? null) : null;
+  const exampleContent = preferences.showExamples ? resolveExampleContent(task) : null;
   const translationText = useMemo(() => {
     const fallback =
       expectedForms.length && task.expectedSolution?.form
         ? `${copy.translations.expectedAnswerPrefix} ${task.expectedSolution.form}`
         : null;
-    return renderTranslationText(copy, preferences, exampleText, task.lexeme.metadata, fallback);
-  }, [copy, preferences, exampleText, task.lexeme.metadata, expectedForms, task.expectedSolution]);
+    return renderTranslationText(copy, preferences, task.lexeme.metadata, fallback);
+  }, [copy, preferences, task.lexeme.metadata, expectedForms, task.expectedSolution]);
 
   const isLegacyTask = task.taskId.startsWith('legacy:verb:');
 
@@ -798,7 +885,7 @@ function ConjugateFormRenderer({
     );
   }
 
-  if (preferences.showExamples && exampleText) {
+  if (preferences.showExamples && exampleContent) {
     supportSections.push(
       <button
         key="example"
@@ -812,15 +899,16 @@ function ConjugateFormRenderer({
           <p className="text-sm font-semibold text-primary-foreground">{copy.exampleLabel}</p>
           <AnimatePresence initial={false}>
             {showExample ? (
-              <motion.p
+              <motion.div
                 key="example-content"
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="text-sm text-primary-foreground/80"
+                className="space-y-1 text-primary-foreground"
               >
-                {exampleText}
-              </motion.p>
+                <p className="text-sm font-semibold">{exampleContent.de}</p>
+                <p className="text-sm text-primary-foreground/80">{exampleContent.en}</p>
+              </motion.div>
             ) : (
               <motion.span
                 key="example-toggle"
@@ -901,15 +989,15 @@ function NounCaseDeclensionRenderer({
     return Array.from(forms.values());
   }, [task.expectedSolution]);
 
-  const exampleText = preferences.showExamples ? renderExamples(task.prompt.example ?? null) : null;
+  const exampleContent = preferences.showExamples ? resolveExampleContent(task) : null;
   const genderTranslation = task.prompt.gender ? `${copy.translations.articleLabel} ${task.prompt.gender}` : null;
   const fallbackTranslation =
     expectedForms.length && task.expectedSolution?.form
       ? `${copy.translations.expectedFormPrefix} ${task.expectedSolution.form}`
       : genderTranslation;
   const translationText = useMemo(() => {
-    return renderTranslationText(copy, preferences, exampleText, task.lexeme.metadata, fallbackTranslation);
-  }, [copy, preferences, exampleText, task.lexeme.metadata, fallbackTranslation]);
+    return renderTranslationText(copy, preferences, task.lexeme.metadata, fallbackTranslation);
+  }, [copy, preferences, task.lexeme.metadata, fallbackTranslation]);
   const displayAnswer = useMemo(() => {
     if (!task.expectedSolution?.form) {
       return null;
@@ -1100,7 +1188,7 @@ function NounCaseDeclensionRenderer({
     );
   }
 
-  if (preferences.showExamples && exampleText) {
+  if (preferences.showExamples && exampleContent) {
     supportSections.push(
       <button
         key="example"
@@ -1114,15 +1202,16 @@ function NounCaseDeclensionRenderer({
           <p className="text-sm font-semibold text-primary-foreground">{copy.exampleLabel}</p>
           <AnimatePresence initial={false}>
             {showExample ? (
-              <motion.p
+              <motion.div
                 key="example-content"
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="text-sm text-primary-foreground/80"
+                className="space-y-1 text-primary-foreground"
               >
-                {exampleText}
-              </motion.p>
+                <p className="text-sm font-semibold">{exampleContent.de}</p>
+                <p className="text-sm text-primary-foreground/80">{exampleContent.en}</p>
+              </motion.div>
             ) : (
               <motion.span
                 key="example-toggle"
@@ -1196,14 +1285,14 @@ function AdjectiveEndingRenderer({
     return Array.from(forms.values());
   }, [task.expectedSolution]);
 
-  const exampleText = preferences.showExamples ? renderExamples(task.prompt.example ?? null) : null;
+  const exampleContent = preferences.showExamples ? resolveExampleContent(task) : null;
   const fallbackTranslation =
     expectedForms.length && task.expectedSolution?.form
       ? `${copy.translations.expectedFormPrefix} ${task.expectedSolution.form}`
       : task.prompt.syntacticFrame ?? null;
   const translationText = useMemo(() => {
-    return renderTranslationText(copy, preferences, exampleText, task.lexeme.metadata, fallbackTranslation);
-  }, [copy, preferences, exampleText, task.lexeme.metadata, fallbackTranslation]);
+    return renderTranslationText(copy, preferences, task.lexeme.metadata, fallbackTranslation);
+  }, [copy, preferences, task.lexeme.metadata, fallbackTranslation]);
   const displayAnswer = task.expectedSolution?.form ?? null;
 
   const handlePronounce = () => {
@@ -1382,7 +1471,7 @@ function AdjectiveEndingRenderer({
     );
   }
 
-  if (preferences.showExamples && exampleText) {
+  if (preferences.showExamples && exampleContent) {
     supportSections.push(
       <button
         key="example"
@@ -1396,15 +1485,16 @@ function AdjectiveEndingRenderer({
           <p className="text-sm font-semibold text-primary-foreground">{copy.exampleLabel}</p>
           <AnimatePresence initial={false}>
             {showExample ? (
-              <motion.p
+              <motion.div
                 key="example-content"
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="text-sm text-primary-foreground/80"
+                className="space-y-1 text-primary-foreground"
               >
-                {exampleText}
-              </motion.p>
+                <p className="text-sm font-semibold">{exampleContent.de}</p>
+                <p className="text-sm text-primary-foreground/80">{exampleContent.en}</p>
+              </motion.div>
             ) : (
               <motion.span
                 key="example-toggle"

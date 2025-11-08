@@ -1,7 +1,7 @@
 import { inArray, sql } from 'drizzle-orm';
 
 import { getDb } from '@db';
-import { inflections, lexemes, taskSpecs } from '@db/schema';
+import { inflections, lexemes, taskSpecs, words } from '@db/schema';
 import type { LexemePos } from '@shared/task-registry';
 
 import { generateTaskSpecs, type TaskTemplateSource } from './templates.js';
@@ -35,6 +35,8 @@ interface LexemeRow {
   pos: string;
   gender: string | null;
   metadata: Record<string, unknown> | null;
+  fallbackExampleDe: string | null;
+  fallbackExampleEn: string | null;
 }
 
 interface InflectionRow {
@@ -53,8 +55,16 @@ async function syncAllTaskSpecs(): Promise<void> {
       pos: lexemes.pos,
       gender: lexemes.gender,
       metadata: lexemes.metadata,
+      fallbackExampleDe: words.exampleDe,
+      fallbackExampleEn: words.exampleEn,
     })
     .from(lexemes)
+    .leftJoin(
+      words,
+      sql`lower(${words.lemma}) = lower(${lexemes.lemma}) AND ${words.pos} = ${mapLexemePosToWordPosSql(
+        lexemes.pos,
+      )}`,
+    )
     .where(inArray(lexemes.pos, SUPPORTED_POS as string[]));
 
   if (lexemeRows.length === 0) {
@@ -144,8 +154,25 @@ function buildTaskSource(
   const metadata = (lexeme.metadata ?? {}) as Record<string, unknown>;
   const exampleRaw = metadata.example as Record<string, unknown> | undefined;
 
-  const exampleDe = toOptionalString(exampleRaw?.de ?? exampleRaw?.exampleDe);
-  const exampleEn = toOptionalString(exampleRaw?.en ?? exampleRaw?.exampleEn);
+  const fallbackExampleDe = toOptionalString(lexeme.fallbackExampleDe);
+  const fallbackExampleEn = toOptionalString(lexeme.fallbackExampleEn);
+
+  const metadataExampleDe = toOptionalString(exampleRaw?.de ?? exampleRaw?.exampleDe);
+  const metadataExampleEn = toOptionalString(exampleRaw?.en ?? exampleRaw?.exampleEn);
+
+  let exampleDe = metadataExampleDe ?? fallbackExampleDe ?? null;
+  let exampleEn = metadataExampleEn ?? fallbackExampleEn ?? null;
+
+  if (!exampleDe && fallbackExampleDe) {
+    exampleDe = fallbackExampleDe;
+  }
+
+  if (
+    fallbackExampleEn &&
+    (!exampleEn || (exampleDe && exampleEn === exampleDe))
+  ) {
+    exampleEn = fallbackExampleEn;
+  }
 
   const base: TaskTemplateSource = {
     lexemeId: lexeme.id,
@@ -267,6 +294,14 @@ function toOptionalString(value: unknown): string | null {
 
 function toOptionalBoolean(value: unknown): boolean | null {
   return typeof value === 'boolean' ? value : null;
+}
+
+function mapLexemePosToWordPosSql(column: typeof lexemes.pos) {
+  return sql<string>`case ${column}
+    when 'verb' then 'V'
+    when 'noun' then 'N'
+    when 'adjective' then 'Adj'
+    else '' end`;
 }
 
 function asLexemePos(value: string | null | undefined): LexemePos | null {
