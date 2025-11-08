@@ -50,6 +50,7 @@ interface RendererProps<T extends TaskType = TaskType> extends DebuggableCompone
   className?: string;
   sessionProgress: PracticeCardSessionProgress;
   onContinue?: () => void;
+  onSkip?: () => void;
 }
 
 const DEFAULT_RENDERER_PREFS: PracticeSettingsRendererPreferences = {
@@ -120,6 +121,8 @@ interface PracticeCardHotkeyOptions {
   canPronounce?: boolean;
   onToggleExample?: () => void;
   canToggleExample?: boolean;
+  onSkip?: () => void;
+  canSkip?: boolean;
 }
 
 const EDITABLE_TAGS = new Set(['INPUT', 'TEXTAREA', 'SELECT']);
@@ -135,6 +138,8 @@ function usePracticeCardHotkeys({
   canPronounce,
   onToggleExample,
   canToggleExample,
+  onSkip,
+  canSkip,
 }: PracticeCardHotkeyOptions): void {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -152,35 +157,44 @@ function usePracticeCardHotkeys({
       }
 
       const key = event.key;
-      const normalizedKey = key.length === 1 ? key.toLowerCase() : key;
 
-      if (status !== 'idle' && onContinue && (key === 'ArrowRight' || normalizedKey === 'n')) {
+      if (status !== 'idle' && onContinue && key === 'ArrowRight') {
         event.preventDefault();
         onContinue();
         return;
       }
 
-      if (status !== 'idle' && canRevealAnswer && onToggleAnswer && normalizedKey === 'a') {
+      if (status !== 'idle' && canRevealAnswer && onToggleAnswer && key === 'ArrowDown') {
         event.preventDefault();
         onToggleAnswer();
         return;
       }
 
-      if (status === 'incorrect' && canRetry && onRetry && normalizedKey === 'r') {
+      if (status === 'incorrect' && canRetry && onRetry && key === 'ArrowLeft') {
         event.preventDefault();
         onRetry();
         return;
       }
 
-      if (canPronounce && onPronounce && normalizedKey === 'p') {
+      if (
+        canPronounce &&
+        onPronounce &&
+        (key === ' ' || key === 'Spacebar' || key === 'Space')
+      ) {
         event.preventDefault();
         onPronounce();
         return;
       }
 
-      if (canToggleExample && onToggleExample && normalizedKey === 'h') {
+      if (canToggleExample && onToggleExample && key === 'ArrowUp') {
         event.preventDefault();
         onToggleExample();
+        return;
+      }
+
+      if (status === 'idle' && canSkip && onSkip && key === 'Escape') {
+        event.preventDefault();
+        onSkip();
       }
     };
 
@@ -199,6 +213,8 @@ function usePracticeCardHotkeys({
     canPronounce,
     onToggleExample,
     canToggleExample,
+    onSkip,
+    canSkip,
   ]);
 }
 
@@ -215,6 +231,26 @@ interface KeyboardShortcutHintsProps {
 function formatShortcutKey(key: string): string {
   if (key === 'ArrowRight') {
     return '→';
+  }
+
+  if (key === 'ArrowLeft') {
+    return '←';
+  }
+
+  if (key === 'ArrowUp') {
+    return '↑';
+  }
+
+  if (key === 'ArrowDown') {
+    return '↓';
+  }
+
+  if (key === 'Escape') {
+    return 'Esc';
+  }
+
+  if (key === 'Space' || key === ' ') {
+    return 'Space';
   }
 
   return key.length === 1 ? key.toUpperCase() : key;
@@ -258,6 +294,21 @@ function KeyboardShortcutHints({ heading, sections }: KeyboardShortcutHintsProps
         )}
       </div>
     </div>
+  );
+}
+
+function ActionButtonContent({ label, hint }: { label: ReactNode; hint?: string }) {
+  return (
+    <span className="flex w-full flex-col items-center leading-tight">
+      <span className="flex items-center justify-center gap-2 text-base font-semibold text-inherit">
+        {label}
+      </span>
+      {hint ? (
+        <span className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-primary-foreground/70">
+          {hint}
+        </span>
+      ) : null}
+    </span>
   );
 }
 
@@ -665,6 +716,9 @@ function PracticeCardReviewControls({
   }
 
   const revealLabel = isAnswerRevealed ? copy.actions.hideAnswer : copy.actions.revealAnswer;
+  const revealHint = formatShortcutKey('ArrowDown');
+  const retryHint = formatShortcutKey('ArrowLeft');
+  const nextHint = formatShortcutKey('ArrowRight');
 
   return (
     <div className="flex w-full flex-col items-center gap-3 sm:flex-row sm:justify-center sm:gap-4">
@@ -675,9 +729,9 @@ function PracticeCardReviewControls({
           size="lg"
           className="w-full max-w-[min(60vw,20rem)]"
           onClick={onToggleAnswer}
-          aria-keyshortcuts="A"
+          aria-keyshortcuts="ArrowDown"
         >
-          {revealLabel}
+          <ActionButtonContent label={revealLabel} hint={revealHint} />
         </Button>
       ) : null}
       {status === 'incorrect' && onRetry ? (
@@ -687,9 +741,9 @@ function PracticeCardReviewControls({
           size="lg"
           className="w-full max-w-[min(60vw,20rem)]"
           onClick={onRetry}
-          aria-keyshortcuts="R"
+          aria-keyshortcuts="ArrowLeft"
         >
-          {copy.actions.retry}
+          <ActionButtonContent label={copy.actions.retry} hint={retryHint} />
         </Button>
       ) : null}
       {onContinue ? (
@@ -698,9 +752,9 @@ function PracticeCardReviewControls({
           size="lg"
           className="w-full max-w-[min(60vw,20rem)]"
           onClick={onContinue}
-          aria-keyshortcuts="ArrowRight N"
+          aria-keyshortcuts="ArrowRight"
         >
-          {copy.actions.nextQuestion}
+          <ActionButtonContent label={copy.actions.nextQuestion} hint={nextHint} />
         </Button>
       ) : null}
     </div>
@@ -778,6 +832,7 @@ function ConjugateFormRenderer({
   isLoadingNext,
   sessionProgress,
   onContinue,
+  onSkip,
 }: RendererProps<'conjugate_form'>) {
   const { toast } = useToast();
   const { practiceCard: copy } = useTranslations();
@@ -921,6 +976,7 @@ function ConjugateFormRenderer({
   const displayAnswer = task.expectedSolution?.form ?? undefined;
   const canRevealAnswer = Boolean(displayAnswer || expectedForms.length > 0);
   const canToggleExample = Boolean(preferences.showExamples && exampleContent);
+  const canSkip = Boolean(onSkip) && !isSubmitting && status === 'idle';
 
   usePracticeCardHotkeys({
     status,
@@ -933,25 +989,33 @@ function ConjugateFormRenderer({
     canPronounce: true,
     onToggleExample: canToggleExample ? toggleExample : undefined,
     canToggleExample,
+    onSkip,
+    canSkip,
   });
 
   const whileAnsweringShortcuts: KeyboardShortcutHint[] = [
     { label: copy.shortcuts.submit, keys: ['Enter'] },
-    { label: copy.shortcuts.pronounce, keys: ['P'] },
+    { label: copy.shortcuts.pronounce, keys: ['Space'] },
   ];
   if (canToggleExample) {
-    whileAnsweringShortcuts.push({ label: copy.shortcuts.example, keys: ['H'] });
+    whileAnsweringShortcuts.push({ label: copy.shortcuts.example, keys: ['ArrowUp'] });
+  }
+  if (onSkip) {
+    whileAnsweringShortcuts.push({ label: copy.shortcuts.skip, keys: ['Escape'] });
   }
 
   const afterCheckingShortcuts: KeyboardShortcutHint[] = [];
   if (status !== 'idle' && canRevealAnswer) {
-    afterCheckingShortcuts.push({ label: copy.shortcuts.reveal, keys: ['A'] });
+    afterCheckingShortcuts.push({ label: copy.shortcuts.reveal, keys: ['ArrowDown'] });
   }
   if (status === 'incorrect') {
-    afterCheckingShortcuts.push({ label: copy.shortcuts.retry, keys: ['R'] });
+    afterCheckingShortcuts.push({ label: copy.shortcuts.retry, keys: ['ArrowLeft'] });
   }
   if (status !== 'idle' && onContinue) {
-    afterCheckingShortcuts.push({ label: copy.shortcuts.next, keys: ['ArrowRight', 'N'] });
+    afterCheckingShortcuts.push({ label: copy.shortcuts.next, keys: ['ArrowRight'] });
+  }
+  if (canToggleExample) {
+    afterCheckingShortcuts.push({ label: copy.shortcuts.example, keys: ['ArrowUp'] });
   }
 
   const promptSection = (
@@ -985,6 +1049,10 @@ function ConjugateFormRenderer({
     />
   );
 
+  const enterHint = formatShortcutKey('Enter');
+  const pronounceHint = formatShortcutKey('Space');
+  const skipHint = formatShortcutKey('Escape');
+
   const answerSection = (
     <div className="flex flex-col items-center gap-6">
       <Input
@@ -1007,7 +1075,15 @@ function ConjugateFormRenderer({
           className="h-14 w-full max-w-[min(60vw,24rem)] rounded-full text-base shadow-soft shadow-primary/30"
           aria-keyshortcuts="Enter"
         >
-          {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : copy.actions.submit}
+          <ActionButtonContent
+            label={
+              <span className="flex items-center gap-2">
+                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
+                <span>{copy.actions.submit}</span>
+              </span>
+            }
+            hint={enterHint}
+          />
         </Button>
         <Button
           type="button"
@@ -1015,11 +1091,17 @@ function ConjugateFormRenderer({
           size="icon"
           onClick={handlePronounce}
           disabled={isSubmitting}
-          className="h-12 w-12 rounded-full border border-border/40 bg-card/30 text-primary-foreground transition hover:bg-card/40 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
-          aria-keyshortcuts="P"
+          className="flex h-12 w-12 flex-col items-center justify-center gap-1 rounded-full border border-border/40 bg-card/30 text-primary-foreground transition hover:bg-card/40 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+          aria-keyshortcuts="Space"
         >
           <Volume2 className="h-5 w-5" aria-hidden />
           <span className="sr-only">{copy.actions.pronounceSrLabel}</span>
+          <span
+            aria-hidden
+            className="text-[0.6rem] font-semibold uppercase tracking-[0.3em] text-primary-foreground/70"
+          >
+            {pronounceHint}
+          </span>
         </Button>
       </div>
       {reviewControls}
@@ -1030,6 +1112,19 @@ function ConjugateFormRenderer({
           { title: copy.shortcuts.afterChecking, hints: afterCheckingShortcuts },
         ]}
       />
+      {onSkip ? (
+        <Button
+          type="button"
+          variant="ghost"
+          size="lg"
+          className="w-full max-w-[min(60vw,20rem)]"
+          onClick={onSkip}
+          disabled={!canSkip}
+          aria-keyshortcuts="Escape"
+        >
+          <ActionButtonContent label={copy.actions.skip} hint={skipHint} />
+        </Button>
+      ) : null}
     </div>
   );
 
@@ -1058,35 +1153,43 @@ function ConjugateFormRenderer({
         className="flex w-full items-start gap-3 rounded-2xl border border-border/40 bg-card/20 px-4 py-3 text-left text-sm text-primary-foreground/90 transition hover:bg-card/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
         onClick={toggleExample}
         aria-expanded={showExample}
-        aria-keyshortcuts="H"
+        aria-keyshortcuts="ArrowUp"
       >
         <HelpCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary-foreground" aria-hidden />
-        <div className="space-y-1">
-          <p className="text-sm font-semibold text-primary-foreground">{copy.exampleLabel}</p>
-          <AnimatePresence initial={false}>
-            {showExample ? (
-              <motion.div
-                key="example-content"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="space-y-1 text-primary-foreground"
-              >
-                <p className="text-sm font-semibold">{exampleContent.de}</p>
-                <p className="text-sm text-primary-foreground/80">{exampleContent.en}</p>
-              </motion.div>
-            ) : (
-              <motion.span
-                key="example-toggle"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="text-xs text-primary-foreground/70"
-              >
-                {copy.exampleToggle}
-              </motion.span>
-            )}
-          </AnimatePresence>
+        <div className="flex w-full items-start justify-between gap-3">
+          <div className="space-y-1">
+            <p className="text-sm font-semibold text-primary-foreground">{copy.exampleLabel}</p>
+            <AnimatePresence initial={false}>
+              {showExample ? (
+                <motion.div
+                  key="example-content"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="space-y-1 text-primary-foreground"
+                >
+                  <p className="text-sm font-semibold">{exampleContent.de}</p>
+                  <p className="text-sm text-primary-foreground/80">{exampleContent.en}</p>
+                </motion.div>
+              ) : (
+                <motion.span
+                  key="example-toggle"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="text-xs text-primary-foreground/70"
+                >
+                  {copy.exampleToggle}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </div>
+          <span
+            aria-hidden
+            className="mt-1 text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-primary-foreground/60"
+          >
+            {formatShortcutKey('ArrowUp')}
+          </span>
         </div>
       </button>,
     );
@@ -1117,6 +1220,7 @@ function NounCaseDeclensionRenderer({
   isLoadingNext,
   sessionProgress,
   onContinue,
+  onSkip,
 }: RendererProps<'noun_case_declension'>) {
   const { toast } = useToast();
   const { practiceCard: copy } = useTranslations();
@@ -1265,6 +1369,7 @@ function NounCaseDeclensionRenderer({
   const numberLabel = copy.numberLabels[task.prompt.requestedNumber] ?? task.prompt.requestedNumber;
   const canRevealAnswer = Boolean(displayAnswer || expectedForms.length > 0);
   const canToggleExample = Boolean(preferences.showExamples && exampleContent);
+  const canSkip = Boolean(onSkip) && !isSubmitting && status === 'idle';
 
   usePracticeCardHotkeys({
     status,
@@ -1277,25 +1382,33 @@ function NounCaseDeclensionRenderer({
     canPronounce: true,
     onToggleExample: canToggleExample ? toggleExample : undefined,
     canToggleExample,
+    onSkip,
+    canSkip,
   });
 
   const whileAnsweringShortcuts: KeyboardShortcutHint[] = [
     { label: copy.shortcuts.submit, keys: ['Enter'] },
-    { label: copy.shortcuts.pronounce, keys: ['P'] },
+    { label: copy.shortcuts.pronounce, keys: ['Space'] },
   ];
   if (canToggleExample) {
-    whileAnsweringShortcuts.push({ label: copy.shortcuts.example, keys: ['H'] });
+    whileAnsweringShortcuts.push({ label: copy.shortcuts.example, keys: ['ArrowUp'] });
+  }
+  if (onSkip) {
+    whileAnsweringShortcuts.push({ label: copy.shortcuts.skip, keys: ['Escape'] });
   }
 
   const afterCheckingShortcuts: KeyboardShortcutHint[] = [];
   if (status !== 'idle' && canRevealAnswer) {
-    afterCheckingShortcuts.push({ label: copy.shortcuts.reveal, keys: ['A'] });
+    afterCheckingShortcuts.push({ label: copy.shortcuts.reveal, keys: ['ArrowDown'] });
   }
   if (status === 'incorrect') {
-    afterCheckingShortcuts.push({ label: copy.shortcuts.retry, keys: ['R'] });
+    afterCheckingShortcuts.push({ label: copy.shortcuts.retry, keys: ['ArrowLeft'] });
   }
   if (status !== 'idle' && onContinue) {
-    afterCheckingShortcuts.push({ label: copy.shortcuts.next, keys: ['ArrowRight', 'N'] });
+    afterCheckingShortcuts.push({ label: copy.shortcuts.next, keys: ['ArrowRight'] });
+  }
+  if (canToggleExample) {
+    afterCheckingShortcuts.push({ label: copy.shortcuts.example, keys: ['ArrowUp'] });
   }
 
   const promptSection = (
@@ -1332,6 +1445,10 @@ function NounCaseDeclensionRenderer({
     />
   );
 
+  const enterHint = formatShortcutKey('Enter');
+  const pronounceHint = formatShortcutKey('Space');
+  const skipHint = formatShortcutKey('Escape');
+
   const answerSection = (
     <div className="flex flex-col items-center gap-6">
       <Input
@@ -1354,7 +1471,15 @@ function NounCaseDeclensionRenderer({
           className="h-14 w-full max-w-[min(60vw,24rem)] rounded-full text-base shadow-soft shadow-primary/30"
           aria-keyshortcuts="Enter"
         >
-          {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : copy.actions.submit}
+          <ActionButtonContent
+            label={
+              <span className="flex items-center gap-2">
+                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
+                <span>{copy.actions.submit}</span>
+              </span>
+            }
+            hint={enterHint}
+          />
         </Button>
         <Button
           type="button"
@@ -1362,11 +1487,17 @@ function NounCaseDeclensionRenderer({
           size="icon"
           onClick={handlePronounce}
           disabled={isSubmitting}
-          className="h-12 w-12 rounded-full border border-border/40 bg-card/30 text-primary-foreground transition hover:bg-card/40 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
-          aria-keyshortcuts="P"
+          className="flex h-12 w-12 flex-col items-center justify-center gap-1 rounded-full border border-border/40 bg-card/30 text-primary-foreground transition hover:bg-card/40 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+          aria-keyshortcuts="Space"
         >
           <Volume2 className="h-5 w-5" aria-hidden />
           <span className="sr-only">{copy.actions.pronounceSrLabel}</span>
+          <span
+            aria-hidden
+            className="text-[0.6rem] font-semibold uppercase tracking-[0.3em] text-primary-foreground/70"
+          >
+            {pronounceHint}
+          </span>
         </Button>
       </div>
       {reviewControls}
@@ -1377,6 +1508,19 @@ function NounCaseDeclensionRenderer({
           { title: copy.shortcuts.afterChecking, hints: afterCheckingShortcuts },
         ]}
       />
+      {onSkip ? (
+        <Button
+          type="button"
+          variant="ghost"
+          size="lg"
+          className="w-full max-w-[min(60vw,20rem)]"
+          onClick={onSkip}
+          disabled={!canSkip}
+          aria-keyshortcuts="Escape"
+        >
+          <ActionButtonContent label={copy.actions.skip} hint={skipHint} />
+        </Button>
+      ) : null}
     </div>
   );
 
@@ -1405,35 +1549,43 @@ function NounCaseDeclensionRenderer({
         className="flex w-full items-start gap-3 rounded-2xl border border-border/40 bg-card/20 px-4 py-3 text-left text-sm text-primary-foreground/90 transition hover:bg-card/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
         onClick={toggleExample}
         aria-expanded={showExample}
-        aria-keyshortcuts="H"
+        aria-keyshortcuts="ArrowUp"
       >
         <HelpCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary-foreground" aria-hidden />
-        <div className="space-y-1">
-          <p className="text-sm font-semibold text-primary-foreground">{copy.exampleLabel}</p>
-          <AnimatePresence initial={false}>
-            {showExample ? (
-              <motion.div
-                key="example-content"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="space-y-1 text-primary-foreground"
-              >
-                <p className="text-sm font-semibold">{exampleContent.de}</p>
-                <p className="text-sm text-primary-foreground/80">{exampleContent.en}</p>
-              </motion.div>
-            ) : (
-              <motion.span
-                key="example-toggle"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="text-xs text-primary-foreground/70"
-              >
-                {copy.exampleToggle}
-              </motion.span>
-            )}
-          </AnimatePresence>
+        <div className="flex w-full items-start justify-between gap-3">
+          <div className="space-y-1">
+            <p className="text-sm font-semibold text-primary-foreground">{copy.exampleLabel}</p>
+            <AnimatePresence initial={false}>
+              {showExample ? (
+                <motion.div
+                  key="example-content"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="space-y-1 text-primary-foreground"
+                >
+                  <p className="text-sm font-semibold">{exampleContent.de}</p>
+                  <p className="text-sm text-primary-foreground/80">{exampleContent.en}</p>
+                </motion.div>
+              ) : (
+                <motion.span
+                  key="example-toggle"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="text-xs text-primary-foreground/70"
+                >
+                  {copy.exampleToggle}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </div>
+          <span
+            aria-hidden
+            className="mt-1 text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-primary-foreground/60"
+          >
+            {formatShortcutKey('ArrowUp')}
+          </span>
         </div>
       </button>,
     );
@@ -1464,6 +1616,7 @@ function AdjectiveEndingRenderer({
   isLoadingNext,
   sessionProgress,
   onContinue,
+  onSkip,
 }: RendererProps<'adj_ending'>) {
   const { toast } = useToast();
   const { practiceCard: copy } = useTranslations();
@@ -1594,6 +1747,7 @@ function AdjectiveEndingRenderer({
   const degreeLabel = copy.degreeLabels[task.prompt.degree] ?? task.prompt.degree;
   const canRevealAnswer = Boolean(displayAnswer || expectedForms.length > 0);
   const canToggleExample = Boolean(preferences.showExamples && exampleContent);
+  const canSkip = Boolean(onSkip) && !isSubmitting && status === 'idle';
 
   usePracticeCardHotkeys({
     status,
@@ -1606,25 +1760,33 @@ function AdjectiveEndingRenderer({
     canPronounce: true,
     onToggleExample: canToggleExample ? toggleExample : undefined,
     canToggleExample,
+    onSkip,
+    canSkip,
   });
 
   const whileAnsweringShortcuts: KeyboardShortcutHint[] = [
     { label: copy.shortcuts.submit, keys: ['Enter'] },
-    { label: copy.shortcuts.pronounce, keys: ['P'] },
+    { label: copy.shortcuts.pronounce, keys: ['Space'] },
   ];
   if (canToggleExample) {
-    whileAnsweringShortcuts.push({ label: copy.shortcuts.example, keys: ['H'] });
+    whileAnsweringShortcuts.push({ label: copy.shortcuts.example, keys: ['ArrowUp'] });
+  }
+  if (onSkip) {
+    whileAnsweringShortcuts.push({ label: copy.shortcuts.skip, keys: ['Escape'] });
   }
 
   const afterCheckingShortcuts: KeyboardShortcutHint[] = [];
   if (status !== 'idle' && canRevealAnswer) {
-    afterCheckingShortcuts.push({ label: copy.shortcuts.reveal, keys: ['A'] });
+    afterCheckingShortcuts.push({ label: copy.shortcuts.reveal, keys: ['ArrowDown'] });
   }
   if (status === 'incorrect') {
-    afterCheckingShortcuts.push({ label: copy.shortcuts.retry, keys: ['R'] });
+    afterCheckingShortcuts.push({ label: copy.shortcuts.retry, keys: ['ArrowLeft'] });
   }
   if (status !== 'idle' && onContinue) {
-    afterCheckingShortcuts.push({ label: copy.shortcuts.next, keys: ['ArrowRight', 'N'] });
+    afterCheckingShortcuts.push({ label: copy.shortcuts.next, keys: ['ArrowRight'] });
+  }
+  if (canToggleExample) {
+    afterCheckingShortcuts.push({ label: copy.shortcuts.example, keys: ['ArrowUp'] });
   }
 
   const promptSection = (
@@ -1659,6 +1821,10 @@ function AdjectiveEndingRenderer({
     />
   );
 
+  const enterHint = formatShortcutKey('Enter');
+  const pronounceHint = formatShortcutKey('Space');
+  const skipHint = formatShortcutKey('Escape');
+
   const answerSection = (
     <div className="flex flex-col items-center gap-6">
       <Input
@@ -1681,7 +1847,15 @@ function AdjectiveEndingRenderer({
           className="h-14 w-full max-w-[min(60vw,24rem)] rounded-full text-base shadow-soft shadow-primary/30"
           aria-keyshortcuts="Enter"
         >
-          {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : copy.actions.submit}
+          <ActionButtonContent
+            label={
+              <span className="flex items-center gap-2">
+                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
+                <span>{copy.actions.submit}</span>
+              </span>
+            }
+            hint={enterHint}
+          />
         </Button>
         <Button
           type="button"
@@ -1689,11 +1863,17 @@ function AdjectiveEndingRenderer({
           size="icon"
           onClick={handlePronounce}
           disabled={isSubmitting}
-          className="h-12 w-12 rounded-full border border-border/40 bg-card/30 text-primary-foreground transition hover:bg-card/40 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
-          aria-keyshortcuts="P"
+          className="flex h-12 w-12 flex-col items-center justify-center gap-1 rounded-full border border-border/40 bg-card/30 text-primary-foreground transition hover:bg-card/40 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+          aria-keyshortcuts="Space"
         >
           <Volume2 className="h-5 w-5" aria-hidden />
           <span className="sr-only">{copy.actions.pronounceSrLabel}</span>
+          <span
+            aria-hidden
+            className="text-[0.6rem] font-semibold uppercase tracking-[0.3em] text-primary-foreground/70"
+          >
+            {pronounceHint}
+          </span>
         </Button>
       </div>
       {reviewControls}
@@ -1704,6 +1884,19 @@ function AdjectiveEndingRenderer({
           { title: copy.shortcuts.afterChecking, hints: afterCheckingShortcuts },
         ]}
       />
+      {onSkip ? (
+        <Button
+          type="button"
+          variant="ghost"
+          size="lg"
+          className="w-full max-w-[min(60vw,20rem)]"
+          onClick={onSkip}
+          disabled={!canSkip}
+          aria-keyshortcuts="Escape"
+        >
+          <ActionButtonContent label={copy.actions.skip} hint={skipHint} />
+        </Button>
+      ) : null}
     </div>
   );
 
@@ -1732,35 +1925,43 @@ function AdjectiveEndingRenderer({
         className="flex w-full items-start gap-3 rounded-2xl border border-border/40 bg-card/20 px-4 py-3 text-left text-sm text-primary-foreground/90 transition hover:bg-card/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
         onClick={toggleExample}
         aria-expanded={showExample}
-        aria-keyshortcuts="H"
+        aria-keyshortcuts="ArrowUp"
       >
         <HelpCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary-foreground" aria-hidden />
-        <div className="space-y-1">
-          <p className="text-sm font-semibold text-primary-foreground">{copy.exampleLabel}</p>
-          <AnimatePresence initial={false}>
-            {showExample ? (
-              <motion.div
-                key="example-content"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="space-y-1 text-primary-foreground"
-              >
-                <p className="text-sm font-semibold">{exampleContent.de}</p>
-                <p className="text-sm text-primary-foreground/80">{exampleContent.en}</p>
-              </motion.div>
-            ) : (
-              <motion.span
-                key="example-toggle"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="text-xs text-primary-foreground/70"
-              >
-                {copy.exampleToggle}
-              </motion.span>
-            )}
-          </AnimatePresence>
+        <div className="flex w-full items-start justify-between gap-3">
+          <div className="space-y-1">
+            <p className="text-sm font-semibold text-primary-foreground">{copy.exampleLabel}</p>
+            <AnimatePresence initial={false}>
+              {showExample ? (
+                <motion.div
+                  key="example-content"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="space-y-1 text-primary-foreground"
+                >
+                  <p className="text-sm font-semibold">{exampleContent.de}</p>
+                  <p className="text-sm text-primary-foreground/80">{exampleContent.en}</p>
+                </motion.div>
+              ) : (
+                <motion.span
+                  key="example-toggle"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="text-xs text-primary-foreground/70"
+                >
+                  {copy.exampleToggle}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </div>
+          <span
+            aria-hidden
+            className="mt-1 text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-primary-foreground/60"
+          >
+            {formatShortcutKey('ArrowUp')}
+          </span>
         </div>
       </button>,
     );
@@ -1843,4 +2044,5 @@ interface PracticeCardProps extends DebuggableComponentProps {
   className?: string;
   sessionProgress?: PracticeCardSessionProgress;
   onContinue?: () => void;
+  onSkip?: () => void;
 }
