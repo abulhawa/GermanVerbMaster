@@ -229,7 +229,18 @@ function useAnswerInputFocus(
 ) {
   useEffect(() => {
     if (status === 'idle' && !isSubmitting) {
-      inputRef.current?.focus();
+      const input = inputRef.current;
+      if (!input) {
+        return;
+      }
+      const length = input.value.length;
+      input.focus();
+      if (typeof input.setSelectionRange === 'function') {
+        input.setSelectionRange(length, length);
+      } else {
+        input.selectionStart = length;
+        input.selectionEnd = length;
+      }
     }
   }, [status, isSubmitting]);
 }
@@ -904,7 +915,6 @@ function ConjugateFormRenderer({
     }
 
     setStatus('idle');
-    setAnswer('');
     setIsAnswerRevealed(false);
     startTimeRef.current = Date.now();
     inputRef.current?.focus();
@@ -1255,7 +1265,6 @@ function NounCaseDeclensionRenderer({
     }
 
     setStatus('idle');
-    setAnswer('');
     setIsAnswerRevealed(false);
     startTimeRef.current = Date.now();
     inputRef.current?.focus();
@@ -1592,7 +1601,6 @@ function AdjectiveEndingRenderer({
     }
 
     setStatus('idle');
-    setAnswer('');
     setIsAnswerRevealed(false);
     startTimeRef.current = Date.now();
     inputRef.current?.focus();
