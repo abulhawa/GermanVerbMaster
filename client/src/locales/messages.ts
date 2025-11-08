@@ -49,6 +49,17 @@ export interface PracticeCardMessages {
     nextQuestion: string;
     retry: string;
   };
+  shortcuts: {
+    heading: string;
+    whileAnswering: string;
+    afterChecking: string;
+    submit: string;
+    pronounce: string;
+    example: string;
+    reveal: string;
+    retry: string;
+    next: string;
+  };
   loadingNext: string;
   progress: {
     completedLabel: string;
@@ -373,6 +384,17 @@ const MESSAGES: Record<Locale, AppMessages> = {
         nextQuestion: 'Next question',
         retry: 'Try again',
       },
+      shortcuts: {
+        heading: 'Keyboard tips',
+        whileAnswering: 'While answering',
+        afterChecking: 'After checking',
+        submit: 'Submit answer',
+        pronounce: 'Play pronunciation',
+        example: 'Toggle example hint',
+        reveal: 'Reveal or hide answer',
+        retry: 'Retry question',
+        next: 'Go to next question',
+      },
       loadingNext: 'Loading next task…',
       progress: {
         completedLabel: 'Completed {count}',
@@ -630,6 +652,17 @@ const MESSAGES: Record<Locale, AppMessages> = {
         hideAnswer: 'Antwort verbergen',
         nextQuestion: 'Nächste Aufgabe',
         retry: 'Nochmal versuchen',
+      },
+      shortcuts: {
+        heading: 'Tastaturtipps',
+        whileAnswering: 'Während der Eingabe',
+        afterChecking: 'Nach der Auswertung',
+        submit: 'Antwort prüfen',
+        pronounce: 'Aussprache abspielen',
+        example: 'Hinweis ein- oder ausblenden',
+        reveal: 'Antwort ein- oder ausblenden',
+        retry: 'Aufgabe wiederholen',
+        next: 'Zur nächsten Aufgabe springen',
       },
       loadingNext: 'Lädt nächste Aufgabe…',
       progress: {
