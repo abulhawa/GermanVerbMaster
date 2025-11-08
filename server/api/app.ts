@@ -1,8 +1,9 @@
 import express, { type Express, type NextFunction, type Request, type Response } from "express";
-import cors, { type CorsOptions } from "cors";
+import cors from "cors";
 
 import { registerRoutes } from "../routes.js";
 import { logError } from "../logger.js";
+import { buildCorsOptions, resolveAllowedOrigins } from "../config/cors.js";
 
 export interface CreateApiAppOptions {
   /**
@@ -20,32 +21,16 @@ export interface CreateApiAppOptions {
   rethrowErrors?: boolean;
 }
 
-function buildCorsOptions(allowedOrigins: readonly string[] = []): CorsOptions {
-  if (allowedOrigins.length === 0) {
-    return { origin: true };
-  }
-
-  return {
-    origin(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-  } satisfies CorsOptions;
-}
-
 export function createApiApp(options: CreateApiAppOptions = {}): Express {
   const app = express();
 
   const enableCors = options.enableCors ?? true;
   const rethrowErrors = options.rethrowErrors ?? false;
   if (enableCors) {
-    const configuredOrigins = options.allowedOrigins ?? (process.env.APP_ORIGIN ?? "")
-      .split(",")
-      .map((origin) => origin.trim())
-      .filter(Boolean);
+    const configuredOrigins = resolveAllowedOrigins({
+      explicitOrigins: options.allowedOrigins,
+      envOrigins: process.env.APP_ORIGIN,
+    });
 
     app.use(cors(buildCorsOptions(configuredOrigins)));
   }
