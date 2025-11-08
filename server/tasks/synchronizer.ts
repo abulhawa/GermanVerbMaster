@@ -182,7 +182,7 @@ function buildTaskSource(
     english: toOptionalString(metadata.english),
     exampleDe,
     exampleEn,
-    gender: toOptionalString(lexeme.gender),
+    gender: normaliseGenderValue(toOptionalString(lexeme.gender)),
     plural: null,
     separable: toOptionalBoolean(metadata.separable),
     aux: toOptionalString(metadata.auxiliary),
@@ -294,6 +294,67 @@ function toOptionalString(value: unknown): string | null {
 
 function toOptionalBoolean(value: unknown): boolean | null {
   return typeof value === 'boolean' ? value : null;
+}
+
+const SIMPLE_GENDERS = ['der', 'die', 'das'] as const;
+const COMPOUND_GENDERS = ['der/die', 'der/das', 'die/das'] as const;
+type SimpleGender = (typeof SIMPLE_GENDERS)[number];
+type CompoundGender = (typeof COMPOUND_GENDERS)[number];
+
+export function normaliseGenderValue(value: string | null): SimpleGender | CompoundGender | null {
+  if (!value) {
+    return null;
+  }
+
+  const normalised = value.trim().toLowerCase();
+  if (!normalised || normalised === 'null') {
+    return null;
+  }
+
+  if ((SIMPLE_GENDERS as readonly string[]).includes(normalised)) {
+    return normalised as SimpleGender;
+  }
+
+  if ((COMPOUND_GENDERS as readonly string[]).includes(normalised)) {
+    return normalised as CompoundGender;
+  }
+
+  const tokens = normalised
+    .split(/[\/,]/)
+    .map((token) => token.trim())
+    .filter(Boolean);
+
+  if (tokens.length === 0 || tokens.length > 2) {
+    return null;
+  }
+
+  const uniqueTokens: string[] = [];
+  for (const token of tokens) {
+    if (!uniqueTokens.includes(token)) {
+      uniqueTokens.push(token);
+    }
+  }
+
+  if (uniqueTokens.length === 1) {
+    const [token] = uniqueTokens;
+    return (SIMPLE_GENDERS as readonly string[]).includes(token) ? (token as SimpleGender) : null;
+  }
+
+  if (uniqueTokens.length !== 2) {
+    return null;
+  }
+
+  const canonicalOrder: SimpleGender[] = ['der', 'die', 'das'];
+  const orderedTokens = canonicalOrder.filter((gender) => uniqueTokens.includes(gender));
+
+  if (orderedTokens.length !== uniqueTokens.length) {
+    return null;
+  }
+
+  const compound = `${orderedTokens[0]}/${orderedTokens[1]}`;
+  return (COMPOUND_GENDERS as readonly string[]).includes(compound)
+    ? (compound as CompoundGender)
+    : null;
 }
 
 function mapLexemePosToWordPosSql(column: typeof lexemes.pos) {
