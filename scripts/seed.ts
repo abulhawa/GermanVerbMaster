@@ -178,7 +178,7 @@ function createExampleFallback(record: BasePosJsonRecord | null): FallbackExampl
     return null;
   }
 
-  const raw = record as Record<string, unknown>;
+  const raw = record as unknown as Record<string, unknown>;
   const exampleDe = raw['example_de'] ?? raw.exampleDe;
   const exampleEn = raw['example_en'] ?? raw.exampleEn;
   const exampleValue = raw.example;

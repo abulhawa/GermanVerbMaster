@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CheckCircle2, HelpCircle, Loader2, Volume2, XCircle } from 'lucide-react';
 
@@ -109,29 +109,78 @@ function expandWithUmlautFallbacks(value: string): string[] {
   return Array.from(variants);
 }
 
-function useNextQuestionHotkey(
-  status: 'idle' | 'correct' | 'incorrect',
-  onContinue?: () => void,
-): void {
-  useEffect(() => {
-    if (status === 'idle' || !onContinue) {
-      return undefined;
-    }
+interface PracticeCardHotkeyOptions {
+  status: 'idle' | 'correct' | 'incorrect';
+  onContinue?: () => void;
+  onToggleAnswer?: () => void;
+  canRevealAnswer?: boolean;
+  onRetry?: () => void;
+  canRetry?: boolean;
+  onPronounce?: () => void;
+  canPronounce?: boolean;
+  onToggleExample?: () => void;
+  canToggleExample?: boolean;
+}
 
+const EDITABLE_TAGS = new Set(['INPUT', 'TEXTAREA', 'SELECT']);
+
+function usePracticeCardHotkeys({
+  status,
+  onContinue,
+  onToggleAnswer,
+  canRevealAnswer,
+  onRetry,
+  canRetry,
+  onPronounce,
+  canPronounce,
+  onToggleExample,
+  canToggleExample,
+}: PracticeCardHotkeyOptions): void {
+  useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (
-        event.defaultPrevented ||
-        event.repeat ||
-        event.altKey ||
-        event.ctrlKey ||
-        event.metaKey
-      ) {
+      if (event.defaultPrevented || event.repeat || event.metaKey || event.ctrlKey || event.altKey) {
         return;
       }
 
-      if (event.key === 'ArrowRight') {
+      const target = event.target as HTMLElement | null;
+      const isEditableTarget = Boolean(
+        target && (target.isContentEditable || (target.tagName && EDITABLE_TAGS.has(target.tagName))),
+      );
+
+      if (status === 'idle' && isEditableTarget) {
+        return;
+      }
+
+      const key = event.key;
+      const normalizedKey = key.length === 1 ? key.toLowerCase() : key;
+
+      if (status !== 'idle' && onContinue && (key === 'ArrowRight' || normalizedKey === 'n')) {
         event.preventDefault();
         onContinue();
+        return;
+      }
+
+      if (status !== 'idle' && canRevealAnswer && onToggleAnswer && normalizedKey === 'a') {
+        event.preventDefault();
+        onToggleAnswer();
+        return;
+      }
+
+      if (status === 'incorrect' && canRetry && onRetry && normalizedKey === 'r') {
+        event.preventDefault();
+        onRetry();
+        return;
+      }
+
+      if (canPronounce && onPronounce && normalizedKey === 'p') {
+        event.preventDefault();
+        onPronounce();
+        return;
+      }
+
+      if (canToggleExample && onToggleExample && normalizedKey === 'h') {
+        event.preventDefault();
+        onToggleExample();
       }
     };
 
@@ -139,7 +188,77 @@ function useNextQuestionHotkey(
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [status, onContinue]);
+  }, [
+    status,
+    onContinue,
+    onToggleAnswer,
+    canRevealAnswer,
+    onRetry,
+    canRetry,
+    onPronounce,
+    canPronounce,
+    onToggleExample,
+    canToggleExample,
+  ]);
+}
+
+interface KeyboardShortcutHint {
+  label: string;
+  keys: string[];
+}
+
+interface KeyboardShortcutHintsProps {
+  heading: string;
+  sections: { title: string; hints: KeyboardShortcutHint[] }[];
+}
+
+function formatShortcutKey(key: string): string {
+  if (key === 'ArrowRight') {
+    return '→';
+  }
+
+  return key.length === 1 ? key.toUpperCase() : key;
+}
+
+function KeyboardShortcutHints({ heading, sections }: KeyboardShortcutHintsProps) {
+  const hasHints = sections.some((section) => section.hints.length > 0);
+  if (!hasHints) {
+    return null;
+  }
+
+  return (
+    <div className="w-full max-w-[min(80vw,32rem)] rounded-2xl border border-border/40 bg-card/20 px-4 py-3 text-left text-sm text-primary-foreground/90 shadow-soft shadow-primary/20">
+      <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary-foreground/60">{heading}</p>
+      <div className="mt-2 flex flex-col gap-3">
+        {sections.map((section) =>
+          section.hints.length > 0 ? (
+            <div key={section.title} className="space-y-1">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground/70">
+                {section.title}
+              </p>
+              <ul className="flex flex-col gap-1 text-sm">
+                {section.hints.map((hint) => (
+                  <li key={`${section.title}-${hint.label}`} className="flex items-center justify-between gap-3">
+                    <span>{hint.label}</span>
+                    <span className="flex items-center gap-1 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-primary-foreground/80">
+                      {hint.keys.map((keyValue) => (
+                        <kbd
+                          key={keyValue}
+                          className="rounded-md border border-primary/40 bg-primary/20 px-2 py-1 text-[0.65rem] font-semibold text-primary-foreground shadow-sm"
+                        >
+                          {formatShortcutKey(keyValue)}
+                        </kbd>
+                      ))}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null,
+        )}
+      </div>
+    </div>
+  );
 }
 
 function addExpectedForm(forms: Set<string>, value: unknown): void {
@@ -556,6 +675,7 @@ function PracticeCardReviewControls({
           size="lg"
           className="w-full max-w-[min(60vw,20rem)]"
           onClick={onToggleAnswer}
+          aria-keyshortcuts="A"
         >
           {revealLabel}
         </Button>
@@ -567,6 +687,7 @@ function PracticeCardReviewControls({
           size="lg"
           className="w-full max-w-[min(60vw,20rem)]"
           onClick={onRetry}
+          aria-keyshortcuts="R"
         >
           {copy.actions.retry}
         </Button>
@@ -577,6 +698,7 @@ function PracticeCardReviewControls({
           size="lg"
           className="w-full max-w-[min(60vw,20rem)]"
           onClick={onContinue}
+          aria-keyshortcuts="ArrowRight N"
         >
           {copy.actions.nextQuestion}
         </Button>
@@ -664,13 +786,14 @@ function ConjugateFormRenderer({
   const [showExample, setShowExample] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAnswerRevealed, setIsAnswerRevealed] = useState(false);
+  const toggleExample = useCallback(() => {
+    setShowExample((value) => !value);
+  }, []);
   const startTimeRef = useRef(Date.now());
   const inputRef = useRef<HTMLInputElement | null>(null);
   const preferences = getRendererPreferences(settings, task.taskType);
   const instructionText = useMemo(() => getTaskInstructions(copy, task), [copy, task]);
   const partOfSpeechLabel = useMemo(() => formatPartOfSpeechLabel(task), [task.pos, task.taskType]);
-
-  useNextQuestionHotkey(status, onContinue);
 
   useEffect(() => {
     setAnswer('');
@@ -797,6 +920,39 @@ function ConjugateFormRenderer({
 
   const displayAnswer = task.expectedSolution?.form ?? undefined;
   const canRevealAnswer = Boolean(displayAnswer || expectedForms.length > 0);
+  const canToggleExample = Boolean(preferences.showExamples && exampleContent);
+
+  usePracticeCardHotkeys({
+    status,
+    onContinue,
+    onToggleAnswer: canRevealAnswer ? handleToggleAnswerReveal : undefined,
+    canRevealAnswer,
+    onRetry: status === 'incorrect' ? handleRetry : undefined,
+    canRetry: status === 'incorrect',
+    onPronounce: handlePronounce,
+    canPronounce: true,
+    onToggleExample: canToggleExample ? toggleExample : undefined,
+    canToggleExample,
+  });
+
+  const whileAnsweringShortcuts: KeyboardShortcutHint[] = [
+    { label: copy.shortcuts.submit, keys: ['Enter'] },
+    { label: copy.shortcuts.pronounce, keys: ['P'] },
+  ];
+  if (canToggleExample) {
+    whileAnsweringShortcuts.push({ label: copy.shortcuts.example, keys: ['H'] });
+  }
+
+  const afterCheckingShortcuts: KeyboardShortcutHint[] = [];
+  if (status !== 'idle' && canRevealAnswer) {
+    afterCheckingShortcuts.push({ label: copy.shortcuts.reveal, keys: ['A'] });
+  }
+  if (status === 'incorrect') {
+    afterCheckingShortcuts.push({ label: copy.shortcuts.retry, keys: ['R'] });
+  }
+  if (status !== 'idle' && onContinue) {
+    afterCheckingShortcuts.push({ label: copy.shortcuts.next, keys: ['ArrowRight', 'N'] });
+  }
 
   const promptSection = (
     <>
@@ -849,6 +1005,7 @@ function ConjugateFormRenderer({
           disabled={status !== 'idle' || isSubmitting || !answer.trim()}
           size="lg"
           className="h-14 w-full max-w-[min(60vw,24rem)] rounded-full text-base shadow-soft shadow-primary/30"
+          aria-keyshortcuts="Enter"
         >
           {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : copy.actions.submit}
         </Button>
@@ -859,12 +1016,20 @@ function ConjugateFormRenderer({
           onClick={handlePronounce}
           disabled={isSubmitting}
           className="h-12 w-12 rounded-full border border-border/40 bg-card/30 text-primary-foreground transition hover:bg-card/40 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+          aria-keyshortcuts="P"
         >
           <Volume2 className="h-5 w-5" aria-hidden />
           <span className="sr-only">{copy.actions.pronounceSrLabel}</span>
         </Button>
       </div>
       {reviewControls}
+      <KeyboardShortcutHints
+        heading={copy.shortcuts.heading}
+        sections={[
+          { title: copy.shortcuts.whileAnswering, hints: whileAnsweringShortcuts },
+          { title: copy.shortcuts.afterChecking, hints: afterCheckingShortcuts },
+        ]}
+      />
     </div>
   );
 
@@ -891,8 +1056,9 @@ function ConjugateFormRenderer({
         key="example"
         type="button"
         className="flex w-full items-start gap-3 rounded-2xl border border-border/40 bg-card/20 px-4 py-3 text-left text-sm text-primary-foreground/90 transition hover:bg-card/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
-        onClick={() => setShowExample((value) => !value)}
+        onClick={toggleExample}
         aria-expanded={showExample}
+        aria-keyshortcuts="H"
       >
         <HelpCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary-foreground" aria-hidden />
         <div className="space-y-1">
@@ -959,13 +1125,14 @@ function NounCaseDeclensionRenderer({
   const [showExample, setShowExample] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAnswerRevealed, setIsAnswerRevealed] = useState(false);
+  const toggleExample = useCallback(() => {
+    setShowExample((value) => !value);
+  }, []);
   const startTimeRef = useRef(Date.now());
   const inputRef = useRef<HTMLInputElement | null>(null);
   const preferences = getRendererPreferences(settings, task.taskType);
   const instructionText = useMemo(() => getTaskInstructions(copy, task), [copy, task]);
   const partOfSpeechLabel = useMemo(() => formatPartOfSpeechLabel(task), [task.pos, task.taskType]);
-
-  useNextQuestionHotkey(status, onContinue);
 
   useEffect(() => {
     setAnswer('');
@@ -1097,6 +1264,39 @@ function NounCaseDeclensionRenderer({
   const caseLabel = copy.caseLabels[task.prompt.requestedCase] ?? task.prompt.requestedCase;
   const numberLabel = copy.numberLabels[task.prompt.requestedNumber] ?? task.prompt.requestedNumber;
   const canRevealAnswer = Boolean(displayAnswer || expectedForms.length > 0);
+  const canToggleExample = Boolean(preferences.showExamples && exampleContent);
+
+  usePracticeCardHotkeys({
+    status,
+    onContinue,
+    onToggleAnswer: canRevealAnswer ? handleToggleAnswerReveal : undefined,
+    canRevealAnswer,
+    onRetry: status === 'incorrect' ? handleRetry : undefined,
+    canRetry: status === 'incorrect',
+    onPronounce: handlePronounce,
+    canPronounce: true,
+    onToggleExample: canToggleExample ? toggleExample : undefined,
+    canToggleExample,
+  });
+
+  const whileAnsweringShortcuts: KeyboardShortcutHint[] = [
+    { label: copy.shortcuts.submit, keys: ['Enter'] },
+    { label: copy.shortcuts.pronounce, keys: ['P'] },
+  ];
+  if (canToggleExample) {
+    whileAnsweringShortcuts.push({ label: copy.shortcuts.example, keys: ['H'] });
+  }
+
+  const afterCheckingShortcuts: KeyboardShortcutHint[] = [];
+  if (status !== 'idle' && canRevealAnswer) {
+    afterCheckingShortcuts.push({ label: copy.shortcuts.reveal, keys: ['A'] });
+  }
+  if (status === 'incorrect') {
+    afterCheckingShortcuts.push({ label: copy.shortcuts.retry, keys: ['R'] });
+  }
+  if (status !== 'idle' && onContinue) {
+    afterCheckingShortcuts.push({ label: copy.shortcuts.next, keys: ['ArrowRight', 'N'] });
+  }
 
   const promptSection = (
     <>
@@ -1152,6 +1352,7 @@ function NounCaseDeclensionRenderer({
           disabled={status !== 'idle' || isSubmitting || !answer.trim()}
           size="lg"
           className="h-14 w-full max-w-[min(60vw,24rem)] rounded-full text-base shadow-soft shadow-primary/30"
+          aria-keyshortcuts="Enter"
         >
           {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : copy.actions.submit}
         </Button>
@@ -1162,12 +1363,20 @@ function NounCaseDeclensionRenderer({
           onClick={handlePronounce}
           disabled={isSubmitting}
           className="h-12 w-12 rounded-full border border-border/40 bg-card/30 text-primary-foreground transition hover:bg-card/40 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+          aria-keyshortcuts="P"
         >
           <Volume2 className="h-5 w-5" aria-hidden />
           <span className="sr-only">{copy.actions.pronounceSrLabel}</span>
         </Button>
       </div>
       {reviewControls}
+      <KeyboardShortcutHints
+        heading={copy.shortcuts.heading}
+        sections={[
+          { title: copy.shortcuts.whileAnswering, hints: whileAnsweringShortcuts },
+          { title: copy.shortcuts.afterChecking, hints: afterCheckingShortcuts },
+        ]}
+      />
     </div>
   );
 
@@ -1194,8 +1403,9 @@ function NounCaseDeclensionRenderer({
         key="example"
         type="button"
         className="flex w-full items-start gap-3 rounded-2xl border border-border/40 bg-card/20 px-4 py-3 text-left text-sm text-primary-foreground/90 transition hover:bg-card/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
-        onClick={() => setShowExample((value) => !value)}
+        onClick={toggleExample}
         aria-expanded={showExample}
+        aria-keyshortcuts="H"
       >
         <HelpCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary-foreground" aria-hidden />
         <div className="space-y-1">
@@ -1262,13 +1472,14 @@ function AdjectiveEndingRenderer({
   const [showExample, setShowExample] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAnswerRevealed, setIsAnswerRevealed] = useState(false);
+  const toggleExample = useCallback(() => {
+    setShowExample((value) => !value);
+  }, []);
   const startTimeRef = useRef(Date.now());
   const inputRef = useRef<HTMLInputElement | null>(null);
   const preferences = getRendererPreferences(settings, task.taskType);
   const instructionText = useMemo(() => getTaskInstructions(copy, task), [copy, task]);
   const partOfSpeechLabel = useMemo(() => formatPartOfSpeechLabel(task), [task.pos, task.taskType]);
-
-  useNextQuestionHotkey(status, onContinue);
 
   useEffect(() => {
     setAnswer('');
@@ -1382,6 +1593,39 @@ function AdjectiveEndingRenderer({
 
   const degreeLabel = copy.degreeLabels[task.prompt.degree] ?? task.prompt.degree;
   const canRevealAnswer = Boolean(displayAnswer || expectedForms.length > 0);
+  const canToggleExample = Boolean(preferences.showExamples && exampleContent);
+
+  usePracticeCardHotkeys({
+    status,
+    onContinue,
+    onToggleAnswer: canRevealAnswer ? handleToggleAnswerReveal : undefined,
+    canRevealAnswer,
+    onRetry: status === 'incorrect' ? handleRetry : undefined,
+    canRetry: status === 'incorrect',
+    onPronounce: handlePronounce,
+    canPronounce: true,
+    onToggleExample: canToggleExample ? toggleExample : undefined,
+    canToggleExample,
+  });
+
+  const whileAnsweringShortcuts: KeyboardShortcutHint[] = [
+    { label: copy.shortcuts.submit, keys: ['Enter'] },
+    { label: copy.shortcuts.pronounce, keys: ['P'] },
+  ];
+  if (canToggleExample) {
+    whileAnsweringShortcuts.push({ label: copy.shortcuts.example, keys: ['H'] });
+  }
+
+  const afterCheckingShortcuts: KeyboardShortcutHint[] = [];
+  if (status !== 'idle' && canRevealAnswer) {
+    afterCheckingShortcuts.push({ label: copy.shortcuts.reveal, keys: ['A'] });
+  }
+  if (status === 'incorrect') {
+    afterCheckingShortcuts.push({ label: copy.shortcuts.retry, keys: ['R'] });
+  }
+  if (status !== 'idle' && onContinue) {
+    afterCheckingShortcuts.push({ label: copy.shortcuts.next, keys: ['ArrowRight', 'N'] });
+  }
 
   const promptSection = (
     <>
@@ -1435,6 +1679,7 @@ function AdjectiveEndingRenderer({
           disabled={status !== 'idle' || isSubmitting || !answer.trim()}
           size="lg"
           className="h-14 w-full max-w-[min(60vw,24rem)] rounded-full text-base shadow-soft shadow-primary/30"
+          aria-keyshortcuts="Enter"
         >
           {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : copy.actions.submit}
         </Button>
@@ -1445,12 +1690,20 @@ function AdjectiveEndingRenderer({
           onClick={handlePronounce}
           disabled={isSubmitting}
           className="h-12 w-12 rounded-full border border-border/40 bg-card/30 text-primary-foreground transition hover:bg-card/40 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+          aria-keyshortcuts="P"
         >
           <Volume2 className="h-5 w-5" aria-hidden />
           <span className="sr-only">{copy.actions.pronounceSrLabel}</span>
         </Button>
       </div>
       {reviewControls}
+      <KeyboardShortcutHints
+        heading={copy.shortcuts.heading}
+        sections={[
+          { title: copy.shortcuts.whileAnswering, hints: whileAnsweringShortcuts },
+          { title: copy.shortcuts.afterChecking, hints: afterCheckingShortcuts },
+        ]}
+      />
     </div>
   );
 
@@ -1477,8 +1730,9 @@ function AdjectiveEndingRenderer({
         key="example"
         type="button"
         className="flex w-full items-start gap-3 rounded-2xl border border-border/40 bg-card/20 px-4 py-3 text-left text-sm text-primary-foreground/90 transition hover:bg-card/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
-        onClick={() => setShowExample((value) => !value)}
+        onClick={toggleExample}
         aria-expanded={showExample}
+        aria-keyshortcuts="H"
       >
         <HelpCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary-foreground" aria-hidden />
         <div className="space-y-1">
