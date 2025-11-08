@@ -237,6 +237,8 @@ function createBaseRecord(row: WordRow): Record<string, unknown> {
 
   assignIfString(record, 'level', row.level);
   assignIfString(record, 'english', row.english);
+  assignIfString(record, 'example_de', row.exampleDe);
+  assignIfString(record, 'example_en', row.exampleEn);
 
   const examples = buildExamples(row);
   if (examples.length) {

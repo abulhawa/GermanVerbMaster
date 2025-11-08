@@ -168,6 +168,9 @@ interface BasePosJsonRecord {
   english?: unknown;
   approved?: unknown;
   examples?: unknown;
+  example?: unknown;
+  example_de?: unknown;
+  example_en?: unknown;
 }
 
 interface VerbJsonRecord extends BasePosJsonRecord {
@@ -242,11 +245,32 @@ function normaliseBoolean(value: unknown): boolean | null {
   return null;
 }
 
+interface FallbackExampleInput {
+  exampleDe?: unknown;
+  exampleEn?: unknown;
+  example?: unknown;
+}
+
 function normaliseExamples(
   rawExamples: unknown,
+  fallback: FallbackExampleInput | null = null,
 ): { exampleDe: string | null; exampleEn: string | null; examples: WordExample[] | null } {
+  const fallbackExample = resolveFallbackExample(fallback);
+
   if (!Array.isArray(rawExamples)) {
-    return { exampleDe: null, exampleEn: null, examples: null };
+    return {
+      exampleDe: fallbackExample.de,
+      exampleEn: fallbackExample.en,
+      examples:
+        fallbackExample.de || fallbackExample.en
+          ? [
+              {
+                sentence: fallbackExample.de ?? undefined,
+                translations: fallbackExample.en ? { en: fallbackExample.en } : null,
+              },
+            ]
+          : null,
+    };
   }
 
   const examples: WordExample[] = [];
@@ -271,11 +295,51 @@ function normaliseExamples(
 
   const [first] = examples;
 
+  const exampleDe = first?.sentence ?? fallbackExample.de ?? null;
+  const exampleEn = first?.translations?.en ?? fallbackExample.en ?? null;
+
+  if (!examples.length && (fallbackExample.de || fallbackExample.en)) {
+    examples.push({
+      sentence: fallbackExample.de ?? undefined,
+      translations: fallbackExample.en ? { en: fallbackExample.en } : null,
+    });
+  }
+
   return {
-    exampleDe: first?.sentence ?? null,
-    exampleEn: first?.translations?.en ?? null,
+    exampleDe,
+    exampleEn,
     examples: examples.length ? examples : null,
   };
+}
+
+function resolveFallbackExample(input: FallbackExampleInput | null): { de: string | null; en: string | null } {
+  if (!input) {
+    return { de: null, en: null };
+  }
+
+  const exampleRecord = isRecord(input.example) ? (input.example as Record<string, unknown>) : null;
+  const deValue = pickFirstString(
+    [input.exampleDe, exampleRecord?.exampleDe, exampleRecord?.example_de, exampleRecord?.de],
+  );
+  const enValue = pickFirstString(
+    [input.exampleEn, exampleRecord?.exampleEn, exampleRecord?.example_en, exampleRecord?.en],
+  );
+
+  return { de: deValue, en: enValue };
+}
+
+function pickFirstString(values: Array<unknown>): string | null {
+  for (const value of values) {
+    const normalized = normaliseString(value);
+    if (normalized) {
+      return normalized;
+    }
+  }
+  return null;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value && typeof value === 'object');
 }
 
 function normalisePos(raw: unknown): PartOfSpeech | null {
@@ -572,7 +636,11 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
       const lemma = normaliseString(data.lemma);
       if (!lemma) return null;
 
-      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples);
+      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples, {
+        exampleDe: 'example_de' in data ? (data as Record<string, unknown>).example_de : (data as Record<string, unknown>).exampleDe,
+        exampleEn: 'example_en' in data ? (data as Record<string, unknown>).example_en : (data as Record<string, unknown>).exampleEn,
+        example: 'example' in data ? (data as Record<string, unknown>).example : undefined,
+      });
       const verb = (data.verb ?? {}) as NonNullable<VerbJsonRecord['verb']>;
       const praesens = (verb.praesens ?? {}) as { ich?: unknown; er?: unknown };
 
@@ -611,7 +679,11 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
       const lemma = normaliseString(data.lemma);
       if (!lemma) return null;
 
-      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples);
+      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples, {
+        exampleDe: (data as Record<string, unknown>).example_de ?? (data as Record<string, unknown>).exampleDe,
+        exampleEn: (data as Record<string, unknown>).example_en ?? (data as Record<string, unknown>).exampleEn,
+        example: (data as Record<string, unknown>).example,
+      });
       const noun = (data.noun ?? {}) as NonNullable<NounJsonRecord['noun']>;
 
       return {
@@ -649,7 +721,11 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
       const lemma = normaliseString(data.lemma);
       if (!lemma) return null;
 
-      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples);
+      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples, {
+        exampleDe: (data as Record<string, unknown>).example_de ?? (data as Record<string, unknown>).exampleDe,
+        exampleEn: (data as Record<string, unknown>).example_en ?? (data as Record<string, unknown>).exampleEn,
+        example: (data as Record<string, unknown>).example,
+      });
       const adjective = (data.adjective ?? {}) as NonNullable<AdjectiveJsonRecord['adjective']>;
 
       return {
@@ -687,7 +763,11 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
       const lemma = normaliseString(data.lemma);
       if (!lemma) return null;
 
-      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples);
+      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples, {
+        exampleDe: (data as Record<string, unknown>).example_de ?? (data as Record<string, unknown>).exampleDe,
+        exampleEn: (data as Record<string, unknown>).example_en ?? (data as Record<string, unknown>).exampleEn,
+        example: (data as Record<string, unknown>).example,
+      });
       const adverb = (data.adverb ?? {}) as NonNullable<AdverbJsonRecord['adverb']>;
 
       return {
@@ -725,7 +805,11 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
       const lemma = normaliseString(data.lemma);
       if (!lemma) return null;
 
-      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples);
+      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples, {
+        exampleDe: (data as Record<string, unknown>).example_de ?? (data as Record<string, unknown>).exampleDe,
+        exampleEn: (data as Record<string, unknown>).example_en ?? (data as Record<string, unknown>).exampleEn,
+        example: (data as Record<string, unknown>).example,
+      });
       const preposition = (data.preposition ?? {}) as NonNullable<PrepositionJsonRecord['preposition']>;
 
       const caseValues = normalizeStringArray(
@@ -789,7 +873,11 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
       const lemma = normaliseString(data.lemma);
       if (!lemma) return null;
 
-      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples);
+      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples, {
+        exampleDe: (data as Record<string, unknown>).example_de ?? (data as Record<string, unknown>).exampleDe,
+        exampleEn: (data as Record<string, unknown>).example_en ?? (data as Record<string, unknown>).exampleEn,
+        example: (data as Record<string, unknown>).example,
+      });
 
       return {
         lemma,
@@ -826,7 +914,11 @@ const POS_FILE_DEFINITIONS: PosFileDefinition[] = [
       const lemma = normaliseString(data.lemma);
       if (!lemma) return null;
 
-      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples);
+      const { exampleDe, exampleEn, examples } = normaliseExamples(data.examples, {
+        exampleDe: (data as Record<string, unknown>).example_de ?? (data as Record<string, unknown>).exampleDe,
+        exampleEn: (data as Record<string, unknown>).example_en ?? (data as Record<string, unknown>).exampleEn,
+        example: (data as Record<string, unknown>).example,
+      });
 
       return {
         lemma,
