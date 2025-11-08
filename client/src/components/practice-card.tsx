@@ -658,7 +658,7 @@ function renderTranslationText(
 
   const english = metadata && typeof metadata.english === 'string' ? metadata.english : null;
   if (english) {
-    return `${copy.translations.englishPrefix} ${english}`;
+    return formatEnglishTranslation(english);
   }
 
   if (fallback) {
@@ -666,6 +666,20 @@ function renderTranslationText(
   }
 
   return null;
+}
+
+function formatEnglishTranslation(value: string): string {
+  const trimmed = value.trim();
+  if (!/[,;]/.test(trimmed)) {
+    return trimmed;
+  }
+
+  const parts = trimmed
+    .split(/[,;]+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  return parts.join(' – ') || trimmed;
 }
 
 interface PracticeCardScaffoldProps extends DebuggableComponentProps {
@@ -992,6 +1006,9 @@ function ConjugateFormRenderer({
       <p className="max-w-3xl text-4xl font-semibold leading-tight text-primary-foreground sm:text-5xl">
         {instructionText}
       </p>
+      {translationText ? (
+        <p className="max-w-3xl text-lg text-primary-foreground/80">{translationText}</p>
+      ) : null}
     </>
   );
 
@@ -1087,20 +1104,6 @@ function ConjugateFormRenderer({
 
   const supportSections: ReactNode[] = [];
 
-  if (translationText) {
-    supportSections.push(
-      <div
-        key="translation"
-        className="flex w-full items-start gap-3 rounded-2xl border border-border/40 bg-card/20 px-4 py-3 text-left text-sm text-primary-foreground/90 shadow-soft backdrop-blur"
-      >
-        <HelpCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary-foreground" aria-hidden />
-        <div className="space-y-1">
-          <p className="text-sm font-semibold text-primary-foreground">{copy.translations.label}</p>
-          <p className="text-sm text-primary-foreground/80">{translationText}</p>
-        </div>
-      </div>,
-    );
-  }
 
   if (preferences.showExamples && exampleContent) {
     supportSections.push(
@@ -1357,6 +1360,9 @@ function NounCaseDeclensionRenderer({
       <h2 className="max-w-3xl text-4xl font-semibold leading-tight text-primary-foreground sm:text-5xl">
         {instructionText}
       </h2>
+      {translationText ? (
+        <p className="max-w-3xl text-lg text-primary-foreground/80">{translationText}</p>
+      ) : null}
     </>
   );
 
@@ -1452,20 +1458,6 @@ function NounCaseDeclensionRenderer({
 
   const supportSections: ReactNode[] = [];
 
-  if (translationText) {
-    supportSections.push(
-      <div
-        key="translation"
-        className="flex w-full items-start gap-3 rounded-2xl border border-border/40 bg-card/20 px-4 py-3 text-left text-sm text-primary-foreground/90 shadow-soft backdrop-blur"
-      >
-        <HelpCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary-foreground" aria-hidden />
-        <div className="space-y-1">
-          <p className="text-sm font-semibold text-primary-foreground">{copy.translations.label}</p>
-          <p className="text-sm text-primary-foreground/80">{translationText}</p>
-        </div>
-      </div>,
-    );
-  }
 
   if (preferences.showExamples && exampleContent) {
     supportSections.push(
@@ -1702,6 +1694,9 @@ function AdjectiveEndingRenderer({
       <h2 className="max-w-3xl text-4xl font-semibold leading-tight text-primary-foreground sm:text-5xl">
         {instructionText}
       </h2>
+      {translationText ? (
+        <p className="max-w-3xl text-lg text-primary-foreground/80">{translationText}</p>
+      ) : null}
     </>
   );
 
@@ -1797,20 +1792,6 @@ function AdjectiveEndingRenderer({
 
   const supportSections: ReactNode[] = [];
 
-  if (translationText) {
-    supportSections.push(
-      <div
-        key="translation"
-        className="flex w-full items-start gap-3 rounded-2xl border border-border/40 bg-card/20 px-4 py-3 text-left text-sm text-primary-foreground/90 shadow-soft backdrop-blur"
-      >
-        <HelpCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary-foreground" aria-hidden />
-        <div className="space-y-1">
-          <p className="text-sm font-semibold text-primary-foreground">{copy.translations.label}</p>
-          <p className="text-sm text-primary-foreground/80">{translationText}</p>
-        </div>
-      </div>,
-    );
-  }
 
   if (preferences.showExamples && exampleContent) {
     supportSections.push(
