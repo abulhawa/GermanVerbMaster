@@ -248,11 +248,13 @@ export default function Home() {
         const perTypeLimit = Math.max(1, Math.ceil(FETCH_LIMIT / activeTaskTypes.length));
         const fetchedTasks: PracticeTask[][] = [];
 
-        const resolveLevelForPos = (pos: LexemePos): CEFRLevel | undefined => {
+        const resolveLevelForPos = (pos: LexemePos): CEFRLevel => {
+          const fallbackLevel: CEFRLevel =
+            settings.cefrLevelByPos.verb ?? settings.legacyVerbLevel ?? 'A1';
           if (pos === 'verb') {
-            return settings.cefrLevelByPos.verb ?? settings.legacyVerbLevel ?? 'A1';
+            return fallbackLevel;
           }
-          return settings.cefrLevelByPos[pos];
+          return settings.cefrLevelByPos[pos] ?? fallbackLevel;
         };
 
         for (const taskType of activeTaskTypes) {

@@ -345,13 +345,33 @@ describe('Home navigation controls', () => {
 
     await waitFor(() => {
       expect(mockFetchPracticeTasks).toHaveBeenCalledWith(
-        expect.objectContaining({ taskType: 'conjugate_form', pos: 'verb', limit: 8 }),
+        expect.objectContaining({ taskType: 'conjugate_form', pos: 'verb', limit: 8, level: 'A1' }),
       );
     });
 
     await waitFor(() => {
       expect(mockFetchPracticeTasks).toHaveBeenCalledWith(
-        expect.objectContaining({ taskType: 'noun_case_declension', pos: 'noun', limit: 8 }),
+        expect.objectContaining({ taskType: 'noun_case_declension', pos: 'noun', limit: 8, level: 'A1' }),
+      );
+    });
+  });
+
+  it('uses the verb level as the fallback for other parts of speech', async () => {
+    seedPracticeSettings({
+      preferredTaskTypes: ['noun_case_declension'],
+      defaultTaskType: 'noun_case_declension',
+      cefrLevelByPos: { verb: 'B1' },
+    });
+
+    mockFetchPracticeTasks.mockImplementation(async ({ taskType, limit = 15 }: TaskFetchOptions = {}) => {
+      return Array.from({ length: limit }, (_, index) => buildTask(taskType as TaskType, index));
+    });
+
+    renderHome();
+
+    await waitFor(() => {
+      expect(mockFetchPracticeTasks).toHaveBeenCalledWith(
+        expect.objectContaining({ taskType: 'noun_case_declension', pos: 'noun', level: 'B1' }),
       );
     });
   });
