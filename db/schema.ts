@@ -185,6 +185,7 @@ export const lexemes = pgTable(
       .default(sql`'[]'::jsonb`),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+    revision: integer("revision").notNull().default(1),
   },
   (table) => [uniqueIndex("lexemes_lemma_pos_idx").on(table.lemma, table.pos)],
 );
@@ -205,6 +206,7 @@ export const inflections = pgTable(
     checksum: text("checksum"),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+    revision: integer("revision").notNull().default(1),
   },
   (table) => [
     uniqueIndex("inflections_lexeme_form_features_idx").on(
@@ -242,6 +244,13 @@ export const taskSpecs = pgTable(
     index("task_specs_pos_idx").on(table.pos),
   ],
 );
+
+export const taskSyncState = pgTable("task_sync_state", {
+  id: text("id").primaryKey(),
+  lastSyncedAt: timestamp("last_synced_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
 
 export const practiceHistory = pgTable(
   "practice_history",
