@@ -147,7 +147,7 @@ function usePracticeCardHotkeys({
         target && (target.isContentEditable || (target.tagName && EDITABLE_TAGS.has(target.tagName))),
       );
 
-      if (status === 'idle' && isEditableTarget) {
+      if (isEditableTarget) {
         return;
       }
 
