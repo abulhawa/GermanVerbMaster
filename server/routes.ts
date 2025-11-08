@@ -23,6 +23,10 @@ import {
 import type { LexemePos, TaskType } from "@shared";
 import { posPrimarySourceId } from "@shared/source-ids";
 import { ensureTaskSpecsSynced } from "./tasks/synchronizer.js";
+import {
+  loadTaskSpecSyncMarker,
+  storeTaskSpecSyncMarker,
+} from "./tasks/task-sync-state.js";
 import { getTaskRegistryEntry, taskRegistry } from "./tasks/registry.js";
 import { authRouter, getSessionFromRequest } from "./auth/index.js";
 import type { AuthSession } from "./auth/index.js";
@@ -973,7 +977,12 @@ export function registerRoutes(app: Express): void {
     }
 
     try {
-      await ensureTaskSpecsSynced();
+      const storedMarker = await loadTaskSpecSyncMarker();
+      const since = storedMarker ?? null;
+      const { latestTouchedAt } = await ensureTaskSpecsSynced({ since });
+      if (latestTouchedAt && (!storedMarker || latestTouchedAt > storedMarker)) {
+        await storeTaskSpecSyncMarker(latestTouchedAt);
+      }
 
       const { pos, taskType, limit, deviceId, level } = parsed.data;
       const filters: SQL[] = [];

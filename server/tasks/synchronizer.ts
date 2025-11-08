@@ -1,4 +1,4 @@
-import { inArray, sql } from 'drizzle-orm';
+import { and, eq, gt, inArray, sql } from 'drizzle-orm';
 
 import { getDb } from '@db';
 import { inflections, lexemes, taskSpecs, words } from '@db/schema';
@@ -9,24 +9,36 @@ import { generateTaskSpecs, type TaskTemplateSource } from './templates.js';
 const SUPPORTED_POS: readonly LexemePos[] = ['verb', 'noun', 'adjective'];
 const INSERT_CHUNK_SIZE = 500;
 
-let syncPromise: Promise<void> | null = null;
+export interface EnsureTaskSpecsOptions {
+  since?: Date | null;
+}
+
+export interface EnsureTaskSpecsResult {
+  latestTouchedAt: Date | null;
+}
+
+let syncPromise: Promise<EnsureTaskSpecsResult> | null = null;
 
 export function resetTaskSpecSync(): void {
   syncPromise = null;
 }
 
-export async function ensureTaskSpecsSynced(): Promise<void> {
+export async function ensureTaskSpecsSynced(
+  options?: EnsureTaskSpecsOptions,
+): Promise<EnsureTaskSpecsResult> {
+  const since = options?.since ?? null;
+
   if (!syncPromise) {
     syncPromise = (async () => {
       try {
-        await syncAllTaskSpecs();
+        return await syncAllTaskSpecs(since ?? undefined);
       } finally {
         syncPromise = null;
       }
     })();
   }
 
-  await syncPromise;
+  return await syncPromise;
 }
 
 interface LexemeRow {
@@ -37,6 +49,7 @@ interface LexemeRow {
   metadata: Record<string, unknown> | null;
   fallbackExampleDe: string | null;
   fallbackExampleEn: string | null;
+  updatedAt: Date;
 }
 
 interface InflectionRow {
@@ -45,10 +58,58 @@ interface InflectionRow {
   features: Record<string, unknown>;
 }
 
-async function syncAllTaskSpecs(): Promise<void> {
+async function syncAllTaskSpecs(since?: Date): Promise<EnsureTaskSpecsResult> {
   const db = getDb();
+  const lexemeIds = new Set<string>();
+  let latestTouchedAt: Date | null = null;
 
-  const lexemeRows = await db
+  const updateLatest = (value: Date | null | undefined) => {
+    if (!value) {
+      return;
+    }
+    if (!latestTouchedAt || value > latestTouchedAt) {
+      latestTouchedAt = value;
+    }
+  };
+
+  if (since) {
+    const updatedLexemes = await db
+      .select({
+        id: lexemes.id,
+        updatedAt: lexemes.updatedAt,
+      })
+      .from(lexemes)
+      .where(and(inArray(lexemes.pos, SUPPORTED_POS as string[]), gt(lexemes.updatedAt, since)));
+
+    for (const row of updatedLexemes) {
+      if (row.id) {
+        lexemeIds.add(row.id);
+        updateLatest(row.updatedAt);
+      }
+    }
+
+    const updatedInflections = await db
+      .select({
+        lexemeId: inflections.lexemeId,
+        updatedAt: inflections.updatedAt,
+      })
+      .from(inflections)
+      .innerJoin(lexemes, eq(inflections.lexemeId, lexemes.id))
+      .where(and(inArray(lexemes.pos, SUPPORTED_POS as string[]), gt(inflections.updatedAt, since)));
+
+    for (const row of updatedInflections) {
+      if (row.lexemeId) {
+        lexemeIds.add(row.lexemeId);
+        updateLatest(row.updatedAt);
+      }
+    }
+
+    if (lexemeIds.size === 0) {
+      return { latestTouchedAt: null };
+    }
+  }
+
+  const lexemeQuery = db
     .select({
       id: lexemes.id,
       lemma: lexemes.lemma,
@@ -57,6 +118,7 @@ async function syncAllTaskSpecs(): Promise<void> {
       metadata: lexemes.metadata,
       fallbackExampleDe: words.exampleDe,
       fallbackExampleEn: words.exampleEn,
+      updatedAt: lexemes.updatedAt,
     })
     .from(lexemes)
     .leftJoin(
@@ -64,26 +126,41 @@ async function syncAllTaskSpecs(): Promise<void> {
       sql`lower(${words.lemma}) = lower(${lexemes.lemma}) AND ${words.pos} = ${mapLexemePosToWordPosSql(
         lexemes.pos,
       )}`,
-    )
-    .where(inArray(lexemes.pos, SUPPORTED_POS as string[]));
+    );
+
+  const lexemeRows = since
+    ? await lexemeQuery.where(
+        and(
+          inArray(lexemes.pos, SUPPORTED_POS as string[]),
+          inArray(lexemes.id, Array.from(lexemeIds)),
+        ),
+      )
+    : await lexemeQuery.where(inArray(lexemes.pos, SUPPORTED_POS as string[]));
 
   if (lexemeRows.length === 0) {
-    return;
+    return { latestTouchedAt };
   }
 
-  const lexemeIds = lexemeRows.map((row) => row.id);
+  const lexemeIdList = lexemeRows.map((row) => {
+    updateLatest(row.updatedAt);
+    return row.id;
+  });
 
-  const inflectionRows = await db
-    .select({
-      lexemeId: inflections.lexemeId,
-      form: inflections.form,
-      features: inflections.features,
-    })
-    .from(inflections)
-    .where(inArray(inflections.lexemeId, lexemeIds));
+  const inflectionRows = lexemeIdList.length
+    ? await db
+        .select({
+          lexemeId: inflections.lexemeId,
+          form: inflections.form,
+          features: inflections.features,
+          updatedAt: inflections.updatedAt,
+        })
+        .from(inflections)
+        .where(inArray(inflections.lexemeId, lexemeIdList))
+    : [];
 
   const inflectionsByLexeme = new Map<string, InflectionRow[]>();
   for (const row of inflectionRows) {
+    updateLatest(row.updatedAt);
     const list = inflectionsByLexeme.get(row.lexemeId) ?? [];
     list.push({
       lexemeId: row.lexemeId,
@@ -124,26 +201,26 @@ async function syncAllTaskSpecs(): Promise<void> {
     }
   }
 
-  if (inserts.length === 0) {
-    return;
+  if (inserts.length > 0) {
+    for (const chunk of chunkArray(inserts, INSERT_CHUNK_SIZE)) {
+      await db
+        .insert(taskSpecs)
+        .values(chunk)
+        .onConflictDoUpdate({
+          target: taskSpecs.id,
+          set: {
+            prompt: sql`excluded.prompt`,
+            solution: sql`excluded.solution`,
+            hints: sql`excluded.hints`,
+            metadata: sql`excluded.metadata`,
+            revision: sql`excluded.revision`,
+            updatedAt: sql`now()`,
+          },
+        });
+    }
   }
 
-  for (const chunk of chunkArray(inserts, INSERT_CHUNK_SIZE)) {
-    await db
-      .insert(taskSpecs)
-      .values(chunk)
-      .onConflictDoUpdate({
-        target: taskSpecs.id,
-        set: {
-          prompt: sql`excluded.prompt`,
-          solution: sql`excluded.solution`,
-          hints: sql`excluded.hints`,
-          metadata: sql`excluded.metadata`,
-          revision: sql`excluded.revision`,
-          updatedAt: sql`now()`,
-        },
-      });
-  }
+  return { latestTouchedAt };
 }
 
 function buildTaskSource(
