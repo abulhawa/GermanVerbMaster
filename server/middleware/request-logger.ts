@@ -22,6 +22,16 @@ function formatDuration(start: number): number {
   return Date.now() - start;
 }
 
+function stripQuery(value: string): string {
+  const queryStart = value.indexOf("?");
+
+  if (queryStart === -1) {
+    return value;
+  }
+
+  return value.slice(0, queryStart);
+}
+
 function buildLogLine(
   req: Request,
   res: Response,
@@ -30,7 +40,11 @@ function buildLogLine(
   shouldLogPayload: boolean,
 ): string {
   const method = req.method ?? "UNKNOWN";
-  const route = req.originalUrl ?? req.url ?? req.path ?? "";
+  const route =
+    req.path ??
+    req.baseUrl ??
+    (req.originalUrl ? stripQuery(req.originalUrl) : undefined) ??
+    (req.url ? stripQuery(req.url) : "");
   const status = res.statusCode ?? 0;
 
   let logLine = `${method} ${route} ${status} in ${duration}ms`;
