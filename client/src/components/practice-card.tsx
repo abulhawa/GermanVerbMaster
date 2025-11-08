@@ -292,7 +292,7 @@ function ActionButtonContent({ label, hint }: { label: ReactNode; hint?: ReactNo
         {label}
       </span>
       {hint ? (
-        <span className="inline-flex min-h-[1.5rem] min-w-[1.5rem] items-center justify-center text-xl leading-none text-primary-foreground/80">
+        <span className="inline-flex min-h-[1.25rem] min-w-[1.25rem] items-center justify-center text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-primary-foreground/70">
           {hint}
         </span>
       ) : null}
@@ -1072,9 +1072,9 @@ function ConjugateFormRenderer({
       {onSkip ? (
         <Button
           type="button"
-          variant="ghost"
+          variant="outline"
           size="lg"
-          className="w-full max-w-[min(60vw,20rem)]"
+          className="h-12 w-full max-w-[min(60vw,20rem)] rounded-full border-border/70 bg-card/90 text-base shadow-soft transition hover:bg-card focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
           onClick={onSkip}
           disabled={!canSkip}
           aria-keyshortcuts="Escape"
@@ -1437,9 +1437,9 @@ function NounCaseDeclensionRenderer({
       {onSkip ? (
         <Button
           type="button"
-          variant="ghost"
+          variant="outline"
           size="lg"
-          className="w-full max-w-[min(60vw,20rem)]"
+          className="h-12 w-full max-w-[min(60vw,20rem)] rounded-full border-border/70 bg-card/90 text-base shadow-soft transition hover:bg-card focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
           onClick={onSkip}
           disabled={!canSkip}
           aria-keyshortcuts="Escape"
@@ -1782,9 +1782,9 @@ function AdjectiveEndingRenderer({
       {onSkip ? (
         <Button
           type="button"
-          variant="ghost"
+          variant="outline"
           size="lg"
-          className="w-full max-w-[min(60vw,20rem)]"
+          className="h-12 w-full max-w-[min(60vw,20rem)] rounded-full border-border/70 bg-card/90 text-base shadow-soft transition hover:bg-card focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
           onClick={onSkip}
           disabled={!canSkip}
           aria-keyshortcuts="Escape"
