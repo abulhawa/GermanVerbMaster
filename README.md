@@ -12,7 +12,7 @@ Requires Node.js 22.0.0 or newer and npm 10+ (see `package.json` engines field).
 2. (Optional) Copy `.env.example` to `.env` and override the defaults. You can change:
    - `DATABASE_URL` – Postgres connection string (e.g. Supabase or local `postgres://` URL).
    - `DATABASE_SSL` / `PGSSLMODE` – set to `disable` when connecting to a local instance without TLS.
-   - `APP_ORIGIN` – a comma-separated allow list used for CORS in production builds.
+   - `APP_ORIGIN` – a comma-separated allow list used for CORS. Required in production; development falls back to localhost origins when unset.
    - `BETTER_AUTH_SECRET` – 64-byte secret used to sign Better Auth cookies and tokens.
    - `BETTER_AUTH_URL` – external base URL Better Auth should use when generating callbacks (defaults to `http://localhost:5000`).
    - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` – optional credentials for Google OAuth sign-in.
@@ -55,7 +55,7 @@ Before running `npm run db:push` or `npm run seed` in any managed environment, s
 
 - `DATABASE_URL` (required) – Postgres connection string for the production database.
 - `DATABASE_SSL` / `PGSSLMODE` (optional) – leave unset to negotiate TLS automatically or set to `disable` when targeting a local database without SSL.
-- `APP_ORIGIN` – comma-separated allow list of trusted origins that should be able to hit the production API.
+- `APP_ORIGIN` (required in production) – comma-separated allow list of trusted origins that should be able to hit the production API. Development builds fall back to `http://localhost` / `http://127.0.0.1` ports used by Vite.
 - `BETTER_AUTH_SECRET` – secret shared with Better Auth for signing cookies and tokens.
 - `BETTER_AUTH_URL` – public base URL Better Auth should advertise in emails and OAuth callbacks.
 - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` – optional Google OAuth credentials.
