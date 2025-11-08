@@ -599,6 +599,7 @@ export default function Home() {
                     settings={settings}
                     onResult={handleTaskResult}
                     onContinue={handleContinueToNext}
+                    onSkip={handleSkipTask}
                     isLoadingNext={isFetchingTasks && session.queue.length === 0}
                     debugId="home-practice-card"
                     sessionProgress={{

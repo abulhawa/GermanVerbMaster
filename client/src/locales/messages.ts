@@ -48,6 +48,7 @@ export interface PracticeCardMessages {
     hideAnswer: string;
     nextQuestion: string;
     retry: string;
+    skip: string;
   };
   shortcuts: {
     heading: string;
@@ -59,6 +60,7 @@ export interface PracticeCardMessages {
     reveal: string;
     retry: string;
     next: string;
+    skip: string;
   };
   loadingNext: string;
   progress: {
@@ -383,6 +385,7 @@ const MESSAGES: Record<Locale, AppMessages> = {
         hideAnswer: 'Hide answer',
         nextQuestion: 'Next question',
         retry: 'Try again',
+        skip: 'Skip card',
       },
       shortcuts: {
         heading: 'Keyboard tips',
@@ -394,6 +397,7 @@ const MESSAGES: Record<Locale, AppMessages> = {
         reveal: 'Reveal or hide answer',
         retry: 'Retry question',
         next: 'Go to next question',
+        skip: 'Skip this card',
       },
       loadingNext: 'Loading next task…',
       progress: {
@@ -652,6 +656,7 @@ const MESSAGES: Record<Locale, AppMessages> = {
         hideAnswer: 'Antwort verbergen',
         nextQuestion: 'Nächste Aufgabe',
         retry: 'Nochmal versuchen',
+        skip: 'Aufgabe überspringen',
       },
       shortcuts: {
         heading: 'Tastaturtipps',
@@ -663,6 +668,7 @@ const MESSAGES: Record<Locale, AppMessages> = {
         reveal: 'Antwort ein- oder ausblenden',
         retry: 'Aufgabe wiederholen',
         next: 'Zur nächsten Aufgabe springen',
+        skip: 'Aktuelle Karte überspringen',
       },
       loadingNext: 'Lädt nächste Aufgabe…',
       progress: {
