@@ -5,6 +5,7 @@
 - `npm run test:unit` (via `npm run test:all`) completed successfully after running 116 tests across 37 files.
 - Playwright end-to-end tests initially failed because browsers were not installed. After installing Chromium with `npx playwright install --with-deps chromium`, all 7 E2E tests passed.
 - `npm run check` (TypeScript compile) finished without errors.
+- `FORCE_ENV_VALIDATION=1 npm run validate:env` succeeded with production values set for `BETTER_AUTH_SECRET`, `APP_ORIGIN`, `RESEND_API_KEY`, and `ADMIN_API_TOKEN`. Output recorded in `docs/deployment/production-env-validation-2025-11-09.log`.
 
 ## Detailed Command Output
 
@@ -23,6 +24,10 @@
 
 ### `npm run check`
 - Completed successfully with no diagnostics.
+
+### `FORCE_ENV_VALIDATION=1 npm run validate:env`
+- Passed with production equivalents for `BETTER_AUTH_SECRET`/`AUTH_SECRET`, `APP_ORIGIN`, `RESEND_API_KEY`, and `ADMIN_API_TOKEN`.
+- Command output archived in `docs/deployment/production-env-validation-2025-11-09.log` for release traceability.
 
 ## Outstanding Requirements / Blocks
 - A valid `DATABASE_URL` (and associated credentials) is required to execute `npm run db:push` and `npm run seed` successfully. Provide connection details for the target PostgreSQL instance before rerunning these steps.

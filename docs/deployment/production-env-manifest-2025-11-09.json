@@ -1,0 +1,30 @@
+{
+  "updatedAt": "2025-11-09T00:00:00Z",
+  "appOrigin": [
+    "https://app.germanverbmaster.com"
+  ],
+  "betterAuth": {
+    "secret": {
+      "sha256": "49e68f11ace466e7a50420f5a105bf08c5e5755ddae9e653a00d8fd327bf6c67",
+      "length": 64,
+      "generatedAt": "2025-11-09"
+    }
+  },
+  "resend": {
+    "apiKey": {
+      "sha256": "fb8100771e18e8c17f8fed3d38822e6e61824f320b6d5f545b5ce82462a81b5b",
+      "prefix": "re_",
+      "length": 35,
+      "generatedAt": "2025-11-09"
+    },
+    "fromEmail": "German Verb Master <no-reply@germanverbmaster.com>"
+  },
+  "admin": {
+    "apiToken": {
+      "sha256": "882d56634d4888e548d8b65db9b75d1ec2c24e244158ff3203c6af2b8f03bd07",
+      "length": 24,
+      "generatedAt": "2025-11-09"
+    }
+  },
+  "notes": "Insert these values into the external secret manager (see ops runbook) and use the digests above for rotation traceability."
+}
