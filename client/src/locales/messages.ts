@@ -161,6 +161,34 @@ export interface HomeMessages {
     title: string;
     description: string;
   };
+  historyCard: {
+    title: string;
+    summary: string;
+    emptySummary: string;
+    emptyDetail: string;
+    open: string;
+    close: string;
+  };
+  queueDiagnostics: {
+    title: string;
+    description: string;
+    status: {
+      blocked: string;
+      fetching: string;
+      replenishing: string;
+      healthy: string;
+    };
+    labels: {
+      queued: string;
+      threshold: string;
+      server: string;
+      signature: string;
+    };
+    serverStates: {
+      yes: string;
+      no: string;
+    };
+  };
 }
 
 export interface AuthMessages {
@@ -275,6 +303,38 @@ const MESSAGES: Record<Locale, AppMessages> = {
         title: 'Review mode',
         description:
           "You've completed every available prompt. We'll cycle them for spaced review so you keep reinforcing your memory.",
+      },
+      historyCard: {
+        title: 'Practice recap',
+        summary: 'Logged {count} answers recently.',
+        emptySummary: 'Your recent answers will appear here once you start practicing.',
+        emptyDetail: "We'll summarise your answers once you complete a prompt.",
+        open: 'View recap',
+        close: 'Hide details',
+        resultLabels: {
+          correct: 'Correct',
+          incorrect: 'Incorrect',
+        },
+      },
+      queueDiagnostics: {
+        title: 'Queue diagnostics',
+        description: 'Monitor how many prompts remain available and whether new tasks are being fetched.',
+        status: {
+          blocked: 'Blocked',
+          fetching: 'Fetching tasks',
+          replenishing: 'Replenishing',
+          healthy: 'Healthy',
+        },
+        labels: {
+          queued: 'Queued tasks',
+          threshold: 'Min threshold',
+          server: 'Server exhausted',
+          signature: 'Last fetch signature',
+        },
+        serverStates: {
+          yes: 'Yes',
+          no: 'No',
+        },
       },
     },
     auth: {
@@ -546,6 +606,38 @@ const MESSAGES: Record<Locale, AppMessages> = {
         title: 'Wiederholungsmodus',
         description:
           'Du hast alle verfügbaren Aufgaben abgeschlossen. Wir wiederholen sie jetzt im zeitlich gestaffelten Rhythmus, damit du weiter üben kannst.',
+      },
+      historyCard: {
+        title: 'Übungsrückblick',
+        summary: 'Zuletzt {count} Antworten protokolliert.',
+        emptySummary: 'Deine jüngsten Antworten erscheinen hier, sobald du mit dem Üben beginnst.',
+        emptyDetail: 'Wir fassen deine Antworten zusammen, sobald du eine Aufgabe abschließt.',
+        open: 'Rückblick anzeigen',
+        close: 'Details verbergen',
+        resultLabels: {
+          correct: 'Richtig',
+          incorrect: 'Falsch',
+        },
+      },
+      queueDiagnostics: {
+        title: 'Queue-Diagnose',
+        description: 'Behalte im Blick, wie viele Aufgaben bereitstehen und ob neue geladen werden.',
+        status: {
+          blocked: 'Blockiert',
+          fetching: 'Aufgaben werden geladen',
+          replenishing: 'Wird aufgefüllt',
+          healthy: 'Stabil',
+        },
+        labels: {
+          queued: 'Aufgaben in der Warteschlange',
+          threshold: 'Mindestschwelle',
+          server: 'Server erschöpft',
+          signature: 'Letzte Abrufsignatur',
+        },
+        serverStates: {
+          yes: 'Ja',
+          no: 'Nein',
+        },
       },
     },
     auth: {
