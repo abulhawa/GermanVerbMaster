@@ -26,19 +26,17 @@ import { useAnswerInputFocus } from '../hooks/use-answer-input-focus';
 import { usePracticeCardHotkeys } from '../hooks/use-practice-card-hotkeys';
 import type { RendererProps } from '../types';
 import {
-  addExpectedForm,
   buildPromptSummary,
-  computeAnsweredAtAndTime,
   createErrorToast,
   createOfflineToast,
-  createSubmissionContext,
-  formatPartOfSpeechLabel,
   getRendererPreferences,
   getTaskInstructions,
   renderTranslationText,
   resolveExampleContent,
   toLegacyVerbPayload,
-} from '../utils';
+} from '../utils/data';
+import { addExpectedForm, computeAnsweredAtAndTime, createSubmissionContext } from '../utils/scoring';
+import { formatPartOfSpeechLabel } from '../utils/format';
 
 export function ConjugateFormRenderer({
   task,

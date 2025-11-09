@@ -26,18 +26,16 @@ import { useAnswerInputFocus } from '../hooks/use-answer-input-focus';
 import { usePracticeCardHotkeys } from '../hooks/use-practice-card-hotkeys';
 import type { RendererProps } from '../types';
 import {
-  addExpectedForm,
   buildNounPromptSummary,
   buildNounInstruction,
-  computeAnsweredAtAndTime,
   createErrorToast,
   createOfflineToast,
-  createSubmissionContext,
-  formatPartOfSpeechLabel,
   getRendererPreferences,
   renderTranslationText,
   resolveExampleContent,
-} from '../utils';
+} from '../utils/data';
+import { addExpectedForm, computeAnsweredAtAndTime, createSubmissionContext } from '../utils/scoring';
+import { formatPartOfSpeechLabel } from '../utils/format';
 
 export function NounCaseDeclensionRenderer({
   task,

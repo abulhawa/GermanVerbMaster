@@ -6,7 +6,7 @@ import { getDevAttributes } from '@/lib/dev-attributes';
 import type { PracticeCardMessages } from '@/locales';
 
 import type { PracticeCardSessionProgress } from '../types';
-import { formatInstructionTemplate } from '../utils';
+import { formatInstructionTemplate } from '../utils/format';
 
 export interface PracticeCardScaffoldProps {
   copy: PracticeCardMessages;

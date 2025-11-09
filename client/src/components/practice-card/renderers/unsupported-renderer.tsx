@@ -3,7 +3,7 @@ import { getDevAttributes } from '@/lib/dev-attributes';
 import { useTranslations } from '@/locales';
 
 import type { RendererProps } from '../types';
-import { formatUnsupportedDescription } from '../utils';
+import { formatUnsupportedDescription } from '../utils/format';
 
 export function UnsupportedRenderer({ task, debugId }: RendererProps) {
   const { practiceCard: copy } = useTranslations();
