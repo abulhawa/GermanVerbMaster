@@ -9,6 +9,8 @@ describe('tasks API', () => {
   let seedLexemeInventoryForWords: typeof import('./helpers/task-fixtures').seedLexemeInventoryForWords;
   let ensureTaskSpecsSynced: typeof import('../server/tasks/synchronizer.js').ensureTaskSpecsSynced;
   let resetTaskSpecSync: typeof import('../server/tasks/synchronizer.js').resetTaskSpecSync;
+  let resetTaskSpecCache: typeof import('../server/cache/task-specs-cache.js').resetTaskSpecCache;
+  let setTaskSpecCacheTtlMs: typeof import('../server/cache/task-specs-cache.js').setTaskSpecCacheTtlMs;
   let invokeApi: ReturnType<typeof createApiInvoker>;
   let createVercelApiHandler: typeof import('../server/api/vercel-handler.js').createVercelApiHandler;
   let practiceHistoryTable: typeof import('../db/schema.js').practiceHistory;
@@ -131,9 +133,12 @@ describe('tasks API', () => {
 
     ({ seedLexemeInventoryForWords } = await import('./helpers/task-fixtures'));
     ({ ensureTaskSpecsSynced, resetTaskSpecSync } = await import('../server/tasks/synchronizer.js'));
+    ({ resetTaskSpecCache, setTaskSpecCacheTtlMs } = await import('../server/cache/task-specs-cache.js'));
 
     await seedLexemeInventoryForWords(drizzleDb, sampleWords);
     resetTaskSpecSync();
+    resetTaskSpecCache();
+    setTaskSpecCacheTtlMs(null);
     await ensureTaskSpecsSynced();
 
     ({ createVercelApiHandler } = await import('../server/api/vercel-handler.js'));
@@ -143,6 +148,12 @@ describe('tasks API', () => {
 
   afterEach(async () => {
     getSessionFromRequestMock.mockReset();
+    if (resetTaskSpecCache) {
+      resetTaskSpecCache();
+    }
+    if (setTaskSpecCacheTtlMs) {
+      setTaskSpecCacheTtlMs(null);
+    }
     if (dbContext) {
       await dbContext.cleanup();
       dbContext = undefined;
@@ -292,5 +303,45 @@ describe('tasks API', () => {
     const nextTask = (nextResponse.bodyJson as any).tasks[0];
     expect(nextTask).toBeDefined();
     expect(nextTask.taskId).not.toBe(firstTask.taskId);
+  });
+
+  it('serves cached task specs when sync results are fresh', async () => {
+    const synchronizerModule = await import('../server/tasks/synchronizer.js');
+    const syncSpy = vi.spyOn(synchronizerModule, 'ensureTaskSpecsSynced');
+
+    syncSpy.mockClear();
+    setTaskSpecCacheTtlMs(5 * 60 * 1000);
+    resetTaskSpecCache();
+
+    const firstResponse = await invokeApi('/api/tasks');
+    expect(firstResponse.status).toBe(200);
+
+    const secondResponse = await invokeApi('/api/tasks?limit=2');
+    expect(secondResponse.status).toBe(200);
+
+    expect(syncSpy).not.toHaveBeenCalled();
+
+    syncSpy.mockRestore();
+  });
+
+  it('refreshes task specs when the cache is stale', async () => {
+    const synchronizerModule = await import('../server/tasks/synchronizer.js');
+    const syncSpy = vi.spyOn(synchronizerModule, 'ensureTaskSpecsSynced');
+
+    syncSpy.mockClear();
+    setTaskSpecCacheTtlMs(0);
+    resetTaskSpecCache();
+
+    const firstResponse = await invokeApi('/api/tasks');
+    expect(firstResponse.status).toBe(200);
+    expect(syncSpy).toHaveBeenCalledTimes(1);
+
+    syncSpy.mockClear();
+
+    const secondResponse = await invokeApi('/api/tasks');
+    expect(secondResponse.status).toBe(200);
+    expect(syncSpy).toHaveBeenCalledTimes(1);
+
+    syncSpy.mockRestore();
   });
 });

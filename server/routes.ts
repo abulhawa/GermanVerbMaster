@@ -22,7 +22,7 @@ import {
 } from "@shared";
 import type { LexemePos, TaskType } from "@shared";
 import { posPrimarySourceId } from "@shared/source-ids";
-import { ensureTaskSpecsSynced } from "./tasks/synchronizer.js";
+import { ensureTaskSpecCacheFresh } from "./cache/task-specs-cache.js";
 import { getTaskRegistryEntry, taskRegistry } from "./tasks/registry.js";
 import { authRouter, getSessionFromRequest } from "./auth/index.js";
 import type { AuthSession } from "./auth/index.js";
@@ -999,7 +999,7 @@ export function registerRoutes(app: Express): void {
     }
 
     try {
-      await ensureTaskSpecsSynced();
+      await ensureTaskSpecCacheFresh();
 
       const { pos, taskType, limit, deviceId, level } = parsed.data;
       const filters: SQL[] = [];
