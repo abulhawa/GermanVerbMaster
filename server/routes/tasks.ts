@@ -282,12 +282,6 @@ export function createTaskRouter(): Router {
         });
       }
 
-      if (resolvedTaskTypes.length === 1) {
-        filters.push(eq(taskSpecs.taskType, resolvedTaskTypes[0]!));
-      } else if (resolvedTaskTypes.length > 1) {
-        filters.push(inArray(taskSpecs.taskType, resolvedTaskTypes));
-      }
-
       const requestedLevels = Array.isArray(level)
         ? level
         : typeof level === "string"
@@ -322,12 +316,24 @@ export function createTaskRouter(): Router {
         .from(taskSpecs)
         .innerJoin(lexemes, eq(taskSpecs.lexemeId, lexemes.id));
 
-      let taskQuery = filters.length ? baseQuery.where(and(...filters)) : baseQuery;
-
       const recencyThreshold = new Date(Date.now() - RECENT_ATTEMPT_WINDOW_MS);
 
-      const orderedQuery = hasIdentity
-        ? (() => {
+      const buildOrderedQuery = (typesOverride?: TaskType[]) => {
+        const activeTaskTypes = typesOverride ?? resolvedTaskTypes;
+        const combinedFilters = [...filters];
+
+        if (activeTaskTypes.length === 1) {
+          combinedFilters.push(eq(taskSpecs.taskType, activeTaskTypes[0]!));
+        } else if (activeTaskTypes.length > 1) {
+          combinedFilters.push(inArray(taskSpecs.taskType, activeTaskTypes));
+        }
+
+        const taskQuery = combinedFilters.length
+          ? baseQuery.where(and(...combinedFilters))
+          : baseQuery;
+
+        const orderedQuery = hasIdentity
+          ? (() => {
             const identityExpressions: SQL[] = [];
             if (sessionUserId) {
               identityExpressions.push(eq(practiceHistory.userId, sessionUserId));
@@ -353,10 +359,10 @@ export function createTaskRouter(): Router {
             if (normalisedPos) {
               historyFilters.push(eq(practiceHistory.pos, normalisedPos));
             }
-            if (resolvedTaskTypes.length === 1) {
-              historyFilters.push(eq(practiceHistory.taskType, resolvedTaskTypes[0]!));
-            } else if (resolvedTaskTypes.length > 1) {
-              historyFilters.push(inArray(practiceHistory.taskType, resolvedTaskTypes));
+            if (activeTaskTypes.length === 1) {
+              historyFilters.push(eq(practiceHistory.taskType, activeTaskTypes[0]!));
+            } else if (activeTaskTypes.length > 1) {
+              historyFilters.push(inArray(practiceHistory.taskType, activeTaskTypes));
             }
 
             const historyWhere = combineFilters(historyFilters);
@@ -456,10 +462,26 @@ export function createTaskRouter(): Router {
           })()
         : taskQuery.orderBy(desc(taskSpecs.updatedAt), asc(taskSpecs.id));
 
-      const rowLimit = resolvedTaskTypes.length > 1 ? limit * resolvedTaskTypes.length : limit;
-      const compiledQuery = orderedQuery.limit(rowLimit);
-      const rowsRaw = await executeSelectRaw<Record<string, unknown>>(compiledQuery);
-      const mappedRows = rowsRaw.map((row) => mapTaskRow(row as Record<string, any>));
+        return orderedQuery;
+      };
+
+      const mappedRows: Array<Record<string, any>> = [];
+
+      if (resolvedTaskTypes.length > 1) {
+        for (const typeKey of resolvedTaskTypes) {
+          const perTypeQuery = buildOrderedQuery([typeKey]);
+          const perTypeRows = await executeSelectRaw<Record<string, unknown>>(
+            perTypeQuery.limit(limit),
+          );
+          mappedRows.push(
+            ...perTypeRows.map((row) => mapTaskRow(row as Record<string, any>)),
+          );
+        }
+      } else {
+        const compiledQuery = buildOrderedQuery().limit(limit);
+        const rowsRaw = await executeSelectRaw<Record<string, unknown>>(compiledQuery);
+        mappedRows.push(...rowsRaw.map((row) => mapTaskRow(row as Record<string, any>)));
+      }
 
       const payload: Array<{
         taskId: string;
@@ -472,7 +494,7 @@ export function createTaskRouter(): Router {
         lexeme: { id: string; lemma: string; metadata: Record<string, unknown> | null };
       }> = [];
 
-      for (const row of mappedRows.slice(0, limit)) {
+      for (const row of mappedRows) {
         const taskId = normaliseString(row.taskId);
         const taskTypeValue = normaliseString(row.taskType);
         const rendererValue = normaliseString(row.renderer);
@@ -576,7 +598,7 @@ export function createTaskRouter(): Router {
         tasksByType.get(typeKey)!.push(task);
       }
 
-      const limitPerType = resolvedTaskTypes.length > 1 ? limit : rowLimit;
+      const limitPerType = limit;
       const limitedByTypeEntries: Array<[TaskType, typeof payload]> = [];
 
       const targetTypes = resolvedTaskTypes.length
