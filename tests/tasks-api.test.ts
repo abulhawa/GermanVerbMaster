@@ -149,7 +149,7 @@ describe('tasks API', () => {
     }
   });
 
-  it('responds with an error when the task registry is misconfigured', async () => {
+  it('prunes tasks with unsupported types before serving requests', async () => {
     if (!dbContext) {
       throw new Error('test database not initialised');
     }
@@ -166,10 +166,13 @@ describe('tasks API', () => {
     );
 
     const response = await invokeApi('/api/tasks');
-    expect(response.status).toBe(500);
+    expect(response.status).toBe(200);
 
-    const body = (response.bodyJson ?? JSON.parse(response.bodyText)) as { error?: string };
-    expect(body?.error).toContain('Unknown task type');
+    const staleCount = await dbContext.pool.query(
+      'select count(*)::int as count from task_specs where task_type = $1',
+      ['unsupported_task_type'],
+    );
+    expect(staleCount.rows[0]?.count).toBe(0);
   });
 
   it('records submissions and updates scheduling state', async () => {
