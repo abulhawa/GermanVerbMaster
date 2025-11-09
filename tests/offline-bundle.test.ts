@@ -69,7 +69,11 @@ describe('offline practice bundle', () => {
     enqueueReviewTasks([baseQueueItem], { replace: true });
 
     await practiceDbReady;
-    await practiceDb.pendingAttempts.add({ payload: pendingPayload, createdAt: 1_700_000_000_000 });
+    await practiceDb.pendingAttempts.add({
+      payload: pendingPayload,
+      createdAt: 1_700_000_000_000,
+      retryCount: 0,
+    });
 
     const settings = createDefaultSettings();
     settings.cefrLevelByPos.noun = 'A2';

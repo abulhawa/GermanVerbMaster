@@ -47,6 +47,7 @@ describe('offline queue', () => {
   beforeEach(async () => {
     await resetDb();
     vi.restoreAllMocks();
+    vi.useRealTimers();
     Object.defineProperty(navigator, 'onLine', { value: true, configurable: true });
     global.fetch = vi.fn();
   });
@@ -87,9 +88,61 @@ describe('offline queue', () => {
     global.fetch = fetchMock as unknown as typeof fetch;
 
     const flushed = await flushPendingAttempts();
-    expect(flushed).toBe(1);
+    expect(flushed.succeeded).toBe(1);
+    expect(flushed.failed).toBe(0);
+    expect(flushed.deferred).toBe(0);
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const attempts = await getPendingAttempts();
+    expect(attempts).toHaveLength(0);
+  });
+
+  it('continues flushing attempts when one fails and backs off retries', async () => {
+    Object.defineProperty(navigator, 'onLine', { value: false, configurable: true });
+    await submitPracticeAttempt(basePayload);
+    await submitPracticeAttempt(nounPayload);
+
+    Object.defineProperty(navigator, 'onLine', { value: true, configurable: true });
+
+    const responses = [
+      { ok: false, status: 500, json: () => Promise.resolve({ error: 'retry' }) },
+      { ok: true, json: () => Promise.resolve({ success: true }) },
+      { ok: true, json: () => Promise.resolve({ success: true }) },
+    ];
+
+    const fetchMock = vi.fn().mockImplementation(() => Promise.resolve(responses.shift()!));
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    const firstFlush = await flushPendingAttempts();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(firstFlush.succeeded).toBe(1);
+    expect(firstFlush.failed).toBe(1);
+    expect(firstFlush.deferred).toBe(0);
+
+    let attempts = await getPendingAttempts();
+    expect(attempts).toHaveLength(1);
+    const pendingAttempt = attempts[0];
+    expect(pendingAttempt?.retryCount).toBe(1);
+    expect(pendingAttempt?.lastTriedAt).toBeDefined();
+
+    const secondFlush = await flushPendingAttempts();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(secondFlush.succeeded).toBe(0);
+    expect(secondFlush.failed).toBe(0);
+    expect(secondFlush.deferred).toBe(1);
+
+    if (pendingAttempt?.id) {
+      await practiceDb.pendingAttempts.update(pendingAttempt.id, {
+        lastTriedAt: Date.now() - 1500,
+      });
+    }
+
+    const thirdFlush = await flushPendingAttempts();
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(thirdFlush.succeeded).toBe(1);
+    expect(thirdFlush.failed).toBe(0);
+    expect(thirdFlush.deferred).toBe(0);
+
+    attempts = await getPendingAttempts();
     expect(attempts).toHaveLength(0);
   });
 });

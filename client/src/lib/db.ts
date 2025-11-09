@@ -7,6 +7,8 @@ export interface PendingAttempt {
   id?: number;
   payload: TaskAttemptPayload;
   createdAt: number;
+  retryCount: number;
+  lastTriedAt?: number;
 }
 
 class PracticeDatabase extends Dexie {
@@ -17,6 +19,21 @@ class PracticeDatabase extends Dexie {
     this.version(1).stores({
       pendingAttempts: '++id, createdAt, payload.taskId',
     });
+    this.version(2)
+      .stores({
+        pendingAttempts: '++id, createdAt, payload.taskId, retryCount, lastTriedAt',
+      })
+      .upgrade(async (transaction) => {
+        await transaction
+          .table<PendingAttempt>('pendingAttempts')
+          .toCollection()
+          .modify((attempt) => {
+            attempt.retryCount = attempt.retryCount ?? 0;
+            if (attempt.lastTriedAt === undefined) {
+              delete attempt.lastTriedAt;
+            }
+          });
+      });
     this.on('ready', async () => {
       await migrateLegacyPendingAttempts(this);
     });
@@ -51,6 +68,7 @@ async function migrateLegacyPendingAttempts(db: PracticeDatabase): Promise<void>
     const converted = legacyAttempts.map<PendingAttempt>((attempt) => ({
       payload: convertLegacyAttempt(attempt.payload),
       createdAt: attempt.createdAt,
+      retryCount: 0,
     }));
 
     await db.transaction('rw', db.pendingAttempts, async () => {
