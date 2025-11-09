@@ -12,6 +12,7 @@ import { emitMetric } from '../metrics/emitter.js';
 import { generateTaskSpecs, type TaskTemplateSource } from './templates.js';
 import {
   loadTaskSpecSyncCheckpoint,
+  recordTaskSpecSyncHeartbeat,
   storeTaskSpecSyncCheckpoint,
   type TaskSpecSyncCheckpoint,
 } from './task-sync-state.js';
@@ -26,6 +27,20 @@ const DELETE_CHUNK_SIZE = 500;
 const TASK_SYNC_PROFILING_ENABLED = process.env.DEBUG_TASK_SYNC_PROFILING === '1';
 const DEFAULT_RETRY_ATTEMPTS = 3;
 const DEFAULT_RETRY_DELAY_MS = 250;
+
+interface TaskSpecSyncMetadataInternal {
+  inProgress: boolean;
+  lastRunStartedAt: Date | null;
+  lastRunCompletedAt: Date | null;
+  lastCheckpoint: TaskSpecSyncCheckpoint | null;
+}
+
+const syncMetadata: TaskSpecSyncMetadataInternal = {
+  inProgress: false,
+  lastRunStartedAt: null,
+  lastRunCompletedAt: null,
+  lastCheckpoint: null,
+};
 
 export interface EnsureTaskSpecsOptions {
   since?: Date | null;
@@ -49,10 +64,54 @@ export interface TaskSyncStats {
   taskSpecsDeleted: number;
 }
 
+export interface TaskSpecSyncMetadata {
+  inProgress: boolean;
+  lastRunStartedAt: Date | null;
+  lastRunCompletedAt: Date | null;
+  lastCheckpoint: TaskSpecSyncCheckpoint | null;
+}
+
+function markSyncStart(startedAt: Date): void {
+  syncMetadata.inProgress = true;
+  syncMetadata.lastRunStartedAt = startedAt;
+}
+
+function markSyncSuccess(completedAt: Date, checkpoint: TaskSpecSyncCheckpoint | null): void {
+  syncMetadata.inProgress = false;
+  syncMetadata.lastRunCompletedAt = completedAt;
+  syncMetadata.lastCheckpoint = checkpoint;
+}
+
+function markSyncFailure(): void {
+  syncMetadata.inProgress = false;
+}
+
+export function getTaskSpecSyncMetadata(): TaskSpecSyncMetadata {
+  return {
+    inProgress: syncMetadata.inProgress,
+    lastRunStartedAt: syncMetadata.lastRunStartedAt
+      ? new Date(syncMetadata.lastRunStartedAt)
+      : null,
+    lastRunCompletedAt: syncMetadata.lastRunCompletedAt
+      ? new Date(syncMetadata.lastRunCompletedAt)
+      : null,
+    lastCheckpoint: syncMetadata.lastCheckpoint
+      ? {
+          lastSyncedAt: new Date(syncMetadata.lastCheckpoint.lastSyncedAt),
+          versionHash: syncMetadata.lastCheckpoint.versionHash,
+        }
+      : null,
+  };
+}
+
 let syncPromise: Promise<EnsureTaskSpecsResult> | null = null;
 
 export function resetTaskSpecSync(): void {
   syncPromise = null;
+  syncMetadata.inProgress = false;
+  syncMetadata.lastRunStartedAt = null;
+  syncMetadata.lastRunCompletedAt = null;
+  syncMetadata.lastCheckpoint = null;
 }
 
 interface SyncExecutionOptions {
@@ -69,6 +128,9 @@ export async function ensureTaskSpecsSynced(
       const storedCheckpoint = providedCheckpoint ?? (await loadTaskSpecSyncCheckpoint());
       const since = options?.since ?? storedCheckpoint?.lastSyncedAt ?? null;
       const startedAt = process.hrtime.bigint();
+      const startedAtDate = new Date();
+
+      markSyncStart(startedAtDate);
 
       logStructured({
         source: LOG_SOURCE,
@@ -93,6 +155,14 @@ export async function ensureTaskSpecsSynced(
         });
 
         const checkpoint = result.checkpoint ?? storedCheckpoint ?? null;
+        const completedAtDate = new Date();
+
+        await recordTaskSpecSyncHeartbeat({
+          checkpoint,
+          completedAt: completedAtDate,
+        });
+
+        markSyncSuccess(completedAtDate, checkpoint);
 
         logStructured({
           source: LOG_SOURCE,
@@ -121,6 +191,8 @@ export async function ensureTaskSpecsSynced(
           value: 1,
           tags: { stage: 'sync' },
         });
+
+        markSyncFailure();
 
         logStructured({
           source: LOG_SOURCE,
