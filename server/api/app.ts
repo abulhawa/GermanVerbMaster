@@ -45,6 +45,13 @@ export function createApiApp(options: CreateApiAppOptions = {}): Express {
     );
   }
 
+  const scriptSrc: string[] = ["'self'"];
+  if (!isProduction) {
+    // Vite injects an inline React refresh preamble in development.
+    // Allow it explicitly so the dev client can boot without violating the CSP.
+    scriptSrc.push("'unsafe-inline'", "'unsafe-eval'", "'wasm-unsafe-eval'");
+  }
+
   const helmetOptions: HelmetOptions = {
     contentSecurityPolicy: {
       useDefaults: true,
@@ -57,7 +64,7 @@ export function createApiApp(options: CreateApiAppOptions = {}): Express {
         frameAncestors: ["'self'"],
         imgSrc: ["'self'", "data:"],
         objectSrc: ["'none'"],
-        scriptSrc: ["'self'"],
+        scriptSrc,
         // React components from Radix UI rely on inline styles for dynamic rendering.
         // Preserve Helmet's default allowance so CSP does not break those components.
         styleSrc: ["'self'", "'unsafe-inline'"],
