@@ -2,7 +2,6 @@ import { createApiApp } from "./api/app.js";
 import { createServer } from "http";
 import { serveStatic } from "./serve-static.js";
 import { log, logError } from "./logger.js";
-import { requestLogger } from "./middleware/request-logger.js";
 
 const defaultNodeEnv = process.env.VERCEL ? "production" : "development";
 process.env.NODE_ENV = process.env.NODE_ENV ?? defaultNodeEnv;
@@ -11,8 +10,6 @@ const app = createApiApp();
 
 const nodeEnv = process.env.NODE_ENV ?? defaultNodeEnv;
 app.set("env", nodeEnv);
-
-app.use(requestLogger);
 
 (async () => {
   try {
