@@ -1,0 +1,7 @@
+
+> german-verb-master@1.0.0 validate:env
+> tsx scripts/validate-env.ts
+
+
+✅ Environment validation passed.
+
