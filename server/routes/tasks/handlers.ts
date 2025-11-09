@@ -184,7 +184,25 @@ export function createListTasksHandler(): RequestHandler {
         });
       }
 
-      res.json({ tasks: payload });
+      const tasksByType = payload.reduce<Record<TaskType, typeof payload>>((acc, task) => {
+        const key = task.taskType as TaskType;
+        if (!acc[key]) {
+          acc[key] = [];
+        }
+        acc[key]!.push(task);
+        return acc;
+      }, {} as Record<TaskType, typeof payload>);
+
+      const responsePayload: {
+        tasks: typeof payload;
+        tasksByType?: Record<TaskType, typeof payload>;
+      } = { tasks: payload };
+
+      if (Object.keys(tasksByType).length > 0) {
+        responsePayload.tasksByType = tasksByType;
+      }
+
+      res.json(responsePayload);
     } catch (error) {
       next(error);
     }
