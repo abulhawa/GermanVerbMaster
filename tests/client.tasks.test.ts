@@ -1,5 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { clientTaskRegistry, fetchPracticeTasks, getClientTaskRegistryEntry, listClientTaskTypes } from '@/lib/tasks';
+import {
+  clientTaskRegistry,
+  fetchPracticeTasks,
+  fetchPracticeTasksByType,
+  getClientTaskRegistryEntry,
+  listClientTaskTypes,
+} from '@/lib/tasks';
 import { taskTypeRegistry } from '@shared/task-registry';
 
 const conjugatePrompt = {
@@ -116,6 +122,80 @@ describe('fetchPracticeTasks', () => {
 
     await expect(fetchPracticeTasks({ pos: 'verb', limit: 1 })).rejects.toThrow('Task feed responded with status 502');
     expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('fetchPracticeTasksByType', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('requests multiple task types in a single fetch and groups the response', async () => {
+    const payload = {
+      tasksByType: {
+        conjugate_form: [
+          {
+            taskId: 'task-1',
+            taskType: 'conjugate_form',
+            renderer: 'conjugate_form',
+            pos: 'verb',
+            prompt: conjugatePrompt,
+            solution: conjugateSolution,
+            queueCap: 30,
+            lexeme: { id: 'lex-1', lemma: 'sein', metadata: { english: 'to be' } },
+          },
+        ],
+        noun_case_declension: [
+          {
+            taskId: 'task-2',
+            taskType: 'noun_case_declension',
+            renderer: 'noun_case_declension',
+            pos: 'noun',
+            prompt: {
+              lemma: 'Haus',
+              pos: 'noun',
+              gender: 'das',
+              requestedCase: 'nominative',
+              requestedNumber: 'singular',
+              instructions: 'Bestimme den Nominativ Singular für „Haus“. ',
+            },
+            solution: { form: 'das Haus', article: 'das' },
+            queueCap: 25,
+            lexeme: { id: 'lex-2', lemma: 'Haus', metadata: null },
+          },
+        ],
+      },
+    } satisfies Record<string, unknown>;
+
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const url = requestToUrl(input);
+      if (url.includes('/api/tasks')) {
+        return new Response(JSON.stringify(payload), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+      throw new Error(`Unexpected request: ${input}`);
+    });
+
+    vi.stubGlobal('fetch', fetchMock);
+
+    const result = await fetchPracticeTasksByType({
+      taskTypes: ['conjugate_form', 'noun_case_declension'],
+      limit: 5,
+      level: ['A1', 'A2'],
+    });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const url = new URL(requestToUrl(fetchMock.mock.calls[0]![0]!));
+    expect(url.searchParams.getAll('taskTypes')).toEqual(['conjugate_form', 'noun_case_declension']);
+    expect(url.searchParams.getAll('level')).toEqual(['A1', 'A2']);
+    expect(url.searchParams.get('limit')).toBe('5');
+
+    expect(result.conjugate_form).toHaveLength(1);
+    expect(result.noun_case_declension).toHaveLength(1);
+    expect(result.conjugate_form[0]!.taskId).toBe('task-1');
+    expect(result.noun_case_declension[0]!.taskId).toBe('task-2');
   });
 });
 

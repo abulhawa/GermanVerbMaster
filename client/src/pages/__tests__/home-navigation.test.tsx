@@ -7,7 +7,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
 
 import Home from '@/pages/home';
-import type { PracticeTask, TaskFetchOptions } from '@/lib/tasks';
+import type { PracticeTask, MultiTaskFetchOptions } from '@/lib/tasks';
 import { clientTaskRegistry } from '@/lib/tasks';
 import { createDefaultSettings } from '@/lib/practice-settings';
 import type { PracticeSettingsState, TaskType } from '@shared';
@@ -54,7 +54,7 @@ vi.mock('@/lib/tasks', async () => {
   const actual = await vi.importActual<typeof import('@/lib/tasks')>('@/lib/tasks');
   return {
     ...actual,
-    fetchPracticeTasks: vi.fn(),
+    fetchPracticeTasksByType: vi.fn(),
   };
 });
 
@@ -62,10 +62,12 @@ vi.mock('@/lib/api', () => ({
   submitPracticeAttempt: vi.fn().mockResolvedValue({ queued: false }),
 }));
 
-const { fetchPracticeTasks } = await import('@/lib/tasks');
-type FetchPracticeTasksMock = Mock<(options?: TaskFetchOptions) => Promise<PracticeTask[]>>;
+const { fetchPracticeTasksByType } = await import('@/lib/tasks');
+type FetchPracticeTasksMock = Mock<
+  (options: MultiTaskFetchOptions) => Promise<Record<TaskType, PracticeTask[]>>
+>;
 
-const mockFetchPracticeTasks = fetchPracticeTasks as unknown as FetchPracticeTasksMock;
+const mockFetchPracticeTasks = fetchPracticeTasksByType as unknown as FetchPracticeTasksMock;
 
 const SETTINGS_STORAGE_KEY = 'practice.settings';
 const MIGRATION_MARKER_KEY = 'practice.settings.migrated';
@@ -225,7 +227,7 @@ describe('Home navigation controls', () => {
     vi.clearAllMocks();
     taskTypeCounters = createTaskCounters();
     mockFetchPracticeTasks.mockReset();
-    mockFetchPracticeTasks.mockResolvedValue([]);
+    mockFetchPracticeTasks.mockResolvedValue({});
     localStorage.clear();
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
@@ -275,43 +277,52 @@ describe('Home navigation controls', () => {
   });
 
   it('advances to the next task when skipping', async () => {
-    mockFetchPracticeTasks.mockResolvedValueOnce([createTask('task-1', 'gehen'), createTask('task-2', 'kommen')]);
-    mockFetchPracticeTasks.mockResolvedValue([]);
+    mockFetchPracticeTasks.mockResolvedValueOnce({
+      conjugate_form: [createTask('task-1', 'gehen'), createTask('task-2', 'kommen')],
+    });
+    mockFetchPracticeTasks.mockResolvedValue({ conjugate_form: [] });
 
     renderHome();
 
     const practiceCard = await screen.findByTestId('practice-card');
-    expect(within(practiceCard).getByText('gehen')).toBeInTheDocument();
+    expect(
+      within(practiceCard).getByRole('heading', { name: 'gehen', level: 1 }),
+    ).toBeInTheDocument();
 
     const skipButton = await screen.findByRole('button', { name: /skip to next/i });
     await userEvent.click(skipButton);
 
     await waitFor(() => {
       const updatedCard = screen.getByTestId('practice-card');
-      expect(within(updatedCard).getByText('kommen')).toBeInTheDocument();
+      expect(
+        within(updatedCard).getByRole('heading', { name: 'kommen', level: 1 }),
+      ).toBeInTheDocument();
     });
   });
 
   it('reloads practice tasks for the selected verb level', async () => {
     seedPracticeSettings();
 
-    mockFetchPracticeTasks.mockImplementation(async ({ level }: TaskFetchOptions = {}) => {
-      if (level === 'B2') {
-        return [createTask('task-b2', 'reisen')];
+    mockFetchPracticeTasks.mockImplementation(async ({ level }) => {
+      const resolvedLevel = Array.isArray(level) ? level[0] : level;
+      if (resolvedLevel === 'B2') {
+        return { conjugate_form: [createTask('task-b2', 'reisen')] };
       }
-      return [createTask('task-a1', 'gehen')];
+      return { conjugate_form: [createTask('task-a1', 'gehen')] };
     });
 
     renderHome();
 
     await waitFor(() => {
       expect(mockFetchPracticeTasks).toHaveBeenCalledWith(
-        expect.objectContaining({ level: 'A1', taskType: 'conjugate_form' }),
+        expect.objectContaining({ level: ['A1'], taskTypes: ['conjugate_form'], limit: 15 }),
       );
     });
 
     const practiceCard = await screen.findByTestId('practice-card');
-    expect(within(practiceCard).getByText('gehen')).toBeInTheDocument();
+    expect(
+      within(practiceCard).getByRole('heading', { name: 'gehen', level: 1 }),
+    ).toBeInTheDocument();
 
     const levelTrigger = await screen.findByRole('combobox', { name: /verb level/i });
     await userEvent.click(levelTrigger);
@@ -320,14 +331,16 @@ describe('Home navigation controls', () => {
 
     await waitFor(() => {
       expect(mockFetchPracticeTasks).toHaveBeenCalledWith(
-        expect.objectContaining({ level: 'B2', taskType: 'conjugate_form' }),
+        expect.objectContaining({ level: ['B2'], taskTypes: ['conjugate_form'], limit: 15 }),
       );
     });
 
     await waitFor(() => {
       const updatedCard = screen.queryByTestId('practice-card');
       expect(updatedCard).not.toBeNull();
-      expect(within(updatedCard!).getByText('reisen')).toBeInTheDocument();
+      expect(
+        within(updatedCard!).getByRole('heading', { name: 'reisen', level: 1 }),
+      ).toBeInTheDocument();
     });
   });
 
@@ -337,21 +350,22 @@ describe('Home navigation controls', () => {
       defaultTaskType: 'conjugate_form',
     });
 
-    mockFetchPracticeTasks.mockImplementation(async ({ taskType, limit = 15 }: TaskFetchOptions = {}) => {
-      return Array.from({ length: limit }, (_, index) => buildTask(taskType as TaskType, index));
+    mockFetchPracticeTasks.mockImplementation(async ({ taskTypes = [], limit = 15 }) => {
+      return taskTypes.reduce((acc, type) => {
+        acc[type] = Array.from({ length: limit }, (_, index) => buildTask(type, index));
+        return acc;
+      }, {} as Record<TaskType, PracticeTask[]>);
     });
 
     renderHome();
 
     await waitFor(() => {
       expect(mockFetchPracticeTasks).toHaveBeenCalledWith(
-        expect.objectContaining({ taskType: 'conjugate_form', pos: 'verb', limit: 8, level: 'A1' }),
-      );
-    });
-
-    await waitFor(() => {
-      expect(mockFetchPracticeTasks).toHaveBeenCalledWith(
-        expect.objectContaining({ taskType: 'noun_case_declension', pos: 'noun', limit: 8, level: 'A1' }),
+        expect.objectContaining({
+          taskTypes: ['conjugate_form', 'noun_case_declension'],
+          limit: 8,
+          level: ['A1', 'A1'],
+        }),
       );
     });
   });
@@ -363,15 +377,18 @@ describe('Home navigation controls', () => {
       cefrLevelByPos: { verb: 'B1' },
     });
 
-    mockFetchPracticeTasks.mockImplementation(async ({ taskType, limit = 15 }: TaskFetchOptions = {}) => {
-      return Array.from({ length: limit }, (_, index) => buildTask(taskType as TaskType, index));
+    mockFetchPracticeTasks.mockImplementation(async ({ taskTypes = [], limit = 15 }) => {
+      return taskTypes.reduce((acc, type) => {
+        acc[type] = Array.from({ length: limit }, (_, index) => buildTask(type, index));
+        return acc;
+      }, {} as Record<TaskType, PracticeTask[]>);
     });
 
     renderHome();
 
     await waitFor(() => {
       expect(mockFetchPracticeTasks).toHaveBeenCalledWith(
-        expect.objectContaining({ taskType: 'noun_case_declension', pos: 'noun', level: 'B1' }),
+        expect.objectContaining({ taskTypes: ['noun_case_declension'], level: ['B1'] }),
       );
     });
   });
@@ -379,8 +396,11 @@ describe('Home navigation controls', () => {
   it('updates preferred task types when selecting a custom mix', async () => {
     seedPracticeSettings();
 
-    mockFetchPracticeTasks.mockImplementation(async ({ taskType, limit = 15 }: TaskFetchOptions = {}) => {
-      return Array.from({ length: limit }, (_, index) => buildTask(taskType as TaskType, index));
+    mockFetchPracticeTasks.mockImplementation(async ({ taskTypes = [], limit = 15 }) => {
+      return taskTypes.reduce((acc, type) => {
+        acc[type] = Array.from({ length: limit }, (_, index) => buildTask(type, index));
+        return acc;
+      }, {} as Record<TaskType, PracticeTask[]>);
     });
 
     renderHome();
@@ -398,10 +418,10 @@ describe('Home navigation controls', () => {
 
     await waitFor(() => {
       expect(mockFetchPracticeTasks).toHaveBeenCalledWith(
-        expect.objectContaining({ taskType: 'conjugate_form', pos: 'verb', limit: 8 }),
-      );
-      expect(mockFetchPracticeTasks).toHaveBeenCalledWith(
-        expect.objectContaining({ taskType: 'adj_ending', pos: 'adjective', limit: 8 }),
+        expect.objectContaining({
+          taskTypes: ['conjugate_form', 'adj_ending'],
+          limit: 8,
+        }),
       );
     });
 
@@ -415,13 +435,17 @@ describe('Home navigation controls', () => {
   });
 
   it('keeps the practice surface full width to prioritise the input experience', async () => {
-    mockFetchPracticeTasks.mockResolvedValueOnce([createTask('task-1', 'arbeiten')]);
-    mockFetchPracticeTasks.mockResolvedValue([]);
+    mockFetchPracticeTasks.mockResolvedValueOnce({
+      conjugate_form: [createTask('task-1', 'arbeiten')],
+    });
+    mockFetchPracticeTasks.mockResolvedValue({ conjugate_form: [] });
 
     renderHome();
 
     const practiceCard = await screen.findByTestId('practice-card');
-    expect(within(practiceCard).getByText('arbeiten')).toBeInTheDocument();
+    expect(
+      within(practiceCard).getByRole('heading', { name: 'arbeiten', level: 1 }),
+    ).toBeInTheDocument();
 
     const practiceContainer = await screen.findByTestId('practice-card-container');
     expect(practiceContainer.className).toContain('w-full');

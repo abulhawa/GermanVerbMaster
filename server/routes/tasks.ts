@@ -29,12 +29,15 @@ import {
 
 const RECENT_ATTEMPT_WINDOW_MS = 1000 * 60 * 60 * 6;
 
+const multiStringSchema = z.union([z.string().trim(), z.array(z.string().trim())]);
+
 const taskQuerySchema = z.object({
   pos: z.string().trim().optional(),
   taskType: z.string().trim().optional(),
+  taskTypes: multiStringSchema.optional(),
   limit: z.coerce.number().int().min(1).max(100).default(25),
   deviceId: z.string().trim().min(6).max(64).optional(),
-  level: levelSchema.optional(),
+  level: z.union([levelSchema, z.array(levelSchema)]).optional(),
 });
 
 const submissionSchema = z
@@ -232,9 +235,20 @@ export function createTaskRouter(): Router {
     try {
       await ensureTaskSpecCacheFresh();
 
-      const { pos, taskType, limit, deviceId, level } = parsed.data;
+      const { pos, taskType, taskTypes: taskTypesRaw, limit, deviceId, level } = parsed.data;
       const filters: SQL[] = [];
       let normalisedPos: LexemePos | null = null;
+      const resolvedTaskTypes: TaskType[] = [];
+
+      const appendTaskType = (value: string) => {
+        const resolved = parseTaskTypeFilter(value);
+        if (!resolved) {
+          throw new Error(value);
+        }
+        if (!resolvedTaskTypes.includes(resolved)) {
+          resolvedTaskTypes.push(resolved);
+        }
+      };
 
       res.setHeader("Cache-Control", "no-store");
 
@@ -249,21 +263,44 @@ export function createTaskRouter(): Router {
         filters.push(eq(taskSpecs.pos, normalisedPos));
       }
 
-      let resolvedTaskType: TaskType | null = null;
-      if (taskType) {
-        resolvedTaskType = parseTaskTypeFilter(taskType);
-        if (!resolvedTaskType) {
-          return res.status(400).json({
-            error: `Unsupported task type filter: ${taskType}`,
-            code: "INVALID_TASK_TYPE",
-          });
+      try {
+        if (taskType) {
+          appendTaskType(taskType);
         }
-        filters.push(eq(taskSpecs.taskType, resolvedTaskType));
+
+        if (taskTypesRaw) {
+          const candidates = Array.isArray(taskTypesRaw) ? taskTypesRaw : [taskTypesRaw];
+          for (const candidate of candidates) {
+            appendTaskType(candidate);
+          }
+        }
+      } catch (error) {
+        const invalidType = typeof error === "string" ? error : String(error);
+        return res.status(400).json({
+          error: `Unsupported task type filter: ${invalidType}`,
+          code: "INVALID_TASK_TYPE",
+        });
       }
 
-      if (level) {
+      if (resolvedTaskTypes.length === 1) {
+        filters.push(eq(taskSpecs.taskType, resolvedTaskTypes[0]!));
+      } else if (resolvedTaskTypes.length > 1) {
+        filters.push(inArray(taskSpecs.taskType, resolvedTaskTypes));
+      }
+
+      const requestedLevels = Array.isArray(level)
+        ? level
+        : typeof level === "string"
+        ? [level]
+        : [];
+
+      const applyGlobalLevelFilter =
+        requestedLevels.length === 1 && (resolvedTaskTypes.length <= 1 || resolvedTaskTypes.length === 0);
+      const globalLevel = applyGlobalLevelFilter ? requestedLevels[0]! : null;
+
+      if (applyGlobalLevelFilter && globalLevel) {
         filters.push(
-          sql`upper(coalesce(${lexemes.metadata} ->> 'level', ${taskSpecs.prompt} ->> 'cefrLevel')) = ${level}`,
+          sql`upper(coalesce(${lexemes.metadata} ->> 'level', ${taskSpecs.prompt} ->> 'cefrLevel')) = ${globalLevel}`,
         );
       }
 
@@ -316,8 +353,10 @@ export function createTaskRouter(): Router {
             if (normalisedPos) {
               historyFilters.push(eq(practiceHistory.pos, normalisedPos));
             }
-            if (resolvedTaskType) {
-              historyFilters.push(eq(practiceHistory.taskType, resolvedTaskType));
+            if (resolvedTaskTypes.length === 1) {
+              historyFilters.push(eq(practiceHistory.taskType, resolvedTaskTypes[0]!));
+            } else if (resolvedTaskTypes.length > 1) {
+              historyFilters.push(inArray(practiceHistory.taskType, resolvedTaskTypes));
             }
 
             const historyWhere = combineFilters(historyFilters);
@@ -367,9 +406,10 @@ export function createTaskRouter(): Router {
             if (identityLogFilter) {
               recencyFilters.push(identityLogFilter);
               recencyFilters.push(gte(practiceLog.attemptedAt, recencyThreshold));
-              if (level) {
+              if (requestedLevels.length) {
+                const levelSet = new Set([UNSPECIFIED_CEFR_LEVEL, ...requestedLevels]);
                 recencyFilters.push(
-                  inArray(practiceLog.cefrLevel, [UNSPECIFIED_CEFR_LEVEL, level]),
+                  inArray(practiceLog.cefrLevel, Array.from(levelSet)),
                 );
               }
             }
@@ -416,7 +456,8 @@ export function createTaskRouter(): Router {
           })()
         : taskQuery.orderBy(desc(taskSpecs.updatedAt), asc(taskSpecs.id));
 
-      const compiledQuery = orderedQuery.limit(limit);
+      const rowLimit = resolvedTaskTypes.length > 1 ? limit * resolvedTaskTypes.length : limit;
+      const compiledQuery = orderedQuery.limit(rowLimit);
       const rowsRaw = await executeSelectRaw<Record<string, unknown>>(compiledQuery);
       const mappedRows = rowsRaw.map((row) => mapTaskRow(row as Record<string, any>));
 
@@ -488,7 +529,110 @@ export function createTaskRouter(): Router {
         });
       }
 
-      res.json({ tasks: payload });
+      const levelByType = new Map<TaskType, string>();
+      if (!applyGlobalLevelFilter && requestedLevels.length && resolvedTaskTypes.length) {
+        resolvedTaskTypes.forEach((taskTypeValue, index) => {
+          const levelValue = requestedLevels[index] ?? requestedLevels[0];
+          if (levelValue) {
+            levelByType.set(taskTypeValue, levelValue);
+          }
+        });
+      } else if (globalLevel) {
+        resolvedTaskTypes.forEach((taskTypeValue) => {
+          levelByType.set(taskTypeValue, globalLevel);
+        });
+      }
+
+      const tasksByType = new Map<TaskType, typeof payload>();
+
+      const resolveTaskLevel = (task: (typeof payload)[number]): string | null => {
+        const metadataLevel = normaliseCefrLevel(task.lexeme.metadata?.level);
+        if (metadataLevel) {
+          return metadataLevel;
+        }
+        const promptLevel = normaliseCefrLevel(
+          isRecord(task.prompt) ? (task.prompt.cefrLevel as string | undefined) : undefined,
+        );
+        return promptLevel ?? null;
+      };
+
+      for (const task of payload) {
+        const typeKey = task.taskType as TaskType;
+        if (resolvedTaskTypes.length && !resolvedTaskTypes.includes(typeKey)) {
+          continue;
+        }
+
+        const requiredLevel = levelByType.get(typeKey) ?? null;
+        if (requiredLevel) {
+          const taskLevel = resolveTaskLevel(task);
+          if (taskLevel && taskLevel !== requiredLevel) {
+            continue;
+          }
+        }
+
+        if (!tasksByType.has(typeKey)) {
+          tasksByType.set(typeKey, []);
+        }
+        tasksByType.get(typeKey)!.push(task);
+      }
+
+      const limitPerType = resolvedTaskTypes.length > 1 ? limit : rowLimit;
+      const limitedByTypeEntries: Array<[TaskType, typeof payload]> = [];
+
+      const targetTypes = resolvedTaskTypes.length
+        ? resolvedTaskTypes
+        : Array.from(tasksByType.keys());
+
+      for (const typeKey of targetTypes) {
+        const tasks = tasksByType.get(typeKey) ?? [];
+        const limited = tasks.slice(0, limitPerType);
+        tasksByType.set(typeKey, limited);
+        limitedByTypeEntries.push([typeKey, limited]);
+      }
+
+      const mergeTaskGroups = (
+        groups: Array<[TaskType, typeof payload]>,
+        perTypeLimit: number,
+      ): typeof payload => {
+        if (!groups.length) {
+          return [];
+        }
+        const queues = groups.map(([, tasks]) => [...tasks]);
+        const result: typeof payload = [];
+        const seen = new Set<string>();
+        const totalLimit = perTypeLimit * groups.length;
+
+        while (result.length < totalLimit && queues.some((queue) => queue.length > 0)) {
+          for (const queue of queues) {
+            if (!queue.length) {
+              continue;
+            }
+            const candidate = queue.shift()!;
+            if (seen.has(candidate.taskId)) {
+              continue;
+            }
+            seen.add(candidate.taskId);
+            result.push(candidate);
+            if (result.length >= totalLimit) {
+              break;
+            }
+          }
+        }
+
+        return result;
+      };
+
+      const mergedTasks =
+        resolvedTaskTypes.length > 1
+          ? mergeTaskGroups(limitedByTypeEntries, limitPerType)
+          : payload.slice(0, limitPerType);
+
+      res.json({
+        tasks: mergedTasks,
+        tasksByType: Object.fromEntries(
+          Array.from(tasksByType.entries()).map(([typeKey, tasks]) => [typeKey, tasks]),
+        ),
+      });
     } catch (error) {
       next(error);
     }
