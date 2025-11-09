@@ -26,6 +26,7 @@ import { ensureTaskSpecsSynced } from "./tasks/synchronizer.js";
 import { getTaskRegistryEntry, taskRegistry } from "./tasks/registry.js";
 import { authRouter, getSessionFromRequest } from "./auth/index.js";
 import type { AuthSession } from "./auth/index.js";
+import { runRegenerateQueuesJob } from "./jobs/regenerate-queues.js";
 
 const attachAuthSessionMiddleware: RequestHandler = async (req, res, next) => {
   try {
@@ -918,6 +919,31 @@ export function registerRoutes(app: Express): void {
   app.use("/api/auth", authRouter);
 
   app.use("/api", attachAuthSessionMiddleware);
+
+  app.post("/api/jobs/regenerate-queues", requireAdminAccess, async (req, res, next) => {
+    try {
+      const reason = isRecord(req.body) ? normaliseString(req.body.reason) ?? null : null;
+      const triggeredBy = getSessionUserId(req.authSession);
+
+      const result = await runRegenerateQueuesJob({
+        triggeredBy,
+        reason,
+      });
+
+      res.json({
+        status: "completed",
+        job: "regenerate_queues",
+        runId: result.jobRunId,
+        startedAt: result.startedAt.toISOString(),
+        finishedAt: result.finishedAt.toISOString(),
+        durationMs: result.durationMs,
+        latestTouchedAt: result.latestTouchedAt ? result.latestTouchedAt.toISOString() : null,
+        stats: result.stats,
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
 
   app.get("/api/me", async (req, res, next) => {
     try {

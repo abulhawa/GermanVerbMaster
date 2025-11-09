@@ -83,6 +83,8 @@ On Vercel, configure the project to run `npm install`, `npm run db:push`, `npm r
 
 The adaptive scheduler relies on `POST /api/jobs/regenerate-queues` to recompute spaced-repetition queues. In Vercel, create a [Cron Job](https://vercel.com/docs/cron-jobs) with an interval that matches your release cadence (e.g. hourly) and set the target URL to `https://<your-app-domain>/api/jobs/regenerate-queues`. Authorise it with the same `ADMIN_API_TOKEN` used in production so the background job continues to run when the API is fully serverless.
 
+Each invocation now records an execution row in the `background_job_runs` table and emits structured metrics. Configure `JOB_ALERT_WEBHOOK_URL` to send a JSON payload to your on-call channel whenever the regeneration job fails so incidents are surfaced automatically. You can also schedule `npm run monitor:queues` (which executes `scripts/check-job-health.ts`) from your monitoring platform; it exits non-zero when the latest run failed, stalled, or has not succeeded within the configured freshness window. Override the defaults with `JOB_MAX_AGE_MINUTES`, `JOB_MAX_RUNNING_MINUTES`, or `JOB_NAME` when watching additional jobs.
+
 ### Provisioning Supabase
 
 1. Follow the Supabase “Get started with Postgres” guide to [create a new project and database](https://supabase.com/docs/guides/database/overview).
