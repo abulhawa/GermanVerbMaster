@@ -17,6 +17,9 @@ const mocks = vi.hoisted(() => {
     })),
     createServerMock: vi.fn(() => ({
       listen: listenMock,
+      close: vi.fn((callback?: (error?: Error | null) => void) => {
+        callback?.(null);
+      }),
     })),
     listenMock,
   };
@@ -43,6 +46,12 @@ vi.mock("../server/serve-static.js", () => ({
 
 vi.mock("../server/vite.js", () => ({
   setupVite: mocks.setupViteMock,
+}));
+
+vi.mock("../db/client.js", () => ({
+  getPool: vi.fn(() => ({
+    end: vi.fn(async () => {}),
+  })),
 }));
 
 describe("server startup error handling", () => {
