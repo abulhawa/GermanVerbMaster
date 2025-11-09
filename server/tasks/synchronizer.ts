@@ -80,7 +80,7 @@ async function syncAllTaskSpecs(since?: Date): Promise<EnsureTaskSpecsResult> {
         updatedAt: lexemes.updatedAt,
       })
       .from(lexemes)
-      .where(and(inArray(lexemes.pos, SUPPORTED_POS as string[]), gt(lexemes.updatedAt, since)));
+      .where(gt(lexemes.updatedAt, since));
 
     for (const row of updatedLexemes) {
       if (row.id) {
@@ -130,12 +130,7 @@ async function syncAllTaskSpecs(since?: Date): Promise<EnsureTaskSpecsResult> {
     );
 
   const lexemeRows = since
-    ? await lexemeQuery.where(
-        and(
-          inArray(lexemes.pos, SUPPORTED_POS as string[]),
-          inArray(lexemes.id, Array.from(lexemeIds)),
-        ),
-      )
+    ? await lexemeQuery.where(inArray(lexemes.id, Array.from(lexemeIds)))
     : await lexemeQuery.where(inArray(lexemes.pos, SUPPORTED_POS as string[]));
 
   if (lexemeRows.length === 0) {
