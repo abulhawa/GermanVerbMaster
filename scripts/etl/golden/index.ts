@@ -1,86 +1,30 @@
-import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { inArray, sql } from 'drizzle-orm';
-
 import type { PartOfSpeech } from '@shared';
-import { type LexemePos, type TaskType } from '@shared/task-registry';
+import { type LexemePos } from '@shared/task-registry';
 
+import { generateTaskSpecs, type TaskTemplateSource } from '../../../server/tasks/templates.ts';
+
+import type { AggregatedWord } from '../types';
+import { stableStringify, sha1 } from '../utils';
 import {
-  inflections as inflectionsTable,
-  lexemes as lexemesTable,
-  taskSpecs as taskSpecsTable,
-} from '@db/schema';
-
-import { generateTaskSpecs, type TaskTemplateSource } from '../../server/tasks/templates.ts';
-
-import type { AggregatedWord } from './types';
-import { buildAttributionSummary } from './attribution';
-import type { AttributionEntry } from './attribution';
-import { collectSources, deriveSourceRevision, primarySourceId } from './sources';
-import { validateWord } from './validators';
-import { chunkArray, stableStringify, sha1 } from './utils';
-
-const INFLECTION_DELETE_CHUNK_SIZE = 500;
-const TASK_DELETE_CHUNK_SIZE = 1000;
-
-const LOG_VALIDATION_WARNINGS =
-  process.env.GOLDEN_LOG_VALIDATION_WARNINGS?.toLowerCase() === 'true';
-
-export interface LexemeSeed {
-  id: string;
-  lemma: string;
-  language: string;
-  pos: LexemePos;
-  gender: string | null;
-  metadata: Record<string, unknown>;
-  frequencyRank: number | null;
-  sourceIds: string[];
-}
-
-export interface InflectionSeed {
-  id: string;
-  lexemeId: string;
-  form: string;
-  features: Record<string, unknown>;
-  audioAsset: string | null;
-  sourceRevision: string | null;
-  checksum: string | null;
-}
-
-export interface TaskSpecSeed {
-  id: string;
-  lexemeId: string;
-  pos: LexemePos;
-  taskType: TaskType;
-  renderer: string;
-  prompt: Record<string, unknown>;
-  solution: Record<string, unknown>;
-  hints: unknown[] | null;
-  metadata: Record<string, unknown> | null;
-  revision: number;
-}
-
-export interface TaskInventory {
-  tasks: TaskSpecSeed[];
-}
-
-export interface LexemeInventory {
-  lexemes: LexemeSeed[];
-  inflections: InflectionSeed[];
-  attribution: AttributionEntry[];
-}
-
-type DrizzleDatabase = NodePgDatabase<typeof import('@db/schema')>;
+  buildAttributionSummary,
+  collectSources,
+  deriveSourceRevision,
+  primarySourceId,
+} from './attribution';
+import { validateGoldenWord } from './validation';
+import {
+  type InflectionSeed,
+  type LexemeInventory,
+  type LexemeSeed,
+  type TaskInventory,
+  type TaskSpecSeed,
+} from './types';
 
 export function buildTaskInventory(words: AggregatedWord[]): TaskInventory {
   const tasks: TaskSpecSeed[] = [];
 
   for (const word of words) {
-    const validation = validateWord(word);
-    if (LOG_VALIDATION_WARNINGS && validation.errors.length > 0) {
-      console.warn(
-        `[etl] lexeme ${word.lemma} (${word.pos}) has validation issues: ${validation.errors.join(', ')}`,
-      );
-    }
+    validateGoldenWord(word);
 
     const lexeme = createLexemeSeed(word);
     const taskSource = createTaskSourceFromWord(word, lexeme.id);
@@ -115,12 +59,7 @@ export function buildLexemeInventory(words: AggregatedWord[]): LexemeInventory {
   const allInflections: InflectionSeed[] = [];
 
   for (const word of words) {
-    const validation = validateWord(word);
-    if (LOG_VALIDATION_WARNINGS && validation.errors.length > 0) {
-      console.warn(
-        `[etl] lexeme ${word.lemma} (${word.pos}) has validation issues: ${validation.errors.join(', ')}`,
-      );
-    }
+    validateGoldenWord(word);
     const lexeme = createLexemeSeed(word);
     if (!lexemeMap.has(lexeme.id)) {
       lexemeMap.set(lexeme.id, lexeme);
@@ -147,125 +86,6 @@ export function buildLexemeInventory(words: AggregatedWord[]): LexemeInventory {
     attribution: buildAttributionSummary(words),
   };
 }
-
-export async function upsertLexemeInventory(
-  db: DrizzleDatabase,
-  inventory: LexemeInventory,
-): Promise<void> {
-  const incomingLexemeIds = new Set(inventory.lexemes.map((lexeme) => lexeme.id));
-  const existingLexemes = await db.select({ id: lexemesTable.id }).from(lexemesTable);
-
-  if (incomingLexemeIds.size === 0) {
-    if (existingLexemes.length > 0) {
-      await db.delete(lexemesTable);
-    }
-  } else {
-    const staleLexemeIds = existingLexemes
-      .map((row) => row.id)
-      .filter((id): id is string => Boolean(id) && !incomingLexemeIds.has(id));
-    if (staleLexemeIds.length > 0) {
-      await db.delete(lexemesTable).where(inArray(lexemesTable.id, staleLexemeIds));
-    }
-  }
-
-  if (inventory.lexemes.length > 0) {
-    await db
-      .insert(lexemesTable)
-      .values(inventory.lexemes)
-      .onConflictDoUpdate({
-        target: lexemesTable.id,
-        set: {
-          lemma: sql`excluded.lemma`,
-          pos: sql`excluded.pos`,
-          gender: sql`excluded.gender`,
-          metadata: sql`excluded.metadata`,
-          frequencyRank: sql`excluded.frequency_rank`,
-          sourceIds: sql`excluded.source_ids`,
-          updatedAt: sql`now()`,
-        },
-      });
-  }
-
-  const inflectionsByLexeme = new Map<string, Set<string>>();
-  for (const inflection of inventory.inflections) {
-    let ids = inflectionsByLexeme.get(inflection.lexemeId);
-    if (!ids) {
-      ids = new Set<string>();
-      inflectionsByLexeme.set(inflection.lexemeId, ids);
-    }
-    ids.add(inflection.id);
-  }
-
-  if (inflectionsByLexeme.size > 0) {
-    const lexemeIds = Array.from(inflectionsByLexeme.keys());
-    const existing = await db
-      .select({
-        id: inflectionsTable.id,
-        lexemeId: inflectionsTable.lexemeId,
-      })
-      .from(inflectionsTable)
-      .where(inArray(inflectionsTable.lexemeId, lexemeIds));
-
-    const staleIds = existing
-      .filter(({ id, lexemeId }) => {
-        const incoming = inflectionsByLexeme.get(lexemeId);
-        return !incoming || !incoming.has(id);
-      })
-      .map((row) => row.id);
-
-    if (staleIds.length > 0) {
-      for (const chunk of chunkArray(staleIds, INFLECTION_DELETE_CHUNK_SIZE)) {
-        await db.delete(inflectionsTable).where(inArray(inflectionsTable.id, chunk));
-      }
-    }
-  }
-
-  if (inventory.inflections.length > 0) {
-    await db
-      .insert(inflectionsTable)
-      .values(inventory.inflections)
-      .onConflictDoUpdate({
-        target: inflectionsTable.id,
-        set: {
-          form: sql`excluded.form`,
-          features: sql`excluded.features`,
-          audioAsset: sql`excluded.audio_asset`,
-          sourceRevision: sql`excluded.source_revision`,
-          checksum: sql`excluded.checksum`,
-          updatedAt: sql`now()`,
-        },
-      });
-  }
-}
-
-export async function upsertTaskInventory(
-  db: DrizzleDatabase,
-  inventory: TaskInventory,
-): Promise<void> {
-  if (inventory.tasks.length === 0) return;
-
-  const lexemeIds = Array.from(new Set(inventory.tasks.map((task) => task.lexemeId)));
-  if (lexemeIds.length > 0) {
-    for (const chunk of chunkArray(lexemeIds, TASK_DELETE_CHUNK_SIZE)) {
-      await db.delete(taskSpecsTable).where(inArray(taskSpecsTable.lexemeId, chunk));
-    }
-  }
-
-  await db
-    .insert(taskSpecsTable)
-    .values(inventory.tasks)
-    .onConflictDoUpdate({
-      target: taskSpecsTable.id,
-      set: {
-        prompt: sql`excluded.prompt`,
-        solution: sql`excluded.solution`,
-        hints: sql`excluded.hints`,
-        metadata: sql`excluded.metadata`,
-        updatedAt: sql`now()`,
-      },
-    });
-}
-
 
 function createLexemeSeed(word: AggregatedWord): LexemeSeed {
   const pos = mapPos(word.pos);
@@ -454,7 +274,8 @@ function createInflectionsForWord(word: AggregatedWord, lexemeId: string): Infle
             form: word.lemma,
             features: {
               slot: 'lemma',
-              governedCases: Array.isArray(governedCases) && governedCases.length > 0 ? governedCases : undefined,
+              governedCases:
+                Array.isArray(governedCases) && governedCases.length > 0 ? governedCases : undefined,
             },
           },
         ],
@@ -555,7 +376,10 @@ function normaliseLemma(lemma: string): string {
     .toLowerCase();
 }
 
-function normaliseExample(exampleDe: string | null, exampleEn: string | null):
+function normaliseExample(
+  exampleDe: string | null,
+  exampleEn: string | null,
+):
   | {
       de?: string;
       en?: string;
@@ -600,3 +424,12 @@ function mapPos(pos: PartOfSpeech): LexemePos {
       throw new Error(`Unsupported part of speech in task inventory: ${pos}`);
   }
 }
+
+export { upsertLexemeInventory, upsertTaskInventory } from './persistence';
+export type {
+  InflectionSeed,
+  LexemeInventory,
+  LexemeSeed,
+  TaskInventory,
+  TaskSpecSeed,
+} from './types';
