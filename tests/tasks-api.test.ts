@@ -264,11 +264,27 @@ describe('tasks API', () => {
 
     expect(submission.status).toBe(200);
 
+    if (!dbContext) {
+      throw new Error('test database not initialised');
+    }
+
+    const querySpy = vi.spyOn(dbContext.pool, 'query');
     const nextResponse = await invokeApi(`/api/tasks?pos=verb&limit=1&deviceId=${deviceId}`);
     expect(nextResponse.status).toBe(200);
     const nextTask = (nextResponse.bodyJson as any).tasks[0];
     expect(nextTask).toBeDefined();
     expect(nextTask.taskId).not.toBe(firstTask.taskId);
+
+    const practiceLogSelects = querySpy.mock.calls.filter(([sql]) => {
+      if (typeof sql !== 'string') {
+        return false;
+      }
+      const normalised = sql.toLowerCase();
+      return normalised.includes('select') && normalised.includes('practice_log');
+    });
+
+    expect(practiceLogSelects).toHaveLength(1);
+    querySpy.mockRestore();
   });
 
   it('uses user history when available to avoid repeats', async () => {
