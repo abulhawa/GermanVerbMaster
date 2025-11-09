@@ -6,6 +6,7 @@ import { registerRoutes } from "../routes.js";
 import { logError } from "../logger.js";
 import { requestLogger } from "../middleware/request-logger.js";
 import { buildCorsOptions, resolveAllowedOrigins } from "../config/cors.js";
+import { authRateLimitedPaths, createAuthRateLimiter } from "../middleware/rate-limit.js";
 
 export interface CreateApiAppOptions {
   /**
@@ -99,6 +100,10 @@ export function createApiApp(options: CreateApiAppOptions = {}): Express {
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
+
+  for (const path of authRateLimitedPaths) {
+    app.use(path, createAuthRateLimiter());
+  }
 
   registerRoutes(app);
 
