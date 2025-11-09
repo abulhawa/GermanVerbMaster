@@ -1,0 +1,38 @@
+import type { GermanVerb } from "@shared";
+
+export const c2Verbs: GermanVerb[] = [
+  {
+    infinitive: "suggerieren",
+    english: "to suggest/imply",
+    präteritum: "suggerierte",
+    partizipII: "suggeriert",
+    auxiliary: "haben",
+    level: "C2",
+    präteritumExample: "Der Text suggerierte eine andere Interpretation.",
+    partizipIIExample: "Die Studie hat einen Zusammenhang suggeriert.",
+    source: { name: "Duden", levelReference: "C2 Academic Verbs" }
+  },
+  {
+    infinitive: "gedeihen",
+    english: "to thrive/flourish",
+    präteritum: "gedieh",
+    partizipII: "gediehen",
+    auxiliary: "sein",
+    level: "C2",
+    präteritumExample: "Das Unternehmen gedieh unter seiner Führung.",
+    partizipIIExample: "Die Pflanzen sind prächtig gediehen.",
+    source: { name: "Duden", levelReference: "C2 Academic Verbs" },
+    pattern: { type: "ablaut", group: "ei -> ie -> ie" }
+  },
+  {
+    infinitive: "differenzieren",
+    english: "to differentiate",
+    präteritum: "differenzierte",
+    partizipII: "differenziert",
+    auxiliary: "haben",
+    level: "C2",
+    präteritumExample: "Der Experte differenzierte zwischen den Konzepten.",
+    partizipIIExample: "Sie hat genau zwischen den Optionen differenziert.",
+    source: { name: "Duden", levelReference: "C2 Academic Verbs" }
+  }
+];
