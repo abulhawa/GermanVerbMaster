@@ -33,6 +33,56 @@ function normaliseError(error: unknown): string {
   return String(error);
 }
 
+export interface StructuredLogEntry {
+  event: string;
+  level?: "info" | "warn" | "error" | "debug";
+  source?: string;
+  message?: string;
+  data?: Record<string, unknown>;
+  error?: unknown;
+}
+
+export function logStructured(entry: StructuredLogEntry): void {
+  const { event, level = "info", source = DEFAULT_SOURCE, message, data, error } = entry;
+  const payload: Record<string, unknown> = {
+    timestamp: new Date().toISOString(),
+    level,
+    source,
+    event,
+  };
+
+  if (message) {
+    payload.message = message;
+  }
+
+  if (data) {
+    payload.data = data;
+  }
+
+  if (error !== undefined) {
+    payload.error = normaliseError(error);
+  }
+
+  const serialised = JSON.stringify(payload);
+
+  if (level === "error") {
+    console.error(serialised);
+    return;
+  }
+
+  if (level === "warn") {
+    console.warn(serialised);
+    return;
+  }
+
+  if (level === "debug") {
+    console.debug(serialised);
+    return;
+  }
+
+  console.log(serialised);
+}
+
 export function logError(error: unknown, source: string = DEFAULT_SOURCE): void {
   console.error(formatLogLine(normaliseError(error), source));
 }

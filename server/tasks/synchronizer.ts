@@ -4,12 +4,21 @@ import { getDb } from '@db';
 import { inflections, lexemes, taskSpecs, words } from '@db/schema';
 import type { LexemePos } from '@shared/task-registry';
 
+import { logStructured } from '../logger.js';
+import { emitMetric } from '../metrics/emitter.js';
+
 import { generateTaskSpecs, type TaskTemplateSource } from './templates.js';
+
+const LOG_SOURCE = 'task-sync';
+const METRIC_DURATION_NAME = 'task_sync_duration_ms';
+const METRIC_ERROR_NAME = 'task_sync_error_total';
 
 const SUPPORTED_POS: readonly LexemePos[] = ['verb', 'noun', 'adjective'];
 const INSERT_CHUNK_SIZE = 500;
 const DELETE_CHUNK_SIZE = 500;
 const TASK_SYNC_PROFILING_ENABLED = process.env.DEBUG_TASK_SYNC_PROFILING === '1';
+const DEFAULT_RETRY_ATTEMPTS = 3;
+const DEFAULT_RETRY_DELAY_MS = 250;
 
 export interface EnsureTaskSpecsOptions {
   since?: Date | null;
@@ -17,6 +26,18 @@ export interface EnsureTaskSpecsOptions {
 
 export interface EnsureTaskSpecsResult {
   latestTouchedAt: Date | null;
+  stats: TaskSyncStats;
+}
+
+export interface TaskSyncStats {
+  lexemesConsidered: number;
+  lexemesProcessed: number;
+  lexemesSkipped: number;
+  taskSpecsProcessed: number;
+  taskSpecsSkipped: number;
+  taskSpecsInserted: number;
+  taskSpecsUpdated: number;
+  taskSpecsDeleted: number;
 }
 
 let syncPromise: Promise<EnsureTaskSpecsResult> | null = null;
@@ -31,9 +52,66 @@ export async function ensureTaskSpecsSynced(
   const since = options?.since ?? null;
 
   if (!syncPromise) {
+    const startedAt = process.hrtime.bigint();
+    logStructured({
+      source: LOG_SOURCE,
+      event: 'task_sync.start',
+      data: {
+        since: since ? since.toISOString() : null,
+      },
+    });
+
     syncPromise = (async () => {
       try {
-        return await syncAllTaskSpecs(since ?? undefined);
+        const result = await syncAllTaskSpecs(since ?? undefined);
+        const durationMs = Number(process.hrtime.bigint() - startedAt) / 1_000_000;
+
+        emitMetric({
+          name: METRIC_DURATION_NAME,
+          value: durationMs,
+          tags: { status: 'success' },
+        });
+
+        logStructured({
+          source: LOG_SOURCE,
+          event: 'task_sync.finish',
+          data: {
+            since: since ? since.toISOString() : null,
+            durationMs,
+            latestTouchedAt: result.latestTouchedAt ? result.latestTouchedAt.toISOString() : null,
+            stats: result.stats,
+          },
+        });
+
+        return result;
+      } catch (error) {
+        const durationMs = Number(process.hrtime.bigint() - startedAt) / 1_000_000;
+
+        emitMetric({
+          name: METRIC_DURATION_NAME,
+          value: durationMs,
+          tags: { status: 'error' },
+        });
+
+        emitMetric({
+          name: METRIC_ERROR_NAME,
+          value: 1,
+          tags: { stage: 'sync' },
+        });
+
+        logStructured({
+          source: LOG_SOURCE,
+          level: 'error',
+          event: 'task_sync.failure',
+          message: 'Task spec synchronisation failed',
+          data: {
+            since: since ? since.toISOString() : null,
+            durationMs,
+          },
+          error,
+        });
+
+        throw error;
       } finally {
         syncPromise = null;
       }
@@ -76,6 +154,16 @@ const SUPPORTED_FEATURE_COMBINATIONS: readonly FeatureKey[][] = [
 
 async function syncAllTaskSpecs(since?: Date): Promise<EnsureTaskSpecsResult> {
   const db = getDb();
+  const stats: TaskSyncStats = {
+    lexemesConsidered: 0,
+    lexemesProcessed: 0,
+    lexemesSkipped: 0,
+    taskSpecsProcessed: 0,
+    taskSpecsSkipped: 0,
+    taskSpecsInserted: 0,
+    taskSpecsUpdated: 0,
+    taskSpecsDeleted: 0,
+  };
   const lexemeIds = new Set<string>();
   let latestTouchedAt: Date | null = null;
 
@@ -121,7 +209,16 @@ async function syncAllTaskSpecs(since?: Date): Promise<EnsureTaskSpecsResult> {
     }
 
     if (lexemeIds.size === 0) {
-      return { latestTouchedAt: null };
+      logStructured({
+        source: LOG_SOURCE,
+        event: 'task_sync.no_candidates',
+        data: {
+          since: since.toISOString(),
+          stats,
+        },
+      });
+
+      return { latestTouchedAt: null, stats };
     }
   }
 
@@ -148,8 +245,31 @@ async function syncAllTaskSpecs(since?: Date): Promise<EnsureTaskSpecsResult> {
     ? await lexemeQuery.where(inArray(lexemes.id, Array.from(lexemeIds)))
     : await lexemeQuery.where(inArray(lexemes.pos, SUPPORTED_POS as string[]));
 
+  stats.lexemesConsidered = lexemeRows.length;
+
+  logStructured({
+    source: LOG_SOURCE,
+    event: 'task_sync.lexeme_scan',
+    data: {
+      since: since ? since.toISOString() : null,
+      lexemesConsidered: stats.lexemesConsidered,
+    },
+  });
+
   if (lexemeRows.length === 0) {
-    return { latestTouchedAt };
+    logStructured({
+      source: LOG_SOURCE,
+      event: 'task_sync.generation_summary',
+      data: {
+        lexemesConsidered: stats.lexemesConsidered,
+        lexemesProcessed: 0,
+        lexemesSkipped: 0,
+        taskSpecsProcessed: 0,
+        taskSpecsSkipped: 0,
+      },
+    });
+
+    return { latestTouchedAt, stats };
   }
 
   const lexemeIdList = lexemeRows.map((row) => {
@@ -200,16 +320,28 @@ async function syncAllTaskSpecs(since?: Date): Promise<EnsureTaskSpecsResult> {
 
     const pos = asLexemePos(lexeme.pos);
     if (!pos || !SUPPORTED_POS.includes(pos)) {
+      stats.lexemesSkipped += 1;
+      stats.taskSpecsSkipped += 1;
       continue;
     }
 
     const groupedInflections = inflectionsByLexeme.get(lexeme.id) ?? [];
     const source = buildTaskSource(lexeme, pos, groupedInflections);
     if (!source) {
+      stats.lexemesSkipped += 1;
+      stats.taskSpecsSkipped += 1;
       continue;
     }
 
     const tasks = generateTaskSpecs(source);
+    if (tasks.length === 0) {
+      stats.lexemesSkipped += 1;
+      stats.taskSpecsSkipped += 1;
+      continue;
+    }
+
+    stats.lexemesProcessed += 1;
+    stats.taskSpecsProcessed += tasks.length;
     for (const task of tasks) {
       expectedIds.add(task.id);
       expectedTypes.add(task.taskType);
@@ -228,24 +360,17 @@ async function syncAllTaskSpecs(since?: Date): Promise<EnsureTaskSpecsResult> {
     }
   }
 
-  if (inserts.length > 0) {
-    for (const chunk of chunkArray(inserts, INSERT_CHUNK_SIZE)) {
-      await db
-        .insert(taskSpecs)
-        .values(chunk)
-        .onConflictDoUpdate({
-          target: taskSpecs.id,
-          set: {
-            prompt: sql`excluded.prompt`,
-            solution: sql`excluded.solution`,
-            hints: sql`excluded.hints`,
-            metadata: sql`excluded.metadata`,
-            revision: sql`excluded.revision`,
-            updatedAt: sql`now()`,
-          },
-        });
-    }
-  }
+  logStructured({
+    source: LOG_SOURCE,
+    event: 'task_sync.generation_summary',
+    data: {
+      lexemesConsidered: stats.lexemesConsidered,
+      lexemesProcessed: stats.lexemesProcessed,
+      lexemesSkipped: stats.lexemesSkipped,
+      taskSpecsProcessed: stats.taskSpecsProcessed,
+      taskSpecsSkipped: stats.taskSpecsSkipped,
+    },
+  });
 
   const fetchedAllLexemes = !since;
   const authoritativeLexemeIds = new Set(expectedTaskIdsByLexeme.keys());
@@ -255,9 +380,6 @@ async function syncAllTaskSpecs(since?: Date): Promise<EnsureTaskSpecsResult> {
     | undefined;
 
   if (!fetchedAllLexemes) {
-    if (lexemeIdList.length === 0) {
-      return { latestTouchedAt };
-    }
     existingTasks = await db
       .select({ id: taskSpecs.id, lexemeId: taskSpecs.lexemeId, taskType: taskSpecs.taskType })
       .from(taskSpecs)
@@ -269,6 +391,52 @@ async function syncAllTaskSpecs(since?: Date): Promise<EnsureTaskSpecsResult> {
   }
 
   const taskRows = existingTasks ?? [];
+  const existingTaskIds = new Set(taskRows.map((task) => task.id));
+
+  const insertChunks = inserts.length > 0 ? chunkArray(inserts, INSERT_CHUNK_SIZE) : [];
+
+  if (insertChunks.length > 0) {
+    await processChunksWithRetry(
+      insertChunks,
+      async (chunk) => {
+        await db
+          .insert(taskSpecs)
+          .values(chunk)
+          .onConflictDoUpdate({
+            target: taskSpecs.id,
+            set: {
+              prompt: sql`excluded.prompt`,
+              solution: sql`excluded.solution`,
+              hints: sql`excluded.hints`,
+              metadata: sql`excluded.metadata`,
+              revision: sql`excluded.revision`,
+              updatedAt: sql`now()`,
+            },
+          });
+
+        let existingCount = 0;
+        for (const row of chunk) {
+          if (existingTaskIds.has(row.id)) {
+            existingCount += 1;
+          }
+        }
+
+        stats.taskSpecsUpdated += existingCount;
+        stats.taskSpecsInserted += chunk.length - existingCount;
+      },
+      { operation: 'task_sync.upsert' },
+    );
+  }
+
+  logStructured({
+    source: LOG_SOURCE,
+    event: 'task_sync.upsert_summary',
+    data: {
+      chunksAttempted: insertChunks.length,
+      taskSpecsInserted: stats.taskSpecsInserted,
+      taskSpecsUpdated: stats.taskSpecsUpdated,
+    },
+  });
   const staleTaskIds: string[] = [];
 
   for (const task of taskRows) {
@@ -295,13 +463,29 @@ async function syncAllTaskSpecs(since?: Date): Promise<EnsureTaskSpecsResult> {
     }
   }
 
-  if (staleTaskIds.length > 0) {
-    for (const chunk of chunkArray(staleTaskIds, DELETE_CHUNK_SIZE)) {
-      await db.delete(taskSpecs).where(inArray(taskSpecs.id, chunk));
-    }
+  const deleteChunks = staleTaskIds.length > 0 ? chunkArray(staleTaskIds, DELETE_CHUNK_SIZE) : [];
+
+  if (deleteChunks.length > 0) {
+    await processChunksWithRetry(
+      deleteChunks,
+      async (chunk) => {
+        await db.delete(taskSpecs).where(inArray(taskSpecs.id, chunk));
+        stats.taskSpecsDeleted += chunk.length;
+      },
+      { operation: 'task_sync.delete' },
+    );
   }
 
-  return { latestTouchedAt };
+  logStructured({
+    source: LOG_SOURCE,
+    event: 'task_sync.cleanup_summary',
+    data: {
+      chunksAttempted: deleteChunks.length,
+      taskSpecsDeleted: stats.taskSpecsDeleted,
+    },
+  });
+
+  return { latestTouchedAt, stats };
 }
 
 function buildTaskSource(
@@ -726,6 +910,61 @@ function asLexemePos(value: string | null | undefined): LexemePos | null {
     return normalised as LexemePos;
   }
   return null;
+}
+
+interface ChunkRetryOptions {
+  operation: string;
+  attempts?: number;
+  delayMs?: number;
+}
+
+async function processChunksWithRetry<T>(
+  chunks: T[][],
+  handler: (chunk: T[]) => Promise<void>,
+  options: ChunkRetryOptions,
+): Promise<void> {
+  const attempts = Math.max(options.attempts ?? DEFAULT_RETRY_ATTEMPTS, 1);
+  const delayMs = Math.max(options.delayMs ?? DEFAULT_RETRY_DELAY_MS, 0);
+
+  for (let index = 0; index < chunks.length; index += 1) {
+    const chunk = chunks[index];
+    let attempt = 0;
+
+    while (attempt < attempts) {
+      try {
+        await handler(chunk);
+        break;
+      } catch (error) {
+        attempt += 1;
+        if (attempt >= attempts) {
+          throw error;
+        }
+
+        logStructured({
+          source: LOG_SOURCE,
+          level: 'warn',
+          event: `${options.operation}.retry`,
+          message: `Retrying chunk ${index + 1}/${chunks.length}`,
+          data: {
+            attempt,
+            attempts,
+            chunkSize: chunk.length,
+          },
+          error,
+        });
+
+        if (delayMs > 0) {
+          await sleep(delayMs * attempt);
+        }
+      }
+    }
+  }
+}
+
+function sleep(durationMs: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, durationMs);
+  });
 }
 
 function chunkArray<T>(values: T[], size: number): T[][] {
