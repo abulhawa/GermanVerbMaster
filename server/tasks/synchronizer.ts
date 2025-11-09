@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+
 import { and, eq, gt, inArray, sql } from 'drizzle-orm';
 
 import { getDb } from '@db';
@@ -8,6 +10,11 @@ import { logStructured } from '../logger.js';
 import { emitMetric } from '../metrics/emitter.js';
 
 import { generateTaskSpecs, type TaskTemplateSource } from './templates.js';
+import {
+  loadTaskSpecSyncCheckpoint,
+  storeTaskSpecSyncCheckpoint,
+  type TaskSpecSyncCheckpoint,
+} from './task-sync-state.js';
 
 const LOG_SOURCE = 'task-sync';
 const METRIC_DURATION_NAME = 'task_sync_duration_ms';
@@ -22,11 +29,13 @@ const DEFAULT_RETRY_DELAY_MS = 250;
 
 export interface EnsureTaskSpecsOptions {
   since?: Date | null;
+  checkpoint?: TaskSpecSyncCheckpoint | null;
 }
 
 export interface EnsureTaskSpecsResult {
   latestTouchedAt: Date | null;
   stats: TaskSyncStats;
+  checkpoint: TaskSpecSyncCheckpoint | null;
 }
 
 export interface TaskSyncStats {
@@ -46,24 +55,35 @@ export function resetTaskSpecSync(): void {
   syncPromise = null;
 }
 
+interface SyncExecutionOptions {
+  since?: Date;
+  previousCheckpoint: TaskSpecSyncCheckpoint | null;
+}
+
 export async function ensureTaskSpecsSynced(
   options?: EnsureTaskSpecsOptions,
 ): Promise<EnsureTaskSpecsResult> {
-  const since = options?.since ?? null;
-
   if (!syncPromise) {
-    const startedAt = process.hrtime.bigint();
-    logStructured({
-      source: LOG_SOURCE,
-      event: 'task_sync.start',
-      data: {
-        since: since ? since.toISOString() : null,
-      },
-    });
-
     syncPromise = (async () => {
+      const providedCheckpoint = options?.checkpoint ?? null;
+      const storedCheckpoint = providedCheckpoint ?? (await loadTaskSpecSyncCheckpoint());
+      const since = options?.since ?? storedCheckpoint?.lastSyncedAt ?? null;
+      const startedAt = process.hrtime.bigint();
+
+      logStructured({
+        source: LOG_SOURCE,
+        event: 'task_sync.start',
+        data: {
+          since: since ? since.toISOString() : null,
+          checkpointVersion: storedCheckpoint?.versionHash ?? null,
+        },
+      });
+
       try {
-        const result = await syncAllTaskSpecs(since ?? undefined);
+        const result = await syncAllTaskSpecs({
+          since: since ?? undefined,
+          previousCheckpoint: storedCheckpoint ?? null,
+        });
         const durationMs = Number(process.hrtime.bigint() - startedAt) / 1_000_000;
 
         emitMetric({
@@ -71,6 +91,8 @@ export async function ensureTaskSpecsSynced(
           value: durationMs,
           tags: { status: 'success' },
         });
+
+        const checkpoint = result.checkpoint ?? storedCheckpoint ?? null;
 
         logStructured({
           source: LOG_SOURCE,
@@ -80,10 +102,11 @@ export async function ensureTaskSpecsSynced(
             durationMs,
             latestTouchedAt: result.latestTouchedAt ? result.latestTouchedAt.toISOString() : null,
             stats: result.stats,
+            checkpointVersion: checkpoint?.versionHash ?? null,
           },
         });
 
-        return result;
+        return { ...result, checkpoint };
       } catch (error) {
         const durationMs = Number(process.hrtime.bigint() - startedAt) / 1_000_000;
 
@@ -133,6 +156,7 @@ interface LexemeRow {
 }
 
 interface InflectionRow {
+  id: string;
   lexemeId: string;
   form: string;
   features: Record<string, unknown>;
@@ -152,7 +176,10 @@ const SUPPORTED_FEATURE_COMBINATIONS: readonly FeatureKey[][] = [
   ['degree'],
 ];
 
-async function syncAllTaskSpecs(since?: Date): Promise<EnsureTaskSpecsResult> {
+async function syncAllTaskSpecs({
+  since,
+  previousCheckpoint,
+}: SyncExecutionOptions): Promise<EnsureTaskSpecsResult> {
   const db = getDb();
   const stats: TaskSyncStats = {
     lexemesConsidered: 0,
@@ -218,7 +245,7 @@ async function syncAllTaskSpecs(since?: Date): Promise<EnsureTaskSpecsResult> {
         },
       });
 
-      return { latestTouchedAt: null, stats };
+      return { latestTouchedAt: null, stats, checkpoint: null };
     }
   }
 
@@ -269,7 +296,7 @@ async function syncAllTaskSpecs(since?: Date): Promise<EnsureTaskSpecsResult> {
       },
     });
 
-    return { latestTouchedAt, stats };
+    return { latestTouchedAt, stats, checkpoint: null };
   }
 
   const lexemeIdList = lexemeRows.map((row) => {
@@ -277,9 +304,10 @@ async function syncAllTaskSpecs(since?: Date): Promise<EnsureTaskSpecsResult> {
     return row.id;
   });
 
-  const inflectionRows = lexemeIdList.length
+  const inflectionRowsRaw = lexemeIdList.length
     ? await db
         .select({
+          id: inflections.id,
           lexemeId: inflections.lexemeId,
           form: inflections.form,
           features: inflections.features,
@@ -290,10 +318,11 @@ async function syncAllTaskSpecs(since?: Date): Promise<EnsureTaskSpecsResult> {
     : [];
 
   const inflectionsByLexeme = new Map<string, InflectionRow[]>();
-  for (const row of inflectionRows) {
+  for (const row of inflectionRowsRaw) {
     updateLatest(row.updatedAt);
     const list = inflectionsByLexeme.get(row.lexemeId) ?? [];
     list.push({
+      id: row.id,
       lexemeId: row.lexemeId,
       form: row.form,
       features: row.features ?? {},
@@ -485,7 +514,30 @@ async function syncAllTaskSpecs(since?: Date): Promise<EnsureTaskSpecsResult> {
     },
   });
 
-  return { latestTouchedAt, stats };
+  const versionHash = computeSyncVersionHash(lexemeRows, inflectionRowsRaw);
+  const checkpoint: TaskSpecSyncCheckpoint | null =
+    latestTouchedAt && lexemeRows.length > 0
+      ? { lastSyncedAt: latestTouchedAt, versionHash: versionHash ?? null }
+      : null;
+
+  if (
+    checkpoint &&
+    (!previousCheckpoint ||
+      checkpoint.lastSyncedAt.getTime() !== previousCheckpoint.lastSyncedAt.getTime() ||
+      checkpoint.versionHash !== previousCheckpoint.versionHash)
+  ) {
+    await storeTaskSpecSyncCheckpoint(checkpoint);
+    logStructured({
+      source: LOG_SOURCE,
+      event: 'task_sync.checkpoint_updated',
+      data: {
+        lastSyncedAt: checkpoint.lastSyncedAt.toISOString(),
+        versionHash: checkpoint.versionHash,
+      },
+    });
+  }
+
+  return { latestTouchedAt, stats, checkpoint };
 }
 
 function buildTaskSource(
@@ -965,6 +1017,44 @@ function sleep(durationMs: number): Promise<void> {
   return new Promise((resolve) => {
     setTimeout(resolve, durationMs);
   });
+}
+
+function computeSyncVersionHash(
+  lexemeRows: Array<Pick<LexemeRow, 'id' | 'updatedAt'>>,
+  inflectionRows: Array<{ id: string; lexemeId: string; updatedAt: Date | null }>,
+): string | null {
+  const tokens: string[] = [];
+
+  for (const row of lexemeRows) {
+    if (!row.id) {
+      continue;
+    }
+
+    const updatedAt = row.updatedAt instanceof Date ? row.updatedAt.getTime() : 0;
+    tokens.push(`lexeme:${row.id}:${updatedAt}`);
+  }
+
+  for (const row of inflectionRows) {
+    if (!row.id) {
+      continue;
+    }
+
+    const updatedAt = row.updatedAt instanceof Date ? row.updatedAt.getTime() : 0;
+    tokens.push(`inflection:${row.lexemeId}:${row.id}:${updatedAt}`);
+  }
+
+  if (tokens.length === 0) {
+    return null;
+  }
+
+  tokens.sort();
+  const hash = createHash('sha1');
+  for (const token of tokens) {
+    hash.update(token);
+    hash.update('\n');
+  }
+
+  return hash.digest('hex');
 }
 
 function chunkArray<T>(values: T[], size: number): T[][] {

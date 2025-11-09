@@ -23,10 +23,6 @@ import {
 import type { LexemePos, TaskType } from "@shared";
 import { posPrimarySourceId } from "@shared/source-ids";
 import { ensureTaskSpecsSynced } from "./tasks/synchronizer.js";
-import {
-  loadTaskSpecSyncMarker,
-  storeTaskSpecSyncMarker,
-} from "./tasks/task-sync-state.js";
 import { getTaskRegistryEntry, taskRegistry } from "./tasks/registry.js";
 import { authRouter, getSessionFromRequest } from "./auth/index.js";
 import type { AuthSession } from "./auth/index.js";
@@ -977,12 +973,7 @@ export function registerRoutes(app: Express): void {
     }
 
     try {
-      const storedMarker = await loadTaskSpecSyncMarker();
-      const since = storedMarker ?? null;
-      const { latestTouchedAt } = await ensureTaskSpecsSynced({ since });
-      if (latestTouchedAt && (!storedMarker || latestTouchedAt > storedMarker)) {
-        await storeTaskSpecSyncMarker(latestTouchedAt);
-      }
+      await ensureTaskSpecsSynced();
 
       const { pos, taskType, limit, deviceId, level } = parsed.data;
       const filters: SQL[] = [];
@@ -1226,8 +1217,21 @@ export function registerRoutes(app: Express): void {
         try {
           registryEntry = getTaskRegistryEntry(taskTypeValue as TaskType);
         } catch (error) {
-          console.error("Failed to resolve registry entry for task", { taskType: taskTypeValue, taskId, error });
-          throw error;
+          console.warn("Pruning task with unsupported type", {
+            taskType: taskTypeValue,
+            taskId,
+            error,
+          });
+          try {
+            await db.delete(taskSpecs).where(eq(taskSpecs.id, taskId));
+          } catch (deleteError) {
+            console.error("Failed to delete unsupported task spec", {
+              taskId,
+              taskType: taskTypeValue,
+              deleteError,
+            });
+          }
+          continue;
         }
 
         const prompt = normaliseTaskPrompt(row.prompt);
