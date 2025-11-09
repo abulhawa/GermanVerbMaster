@@ -1,7 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { z } from 'zod';
-import { Sparkles, Settings2, PenSquare, Trash2 } from 'lucide-react';
+import { Settings2 } from 'lucide-react';
 import { Link } from 'wouter';
 
 import { AppShell } from '@/components/layout/app-shell';
@@ -9,208 +7,22 @@ import { SidebarNavButton } from '@/components/layout/sidebar-nav-button';
 import { MobileNavBar } from '@/components/layout/mobile-nav-bar';
 import { getPrimaryNavigationItems } from '@/components/layout/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useAuthSession } from '@/auth/session';
 import type { Word } from '@shared';
-import { wordSchema, wordsResponseSchema } from './admin-word-schemas';
 
-type ApprovalFilter = 'all' | 'approved' | 'pending';
-type CompleteFilter = 'all' | 'complete' | 'incomplete';
-const PER_PAGE_OPTIONS = [25, 50, 100, 200] as const;
-
-const POS_OPTIONS: Array<{ label: string; value: Word['pos'] | 'ALL' }> = [
-  { label: 'All', value: 'ALL' },
-  { label: 'Verbs', value: 'V' },
-  { label: 'Nouns', value: 'N' },
-  { label: 'Adjectives', value: 'Adj' },
-  { label: 'Adverbs', value: 'Adv' },
-  { label: 'Pronouns', value: 'Pron' },
-  { label: 'Determiners', value: 'Det' },
-  { label: 'Prepositions', value: 'Präp' },
-  { label: 'Conjunctions', value: 'Konj' },
-  { label: 'Numbers', value: 'Num' },
-  { label: 'Particles', value: 'Part' },
-  { label: 'Interjections', value: 'Interj' },
-];
-
-const LEVEL_OPTIONS = ['All', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
-
-const completeOptions: Array<{ label: string; value: CompleteFilter }> = [
-  { label: 'All', value: 'all' },
-  { label: 'Complete', value: 'complete' },
-  { label: 'Incomplete', value: 'incomplete' },
-];
-
-const ADMIN_PAGE_IDS = {
-  page: 'admin-words-page',
-  content: 'admin-words-content',
-  headerSection: 'admin-words-header',
-  filterCard: 'admin-words-filter-card',
-  tokenInput: 'admin-words-token-input',
-  searchInput: 'admin-words-search-input',
-  filterControls: 'admin-words-filter-controls',
-  wordsCard: 'admin-words-table-card',
-  tableContainer: 'admin-words-table-container',
-  pagination: 'admin-words-pagination',
-} as const;
-
-interface EditFieldConfig {
-  key:
-    | 'level'
-    | 'english'
-    | 'exampleDe'
-    | 'exampleEn'
-    | 'gender'
-    | 'plural'
-    | 'separable'
-    | 'aux'
-    | 'praesensIch'
-    | 'praesensEr'
-    | 'praeteritum'
-    | 'partizipIi'
-    | 'perfekt'
-    | 'comparative'
-    | 'superlative';
-  label: string;
-  type?: 'text' | 'textarea' | 'select' | 'boolean';
-  options?: Array<{ label: string; value: string }>;
-}
-
-const commonFields: EditFieldConfig[] = [
-  { key: 'level', label: 'Level' },
-  { key: 'english', label: 'English' },
-  { key: 'exampleDe', label: 'Example (DE)', type: 'textarea' },
-  { key: 'exampleEn', label: 'Example (EN)', type: 'textarea' },
-];
-
-const verbFields: EditFieldConfig[] = [
-  { key: 'aux', label: 'Auxiliary', type: 'select', options: [
-    { label: 'Unset', value: 'unset' },
-    { label: 'haben', value: 'haben' },
-    { label: 'sein', value: 'sein' },
-    { label: 'haben / sein', value: 'haben / sein' },
-  ] },
-  { key: 'separable', label: 'Separable', type: 'select', options: [
-    { label: 'Unset', value: 'unset' },
-    { label: 'Yes', value: 'true' },
-    { label: 'No', value: 'false' },
-  ] },
-  { key: 'praesensIch', label: 'Präsens (ich)' },
-  { key: 'praesensEr', label: 'Präsens (er/sie/es)' },
-  { key: 'praeteritum', label: 'Präteritum' },
-  { key: 'partizipIi', label: 'Partizip II' },
-  { key: 'perfekt', label: 'Perfekt' },
-];
-
-const nounFields: EditFieldConfig[] = [
-  { key: 'gender', label: 'Gender / Artikel' },
-  { key: 'plural', label: 'Plural' },
-];
-
-const adjectiveFields: EditFieldConfig[] = [
-  { key: 'comparative', label: 'Comparative' },
-  { key: 'superlative', label: 'Superlative' },
-];
-
-const wordFormSchema = z.object({
-  level: z.string(),
-  english: z.string(),
-  exampleDe: z.string(),
-  exampleEn: z.string(),
-  gender: z.string(),
-  plural: z.string(),
-  separable: z.string(),
-  aux: z.string(),
-  praesensIch: z.string(),
-  praesensEr: z.string(),
-  praeteritum: z.string(),
-  partizipIi: z.string(),
-  perfekt: z.string(),
-  comparative: z.string(),
-  superlative: z.string(),
-});
-
-type WordFormState = z.infer<typeof wordFormSchema>;
-
-function createFormState(word: Word): WordFormState {
-  return {
-    level: word.level ?? '',
-    english: word.english ?? '',
-    exampleDe: word.exampleDe ?? '',
-    exampleEn: word.exampleEn ?? '',
-    gender: word.gender ?? '',
-    plural: word.plural ?? '',
-    separable: word.separable === null ? 'unset' : word.separable ? 'true' : 'false',
-    aux: word.aux ?? 'unset',
-    praesensIch: word.praesensIch ?? '',
-    praesensEr: word.praesensEr ?? '',
-    praeteritum: word.praeteritum ?? '',
-    partizipIi: word.partizipIi ?? '',
-    perfekt: word.perfekt ?? '',
-    comparative: word.comparative ?? '',
-    superlative: word.superlative ?? '',
-  };
-}
-
-function preparePayload(form: WordFormState, pos: Word['pos']) {
-  const payload: Record<string, unknown> = {};
-
-  const assignText = (key: keyof WordFormState, column: keyof Word) => {
-    const raw = form[key].trim();
-    payload[column] = raw.length ? raw : null;
-  };
-
-  assignText('level', 'level');
-  assignText('english', 'english');
-  assignText('exampleDe', 'exampleDe');
-  assignText('exampleEn', 'exampleEn');
-
-  if (pos === 'V') {
-    if (form.aux === 'unset') {
-      payload.aux = null;
-    } else if (
-      form.aux === 'haben'
-      || form.aux === 'sein'
-      || form.aux === 'haben / sein'
-    ) {
-      payload.aux = form.aux;
-    }
-
-    if (form.separable === 'unset') {
-      payload.separable = null;
-    } else if (form.separable === 'true') {
-      payload.separable = true;
-    } else if (form.separable === 'false') {
-      payload.separable = false;
-    }
-
-    assignText('praesensIch', 'praesensIch');
-    assignText('praesensEr', 'praesensEr');
-    assignText('praeteritum', 'praeteritum');
-    assignText('partizipIi', 'partizipIi');
-    assignText('perfekt', 'perfekt');
-  }
-
-  if (pos === 'N') {
-    assignText('gender', 'gender');
-    assignText('plural', 'plural');
-  }
-
-  if (pos === 'Adj') {
-    assignText('comparative', 'comparative');
-    assignText('superlative', 'superlative');
-  }
-
-  return payload;
-}
+import {
+  ADMIN_PAGE_IDS,
+  PAGE_DEBUG_ID,
+  type AdminWordFilters as AdminWordFiltersState,
+  type ApprovalFilter,
+  type CompleteFilter,
+} from './admin/constants';
+import { AdminWordFilters } from './admin/components/admin-word-filters';
+import { AdminWordTable } from './admin/components/admin-word-table';
+import { useAdminWordsQuery } from './admin/hooks/use-admin-words-query';
+import { useUpdateWordMutation } from './admin/hooks/use-update-word-mutation';
 
 const AdminWordsPage = () => {
   const [adminToken, setAdminToken] = useState(() => localStorage.getItem('gvm-admin-token') ?? '');
@@ -221,13 +33,9 @@ const AdminWordsPage = () => {
   const [completeFilter, setCompleteFilter] = useState<CompleteFilter>('all');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState<number>(50);
-  const [selectedWord, setSelectedWord] = useState<Word | null>(null);
-  const [formState, setFormState] = useState<WordFormState | null>(null);
-
-  const pageDebugId = 'admin-words';
+  const [selectedWordId, setSelectedWordId] = useState<number | null>(null);
 
   const { toast } = useToast();
-  const queryClient = useQueryClient();
 
   const normalizedAdminToken = adminToken.trim();
 
@@ -239,7 +47,7 @@ const AdminWordsPage = () => {
     setPage(1);
   }, [search, pos, level, approvalFilter, completeFilter]);
 
-  const filters = useMemo(
+  const filters = useMemo<AdminWordFiltersState>(
     () => ({
       search,
       pos,
@@ -252,150 +60,47 @@ const AdminWordsPage = () => {
     [search, pos, level, approvalFilter, completeFilter, page, perPage],
   );
 
-  const queryKey = useMemo(
-    () => ['words', filters, normalizedAdminToken],
-    [filters, normalizedAdminToken],
-  );
+  const wordsQuery = useAdminWordsQuery({ token: normalizedAdminToken, filters });
 
-  const wordsQuery = useQuery({
-    queryKey,
-    queryFn: async () => {
-      const params = new URLSearchParams({ admin: '1' });
-      if (filters.pos !== 'ALL') params.set('pos', filters.pos);
-      if (filters.level !== 'All') params.set('level', filters.level);
-      if (filters.search.trim()) params.set('search', filters.search.trim());
-      if (filters.approvalFilter === 'approved') params.set('approved', 'true');
-      if (filters.approvalFilter === 'pending') params.set('approved', 'false');
-      if (filters.completeFilter === 'complete') params.set('complete', 'only');
-      if (filters.completeFilter === 'incomplete') params.set('complete', 'non');
-      const headers: Record<string, string> = {};
-      if (normalizedAdminToken) {
-        headers['x-admin-token'] = normalizedAdminToken;
-      }
-
-      params.set('page', String(filters.page));
-      params.set('perPage', String(filters.perPage));
-
-      const response = await fetch(`/api/words?${params.toString()}`, {
-        headers,
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to load words (${response.status})`);
-      }
-
-      const payload = await response.json();
-      const parsed = wordsResponseSchema.parse(payload);
-      return parsed;
-    },
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: async ({ id, payload }: { id: number; payload: Record<string, unknown> }) => {
-      const response = await fetch(`/api/words/${id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(normalizedAdminToken ? { 'x-admin-token': normalizedAdminToken } : {}),
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || 'Failed to update word');
-      }
-
-      const result = await response.json();
-      return wordSchema.parse(result);
-    },
+  const updateMutation = useUpdateWordMutation({
+    token: normalizedAdminToken,
+    invalidateKey: wordsQuery.queryKey,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey });
       toast({ title: 'Word updated' });
     },
     onError: (error) => {
-      toast({ title: 'Update failed', description: error instanceof Error ? error.message : String(error), variant: 'destructive' });
+      toast({
+        title: 'Update failed',
+        description: error instanceof Error ? error.message : String(error),
+        variant: 'destructive',
+      });
     },
   });
 
-  const openEditor = (word: Word) => {
-    setSelectedWord(word);
-    setFormState(createFormState(word));
-  };
-
-  const closeEditor = () => {
-    setSelectedWord(null);
-    setFormState(null);
-  };
-
-  const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!selectedWord || !formState) return;
-
-    const payload = preparePayload(formState, selectedWord.pos);
-    updateMutation.mutate({ id: selectedWord.id, payload });
-    closeEditor();
-  };
-
-  const toggleApproval = (word: Word) => {
-    updateMutation.mutate({ id: word.id, payload: { approved: !word.approved } });
-  };
-
   const words = wordsQuery.data?.data ?? [];
-  const pagination = wordsQuery.data?.pagination;
-  const activePos = pos;
-
-  const totalWords = pagination?.total ?? 0;
-  const totalPages = pagination?.totalPages ?? 0;
-  const currentPage = pagination?.page ?? page;
-  const currentPerPage = pagination?.perPage ?? perPage;
-  const displayTotalPages = totalPages > 0 ? totalPages : 1;
-  const pageStart = totalWords > 0 ? (currentPage - 1) * currentPerPage + 1 : 0;
-  const pageEnd = totalWords > 0 ? pageStart + words.length - 1 : 0;
+  const pagination = wordsQuery.data?.pagination ?? null;
 
   const isUnauthorized =
     wordsQuery.isError &&
     wordsQuery.error instanceof Error &&
     wordsQuery.error.message.includes('(401)');
 
-  const columns = useMemo(() => {
-    const base = [
-      { key: 'lemma', label: 'Lemma' },
-      { key: 'pos', label: 'POS' },
-      { key: 'level', label: 'Level' },
-      { key: 'english', label: 'English' },
-    ];
+  const handlePageChange = (nextPage: number) => {
+    setPage(nextPage);
+  };
 
-    if (activePos === 'V') {
-      base.push(
-        { key: 'praeteritum', label: 'Präteritum' },
-        { key: 'partizipIi', label: 'Partizip II' },
-        { key: 'perfekt', label: 'Perfekt' },
-        { key: 'aux', label: 'Aux' },
-      );
-    } else if (activePos === 'N') {
-      base.push(
-        { key: 'gender', label: 'Gender' },
-        { key: 'plural', label: 'Plural' },
-      );
-    } else if (activePos === 'Adj') {
-      base.push(
-        { key: 'comparative', label: 'Comparative' },
-        { key: 'superlative', label: 'Superlative' },
-      );
-    } else {
-      base.push(
-        { key: 'exampleDe', label: 'Example (DE)' },
-        { key: 'exampleEn', label: 'Example (EN)' },
-      );
-    }
+  const handleOpenEditor = (word: Word) => {
+    setSelectedWordId(word.id);
+  };
 
-    base.push({ key: 'approval', label: 'Approval' });
-    base.push({ key: 'complete', label: 'Complete' });
-    base.push({ key: 'actions', label: 'Actions' });
+  const handleCloseEditor = () => {
+    setSelectedWordId(null);
+  };
 
-    return base;
-  }, [activePos]);
+  const handleSubmitWord = (wordId: number, payload: Record<string, unknown>) => {
+    updateMutation.mutate({ id: wordId, payload });
+    setSelectedWordId(null);
+  };
 
   const { data: authSession } = useAuthSession();
   const navigationItems = useMemo(
@@ -405,11 +110,11 @@ const AdminWordsPage = () => {
 
   const sidebar = (
     <div className="flex h-full flex-col justify-between gap-8">
-        <div className="space-y-6">
-          <div className="space-y-3">
-            <div className="grid gap-2">
-              {navigationItems.map((item) => (
-                <SidebarNavButton
+      <div className="space-y-6">
+        <div className="space-y-3">
+          <div className="grid gap-2">
+            {navigationItems.map((item) => (
+              <SidebarNavButton
                 key={item.href}
                 href={item.href}
                 icon={item.icon}
@@ -425,494 +130,93 @@ const AdminWordsPage = () => {
 
   return (
     <div id={ADMIN_PAGE_IDS.page}>
-      <AppShell
-        sidebar={sidebar}
-        mobileNav={<MobileNavBar items={navigationItems} />}
-      >
+      <AppShell sidebar={sidebar} mobileNav={<MobileNavBar items={navigationItems} />}>
         <div className="space-y-6" id={ADMIN_PAGE_IDS.content}>
           <section
             className="space-y-4 rounded-3xl border border-border/60 bg-card/85 p-6 shadow-soft shadow-primary/5"
             id={ADMIN_PAGE_IDS.headerSection}
           >
-          <div className="space-y-1">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Admin console</p>
-            <h1 className="flex items-center gap-2 text-2xl font-semibold text-foreground">
-              <Settings2 className="h-6 w-6 text-primary" aria-hidden />
-              Lexicon management
-            </h1>
-            <p className="max-w-2xl text-sm text-muted-foreground">
-              Curate the verb bank, manage metadata, and keep entries aligned across CEFR levels.
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center justify-start gap-2 sm:justify-end">
-            <Link href="/">
-              <Button
-                variant="secondary"
-                className="rounded-2xl px-5"
-                debugId={`${pageDebugId}-topbar-back-button`}
-                id={`${pageDebugId}-topbar-back-button`}
-              >
-                Back to practice
-              </Button>
-            </Link>
-            <Link href="/analytics">
-              <Button
-                className="rounded-2xl px-5"
-                debugId={`${pageDebugId}-topbar-analytics-button`}
-                id={`${pageDebugId}-topbar-analytics-button`}
-              >
-                Open analytics
-              </Button>
-            </Link>
-          </div>
+            <div className="space-y-1">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Admin console</p>
+              <h1 className="flex items-center gap-2 text-2xl font-semibold text-foreground">
+                <Settings2 className="h-6 w-6 text-primary" aria-hidden />
+                Lexicon management
+              </h1>
+              <p className="max-w-2xl text-sm text-muted-foreground">
+                Curate the verb bank, manage metadata, and keep entries aligned across CEFR levels.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center justify-start gap-2 sm:justify-end">
+              <Link href="/">
+                <Button
+                  variant="secondary"
+                  className="rounded-2xl px-5"
+                  debugId={`${PAGE_DEBUG_ID}-topbar-back-button`}
+                  id={`${PAGE_DEBUG_ID}-topbar-back-button`}
+                >
+                  Back to practice
+                </Button>
+              </Link>
+              <Link href="/analytics">
+                <Button
+                  className="rounded-2xl px-5"
+                  debugId={`${PAGE_DEBUG_ID}-topbar-analytics-button`}
+                  id={`${PAGE_DEBUG_ID}-topbar-analytics-button`}
+                >
+                  Open analytics
+                </Button>
+              </Link>
+            </div>
           </section>
           <Card
             className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5"
             id={ADMIN_PAGE_IDS.filterCard}
           >
-          <CardHeader className="space-y-2">
-            <CardTitle>Admin: Words</CardTitle>
-            <CardDescription>Review and edit the aggregated lexicon. Filters update the API query in real time.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid gap-4 lg:grid-cols-2">
-              <div className="space-y-2" id={ADMIN_PAGE_IDS.tokenInput}>
-                <Label htmlFor="admin-token">Admin token (if configured)</Label>
-                <Input
-                  id="admin-token"
-                  type="password"
-                  value={adminToken}
-                  onChange={(event) => setAdminToken(event.target.value)}
-                  placeholder="Enter x-admin-token"
-                />
-              </div>
-              <div className="space-y-2" id={ADMIN_PAGE_IDS.searchInput}>
-                <Label htmlFor="search">Search</Label>
-                <Input
-                  id="search"
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                  placeholder="Search by lemma or English"
-                />
-              </div>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-5" id={ADMIN_PAGE_IDS.filterControls}>
-              <div className="space-y-2">
-                <Label>Part of speech</Label>
-                <Select value={pos} onValueChange={(value) => setPos(value as Word['pos'] | 'ALL')}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="POS" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {POS_OPTIONS.map((option) => (
-                      <SelectItem key={option.value || 'all'} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Level</Label>
-                <Select value={level} onValueChange={setLevel}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {LEVEL_OPTIONS.map((option) => (
-                      <SelectItem key={option} value={option}>
-                        {option}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Approval</Label>
-                <div className="flex rounded-2xl border border-border/60 bg-card/60 p-1 shadow-sm">
-                  <Button
-                    size="sm"
-                    variant={approvalFilter === 'all' ? 'default' : 'secondary'}
-                    className="flex-1 rounded-2xl"
-                    onClick={() => setApprovalFilter('all')}
-                    debugId={`${pageDebugId}-approval-filter-all-button`}
-                    id={`${pageDebugId}-approval-filter-all-button`}
-                  >
-                    All
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant={approvalFilter === 'approved' ? 'default' : 'secondary'}
-                    className="flex-1 rounded-2xl"
-                    onClick={() => setApprovalFilter('approved')}
-                    debugId={`${pageDebugId}-approval-filter-approved-button`}
-                    id={`${pageDebugId}-approval-filter-approved-button`}
-                  >
-                    Approved
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant={approvalFilter === 'pending' ? 'default' : 'secondary'}
-                    className="flex-1 rounded-2xl"
-                    onClick={() => setApprovalFilter('pending')}
-                    debugId={`${pageDebugId}-approval-filter-pending-button`}
-                    id={`${pageDebugId}-approval-filter-pending-button`}
-                  >
-                    Pending
-                  </Button>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label>Completeness</Label>
-                <Select value={completeFilter} onValueChange={(value: CompleteFilter) => setCompleteFilter(value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Completeness" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {completeOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </CardContent>
-          </Card>
-
-        <Card
-          className="rounded-3xl border border-border/60 bg-card/85 shadow-lg shadow-primary/5"
-          id={ADMIN_PAGE_IDS.wordsCard}
-        >
-        <CardHeader>
-          <CardTitle>Words</CardTitle>
-          <CardDescription>
-            {isUnauthorized && 'Enter the admin token to load words.'}
-            {wordsQuery.isLoading && 'Loading words…'}
-            {wordsQuery.isError && !isUnauthorized && 'Failed to load words. Check the token and try again.'}
-            {wordsQuery.isSuccess &&
-              (totalWords
-                ? `Showing ${pageStart}–${pageEnd} of ${totalWords} words.`
-                : 'No words match the current filters.')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <div className="text-sm text-muted-foreground">Page {currentPage} of {displayTotalPages}</div>
-            <div className="flex items-center gap-2">
-              <Label className="text-sm" htmlFor="per-page">
-                Rows per page
-              </Label>
-              <Select
-                value={String(perPage)}
-                onValueChange={(value) => {
-                  const next = Number.parseInt(value, 10) || perPage;
-                  setPerPage(next);
+            <CardHeader className="space-y-2">
+              <CardTitle>Admin: Words</CardTitle>
+              <CardDescription>
+                Review and edit the aggregated lexicon. Filters update the API query in real time.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <AdminWordFilters
+                adminToken={adminToken}
+                search={search}
+                pos={pos}
+                level={level}
+                approvalFilter={approvalFilter}
+                completeFilter={completeFilter}
+                perPage={perPage}
+                onAdminTokenChange={setAdminToken}
+                onSearchChange={setSearch}
+                onPosChange={setPos}
+                onLevelChange={setLevel}
+                onApprovalFilterChange={setApprovalFilter}
+                onCompleteFilterChange={setCompleteFilter}
+                onPerPageChange={(value) => {
+                  setPerPage(value);
                   setPage(1);
                 }}
-              >
-                <SelectTrigger id="per-page" className="w-[120px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {PER_PAGE_OPTIONS.map((option) => (
-                    <SelectItem key={option} value={String(option)}>
-                      {option}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div
-            className="max-h-[520px] overflow-auto rounded-3xl border border-border/60"
-            id={ADMIN_PAGE_IDS.tableContainer}
-          >
-            <Table className="text-xs">
-              <TableHeader className="sticky top-0 z-20 bg-card/95 backdrop-blur">
-                <TableRow>
-                  {columns.map((column) => (
-                    <TableHead
-                      key={column.key}
-                      className="px-2 py-2 text-xs font-semibold uppercase tracking-wide"
-                    >
-                      {column.label}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-              {words.map((word) => {
-                return (
-                  <TableRow key={word.id}>
-                    <TableCell className="px-2 py-2 font-medium">{word.lemma}</TableCell>
-                    <TableCell className="px-2 py-2">{word.pos}</TableCell>
-                    <TableCell className="px-2 py-2">{word.level ?? '—'}</TableCell>
-                    <TableCell className="px-2 py-2">{word.english ?? '—'}</TableCell>
-                    {activePos === 'V' && (
-                      <>
-                        <TableCell className="px-2 py-2">{word.praeteritum ?? '—'}</TableCell>
-                        <TableCell className="px-2 py-2">{word.partizipIi ?? '—'}</TableCell>
-                        <TableCell className="px-2 py-2">{word.perfekt ?? '—'}</TableCell>
-                        <TableCell className="px-2 py-2">{word.aux ?? '—'}</TableCell>
-                      </>
-                    )}
-                    {activePos === 'N' && (
-                      <>
-                        <TableCell className="px-2 py-2">{word.gender ?? '—'}</TableCell>
-                        <TableCell className="px-2 py-2">{word.plural ?? '—'}</TableCell>
-                      </>
-                    )}
-                    {activePos === 'Adj' && (
-                      <>
-                        <TableCell className="px-2 py-2">{word.comparative ?? '—'}</TableCell>
-                        <TableCell className="px-2 py-2">{word.superlative ?? '—'}</TableCell>
-                      </>
-                    )}
-                    {activePos === 'ALL' && (
-                      <>
-                        <TableCell className="px-2 py-2">{word.exampleDe ?? '—'}</TableCell>
-                        <TableCell className="px-2 py-2">{word.exampleEn ?? '—'}</TableCell>
-                      </>
-                    )}
-                    <TableCell className="px-2 py-2">
-                      <Badge variant={word.approved ? 'default' : 'secondary'}>
-                        {word.approved ? 'Approved' : 'Pending'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="px-2 py-2">
-                      <Badge variant={word.complete ? 'default' : 'outline'}>
-                        {word.complete ? 'Complete' : 'Incomplete'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="flex items-center gap-2 px-2 py-2">
-                      <Button
-                        size="icon"
-                        variant={word.approved ? 'destructive' : 'secondary'}
-                        className="rounded-xl"
-                        title={word.approved ? 'Revoke approval' : 'Mark as approved'}
-                        aria-label={word.approved ? 'Revoke approval' : 'Mark as approved'}
-                        onClick={() => toggleApproval(word)}
-                        debugId={`${pageDebugId}-word-${word.id}-toggle-approval-button`}
-                        id={`${pageDebugId}-word-${word.id}-toggle-approval-button`}
-                      >
-                        {word.approved ? (
-                          <Trash2 className="h-4 w-4" aria-hidden />
-                        ) : (
-                          <Sparkles className="h-4 w-4" aria-hidden />
-                        )}
-                      </Button>
-                      <Drawer open={selectedWord?.id === word.id} onOpenChange={(open) => {
-                        if (open) {
-                          openEditor(word);
-                        } else {
-                          closeEditor();
-                        }
-                      }}>
-                        <DrawerTrigger asChild>
-                          <Button
-                            size="icon"
-                            variant="secondary"
-                            className="rounded-xl"
-                            onClick={() => openEditor(word)}
-                            title="Edit entry"
-                            aria-label="Edit entry"
-                            debugId={`${pageDebugId}-word-${word.id}-edit-button`}
-                            id={`${pageDebugId}-word-${word.id}-edit-button`}
-                          >
-                            <PenSquare className="h-4 w-4" aria-hidden />
-                          </Button>
-                        </DrawerTrigger>
-                        <DrawerContent className="max-h-[85vh] overflow-y-auto">
-                          <DrawerHeader>
-                            <DrawerTitle>Edit {word.lemma}</DrawerTitle>
-                          </DrawerHeader>
-                          <form onSubmit={submitForm} className="space-y-4 p-4">
-                          {[...commonFields,
-                            ...(word.pos === 'V' ? verbFields : []),
-                            ...(word.pos === 'N' ? nounFields : []),
-                            ...(word.pos === 'Adj' ? adjectiveFields : []),
-                          ].map((field) => (
-                            <div key={field.key} className="space-y-2">
-                              <Label className="text-sm font-medium">{field.label}</Label>
-                                {field.type === 'textarea' ? (
-                                  <Textarea
-                                    value={formState?.[field.key] ?? ''}
-                                    onChange={(event) =>
-                                      setFormState((state) =>
-                                        state ? { ...state, [field.key]: event.target.value } : state,
-                                      )
-                                    }
-                                  />
-                                ) : field.type === 'select' && field.options ? (
-                                  (() => {
-                                    const fallbackOption =
-                                      field.options.find((option) => option.value === 'unset')?.value ??
-                                      field.options[0]?.value ??
-                                      '';
-                                    const currentValue = formState?.[field.key] ?? fallbackOption;
-                                    return (
-                                      <Select
-                                        value={currentValue}
-                                        onValueChange={(value) =>
-                                          setFormState((state) =>
-                                            state ? { ...state, [field.key]: value } : state,
-                                          )
-                                        }
-                                      >
-                                        <SelectTrigger>
-                                          <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          {field.options.map((option) => (
-                                            <SelectItem key={option.value} value={option.value}>
-                                              {option.label}
-                                            </SelectItem>
-                                          ))}
-                                        </SelectContent>
-                                      </Select>
-                                    );
-                                  })()
-                                ) : (
-                                  <Input
-                                    value={formState?.[field.key] ?? ''}
-                                    onChange={(event) =>
-                                      setFormState((state) =>
-                                      state ? { ...state, [field.key]: event.target.value } : state,
-                                    )
-                                  }
-                                />
-                              )}
-                            </div>
-                          ))}
-                          {(word.translations?.length ?? 0) || (word.examples?.length ?? 0) ? (
-                            <div className="space-y-3 rounded-2xl border border-border/60 bg-muted/40 p-4">
-                              {word.translations?.length ? (
-                                <div>
-                                  <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                                    Stored translations
-                                  </div>
-                                  <ul className="mt-1 space-y-1 text-sm">
-                                    {word.translations.map((translation, index) => (
-                                      <li key={`${translation.value}-${translation.source ?? 'unknown'}-${index}`}>
-                                        <span className="font-medium">{translation.value}</span>
-                                        {translation.language ? (
-                                          <span className="text-muted-foreground"> ({translation.language})</span>
-                                        ) : null}
-                                        {translation.source ? (
-                                          <span className="text-muted-foreground"> · {translation.source}</span>
-                                        ) : null}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                </div>
-                              ) : null}
-                              {word.examples?.length ? (
-                                <div>
-                                  <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                                    Stored examples
-                                  </div>
-                                  <ul className="mt-1 space-y-2 text-sm">
-                                    {word.examples.map((example, index) => {
-                                      const sentence = example.sentence ?? example.exampleDe ?? '—';
-                                      const english = example.translations?.en ?? example.exampleEn ?? null;
-                                      return (
-                                        <li key={`${sentence}-${english ?? '—'}-${index}`} className="leading-snug">
-                                          <span className="font-medium text-foreground">{sentence}</span>
-                                          {english ? (
-                                            <span className="text-muted-foreground"> · {english}</span>
-                                          ) : null}
-                                        </li>
-                                      );
-                                    })}
-                                  </ul>
-                                </div>
-                              ) : null}
-                            </div>
-                          ) : null}
-                          <DrawerFooter>
-                            <Button
-                              type="submit"
-                              disabled={updateMutation.isPending}
-                              debugId={`${pageDebugId}-word-${word.id}-save-button`}
-                              id={`${pageDebugId}-word-${word.id}-save-button`}
-                            >
-                              Save changes
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              onClick={closeEditor}
-                              debugId={`${pageDebugId}-word-${word.id}-cancel-button`}
-                              id={`${pageDebugId}-word-${word.id}-cancel-button`}
-                            >
-                              Cancel
-                            </Button>
-                          </DrawerFooter>
-                        </form>
-                      </DrawerContent>
-                    </Drawer>
-                  </TableCell>
-                  </TableRow>
-                );
-              })}
-              {isUnauthorized && (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="text-center text-muted-foreground">
-                    Enter the admin token to load words.
-                  </TableCell>
-                </TableRow>
-              )}
-              {!isUnauthorized && !words.length && !wordsQuery.isLoading && (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="text-center text-muted-foreground">
-                    No words match the current filters.
-                  </TableCell>
-                </TableRow>
-              )}
-              </TableBody>
-            </Table>
-          </div>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between" id={ADMIN_PAGE_IDS.pagination}>
-            <div className="text-sm text-muted-foreground">
-              {totalWords
-                ? `Showing ${pageStart}–${pageEnd} of ${totalWords} words`
-                : 'No words to display'}
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => setPage((current) => Math.max(1, current - 1))}
-                disabled={currentPage <= 1 || wordsQuery.isLoading}
-                className="rounded-2xl"
-                debugId={`${pageDebugId}-pagination-previous-button`}
-                id={`${pageDebugId}-pagination-previous-button`}
-              >
-                Previous
-              </Button>
-              <div className="text-sm text-muted-foreground">Page {currentPage} of {displayTotalPages}</div>
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => setPage((current) => current + 1)}
-                disabled={
-                  wordsQuery.isLoading ||
-                  (totalPages > 0 ? currentPage >= totalPages : !totalWords)
-                }
-                className="rounded-2xl"
-                debugId={`${pageDebugId}-pagination-next-button`}
-                id={`${pageDebugId}-pagination-next-button`}
-              >
-                Next
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-        </Card>
-      </div>
+              />
+              <AdminWordTable
+                words={words}
+                activePos={pos}
+                isUnauthorized={isUnauthorized}
+                isLoading={wordsQuery.isLoading}
+                pagination={pagination}
+                fallbackPage={page}
+                fallbackPerPage={perPage}
+                onPageChange={handlePageChange}
+                onToggleApproval={(word) => updateMutation.mutate({ id: word.id, payload: { approved: !word.approved } })}
+                selectedWordId={selectedWordId}
+                onOpenEditor={handleOpenEditor}
+                onCloseEditor={handleCloseEditor}
+                onSubmitWord={handleSubmitWord}
+                isSubmitting={updateMutation.isPending}
+              />
+            </CardContent>
+          </Card>
+        </div>
       </AppShell>
     </div>
   );
