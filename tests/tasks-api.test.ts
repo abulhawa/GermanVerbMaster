@@ -186,6 +186,22 @@ describe('tasks API', () => {
     expect(staleCount.rows[0]?.count).toBe(0);
   });
 
+  it('returns grouped tasks when requesting multiple task types', async () => {
+    const response = await invokeApi(
+      '/api/tasks?taskTypes=conjugate_form&taskTypes=noun_case_declension&limit=2',
+    );
+
+    expect(response.status).toBe(200);
+    const body = response.bodyJson as any;
+    expect(body.tasksByType).toBeDefined();
+    expect(Array.isArray(body.tasks)).toBe(true);
+    expect(body.tasksByType.conjugate_form?.length).toBeGreaterThan(0);
+    expect(body.tasksByType.noun_case_declension?.length).toBeGreaterThan(0);
+    const taskTypes = new Set(body.tasks.map((task: any) => task.taskType));
+    expect(taskTypes.has('conjugate_form')).toBe(true);
+    expect(taskTypes.has('noun_case_declension')).toBe(true);
+  });
+
   it('records submissions and updates scheduling state', async () => {
     const taskResponse = await invokeApi('/api/tasks?pos=verb&limit=1');
     expect(taskResponse.status).toBe(200);

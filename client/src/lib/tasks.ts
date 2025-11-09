@@ -35,10 +35,11 @@ export interface PracticeTask<T extends TaskType = TaskType> {
 export interface TaskFetchOptions {
   pos?: LexemePos;
   taskType?: TaskType;
+  taskTypes?: TaskType[];
   limit?: number;
   signal?: AbortSignal;
   deviceId?: string;
-  level?: CEFRLevel;
+  level?: CEFRLevel | CEFRLevel[];
 }
 
 const rawTaskSchema = z.object({
@@ -57,7 +58,10 @@ const rawTaskSchema = z.object({
 });
 
 const tasksResponseSchema = z.object({
-  tasks: z.array(rawTaskSchema),
+  tasks: z.array(rawTaskSchema).optional(),
+  tasksByType: z
+    .record(z.string(), z.array(rawTaskSchema))
+    .optional(),
 });
 
 type RawTaskPayload = z.infer<typeof rawTaskSchema>;
@@ -98,10 +102,21 @@ function buildTasksQuery(options: TaskFetchOptions): string {
   if (options.taskType) {
     params.set('taskType', options.taskType);
   }
+  if (options.taskTypes?.length) {
+    for (const type of options.taskTypes) {
+      params.append('taskTypes', type);
+    }
+  }
   const limit = options.limit ?? DEFAULT_TASK_LIMIT;
   params.set('limit', String(limit));
   if (options.level) {
-    params.set('level', options.level);
+    if (Array.isArray(options.level)) {
+      for (const level of options.level) {
+        params.append('level', level);
+      }
+    } else {
+      params.set('level', options.level);
+    }
   }
   const deviceId = options.deviceId?.trim() || getDeviceId();
   params.set('deviceId', deviceId);
@@ -115,7 +130,12 @@ class TaskFeedError extends Error {
   }
 }
 
-async function fetchFromTaskFeed(options: TaskFetchOptions): Promise<PracticeTask[]> {
+interface TaskFeedResult {
+  tasks: PracticeTask[];
+  tasksByType: Partial<Record<TaskType, PracticeTask[]>> | null;
+}
+
+async function fetchFromTaskFeed(options: TaskFetchOptions): Promise<TaskFeedResult> {
   const query = buildTasksQuery(options);
   const response = await fetch(createApiUrl('/api/tasks', query ? new URLSearchParams(query) : undefined), {
     signal: options.signal,
@@ -134,12 +154,64 @@ async function fetchFromTaskFeed(options: TaskFetchOptions): Promise<PracticeTas
     throw new TaskFeedError('Invalid task feed payload', parsed.error);
   }
 
-  return parsed.data.tasks.map(mapTaskPayload);
+  const tasks = (parsed.data.tasks ?? []).map(mapTaskPayload);
+
+  const tasksByType = parsed.data.tasksByType
+    ? Object.entries(parsed.data.tasksByType).reduce((acc, [type, entries]) => {
+        if (!type || !entries) {
+          return acc;
+        }
+        const mapped = entries
+          .map(mapTaskPayload)
+          .filter((task) => task.taskType === (type as TaskType));
+        if (mapped.length) {
+          acc[type as TaskType] = mapped;
+        }
+        return acc;
+      }, {} as Partial<Record<TaskType, PracticeTask[]>>)
+    : null;
+
+  return { tasks, tasksByType };
 }
 
 export async function fetchPracticeTasks(options: TaskFetchOptions = {}): Promise<PracticeTask[]> {
   const resolvedOptions = options.deviceId ? options : { ...options, deviceId: getDeviceId() };
-  return fetchFromTaskFeed(resolvedOptions);
+  const result = await fetchFromTaskFeed(resolvedOptions);
+  return result.tasks;
+}
+
+export interface MultiTaskFetchOptions extends TaskFetchOptions {
+  taskTypes: TaskType[];
+}
+
+export async function fetchPracticeTasksByType(
+  options: MultiTaskFetchOptions,
+): Promise<Record<TaskType, PracticeTask[]>> {
+  const resolvedOptions = options.deviceId ? options : { ...options, deviceId: getDeviceId() };
+  const result = await fetchFromTaskFeed(resolvedOptions);
+
+  const grouped = {} as Record<TaskType, PracticeTask[]>;
+  for (const taskType of options.taskTypes) {
+    grouped[taskType] = [];
+  }
+
+  if (result.tasksByType) {
+    for (const [type, tasks] of Object.entries(result.tasksByType)) {
+      if (grouped[type as TaskType]) {
+        grouped[type as TaskType] = tasks;
+      }
+    }
+  }
+
+  if (options.taskTypes.some((type) => grouped[type].length === 0) && result.tasks.length) {
+    for (const task of result.tasks) {
+      if (options.taskTypes.includes(task.taskType) && grouped[task.taskType].every((entry) => entry.taskId !== task.taskId)) {
+        grouped[task.taskType].push(task);
+      }
+    }
+  }
+
+  return grouped;
 }
 
 export type ClientTaskRegistry = Readonly<TaskRegistry>;
@@ -168,9 +240,7 @@ function createApiUrl(path: string, params?: URLSearchParams): string {
       : 'http://localhost';
   const url = new URL(path, base);
   if (params) {
-    for (const [key, value] of params.entries()) {
-      url.searchParams.set(key, value);
-    }
+    url.search = params.toString();
   }
   return url.toString();
 }

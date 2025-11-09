@@ -38,9 +38,10 @@ import {
   createAnswerHistoryEntry,
 } from '@/lib/answer-history';
 import {
-  fetchPracticeTasks,
+  fetchPracticeTasksByType,
   type PracticeTask,
   clientTaskRegistry,
+  type MultiTaskFetchOptions,
 } from '@/lib/tasks';
 import { useTranslations } from '@/locales';
 import { usePracticeSettings } from '@/contexts/practice-settings-context';
@@ -59,8 +60,8 @@ const MIN_QUEUE_THRESHOLD = 5;
 const FETCH_LIMIT = 15;
 
 type FetchPracticeTasksFn = (
-  options?: Parameters<typeof fetchPracticeTasks>[0],
-) => Promise<PracticeTask[]>;
+  options: MultiTaskFetchOptions,
+) => Promise<Record<TaskType, PracticeTask[]>>;
 
 interface FetchTasksForActiveTypesOptions {
   taskTypes: TaskType[];
@@ -78,33 +79,32 @@ export async function fetchTasksForActiveTypes({
   taskTypes,
   perTypeLimit,
   resolveLevelForPos,
-  fetcher = fetchPracticeTasks,
+  fetcher = fetchPracticeTasksByType,
 }: FetchTasksForActiveTypesOptions): Promise<FetchTasksForActiveTypesResult> {
-  const fetchPromises = taskTypes.map((taskType) => {
+  const taskLevels = taskTypes.map((taskType) => {
     const entry = clientTaskRegistry[taskType];
-    if (!entry) {
-      return Promise.resolve({ taskType, tasks: [] as PracticeTask[], error: null });
-    }
-
-    const pos = entry.supportedPos[0];
-    const level = resolveLevelForPos(pos);
-
-    return fetcher({ taskType, pos, limit: perTypeLimit, level })
-      .then((tasks) => ({ taskType, tasks, error: null as unknown }))
-      .catch((error) => {
-        console.error(`[home] Unable to fetch ${taskType} practice tasks`, error);
-        return { taskType, tasks: [] as PracticeTask[], error };
-      });
+    const pos = entry?.supportedPos[0];
+    return pos ? resolveLevelForPos(pos) : resolveLevelForPos('verb');
   });
 
-  const results = await Promise.all(fetchPromises);
+  try {
+    const groupedTasks = await fetcher({
+      taskTypes,
+      limit: perTypeLimit,
+      level: taskLevels,
+    });
 
-  return {
-    tasksByType: results.map((result) => result.tasks),
-    errors: results
-      .filter((result) => result.error)
-      .map((result) => ({ taskType: result.taskType, error: result.error as unknown })),
-  };
+    return {
+      tasksByType: taskTypes.map((taskType) => groupedTasks[taskType] ?? []),
+      errors: [],
+    };
+  } catch (error) {
+    console.error('[home] Unable to fetch practice tasks', error);
+    return {
+      tasksByType: taskTypes.map(() => []),
+      errors: taskTypes.map((taskType) => ({ taskType, error })),
+    };
+  }
 }
 
 const HOME_SECTION_IDS = {
