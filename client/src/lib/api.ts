@@ -6,7 +6,19 @@ import { getDeviceId } from './device';
 const TASK_ENDPOINT = '/api/submission';
 const PRACTICE_HISTORY_ENDPOINT = '/api/practice/history';
 
+const MAX_BACKOFF_MS = 5 * 60 * 1000;
+
 type SubmitPayload = Omit<TaskAttemptPayload, 'deviceId'>;
+
+function getRetryBackoffMs(retryCount: number): number {
+  if (retryCount <= 0) {
+    return 0;
+  }
+
+  const cappedRetry = Math.min(retryCount, 10);
+  const delay = Math.pow(2, cappedRetry - 1) * 1000;
+  return Math.min(MAX_BACKOFF_MS, delay);
+}
 
 const answerHistoryLexemeSchema = z.object({
   id: z.string(),
@@ -65,6 +77,7 @@ async function queueAttempt(payload: TaskAttemptPayload): Promise<void> {
   await practiceDb.pendingAttempts.add({
     payload,
     createdAt: Date.now(),
+    retryCount: 0,
   });
 }
 
@@ -112,12 +125,38 @@ export async function submitPracticeAttempt(
   }
 }
 
-export async function flushPendingAttempts(): Promise<number> {
+export interface FlushPendingAttemptsResult {
+  attempted: number;
+  succeeded: number;
+  failed: number;
+  deferred: number;
+  dropped: number;
+}
+
+export async function flushPendingAttempts(): Promise<FlushPendingAttemptsResult> {
   await practiceDbReady;
   const queued = await practiceDb.pendingAttempts.orderBy('createdAt').toArray();
-  let flushed = 0;
+  const result: FlushPendingAttemptsResult = {
+    attempted: 0,
+    succeeded: 0,
+    failed: 0,
+    deferred: 0,
+    dropped: 0,
+  };
 
   for (const attempt of queued) {
+    const now = Date.now();
+    const retryCount = attempt.retryCount ?? 0;
+    const lastTriedAt = attempt.lastTriedAt ?? 0;
+    const backoffMs = getRetryBackoffMs(retryCount);
+
+    if (retryCount > 0 && now - lastTriedAt < backoffMs) {
+      result.deferred += 1;
+      continue;
+    }
+
+    result.attempted += 1;
+
     try {
       const response = await sendAttempt(attempt.payload);
       if (!response.ok) {
@@ -125,21 +164,26 @@ export async function flushPendingAttempts(): Promise<number> {
         if (!retriable) {
           console.error('Dropping invalid queued attempt', await response.json().catch(() => undefined));
           await practiceDb.pendingAttempts.delete(attempt.id!);
-          flushed += 1;
+          result.dropped += 1;
           continue;
         }
         throw new Error(`Server responded with ${response.status}`);
       }
 
       await practiceDb.pendingAttempts.delete(attempt.id!);
-      flushed += 1;
+      result.succeeded += 1;
     } catch (error) {
       console.warn('Failed to flush queued practice attempt', error);
-      break;
+      await practiceDb.pendingAttempts.update(attempt.id!, {
+        retryCount: retryCount + 1,
+        lastTriedAt: now,
+      });
+      result.failed += 1;
+      continue;
     }
   }
 
-  return flushed;
+  return result;
 }
 
 export async function getPendingAttempts(): Promise<PendingAttempt[]> {

@@ -3,7 +3,11 @@ import { flushPendingAttempts } from '@/lib/api';
 
 export function useSyncQueue() {
   const flush = useCallback(async () => {
-    await flushPendingAttempts();
+    const result = await flushPendingAttempts();
+
+    if (result.failed > 0 || result.deferred > 0) {
+      console.info('Pending attempts remain after sync', result);
+    }
   }, []);
 
   useEffect(() => {

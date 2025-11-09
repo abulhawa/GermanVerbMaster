@@ -25,6 +25,8 @@ const BUNDLE_VERSION = 2;
 export interface PendingAttemptSnapshot {
   payload: TaskAttemptPayload;
   createdAt: number;
+  retryCount?: number;
+  lastTriedAt?: number;
 }
 
 export interface PracticeExportBundle {
@@ -126,11 +128,16 @@ function sanitisePendingAttempts(attempts: unknown): PendingAttemptSnapshot[] {
     if (!raw.payload.taskId || !raw.payload.lexemeId) {
       continue;
     }
+    const retryCount = typeof raw.retryCount === 'number' && raw.retryCount >= 0 ? raw.retryCount : 0;
+    const lastTriedAt =
+      typeof raw.lastTriedAt === 'number' && Number.isFinite(raw.lastTriedAt) ? raw.lastTriedAt : undefined;
     result.push({
       payload: raw.payload,
       createdAt: typeof raw.createdAt === 'number' && Number.isFinite(raw.createdAt)
         ? raw.createdAt
         : Date.now(),
+      retryCount,
+      lastTriedAt,
     });
   }
   return result;
@@ -156,6 +163,8 @@ export async function exportPracticeBundle(): Promise<PracticeExportBundle> {
   const pendingAttempts: PendingAttemptSnapshot[] = attempts.map((attempt) => ({
     payload: attempt.payload,
     createdAt: attempt.createdAt,
+    retryCount: attempt.retryCount,
+    lastTriedAt: attempt.lastTriedAt,
   }));
 
   const queuePacks = extractPacksFromQueue(queue);
@@ -203,6 +212,8 @@ export async function importPracticeBundle(
       await practiceDb.pendingAttempts.add({
         payload: attempt.payload,
         createdAt: attempt.createdAt,
+        retryCount: attempt.retryCount ?? 0,
+        lastTriedAt: attempt.lastTriedAt,
       });
     }
   });
@@ -224,7 +235,12 @@ export async function importPracticeBundle(
 
 export async function getPendingAttemptSnapshots(): Promise<PendingAttemptSnapshot[]> {
   const attempts = await getPendingAttempts();
-  return attempts.map((attempt) => ({ payload: attempt.payload, createdAt: attempt.createdAt }));
+  return attempts.map((attempt) => ({
+    payload: attempt.payload,
+    createdAt: attempt.createdAt,
+    retryCount: attempt.retryCount,
+    lastTriedAt: attempt.lastTriedAt,
+  }));
 }
 
 export async function clearPendingAttempts(): Promise<void> {
