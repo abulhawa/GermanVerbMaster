@@ -22,8 +22,69 @@ const migrationsFolder = path.resolve(
   "../migrations",
 );
 
-const userRoleDoPattern =
-  /\s*DO\s+\$\$[\s\S]*?CREATE\s+TYPE\s+"public"\."user_role"\s+AS\s+ENUM[\s\S]*?\$\$\s*;?/gi;
+interface EnumTypeDefinition {
+  schema: string | null;
+  name: string;
+  values: readonly string[];
+}
+
+const enumTypeDefinitions: readonly EnumTypeDefinition[] = [
+  {
+    schema: "public",
+    name: "enrichment_method",
+    values: ["bulk", "manual_api", "manual_entry", "preexisting"],
+  },
+  {
+    schema: "public",
+    name: "user_role",
+    values: ["standard", "admin"],
+  },
+  {
+    schema: "public",
+    name: "practice_result",
+    values: ["correct", "incorrect"],
+  },
+  {
+    schema: "public",
+    name: "job_run_status",
+    values: ["running", "success", "failed"],
+  },
+];
+
+function escapeRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function formatQualifiedTypeName(definition: EnumTypeDefinition): string {
+  if (definition.schema) {
+    return `"${definition.schema}"."${definition.name}"`;
+  }
+
+  return `"${definition.name}"`;
+}
+
+function createEnumValuesLiteral(definition: EnumTypeDefinition): string {
+  return definition.values.map((value) => `'${value.replace(/'/g, "''")}'`).join(", ");
+}
+
+function createEnumTypeStatement(definition: EnumTypeDefinition, options: { ifNotExists?: boolean } = {}): string {
+  const prefix = options.ifNotExists ? "CREATE TYPE IF NOT EXISTS" : "CREATE TYPE";
+  return `${prefix} ${formatQualifiedTypeName(definition)} AS ENUM (${createEnumValuesLiteral(definition)});`;
+}
+
+function buildEnumDoPattern(definition: EnumTypeDefinition): RegExp {
+  const schemaPart = definition.schema ? `"${escapeRegex(definition.schema)}"\.` : "";
+  return new RegExp(
+    `\\s*DO\\s+\\$\\$[\\s\\S]*?CREATE\\s+TYPE\\s+${schemaPart}"${escapeRegex(definition.name)}"\\s+AS\\s+ENUM[\\s\\S]*?\\$\\$\\s*;?`,
+    "gi",
+  );
+}
+
+const enumDoReplacements = enumTypeDefinitions.map((definition) => ({
+  pattern: buildEnumDoPattern(definition),
+  replacement: createEnumTypeStatement(definition, { ifNotExists: true }),
+}));
+
 const genericDoPattern = /\s*DO\s+\$\$[\s\S]*?\$\$\s*;?/gi;
 const alterUsingPattern = /(ALTER\s+TABLE\s+[^;]+?\s+ALTER\s+COLUMN\s+[^;]+?\s+TYPE\s+[^;]+?)\s+USING\s+[^;]+(;?)/gis;
 const foreignKeyNoActionPattern = /ON\s+DELETE\s+NO\s+ACTION/gi;
@@ -60,10 +121,9 @@ function extractQueryConfig(configOrText: unknown): NormalizedQuery {
 function sanitizeSql(text: string): string[] {
   let normalized = text.replace(/-->\s*statement-breakpoint/gi, "");
 
-  normalized = normalized.replace(
-    userRoleDoPattern,
-    'CREATE TYPE IF NOT EXISTS "public"."user_role" AS ENUM (\'standard\', \'admin\');',
-  );
+  for (const { pattern, replacement } of enumDoReplacements) {
+    normalized = normalized.replace(pattern, replacement);
+  }
 
   normalized = normalized.replace(genericDoPattern, "");
   normalized = normalized.replace(alterForeignKeyPattern, "");
@@ -87,15 +147,38 @@ function createEmptyResult(): QueryResult<any> {
   } as QueryResult<any>;
 }
 
-function handleCustomStatements(statement: string, mem: IMemoryDb): QueryResult<any> | undefined {
-  const createUserRole =
-    /CREATE\s+TYPE\s+IF\s+NOT\s+EXISTS\s+"public"\."user_role"\s+AS\s+ENUM\s*\('standard',\s*'admin'\)\s*;?/i;
-  const dropWordsExportQueue = /DROP\s+VIEW\s+IF\s+EXISTS\s+"words_export_queue"\s*;?/i;
-  const dropEnrichmentSnapshots = /DROP\s+TABLE\s+IF\s+EXISTS\s+"enrichment_provider_snapshots"\s*;?/i;
+function matchesEnumCreateStatement(statement: string, definition: EnumTypeDefinition): boolean {
+  const normalized = statement.replace(/\s+/g, " ").trim().toLowerCase();
+  const schemaQualified = definition.schema
+    ? `"${definition.schema.toLowerCase()}"."${definition.name.toLowerCase()}"`
+    : `"${definition.name.toLowerCase()}"`;
+  const schemaQualifiedBare = definition.schema
+    ? `${definition.schema.toLowerCase()}.${definition.name.toLowerCase()}`
+    : definition.name.toLowerCase();
+  const bareName = definition.name.toLowerCase();
+  const candidates = new Set<string>([schemaQualified, schemaQualifiedBare, `"${bareName}"`, bareName]);
 
-  if (createUserRole.test(statement)) {
+  for (const candidate of candidates) {
+    if (normalized.startsWith(`create type if not exists ${candidate} as enum`)) {
+      return true;
+    }
+
+    if (normalized.startsWith(`create type ${candidate} as enum`)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function handleEnumCreateStatement(statement: string, mem: IMemoryDb): QueryResult<any> | undefined {
+  for (const definition of enumTypeDefinitions) {
+    if (!matchesEnumCreateStatement(statement, definition)) {
+      continue;
+    }
+
     try {
-      mem.public.none("CREATE TYPE \"public\".\"user_role\" AS ENUM ('standard', 'admin')");
+      mem.public.none(`CREATE TYPE ${formatQualifiedTypeName(definition)} AS ENUM (${createEnumValuesLiteral(definition)})`);
     } catch (error) {
       if (!/already exists/i.test((error as Error).message ?? "")) {
         throw error;
@@ -104,6 +187,18 @@ function handleCustomStatements(statement: string, mem: IMemoryDb): QueryResult<
 
     return createEmptyResult();
   }
+
+  return undefined;
+}
+
+function handleCustomStatements(statement: string, mem: IMemoryDb): QueryResult<any> | undefined {
+  const enumResult = handleEnumCreateStatement(statement, mem);
+  if (enumResult) {
+    return enumResult;
+  }
+
+  const dropWordsExportQueue = /DROP\s+VIEW\s+IF\s+EXISTS\s+"words_export_queue"\s*;?/i;
+  const dropEnrichmentSnapshots = /DROP\s+TABLE\s+IF\s+EXISTS\s+"enrichment_provider_snapshots"\s*;?/i;
 
   if (dropWordsExportQueue.test(statement) || dropEnrichmentSnapshots.test(statement)) {
     return createEmptyResult();
