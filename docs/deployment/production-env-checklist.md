@@ -27,3 +27,8 @@ Preview deployments can include additional origins (for example, `https://<branc
 4. Record completion of this checklist in the release issue before promoting the deployment.
 
 Following this checklist ensures database access, authentication, transactional email, and admin automation stay functional in production.
+
+## Health and readiness probes
+
+- `GET /healthz` returns `200 OK` when the API process is running and ready to receive traffic. No authentication is required.
+- `GET /readyz` verifies database connectivity via `SELECT 1` before returning `200 OK`. If Postgres is unreachable the endpoint fails with a `503` so deployment platforms can block promotion automatically.
