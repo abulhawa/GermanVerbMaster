@@ -58,7 +58,9 @@ export function createApiApp(options: CreateApiAppOptions = {}): Express {
         imgSrc: ["'self'", "data:"],
         objectSrc: ["'none'"],
         scriptSrc: ["'self'"],
-        styleSrc: ["'self'"],
+        // React components from Radix UI rely on inline styles for dynamic rendering.
+        // Preserve Helmet's default allowance so CSP does not break those components.
+        styleSrc: ["'self'", "'unsafe-inline'"],
       },
     },
     crossOriginEmbedderPolicy: false,

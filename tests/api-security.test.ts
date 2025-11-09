@@ -74,6 +74,7 @@ describe("API security middleware", () => {
       expect(csp).toBeTruthy();
       expect(csp).toContain("default-src 'self'");
       expect(csp).toContain("frame-ancestors 'self'");
+      expect(csp).toContain("style-src 'self' 'unsafe-inline'");
     } finally {
       await close(server);
     }
