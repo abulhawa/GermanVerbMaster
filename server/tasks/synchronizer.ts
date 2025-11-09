@@ -9,6 +9,7 @@ import { generateTaskSpecs, type TaskTemplateSource } from './templates.js';
 const SUPPORTED_POS: readonly LexemePos[] = ['verb', 'noun', 'adjective'];
 const INSERT_CHUNK_SIZE = 500;
 const DELETE_CHUNK_SIZE = 500;
+const TASK_SYNC_PROFILING_ENABLED = process.env.DEBUG_TASK_SYNC_PROFILING === '1';
 
 export interface EnsureTaskSpecsOptions {
   since?: Date | null;
@@ -58,6 +59,20 @@ interface InflectionRow {
   form: string;
   features: Record<string, unknown>;
 }
+
+type FeatureKey = 'tense' | 'mood' | 'person' | 'number' | 'aspect' | 'case' | 'degree';
+type FeatureQuery = Partial<Record<FeatureKey, string | number>>;
+type InflectionIndex = Map<string, Map<string, string>>;
+
+const FEATURE_KEY_ORDER: readonly FeatureKey[] = ['tense', 'mood', 'person', 'number', 'aspect', 'case', 'degree'];
+
+const SUPPORTED_FEATURE_COMBINATIONS: readonly FeatureKey[][] = [
+  ['tense', 'mood', 'person', 'number'],
+  ['tense', 'aspect'],
+  ['tense'],
+  ['case', 'number'],
+  ['degree'],
+];
 
 async function syncAllTaskSpecs(since?: Date): Promise<EnsureTaskSpecsResult> {
   const db = getDb();
@@ -294,6 +309,7 @@ function buildTaskSource(
   pos: LexemePos,
   inflectionRows: InflectionRow[],
 ): TaskTemplateSource | null {
+  const buildStart = TASK_SYNC_PROFILING_ENABLED ? process.hrtime.bigint() : null;
   const metadata = (lexeme.metadata ?? {}) as Record<string, unknown>;
   const exampleRaw = metadata.example as Record<string, unknown> | undefined;
 
@@ -341,58 +357,248 @@ function buildTaskSource(
   const finder = createInflectionFinder(inflectionRows);
 
   if (pos === 'verb') {
-    base.praesensIch = finder((features) =>
-      matchesFeature(features, 'tense', 'present') &&
-      matchesFeature(features, 'mood', 'indicative') &&
-      matchesFeature(features, 'person', 1) &&
-      matchesFeature(features, 'number', 'singular'),
-    );
+    base.praesensIch = finder({
+      tense: 'present',
+      mood: 'indicative',
+      person: 1,
+      number: 'singular',
+    });
 
-    base.praesensEr = finder((features) =>
-      matchesFeature(features, 'tense', 'present') &&
-      matchesFeature(features, 'mood', 'indicative') &&
-      matchesFeature(features, 'person', 3) &&
-      matchesFeature(features, 'number', 'singular'),
-    );
+    base.praesensEr = finder({
+      tense: 'present',
+      mood: 'indicative',
+      person: 3,
+      number: 'singular',
+    });
 
-    base.praeteritum = finder((features) =>
-      matchesFeature(features, 'tense', 'past') &&
-      matchesFeature(features, 'mood', 'indicative') &&
-      matchesFeature(features, 'person', 3) &&
-      matchesFeature(features, 'number', 'singular'),
-    );
+    base.praeteritum = finder({
+      tense: 'past',
+      mood: 'indicative',
+      person: 3,
+      number: 'singular',
+    });
 
-    base.partizipIi = finder((features) =>
-      matchesFeature(features, 'tense', 'participle') && matchesFeature(features, 'aspect', 'perfect'),
-    );
+    base.partizipIi = finder({
+      tense: 'participle',
+      aspect: 'perfect',
+    });
 
-    base.perfekt = base.perfekt ?? finder((features) => matchesFeature(features, 'tense', 'perfect'));
+    base.perfekt = base.perfekt ?? finder({ tense: 'perfect' });
   } else if (pos === 'noun') {
-    base.plural = finder((features) =>
-      matchesFeature(features, 'case', 'nominative') && matchesFeature(features, 'number', 'plural'),
-    );
+    base.plural = finder({
+      case: 'nominative',
+      number: 'plural',
+    });
   } else if (pos === 'adjective') {
-    base.comparative = finder((features) => matchesFeature(features, 'degree', 'comparative'));
-    base.superlative = finder((features) => matchesFeature(features, 'degree', 'superlative'));
+    base.comparative = finder({ degree: 'comparative' });
+    base.superlative = finder({ degree: 'superlative' });
+  }
+
+  if (TASK_SYNC_PROFILING_ENABLED && buildStart) {
+    const durationMs = Number(process.hrtime.bigint() - buildStart) / 1_000_000;
+    console.debug(
+      `[task-sync] buildTaskSource ${lexeme.lemma} (${lexeme.id}) took ${durationMs.toFixed(3)}ms`,
+    );
   }
 
   return base;
 }
 
-function createInflectionFinder(inflectionRows: InflectionRow[]): (predicate: (features: Record<string, unknown>) => boolean) => string | null {
-  return (predicate) => {
-    for (const entry of inflectionRows) {
-      const form = toOptionalString(entry.form);
-      if (!form) {
+function createInflectionFinder(inflectionRows: InflectionRow[]): (query: FeatureQuery) => string | null {
+  const buildStart = TASK_SYNC_PROFILING_ENABLED ? process.hrtime.bigint() : null;
+  const index = buildInflectionIndex(inflectionRows);
+
+  if (TASK_SYNC_PROFILING_ENABLED && buildStart) {
+    const durationMs = Number(process.hrtime.bigint() - buildStart) / 1_000_000;
+    console.debug(
+      `[task-sync] built inflection index with ${inflectionRows.length} entries in ${durationMs.toFixed(3)}ms`,
+    );
+  }
+
+  return (query) => {
+    const lookupStart = TASK_SYNC_PROFILING_ENABLED ? process.hrtime.bigint() : null;
+    const result = lookupInflection(index, inflectionRows, query);
+
+    if (TASK_SYNC_PROFILING_ENABLED && lookupStart) {
+      const elapsedMs = Number(process.hrtime.bigint() - lookupStart) / 1_000_000;
+      const keys = Object.keys(query)
+        .sort(
+          (left, right) => FEATURE_KEY_ORDER.indexOf(left as FeatureKey) - FEATURE_KEY_ORDER.indexOf(right as FeatureKey),
+        )
+        .join(',');
+      console.debug(`[task-sync] lookup ${keys} -> ${result ?? '∅'} (${elapsedMs.toFixed(3)}ms)`);
+    }
+
+    return result;
+  };
+}
+
+function buildInflectionIndex(inflectionRows: InflectionRow[]): InflectionIndex {
+  const index: InflectionIndex = new Map();
+
+  for (const entry of inflectionRows) {
+    const form = toOptionalString(entry.form);
+    if (!form) {
+      continue;
+    }
+
+    const features = entry.features ?? {};
+    for (const combination of SUPPORTED_FEATURE_COMBINATIONS) {
+      const sortedKeys = normaliseCombinationKeys(combination);
+      const valueMatrix = sortedKeys.map((key) => extractFeatureValues(features, key));
+
+      if (valueMatrix.some((values) => values.length === 0)) {
         continue;
       }
-      const features = entry.features ?? {};
-      if (predicate(features)) {
-        return form;
+
+      const combinationKey = buildCombinationKey(sortedKeys);
+      let bucket = index.get(combinationKey);
+      if (!bucket) {
+        bucket = new Map<string, string>();
+        index.set(combinationKey, bucket);
+      }
+
+      for (const tuple of cartesianProduct(valueMatrix)) {
+        const valueKey = buildValueKey(tuple);
+        if (!bucket.has(valueKey)) {
+          bucket.set(valueKey, form);
+        }
       }
     }
+  }
+
+  return index;
+}
+
+function lookupInflection(
+  index: InflectionIndex,
+  fallbackRows: InflectionRow[],
+  query: FeatureQuery,
+): string | null {
+  const keys = Object.keys(query) as FeatureKey[];
+  if (keys.length === 0) {
     return null;
-  };
+  }
+
+  const sortedKeys = normaliseCombinationKeys(keys);
+  const combinationKey = buildCombinationKey(sortedKeys);
+  const bucket = index.get(combinationKey);
+
+  if (bucket) {
+    const valueKeyParts: string[] = [];
+    for (const key of sortedKeys) {
+      const raw = query[key];
+      const normalised = normaliseFeatureValue(raw);
+      if (normalised === null) {
+        return null;
+      }
+      valueKeyParts.push(normalised);
+    }
+
+    const lookupKey = buildValueKey(valueKeyParts);
+    const hit = bucket.get(lookupKey);
+    if (hit) {
+      return hit;
+    }
+  }
+
+  return fallbackLinearSearch(fallbackRows, query);
+}
+
+function normaliseCombinationKeys(keys: readonly FeatureKey[]): FeatureKey[] {
+  return [...new Set(keys)].sort(
+    (left, right) => FEATURE_KEY_ORDER.indexOf(left) - FEATURE_KEY_ORDER.indexOf(right),
+  );
+}
+
+function buildCombinationKey(keys: readonly FeatureKey[]): string {
+  return keys.join('|');
+}
+
+function buildValueKey(values: readonly string[]): string {
+  return values.join('§');
+}
+
+function extractFeatureValues(features: Record<string, unknown>, key: FeatureKey): string[] {
+  const raw = features[key];
+  if (raw === undefined || raw === null) {
+    return [];
+  }
+
+  if (Array.isArray(raw)) {
+    const values: string[] = [];
+    for (const value of raw) {
+      const normalised = normaliseFeatureValue(value);
+      if (normalised) {
+        values.push(normalised);
+      }
+    }
+    return Array.from(new Set(values));
+  }
+
+  const normalised = normaliseFeatureValue(raw);
+  return normalised ? [normalised] : [];
+}
+
+function normaliseFeatureValue(value: unknown): string | null {
+  if (value === undefined || value === null) {
+    return null;
+  }
+
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return String(value);
+  }
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    return trimmed ? trimmed : null;
+  }
+
+  return null;
+}
+
+function cartesianProduct(matrix: string[][]): string[][] {
+  if (matrix.length === 0) {
+    return [];
+  }
+
+  return matrix.reduce<string[][]>((accumulator, values) => {
+    if (accumulator.length === 0) {
+      return values.map((value) => [value]);
+    }
+
+    const next: string[][] = [];
+    for (const tuple of accumulator) {
+      for (const value of values) {
+        next.push([...tuple, value]);
+      }
+    }
+    return next;
+  }, []);
+}
+
+function fallbackLinearSearch(inflectionRows: InflectionRow[], query: FeatureQuery): string | null {
+  for (const entry of inflectionRows) {
+    const form = toOptionalString(entry.form);
+    if (!form) {
+      continue;
+    }
+
+    const features = entry.features ?? {};
+    let matches = true;
+    for (const [key, expected] of Object.entries(query)) {
+      if (!matchesFeature(features, key, expected as string | number)) {
+        matches = false;
+        break;
+      }
+    }
+
+    if (matches) {
+      return form;
+    }
+  }
+
+  return null;
 }
 
 function matchesFeature(
@@ -529,3 +735,7 @@ function chunkArray<T>(values: T[], size: number): T[][] {
   }
   return chunks;
 }
+
+export const __TEST_ONLY__ = {
+  createInflectionFinder,
+};
