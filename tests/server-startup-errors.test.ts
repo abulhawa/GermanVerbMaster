@@ -1,5 +1,4 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
-import * as logger from "../server/logger.js";
 
 const mocks = vi.hoisted(() => {
   const listenMock = vi.fn(
@@ -50,10 +49,13 @@ describe("server startup error handling", () => {
   afterEach(() => {
     delete process.env.NODE_ENV;
     delete process.env.VERCEL;
+    delete process.env.PORT;
   });
 
   test("logs errors from setupVite rejections and exits the process", async () => {
+    await vi.resetModules();
     vi.clearAllMocks();
+    const logger = await import("../server/logger.js");
     mocks.setupViteMock.mockReset();
     mocks.serveStaticMock.mockReset();
     mocks.requestLoggerMock.mockReset();
@@ -79,5 +81,23 @@ describe("server startup error handling", () => {
 
     exitSpy.mockRestore();
     logErrorSpy.mockRestore();
+  });
+
+  test("listens on the port defined by the PORT environment variable", async () => {
+    await vi.resetModules();
+    vi.clearAllMocks();
+    const logger = await import("../server/logger.js");
+    const logSpy = vi.spyOn(logger, "log").mockImplementation(() => {});
+
+    process.env.NODE_ENV = "production";
+    process.env.PORT = "6543";
+
+    await import("../server/index.js");
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(mocks.listenMock).toHaveBeenCalledWith(6543, "0.0.0.0", expect.any(Function));
+    expect(logSpy).toHaveBeenCalledWith("serving on port 6543");
+
+    logSpy.mockRestore();
   });
 });
