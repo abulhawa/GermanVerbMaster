@@ -25,11 +25,25 @@ app.set("env", nodeEnv);
       await serveStatic(app);
     }
 
-    // ALWAYS serve the app on port 5000
-    // this serves both the API and the client
-    const PORT = 5000;
-    server.listen(PORT, "0.0.0.0", () => {
-      log(`serving on port ${PORT}`);
+    const defaultPort = 5000;
+    const resolvedPort = (() => {
+      const envPort = process.env.PORT;
+
+      if (!envPort) {
+        return defaultPort;
+      }
+
+      const parsedPort = Number.parseInt(envPort, 10);
+
+      if (Number.isNaN(parsedPort)) {
+        return defaultPort;
+      }
+
+      return parsedPort;
+    })();
+
+    server.listen(resolvedPort, "0.0.0.0", () => {
+      log(`serving on port ${resolvedPort}`);
     });
   } catch (error) {
     logError(error, "server-startup");
