@@ -89,22 +89,25 @@ function validateAppOrigins(): ValidationResult[] {
   const appOrigins = parseOrigins(getEnv("APP_ORIGIN"));
   const betterAuthUrl = getEnv("BETTER_AUTH_URL");
 
-  if (appOrigins.length === 0 && !betterAuthUrl) {
+  if (appOrigins.length === 0) {
     addResult(
       results,
       "error",
-      "APP_ORIGIN must include at least one HTTPS origin (or set BETTER_AUTH_URL explicitly) so CORS and Better Auth callbacks resolve correctly."
+      "APP_ORIGIN must include at least one HTTPS origin so CORS and Better Auth callbacks resolve correctly."
     );
-    return results;
-  }
+  } else {
+    for (const origin of appOrigins) {
+      if (!origin.startsWith("https://")) {
+        addResult(
+          results,
+          "error",
+          "Each APP_ORIGIN entry must use https://. Remove insecure origins before deploying to production."
+        );
+      }
 
-  for (const origin of appOrigins) {
-    if (!origin.startsWith("https://")) {
-      addResult(results, "error", "Each APP_ORIGIN entry must use https://. Remove insecure origins before deploying to production.");
-    }
-
-    if (/localhost|127\.0\.0\.1/i.test(origin)) {
-      addResult(results, "error", "APP_ORIGIN still references localhost. Replace it with the public production domain.");
+      if (/localhost|127\.0\.0\.1/i.test(origin)) {
+        addResult(results, "error", "APP_ORIGIN still references localhost. Replace it with the public production domain.");
+      }
     }
   }
 
