@@ -6,8 +6,8 @@ import { getPool } from '@db';
 import { applyMigrations } from './db-push';
 import { ensureTaskSpecsSynced, resetTaskSpecSync } from '../server/tasks/synchronizer.js';
 import {
-  clearTaskSpecSyncMarker,
-  storeTaskSpecSyncMarker,
+  clearTaskSpecSyncCheckpoint,
+  loadTaskSpecSyncCheckpoint,
 } from '../server/tasks/task-sync-state.js';
 
 async function rebuildTaskSpecs(): Promise<void> {
@@ -19,10 +19,13 @@ async function rebuildTaskSpecs(): Promise<void> {
 
     console.log('Regenerating task specs from current lexeme inventory…');
     resetTaskSpecSync();
-    await clearTaskSpecSyncMarker();
-    const { latestTouchedAt } = await ensureTaskSpecsSynced();
-    if (latestTouchedAt) {
-      await storeTaskSpecSyncMarker(latestTouchedAt);
+    await clearTaskSpecSyncCheckpoint();
+    const result = await ensureTaskSpecsSynced();
+    const checkpoint = result.checkpoint ?? (await loadTaskSpecSyncCheckpoint());
+    if (checkpoint) {
+      console.log(
+        `Checkpoint stored at ${checkpoint.lastSyncedAt.toISOString()} (version ${checkpoint.versionHash ?? '∅'})`,
+      );
     }
     console.log('Task specs rebuilt successfully.');
   } finally {

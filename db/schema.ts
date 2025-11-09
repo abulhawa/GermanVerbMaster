@@ -248,6 +248,7 @@ export const taskSpecs = pgTable(
 export const taskSyncState = pgTable("task_sync_state", {
   id: text("id").primaryKey(),
   lastSyncedAt: timestamp("last_synced_at", { withTimezone: true }),
+  versionHash: text("version_hash"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });

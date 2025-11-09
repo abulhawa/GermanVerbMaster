@@ -68,9 +68,8 @@ describe('task synchronizer delta sync', () => {
   let seedLexemeInventoryForWords: typeof import('./helpers/task-fixtures').seedLexemeInventoryForWords;
   let ensureTaskSpecsSynced: typeof import('../server/tasks/synchronizer.js').ensureTaskSpecsSynced;
   let resetTaskSpecSync: typeof import('../server/tasks/synchronizer.js').resetTaskSpecSync;
-  let loadTaskSpecSyncMarker: typeof import('../server/tasks/task-sync-state.js').loadTaskSpecSyncMarker;
-  let storeTaskSpecSyncMarker: typeof import('../server/tasks/task-sync-state.js').storeTaskSpecSyncMarker;
-  let clearTaskSpecSyncMarker: typeof import('../server/tasks/task-sync-state.js').clearTaskSpecSyncMarker;
+  let loadTaskSpecSyncCheckpoint: typeof import('../server/tasks/task-sync-state.js').loadTaskSpecSyncCheckpoint;
+  let clearTaskSpecSyncCheckpoint: typeof import('../server/tasks/task-sync-state.js').clearTaskSpecSyncCheckpoint;
 
   beforeEach(async () => {
     dbContext = await setupTestDatabase();
@@ -86,14 +85,12 @@ describe('task synchronizer delta sync', () => {
 
     ({ seedLexemeInventoryForWords } = await import('./helpers/task-fixtures'));
     ({ ensureTaskSpecsSynced, resetTaskSpecSync } = await import('../server/tasks/synchronizer.js'));
-    ({
-      loadTaskSpecSyncMarker,
-      storeTaskSpecSyncMarker,
-      clearTaskSpecSyncMarker,
-    } = await import('../server/tasks/task-sync-state.js'));
+    ({ loadTaskSpecSyncCheckpoint, clearTaskSpecSyncCheckpoint } = await import(
+      '../server/tasks/task-sync-state.js'
+    ));
 
     await seedLexemeInventoryForWords(drizzleDb, sampleWords);
-    await clearTaskSpecSyncMarker();
+    await clearTaskSpecSyncCheckpoint();
     resetTaskSpecSync();
   });
 
@@ -134,15 +131,58 @@ describe('task synchronizer delta sync', () => {
     return latest;
   }
 
-  function rewindMarker(marker: Date | null): Date | null {
-    return marker;
-  }
+  it('bootstraps a checkpoint when none exists', async () => {
+    const before = await loadTaskSpecSyncCheckpoint();
+    expect(before).toBeNull();
 
-  it('skips unchanged lexemes when rerunning with a marker', async () => {
+    const result = await ensureTaskSpecsSynced();
+    expect(result.checkpoint).toBeTruthy();
+    const checkpoint = result.checkpoint!;
+    expect(checkpoint.lastSyncedAt).toBeInstanceOf(Date);
+
+    const stored = await loadTaskSpecSyncCheckpoint();
+    expect(stored?.lastSyncedAt.toISOString()).toBe(checkpoint.lastSyncedAt.toISOString());
+    expect(stored?.versionHash ?? null).toBe(checkpoint.versionHash ?? null);
+  });
+
+  it('recovers and persists a fresh checkpoint after loss', async () => {
+    const initial = await ensureTaskSpecsSynced();
+    expect(initial.checkpoint).toBeTruthy();
+    const initialCheckpoint = initial.checkpoint!;
+
+    await clearTaskSpecSyncCheckpoint();
+    resetTaskSpecSync();
+
+    const lexemeId = await getLexemeIdByLemma('gehen');
+    const bumpedTimestamp = new Date(initialCheckpoint.lastSyncedAt.getTime() + 1000);
+
+    await drizzleDb
+      .update(lexemesTable)
+      .set({ updatedAt: bumpedTimestamp })
+      .where(eq(lexemesTable.id, lexemeId));
+
+    resetTaskSpecSync();
+    const recovery = await ensureTaskSpecsSynced();
+    expect(recovery.checkpoint).toBeTruthy();
+    const recoveryCheckpoint = recovery.checkpoint!;
+    expect(recoveryCheckpoint.lastSyncedAt.getTime()).toBeGreaterThan(
+      initialCheckpoint.lastSyncedAt.getTime(),
+    );
+
+    const stored = await loadTaskSpecSyncCheckpoint();
+    expect(stored?.lastSyncedAt.toISOString()).toBe(recoveryCheckpoint.lastSyncedAt.toISOString());
+    expect(stored?.versionHash ?? null).toBe(recoveryCheckpoint.versionHash ?? null);
+  });
+
+  it('skips unchanged lexemes when rerunning with a stored checkpoint', async () => {
     const fullSync = await ensureTaskSpecsSynced();
-    expect(fullSync.latestTouchedAt).toBeInstanceOf(Date);
-    const marker = fullSync.latestTouchedAt!;
-    await storeTaskSpecSyncMarker(marker);
+    expect(fullSync.checkpoint).toBeTruthy();
+    const initialCheckpoint = fullSync.checkpoint!;
+
+    const storedAfterFull = await loadTaskSpecSyncCheckpoint();
+    expect(storedAfterFull?.lastSyncedAt.toISOString()).toBe(
+      initialCheckpoint.lastSyncedAt.toISOString(),
+    );
 
     const updatedLexemeId = await getLexemeIdByLemma('gehen');
     const untouchedLexemeId = await getLexemeIdByLemma('kommen');
@@ -163,7 +203,7 @@ describe('task synchronizer delta sync', () => {
       level: 'B1',
     };
 
-    const updatedLexemeTimestamp = new Date(marker.getTime() + 1000);
+    const updatedLexemeTimestamp = new Date(initialCheckpoint.lastSyncedAt.getTime() + 1000);
 
     await drizzleDb
       .update(lexemesTable)
@@ -171,12 +211,13 @@ describe('task synchronizer delta sync', () => {
       .where(eq(lexemesTable.id, updatedLexemeId));
 
     resetTaskSpecSync();
-    const storedMarker = await loadTaskSpecSyncMarker();
-    const since = rewindMarker(storedMarker);
-    const deltaSync = await ensureTaskSpecsSynced({ since });
-    if (deltaSync.latestTouchedAt) {
-      await storeTaskSpecSyncMarker(deltaSync.latestTouchedAt);
-    }
+    const deltaSync = await ensureTaskSpecsSynced();
+    expect(deltaSync.checkpoint).toBeTruthy();
+
+    const storedAfterDelta = await loadTaskSpecSyncCheckpoint();
+    expect(storedAfterDelta?.lastSyncedAt.toISOString()).toBe(
+      deltaSync.checkpoint!.lastSyncedAt.toISOString(),
+    );
 
     const afterUpdated = await getLatestTaskUpdatedAt(updatedLexemeId);
     const afterUntouched = await getLatestTaskUpdatedAt(untouchedLexemeId);
@@ -187,9 +228,8 @@ describe('task synchronizer delta sync', () => {
 
   it('resyncs lexemes when only inflections change', async () => {
     const fullSync = await ensureTaskSpecsSynced();
-    expect(fullSync.latestTouchedAt).toBeInstanceOf(Date);
-    const marker = fullSync.latestTouchedAt!;
-    await storeTaskSpecSyncMarker(marker);
+    expect(fullSync.checkpoint).toBeTruthy();
+    const initialCheckpoint = fullSync.checkpoint!;
 
     const targetLexemeId = await getLexemeIdByLemma('gehen');
     const untouchedLexemeId = await getLexemeIdByLemma('kommen');
@@ -213,7 +253,7 @@ describe('task synchronizer delta sync', () => {
 
     const updatedForm = `${originalInflection[0]?.form ?? ''}_mod`;
 
-    const updatedInflectionTimestamp = new Date(marker.getTime() + 1000);
+    const updatedInflectionTimestamp = new Date(initialCheckpoint.lastSyncedAt.getTime() + 1000);
 
     await drizzleDb
       .update(inflectionsTable)
@@ -221,12 +261,8 @@ describe('task synchronizer delta sync', () => {
       .where(eq(inflectionsTable.id, inflectionId!));
 
     resetTaskSpecSync();
-    const storedMarker = await loadTaskSpecSyncMarker();
-    const since = rewindMarker(storedMarker);
-    const deltaSync = await ensureTaskSpecsSynced({ since });
-    if (deltaSync.latestTouchedAt) {
-      await storeTaskSpecSyncMarker(deltaSync.latestTouchedAt);
-    }
+    const deltaSync = await ensureTaskSpecsSynced();
+    expect(deltaSync.checkpoint).toBeTruthy();
 
     const afterTarget = await getLatestTaskUpdatedAt(targetLexemeId);
     const afterUntouched = await getLatestTaskUpdatedAt(untouchedLexemeId);
@@ -237,9 +273,8 @@ describe('task synchronizer delta sync', () => {
 
   it('removes obsolete task specs when templates are no longer available', async () => {
     const fullSync = await ensureTaskSpecsSynced();
-    expect(fullSync.latestTouchedAt).toBeInstanceOf(Date);
-    const marker = fullSync.latestTouchedAt!;
-    await storeTaskSpecSyncMarker(marker);
+    expect(fullSync.checkpoint).toBeTruthy();
+    const initialCheckpoint = fullSync.checkpoint!;
 
     const targetLexemeId = await getLexemeIdByLemma('gehen');
 
@@ -268,7 +303,7 @@ describe('task synchronizer delta sync', () => {
       tense: 'present',
     } as Record<string, unknown>;
 
-    const updatedTimestamp = new Date(marker.getTime() + 1000);
+    const updatedTimestamp = new Date(initialCheckpoint.lastSyncedAt.getTime() + 1000);
 
     await drizzleDb
       .update(inflectionsTable)
@@ -276,12 +311,8 @@ describe('task synchronizer delta sync', () => {
       .where(eq(inflectionsTable.id, partizipInflection!.id));
 
     resetTaskSpecSync();
-    const storedMarker = await loadTaskSpecSyncMarker();
-    const since = rewindMarker(storedMarker);
-    const deltaSync = await ensureTaskSpecsSynced({ since });
-    if (deltaSync.latestTouchedAt) {
-      await storeTaskSpecSyncMarker(deltaSync.latestTouchedAt);
-    }
+    const deltaSync = await ensureTaskSpecsSynced();
+    expect(deltaSync.checkpoint).toBeTruthy();
 
     const refreshedTasks = await drizzleDb
       .select({ id: taskSpecsTable.id, revision: taskSpecsTable.revision })
