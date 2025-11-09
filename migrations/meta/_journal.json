@@ -36,6 +36,13 @@
       "when": 1760647452783,
       "tag": "0004_add_background_job_runs",
       "breakpoints": false
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1760647453783,
+      "tag": "0005_add_practice_log_scope_idx",
+      "breakpoints": false
     }
   ]
 }

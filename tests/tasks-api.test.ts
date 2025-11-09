@@ -240,6 +240,91 @@ describe('tasks API', () => {
     expect(new Date(logResult.rows[0]!.attempted_at).getTime()).toBeGreaterThan(0);
   });
 
+  it('upserts practice log rows for both device and user aggregates', async () => {
+    if (!dbContext) {
+      throw new Error('test database not initialised');
+    }
+
+    const deviceId = 'aggregate-device-1';
+    const userId = 'aggregate-user-1';
+
+    getSessionFromRequestMock.mockResolvedValue({
+      session: { id: 'session-aggregate', expiresAt: new Date().toISOString() },
+      user: { id: userId, role: 'standard' },
+    } as any);
+
+    const taskResponse = await invokeApi('/api/tasks?pos=verb&limit=1');
+    expect(taskResponse.status).toBe(200);
+    const task = (taskResponse.bodyJson as any).tasks[0];
+    expect(task).toBeDefined();
+
+    const firstAttemptedAt = new Date().toISOString();
+    const firstSubmission = await invokeApi('/api/submission', {
+      method: 'POST',
+      body: {
+        taskId: task.taskId,
+        lexemeId: task.lexeme.id,
+        taskType: task.taskType,
+        pos: task.pos,
+        renderer: task.renderer,
+        deviceId,
+        submittedAt: firstAttemptedAt,
+        result: 'correct',
+        timeSpentMs: 500,
+      },
+    });
+
+    expect(firstSubmission.status).toBe(200);
+
+    const deviceLogInitial = await dbContext.pool.query(
+      'select attempted_at from practice_log where task_id = $1 and device_id = $2',
+      [task.taskId, deviceId],
+    );
+    expect(deviceLogInitial.rowCount).toBe(1);
+
+    const userLogInitial = await dbContext.pool.query(
+      'select attempted_at from practice_log where task_id = $1 and user_id = $2',
+      [task.taskId, userId],
+    );
+    expect(userLogInitial.rowCount).toBe(1);
+
+    const secondAttemptedAt = new Date(Date.now() + 60_000).toISOString();
+    const secondSubmission = await invokeApi('/api/submission', {
+      method: 'POST',
+      body: {
+        taskId: task.taskId,
+        lexemeId: task.lexeme.id,
+        taskType: task.taskType,
+        pos: task.pos,
+        renderer: task.renderer,
+        deviceId,
+        submittedAt: secondAttemptedAt,
+        result: 'incorrect',
+        timeSpentMs: 800,
+      },
+    });
+
+    expect(secondSubmission.status).toBe(200);
+
+    const deviceLogFinal = await dbContext.pool.query(
+      'select attempted_at from practice_log where task_id = $1 and device_id = $2',
+      [task.taskId, deviceId],
+    );
+    expect(deviceLogFinal.rowCount).toBe(1);
+    expect(new Date(deviceLogFinal.rows[0]!.attempted_at).getTime()).toBe(
+      new Date(secondAttemptedAt).getTime(),
+    );
+
+    const userLogFinal = await dbContext.pool.query(
+      'select attempted_at from practice_log where task_id = $1 and user_id = $2',
+      [task.taskId, userId],
+    );
+    expect(userLogFinal.rowCount).toBe(1);
+    expect(new Date(userLogFinal.rows[0]!.attempted_at).getTime()).toBe(
+      new Date(secondAttemptedAt).getTime(),
+    );
+  });
+
   it('omits recently practiced tasks for the same device', async () => {
     const deviceId = 'device-queue-123';
 
