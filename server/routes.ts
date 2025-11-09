@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createAdminRouter } from "./routes/admin.js";
 import { createAuthRouter } from "./routes/auth.js";
+import { createHealthRouter } from "./routes/health.js";
 import { createPracticeHistoryRouter } from "./routes/practice-history.js";
 import { createTaskRouter } from "./routes/tasks.js";
 
@@ -10,11 +11,13 @@ import { createTaskRouter } from "./routes/tasks.js";
 // run before downstream handlers.
 
 export function registerRoutes(app: Express): void {
+  const healthRouter = createHealthRouter();
   const authRouter = createAuthRouter();
   const taskRouter = createTaskRouter();
   const practiceHistoryRouter = createPracticeHistoryRouter();
   const adminRouter = createAdminRouter();
 
+  app.use(healthRouter);
   app.use("/api", authRouter);
   app.use("/api", taskRouter);
   app.use("/api", practiceHistoryRouter);
