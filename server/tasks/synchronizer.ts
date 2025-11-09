@@ -8,6 +8,7 @@ import { generateTaskSpecs, type TaskTemplateSource } from './templates.js';
 
 const SUPPORTED_POS: readonly LexemePos[] = ['verb', 'noun', 'adjective'];
 const INSERT_CHUNK_SIZE = 500;
+const DELETE_CHUNK_SIZE = 500;
 
 export interface EnsureTaskSpecsOptions {
   since?: Date | null;
@@ -171,8 +172,22 @@ async function syncAllTaskSpecs(since?: Date): Promise<EnsureTaskSpecsResult> {
   }
 
   const inserts: Array<typeof taskSpecs.$inferInsert> = [];
+  const expectedTaskIdsByLexeme = new Map<string, Set<string>>();
+  const expectedTaskTypesByLexeme = new Map<string, Set<string>>();
 
   for (const lexeme of lexemeRows) {
+    let expectedIds = expectedTaskIdsByLexeme.get(lexeme.id);
+    if (!expectedIds) {
+      expectedIds = new Set<string>();
+      expectedTaskIdsByLexeme.set(lexeme.id, expectedIds);
+    }
+
+    let expectedTypes = expectedTaskTypesByLexeme.get(lexeme.id);
+    if (!expectedTypes) {
+      expectedTypes = new Set<string>();
+      expectedTaskTypesByLexeme.set(lexeme.id, expectedTypes);
+    }
+
     const pos = asLexemePos(lexeme.pos);
     if (!pos || !SUPPORTED_POS.includes(pos)) {
       continue;
@@ -186,6 +201,8 @@ async function syncAllTaskSpecs(since?: Date): Promise<EnsureTaskSpecsResult> {
 
     const tasks = generateTaskSpecs(source);
     for (const task of tasks) {
+      expectedIds.add(task.id);
+      expectedTypes.add(task.taskType);
       inserts.push({
         id: task.id,
         lexemeId: task.lexemeId,
@@ -217,6 +234,60 @@ async function syncAllTaskSpecs(since?: Date): Promise<EnsureTaskSpecsResult> {
             updatedAt: sql`now()`,
           },
         });
+    }
+  }
+
+  const fetchedAllLexemes = !since;
+  const authoritativeLexemeIds = new Set(expectedTaskIdsByLexeme.keys());
+
+  let existingTasks:
+    | Array<{ id: string; lexemeId: string; taskType: string }>
+    | undefined;
+
+  if (!fetchedAllLexemes) {
+    if (lexemeIdList.length === 0) {
+      return { latestTouchedAt };
+    }
+    existingTasks = await db
+      .select({ id: taskSpecs.id, lexemeId: taskSpecs.lexemeId, taskType: taskSpecs.taskType })
+      .from(taskSpecs)
+      .where(inArray(taskSpecs.lexemeId, lexemeIdList));
+  } else {
+    existingTasks = await db
+      .select({ id: taskSpecs.id, lexemeId: taskSpecs.lexemeId, taskType: taskSpecs.taskType })
+      .from(taskSpecs);
+  }
+
+  const taskRows = existingTasks ?? [];
+  const staleTaskIds: string[] = [];
+
+  for (const task of taskRows) {
+    const lexemeId = task.lexemeId;
+    const lexemeFetched = authoritativeLexemeIds.has(lexemeId);
+
+    if (!lexemeFetched) {
+      if (fetchedAllLexemes) {
+        staleTaskIds.push(task.id);
+      }
+      continue;
+    }
+
+    const expectedIds = expectedTaskIdsByLexeme.get(lexemeId);
+    const expectedTypes = expectedTaskTypesByLexeme.get(lexemeId);
+
+    if (!expectedIds || !expectedTypes) {
+      staleTaskIds.push(task.id);
+      continue;
+    }
+
+    if (!expectedIds.has(task.id) || !expectedTypes.has(task.taskType)) {
+      staleTaskIds.push(task.id);
+    }
+  }
+
+  if (staleTaskIds.length > 0) {
+    for (const chunk of chunkArray(staleTaskIds, DELETE_CHUNK_SIZE)) {
+      await db.delete(taskSpecs).where(inArray(taskSpecs.id, chunk));
     }
   }
 

@@ -234,4 +234,102 @@ describe('task synchronizer delta sync', () => {
     expect(afterTarget && beforeTarget && afterTarget > beforeTarget).toBe(true);
     expect(afterUntouched && beforeUntouched && afterUntouched.getTime() === beforeUntouched.getTime()).toBe(true);
   });
+
+  it('removes obsolete task specs when templates are no longer available', async () => {
+    const fullSync = await ensureTaskSpecsSynced();
+    expect(fullSync.latestTouchedAt).toBeInstanceOf(Date);
+    const marker = fullSync.latestTouchedAt!;
+    await storeTaskSpecSyncMarker(marker);
+
+    const targetLexemeId = await getLexemeIdByLemma('gehen');
+
+    const originalTasks = await drizzleDb
+      .select({ id: taskSpecsTable.id, revision: taskSpecsTable.revision })
+      .from(taskSpecsTable)
+      .where(eq(taskSpecsTable.lexemeId, targetLexemeId));
+    expect(originalTasks.length).toBeGreaterThan(0);
+
+    const partizipTaskId = originalTasks.find((row) => row.revision === 4)?.id;
+    expect(partizipTaskId).toBeTruthy();
+
+    const inflectionRows = await drizzleDb
+      .select({ id: inflectionsTable.id, features: inflectionsTable.features })
+      .from(inflectionsTable)
+      .where(eq(inflectionsTable.lexemeId, targetLexemeId));
+
+    const partizipInflection = inflectionRows.find((row) => {
+      const features = row.features as Record<string, unknown>;
+      return features.tense === 'participle';
+    });
+    expect(partizipInflection?.id).toBeTruthy();
+
+    const updatedFeatures = {
+      ...(partizipInflection!.features as Record<string, unknown>),
+      tense: 'present',
+    } as Record<string, unknown>;
+
+    const updatedTimestamp = new Date(marker.getTime() + 1000);
+
+    await drizzleDb
+      .update(inflectionsTable)
+      .set({ features: updatedFeatures, updatedAt: updatedTimestamp })
+      .where(eq(inflectionsTable.id, partizipInflection!.id));
+
+    resetTaskSpecSync();
+    const storedMarker = await loadTaskSpecSyncMarker();
+    const since = rewindMarker(storedMarker);
+    const deltaSync = await ensureTaskSpecsSynced({ since });
+    if (deltaSync.latestTouchedAt) {
+      await storeTaskSpecSyncMarker(deltaSync.latestTouchedAt);
+    }
+
+    const refreshedTasks = await drizzleDb
+      .select({ id: taskSpecsTable.id, revision: taskSpecsTable.revision })
+      .from(taskSpecsTable)
+      .where(eq(taskSpecsTable.lexemeId, targetLexemeId));
+
+    expect(refreshedTasks.length).toBeLessThan(originalTasks.length);
+    expect(refreshedTasks.some((row) => row.id === partizipTaskId)).toBe(false);
+  });
+
+  it('removes task specs when a lexeme is no longer supported', async () => {
+    await ensureTaskSpecsSynced();
+
+    const targetLexemeId = await getLexemeIdByLemma('gehen');
+    const siblingLexemeId = await getLexemeIdByLemma('kommen');
+
+    const beforeTargetCount = await drizzleDb
+      .select({ id: taskSpecsTable.id })
+      .from(taskSpecsTable)
+      .where(eq(taskSpecsTable.lexemeId, targetLexemeId));
+    expect(beforeTargetCount.length).toBeGreaterThan(0);
+
+    const beforeSiblingCount = await drizzleDb
+      .select({ id: taskSpecsTable.id })
+      .from(taskSpecsTable)
+      .where(eq(taskSpecsTable.lexemeId, siblingLexemeId));
+    expect(beforeSiblingCount.length).toBeGreaterThan(0);
+
+    const updatedTimestamp = new Date(Date.now() + 1000);
+
+    await drizzleDb
+      .update(lexemesTable)
+      .set({ pos: 'adverb', updatedAt: updatedTimestamp })
+      .where(eq(lexemesTable.id, targetLexemeId));
+
+    resetTaskSpecSync();
+    await ensureTaskSpecsSynced();
+
+    const afterTargetCount = await drizzleDb
+      .select({ id: taskSpecsTable.id })
+      .from(taskSpecsTable)
+      .where(eq(taskSpecsTable.lexemeId, targetLexemeId));
+    expect(afterTargetCount.length).toBe(0);
+
+    const afterSiblingCount = await drizzleDb
+      .select({ id: taskSpecsTable.id })
+      .from(taskSpecsTable)
+      .where(eq(taskSpecsTable.lexemeId, siblingLexemeId));
+    expect(afterSiblingCount.length).toBe(beforeSiblingCount.length);
+  });
 });
