@@ -8,11 +8,12 @@ import { LocaleProvider } from "@/locales";
 import { ThemeProvider } from "next-themes";
 import { THEME_STORAGE_KEY } from "@/lib/theme";
 import { PracticeSettingsProvider } from "@/contexts/practice-settings-context";
+import { ADMIN_FEATURE_ENABLED } from "@/config/admin-feature";
 
 const HomePage = lazy(() => import("@/pages/home"));
 const AnswerHistoryPage = lazy(() => import("@/pages/answer-history"));
 const AnalyticsPage = lazy(() => import("@/pages/analytics"));
-const AdminPage = lazy(() => import("@/pages/admin"));
+const AdminPage = ADMIN_FEATURE_ENABLED ? lazy(() => import("@/pages/admin")) : null;
 const UITestbedPage = lazy(() => import("@/pages/ui-testbed"));
 const NotFoundPage = lazy(() => import("@/pages/not-found"));
 
@@ -23,7 +24,7 @@ function Router() {
         <Route path="/" component={HomePage} />
         <Route path="/answers" component={AnswerHistoryPage} />
         <Route path="/analytics" component={AnalyticsPage} />
-        <Route path="/admin" component={AdminPage} />
+        {ADMIN_FEATURE_ENABLED && AdminPage ? <Route path="/admin" component={AdminPage} /> : null}
         <Route path="/ui-testbed" component={UITestbedPage} />
         <Route component={NotFoundPage} />
       </Switch>

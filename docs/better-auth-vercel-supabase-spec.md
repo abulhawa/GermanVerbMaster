@@ -46,7 +46,8 @@ Set the following environment variables in Vercel and local `.env` (never commit
 - `DATABASE_URL`: Existing Supabase Postgres connection URL.
 - `RESEND_API_KEY`: Production API key from Resend for verification and password reset email delivery.
 - `RESEND_FROM_EMAIL`: Verified sender identity (e.g. `German Verb Master <no-reply@example.com>`).
-- `ADMIN_API_TOKEN`: Shared secret consumed by admin ingestion jobs and cron triggers.
+- `ENABLE_ADMIN_FEATURES`: Feature flag that keeps admin-only APIs available (defaults to `false` in production).
+- `ADMIN_API_TOKEN`: Shared secret consumed by admin ingestion jobs and cron triggers when admin features are enabled.
 - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`.
 - `MICROSOFT_CLIENT_ID` / `MICROSOFT_CLIENT_SECRET`.
 - Optional: `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD` if using custom SMTP; otherwise rely on Better Auth email provider defaults.

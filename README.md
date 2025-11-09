@@ -63,7 +63,8 @@ Before running `npm run db:push` or `npm run seed` in any managed environment, s
 - `RESEND_FROM_EMAIL` – verified sender (e.g. `German Verb Master <no-reply@example.com>`). Defaults to Resend's sandbox sender when omitted.
 - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` – optional Google OAuth credentials.
 - `MICROSOFT_CLIENT_ID` / `MICROSOFT_CLIENT_SECRET` – optional Microsoft OAuth credentials.
-- `ADMIN_API_TOKEN` – shared secret for cron jobs and ingestion tools targeting `/api/admin/*` routes.
+- `ENABLE_ADMIN_FEATURES` – toggles admin-only APIs and the `/admin` dashboard (defaults to `true` outside production, `false` in production).
+- `ADMIN_API_TOKEN` (optional) – required when admin features are enabled to authenticate ingestion tools targeting `/api/admin/*` routes.
 - `ENABLE_LEXEME_SCHEMA` – opt-in toggle that keeps the multi-POS stack enabled when generating packs.
 
 These must be present both in Vercel’s Environment Variables UI and in any CI job that invokes the migration (`npm run db:push`) and seeding (`npm run seed`) scripts so the Drizzle client connects with the correct SSL options.
@@ -81,7 +82,7 @@ On Vercel, configure the project to run `npm install`, `npm run db:push`, `npm r
 
 ### Serverless scheduler
 
-The adaptive scheduler relies on `POST /api/jobs/regenerate-queues` to recompute spaced-repetition queues. In Vercel, create a [Cron Job](https://vercel.com/docs/cron-jobs) with an interval that matches your release cadence (e.g. hourly) and set the target URL to `https://<your-app-domain>/api/jobs/regenerate-queues`. Authorise it with the same `ADMIN_API_TOKEN` used in production so the background job continues to run when the API is fully serverless.
+When admin features are enabled, the adaptive scheduler relies on `POST /api/jobs/regenerate-queues` to recompute spaced-repetition queues. In Vercel, create a [Cron Job](https://vercel.com/docs/cron-jobs) with an interval that matches your release cadence (e.g. hourly) and set the target URL to `https://<your-app-domain>/api/jobs/regenerate-queues`. Authorise it with the same `ADMIN_API_TOKEN` used in production so the background job continues to run when the API is fully serverless. Skip this job entirely when `ENABLE_ADMIN_FEATURES` resolves to `false` (the production default).
 
 Each invocation now records an execution row in the `background_job_runs` table and emits structured metrics. Configure `JOB_ALERT_WEBHOOK_URL` to send a JSON payload to your on-call channel whenever the regeneration job fails so incidents are surfaced automatically. You can also schedule `npm run monitor:queues` (which executes `scripts/check-job-health.ts`) from your monitoring platform; it exits non-zero when the latest run failed, stalled, or has not succeeded within the configured freshness window. Override the defaults with `JOB_MAX_AGE_MINUTES`, `JOB_MAX_RUNNING_MINUTES`, or `JOB_NAME` when watching additional jobs.
 
@@ -168,7 +169,7 @@ Shut down the container with `docker stop gvm-postgres` when you are done.
 - Use `tsx scripts/enrich-pending-words.ts` for quick exports to `data/generated/pending-approval-enrichment.json` without mutating the database.
 
 ## Lexeme & content admin tools
-- Configure an `ADMIN_API_TOKEN` in your `.env` file (see `.env.example`) to protect ingestion routes. Restart the dev server after changing environment variables.
+- When admin tooling is enabled, configure an `ADMIN_API_TOKEN` in your `.env` file (see `.env.example`) to protect ingestion routes. Restart the dev server after changing environment variables.
 - Visit `http://localhost:5000/admin` to access the words dashboard. Multi-select filters now support verbs, nouns, adjectives, and CEFR levels for quick targeting.
 - Updates are issued via `PATCH /api/words/:id` with the `x-admin-token` header. Approval toggles and field edits immediately invalidate the admin cache and prompt the next `npm run seed` to refresh lexeme rows, inflections, and task specs.
 
