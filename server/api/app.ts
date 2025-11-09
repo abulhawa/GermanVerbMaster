@@ -3,6 +3,7 @@ import cors from "cors";
 
 import { registerRoutes } from "../routes.js";
 import { logError } from "../logger.js";
+import { requestLogger } from "../middleware/request-logger.js";
 import { buildCorsOptions, resolveAllowedOrigins } from "../config/cors.js";
 
 export interface CreateApiAppOptions {
@@ -23,6 +24,8 @@ export interface CreateApiAppOptions {
 
 export function createApiApp(options: CreateApiAppOptions = {}): Express {
   const app = express();
+
+  app.use(requestLogger);
 
   const enableCors = options.enableCors ?? true;
   const rethrowErrors = options.rethrowErrors ?? false;
