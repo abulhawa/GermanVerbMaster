@@ -27,6 +27,7 @@ import { getTaskRegistryEntry, taskRegistry } from "./tasks/registry.js";
 import { authRouter, getSessionFromRequest } from "./auth/index.js";
 import type { AuthSession } from "./auth/index.js";
 import { runRegenerateQueuesJob } from "./jobs/regenerate-queues.js";
+import { logPracticeAttempt } from "./practice-log.js";
 
 const attachAuthSessionMiddleware: RequestHandler = async (req, res, next) => {
   try {
@@ -1548,59 +1549,16 @@ export function registerRoutes(app: Express): void {
         },
       });
 
-      const logUpserts: Promise<unknown>[] = [
-        db
-          .insert(practiceLog)
-          .values({
-            taskId: resolvedTaskId,
-            lexemeId: taskRow.lexemeId!,
-            pos: taskRow.pos!,
-            taskType: taskRow.taskType!,
-            deviceId: payload.deviceId,
-            userId: null,
-            cefrLevel: serialisedLevel,
-            attemptedAt: attemptTimestamp,
-          })
-          .onConflictDoUpdate({
-            target: [practiceLog.taskId, practiceLog.deviceId, practiceLog.cefrLevel],
-            set: {
-              lexemeId: taskRow.lexemeId!,
-              pos: taskRow.pos!,
-              taskType: taskRow.taskType!,
-              attemptedAt: attemptTimestamp,
-              updatedAt: sql`now()`,
-            },
-          }),
-      ];
-
-      if (sessionUserId) {
-        logUpserts.push(
-          db
-            .insert(practiceLog)
-            .values({
-              taskId: resolvedTaskId,
-              lexemeId: taskRow.lexemeId!,
-              pos: taskRow.pos!,
-              taskType: taskRow.taskType!,
-              deviceId: null,
-              userId: sessionUserId,
-              cefrLevel: serialisedLevel,
-              attemptedAt: attemptTimestamp,
-            })
-            .onConflictDoUpdate({
-              target: [practiceLog.taskId, practiceLog.userId, practiceLog.cefrLevel],
-              set: {
-                lexemeId: taskRow.lexemeId!,
-                pos: taskRow.pos!,
-                taskType: taskRow.taskType!,
-                attemptedAt: attemptTimestamp,
-                updatedAt: sql`now()`,
-              },
-            }),
-        );
-      }
-
-      await Promise.all(logUpserts);
+      await logPracticeAttempt(db, {
+        taskId: resolvedTaskId,
+        lexemeId: taskRow.lexemeId!,
+        pos: taskRow.pos!,
+        taskType: taskRow.taskType!,
+        deviceId: payload.deviceId ?? null,
+        userId: sessionUserId,
+        cefrLevel: serialisedLevel,
+        attemptedAt: attemptTimestamp,
+      });
 
       res.json({
         status: "recorded",
