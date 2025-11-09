@@ -1,9 +1,6 @@
 import type { PracticeCardProps } from './types';
 import type { RendererProps } from './types';
-import {
-  DEFAULT_SESSION_PROGRESS,
-  isTaskOfType,
-} from './utils';
+import { DEFAULT_SESSION_PROGRESS, isTaskOfType } from './utils/data';
 import {
   AdjectiveEndingRenderer,
   ConjugateFormRenderer,
