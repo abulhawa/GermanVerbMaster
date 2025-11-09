@@ -301,20 +301,21 @@ export function createTaskRouter(): Router {
       const sessionUserId = getSessionUserId(req.authSession);
       const hasIdentity = Boolean(sessionUserId || deviceId);
 
-      const baseQuery = db
-        .select({
-          taskId: taskSpecs.id,
-          taskType: taskSpecs.taskType,
-          renderer: taskSpecs.renderer,
-          pos: taskSpecs.pos,
-          prompt: taskSpecs.prompt,
-          solution: taskSpecs.solution,
-          lexemeId: taskSpecs.lexemeId,
-          lexemeLemma: lexemes.lemma,
-          lexemeMetadata: lexemes.metadata,
-        })
-        .from(taskSpecs)
-        .innerJoin(lexemes, eq(taskSpecs.lexemeId, lexemes.id));
+      const createBaseQuery = () =>
+        db
+          .select({
+            taskId: taskSpecs.id,
+            taskType: taskSpecs.taskType,
+            renderer: taskSpecs.renderer,
+            pos: taskSpecs.pos,
+            prompt: taskSpecs.prompt,
+            solution: taskSpecs.solution,
+            lexemeId: taskSpecs.lexemeId,
+            lexemeLemma: lexemes.lemma,
+            lexemeMetadata: lexemes.metadata,
+          })
+          .from(taskSpecs)
+          .innerJoin(lexemes, eq(taskSpecs.lexemeId, lexemes.id));
 
       const recencyThreshold = new Date(Date.now() - RECENT_ATTEMPT_WINDOW_MS);
 
@@ -327,6 +328,8 @@ export function createTaskRouter(): Router {
         } else if (activeTaskTypes.length > 1) {
           combinedFilters.push(inArray(taskSpecs.taskType, activeTaskTypes));
         }
+
+        const baseQuery = createBaseQuery();
 
         const taskQuery = combinedFilters.length
           ? baseQuery.where(and(...combinedFilters))
