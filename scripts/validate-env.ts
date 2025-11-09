@@ -1,4 +1,5 @@
 import process from "node:process";
+import { isAdminFeatureEnabled } from "../server/config.js";
 
 type ValidationLevel = "error" | "warning";
 
@@ -168,6 +169,9 @@ function validateResendConfiguration(): ValidationResult[] {
 
 function validateAdminToken(): ValidationResult[] {
   const results: ValidationResult[] = [];
+  if (!isAdminFeatureEnabled()) {
+    return results;
+  }
   const adminToken = getEnv("ADMIN_API_TOKEN");
 
   if (!adminToken) {

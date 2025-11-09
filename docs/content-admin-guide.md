@@ -4,7 +4,8 @@
 The admin dashboard at `/admin` now manages verbs, nouns, and adjectives from a single words table while the lexeme-based task system rolls out. This guide documents the controls content editors need to curate entries, trigger ETL updates, and verify offline readiness.
 
 ## Prerequisites
-- Set an `ADMIN_API_TOKEN` in your `.env` file and restart the server so protected routes accept updates.
+- Confirm admin tooling is enabled locally (defaults to on when `NODE_ENV` is not `production`).
+- When enabled, set an `ADMIN_API_TOKEN` in your `.env` file and restart the server so protected routes accept updates.
 - Confirm the lexeme schema is enabled (`ENABLE_LEXEME_SCHEMA=true`).
 - Run `npm install` followed by `npm run dev` so the React admin UI and Express API are available locally.
 

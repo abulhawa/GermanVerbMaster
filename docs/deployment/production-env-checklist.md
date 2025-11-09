@@ -12,7 +12,8 @@ This checklist summarises the minimum configuration required before promoting a 
 | `BETTER_AUTH_URL` | HTTPS base URL Better Auth uses in email links. When omitted it falls back to the first `APP_ORIGIN` entry; configure explicitly when multiple origins exist. |
 | `RESEND_API_KEY` | Production API key copied from the Resend dashboard (prefix `re_`). |
 | `RESEND_FROM_EMAIL` | Verified sender identity, e.g. `German Verb Master <no-reply@germanverbmaster.com>`. |
-| `ADMIN_API_TOKEN` | Random 16+ character string shared with scheduled jobs hitting `/api/admin/*` endpoints. |
+| `ENABLE_ADMIN_FEATURES` | Leave unset or `false` so admin-only routes remain disabled in production. |
+| `ADMIN_API_TOKEN` | Only required when admin features are enabled. Use a random 16+ character string shared with scheduled jobs hitting `/api/admin/*` endpoints. |
 
 Preview deployments can include additional origins (for example, `https://<branch>.vercel.app`) but must keep production domains in the list. Remove any placeholder values such as `example.com` or `changeme` before shipping.
 

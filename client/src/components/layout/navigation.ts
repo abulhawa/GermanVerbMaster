@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import { Sparkles, History, Compass, Settings2 } from "lucide-react";
+import { ADMIN_FEATURE_ENABLED } from "@/config/admin-feature";
 
 export interface AppNavigationItem {
   href: string;
@@ -26,13 +27,17 @@ const BASE_PRIMARY_NAVIGATION_ITEMS: AppNavigationItem[] = [
     label: "Analytics",
     icon: Compass,
   },
-  {
-    href: "/admin",
-    label: "Admin tools",
-    icon: Settings2,
-    requiresAdmin: true,
-    exact: true,
-  },
+  ...(ADMIN_FEATURE_ENABLED
+    ? ([
+        {
+          href: "/admin",
+          label: "Admin tools",
+          icon: Settings2,
+          requiresAdmin: true,
+          exact: true,
+        },
+      ] as const satisfies readonly AppNavigationItem[])
+    : []),
 ];
 
 export function getPrimaryNavigationItems(role: string | null | undefined): AppNavigationItem[] {

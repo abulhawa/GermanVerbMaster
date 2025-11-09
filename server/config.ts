@@ -35,3 +35,11 @@ export function isRequestPayloadLoggingEnabled(): boolean {
 
   return nodeEnv !== "production";
 }
+
+export function isAdminFeatureEnabled(): boolean {
+  const defaultNodeEnv = process.env.VERCEL ? "production" : "development";
+  const nodeEnv = process.env.NODE_ENV ?? defaultNodeEnv;
+  const defaultValue = nodeEnv !== "production";
+
+  return parseBooleanFlag(process.env.ENABLE_ADMIN_FEATURES, defaultValue);
+}
