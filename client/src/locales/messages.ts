@@ -168,6 +168,10 @@ export interface HomeMessages {
     emptyDetail: string;
     open: string;
     close: string;
+    resultLabels: {
+      correct: string;
+      incorrect: string;
+    };
   };
   queueDiagnostics: {
     title: string;
