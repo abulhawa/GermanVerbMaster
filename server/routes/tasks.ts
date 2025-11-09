@@ -381,7 +381,7 @@ export function createTaskRouter(): Router {
                 .from(practiceHistory)
                 .where(historyWhere)
                 .groupBy(practiceHistory.taskId)
-                .as("practice_history");
+                .as("practice_history_summary");
 
               queryWithHistory = queryWithHistory.leftJoin(
                 attemptHistory,
