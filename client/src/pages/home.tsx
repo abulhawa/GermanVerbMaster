@@ -207,6 +207,7 @@ export default function Home() {
   const [tasksById, setTasksById] = useState<Record<string, PracticeTask>>({});
   const [isFetchingTasks, setIsFetchingTasks] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [hasBlockingFetchError, setHasBlockingFetchError] = useState(false);
   const [shouldReloadTasks, setShouldReloadTasks] = useState(false);
   const [isRecapOpen, setIsRecapOpen] = useState(false);
   const pendingFetchRef = useRef(false);
@@ -315,8 +316,10 @@ export default function Home() {
 
         if (!tasks.length) {
           if (taskFetchErrors.length) {
+            setHasBlockingFetchError(true);
             setFetchError('We couldn\'t load additional practice tasks. Please try again in a moment.');
           } else if (!baseQueue.length) {
+            setHasBlockingFetchError(true);
             setFetchError('No practice tasks are available for your current scope right now. Try adjusting your practice scope or check back later.');
           }
           lastFailedQueueSignatureRef.current = baseSignature;
@@ -357,20 +360,24 @@ export default function Home() {
         const sessionAfterEnqueue = nextSessionState as PracticeSessionState | null;
         if (replace && sessionAfterEnqueue && sessionAfterEnqueue.queue.length === 0) {
           lastFailedQueueSignatureRef.current = baseSignature;
+          setHasBlockingFetchError(true);
           setFetchError('No practice tasks are available for your current scope right now. Try adjusting your practice scope or check back later.');
           return;
         }
 
         lastFailedQueueSignatureRef.current = null;
-        setFetchError(
-          taskFetchErrors.length
-            ? 'Some practice tasks failed to load. Showing the available tasks while we retry.'
-            : null,
-        );
+        if (taskFetchErrors.length) {
+          setHasBlockingFetchError(false);
+          setFetchError('Some practice tasks failed to load. Showing the available tasks while we retry.');
+        } else {
+          setHasBlockingFetchError(false);
+          setFetchError(null);
+        }
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Failed to load practice tasks';
         console.error('[home] Unable to fetch practice tasks', error);
         lastFailedQueueSignatureRef.current = null;
+        setHasBlockingFetchError(true);
         setFetchError(message);
       } finally {
         pendingFetchRef.current = false;
@@ -381,7 +388,7 @@ export default function Home() {
   );
 
   useEffect(() => {
-    if (fetchError) {
+    if (hasBlockingFetchError) {
       return;
     }
 
@@ -412,7 +419,7 @@ export default function Home() {
     tasksById,
     isFetchingTasks,
     fetchAndEnqueueTasks,
-    fetchError,
+    hasBlockingFetchError,
     queueSignature,
     session.leitner?.serverExhausted,
   ]);
@@ -678,6 +685,7 @@ export default function Home() {
                     className="rounded-full px-4"
                     onClick={() => {
                       lastFailedQueueSignatureRef.current = null;
+                      setHasBlockingFetchError(false);
                       setFetchError(null);
                       void fetchAndEnqueueTasks({ replace: true });
                     }}
@@ -705,6 +713,7 @@ export default function Home() {
                       className="rounded-full px-4"
                       onClick={() => {
                         lastFailedQueueSignatureRef.current = null;
+                        setHasBlockingFetchError(false);
                         setFetchError(null);
                         void fetchAndEnqueueTasks({ replace: true });
                       }}
