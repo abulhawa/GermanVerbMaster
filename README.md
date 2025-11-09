@@ -38,6 +38,7 @@ Requires Node.js 22.0.0 or newer and npm 10+ (see `package.json` engines field).
    ```bash
    npm run check      # type-check the project
    npm run build      # create production bundles and server output
+   npm run validate:env # ensure production env vars are present before building
    npm run test:unit  # run unit and integration tests with Vitest
    npm run test:e2e   # execute Playwright end-to-end tests (browsers required)
    npm run test:all   # run unit tests followed by Playwright end-to-end coverage
@@ -58,11 +59,16 @@ Before running `npm run db:push` or `npm run seed` in any managed environment, s
 - `APP_ORIGIN` (required in production) – comma-separated allow list of trusted origins that should be able to hit the production API. Development builds fall back to `http://localhost` / `http://127.0.0.1` ports used by Vite.
 - `BETTER_AUTH_SECRET` – secret shared with Better Auth for signing cookies and tokens.
 - `BETTER_AUTH_URL` – public base URL Better Auth should advertise in emails and OAuth callbacks.
+- `RESEND_API_KEY` – Resend production API key used to deliver verification and password reset emails.
+- `RESEND_FROM_EMAIL` – verified sender (e.g. `German Verb Master <no-reply@example.com>`). Defaults to Resend's sandbox sender when omitted.
 - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` – optional Google OAuth credentials.
 - `MICROSOFT_CLIENT_ID` / `MICROSOFT_CLIENT_SECRET` – optional Microsoft OAuth credentials.
+- `ADMIN_API_TOKEN` – shared secret for cron jobs and ingestion tools targeting `/api/admin/*` routes.
 - `ENABLE_LEXEME_SCHEMA` – opt-in toggle that keeps the multi-POS stack enabled when generating packs.
 
 These must be present both in Vercel’s Environment Variables UI and in any CI job that invokes the migration (`npm run db:push`) and seeding (`npm run seed`) scripts so the Drizzle client connects with the correct SSL options.
+
+Run `npm run validate:env` (or let `npm run build` invoke it automatically) to fail fast when any required production value is missing or pointed at a placeholder. Vercel builds abort early when the script reports missing configuration, preventing partially configured deployments.
 
 ### Build output
 
