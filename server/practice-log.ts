@@ -80,7 +80,11 @@ export async function logPracticeAttempt(
         scope_key
       )
       where v.scope_key is not null
-      on conflict on constraint practice_log_scope_idx
+      on conflict (
+        task_id,
+        coalesce('user:' || user_id, 'device:' || device_id),
+        cefr_level
+      )
       do update set
         lexeme_id = excluded.lexeme_id,
         pos = excluded.pos,
