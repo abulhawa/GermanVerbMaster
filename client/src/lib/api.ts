@@ -7,6 +7,7 @@ const TASK_ENDPOINT = '/api/submission';
 const PRACTICE_HISTORY_ENDPOINT = '/api/practice/history';
 
 const MAX_BACKOFF_MS = 5 * 60 * 1000;
+const DEFAULT_FLUSH_BATCH_SIZE = 3;
 
 type SubmitPayload = Omit<TaskAttemptPayload, 'deviceId'>;
 
@@ -133,7 +134,13 @@ export interface FlushPendingAttemptsResult {
   dropped: number;
 }
 
-export async function flushPendingAttempts(): Promise<FlushPendingAttemptsResult> {
+export interface FlushPendingAttemptsOptions {
+  batchSize?: number;
+}
+
+export async function flushPendingAttempts(
+  options: FlushPendingAttemptsOptions = {},
+): Promise<FlushPendingAttemptsResult> {
   await practiceDbReady;
   const queued = await practiceDb.pendingAttempts.orderBy('createdAt').toArray();
   const result: FlushPendingAttemptsResult = {
@@ -143,6 +150,10 @@ export async function flushPendingAttempts(): Promise<FlushPendingAttemptsResult
     deferred: 0,
     dropped: 0,
   };
+
+  const batchSize = Math.max(1, Math.floor(options.batchSize ?? DEFAULT_FLUSH_BATCH_SIZE));
+
+  const readyAttempts: PendingAttempt[] = [];
 
   for (const attempt of queued) {
     const now = Date.now();
@@ -155,31 +166,67 @@ export async function flushPendingAttempts(): Promise<FlushPendingAttemptsResult
       continue;
     }
 
-    result.attempted += 1;
+    readyAttempts.push(attempt);
+  }
 
-    try {
-      const response = await sendAttempt(attempt.payload);
-      if (!response.ok) {
-        const retriable = response.status >= 500 || response.status === 429;
-        if (!retriable) {
-          console.error('Dropping invalid queued attempt', await response.json().catch(() => undefined));
-          await practiceDb.pendingAttempts.delete(attempt.id!);
-          result.dropped += 1;
+  for (let index = 0; index < readyAttempts.length; index += batchSize) {
+    const chunk = readyAttempts.slice(index, index + batchSize);
+    result.attempted += chunk.length;
+
+    const settlements = await Promise.allSettled(
+      chunk.map(async (attempt) => {
+        try {
+          const response = await sendAttempt(attempt.payload);
+          return { attempt, response };
+        } catch (error) {
+          throw { attempt, error };
+        }
+      }),
+    );
+
+    for (const settlement of settlements) {
+      if (settlement.status === 'fulfilled') {
+        const { attempt, response } = settlement.value;
+
+        if (!response.ok) {
+          const retriable = response.status >= 500 || response.status === 429;
+          if (!retriable) {
+            console.error('Dropping invalid queued attempt', await response.json().catch(() => undefined));
+            if (attempt.id !== undefined) {
+              await practiceDb.pendingAttempts.delete(attempt.id);
+            }
+            result.dropped += 1;
+            continue;
+          }
+
+          console.warn('Failed to flush queued practice attempt', new Error(`Server responded with ${response.status}`));
+          const now = Date.now();
+          if (attempt.id !== undefined) {
+            await practiceDb.pendingAttempts.update(attempt.id, {
+              retryCount: (attempt.retryCount ?? 0) + 1,
+              lastTriedAt: now,
+            });
+          }
+          result.failed += 1;
           continue;
         }
-        throw new Error(`Server responded with ${response.status}`);
-      }
 
-      await practiceDb.pendingAttempts.delete(attempt.id!);
-      result.succeeded += 1;
-    } catch (error) {
-      console.warn('Failed to flush queued practice attempt', error);
-      await practiceDb.pendingAttempts.update(attempt.id!, {
-        retryCount: retryCount + 1,
-        lastTriedAt: now,
-      });
-      result.failed += 1;
-      continue;
+        if (attempt.id !== undefined) {
+          await practiceDb.pendingAttempts.delete(attempt.id);
+        }
+        result.succeeded += 1;
+      } else {
+        const { attempt, error } = settlement.reason as { attempt: PendingAttempt; error: unknown };
+        console.warn('Failed to flush queued practice attempt', error);
+        const now = Date.now();
+        if (attempt.id !== undefined) {
+          await practiceDb.pendingAttempts.update(attempt.id, {
+            retryCount: (attempt.retryCount ?? 0) + 1,
+            lastTriedAt: now,
+          });
+        }
+        result.failed += 1;
+      }
     }
   }
 
