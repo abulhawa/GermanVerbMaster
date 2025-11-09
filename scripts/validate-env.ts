@@ -90,11 +90,11 @@ function validateAppOrigins(): ValidationResult[] {
   const betterAuthUrl = getEnv("BETTER_AUTH_URL");
 
   if (appOrigins.length === 0) {
-    addResult(
-      results,
-      "error",
-      "APP_ORIGIN must include at least one HTTPS origin so CORS and Better Auth callbacks resolve correctly."
-    );
+    const baseMessage = "APP_ORIGIN must include at least one HTTPS origin so CORS and Better Auth callbacks resolve correctly.";
+    const betterAuthReminder =
+      "APP_ORIGIN is still required even when BETTER_AUTH_URL is defined because the API uses it to resolve allowed origins.";
+
+    addResult(results, "error", betterAuthUrl ? `${baseMessage} ${betterAuthReminder}` : baseMessage);
   } else {
     for (const origin of appOrigins) {
       if (!origin.startsWith("https://")) {
@@ -130,7 +130,7 @@ function validateResendConfiguration(): ValidationResult[] {
 
   if (!apiKey) {
     addResult(results, "error", "RESEND_API_KEY is missing. Generate a production API key in the Resend dashboard so transactional email works.");
-  } else if (!/^re_[a-zA-Z0-9]+$/.test(apiKey)) {
+  } else if (!/^re_[a-zA-Z0-9_-]+$/.test(apiKey)) {
     addResult(results, "warning", "RESEND_API_KEY does not match the expected re_ prefix. Confirm you copied the correct production key.");
   }
 
