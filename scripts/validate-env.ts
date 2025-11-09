@@ -32,6 +32,26 @@ function parseOrigins(value: string | undefined): string[] {
     .filter((origin) => origin.length > 0);
 }
 
+function hasOnlyResendKeyCharacters(value: string): boolean {
+  if (value.length === 0) {
+    return false;
+  }
+
+  for (const char of value) {
+    const code = char.charCodeAt(0);
+    const isDigit = code >= 48 && code <= 57;
+    const isUppercase = code >= 65 && code <= 90;
+    const isLowercase = code >= 97 && code <= 122;
+    const isAllowedSymbol = char === "-" || char === "_";
+
+    if (!(isDigit || isUppercase || isLowercase || isAllowedSymbol)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 function isProductionLikeEnvironment(): boolean {
   if (getEnv("FORCE_ENV_VALIDATION") === "1") {
     return true;
@@ -130,8 +150,10 @@ function validateResendConfiguration(): ValidationResult[] {
 
   if (!apiKey) {
     addResult(results, "error", "RESEND_API_KEY is missing. Generate a production API key in the Resend dashboard so transactional email works.");
-  } else if (!/^re_[a-zA-Z0-9_-]+$/.test(apiKey)) {
-    addResult(results, "warning", "RESEND_API_KEY does not match the expected re_ prefix. Confirm you copied the correct production key.");
+  } else if (!apiKey.startsWith("re_")) {
+    addResult(results, "warning", "RESEND_API_KEY must start with the re_ prefix issued by Resend. Confirm you copied the production key.");
+  } else if (!hasOnlyResendKeyCharacters(apiKey.slice(3))) {
+    addResult(results, "warning", "RESEND_API_KEY contains unexpected characters. Production keys only include letters, numbers, hyphens, or underscores.");
   }
 
   const fromEmail = getEnv("RESEND_FROM_EMAIL");
