@@ -27,6 +27,8 @@ export const enrichmentMethodEnum = pgEnum("enrichment_method", [
   "preexisting",
 ]);
 
+export const jobRunStatusEnum = pgEnum("job_run_status", ["running", "success", "failed"]);
+
 export const authUsers = pgTable(
   "auth_users",
   {
@@ -313,6 +315,26 @@ export const practiceLog = pgTable(
     index("practice_log_user_idx").on(table.userId),
     uniqueIndex("practice_log_user_task_idx").on(table.taskId, table.userId, table.cefrLevel),
     uniqueIndex("practice_log_device_task_idx").on(table.taskId, table.deviceId, table.cefrLevel),
+  ],
+);
+
+export const backgroundJobRuns = pgTable(
+  "background_job_runs",
+  {
+    id: serial("id").primaryKey(),
+    jobName: text("job_name").notNull(),
+    status: jobRunStatusEnum("status").notNull(),
+    startedAt: timestamp("started_at", { withTimezone: true }).defaultNow().notNull(),
+    finishedAt: timestamp("finished_at", { withTimezone: true }),
+    durationMs: doublePrecision("duration_ms"),
+    stats: jsonb("stats").$type<Record<string, unknown> | null>(),
+    error: jsonb("error").$type<Record<string, unknown> | null>(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("background_job_runs_job_name_started_idx").on(table.jobName, table.startedAt),
+    index("background_job_runs_status_idx").on(table.status),
   ],
 );
 
