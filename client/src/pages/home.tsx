@@ -58,6 +58,55 @@ import {
 const MIN_QUEUE_THRESHOLD = 5;
 const FETCH_LIMIT = 15;
 
+type FetchPracticeTasksFn = (
+  options?: Parameters<typeof fetchPracticeTasks>[0],
+) => Promise<PracticeTask[]>;
+
+interface FetchTasksForActiveTypesOptions {
+  taskTypes: TaskType[];
+  perTypeLimit: number;
+  resolveLevelForPos: (pos: LexemePos) => CEFRLevel;
+  fetcher?: FetchPracticeTasksFn;
+}
+
+interface FetchTasksForActiveTypesResult {
+  tasksByType: PracticeTask[][];
+  errors: Array<{ taskType: TaskType; error: unknown }>;
+}
+
+export async function fetchTasksForActiveTypes({
+  taskTypes,
+  perTypeLimit,
+  resolveLevelForPos,
+  fetcher = fetchPracticeTasks,
+}: FetchTasksForActiveTypesOptions): Promise<FetchTasksForActiveTypesResult> {
+  const fetchPromises = taskTypes.map((taskType) => {
+    const entry = clientTaskRegistry[taskType];
+    if (!entry) {
+      return Promise.resolve({ taskType, tasks: [] as PracticeTask[], error: null });
+    }
+
+    const pos = entry.supportedPos[0];
+    const level = resolveLevelForPos(pos);
+
+    return fetcher({ taskType, pos, limit: perTypeLimit, level })
+      .then((tasks) => ({ taskType, tasks, error: null as unknown }))
+      .catch((error) => {
+        console.error(`[home] Unable to fetch ${taskType} practice tasks`, error);
+        return { taskType, tasks: [] as PracticeTask[], error };
+      });
+  });
+
+  const results = await Promise.all(fetchPromises);
+
+  return {
+    tasksByType: results.map((result) => result.tasks),
+    errors: results
+      .filter((result) => result.error)
+      .map((result) => ({ taskType: result.taskType, error: result.error as unknown })),
+  };
+}
+
 const HOME_SECTION_IDS = {
   page: 'home-page',
   content: 'home-page-content',
@@ -246,7 +295,6 @@ export default function Home() {
 
       try {
         const perTypeLimit = Math.max(1, Math.ceil(FETCH_LIMIT / activeTaskTypes.length));
-        const fetchedTasks: PracticeTask[][] = [];
 
         const resolveLevelForPos = (pos: LexemePos): CEFRLevel => {
           const fallbackLevel: CEFRLevel =
@@ -257,26 +305,18 @@ export default function Home() {
           return settings.cefrLevelByPos[pos] ?? fallbackLevel;
         };
 
-        for (const taskType of activeTaskTypes) {
-          const entry = clientTaskRegistry[taskType];
-          if (!entry) {
-            continue;
-          }
-          const pos = entry.supportedPos[0];
-          const level = resolveLevelForPos(pos);
-          const tasksForType = await fetchPracticeTasks({
-            taskType,
-            pos,
-            limit: perTypeLimit,
-            level,
-          });
-          fetchedTasks.push(tasksForType);
-        }
+        const { tasksByType: fetchedTasks, errors: taskFetchErrors } = await fetchTasksForActiveTypes({
+          taskTypes: activeTaskTypes,
+          perTypeLimit,
+          resolveLevelForPos,
+        });
 
         const tasks = mergeTaskLists(fetchedTasks, FETCH_LIMIT);
 
         if (!tasks.length) {
-          if (!baseQueue.length) {
+          if (taskFetchErrors.length) {
+            setFetchError('We couldn\'t load additional practice tasks. Please try again in a moment.');
+          } else if (!baseQueue.length) {
             setFetchError('No practice tasks are available for your current scope right now. Try adjusting your practice scope or check back later.');
           }
           lastFailedQueueSignatureRef.current = baseSignature;
@@ -322,7 +362,11 @@ export default function Home() {
         }
 
         lastFailedQueueSignatureRef.current = null;
-        setFetchError(null);
+        setFetchError(
+          taskFetchErrors.length
+            ? 'Some practice tasks failed to load. Showing the available tasks while we retry.'
+            : null,
+        );
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Failed to load practice tasks';
         console.error('[home] Unable to fetch practice tasks', error);
