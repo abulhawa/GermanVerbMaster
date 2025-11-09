@@ -1056,7 +1056,7 @@ export function registerRoutes(app: Express): void {
 
       let taskQuery = filters.length ? baseQuery.where(and(...filters)) : baseQuery;
 
-      let fetchLimit = limit;
+      const recencyThreshold = new Date(Date.now() - RECENT_ATTEMPT_WINDOW_MS);
 
       const orderedQuery = hasIdentity
         ? (() => {
@@ -1090,126 +1090,104 @@ export function registerRoutes(app: Express): void {
             }
 
             const historyWhere = combineFilters(historyFilters);
-            fetchLimit = Math.max(limit * 3, limit + 10);
 
-            if (!historyWhere) {
-              return taskQuery.orderBy(desc(taskSpecs.updatedAt), asc(taskSpecs.id));
+            let queryWithHistory = taskQuery;
+            const historyOrder: SQL[] = [];
+
+            if (historyWhere) {
+              const attemptHistory = db
+                .select({
+                  taskId: practiceHistory.taskId,
+                  lastPracticedAt: sql<Date | null>`max(${practiceHistory.submittedAt})`.as(
+                    "last_practiced_at",
+                  ),
+                })
+                .from(practiceHistory)
+                .where(historyWhere)
+                .groupBy(practiceHistory.taskId)
+                .as("practice_history");
+
+              queryWithHistory = queryWithHistory.leftJoin(
+                attemptHistory,
+                eq(taskSpecs.id, attemptHistory.taskId),
+              );
+              historyOrder.push(asc(attemptHistory.lastPracticedAt));
             }
 
-            const attemptHistory = db
-              .select({
-                taskId: practiceHistory.taskId,
-                lastPracticedAt: sql<Date | null>`max(${practiceHistory.submittedAt})`.as(
-                  "last_practiced_at",
-                ),
-              })
-              .from(practiceHistory)
-              .where(historyWhere)
-              .groupBy(practiceHistory.taskId)
-              .as("practice_history");
+            const identityLogExpressions: SQL[] = [];
+            if (sessionUserId) {
+              identityLogExpressions.push(eq(practiceLog.userId, sessionUserId));
+            }
+            if (deviceId) {
+              identityLogExpressions.push(eq(practiceLog.deviceId, deviceId));
+            }
 
-            return taskQuery
-              .leftJoin(attemptHistory, eq(taskSpecs.id, attemptHistory.taskId))
-              .orderBy(
-                asc(attemptHistory.lastPracticedAt),
-                desc(taskSpecs.updatedAt),
-                asc(taskSpecs.id),
+            let identityLogFilter: SQL | null = null;
+            if (identityLogExpressions.length === 1) {
+              identityLogFilter = identityLogExpressions[0]!;
+            } else if (identityLogExpressions.length > 1) {
+              const combinedIdentity = or(
+                ...(identityLogExpressions as [SQL, SQL, ...SQL[]]),
               );
+              identityLogFilter = combinedIdentity ?? null;
+            }
+
+            const recencyFilters: SQL[] = [];
+            if (identityLogFilter) {
+              recencyFilters.push(identityLogFilter);
+              recencyFilters.push(gte(practiceLog.attemptedAt, recencyThreshold));
+              if (level) {
+                recencyFilters.push(
+                  inArray(practiceLog.cefrLevel, [UNSPECIFIED_CEFR_LEVEL, level]),
+                );
+              }
+            }
+
+            const recencyWhere = combineFilters(recencyFilters);
+
+            let queryWithRecency = queryWithHistory;
+            const recencyOrder: SQL[] = [];
+
+            if (recencyWhere) {
+              const recentAttempts = db
+                .select({
+                  taskId: practiceLog.taskId,
+                  recentAttemptedAt: sql<Date | null>`max(${practiceLog.attemptedAt})`.as(
+                    "recent_attempted_at",
+                  ),
+                })
+                .from(practiceLog)
+                .where(recencyWhere)
+                .groupBy(practiceLog.taskId)
+                .as("recent_attempts");
+
+              queryWithRecency = queryWithRecency.leftJoin(
+                recentAttempts,
+                eq(taskSpecs.id, recentAttempts.taskId),
+              );
+
+              recencyOrder.push(
+                asc(
+                  sql`case when ${recentAttempts.recentAttemptedAt} is null then 0 else 1 end`,
+                ),
+              );
+              recencyOrder.push(asc(recentAttempts.recentAttemptedAt));
+            }
+
+            const orderExpressions: SQL[] = [
+              ...recencyOrder,
+              ...historyOrder,
+              desc(taskSpecs.updatedAt),
+              asc(taskSpecs.id),
+            ];
+
+            return queryWithRecency.orderBy(...orderExpressions);
           })()
         : taskQuery.orderBy(desc(taskSpecs.updatedAt), asc(taskSpecs.id));
 
-      const compiledQuery = orderedQuery.limit(fetchLimit);
+      const compiledQuery = orderedQuery.limit(limit);
       const rowsRaw = await executeSelectRaw<Record<string, unknown>>(compiledQuery);
       const mappedRows = rowsRaw.map((row) => mapTaskRow(row as Record<string, any>));
-
-      const identityLogExpressions: SQL[] = [];
-      if (sessionUserId) {
-        identityLogExpressions.push(eq(practiceLog.userId, sessionUserId));
-      }
-      if (deviceId) {
-        identityLogExpressions.push(eq(practiceLog.deviceId, deviceId));
-      }
-
-      let identityLogFilter: SQL | null = null;
-      if (identityLogExpressions.length === 1) {
-        identityLogFilter = identityLogExpressions[0]!;
-      } else if (identityLogExpressions.length > 1) {
-        const combinedIdentity = or(...(identityLogExpressions as [SQL, SQL, ...SQL[]]));
-        identityLogFilter = combinedIdentity ?? null;
-      }
-
-      const recencyThreshold = new Date(Date.now() - RECENT_ATTEMPT_WINDOW_MS);
-      const recencyFilters: SQL[] = [];
-      if (identityLogFilter) {
-        recencyFilters.push(identityLogFilter);
-        recencyFilters.push(gte(practiceLog.attemptedAt, recencyThreshold));
-      }
-
-      const recencyWhere = combineFilters(recencyFilters);
-      const recentAttemptMap = new Map<string, Date>();
-      const recentlyAttempted = new Set<string>();
-
-      if (recencyWhere) {
-        const recentRows = await db
-          .select({
-            taskId: practiceLog.taskId,
-            cefrLevel: practiceLog.cefrLevel,
-            attemptedAt: practiceLog.attemptedAt,
-          })
-          .from(practiceLog)
-          .where(recencyWhere);
-
-        for (const entry of recentRows) {
-          const taskId = normaliseString(entry.taskId);
-          if (!taskId) {
-            continue;
-          }
-
-          const rowLevel = normalisePracticeLogLevel(entry.cefrLevel);
-          const attemptTimestamp =
-            entry.attemptedAt instanceof Date ? entry.attemptedAt : new Date(entry.attemptedAt);
-
-          const existing = recentAttemptMap.get(taskId);
-          if (!existing || attemptTimestamp > existing) {
-            recentAttemptMap.set(taskId, attemptTimestamp);
-          }
-
-          if (!level || !rowLevel || rowLevel === level) {
-            recentlyAttempted.add(taskId);
-          }
-        }
-      }
-
-      const prioritizedRows: typeof mappedRows = [];
-      const fallbackRows: typeof mappedRows = [];
-
-      for (const row of mappedRows) {
-        const taskId = normaliseString(row.taskId);
-        if (!taskId) {
-          continue;
-        }
-
-        if (recentlyAttempted.has(taskId)) {
-          fallbackRows.push(row);
-        } else {
-          prioritizedRows.push(row);
-        }
-      }
-
-      let rows = prioritizedRows.slice(0, limit);
-
-      if (rows.length < limit && fallbackRows.length) {
-        fallbackRows.sort((a, b) => {
-          const aId = normaliseString(a.taskId);
-          const bId = normaliseString(b.taskId);
-          const aTime = aId ? recentAttemptMap.get(aId)?.getTime() ?? 0 : 0;
-          const bTime = bId ? recentAttemptMap.get(bId)?.getTime() ?? 0 : 0;
-          return aTime - bTime;
-        });
-
-        const needed = limit - rows.length;
-        rows = rows.concat(fallbackRows.slice(0, needed));
-      }
 
       const payload: Array<{
         taskId: string;
@@ -1222,7 +1200,7 @@ export function registerRoutes(app: Express): void {
         lexeme: { id: string; lemma: string; metadata: Record<string, unknown> | null };
       }> = [];
 
-      for (const row of rows) {
+      for (const row of mappedRows.slice(0, limit)) {
         const taskId = normaliseString(row.taskId);
         const taskTypeValue = normaliseString(row.taskType);
         const rendererValue = normaliseString(row.renderer);
