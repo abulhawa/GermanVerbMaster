@@ -38,6 +38,19 @@ const nounPayload: Omit<TaskAttemptPayload, 'deviceId'> = {
   cefrLevel: 'A2',
 };
 
+const adjectivePayload: Omit<TaskAttemptPayload, 'deviceId'> = {
+  taskId: 'task:de:adjective:stark',
+  lexemeId: 'lex:de:adjective:stark',
+  taskType: 'adjective_declension',
+  pos: 'adjective',
+  renderer: 'adjective_declension',
+  result: 'incorrect',
+  submittedResponse: 'starke',
+  expectedResponse: 'stark',
+  timeSpentMs: 950,
+  answeredAt: new Date().toISOString(),
+};
+
 async function resetDb() {
   await practiceDbReady;
   await practiceDb.pendingAttempts.clear();
@@ -144,5 +157,59 @@ describe('offline queue', () => {
 
     attempts = await getPendingAttempts();
     expect(attempts).toHaveLength(0);
+  });
+
+  it('flushes attempts in batches and handles partial failures', async () => {
+    Object.defineProperty(navigator, 'onLine', { value: false, configurable: true });
+    await submitPracticeAttempt(basePayload);
+    await submitPracticeAttempt(nounPayload);
+    await submitPracticeAttempt(adjectivePayload);
+
+    Object.defineProperty(navigator, 'onLine', { value: true, configurable: true });
+
+    const responses = [
+      { ok: true, json: () => Promise.resolve({ success: true }) },
+      { ok: false, status: 500, json: () => Promise.resolve({ error: 'retry' }) },
+      { ok: true, json: () => Promise.resolve({ success: true }) },
+    ];
+
+    const fetchMock = vi.fn().mockImplementation(() => Promise.resolve(responses.shift()!));
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    const firstFlush = await flushPendingAttempts({ batchSize: 2 });
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(firstFlush.attempted).toBe(3);
+    expect(firstFlush.succeeded).toBe(2);
+    expect(firstFlush.failed).toBe(1);
+    expect(firstFlush.deferred).toBe(0);
+
+    const attemptsAfterFirstFlush = await getPendingAttempts();
+    expect(attemptsAfterFirstFlush).toHaveLength(1);
+    const deferredAttempt = attemptsAfterFirstFlush[0];
+    expect(deferredAttempt?.retryCount).toBe(1);
+    expect(deferredAttempt?.lastTriedAt).toBeDefined();
+
+    const secondFlush = await flushPendingAttempts({ batchSize: 2 });
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(secondFlush.attempted).toBe(0);
+    expect(secondFlush.failed).toBe(0);
+    expect(secondFlush.deferred).toBe(1);
+
+    if (deferredAttempt?.id) {
+      await practiceDb.pendingAttempts.update(deferredAttempt.id, {
+        lastTriedAt: Date.now() - 5000,
+      });
+    }
+
+    responses.push({ ok: true, json: () => Promise.resolve({ success: true }) });
+
+    const thirdFlush = await flushPendingAttempts({ batchSize: 2 });
+    expect(fetchMock).toHaveBeenCalledTimes(4);
+    expect(thirdFlush.succeeded).toBe(1);
+    expect(thirdFlush.failed).toBe(0);
+    expect(thirdFlush.deferred).toBe(0);
+
+    const attemptsAfterThirdFlush = await getPendingAttempts();
+    expect(attemptsAfterThirdFlush).toHaveLength(0);
   });
 });
