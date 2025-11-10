@@ -136,32 +136,26 @@ export function ConjugateFormRenderer({
     setIsSubmitting(true);
     setIsAnswerRevealed(false);
 
+    const promptSummary = buildPromptSummary(copy, task);
+    const payload = {
+      taskId: task.taskId,
+      lexemeId: task.lexemeId,
+      taskType: task.taskType,
+      pos: task.pos,
+      renderer: task.renderer,
+      result: submissionContext.result,
+      submittedResponse: submitted,
+      expectedResponse: task.expectedSolution,
+      promptSummary,
+      timeSpentMs: submissionContext.timeSpentMs,
+      answeredAt: submissionContext.answeredAt,
+      cefrLevel: task.lexeme.metadata?.level as CEFRLevel | undefined,
+      legacyVerb: isLegacyTask ? toLegacyVerbPayload(task, submitted) : undefined,
+    } as const;
+
+    // Optimistic UI update: show result and notify parent immediately
+    setStatus(submissionContext.result);
     try {
-      const promptSummary = buildPromptSummary(copy, task);
-      const payload = {
-        taskId: task.taskId,
-        lexemeId: task.lexemeId,
-        taskType: task.taskType,
-        pos: task.pos,
-        renderer: task.renderer,
-        result: submissionContext.result,
-        submittedResponse: submitted,
-        expectedResponse: task.expectedSolution,
-        promptSummary,
-        timeSpentMs: submissionContext.timeSpentMs,
-        answeredAt: submissionContext.answeredAt,
-        cefrLevel: task.lexeme.metadata?.level as CEFRLevel | undefined,
-        legacyVerb: isLegacyTask ? toLegacyVerbPayload(task, submitted) : undefined,
-      } as const;
-
-      const { queued } = await submitPracticeAttempt(payload);
-
-      setStatus(submissionContext.result);
-
-      if (queued) {
-        createOfflineToast(copy, toast)();
-      }
-
       onResult({
         task,
         result: submissionContext.result,
@@ -172,13 +166,26 @@ export function ConjugateFormRenderer({
         answeredAt: submissionContext.answeredAt,
       });
     } catch (error) {
-      const fallbackMessage = copy.error.generic;
-      const message = error instanceof Error && error.message ? error.message : fallbackMessage;
-      createErrorToast(copy, toast, message);
-      setStatus('idle');
-    } finally {
-      setIsSubmitting(false);
+      // swallow - parent may throw in rare cases; ensure we still attempt submission
     }
+
+    // Fire-and-forget submission; UI already updated for perceived speed.
+    void submitPracticeAttempt(payload)
+      .then(({ queued }) => {
+        if (queued) {
+          createOfflineToast(copy, toast)();
+        }
+      })
+      .catch((error) => {
+        const fallbackMessage = copy.error.generic;
+        const message = error instanceof Error && error.message ? error.message : fallbackMessage;
+        createErrorToast(copy, toast, message);
+        // revert status to idle on hard failures so user can retry
+        setStatus('idle');
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {

@@ -25,6 +25,28 @@ export default defineConfig({
         globPatterns: ["**/*.{js,css,html,svg,png,webmanifest,json}"],
         runtimeCaching: [
           {
+            // Prefetch and stale-while-revalidate for the authenticated session endpoint
+            urlPattern: ({ url }) => url.pathname === "/api/me" || url.pathname.startsWith("/api/auth"),
+            handler: "StaleWhileRevalidate",
+            method: "GET",
+            options: {
+              cacheName: "auth-api",
+              expiration: { maxAgeSeconds: 60 * 5 }, // 5 minutes
+              cacheableResponse: { statuses: [200, 304] },
+            },
+          },
+          {
+            // Stale-while-revalidate for practice history and settings endpoints
+            urlPattern: ({ url }) => url.pathname.startsWith("/api/practice") || url.pathname.startsWith("/api/settings"),
+            handler: "StaleWhileRevalidate",
+            method: "GET",
+            options: {
+              cacheName: "practice-api",
+              expiration: { maxAgeSeconds: 60 * 2 }, // 2 minutes
+              cacheableResponse: { statuses: [200, 304] },
+            },
+          },
+          {
             urlPattern: ({ url }) => url.pathname.startsWith("/api/tasks"),
             handler: "NetworkFirst",
             method: "GET",

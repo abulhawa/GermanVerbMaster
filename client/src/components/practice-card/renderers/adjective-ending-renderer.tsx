@@ -123,31 +123,25 @@ export function AdjectiveEndingRenderer({
     setIsSubmitting(true);
     setIsAnswerRevealed(false);
 
+    const promptSummary = buildAdjectivePromptSummary(copy, task);
+    const payload = {
+      taskId: task.taskId,
+      lexemeId: task.lexemeId,
+      taskType: task.taskType,
+      pos: task.pos,
+      renderer: task.renderer,
+      result: submissionContext.result,
+      submittedResponse: submitted,
+      expectedResponse: task.expectedSolution,
+      promptSummary,
+      timeSpentMs: submissionContext.timeSpentMs,
+      answeredAt: submissionContext.answeredAt,
+      cefrLevel: task.lexeme.metadata?.level as CEFRLevel | undefined,
+    } as const;
+
+    // Optimistic UI update
+    setStatus(submissionContext.result);
     try {
-      const promptSummary = buildAdjectivePromptSummary(copy, task);
-      const payload = {
-        taskId: task.taskId,
-        lexemeId: task.lexemeId,
-        taskType: task.taskType,
-        pos: task.pos,
-        renderer: task.renderer,
-        result: submissionContext.result,
-        submittedResponse: submitted,
-        expectedResponse: task.expectedSolution,
-        promptSummary,
-        timeSpentMs: submissionContext.timeSpentMs,
-        answeredAt: submissionContext.answeredAt,
-        cefrLevel: task.lexeme.metadata?.level as CEFRLevel | undefined,
-      } as const;
-
-      const { queued } = await submitPracticeAttempt(payload);
-
-      setStatus(submissionContext.result);
-
-      if (queued) {
-        createOfflineToast(copy, toast)();
-      }
-
       onResult({
         task,
         result: submissionContext.result,
@@ -158,13 +152,24 @@ export function AdjectiveEndingRenderer({
         answeredAt: submissionContext.answeredAt,
       });
     } catch (error) {
-      const fallbackMessage = copy.error.generic;
-      const message = error instanceof Error && error.message ? error.message : fallbackMessage;
-      createErrorToast(copy, toast, message);
-      setStatus('idle');
-    } finally {
-      setIsSubmitting(false);
+      // ignore
     }
+
+    void submitPracticeAttempt(payload)
+      .then(({ queued }) => {
+        if (queued) {
+          createOfflineToast(copy, toast)();
+        }
+      })
+      .catch((error) => {
+        const fallbackMessage = copy.error.generic;
+        const message = error instanceof Error && error.message ? error.message : fallbackMessage;
+        createErrorToast(copy, toast, message);
+        setStatus('idle');
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
