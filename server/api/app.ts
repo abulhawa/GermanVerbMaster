@@ -52,6 +52,12 @@ export function createApiApp(options: CreateApiAppOptions = {}): Express {
     // Allow it explicitly so the dev client can boot without violating the CSP.
     scriptSrc.push("'unsafe-inline'", "'unsafe-eval'", "'wasm-unsafe-eval'");
   }
+  
+  const workerSrc: string[] = ["'self'"];
+  if (!isProduction) {
+    // Vite's dev client creates blob: workers for HMR. Allow blob: in dev only.
+    workerSrc.push('blob:');
+  }
 
   const helmetOptions: HelmetOptions = {
     contentSecurityPolicy: {
@@ -60,6 +66,8 @@ export function createApiApp(options: CreateApiAppOptions = {}): Express {
         defaultSrc: ["'self'"],
         baseUri: ["'self'"],
         connectSrc,
+        // Allow blob: worker sources in development so Vite HMR can create blob workers
+        workerSrc,
         fontSrc: ["'self'", "https:", "data:"],
         formAction: ["'self'"],
         frameAncestors: ["'self'"],
