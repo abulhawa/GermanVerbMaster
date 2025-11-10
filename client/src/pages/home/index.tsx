@@ -1,4 +1,4 @@
-import { useCallback, useId, useMemo, useState } from 'react';
+import { useCallback, useId, useMemo, useState, useEffect } from 'react';
 import { Link } from 'wouter';
 import { History, Loader2 } from 'lucide-react';
 
@@ -24,6 +24,8 @@ import {
 } from '@/lib/practice-overview';
 import { useTranslations } from '@/locales';
 import { usePracticeSettings } from '@/contexts/practice-settings-context';
+import { queryClient } from '@/lib/queryClient';
+import { fetchPracticeTasks } from '@/lib/tasks';
 import type { CEFRLevel, TaskType, LexemePos } from '@shared';
 
 import { PracticeSettingsPanel } from './components/practice-settings-panel';
@@ -116,6 +118,23 @@ export default function Home() {
     userId,
     resolveLevelForPos,
   });
+
+  useEffect(() => {
+    // Prefetch a small set of tasks for the current active types to warm the feed and reduce
+    // latency when the practice card requests tasks for the first time.
+    void queryClient.fetchQuery({
+      queryKey: ['tasks', 'home', activeTaskTypes],
+      queryFn: async () => {
+        try {
+          // limit small to avoid excessive network usage
+          return await fetchPracticeTasks({ taskTypes: activeTaskTypes, limit: 6 });
+        } catch (e) {
+          return [] as unknown as ReturnType<typeof fetchPracticeTasks>;
+        }
+      },
+      staleTime: 30_000,
+    }).catch(() => undefined);
+  }, [activeTaskTypes]);
 
   const sessionCompleted = session.completed.length;
   const milestoneTarget = useMemo(() => {

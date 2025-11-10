@@ -1,4 +1,6 @@
 import { type ComponentType } from "react";
+import { queryClient } from "@/lib/queryClient";
+import { fetchPracticeTasks } from "@/lib/tasks";
 import { Link, useLocation } from "wouter";
 
 import { Button } from "@/components/ui/button";
@@ -46,6 +48,20 @@ export function SidebarNavButton({
         "w-full rounded-2xl text-sm transition-all",
         collapsed ? "justify-center px-3 py-3" : "justify-start px-4 py-4",
       )}
+      onMouseEnter={href === '/' ? () => {
+        // Prefetch a small set of tasks when hovering the Practice nav to warm the feed
+        void queryClient.fetchQuery({
+          queryKey: ['tasks', 'hover', 'home'],
+          queryFn: async () => {
+            try {
+              return await fetchPracticeTasks({ limit: 5 });
+            } catch (e) {
+              return [] as unknown as ReturnType<typeof fetchPracticeTasks>;
+            }
+          },
+          staleTime: 60_000,
+        }).catch(() => undefined);
+      } : undefined}
     >
       <Icon
         className={cn(
