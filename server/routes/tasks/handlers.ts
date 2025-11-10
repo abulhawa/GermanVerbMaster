@@ -33,6 +33,7 @@ import {
   fetchTasksForTypes,
   findTaskIdByLexemeAndType,
 } from "./queries.js";
+import { logStructured } from "../../logger.js";
 
 export function createListTasksHandler(): RequestHandler {
   return async (req, res, next) => {
@@ -211,6 +212,7 @@ export function createListTasksHandler(): RequestHandler {
 
 export function createSubmitTaskHandler(): RequestHandler {
   return async (req, res) => {
+    const startTime = Date.now();
     const parsed = submissionSchema.safeParse(req.body ?? {});
     if (!parsed.success) {
       return sendError(res, 400, "Invalid submission", "INVALID_SUBMISSION");
@@ -321,8 +323,35 @@ export function createSubmitTaskHandler(): RequestHandler {
         deviceId: payload.deviceId,
         queueCap,
       });
+
+      // Log structured submission timing
+      logStructured({
+        event: "submission.processed",
+        level: "info",
+        source: "submission",
+        data: {
+          taskId: resolvedTaskId,
+          deviceId: payload.deviceId ?? null,
+          userId: sessionUserId ?? null,
+          durationMs: Date.now() - startTime,
+        },
+      });
     } catch (error) {
       console.error("Failed to process task submission", error);
+      logStructured({
+        event: "submission.failed",
+        level: "error",
+        source: "submission",
+        message: "Failed to process task submission",
+        error,
+        data: {
+          taskId: resolvedTaskId ?? null,
+          deviceId: payload.deviceId ?? null,
+          userId: sessionUserId ?? null,
+          durationMs: Date.now() - startTime,
+        },
+      });
+
       sendError(res, 500, "Failed to record submission", "SUBMISSION_FAILED");
     }
   };

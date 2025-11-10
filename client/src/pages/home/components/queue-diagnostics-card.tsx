@@ -1,5 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import type { QueueDiagnosticsSnapshot } from '../use-practice-session';
+import { getSubmissionMetrics, clearSubmissionMetrics } from '@/lib/metrics';
+import { useMemo, useState } from 'react';
 
 export interface QueueDiagnosticsMessages {
   title: string;
@@ -53,6 +55,10 @@ function resolveStatus({
 
 export function QueueDiagnosticsCard({ diagnostics, isFetching, hasBlockingError, fetchError, messages }: QueueDiagnosticsCardProps) {
   const status = resolveStatus({ diagnostics, isFetching, hasBlockingError, messages });
+  const [showMetrics, setShowMetrics] = useState(false);
+  const metrics = useMemo(() => getSubmissionMetrics(), [diagnostics.queueLength]);
+  const metricCount = metrics.length;
+  const averageMs = metricCount ? Math.round(metrics.reduce((s, m) => s + m.durationMs, 0) / metricCount) : null;
 
   return (
     <div className="rounded-3xl border border-border/60 bg-card/80 px-4 py-4 shadow-soft">
@@ -87,6 +93,37 @@ export function QueueDiagnosticsCard({ diagnostics, isFetching, hasBlockingError
           </dd>
         </div>
       </dl>
+      <div className="mt-3 border-t border-border/40 pt-3 text-xs">
+        <div className="flex items-center justify-between">
+          <p className="text-muted-foreground">Submission metrics</p>
+          <div className="flex items-center gap-2">
+            <p className="font-mono">{metricCount} samples</p>
+            <button
+              type="button"
+              className="text-primary text-[11px] font-semibold"
+              onClick={() => setShowMetrics((v) => !v)}
+            >
+              {showMetrics ? 'Hide' : 'Show'}
+            </button>
+          </div>
+        </div>
+        {showMetrics ? (
+          <div className="mt-2">
+            <p className="text-sm font-medium">Average response: {averageMs !== null ? `${averageMs} ms` : '—'}</p>
+            <div className="mt-2 flex gap-2">
+              <button
+                type="button"
+                className="rounded px-2 py-1 bg-muted/20 text-xs"
+                onClick={() => {
+                  clearSubmissionMetrics();
+                }}
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+        ) : null}
+      </div>
       {fetchError ? (
         <p className="mt-3 text-xs text-destructive" data-testid="queue-diagnostics-error">
           {fetchError}

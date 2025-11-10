@@ -2,6 +2,7 @@ import { z } from 'zod';
 import type { CEFRLevel, TaskAnswerHistoryItem, TaskAttemptPayload } from '@shared';
 import { practiceDb, practiceDbReady, type PendingAttempt } from './db';
 import { getDeviceId } from './device';
+import { recordSubmissionMetric } from './metrics';
 
 const TASK_ENDPOINT = '/api/submission';
 const PRACTICE_HISTORY_ENDPOINT = '/api/practice/history';
@@ -103,25 +104,38 @@ export async function submitPracticeAttempt(
 
   if (options.forceQueue || (typeof navigator !== 'undefined' && navigator.onLine === false)) {
     await queueAttempt(enrichedPayload);
+    try {
+      recordSubmissionMetric(0, true);
+    } catch {}
     return { queued: true };
   }
 
   try {
+    const start = Date.now();
     const response = await sendAttempt(enrichedPayload);
     if (!response.ok) {
       const shouldQueue = response.status >= 500 || response.status === 429;
       if (shouldQueue) {
         await queueAttempt(enrichedPayload);
+        try {
+          recordSubmissionMetric(Date.now() - start, true);
+        } catch {}
         return { queued: true };
       }
 
       const body = await response.json().catch(() => ({ error: 'Failed to record practice attempt' }));
       throw new Error(body.error ?? 'Failed to record practice attempt');
     }
+    try {
+      recordSubmissionMetric(Date.now() - start, false);
+    } catch {}
     return { queued: false };
   } catch (error) {
     console.warn('Unable to submit practice attempt, queueing for later', error);
     await queueAttempt(enrichedPayload);
+    try {
+      recordSubmissionMetric(0, true);
+    } catch {}
     return { queued: true };
   }
 }
