@@ -1,4 +1,6 @@
-const rawFlag = import.meta.env.VITE_ENABLE_ADMIN_FEATURES as string | undefined;
+const rawFlag = (import.meta.env.ENABLE_ADMIN_FEATURES ?? import.meta.env.VITE_ENABLE_ADMIN_FEATURES) as
+  | string
+  | undefined;
 const normalizedFlag = typeof rawFlag === "string" ? rawFlag.trim().toLowerCase() : undefined;
 
 const explicitTrue = normalizedFlag === "1" || normalizedFlag === "true" || normalizedFlag === "yes" || normalizedFlag === "on";
