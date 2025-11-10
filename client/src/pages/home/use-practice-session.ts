@@ -144,6 +144,7 @@ export function useHomePracticeSession({
   const [hasBlockingFetchError, setHasBlockingFetchError] = useState(false);
   const [shouldReloadTasks, setShouldReloadTasks] = useState(false);
   const pendingFetchRef = useRef(false);
+  const sessionRef = useRef(session);
   const sessionHydrationRef = useRef({ scopeKey: sessionScopeKey, userId });
   const previousScopeKeyRef = useRef(sessionScopeKey);
   const lastFailedQueueSignatureRef = useRef<string | null>(null);
@@ -191,13 +192,18 @@ export function useHomePracticeSession({
     }
   }, [pendingResult, session.activeTaskId]);
 
+  useEffect(() => {
+    sessionRef.current = session;
+  }, [session]);
+
   const fetchAndEnqueueTasks = useCallback(
     async ({ replace = false }: { replace?: boolean } = {}) => {
       if (pendingFetchRef.current || !activeTaskTypes.length) {
         return;
       }
 
-      const baseQueue = replace ? [] : session.queue;
+      const currentSession = sessionRef.current;
+      const baseQueue = replace ? [] : currentSession.queue;
       const baseSignature = createQueueSignature(baseQueue, activeTaskTypes);
 
       pendingFetchRef.current = true;
@@ -287,7 +293,7 @@ export function useHomePracticeSession({
         setIsFetchingTasks(false);
       }
     },
-    [activeTaskTypes, resolveLevelForPos, session.queue],
+    [activeTaskTypes, resolveLevelForPos],
   );
 
   useEffect(() => {

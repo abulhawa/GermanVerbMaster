@@ -24,6 +24,45 @@ vi.mock('@/components/ui/avatar', () => ({
   AvatarFallback: ({ children }: { children: ReactNode }) => <div>{children}</div>,
 }));
 
+vi.mock('@/auth/session', () => ({
+  useAuthSession: () => ({
+    data: null,
+    status: 'success',
+    isLoading: false,
+    isFetching: false,
+  }),
+  useSignInMutation: () => ({
+    mutate: vi.fn(),
+    mutateAsync: vi.fn(),
+    reset: vi.fn(),
+    isPending: false,
+  }),
+  useSignUpMutation: () => ({
+    mutate: vi.fn(),
+    mutateAsync: vi.fn(),
+    reset: vi.fn(),
+    isPending: false,
+  }),
+  useSignOutMutation: () => ({
+    mutate: vi.fn(),
+    mutateAsync: vi.fn(),
+    reset: vi.fn(),
+    isPending: false,
+  }),
+  useResendVerificationEmailMutation: () => ({
+    mutate: vi.fn(),
+    mutateAsync: vi.fn(),
+    reset: vi.fn(),
+    isPending: false,
+  }),
+  useRequestPasswordResetMutation: () => ({
+    mutate: vi.fn(),
+    mutateAsync: vi.fn(),
+    reset: vi.fn(),
+    isPending: false,
+  }),
+}));
+
 vi.mock('@/lib/answer-history', async () => {
   const actual = await vi.importActual<typeof import('@/lib/answer-history')>('@/lib/answer-history');
   return {
@@ -151,6 +190,7 @@ function prepareMocks() {
   stubPointerEvents();
   stubNavigatorClipboard();
   stubSpeechSynthesis();
+
 }
 
 export function setupHomeNavigationTest() {
