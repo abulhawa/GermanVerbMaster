@@ -67,8 +67,9 @@ export function createApiApp(options: CreateApiAppOptions = {}): Express {
         objectSrc: ["'none'"],
         scriptSrc,
         // React components from Radix UI rely on inline styles for dynamic rendering.
-        // Preserve Helmet's default allowance so CSP does not break those components.
-        styleSrc: ["'self'", "'unsafe-inline'"],
+        // Preserve Helmet's default allowance so CSP does not break those components,
+        // and explicitly allow Google Fonts stylesheets consumed by the client UI.
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       },
     },
     crossOriginEmbedderPolicy: false,
