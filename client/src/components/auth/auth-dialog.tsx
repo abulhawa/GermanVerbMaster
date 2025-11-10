@@ -47,19 +47,24 @@ export function AuthDialog({ open, onOpenChange, defaultMode = "sign-in", sessio
   } = useAuthMutations({ mode, session });
 
   useEffect(() => {
+    // Reset state when dialog opens
     if (open) {
       setMode(defaultMode);
+      setErrorMessage(null);
+      setSuccessMessage(null);
     }
   }, [defaultMode, open]);
 
+  // Separate effect for cleanup to avoid race conditions
   useEffect(() => {
-    if (!open) {
-      resetForm();
-      setErrorMessage(null);
-      setSuccessMessage(null);
-      resetAll();
-    }
-  }, [open, resetAll, resetForm]);
+    return () => {
+      if (!open) {
+        resetForm();
+        setErrorMessage(null);
+        setSuccessMessage(null);
+      }
+    };
+  }, [open, resetForm]);
 
   const handleError = (error: unknown, fallback: string) => {
     if (error instanceof Error && error.message.trim().length > 0) {

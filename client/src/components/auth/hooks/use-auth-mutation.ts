@@ -24,24 +24,25 @@ export function useAuthMutations({ mode, session }: UseAuthMutationsConfig) {
   const requestPasswordResetMutation = useRequestPasswordResetMutation();
 
   const resetAll = useCallback(() => {
-    signInMutation.reset();
-    signUpMutation.reset();
-    signOutMutation.reset();
-    resendVerificationMutation.reset();
-    requestPasswordResetMutation.reset();
-  }, [requestPasswordResetMutation, resendVerificationMutation, signInMutation, signOutMutation, signUpMutation]);
-
-  const { isPending: isSignInPending } = signInMutation;
-  const { isPending: isSignUpPending } = signUpMutation;
-  const { isPending: isSignOutPending } = signOutMutation;
+    if (!signInMutation.isPending) signInMutation.reset();
+    if (!signUpMutation.isPending) signUpMutation.reset();
+    if (!signOutMutation.isPending) signOutMutation.reset();
+    if (!resendVerificationMutation.isPending) resendVerificationMutation.reset();
+    if (!requestPasswordResetMutation.isPending) requestPasswordResetMutation.reset();
+  }, [
+    signInMutation,
+    signUpMutation,
+    signOutMutation,
+    resendVerificationMutation,
+    requestPasswordResetMutation
+  ]);
 
   const isSubmitting = useMemo(() => {
-    if (session) {
-      return isSignOutPending;
+    if (!session) {
+      return mode === "sign-in" ? signInMutation.isPending : signUpMutation.isPending;
     }
-
-    return mode === "sign-in" ? isSignInPending : isSignUpPending;
-  }, [isSignInPending, isSignOutPending, isSignUpPending, mode, session]);
+    return signOutMutation.isPending;
+  }, [mode, session, signInMutation.isPending, signOutMutation.isPending, signUpMutation.isPending]);
 
   return {
     signInMutation,

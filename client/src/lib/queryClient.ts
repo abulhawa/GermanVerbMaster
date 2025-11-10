@@ -28,3 +28,9 @@ export const queryClient = new QueryClient({
     }
   },
 });
+
+if (import.meta.env.DEV) {
+  queryClient.getQueryCache().subscribe((event) => {
+    console.log("[react-query cache] event:", event.type, event.query?.queryKey);
+  });
+}

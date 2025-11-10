@@ -174,12 +174,25 @@ async function requestPasswordResetEmail(email: string): Promise<void> {
 export function useAuthSession() {
   return useQuery<AuthSessionState, Error>({
     queryKey: SESSION_QUERY_KEY,
-    queryFn: fetchSession,
+    queryFn: async () => {
+      try {
+        return await fetchSession();
+      } catch (error) {
+        if (error instanceof Response && error.status === 401) {
+          return null;
+        }
+        throw error;
+      }
+    },
     staleTime: 60_000,
     gcTime: 5 * 60_000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     retry: (failureCount, error) => {
-      if (error instanceof Error && error.name === "AbortError") {
-        return false;
+      if (error instanceof Error) {
+        if (error.name === "AbortError") return false;
+        if ((error as any).status === 401) return false;
       }
       return failureCount < 2;
     },
@@ -191,8 +204,15 @@ export function useSignInMutation() {
   return useMutation<void, Error, EmailCredentials>({
     mutationFn: signInWithEmail,
     onSuccess: async () => {
+      // After successful sign in, set session to null first to prevent stale data
+      queryClient.setQueryData(SESSION_QUERY_KEY, null);
       await queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY });
     },
+    onError: () => {
+      // On error, ensure session is null to prevent loops
+      queryClient.setQueryData(SESSION_QUERY_KEY, null);
+    },
+    retry: false
   });
 }
 

@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Loader2, LogOut, Moon, Settings2, Sun, User, Languages } from "lucide-react";
 import { useTheme } from "next-themes";
+import { AuthErrorBoundary } from "./auth-error-boundary";
 
 import {
   DropdownMenu,
@@ -29,7 +30,7 @@ interface UserMenuControlProps {
 }
 
 export function UserMenuControl({ className }: UserMenuControlProps) {
-  const { data: session, isLoading, isFetching } = useAuthSession();
+  const { data: session, isLoading, isFetching, isError } = useAuthSession();
   const signOutMutation = useSignOutMutation();
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const { resolvedTheme, setTheme } = useTheme();
@@ -40,7 +41,14 @@ export function UserMenuControl({ className }: UserMenuControlProps) {
   const authCopy = translations.auth;
 
   const isSessionLoading = isLoading || isFetching;
-  const isSignedIn = Boolean(session);
+  const isSignedIn = Boolean(session) && !isError;
+
+  // Close dialog if session changes
+  useEffect(() => {
+    if (session && authDialogOpen) {
+      setAuthDialogOpen(false);
+    }
+  }, [session, authDialogOpen]);
 
   const displayName = session?.user?.name?.trim() || session?.user?.email?.trim() || authCopy.dialog.unknownUser;
 
@@ -177,7 +185,7 @@ export function UserMenuControl({ className }: UserMenuControlProps) {
   );
 
   return (
-    <>
+    <AuthErrorBoundary>
       <div className={cn("flex w-full items-center justify-end", className)}>{menuButton}</div>
       <AuthDialog
         open={authDialogOpen}
@@ -186,6 +194,6 @@ export function UserMenuControl({ className }: UserMenuControlProps) {
         session={session ?? null}
         isSessionLoading={isSessionLoading}
       />
-    </>
+    </AuthErrorBoundary>
   );
 }
