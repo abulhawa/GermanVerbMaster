@@ -1,5 +1,6 @@
 import { createApiApp } from "./api/app.js";
 import { createServer } from "http";
+import type { Socket } from "net";
 import { serveStatic } from "./serve-static.js";
 import { log, logError } from "./logger.js";
 import { getPool } from "../db/client.js";
@@ -7,10 +8,25 @@ import { getPool } from "../db/client.js";
 const defaultNodeEnv = process.env.VERCEL ? "production" : "development";
 process.env.NODE_ENV = process.env.NODE_ENV ?? defaultNodeEnv;
 
-const SHUTDOWN_TIMEOUT_MS = 10_000;
-
 let serverInstance: ReturnType<typeof createServer> | undefined;
 let isShuttingDown = false;
+const trackedSockets = new Set<Socket>();
+
+function trackConnections(server: ReturnType<typeof createServer>): void {
+  server.on("connection", (socket) => {
+    trackedSockets.add(socket);
+    socket.once("close", () => {
+      trackedSockets.delete(socket);
+    });
+  });
+}
+
+function destroyOpenSockets(): void {
+  for (const socket of trackedSockets) {
+    socket.destroy();
+    trackedSockets.delete(socket);
+  }
+}
 
 async function closeServer(): Promise<void> {
   const instance = serverInstance;
@@ -19,6 +35,7 @@ async function closeServer(): Promise<void> {
     return;
   }
 
+  destroyOpenSockets();
   await new Promise<void>((resolve, reject) => {
     instance.close((error) => {
       if (error) {
@@ -31,6 +48,8 @@ async function closeServer(): Promise<void> {
   });
 
   serverInstance = undefined;
+
+  destroyOpenSockets();
 }
 
 async function shutdown(signal: NodeJS.Signals): Promise<void> {
@@ -42,52 +61,32 @@ async function shutdown(signal: NodeJS.Signals): Promise<void> {
 
   log(`received ${signal}, starting graceful shutdown`);
 
-  const timeoutError = new Error("Graceful shutdown timed out");
-  const shutdownSequence = (async () => {
-    let capturedError: unknown;
-
-    try {
-      await closeServer();
-    } catch (error) {
-      capturedError = error;
-    }
-
-    try {
-      await getPool().end();
-    } catch (error) {
-      if (capturedError) {
-        logError(error, "server-shutdown");
-      } else {
-        capturedError = error;
-      }
-    }
-
-    if (capturedError) {
-      throw capturedError;
-    }
-  })();
-
-  let timeoutId: NodeJS.Timeout | undefined;
-  const timeoutPromise = new Promise<never>((_, reject) => {
-    timeoutId = setTimeout(() => {
-      reject(timeoutError);
-    }, SHUTDOWN_TIMEOUT_MS);
-  });
+  let shutdownError: unknown;
 
   try {
-    await Promise.race([shutdownSequence, timeoutPromise]);
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-    log("graceful shutdown completed");
-    process.exit(0);
+    await closeServer();
   } catch (error) {
-    logError(error, "server-shutdown");
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-    process.exit(1);
+    shutdownError = error ?? shutdownError;
   }
+
+  try {
+    await getPool().end();
+  } catch (error) {
+    if (shutdownError) {
+      logError(error, "server-shutdown");
+    } else {
+      shutdownError = error;
+    }
+  }
+
+  if (shutdownError) {
+    logError(shutdownError as Error, "server-shutdown");
+    void process.exit(1);
+    return;
+  }
+
+  log("graceful shutdown completed");
+  void process.exit(0);
 }
 
 const app = createApiApp();
@@ -111,6 +110,7 @@ registerShutdownHandler("SIGINT");
     // doesn't interfere with the other routes
     const server = createServer(app);
     serverInstance = server;
+    trackConnections(server);
 
     if (nodeEnv === "development") {
       const { setupVite } = await import("./vite.js");
