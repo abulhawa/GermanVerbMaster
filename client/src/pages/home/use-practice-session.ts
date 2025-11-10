@@ -148,6 +148,7 @@ export function useHomePracticeSession({
   const sessionHydrationRef = useRef({ scopeKey: sessionScopeKey, userId });
   const previousScopeKeyRef = useRef(sessionScopeKey);
   const lastFailedQueueSignatureRef = useRef<string | null>(null);
+  const lastAutoReloadSignatureRef = useRef<string | null>(null);
 
   const activeTask = session.activeTaskId ? tasksById[session.activeTaskId] : undefined;
   const queueSignature = useMemo(
@@ -332,6 +333,21 @@ export function useHomePracticeSession({
     session.queue.length,
     tasksById,
   ]);
+
+  useEffect(() => {
+    if (!session.leitner?.serverExhausted) {
+      lastAutoReloadSignatureRef.current = null;
+      return;
+    }
+
+    const signature = lastFailedQueueSignatureRef.current;
+    if (!signature || lastAutoReloadSignatureRef.current === signature) {
+      return;
+    }
+
+    lastAutoReloadSignatureRef.current = signature;
+    void reloadQueue();
+  }, [reloadQueue, session.leitner?.serverExhausted]);
 
   useEffect(() => {
     if (shouldReloadTasks) {
