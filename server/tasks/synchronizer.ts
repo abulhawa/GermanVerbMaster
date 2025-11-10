@@ -33,6 +33,7 @@ import {
   setActiveSyncPromise,
   type TaskSpecSyncMetadata,
 } from './sync/state.js';
+import { clearQueryCache } from '../cache/query-cache.js';
 import { chunkArray, processChunksWithRetry } from './sync/utils.js';
 
 const LOG_SOURCE = 'task-sync';
@@ -114,6 +115,14 @@ export async function ensureTaskSpecsSynced(
           checkpointVersion: checkpoint?.versionHash ?? null,
         },
       });
+
+      // Clear short-lived query cache so subsequent task list queries return fresh
+      // results after the task-spec synchronisation has updated the DB.
+      try {
+        clearQueryCache();
+      } catch (err) {
+        // ignore cache clear errors
+      }
 
       return {
         latestTouchedAt: plan.latestTouchedAt,

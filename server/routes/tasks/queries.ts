@@ -1,4 +1,5 @@
 import { and, asc, desc, eq, gte, inArray, or, sql, type SQL } from "drizzle-orm";
+import { logStructured } from "../../logger.js";
 import {
   db,
   getPool,
@@ -10,6 +11,7 @@ import {
 import type { LexemePos, TaskType } from "@shared";
 import { UNSPECIFIED_CEFR_LEVEL, normaliseString } from "../shared.js";
 import { combineFilters } from "./schemas.js";
+import { getQueryCache, setQueryCache } from "../../cache/query-cache.js";
 
 export const RECENT_ATTEMPT_WINDOW_MS = 1000 * 60 * 60 * 6;
 
@@ -132,6 +134,8 @@ export type TaskListQueryOptions = {
   deviceId: string | null | undefined;
   recencyThreshold: Date;
 };
+
+// Query cache module is provided by server/cache/query-cache.ts
 
 function buildOrderedTaskQuery(
   options: TaskListQueryOptions & { typeOverride?: TaskType[] },
@@ -276,8 +280,19 @@ function buildOrderedTaskQuery(
 export async function fetchTasksForTypes(
   options: TaskListQueryOptions & { limit: number },
 ): Promise<TaskRow[]> {
+  const cacheTtlMs = Number(process.env.TASK_QUERY_CACHE_TTL_MS ?? 1000);
+  const cacheKey = `${(options.taskTypes || []).join(',')}|${options.deviceId ?? ''}|${options.sessionUserId ?? ''}|${options.requestedLevels.join(',')}|${options.normalisedPos ?? ''}|${options.limit}`;
+  try {
+    const cached = getQueryCache(cacheKey) as TaskRow[] | undefined;
+    if (cached) {
+      return cached.map((r) => ({ ...r }));
+    }
+  } catch (err) {
+    // ignore cache errors
+  }
   const { taskTypes, limit } = options;
   const rows: TaskRow[] = [];
+  const queryStart = Date.now();
 
   if (taskTypes.length > 1) {
     for (const typeKey of taskTypes) {
@@ -290,6 +305,19 @@ export async function fetchTasksForTypes(
     const perTypeRows = await executeSelectRaw<Record<string, unknown>>(query);
     rows.push(...perTypeRows.map((row) => mapTaskRow(row as RawTaskRow)));
   }
+
+  const durationMs = Date.now() - queryStart;
+  try {
+    logStructured({
+      event: 'tasks.query',
+      source: 'tasks',
+      data: { taskTypes: taskTypes.join(','), limit, durationMs },
+    });
+  } catch {}
+
+  try {
+    setQueryCache(cacheKey, rows.map((r) => ({ ...r })), cacheTtlMs);
+  } catch {}
 
   return rows;
 }
