@@ -57,6 +57,7 @@ export default defineConfig({
       "@verbs-data": path.resolve(__dirname, "data", "generated"),
     },
   },
+  envPrefix: ["VITE_", "ENABLE_"],
   root: path.resolve(__dirname, "client"),
   build: {
     outDir: path.resolve(__dirname, "dist/public"),
