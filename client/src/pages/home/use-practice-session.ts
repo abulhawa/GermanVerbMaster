@@ -65,6 +65,15 @@ export async function fetchTasksForActiveTypes({
   }
 }
 
+function shuffleArray<T>(source: T[]): T[] {
+  const items = [...source];
+  for (let index = items.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [items[index], items[swapIndex]] = [items[swapIndex], items[index]];
+  }
+  return items;
+}
+
 function mergeTaskLists(lists: PracticeTask[][], limit: number): PracticeTask[] {
   const queues = lists.map((list) => [...list]);
   const result: PracticeTask[] = [];
@@ -218,7 +227,7 @@ export function useHomePracticeSession({
           resolveLevelForPos,
         });
 
-        const tasks = mergeTaskLists(fetchedTasks, FETCH_LIMIT);
+        const tasks = shuffleArray(mergeTaskLists(fetchedTasks, FETCH_LIMIT));
 
         if (!tasks.length) {
           if (taskFetchErrors.length) {
