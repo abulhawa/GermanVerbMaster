@@ -149,6 +149,7 @@ export function useHomePracticeSession({
   const previousScopeKeyRef = useRef(sessionScopeKey);
   const lastFailedQueueSignatureRef = useRef<string | null>(null);
   const lastAutoReloadSignatureRef = useRef<string | null>(null);
+  const lastAllInteractedQueueSignatureRef = useRef<string | null>(null);
 
   const activeTask = session.activeTaskId ? tasksById[session.activeTaskId] : undefined;
   const queueSignature = useMemo(
@@ -196,6 +197,16 @@ export function useHomePracticeSession({
   useEffect(() => {
     sessionRef.current = session;
   }, [session]);
+
+  useEffect(() => {
+    if (
+      !session.leitner ||
+      session.leitner.totalUnique === 0 ||
+      session.leitner.seenUnique < session.leitner.totalUnique
+    ) {
+      lastAllInteractedQueueSignatureRef.current = null;
+    }
+  }, [session.leitner?.seenUnique, session.leitner?.totalUnique, session.leitner]);
 
   const fetchAndEnqueueTasks = useCallback(
     async ({ replace = false }: { replace?: boolean } = {}) => {
@@ -316,6 +327,18 @@ export function useHomePracticeSession({
       return;
     }
 
+    if (
+      session.leitner &&
+      session.leitner.totalUnique > 0 &&
+      session.leitner.seenUnique >= session.leitner.totalUnique &&
+      !isFetchingTasks &&
+      lastAllInteractedQueueSignatureRef.current !== queueSignature
+    ) {
+      lastAllInteractedQueueSignatureRef.current = queueSignature;
+      void fetchAndEnqueueTasks({ replace: true });
+      return;
+    }
+
     if (session.leitner?.serverExhausted && session.queue.length > 0) {
       return;
     }
@@ -330,24 +353,11 @@ export function useHomePracticeSession({
     queueSignature,
     session.activeTaskId,
     session.leitner?.serverExhausted,
+    session.leitner?.seenUnique,
+    session.leitner?.totalUnique,
     session.queue.length,
     tasksById,
   ]);
-
-  useEffect(() => {
-    if (!session.leitner?.serverExhausted) {
-      lastAutoReloadSignatureRef.current = null;
-      return;
-    }
-
-    const signature = lastFailedQueueSignatureRef.current;
-    if (!signature || lastAutoReloadSignatureRef.current === signature) {
-      return;
-    }
-
-    lastAutoReloadSignatureRef.current = signature;
-    void reloadQueue();
-  }, [reloadQueue, session.leitner?.serverExhausted]);
 
   useEffect(() => {
     if (shouldReloadTasks) {
@@ -414,6 +424,21 @@ export function useHomePracticeSession({
     setFetchError(null);
     await fetchAndEnqueueTasks({ replace: true });
   }, [fetchAndEnqueueTasks]);
+
+  useEffect(() => {
+    if (!session.leitner?.serverExhausted) {
+      lastAutoReloadSignatureRef.current = null;
+      return;
+    }
+
+    const signature = lastFailedQueueSignatureRef.current;
+    if (!signature || lastAutoReloadSignatureRef.current === signature) {
+      return;
+    }
+
+    lastAutoReloadSignatureRef.current = signature;
+    void reloadQueue();
+  }, [reloadQueue, session.leitner?.serverExhausted]);
 
   const resetFetchError = useCallback(() => {
     lastFailedQueueSignatureRef.current = null;
