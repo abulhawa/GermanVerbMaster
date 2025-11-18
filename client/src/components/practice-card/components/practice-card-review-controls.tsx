@@ -9,7 +9,6 @@ export interface PracticeCardReviewControlsProps {
   canRevealAnswer: boolean;
   isAnswerRevealed: boolean;
   onToggleAnswer: () => void;
-  onRetry?: () => void;
   onContinue?: () => void;
 }
 
@@ -19,7 +18,6 @@ export function PracticeCardReviewControls({
   canRevealAnswer,
   isAnswerRevealed,
   onToggleAnswer,
-  onRetry,
   onContinue,
 }: PracticeCardReviewControlsProps) {
   if (status === 'idle') {
@@ -28,7 +26,6 @@ export function PracticeCardReviewControls({
 
   const revealLabel = isAnswerRevealed ? copy.actions.hideAnswer : copy.actions.revealAnswer;
   const revealHint = formatShortcutKey('ArrowDown');
-  const retryHint = formatShortcutKey('ArrowLeft');
   const nextHint = formatShortcutKey('ArrowRight');
 
   return (
@@ -43,18 +40,6 @@ export function PracticeCardReviewControls({
           aria-keyshortcuts="ArrowDown"
         >
           <ActionButtonContent label={revealLabel} hint={revealHint} />
-        </Button>
-      ) : null}
-      {status === 'incorrect' && onRetry ? (
-        <Button
-          type="button"
-          variant="secondary"
-          size="lg"
-          className="w-full max-w-[min(60vw,20rem)]"
-          onClick={onRetry}
-          aria-keyshortcuts="ArrowLeft"
-        >
-          <ActionButtonContent label={copy.actions.retry} hint={retryHint} />
         </Button>
       ) : null}
       {onContinue ? (
