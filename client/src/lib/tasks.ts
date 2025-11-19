@@ -41,6 +41,7 @@ export interface TaskFetchOptions {
   deviceId?: string;
   level?: CEFRLevel | CEFRLevel[];
   excludeTaskIds?: string[];
+  shuffleSeed?: string;
 }
 
 const rawTaskSchema = z.object({
@@ -126,6 +127,9 @@ function buildTasksQuery(options: TaskFetchOptions): string {
         params.append('excludeTaskIds', normalized);
       }
     }
+  }
+  if (options.shuffleSeed) {
+    params.set('shuffleSeed', options.shuffleSeed);
   }
   const deviceId = options.deviceId?.trim() || getDeviceId();
   params.set('deviceId', deviceId);
