@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import { Loader2, LogOut, Moon, Settings2, Sun, User, Languages } from "lucide-react";
+import { Loader2, LogOut, Moon, Settings2, Shuffle, Sun, User, Languages } from "lucide-react";
 import { useTheme } from "next-themes";
 import { AuthErrorBoundary } from "./auth-error-boundary";
 
@@ -24,6 +24,7 @@ import { AuthDialog } from "@/components/auth/auth-dialog";
 import { useTranslations, useLocale, type Locale } from "@/locales";
 import { type ThemeSetting } from "@/lib/theme";
 import { dispatchPracticeSettingsOpenEvent } from "@/lib/practice-settings-events";
+import { dispatchPracticeQueueRefreshEvent } from "@/lib/practice-queue-events";
 
 interface UserMenuControlProps {
   className?: string;
@@ -89,6 +90,10 @@ export function UserMenuControl({ className }: UserMenuControlProps) {
     signOutMutation.mutate();
   };
 
+  const handlePracticeQueueRefresh = () => {
+    dispatchPracticeQueueRefreshEvent();
+  };
+
   const menuButton = isSignedIn ? (
     <DropdownMenu debugId="user-menu-control">
       <DropdownMenuTrigger asChild>
@@ -135,6 +140,10 @@ export function UserMenuControl({ className }: UserMenuControlProps) {
         <DropdownMenuItem onSelect={handleSettingsSelect}>
           <Settings2 className="h-4 w-4" aria-hidden />
           {menuCopy.settingsLabel}
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={handlePracticeQueueRefresh}>
+          <Shuffle className="h-4 w-4" aria-hidden />
+          {menuCopy.refreshLabel}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={handleThemeToggle}>
