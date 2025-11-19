@@ -27,11 +27,27 @@ interface FetchTasksForActiveTypesOptions {
   resolveLevelForPos: (pos: LexemePos) => CEFRLevel;
   fetcher?: FetchPracticeTasksFn;
   excludeTaskIds?: string[];
+  shuffleSeed?: string;
 }
 
 interface FetchTasksForActiveTypesResult {
   tasksByType: PracticeTask[][];
   errors: Array<{ taskType: TaskType; error: unknown }>;
+}
+
+export type QueueReloadMode = 'default' | 'shuffle';
+
+export interface QueueReloadOptions {
+  mode?: QueueReloadMode;
+}
+
+function createShuffleSeed(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  const timePart = Date.now().toString(36);
+  const randomPart = Math.random().toString(36).slice(2, 10);
+  return `${timePart}-${randomPart}`;
 }
 
 export async function fetchTasksForActiveTypes({
@@ -40,7 +56,9 @@ export async function fetchTasksForActiveTypes({
   resolveLevelForPos,
   fetcher = fetchPracticeTasksByType,
   excludeTaskIds,
+  shuffleSeed,
 }: FetchTasksForActiveTypesOptions): Promise<FetchTasksForActiveTypesResult> {
+  const resolvedShuffleSeed = shuffleSeed ?? createShuffleSeed();
   const taskLevels = taskTypes.map((taskType) => {
     const entry = clientTaskRegistry[taskType];
     const pos = entry?.supportedPos[0];
@@ -53,6 +71,7 @@ export async function fetchTasksForActiveTypes({
       limit: perTypeLimit,
       level: taskLevels,
       excludeTaskIds,
+      shuffleSeed: resolvedShuffleSeed,
     });
 
     return {
@@ -135,8 +154,8 @@ export interface UseHomePracticeSessionResult {
   registerPendingResult: (result: PracticeCardResult | null) => void;
   continueToNext: () => void;
   skipActiveTask: () => void;
-  requestQueueReload: () => void;
-  reloadQueue: () => Promise<void>;
+  requestQueueReload: (options?: QueueReloadOptions) => void;
+  reloadQueue: (options?: QueueReloadOptions) => Promise<void>;
   resetFetchError: () => void;
 }
 
@@ -154,7 +173,18 @@ export function useHomePracticeSession({
   const [isFetchingTasks, setIsFetchingTasks] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [hasBlockingFetchError, setHasBlockingFetchError] = useState(false);
-  const [shouldReloadTasks, setShouldReloadTasks] = useState(false);
+  const reloadRequestNonceRef = useRef(0);
+  const [pendingReloadRequest, setPendingReloadRequest] = useState<
+    { mode: QueueReloadMode; nonce: number } | null
+  >(null);
+  const enqueueReloadRequest = useCallback((mode: QueueReloadMode = 'default') => {
+    reloadRequestNonceRef.current += 1;
+    setPendingReloadRequest({ mode, nonce: reloadRequestNonceRef.current });
+  }, []);
+  const requestQueueReload = useCallback(
+    (options?: QueueReloadOptions) => enqueueReloadRequest(options?.mode ?? 'default'),
+    [enqueueReloadRequest],
+  );
   const pendingFetchRef = useRef(false);
   const sessionRef = useRef(session);
   const sessionHydrationRef = useRef({ scopeKey: sessionScopeKey, userId });
@@ -172,9 +202,9 @@ export function useHomePracticeSession({
   useEffect(() => {
     if (previousScopeKeyRef.current !== sessionScopeKey) {
       previousScopeKeyRef.current = sessionScopeKey;
-      setShouldReloadTasks(true);
+      requestQueueReload();
     }
-  }, [sessionScopeKey]);
+  }, [requestQueueReload, sessionScopeKey]);
 
   useEffect(() => {
     if (userId === undefined) {
@@ -189,8 +219,8 @@ export function useHomePracticeSession({
     sessionHydrationRef.current = { scopeKey: sessionScopeKey, userId };
     setSession(loadPracticeSession({ scopeKey: sessionScopeKey, userId }));
     setTasksById({});
-    setShouldReloadTasks(true);
-  }, [sessionScopeKey, userId]);
+    requestQueueReload();
+  }, [requestQueueReload, sessionScopeKey, userId]);
 
   useEffect(() => {
     if (userId === undefined) {
@@ -221,17 +251,23 @@ export function useHomePracticeSession({
   }, [session.leitner?.seenUnique, session.leitner?.totalUnique, session.leitner]);
 
   const fetchAndEnqueueTasks = useCallback(
-    async ({ replace = false }: { replace?: boolean } = {}) => {
+    async (
+      { replace = false, mode = 'default' }: { replace?: boolean; mode?: QueueReloadMode } = {},
+    ) => {
       if (pendingFetchRef.current || !activeTaskTypes.length) {
         return;
       }
 
       const currentSession = sessionRef.current;
       const baseQueue = replace ? [] : currentSession.queue;
-      const exclusionSources = replace
-        ? [...currentSession.queue, ...currentSession.recent]
-        : currentSession.queue;
+      const shouldResetExclusions = replace && mode === 'shuffle';
+      const exclusionSources = shouldResetExclusions
+        ? []
+        : replace
+          ? [...currentSession.queue, ...currentSession.recent]
+          : currentSession.queue;
       const excludeTaskIds = Array.from(new Set(exclusionSources)).slice(0, 80);
+      const normalizedExcludeTaskIds = excludeTaskIds.length ? excludeTaskIds : undefined;
       const baseSignature = createQueueSignature(baseQueue, activeTaskTypes);
 
       pendingFetchRef.current = true;
@@ -243,7 +279,8 @@ export function useHomePracticeSession({
           taskTypes: activeTaskTypes,
           perTypeLimit,
           resolveLevelForPos,
-          excludeTaskIds,
+          ...(normalizedExcludeTaskIds ? { excludeTaskIds: normalizedExcludeTaskIds } : {}),
+          ...(mode === 'shuffle' ? { shuffleSeed: createShuffleSeed() } : {}),
         });
 
         const tasks = shuffleArray(mergeTaskLists(fetchedTasks, FETCH_LIMIT));
@@ -377,14 +414,16 @@ export function useHomePracticeSession({
   ]);
 
   useEffect(() => {
-    if (shouldReloadTasks) {
-      setShouldReloadTasks(false);
-      setTasksById({});
-      setSession((prev) => clearSessionQueue(prev));
-      lastFailedQueueSignatureRef.current = null;
-      void fetchAndEnqueueTasks({ replace: true });
+    if (!pendingReloadRequest) {
+      return;
     }
-  }, [shouldReloadTasks, fetchAndEnqueueTasks]);
+    const { mode } = pendingReloadRequest;
+    setPendingReloadRequest(null);
+    setTasksById({});
+    setSession((prev) => clearSessionQueue(prev));
+    lastFailedQueueSignatureRef.current = null;
+    void fetchAndEnqueueTasks({ replace: true, mode });
+  }, [pendingReloadRequest, fetchAndEnqueueTasks]);
 
   const continueToNext = useCallback(() => {
     setPendingResult((current) => {
@@ -435,11 +474,11 @@ export function useHomePracticeSession({
     });
   }, [activeTask]);
 
-  const reloadQueue = useCallback(async () => {
+  const reloadQueue = useCallback(async (options?: QueueReloadOptions) => {
     lastFailedQueueSignatureRef.current = null;
     setHasBlockingFetchError(false);
     setFetchError(null);
-    await fetchAndEnqueueTasks({ replace: true });
+    await fetchAndEnqueueTasks({ replace: true, mode: options?.mode ?? 'default' });
   }, [fetchAndEnqueueTasks]);
 
   useEffect(() => {
@@ -491,7 +530,7 @@ export function useHomePracticeSession({
     registerPendingResult,
     continueToNext,
     skipActiveTask,
-    requestQueueReload: () => setShouldReloadTasks(true),
+    requestQueueReload,
     reloadQueue,
     resetFetchError,
   };

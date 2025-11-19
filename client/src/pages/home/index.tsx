@@ -27,12 +27,15 @@ import { usePracticeSettings } from '@/contexts/practice-settings-context';
 import { queryClient } from '@/lib/queryClient';
 import { fetchPracticeTasks } from '@/lib/tasks';
 import type { CEFRLevel, TaskType, LexemePos } from '@shared';
-import { PRACTICE_QUEUE_REFRESH_EVENT } from '@/lib/practice-queue-events';
+import {
+  PRACTICE_QUEUE_REFRESH_EVENT,
+  type PracticeQueueRefreshEventDetail,
+} from '@/lib/practice-queue-events';
 
 import { PracticeSettingsPanel } from './components/practice-settings-panel';
 import { PracticeHistoryCard } from './components/practice-history-card';
 import { QueueDiagnosticsCard } from './components/queue-diagnostics-card';
-import { useHomePracticeSession } from './use-practice-session';
+import { useHomePracticeSession, type QueueReloadOptions } from './use-practice-session';
 import { usePracticeProgressPersistence } from './hooks/use-practice-progress-persistence';
 import { useAnswerHistoryPersistence } from './hooks/use-answer-history-persistence';
 
@@ -111,7 +114,6 @@ export default function Home() {
     continueToNext,
     skipActiveTask,
     requestQueueReload,
-    reloadQueue,
     resetFetchError,
   } = useHomePracticeSession({
     activeTaskTypes,
@@ -233,25 +235,33 @@ export default function Home() {
     [requestQueueReload, updateSettings],
   );
 
+  const triggerQueueReload = useCallback(
+    (options?: QueueReloadOptions) => {
+      resetFetchError();
+      requestQueueReload(options);
+    },
+    [requestQueueReload, resetFetchError],
+  );
+
   const handleReloadQueue = useCallback(() => {
-    resetFetchError();
-    void reloadQueue();
-  }, [reloadQueue, resetFetchError]);
+    triggerQueueReload();
+  }, [triggerQueueReload]);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
       return;
     }
 
-    const handleExternalQueueRefresh = () => {
-      handleReloadQueue();
+    const handleExternalQueueRefresh = (event: Event) => {
+      const detail = (event as CustomEvent<PracticeQueueRefreshEventDetail>).detail;
+      triggerQueueReload(detail);
     };
 
     window.addEventListener(PRACTICE_QUEUE_REFRESH_EVENT, handleExternalQueueRefresh);
     return () => {
       window.removeEventListener(PRACTICE_QUEUE_REFRESH_EVENT, handleExternalQueueRefresh);
     };
-  }, [handleReloadQueue]);
+  }, [triggerQueueReload]);
 
   const sidebar = (
     <div className="flex h-full flex-col justify-between gap-8">
