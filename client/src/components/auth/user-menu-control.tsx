@@ -91,7 +91,7 @@ export function UserMenuControl({ className }: UserMenuControlProps) {
   };
 
   const handlePracticeQueueRefresh = () => {
-    dispatchPracticeQueueRefreshEvent();
+    dispatchPracticeQueueRefreshEvent({ mode: "shuffle" });
   };
 
   const menuButton = isSignedIn ? (
