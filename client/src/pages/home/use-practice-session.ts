@@ -26,6 +26,7 @@ interface FetchTasksForActiveTypesOptions {
   perTypeLimit: number;
   resolveLevelForPos: (pos: LexemePos) => CEFRLevel;
   fetcher?: FetchPracticeTasksFn;
+  excludeTaskIds?: string[];
 }
 
 interface FetchTasksForActiveTypesResult {
@@ -38,6 +39,7 @@ export async function fetchTasksForActiveTypes({
   perTypeLimit,
   resolveLevelForPos,
   fetcher = fetchPracticeTasksByType,
+  excludeTaskIds,
 }: FetchTasksForActiveTypesOptions): Promise<FetchTasksForActiveTypesResult> {
   const taskLevels = taskTypes.map((taskType) => {
     const entry = clientTaskRegistry[taskType];
@@ -50,6 +52,7 @@ export async function fetchTasksForActiveTypes({
       taskTypes,
       limit: perTypeLimit,
       level: taskLevels,
+      excludeTaskIds,
     });
 
     return {
@@ -225,6 +228,10 @@ export function useHomePracticeSession({
 
       const currentSession = sessionRef.current;
       const baseQueue = replace ? [] : currentSession.queue;
+      const exclusionSources = replace
+        ? [...currentSession.queue, ...currentSession.recent]
+        : currentSession.queue;
+      const excludeTaskIds = Array.from(new Set(exclusionSources)).slice(0, 80);
       const baseSignature = createQueueSignature(baseQueue, activeTaskTypes);
 
       pendingFetchRef.current = true;
@@ -236,6 +243,7 @@ export function useHomePracticeSession({
           taskTypes: activeTaskTypes,
           perTypeLimit,
           resolveLevelForPos,
+          excludeTaskIds,
         });
 
         const tasks = shuffleArray(mergeTaskLists(fetchedTasks, FETCH_LIMIT));

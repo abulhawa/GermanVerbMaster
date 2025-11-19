@@ -40,6 +40,7 @@ export interface TaskFetchOptions {
   signal?: AbortSignal;
   deviceId?: string;
   level?: CEFRLevel | CEFRLevel[];
+  excludeTaskIds?: string[];
 }
 
 const rawTaskSchema = z.object({
@@ -116,6 +117,14 @@ function buildTasksQuery(options: TaskFetchOptions): string {
       }
     } else {
       params.set('level', options.level);
+    }
+  }
+  if (options.excludeTaskIds?.length) {
+    for (const taskId of options.excludeTaskIds) {
+      const normalized = taskId?.trim();
+      if (normalized) {
+        params.append('excludeTaskIds', normalized);
+      }
     }
   }
   const deviceId = options.deviceId?.trim() || getDeviceId();

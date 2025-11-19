@@ -289,7 +289,7 @@ const MESSAGES: Record<Locale, AppMessages> = {
       signInLabel: 'Open sign in dialog',
       accountLabel: 'Account',
       settingsLabel: 'Settings',
-      refreshLabel: 'Shuffle practice queue',
+      refreshLabel: 'Get new practice tasks',
       languageLabel: 'Language',
       theme: {
         toggleToDark: 'Switch to dark theme',
@@ -593,7 +593,7 @@ const MESSAGES: Record<Locale, AppMessages> = {
       signInLabel: 'Anmeldedialog öffnen',
       accountLabel: 'Konto',
       settingsLabel: 'Einstellungen',
-      refreshLabel: 'Übungsfragen neu mischen',
+      refreshLabel: 'Neue Übungsaufgaben abrufen',
       languageLabel: 'Sprache',
       theme: {
         toggleToDark: 'Zum dunklen Design wechseln',

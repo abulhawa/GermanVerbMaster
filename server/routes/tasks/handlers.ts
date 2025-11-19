@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import { eq, sql, type SQL } from "drizzle-orm";
+import { eq, sql, notInArray, type SQL } from "drizzle-orm";
 import type { LexemePos, TaskType } from "@shared";
 import {
   db,
@@ -49,7 +49,15 @@ export function createListTasksHandler(): RequestHandler {
     try {
       await ensureTaskSpecCacheFresh();
 
-      const { pos, taskType, taskTypes: taskTypesRaw, limit, deviceId, level } = parsed.data;
+      const {
+        pos,
+        taskType,
+        taskTypes: taskTypesRaw,
+        limit,
+        deviceId,
+        level,
+        excludeTaskIds: excludeTaskIdsRaw,
+      } = parsed.data;
       const filters: SQL[] = [];
       let normalisedPos: LexemePos | null = null;
       const resolvedTaskTypes: TaskType[] = [];
@@ -75,6 +83,18 @@ export function createListTasksHandler(): RequestHandler {
           });
         }
         filters.push(eq(taskSpecs.pos, normalisedPos));
+      }
+
+      const excludeTaskIds = Array.isArray(excludeTaskIdsRaw)
+        ? excludeTaskIdsRaw
+        : excludeTaskIdsRaw
+        ? [excludeTaskIdsRaw]
+        : [];
+      const normalisedExclusions = excludeTaskIds
+        .map((value) => normaliseString(value))
+        .filter((value): value is string => Boolean(value));
+      if (normalisedExclusions.length) {
+        filters.push(notInArray(taskSpecs.id, normalisedExclusions));
       }
 
       try {
