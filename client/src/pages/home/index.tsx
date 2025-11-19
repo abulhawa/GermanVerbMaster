@@ -27,6 +27,7 @@ import { usePracticeSettings } from '@/contexts/practice-settings-context';
 import { queryClient } from '@/lib/queryClient';
 import { fetchPracticeTasks } from '@/lib/tasks';
 import type { CEFRLevel, TaskType, LexemePos } from '@shared';
+import { PRACTICE_QUEUE_REFRESH_EVENT } from '@/lib/practice-queue-events';
 
 import { PracticeSettingsPanel } from './components/practice-settings-panel';
 import { PracticeHistoryCard } from './components/practice-history-card';
@@ -236,6 +237,21 @@ export default function Home() {
     resetFetchError();
     void reloadQueue();
   }, [reloadQueue, resetFetchError]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const handleExternalQueueRefresh = () => {
+      handleReloadQueue();
+    };
+
+    window.addEventListener(PRACTICE_QUEUE_REFRESH_EVENT, handleExternalQueueRefresh);
+    return () => {
+      window.removeEventListener(PRACTICE_QUEUE_REFRESH_EVENT, handleExternalQueueRefresh);
+    };
+  }, [handleReloadQueue]);
 
   const sidebar = (
     <div className="flex h-full flex-col justify-between gap-8">
