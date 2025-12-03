@@ -155,7 +155,7 @@ function buildOrderedTaskQuery(
   const taskQuery = combinedFilters.length ? baseQuery.where(and(...combinedFilters)) : baseQuery;
 
   if (!hasIdentity) {
-    return taskQuery.orderBy(desc(taskSpecs.updatedAt), asc(taskSpecs.id));
+    return taskQuery.orderBy(sql`RANDOM()`, desc(taskSpecs.updatedAt), asc(taskSpecs.id));
   }
 
   const identityExpressions: SQL[] = [];
@@ -209,7 +209,9 @@ function buildOrderedTaskQuery(
       attemptHistory,
       eq(taskSpecs.id, attemptHistory.taskId),
     );
-    historyOrder.push(asc(attemptHistory.lastPracticedAt));
+    historyOrder.push(
+      asc(sql`case when ${attemptHistory.lastPracticedAt} is null then 0 else 1 end`),
+    );
   }
 
   const identityLogExpressions: SQL[] = [];
@@ -264,12 +266,12 @@ function buildOrderedTaskQuery(
     recencyOrder.push(
       asc(sql`case when ${recentAttempts.recentAttemptedAt} is null then 0 else 1 end`),
     );
-    recencyOrder.push(asc(recentAttempts.recentAttemptedAt));
   }
 
   const orderExpressions: SQL[] = [
     ...recencyOrder,
     ...historyOrder,
+    sql`RANDOM()`,
     desc(taskSpecs.updatedAt),
     asc(taskSpecs.id),
   ];
