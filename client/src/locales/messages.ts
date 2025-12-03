@@ -15,6 +15,7 @@ export interface UserMenuMessages {
   signInLabel: string;
   accountLabel: string;
   settingsLabel: string;
+  refreshLabel: string;
   languageLabel: string;
   theme: {
     toggleToDark: string;
@@ -288,6 +289,7 @@ const MESSAGES: Record<Locale, AppMessages> = {
       signInLabel: 'Open sign in dialog',
       accountLabel: 'Account',
       settingsLabel: 'Settings',
+      refreshLabel: 'Get new practice tasks',
       languageLabel: 'Language',
       theme: {
         toggleToDark: 'Switch to dark theme',
@@ -591,6 +593,7 @@ const MESSAGES: Record<Locale, AppMessages> = {
       signInLabel: 'Anmeldedialog öffnen',
       accountLabel: 'Konto',
       settingsLabel: 'Einstellungen',
+      refreshLabel: 'Neue Übungsaufgaben abrufen',
       languageLabel: 'Sprache',
       theme: {
         toggleToDark: 'Zum dunklen Design wechseln',

@@ -13,6 +13,7 @@ export const taskQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(25),
   deviceId: z.string().trim().min(6).max(64).optional(),
   level: z.union([levelSchema, z.array(levelSchema)]).optional(),
+  excludeTaskIds: multiStringSchema.optional(),
 });
 
 export const submissionSchema = z

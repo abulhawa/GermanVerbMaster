@@ -98,20 +98,13 @@ export function AdjectiveEndingRenderer({
     setIsAnswerRevealed((previous) => !previous);
   };
 
-  const handleRetry = () => {
-    if (isSubmitting) {
+  const handleSubmit = async () => {
+    if (!answer.trim() || isSubmitting || status === 'correct') {
       return;
     }
 
-    setStatus('idle');
-    setIsAnswerRevealed(false);
-    startTimeRef.current = Date.now();
-    inputRef.current?.focus();
-  };
-
-  const handleSubmit = async () => {
-    if (!answer.trim() || isSubmitting) {
-      return;
+    if (status === 'incorrect') {
+      startTimeRef.current = Date.now();
     }
 
     const submitted = answer.trim();
@@ -173,7 +166,7 @@ export function AdjectiveEndingRenderer({
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter' && status === 'idle') {
+    if (event.key === 'Enter' && status !== 'correct') {
       void handleSubmit();
     }
   };
@@ -188,8 +181,6 @@ export function AdjectiveEndingRenderer({
     onContinue,
     onToggleAnswer: canRevealAnswer ? handleToggleAnswerReveal : undefined,
     canRevealAnswer,
-    onRetry: status === 'incorrect' ? handleRetry : undefined,
-    canRetry: status === 'incorrect',
     onPronounce: handlePronounce,
     canPronounce: true,
     onToggleExample: canToggleExample ? toggleExample : undefined,
@@ -239,7 +230,6 @@ export function AdjectiveEndingRenderer({
       canRevealAnswer={canRevealAnswer}
       isAnswerRevealed={isAnswerRevealed}
       onToggleAnswer={handleToggleAnswerReveal}
-      onRetry={status === 'incorrect' ? handleRetry : undefined}
       onContinue={status !== 'idle' ? onContinue : undefined}
     />
   );
@@ -255,13 +245,13 @@ export function AdjectiveEndingRenderer({
         aria-label={copy.adjective.ariaLabel}
         autoFocus
         className="h-14 w-full max-w-[min(80vw,32rem)] rounded-full border border-border/50 bg-card/95 px-6 text-lg text-foreground shadow-soft placeholder:text-muted-foreground/80 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
-        disabled={status !== 'idle' || isSubmitting}
+        disabled={status === 'correct' || isSubmitting}
       />
       <div className="flex w-full max-w-[min(60vw,24rem)] items-center justify-center gap-3">
         <Button
           type="button"
           onClick={() => void handleSubmit()}
-          disabled={status !== 'idle' || isSubmitting || !answer.trim()}
+          disabled={status === 'correct' || isSubmitting || !answer.trim()}
           size="lg"
           className="h-14 w-full max-w-[min(60vw,24rem)] rounded-full text-base shadow-soft shadow-primary/30"
           aria-keyshortcuts="Enter"
@@ -270,7 +260,7 @@ export function AdjectiveEndingRenderer({
             label={
               <span className="flex items-center gap-2">
                 {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
-                <span>{copy.actions.submit}</span>
+                <span>{status === 'incorrect' ? copy.actions.retry : copy.actions.submit}</span>
               </span>
             }
             hint={enterHint}

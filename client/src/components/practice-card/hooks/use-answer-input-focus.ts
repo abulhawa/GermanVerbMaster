@@ -6,7 +6,7 @@ export function useAnswerInputFocus(
   inputRef: React.RefObject<HTMLInputElement | null>,
 ): void {
   useEffect(() => {
-    if (status === 'idle' && !isSubmitting) {
+    if (status !== 'correct' && !isSubmitting) {
       const input = inputRef.current;
       if (!input) {
         return;

@@ -7,8 +7,6 @@ export interface PracticeCardHotkeyOptions {
   onContinue?: () => void;
   onToggleAnswer?: () => void;
   canRevealAnswer?: boolean;
-  onRetry?: () => void;
-  canRetry?: boolean;
   onPronounce?: () => void;
   canPronounce?: boolean;
   onToggleExample?: () => void;
@@ -22,8 +20,6 @@ export function usePracticeCardHotkeys({
   onContinue,
   onToggleAnswer,
   canRevealAnswer,
-  onRetry,
-  canRetry,
   onPronounce,
   canPronounce,
   onToggleExample,
@@ -61,12 +57,6 @@ export function usePracticeCardHotkeys({
         return;
       }
 
-      if (status === 'incorrect' && canRetry && onRetry && key === 'ArrowLeft') {
-        event.preventDefault();
-        onRetry();
-        return;
-      }
-
       if (
         canPronounce &&
         onPronounce &&
@@ -101,8 +91,6 @@ export function usePracticeCardHotkeys({
     onContinue,
     onToggleAnswer,
     canRevealAnswer,
-    onRetry,
-    canRetry,
     onPronounce,
     canPronounce,
     onToggleExample,
