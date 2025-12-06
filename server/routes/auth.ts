@@ -6,8 +6,6 @@ import { getSessionRole, toIsoString } from "./shared.js";
 export function createAuthRouter(): Router {
   const router = Router();
 
-  router.use("/auth", betterAuthRouter);
-
   router.get("/auth/providers", (_req, res) => {
     const enabledProviders = Object.entries(socialProviders)
       .filter(([, provider]) => provider?.enabled)
@@ -15,6 +13,8 @@ export function createAuthRouter(): Router {
 
     res.json({ providers: enabledProviders });
   });
+
+  router.use("/auth", betterAuthRouter);
 
   router.use(attachAuthSessionMiddleware);
 
