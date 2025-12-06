@@ -7,7 +7,7 @@ import { db, authAccounts, authSessions, authUsers, authVerifications, userRoleE
 import { sendPasswordResetEmail as deliverPasswordResetEmail, sendVerificationEmail as deliverVerificationEmail } from "./emails.js";
 
 const BASE_PATH = "/api/auth";
-const baseURL = resolveBaseURL();
+const baseURL = new URL(BASE_PATH, resolveBaseURL()).toString();
 
 const auth = betterAuth({
   baseURL,

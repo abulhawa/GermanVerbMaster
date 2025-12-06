@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { FormEventHandler, MouseEventHandler } from "react";
 
 import type { AuthSessionState } from "@/auth/session";
+import { signInWithGoogle } from "@/auth";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslations } from "@/locales";
@@ -45,6 +46,13 @@ export function AuthDialog({ open, onOpenChange, defaultMode = "sign-in", sessio
     resetAll,
     isSubmitting,
   } = useAuthMutations({ mode, session });
+  const providerButtons = [
+    {
+      id: "google",
+      label: copy.dialog.googleSignInLabel,
+      onClick: signInWithGoogle,
+    },
+  ];
 
   useEffect(() => {
     // Reset state when dialog opens
@@ -169,7 +177,7 @@ export function AuthDialog({ open, onOpenChange, defaultMode = "sign-in", sessio
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-full max-w-xl space-y-6">
         <AuthDialogHeader session={session} mode={mode} copy={copy.dialog} />
-        <AuthDialogProviderButtons />
+        {!session ? <AuthDialogProviderButtons providers={providerButtons} /> : null}
         {session ? (
           <AuthDialogAccountPanel
             session={session}

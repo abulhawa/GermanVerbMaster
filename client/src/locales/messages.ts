@@ -232,6 +232,7 @@ export interface AuthMessages {
     submitSignUpLabel: string;
     signingInLabel: string;
     signingUpLabel: string;
+    googleSignInLabel: string;
     switchToSignUpPrompt: string;
     switchToSignUpCta: string;
     switchToSignInPrompt: string;
@@ -379,6 +380,7 @@ const MESSAGES: Record<Locale, AppMessages> = {
         submitSignUpLabel: 'Create account',
         signingInLabel: 'Signing in…',
         signingUpLabel: 'Creating account…',
+        googleSignInLabel: 'Sign in with Google',
         switchToSignUpPrompt: 'Need an account?',
         switchToSignUpCta: 'Create one',
         switchToSignInPrompt: 'Already have an account?',
@@ -683,6 +685,7 @@ const MESSAGES: Record<Locale, AppMessages> = {
         submitSignUpLabel: 'Konto erstellen',
         signingInLabel: 'Melde an…',
         signingUpLabel: 'Erstelle Konto…',
+        googleSignInLabel: 'Mit Google anmelden',
         switchToSignUpPrompt: 'Noch kein Konto?',
         switchToSignUpCta: 'Jetzt erstellen',
         switchToSignInPrompt: 'Bereits ein Konto?',
