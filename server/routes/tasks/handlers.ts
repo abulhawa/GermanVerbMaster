@@ -183,6 +183,16 @@ export function createListTasksHandler(): RequestHandler {
             taskId,
             error,
           });
+
+          try {
+            await db.delete(taskSpecs).where(eq(taskSpecs.id, taskId));
+          } catch (deleteError) {
+            console.error("Failed to delete unsupported task", {
+              taskId,
+              deleteError,
+            });
+          }
+
           continue;
         }
 

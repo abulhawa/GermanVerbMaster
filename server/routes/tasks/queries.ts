@@ -284,6 +284,9 @@ export async function fetchTasksForTypes(
 ): Promise<TaskRow[]> {
   const cacheTtlMs = Number(process.env.TASK_QUERY_CACHE_TTL_MS ?? 1000);
   const cacheKey = `${(options.taskTypes || []).join(',')}|${options.deviceId ?? ''}|${options.sessionUserId ?? ''}|${options.requestedLevels.join(',')}|${options.normalisedPos ?? ''}|${options.limit}`;
+  const shouldCache = !options.deviceId && !options.sessionUserId;
+
+  if (shouldCache) {
   try {
     const cached = getQueryCache(cacheKey) as TaskRow[] | undefined;
     if (cached) {
@@ -291,6 +294,7 @@ export async function fetchTasksForTypes(
     }
   } catch (err) {
     // ignore cache errors
+  }
   }
   const { taskTypes, limit } = options;
   const rows: TaskRow[] = [];
@@ -317,9 +321,11 @@ export async function fetchTasksForTypes(
     });
   } catch {}
 
-  try {
-    setQueryCache(cacheKey, rows.map((r) => ({ ...r })), cacheTtlMs);
-  } catch {}
+  if (shouldCache) {
+    try {
+      setQueryCache(cacheKey, rows.map((r) => ({ ...r })), cacheTtlMs);
+    } catch {}
+  }
 
   return rows;
 }
