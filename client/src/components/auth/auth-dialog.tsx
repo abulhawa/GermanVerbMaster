@@ -35,7 +35,7 @@ export function AuthDialog({ open, onOpenChange, defaultMode = "sign-in", sessio
   const [mode, setMode] = useState<AuthDialogMode>(defaultMode);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [availableProviders, setAvailableProviders] = useState<string[]>([]);
+  const [availableProviders, setAvailableProviders] = useState<string[] | null>(null);
 
   const { formState, handleFieldChange, resetForm, validateSignIn, validateSignUp, validateEmailOnly } =
     useAuthDialogForm({ validation: copy.dialog.validation });
@@ -67,6 +67,9 @@ export function AuthDialog({ open, onOpenChange, defaultMode = "sign-in", sessio
         }
       } catch (error) {
         console.warn("Failed to load available auth providers", error);
+        if (isMounted) {
+          setAvailableProviders(null);
+        }
       }
     };
 
@@ -80,7 +83,9 @@ export function AuthDialog({ open, onOpenChange, defaultMode = "sign-in", sessio
   const providerButtons = useMemo(() => {
     const buttons: AuthProviderButtonConfig[] = [];
 
-    if (availableProviders.includes("google")) {
+    const googleAvailable = !availableProviders || availableProviders.includes("google");
+
+    if (googleAvailable) {
       buttons.push({
         id: "google",
         label: copy.dialog.googleSignInLabel,
