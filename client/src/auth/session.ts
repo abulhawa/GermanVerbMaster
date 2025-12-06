@@ -153,7 +153,7 @@ async function signUpWithEmail(credentials: EmailCredentials): Promise<void> {
 async function signOutRequest(): Promise<void> {
   await requestJson<unknown>("/api/auth/sign-out", {
     method: "POST",
-    body: JSON.stringify({}),
+    body: JSON.stringify({ all: true }),
   });
 }
 
