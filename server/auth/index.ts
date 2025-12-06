@@ -9,6 +9,8 @@ import { sendPasswordResetEmail as deliverPasswordResetEmail, sendVerificationEm
 const BASE_PATH = "/api/auth";
 const baseURL = new URL(BASE_PATH, resolveBaseURL()).toString();
 
+const socialProviders = buildSocialProviders(baseURL);
+
 const auth = betterAuth({
   baseURL,
   basePath: BASE_PATH,
@@ -60,7 +62,7 @@ const auth = betterAuth({
       });
     },
   },
-  socialProviders: buildSocialProviders(baseURL),
+  socialProviders,
   user: {
     additionalFields: {
       role: {
@@ -270,14 +272,25 @@ function getSetCookie(headers: Headers): string[] {
 function buildSocialProviders(origin: string): SocialProviders {
   const providers: SocialProviders = {};
 
-  if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  const googleClientId =
+    process.env.GOOGLE_CLIENT_ID ||
+    process.env.BETTER_AUTH_GOOGLE_CLIENT_ID ||
+    process.env.AUTH_GOOGLE_CLIENT_ID;
+  const googleClientSecret =
+    process.env.GOOGLE_CLIENT_SECRET ||
+    process.env.BETTER_AUTH_GOOGLE_CLIENT_SECRET ||
+    process.env.AUTH_GOOGLE_CLIENT_SECRET;
+
+  if (googleClientId && googleClientSecret) {
     providers.google = {
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientId: googleClientId,
+      clientSecret: googleClientSecret,
       redirectURI: new URL(`${BASE_PATH}/callback/google`, origin).toString(),
       scope: ["openid", "profile", "email"],
       enabled: true,
     };
+  } else {
+    console.warn("Google OAuth credentials are missing; Google sign-in is disabled.");
   }
 
   if (process.env.MICROSOFT_CLIENT_ID && process.env.MICROSOFT_CLIENT_SECRET) {
@@ -308,4 +321,4 @@ function resolveBaseURL(): string {
   return "http://localhost:5000";
 }
 
-export { auth };
+export { auth, socialProviders };

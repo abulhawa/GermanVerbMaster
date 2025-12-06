@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { FormEventHandler, MouseEventHandler } from "react";
 
 import type { AuthSessionState } from "@/auth/session";
@@ -6,6 +6,8 @@ import { signInWithGoogle } from "@/auth";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslations } from "@/locales";
+import type { AuthProviderButtonConfig } from "./auth-dialog/provider-buttons";
+import { GoogleIcon } from "./auth-dialog/google-icon";
 
 import {
   AuthDialogAccountPanel,
@@ -33,6 +35,7 @@ export function AuthDialog({ open, onOpenChange, defaultMode = "sign-in", sessio
   const [mode, setMode] = useState<AuthDialogMode>(defaultMode);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [availableProviders, setAvailableProviders] = useState<string[]>([]);
 
   const { formState, handleFieldChange, resetForm, validateSignIn, validateSignUp, validateEmailOnly } =
     useAuthDialogForm({ validation: copy.dialog.validation });
@@ -46,13 +49,48 @@ export function AuthDialog({ open, onOpenChange, defaultMode = "sign-in", sessio
     resetAll,
     isSubmitting,
   } = useAuthMutations({ mode, session });
-  const providerButtons = [
-    {
-      id: "google",
-      label: copy.dialog.googleSignInLabel,
-      onClick: signInWithGoogle,
-    },
-  ];
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchProviders = async () => {
+      try {
+        const response = await fetch("/api/auth/providers", {
+          credentials: "include",
+          headers: { accept: "application/json" },
+        });
+
+        if (!response.ok) return;
+        const payload = (await response.json()) as { providers?: string[] };
+
+        if (isMounted && Array.isArray(payload.providers)) {
+          setAvailableProviders(payload.providers);
+        }
+      } catch (error) {
+        console.warn("Failed to load available auth providers", error);
+      }
+    };
+
+    void fetchProviders();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const providerButtons = useMemo(() => {
+    const buttons: AuthProviderButtonConfig[] = [];
+
+    if (availableProviders.includes("google")) {
+      buttons.push({
+        id: "google",
+        label: copy.dialog.googleSignInLabel,
+        onClick: signInWithGoogle,
+        icon: <GoogleIcon />,
+      });
+    }
+
+    return buttons;
+  }, [availableProviders, copy.dialog.googleSignInLabel]);
 
   useEffect(() => {
     // Reset state when dialog opens
