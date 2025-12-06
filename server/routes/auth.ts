@@ -7,7 +7,7 @@ export function createAuthRouter(): Router {
   const router = Router();
 
   router.get("/auth/providers", (_req, res) => {
-    const enabledProviders = Object.entries(socialProviders)
+    const enabledProviders = Object.entries(socialProviders as Record<string, { enabled?: boolean }>)
       .filter(([, provider]) => provider?.enabled)
       .map(([key]) => key);
 
