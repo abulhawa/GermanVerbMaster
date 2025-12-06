@@ -1,17 +1,12 @@
-import supabase from "./supabaseClient";
-
-export async function signInWithGoogle() {
+export function signInWithGoogle() {
   try {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: window.location.origin,
-      },
-    });
+    const returnUrl = window.location.href;
+    const redirectUrl = new URL("/api/auth/sign-in/google", window.location.origin);
 
-    if (error) {
-      throw error;
-    }
+    redirectUrl.searchParams.set("redirect_to", returnUrl);
+    redirectUrl.searchParams.set("redirectTo", returnUrl);
+
+    window.location.assign(redirectUrl.toString());
   } catch (error) {
     console.error("Google sign-in failed", error);
     alert("Failed to sign in with Google. Please try again.");
