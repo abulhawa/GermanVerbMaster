@@ -2,12 +2,13 @@ import { useEffect, useMemo, useState } from "react";
 import type { FormEventHandler, MouseEventHandler } from "react";
 
 import type { AuthSessionState } from "@/auth/session";
-import { signInWithGoogle } from "@/auth";
+import { signInWithGoogle, signInWithMicrosoft } from "@/auth";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslations } from "@/locales";
 import type { AuthProviderButtonConfig } from "./auth-dialog/provider-buttons";
 import { GoogleIcon } from "./auth-dialog/google-icon";
+import { MicrosoftIcon } from "./auth-dialog/microsoft-icon";
 
 import {
   AuthDialogAccountPanel,
@@ -82,27 +83,52 @@ export function AuthDialog({ open, onOpenChange, defaultMode = "sign-in", sessio
   }, []);
 
   const providerButtons = useMemo(() => {
-    const buttons: AuthProviderButtonConfig[] = [];
-
-    const googleEnabled = availableProviders?.includes("google") ?? false;
-    const noProvidersReported = Array.isArray(availableProviders) && availableProviders.length === 0;
-    const googleExplicitlyDisabled = Array.isArray(availableProviders) && availableProviders.length > 0 && !googleEnabled;
-    const googleAvailable =
-      googleEnabled || noProvidersReported || availableProviders === null || availableProviders === undefined;
-
-    if (googleAvailable) {
-      buttons.push({
+    const providers: AuthProviderButtonConfig[] = [
+      {
         id: "google",
         label: copy.dialog.googleSignInLabel,
         onClick: signInWithGoogle,
         icon: <GoogleIcon />,
-        disabled: googleExplicitlyDisabled,
-        disabledReason: googleExplicitlyDisabled ? copy.dialog.googleUnavailable : undefined,
-      });
-    }
+        disabledReason: copy.dialog.googleUnavailable,
+      },
+      {
+        id: "microsoft",
+        label: copy.dialog.microsoftSignInLabel,
+        onClick: signInWithMicrosoft,
+        icon: <MicrosoftIcon />,
+        disabledReason: copy.dialog.microsoftUnavailable,
+      },
+    ];
 
-    return buttons;
-  }, [availableProviders, copy.dialog.googleSignInLabel, copy.dialog.googleUnavailable]);
+    const noProvidersReported = Array.isArray(availableProviders) && availableProviders.length === 0;
+    const hasExplicitProviders = Array.isArray(availableProviders) && availableProviders.length > 0;
+
+    return providers
+      .map((provider) => {
+        const isEnabled = availableProviders?.includes(provider.id) ?? false;
+        const shouldRender =
+          isEnabled || noProvidersReported || availableProviders === null || availableProviders === undefined;
+
+        if (!shouldRender) {
+          return null;
+        }
+
+        const disabled = hasExplicitProviders && !isEnabled;
+
+        return {
+          ...provider,
+          disabled,
+          disabledReason: disabled ? provider.disabledReason : undefined,
+        };
+      })
+      .filter(Boolean) as AuthProviderButtonConfig[];
+  }, [
+    availableProviders,
+    copy.dialog.googleSignInLabel,
+    copy.dialog.googleUnavailable,
+    copy.dialog.microsoftSignInLabel,
+    copy.dialog.microsoftUnavailable,
+  ]);
 
   useEffect(() => {
     // Reset state when dialog opens

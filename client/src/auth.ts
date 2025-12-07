@@ -1,4 +1,7 @@
-export async function signInWithGoogle() {
+type SocialProvider = "google" | "microsoft";
+
+async function signInWithProvider(provider: SocialProvider) {
+  const providerLabel = provider === "google" ? "Google" : "Microsoft";
   try {
     const returnUrl = window.location.href;
 
@@ -8,7 +11,7 @@ export async function signInWithGoogle() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        provider: "google",
+        provider,
         callbackURL: returnUrl,
         errorCallbackURL: returnUrl,
       }),
@@ -21,12 +24,20 @@ export async function signInWithGoogle() {
     const data: { url?: string; redirect?: boolean } = await response.json();
 
     if (!data.url) {
-      throw new Error("Missing Google authorization URL");
+      throw new Error(`Missing ${providerLabel} authorization URL`);
     }
 
     window.location.assign(data.url);
   } catch (error) {
-    console.error("Google sign-in failed", error);
-    alert("Failed to sign in with Google. Please try again.");
+    console.error(`${provider} sign-in failed`, error);
+    alert(`Failed to sign in with ${providerLabel}. Please try again.`);
   }
+}
+
+export async function signInWithGoogle() {
+  return signInWithProvider("google");
+}
+
+export async function signInWithMicrosoft() {
+  return signInWithProvider("microsoft");
 }
