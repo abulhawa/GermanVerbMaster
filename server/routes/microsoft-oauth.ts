@@ -47,6 +47,20 @@ export function buildMicrosoftAuthURL(state = randomUUID()): string {
   return `${MICROSOFT_AUTH_URL}?${params.toString()}`;
 }
 
+function parseCookies(cookieHeader?: string): Record<string, string> {
+  if (!cookieHeader) return {};
+
+  return cookieHeader
+    .split(";")
+    .map((cookie) => cookie.trim())
+    .filter(Boolean)
+    .reduce<Record<string, string>>((acc, cookie) => {
+      const [name, ...rest] = cookie.split("=");
+      acc[name] = rest.join("=");
+      return acc;
+    }, {});
+}
+
 /**
  * Exchange an authorization code for access and ID tokens.
  */
@@ -158,12 +172,21 @@ export function createMicrosoftOAuthRouter(): Router {
 
   router.get("/auth/microsoft", (_req: Request, res: ExpressResponse) => {
     // Redirect the browser to Microsoft's hosted login page.
-    const authorizationURL = buildMicrosoftAuthURL();
+    const state = randomUUID();
+    const authorizationURL = buildMicrosoftAuthURL(state);
+
+    res.cookie("microsoft_oauth_state", state, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 10 * 60 * 1000, // 10 minutes
+    });
+
     return res.redirect(authorizationURL);
   });
 
   router.get("/auth/microsoft/callback", async (req: Request, res: ExpressResponse) => {
-    const { code, error, error_description: errorDescription } = req.query;
+    const { code, error, error_description: errorDescription, state } = req.query;
 
     if (typeof error === "string") {
       return res.status(400).json({ error, errorDescription });
@@ -172,6 +195,17 @@ export function createMicrosoftOAuthRouter(): Router {
     if (typeof code !== "string") {
       return res.status(400).json({ error: "Missing authorization code" });
     }
+
+    const cookies = parseCookies(req.headers.cookie);
+    if (typeof state !== "string" || !cookies.microsoft_oauth_state || cookies.microsoft_oauth_state !== state) {
+      return res.status(400).json({ error: "Invalid or missing OAuth state" });
+    }
+
+    res.clearCookie("microsoft_oauth_state", {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+    });
 
     // Swap the short-lived code for tokens, then fetch the user's profile.
     const tokenSet = await exchangeCodeForToken(code);
