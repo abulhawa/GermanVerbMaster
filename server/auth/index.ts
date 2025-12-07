@@ -321,4 +321,10 @@ function resolveBaseURL(): string {
   return "http://localhost:5000";
 }
 
-export { auth, socialProviders };
+function getEnabledSocialProviderKeys(): string[] {
+  return Object.entries(socialProviders as Record<string, { enabled?: boolean }>)
+    .filter(([, provider]) => provider && provider.enabled !== false)
+    .map(([key]) => key);
+}
+
+export { auth, getEnabledSocialProviderKeys, socialProviders };

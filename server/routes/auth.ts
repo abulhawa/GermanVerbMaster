@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authRouter as betterAuthRouter, socialProviders } from "../auth/index.js";
+import { authRouter as betterAuthRouter, getEnabledSocialProviderKeys } from "../auth/index.js";
 import { attachAuthSessionMiddleware } from "./middleware.js";
 import { getSessionRole, toIsoString } from "./shared.js";
 
@@ -7,9 +7,7 @@ export function createAuthRouter(): Router {
   const router = Router();
 
   router.get("/auth/providers", (_req, res) => {
-    const enabledProviders = Object.entries(socialProviders as Record<string, { enabled?: boolean }>)
-      .filter(([, provider]) => provider?.enabled)
-      .map(([key]) => key);
+    const enabledProviders = getEnabledSocialProviderKeys();
 
     res.json({ providers: enabledProviders });
   });
