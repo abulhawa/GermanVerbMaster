@@ -177,3 +177,25 @@ Shut down the container with `docker stop gvm-postgres` when you are done.
 - Practice tasks are served directly from `task_specs` using the latest content updates; no device-level Leitner state is required.
 - Submissions written to `/api/submission` are stored in `practice_history` alongside minimal metadata so analytics can be layered on later if needed.
 
+## Microsoft OAuth example (Express)
+
+Use the built-in `/auth/microsoft` routes when you want a minimal, framework-agnostic OAuth 2.0 flow backed by your own `.env` values:
+
+```bash
+MICROSOFT_CLIENT_ID=...
+MICROSOFT_CLIENT_SECRET=...
+MICROSOFT_REDIRECT_URI=https://mydomain.com/auth/microsoft/callback
+SESSION_SECRET=super-secret-hmac-key
+```
+
+- `GET /auth/microsoft` redirects to Microsoft’s authorization page using the v2.0 consumer endpoints.
+- `GET /auth/microsoft/callback` exchanges the `code`, fetches the OpenID user profile, normalises it to `{ id, email, name, picture }`, and issues a signed session token you can replace with your own persistence strategy.
+- Helper functions such as `buildMicrosoftAuthURL`, `exchangeCodeForToken`, and `fetchMicrosoftUser` live in `server/routes/microsoft-oauth.ts` with inline comments explaining each step.
+- Frontend trigger:
+
+```html
+<button onclick="window.location.href='/auth/microsoft'">
+  Sign in with Microsoft
+</button>
+```
+
