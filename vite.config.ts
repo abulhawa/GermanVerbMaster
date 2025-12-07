@@ -23,6 +23,10 @@ export default defineConfig({
       ],
       workbox: {
         globPatterns: ["**/*.{js,css,html,svg,png,webmanifest,json}"],
+        // Prevent the PWA navigation fallback from hijacking API OAuth callbacks
+        // (e.g. /api/auth/callback/google). Without this, the service worker can
+        // return index.html for those routes and the SPA shows a 404.
+        navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
           {
             // Prefetch and stale-while-revalidate for the authenticated session endpoint
