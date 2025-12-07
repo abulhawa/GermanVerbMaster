@@ -5,6 +5,7 @@ import { createPracticeHistoryRouter } from "./routes/practice-history.js";
 import { createTaskRouter } from "./routes/tasks.js";
 import { createAdminRouter } from "./routes/admin.js";
 import { isAdminFeatureEnabled } from "./config.js";
+import { createMicrosoftOAuthRouter } from "./routes/microsoft-oauth.js";
 
 // The routing surface is split across domain-specific routers located in
 // server/routes/*.ts. This file now focuses on wiring those routers together in
@@ -13,11 +14,13 @@ import { isAdminFeatureEnabled } from "./config.js";
 
 export function registerRoutes(app: Express): void {
   const healthRouter = createHealthRouter();
+  const microsoftOAuthRouter = createMicrosoftOAuthRouter();
   const authRouter = createAuthRouter();
   const taskRouter = createTaskRouter();
   const practiceHistoryRouter = createPracticeHistoryRouter();
 
   app.use(healthRouter);
+  app.use(microsoftOAuthRouter);
   app.use("/api", authRouter);
   app.use("/api", taskRouter);
   app.use("/api", practiceHistoryRouter);
