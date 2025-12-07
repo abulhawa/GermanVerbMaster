@@ -233,6 +233,7 @@ export interface AuthMessages {
     signingInLabel: string;
     signingUpLabel: string;
     googleSignInLabel: string;
+    googleUnavailable: string;
     switchToSignUpPrompt: string;
     switchToSignUpCta: string;
     switchToSignInPrompt: string;
@@ -381,6 +382,7 @@ const MESSAGES: Record<Locale, AppMessages> = {
         signingInLabel: 'Signing in…',
         signingUpLabel: 'Creating account…',
         googleSignInLabel: 'Sign in with Google',
+        googleUnavailable: 'Google sign-in is temporarily unavailable. Use email sign-in for now.',
         switchToSignUpPrompt: 'Need an account?',
         switchToSignUpCta: 'Create one',
         switchToSignInPrompt: 'Already have an account?',
@@ -686,6 +688,7 @@ const MESSAGES: Record<Locale, AppMessages> = {
         signingInLabel: 'Melde an…',
         signingUpLabel: 'Erstelle Konto…',
         googleSignInLabel: 'Mit Google anmelden',
+        googleUnavailable: 'Google-Anmeldung ist vorübergehend nicht verfügbar. Bitte melde dich per E-Mail an.',
         switchToSignUpPrompt: 'Noch kein Konto?',
         switchToSignUpCta: 'Jetzt erstellen',
         switchToSignInPrompt: 'Bereits ein Konto?',
