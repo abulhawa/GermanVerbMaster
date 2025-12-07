@@ -29,15 +29,10 @@ export default defineConfig({
         navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
           {
-            // Prefetch and stale-while-revalidate for the authenticated session endpoint
+            // Always hit the network for auth/session endpoints so sign-in/out state is fresh
             urlPattern: ({ url }) => url.pathname === "/api/me" || url.pathname.startsWith("/api/auth"),
-            handler: "StaleWhileRevalidate",
+            handler: "NetworkOnly",
             method: "GET",
-            options: {
-              cacheName: "auth-api",
-              expiration: { maxAgeSeconds: 60 * 5 }, // 5 minutes
-              cacheableResponse: { statuses: [200, 304] },
-            },
           },
           {
             // Stale-while-revalidate for practice history and settings endpoints
