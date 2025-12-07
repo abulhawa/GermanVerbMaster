@@ -54,7 +54,8 @@ export function AuthDialog({ open, onOpenChange, defaultMode = "sign-in", sessio
 
     const fetchProviders = async () => {
       try {
-        const response = await fetch("/api/auth/providers", {
+        const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost";
+        const response = await fetch(new URL("/api/auth/providers", origin).toString(), {
           credentials: "include",
           headers: { accept: "application/json" },
         });
@@ -83,7 +84,11 @@ export function AuthDialog({ open, onOpenChange, defaultMode = "sign-in", sessio
   const providerButtons = useMemo(() => {
     const buttons: AuthProviderButtonConfig[] = [];
 
-    const googleAvailable = !availableProviders || availableProviders.includes("google");
+    const googleEnabled = availableProviders?.includes("google") ?? false;
+    const noProvidersReported = Array.isArray(availableProviders) && availableProviders.length === 0;
+    const googleExplicitlyDisabled = Array.isArray(availableProviders) && availableProviders.length > 0 && !googleEnabled;
+    const googleAvailable =
+      googleEnabled || noProvidersReported || availableProviders === null || availableProviders === undefined;
 
     if (googleAvailable) {
       buttons.push({
@@ -91,11 +96,13 @@ export function AuthDialog({ open, onOpenChange, defaultMode = "sign-in", sessio
         label: copy.dialog.googleSignInLabel,
         onClick: signInWithGoogle,
         icon: <GoogleIcon />,
+        disabled: googleExplicitlyDisabled,
+        disabledReason: googleExplicitlyDisabled ? copy.dialog.googleUnavailable : undefined,
       });
     }
 
     return buttons;
-  }, [availableProviders, copy.dialog.googleSignInLabel]);
+  }, [availableProviders, copy.dialog.googleSignInLabel, copy.dialog.googleUnavailable]);
 
   useEffect(() => {
     // Reset state when dialog opens
