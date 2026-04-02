@@ -131,6 +131,28 @@ describe('task synchronizer delta sync', () => {
     return latest;
   }
 
+  async function insertManualB2WritingTask(lexemeId: string, taskId: string): Promise<void> {
+    await drizzleDb.insert(taskSpecsTable).values({
+      id: taskId,
+      lexemeId,
+      pos: 'verb',
+      taskType: 'b2_writing_prompt',
+      renderer: 'b2_writing_prompt',
+      prompt: {
+        scenario: 'Formulate a formal response for a project update.',
+        wordBankItems: ['wuerde', 'sollte', 'jedoch', 'meiner Meinung nach'],
+        cefrLevel: 'B2',
+        taskInstructions: 'Write a short formal response.',
+      },
+      solution: {
+        keyPhrases: ['wuerde', 'meiner Meinung nach', 'jedoch'],
+        grammarFocus: 'Use Konjunktiv II for polite tone.',
+      },
+      metadata: { source: 'test:manual-b2' },
+      revision: 1,
+    });
+  }
+
   it('bootstraps a checkpoint when none exists', async () => {
     const before = await loadTaskSpecSyncCheckpoint();
     expect(before).toBeNull();
@@ -323,6 +345,43 @@ describe('task synchronizer delta sync', () => {
     expect(refreshedTasks.some((row) => row.id === partizipTaskId)).toBe(false);
   });
 
+  it('preserves manual b2_writing_prompt tasks during stale type pruning', async () => {
+    const fullSync = await ensureTaskSpecsSynced();
+    expect(fullSync.checkpoint).toBeTruthy();
+    const initialCheckpoint = fullSync.checkpoint!;
+
+    const targetLexemeId = await getLexemeIdByLemma('gehen');
+    const manualTaskId = 'task:b2:manual-preserve';
+    await insertManualB2WritingTask(targetLexemeId, manualTaskId);
+
+    const currentMetadataRow = await drizzleDb
+      .select({ metadata: lexemesTable.metadata })
+      .from(lexemesTable)
+      .where(eq(lexemesTable.id, targetLexemeId))
+      .limit(1);
+
+    const updatedMetadata = {
+      ...((currentMetadataRow[0]?.metadata as Record<string, unknown> | undefined) ?? {}),
+      level: 'B1',
+    };
+
+    const updatedTimestamp = new Date(initialCheckpoint.lastSyncedAt.getTime() + 1000);
+    await drizzleDb
+      .update(lexemesTable)
+      .set({ metadata: updatedMetadata, updatedAt: updatedTimestamp })
+      .where(eq(lexemesTable.id, targetLexemeId));
+
+    resetTaskSpecSync();
+    await ensureTaskSpecsSynced();
+
+    const persistedManualTask = await drizzleDb
+      .select({ id: taskSpecsTable.id })
+      .from(taskSpecsTable)
+      .where(eq(taskSpecsTable.id, manualTaskId))
+      .limit(1);
+    expect(persistedManualTask).toHaveLength(1);
+  });
+
   it('removes task specs when a lexeme is no longer supported', async () => {
     await ensureTaskSpecsSynced();
 
@@ -362,5 +421,35 @@ describe('task synchronizer delta sync', () => {
       .from(taskSpecsTable)
       .where(eq(taskSpecsTable.lexemeId, siblingLexemeId));
     expect(afterSiblingCount.length).toBe(beforeSiblingCount.length);
+  });
+
+  it('removes manual b2_writing_prompt tasks when the lexeme becomes unsupported', async () => {
+    await ensureTaskSpecsSynced();
+
+    const targetLexemeId = await getLexemeIdByLemma('gehen');
+    const manualTaskId = 'task:b2:manual-remove';
+    await insertManualB2WritingTask(targetLexemeId, manualTaskId);
+
+    const insertedManualTask = await drizzleDb
+      .select({ id: taskSpecsTable.id })
+      .from(taskSpecsTable)
+      .where(eq(taskSpecsTable.id, manualTaskId))
+      .limit(1);
+    expect(insertedManualTask).toHaveLength(1);
+
+    await drizzleDb
+      .update(lexemesTable)
+      .set({ pos: 'adverb', updatedAt: new Date(Date.now() + 1000) })
+      .where(eq(lexemesTable.id, targetLexemeId));
+
+    resetTaskSpecSync();
+    await ensureTaskSpecsSynced();
+
+    const afterRemoval = await drizzleDb
+      .select({ id: taskSpecsTable.id })
+      .from(taskSpecsTable)
+      .where(eq(taskSpecsTable.id, manualTaskId))
+      .limit(1);
+    expect(afterRemoval).toHaveLength(0);
   });
 });

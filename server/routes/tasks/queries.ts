@@ -1,4 +1,5 @@
-import { and, asc, desc, eq, gte, inArray, or, sql, type SQL } from "drizzle-orm";
+import { createHash } from "node:crypto";
+import { and, asc, eq, gte, inArray, or, sql, type SQL } from "drizzle-orm";
 import { logStructured } from "../../logger.js";
 import {
   db,
@@ -14,6 +15,7 @@ import { combineFilters } from "./schemas.js";
 import { getQueryCache, setQueryCache } from "../../cache/query-cache.js";
 
 export const RECENT_ATTEMPT_WINDOW_MS = 1000 * 60 * 60 * 6;
+const MAX_SHUFFLE_SEED_LENGTH = 128;
 
 type RawTaskRow = Record<string, any>;
 
@@ -132,10 +134,40 @@ export type TaskListQueryOptions = {
   requestedLevels: string[];
   sessionUserId: string | null;
   deviceId: string | null | undefined;
+  shuffleSeed?: string | null;
   recencyThreshold: Date;
 };
 
 // Query cache module is provided by server/cache/query-cache.ts
+
+function normaliseShuffleSeed(seed: string | null | undefined): string | null {
+  if (typeof seed !== "string") {
+    return null;
+  }
+
+  const trimmed = seed.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  return trimmed.slice(0, MAX_SHUFFLE_SEED_LENGTH);
+}
+
+export function createSeededTaskOrderToken(taskId: string, seed: string): string {
+  return createHash("md5")
+    .update(`${taskId}:${seed}`)
+    .digest("hex");
+}
+
+function buildSeededOrderExpression(shuffleSeed: string | null | undefined): SQL {
+  const seed = normaliseShuffleSeed(shuffleSeed);
+
+  if (!seed) {
+    return sql`RANDOM()`;
+  }
+
+  return sql`md5(${taskSpecs.id} || ':' || ${seed})`;
+}
 
 function buildOrderedTaskQuery(
   options: TaskListQueryOptions & { typeOverride?: TaskType[] },
@@ -144,6 +176,7 @@ function buildOrderedTaskQuery(
   const hasIdentity = Boolean(sessionUserId || deviceId);
   const activeTaskTypes = options.typeOverride ?? taskTypes;
   const combinedFilters = [...filters];
+  const seededOrderExpression = buildSeededOrderExpression(options.shuffleSeed);
 
   if (activeTaskTypes.length === 1) {
     combinedFilters.push(eq(taskSpecs.taskType, activeTaskTypes[0]!));
@@ -155,7 +188,7 @@ function buildOrderedTaskQuery(
   const taskQuery = combinedFilters.length ? baseQuery.where(and(...combinedFilters)) : baseQuery;
 
   if (!hasIdentity) {
-    return taskQuery.orderBy(sql`RANDOM()`, desc(taskSpecs.updatedAt), asc(taskSpecs.id));
+    return taskQuery.orderBy(seededOrderExpression);
   }
 
   const identityExpressions: SQL[] = [];
@@ -271,9 +304,7 @@ function buildOrderedTaskQuery(
   const orderExpressions: SQL[] = [
     ...recencyOrder,
     ...historyOrder,
-    sql`RANDOM()`,
-    desc(taskSpecs.updatedAt),
-    asc(taskSpecs.id),
+    seededOrderExpression,
   ];
 
   return queryWithRecency.orderBy(...orderExpressions);
@@ -283,7 +314,7 @@ export async function fetchTasksForTypes(
   options: TaskListQueryOptions & { limit: number },
 ): Promise<TaskRow[]> {
   const cacheTtlMs = Number(process.env.TASK_QUERY_CACHE_TTL_MS ?? 1000);
-  const cacheKey = `${(options.taskTypes || []).join(',')}|${options.deviceId ?? ''}|${options.sessionUserId ?? ''}|${options.requestedLevels.join(',')}|${options.normalisedPos ?? ''}|${options.limit}`;
+  const cacheKey = `${(options.taskTypes || []).join(',')}|${options.deviceId ?? ''}|${options.sessionUserId ?? ''}|${options.requestedLevels.join(',')}|${options.normalisedPos ?? ''}|${options.limit}|${normaliseShuffleSeed(options.shuffleSeed) ?? ''}`;
   const shouldCache = !options.deviceId && !options.sessionUserId;
 
   if (shouldCache) {

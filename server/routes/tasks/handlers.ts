@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import { eq, sql, notInArray, type SQL } from "drizzle-orm";
+import { eq, inArray, sql, notInArray, type SQL } from "drizzle-orm";
 import type { LexemePos, TaskType } from "@shared";
 import {
   db,
@@ -55,6 +55,7 @@ export function createListTasksHandler(): RequestHandler {
         taskTypes: taskTypesRaw,
         limit,
         deviceId,
+        shuffleSeed,
         level,
         excludeTaskIds: excludeTaskIdsRaw,
       } = parsed.data;
@@ -116,19 +117,19 @@ export function createListTasksHandler(): RequestHandler {
         });
       }
 
-      const requestedLevels = Array.isArray(level)
+      const requestedLevelsRaw = Array.isArray(level)
         ? level
         : typeof level === "string"
         ? [level]
         : [];
+      const requestedLevels = Array.from(new Set(requestedLevelsRaw));
 
-      const applyGlobalLevelFilter =
-        requestedLevels.length === 1 && (resolvedTaskTypes.length <= 1 || resolvedTaskTypes.length === 0);
-      const globalLevel = applyGlobalLevelFilter ? requestedLevels[0]! : null;
-
-      if (applyGlobalLevelFilter && globalLevel) {
+      if (requestedLevels.length > 0) {
         filters.push(
-          sql`upper(coalesce(${lexemes.metadata} ->> 'level', ${taskSpecs.prompt} ->> 'cefrLevel')) = ${globalLevel}`,
+          inArray(
+            sql`upper(coalesce(${lexemes.metadata} ->> 'level', ${taskSpecs.prompt} ->> 'cefrLevel'))`,
+            requestedLevels,
+          ),
         );
       }
 
@@ -142,6 +143,7 @@ export function createListTasksHandler(): RequestHandler {
         requestedLevels,
         sessionUserId,
         deviceId,
+        shuffleSeed,
         recencyThreshold,
         limit,
       });

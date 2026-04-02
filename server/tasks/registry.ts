@@ -37,6 +37,14 @@ export const taskRegistry: Record<TaskType, ServerTaskRegistryEntry> = {
       normalise: true,
     },
   },
+  b2_writing_prompt: {
+    ...sharedRegistry.b2_writing_prompt,
+    queueCap: 3,
+    evaluation: {
+      strategy: 'string-equality',
+      normalise: true,
+    },
+  },
 };
 
 export function getTaskRegistryEntry(taskType: TaskType): ServerTaskRegistryEntry {

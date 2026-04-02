@@ -129,6 +129,32 @@ describe('tasks API', () => {
       enrichmentAppliedAt: null,
       enrichmentMethod: null,
     },
+    {
+      lemma: 'Projekt',
+      pos: 'N',
+      level: 'B2',
+      english: 'project',
+      exampleDe: 'Das Projekt braucht einen klaren Zeitplan.',
+      exampleEn: 'The project needs a clear timeline.',
+      gender: 'das',
+      plural: 'Projekte',
+      separable: null,
+      aux: null,
+      praesensIch: null,
+      praesensEr: null,
+      praeteritum: null,
+      partizipIi: null,
+      perfekt: null,
+      comparative: null,
+      superlative: null,
+      approved: true,
+      complete: true,
+      translations: null,
+      examples: null,
+      posAttributes: null,
+      enrichmentAppliedAt: null,
+      enrichmentMethod: null,
+    },
   ];
 
     ({ seedLexemeInventoryForWords } = await import('./helpers/task-fixtures'));
@@ -200,6 +226,55 @@ describe('tasks API', () => {
     const taskTypes = new Set(body.tasks.map((task: any) => task.taskType));
     expect(taskTypes.has('conjugate_form')).toBe(true);
     expect(taskTypes.has('noun_case_declension')).toBe(true);
+  });
+
+  it('enforces a multi-level allowlist across multiple task types', async () => {
+    const response = await invokeApi(
+      '/api/tasks?taskTypes=conjugate_form&taskTypes=noun_case_declension&level=B1&level=B2&limit=10',
+    );
+
+    expect(response.status).toBe(200);
+    const body = response.bodyJson as any;
+    const tasks = Array.isArray(body.tasks) ? body.tasks : [];
+    expect(tasks.length).toBeGreaterThan(0);
+
+    for (const task of tasks) {
+      const lexemeLevel = typeof task?.lexeme?.metadata?.level === 'string'
+        ? String(task.lexeme.metadata.level).toUpperCase()
+        : null;
+      const promptLevel = typeof task?.prompt?.cefrLevel === 'string'
+        ? String(task.prompt.cefrLevel).toUpperCase()
+        : null;
+      const resolvedLevel = lexemeLevel ?? promptLevel;
+      expect(resolvedLevel).not.toBeNull();
+      expect(['B1', 'B2']).toContain(resolvedLevel);
+    }
+  });
+
+  it('keeps seeded ordering stable and varies order for different seeds', async () => {
+    const deviceId = 'seeded-order-device';
+
+    const first = await invokeApi(
+      `/api/tasks?taskTypes=conjugate_form&taskTypes=noun_case_declension&taskTypes=adj_ending&limit=12&deviceId=${deviceId}&shuffleSeed=seed-alpha`,
+    );
+    const second = await invokeApi(
+      `/api/tasks?taskTypes=conjugate_form&taskTypes=noun_case_declension&taskTypes=adj_ending&limit=12&deviceId=${deviceId}&shuffleSeed=seed-alpha`,
+    );
+    const third = await invokeApi(
+      `/api/tasks?taskTypes=conjugate_form&taskTypes=noun_case_declension&taskTypes=adj_ending&limit=12&deviceId=${deviceId}&shuffleSeed=seed-beta`,
+    );
+
+    expect(first.status).toBe(200);
+    expect(second.status).toBe(200);
+    expect(third.status).toBe(200);
+
+    const firstIds = ((first.bodyJson as any).tasks ?? []).map((task: any) => task.taskId);
+    const secondIds = ((second.bodyJson as any).tasks ?? []).map((task: any) => task.taskId);
+    const thirdIds = ((third.bodyJson as any).tasks ?? []).map((task: any) => task.taskId);
+
+    expect(firstIds.length).toBeGreaterThan(3);
+    expect(secondIds).toEqual(firstIds);
+    expect(thirdIds).not.toEqual(firstIds);
   });
 
   it('records submissions and updates scheduling state', async () => {

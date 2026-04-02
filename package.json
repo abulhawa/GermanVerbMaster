@@ -24,6 +24,7 @@
     "test:all": "npm run test:unit && npm run test:e2e",
     "perf:measure": "tsx scripts/perf-measure.ts",
     "seed": "tsx scripts/seed.ts",
+    "seed:b2": "tsx scripts/seed-b2-tasks.ts",
     "data:export": "tsx scripts/export_verbs_json.ts",
     "validate:env": "tsx scripts/validate-env.ts"
   },

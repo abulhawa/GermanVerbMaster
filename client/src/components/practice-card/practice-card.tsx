@@ -3,6 +3,7 @@ import type { RendererProps } from './types';
 import { DEFAULT_SESSION_PROGRESS, isTaskOfType } from './utils/data';
 import {
   AdjectiveEndingRenderer,
+  B2WritingPromptRenderer,
   ConjugateFormRenderer,
   NounCaseDeclensionRenderer,
   UnsupportedRenderer,
@@ -36,6 +37,15 @@ export function PracticeCard(props: PracticeCardProps) {
       sessionProgress,
     };
     return <AdjectiveEndingRenderer {...rendererProps} />;
+  }
+
+  if (isTaskOfType(props.task, 'b2_writing_prompt')) {
+    const rendererProps: RendererProps<'b2_writing_prompt'> = {
+      ...props,
+      task: props.task,
+      sessionProgress,
+    };
+    return <B2WritingPromptRenderer {...rendererProps} />;
   }
 
   const rendererProps: RendererProps = {

@@ -65,6 +65,18 @@ export const adjectiveEndingSolutionSchema = z.object({
   form: z.string().min(1),
 });
 
+export const b2WritingPromptSchema = z.object({
+  scenario: z.string().min(1),
+  wordBankItems: z.array(z.string().min(1)),
+  cefrLevel: z.string().optional(),
+  taskInstructions: z.string().min(1),
+});
+
+export const b2WritingSolutionSchema = z.object({
+  keyPhrases: z.array(z.string().min(1)),
+  grammarFocus: z.string().min(1),
+});
+
 export type LexemePos =
   | 'verb'
   | 'noun'
@@ -111,6 +123,14 @@ export const taskTypeRegistry = {
     promptSchema: adjectiveEndingPromptSchema,
     solutionSchema: adjectiveEndingSolutionSchema,
     defaultQueueCap: 20,
+  },
+  b2_writing_prompt: {
+    taskType: 'b2_writing_prompt',
+    supportedPos: ['verb', 'adjective', 'noun'],
+    renderer: 'b2_writing_prompt',
+    promptSchema: b2WritingPromptSchema,
+    solutionSchema: b2WritingSolutionSchema,
+    defaultQueueCap: 3,
   },
 } as const satisfies Record<string, TaskRegistryEntryBase>;
 

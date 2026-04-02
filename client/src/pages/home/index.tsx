@@ -6,6 +6,7 @@ import { AppShell } from '@/components/layout/app-shell';
 import { MobileNavBar } from '@/components/layout/mobile-nav-bar';
 import { getPrimaryNavigationItems } from '@/components/layout/navigation';
 import { SidebarNavButton } from '@/components/layout/sidebar-nav-button';
+import { B2Countdown } from '@/components/b2-countdown';
 import { PracticeCard, type PracticeCardResult } from '@/components/practice-card';
 import type { PracticeScope } from '@/components/practice-mode-switcher';
 import { Button } from '@/components/ui/button';
@@ -40,6 +41,7 @@ import { usePracticeProgressPersistence } from './hooks/use-practice-progress-pe
 import { useAnswerHistoryPersistence } from './hooks/use-answer-history-persistence';
 
 export { fetchTasksForActiveTypes } from './use-practice-session';
+const B2_EXAM_DATE = new Date('2026-04-30');
 
 const HOME_SECTION_IDS = {
   page: 'home-page',
@@ -80,12 +82,26 @@ export default function Home() {
   );
 
   const scope = computeScope(settings);
+  const isB2ExamMode = settings.b2ExamMode === true;
   const activeTaskTypes = useMemo(() => {
+    if (isB2ExamMode) {
+      return [
+        'conjugate_form',
+        'adj_ending',
+        'noun_case_declension',
+        'b2_writing_prompt',
+      ] satisfies TaskType[];
+    }
+
     const preferred = settings.preferredTaskTypes.length
       ? settings.preferredTaskTypes
       : [settings.defaultTaskType];
     return normalisePreferredTaskTypes(preferred);
-  }, [settings.preferredTaskTypes, settings.defaultTaskType]);
+  }, [isB2ExamMode, settings.preferredTaskTypes, settings.defaultTaskType]);
+  const levelOverride = useMemo<CEFRLevel[] | undefined>(
+    () => (isB2ExamMode ? ['B1', 'B2'] : undefined),
+    [isB2ExamMode],
+  );
   const verbLevel = getVerbLevel(settings);
   const verbLevelLabelId = useId();
 
@@ -120,6 +136,7 @@ export default function Home() {
     sessionScopeKey,
     userId,
     resolveLevelForPos,
+    levelOverride,
   });
 
   useEffect(() => {
@@ -130,14 +147,18 @@ export default function Home() {
       queryFn: async () => {
         try {
           // limit small to avoid excessive network usage
-          return await fetchPracticeTasks({ taskTypes: activeTaskTypes, limit: 6 });
+          return await fetchPracticeTasks({
+            taskTypes: activeTaskTypes,
+            limit: 6,
+            ...(levelOverride ? { level: levelOverride } : {}),
+          });
         } catch (e) {
           return [] as unknown as ReturnType<typeof fetchPracticeTasks>;
         }
       },
       staleTime: 30_000,
     }).catch(() => undefined);
-  }, [activeTaskTypes]);
+  }, [activeTaskTypes, levelOverride]);
 
   const sessionCompleted = session.completed.length;
   const milestoneTarget = useMemo(() => {
@@ -284,19 +305,22 @@ export default function Home() {
   );
 
   const topBarControls = (
-    <PracticeSettingsPanel
-      scope={scope}
-      scopeBadgeLabel={scopeBadgeLabel}
-      activeTaskTypes={activeTaskTypes}
-      availableTaskTypes={AVAILABLE_TASK_TYPES}
-      verbLevel={verbLevel}
-      verbLevelLabelId={verbLevelLabelId}
-      modeSwitcherId={HOME_SECTION_IDS.modeSwitcher}
-      levelLabel={homeTopBarCopy.levelLabel}
-      onScopeChange={handleScopeChange}
-      onTaskTypesChange={handleCustomTaskTypesChange}
-      onVerbLevelChange={handleVerbLevelChange}
-    />
+    <div className="space-y-2">
+      <PracticeSettingsPanel
+        scope={scope}
+        scopeBadgeLabel={scopeBadgeLabel}
+        activeTaskTypes={activeTaskTypes}
+        availableTaskTypes={AVAILABLE_TASK_TYPES}
+        verbLevel={verbLevel}
+        verbLevelLabelId={verbLevelLabelId}
+        modeSwitcherId={HOME_SECTION_IDS.modeSwitcher}
+        levelLabel={homeTopBarCopy.levelLabel}
+        onScopeChange={handleScopeChange}
+        onTaskTypesChange={handleCustomTaskTypesChange}
+        onVerbLevelChange={handleVerbLevelChange}
+      />
+      <B2Countdown examDate={B2_EXAM_DATE} isActive={isB2ExamMode} />
+    </div>
   );
 
   return (
@@ -325,6 +349,14 @@ export default function Home() {
                     </div>
                   ) : activeTask ? (
                     <div id={HOME_SECTION_IDS.activeCardWrapper}>
+                      {isB2ExamMode ? (
+                        <div className="mb-4 rounded-2xl border border-warning-border bg-warning-muted px-4 py-3 text-sm text-warning-muted-foreground">
+                          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-warning-strong">
+                            {translations.home.b2Banner.title}
+                          </p>
+                          <p className="mt-1 text-sm">{translations.home.b2Banner.description}</p>
+                        </div>
+                      ) : null}
                       {session.isReviewSession ? (
                         <div className="mb-4 rounded-2xl border border-primary/40 bg-primary/10 px-4 py-3 text-sm text-primary">
                           <p className="text-xs font-semibold uppercase tracking-[0.22em]">

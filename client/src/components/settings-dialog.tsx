@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import type { PracticeSettingsState, TaskType, CEFRLevel } from '@shared';
+import { useTranslations } from '@/locales';
 
 import {
   Dialog,
@@ -36,6 +37,7 @@ import {
 
 import {
   updateCefrLevel,
+  updateB2ExamMode,
   updateRendererPreferences,
 } from '@/lib/practice-settings';
 
@@ -63,6 +65,23 @@ interface SettingsDialogProps extends DebuggableComponentProps {
 }
 
 const LEVELS: CEFRLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+const B2_EXAM_DATE = new Date('2026-04-30');
+
+function toDateOnly(value: Date): Date {
+  return new Date(value.getFullYear(), value.getMonth(), value.getDate());
+}
+
+function computeDaysUntil(examDate: Date): number {
+  const today = toDateOnly(new Date());
+  const target = toDateOnly(examDate);
+  return Math.floor((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+}
+
+function formatTemplate(template: string, replacements: Record<string, string>): string {
+  return Object.entries(replacements).reduce((message, [token, value]) => {
+    return message.replaceAll(`{${token}}`, value);
+  }, template);
+}
 
 export function SettingsDialog({
   settings,
@@ -79,6 +98,8 @@ export function SettingsDialog({
 
   showTrigger = true,
 }: SettingsDialogProps) {
+  const translations = useTranslations();
+  const b2Copy = translations.settingsDialog.b2ExamMode;
   const resolvedDebugId =
     debugId && debugId.trim().length > 0 ? debugId : 'settings-dialog';
 
@@ -100,6 +121,7 @@ export function SettingsDialog({
   const [themeSetting, setThemeSetting] = useState<ThemeSetting>('system');
   const [hasMountedTheme, setHasMountedTheme] = useState(false);
   const [open, setOpen] = useState(false);
+  const daysUntilExam = computeDaysUntil(B2_EXAM_DATE);
 
   const handleLevelChange = (level: CEFRLevel) => {
     const next = updateCefrLevel(settings, { pos: 'verb', level });
@@ -117,6 +139,11 @@ export function SettingsDialog({
       preferences: { [field]: value },
     });
 
+    onSettingsChange(next);
+  };
+
+  const handleB2ExamModeChange = (enabled: boolean) => {
+    const next = updateB2ExamMode(settings, enabled);
     onSettingsChange(next);
   };
 
@@ -300,6 +327,30 @@ export function SettingsDialog({
                 handlePreferenceChange('showHints', checked)
               }
             />
+          </div>
+
+          <div className="space-y-3 rounded-2xl border border-warning-border/70 bg-warning-muted p-4">
+            <div className="space-y-1">
+              <Label debugId={`${resolvedDebugId}-b2-label`} htmlFor="b2-exam-mode">
+                {b2Copy.label}
+              </Label>
+              <p className="text-xs text-warning-muted-foreground">
+                {b2Copy.description}
+              </p>
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <Switch
+                id="b2-exam-mode"
+                debugId={`${resolvedDebugId}-b2-switch`}
+                checked={settings.b2ExamMode}
+                onCheckedChange={handleB2ExamModeChange}
+              />
+              {settings.b2ExamMode && daysUntilExam >= 0 ? (
+                <span className="text-xs font-semibold text-warning-strong">
+                  {formatTemplate(b2Copy.countdown, { days: String(daysUntilExam) })}
+                </span>
+              ) : null}
+            </div>
           </div>
 
           <div className="flex items-center justify-between gap-4">

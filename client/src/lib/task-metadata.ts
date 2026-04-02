@@ -33,6 +33,12 @@ export const TASK_TYPE_COPY: Record<TaskType, TaskCopy> = {
     posLabel: 'Adjectives',
     pos: 'adjective',
   },
+  b2_writing_prompt: {
+    label: 'B2 writing prompt',
+    description: 'Practice formal B2 responses with guided key phrases.',
+    posLabel: 'B2 writing',
+    pos: 'verb',
+  },
 };
 
 export function getTaskTypeCopy(taskType: TaskType): TaskCopy {

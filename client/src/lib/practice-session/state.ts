@@ -25,7 +25,7 @@ export interface PracticeSessionState {
 }
 
 export const CURRENT_SESSION_STATE_VERSION = 3;
-export const MAX_RECENT_HISTORY = 50;
+export const MAX_RECENT_HISTORY = 35;
 
 export function cloneLeitnerState(state: LeitnerState | null): LeitnerState | null {
   if (!state) {

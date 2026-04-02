@@ -16,6 +16,15 @@ const LEITNER_INTERVAL_PRESETS: Array<{ max: number; intervals: number[] }> = [
   { max: Number.POSITIVE_INFINITY, intervals: [1, 4, 9, 16, 24] },
 ];
 
+function shuffleArray<T>(items: T[]): T[] {
+  const shuffled = [...items];
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+  }
+  return shuffled;
+}
+
 function computeLeitnerIntervals(totalTasks: number): number[] {
   const preset = LEITNER_INTERVAL_PRESETS.find((option) => totalTasks <= option.max) ?? LEITNER_INTERVAL_PRESETS[0];
   return [...preset.intervals];
@@ -94,14 +103,15 @@ function refillQueueFromLeitner(
     }
   }
 
-  dueNow.sort((a, b) => {
+  const shuffledDueNow = shuffleArray(dueNow);
+  shuffledDueNow.sort((a, b) => {
     if (a.dueStep !== b.dueStep) {
       return a.dueStep - b.dueStep;
     }
-    return a.box - b.box;
+    return 0;
   });
 
-  for (const entry of dueNow) {
+  for (const entry of shuffledDueNow) {
     if (queueSet.has(entry.taskId)) {
       continue;
     }
@@ -145,8 +155,9 @@ export function enqueueTasks(
   }
 
   let reviewSession = replace ? false : state.isReviewSession;
+  const shuffledTasks = shuffleArray(tasks);
 
-  for (const task of tasks) {
+  for (const task of shuffledTasks) {
     const existingEntry = nextLeitner?.entries[task.taskId];
 
     if (nextLeitner && !existingEntry) {
@@ -291,3 +302,8 @@ export function markLeitnerServerExhausted(state: PracticeSessionState): Practic
     },
   } satisfies PracticeSessionState;
 }
+
+export const __TEST_ONLY__ = {
+  refillQueueFromLeitner,
+  shuffleArray,
+};

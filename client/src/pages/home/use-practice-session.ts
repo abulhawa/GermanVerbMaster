@@ -16,6 +16,7 @@ import type { CEFRLevel, LexemePos, TaskType } from '@shared';
 
 export const MIN_QUEUE_THRESHOLD = 5;
 const FETCH_LIMIT = 15;
+const MAX_EXCLUDE_TASK_IDS = 30;
 
 type FetchPracticeTasksFn = (
   options: MultiTaskFetchOptions,
@@ -28,6 +29,7 @@ interface FetchTasksForActiveTypesOptions {
   fetcher?: FetchPracticeTasksFn;
   excludeTaskIds?: string[];
   shuffleSeed?: string;
+  levelOverride?: CEFRLevel[];
 }
 
 interface FetchTasksForActiveTypesResult {
@@ -57,6 +59,7 @@ export async function fetchTasksForActiveTypes({
   fetcher = fetchPracticeTasksByType,
   excludeTaskIds,
   shuffleSeed,
+  levelOverride,
 }: FetchTasksForActiveTypesOptions): Promise<FetchTasksForActiveTypesResult> {
   const resolvedShuffleSeed = shuffleSeed ?? createShuffleSeed();
   const taskLevels = taskTypes.map((taskType) => {
@@ -64,12 +67,13 @@ export async function fetchTasksForActiveTypes({
     const pos = entry?.supportedPos[0];
     return pos ? resolveLevelForPos(pos) : resolveLevelForPos('verb');
   });
+  const resolvedLevel = levelOverride && levelOverride.length > 0 ? levelOverride : taskLevels;
 
   try {
     const groupedTasks = await fetcher({
       taskTypes,
       limit: perTypeLimit,
-      level: taskLevels,
+      level: resolvedLevel,
       excludeTaskIds,
       shuffleSeed: resolvedShuffleSeed,
     });
@@ -133,6 +137,7 @@ export interface UseHomePracticeSessionOptions {
   sessionScopeKey: string;
   userId: string | null | undefined;
   resolveLevelForPos: (pos: LexemePos) => CEFRLevel;
+  levelOverride?: CEFRLevel[];
 }
 
 export interface QueueDiagnosticsSnapshot {
@@ -164,6 +169,7 @@ export function useHomePracticeSession({
   sessionScopeKey,
   userId,
   resolveLevelForPos,
+  levelOverride,
 }: UseHomePracticeSessionOptions): UseHomePracticeSessionResult {
   const [session, setSession] = useState<PracticeSessionState>(() =>
     loadPracticeSession({ scopeKey: sessionScopeKey, userId }),
@@ -266,7 +272,7 @@ export function useHomePracticeSession({
         : replace
           ? [...currentSession.queue, ...currentSession.recent]
           : currentSession.queue;
-      const excludeTaskIds = Array.from(new Set(exclusionSources)).slice(0, 80);
+      const excludeTaskIds = Array.from(new Set(exclusionSources)).slice(0, MAX_EXCLUDE_TASK_IDS);
       const normalizedExcludeTaskIds = excludeTaskIds.length ? excludeTaskIds : undefined;
       const baseSignature = createQueueSignature(baseQueue, activeTaskTypes);
 
@@ -279,6 +285,7 @@ export function useHomePracticeSession({
           taskTypes: activeTaskTypes,
           perTypeLimit,
           resolveLevelForPos,
+          levelOverride,
           ...(normalizedExcludeTaskIds ? { excludeTaskIds: normalizedExcludeTaskIds } : {}),
           ...(mode === 'shuffle' ? { shuffleSeed: createShuffleSeed() } : {}),
         });
@@ -359,7 +366,7 @@ export function useHomePracticeSession({
         setIsFetchingTasks(false);
       }
     },
-    [activeTaskTypes, resolveLevelForPos],
+    [activeTaskTypes, levelOverride, resolveLevelForPos],
   );
 
   useEffect(() => {

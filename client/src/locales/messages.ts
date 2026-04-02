@@ -98,6 +98,20 @@ export interface PracticeCardMessages {
     syntacticFrameLabel: string;
     instruction: string;
   };
+  b2Writing: {
+    placeholder: string;
+    ariaLabel: string;
+    submit: string;
+    scenarioLabel: string;
+    wordBankLabel: string;
+    responseLabel: string;
+    grammarFocusLabel: string;
+    modelAnswerLabel: string;
+    sentenceRequirement: string;
+    matchSummary: string;
+    showGrammarFocus: string;
+    hideGrammarFocus: string;
+  };
   unsupported: {
     title: string;
     description: string;
@@ -194,6 +208,22 @@ export interface HomeMessages {
       no: string;
     };
   };
+  b2Banner: {
+    title: string;
+    description: string;
+  };
+  b2Countdown: {
+    upcoming: string;
+    today: string;
+  };
+}
+
+export interface SettingsDialogMessages {
+  b2ExamMode: {
+    label: string;
+    description: string;
+    countdown: string;
+  };
 }
 
 export interface AuthMessages {
@@ -276,6 +306,7 @@ export interface AppMessages {
   practiceCard: PracticeCardMessages;
   progressDisplay: ProgressDisplayMessages;
   home: HomeMessages;
+  settingsDialog: SettingsDialogMessages;
   auth: AuthMessages;
 }
 
@@ -345,6 +376,21 @@ const MESSAGES: Record<Locale, AppMessages> = {
           yes: 'Yes',
           no: 'No',
         },
+      },
+      b2Banner: {
+        title: 'B2 Exam Mode',
+        description: 'Focusing on B1/B2 level tasks.',
+      },
+      b2Countdown: {
+        upcoming: '📅 B2 in {days} days',
+        today: '📅 B2 today! Viel Erfolg! 🍀',
+      },
+    },
+    settingsDialog: {
+      b2ExamMode: {
+        label: 'B2 Exam Preparation',
+        description: 'Focus on B1/B2 vocabulary and grammar patterns for the telc Deutsch B2 Beruf exam.',
+        countdown: '{days} days until 30 April 2026',
       },
     },
     auth: {
@@ -528,6 +574,20 @@ const MESSAGES: Record<Locale, AppMessages> = {
         syntacticFrameLabel: 'Frame:',
         instruction: 'Give the {degreeLabel} form of "{lemma}"',
       },
+      b2Writing: {
+        placeholder: 'Write your formal response in German...',
+        ariaLabel: 'Write your B2 response',
+        submit: 'Submit response',
+        scenarioLabel: 'Scenario',
+        wordBankLabel: 'Word bank',
+        responseLabel: 'Your response',
+        grammarFocusLabel: 'Grammar focus',
+        modelAnswerLabel: 'Model answer phrases',
+        sentenceRequirement: 'Write at least 2 sentences before submitting.',
+        matchSummary: '{matched}/{total} key phrases matched',
+        showGrammarFocus: 'Show hint',
+        hideGrammarFocus: 'Hide hint',
+      },
       unsupported: {
         title: 'Renderer missing',
         description: `No renderer is available for task type ${PRACTICE_CARD_PLACEHOLDER}.`,
@@ -653,6 +713,21 @@ const MESSAGES: Record<Locale, AppMessages> = {
           yes: 'Ja',
           no: 'Nein',
         },
+      },
+      b2Banner: {
+        title: 'B2-Prüfungsmodus',
+        description: 'Fokus auf Aufgaben auf B1/B2-Niveau.',
+      },
+      b2Countdown: {
+        upcoming: '📅 B2 in {days} Tagen',
+        today: '📅 B2 heute! Viel Erfolg! 🍀',
+      },
+    },
+    settingsDialog: {
+      b2ExamMode: {
+        label: 'B2-Prüfungsvorbereitung',
+        description: 'Fokussiere Wortschatz und Grammatikmuster auf B1/B2-Niveau für die telc Deutsch B2 Beruf Prüfung.',
+        countdown: '{days} Tage bis zum 30. April 2026',
       },
     },
     auth: {
@@ -835,6 +910,20 @@ const MESSAGES: Record<Locale, AppMessages> = {
         ariaLabel: 'Adjektivform eingeben',
         syntacticFrameLabel: 'Rahmen:',
         instruction: 'Bilde die {degreeLabel}form von „{lemma}“',
+      },
+      b2Writing: {
+        placeholder: 'Schreibe deine formelle Antwort auf Deutsch...',
+        ariaLabel: 'B2-Antwort eingeben',
+        submit: 'Antwort einreichen',
+        scenarioLabel: 'Szenario',
+        wordBankLabel: 'Wortbank',
+        responseLabel: 'Deine Antwort',
+        grammarFocusLabel: 'Grammatikfokus',
+        modelAnswerLabel: 'Musterantwort-Phrasen',
+        sentenceRequirement: 'Schreibe mindestens 2 Sätze, bevor du einreichst.',
+        matchSummary: '{matched}/{total} Schlüsselphrasen gefunden',
+        showGrammarFocus: 'Hinweis anzeigen',
+        hideGrammarFocus: 'Hinweis ausblenden',
       },
       unsupported: {
         title: 'Renderer fehlt',

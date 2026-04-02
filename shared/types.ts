@@ -238,6 +238,7 @@ export interface PracticeSettingsState {
   version: number;
   defaultTaskType: TaskType;
   preferredTaskTypes: TaskType[];
+  b2ExamMode: boolean;
   cefrLevelByPos: Partial<Record<LexemePos, CEFRLevel>>;
   rendererPreferences: Record<TaskType, PracticeSettingsRendererPreferences>;
   legacyVerbLevel?: CEFRLevel;

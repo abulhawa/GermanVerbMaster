@@ -1,6 +1,6 @@
 /* @vitest-environment jsdom */
 
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -141,6 +141,44 @@ describe('Home navigation - practice workflows', () => {
         expect.objectContaining({ taskTypes: ['noun_case_declension'], level: ['B1'] }),
       );
     });
+  });
+
+  it('hard-overrides task types and level filter when B2 exam mode is active', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-04-02T12:00:00.000Z'));
+
+    try {
+      seedPracticeSettings({
+        b2ExamMode: true,
+        preferredTaskTypes: ['conjugate_form'],
+        defaultTaskType: 'conjugate_form',
+      });
+
+      mockFetchPracticeTasks.mockImplementation(async ({ taskTypes = [], limit = 15 }) => {
+        return taskTypes.reduce((acc, type) => {
+          acc[type] = Array.from({ length: limit }, (_, index) => buildPracticeTask(type, index));
+          return acc;
+        }, {} as Record<TaskType, PracticeTask[]>);
+      });
+
+      renderHome();
+
+      await waitFor(() => {
+        expect(mockFetchPracticeTasks).toHaveBeenCalledWith(
+          expect.objectContaining({
+            taskTypes: ['conjugate_form', 'adj_ending', 'noun_case_declension', 'b2_writing_prompt'],
+            level: ['B1', 'B2'],
+            limit: 4,
+          }),
+        );
+      });
+
+      expect(await screen.findByText('B2 Exam Mode')).toBeInTheDocument();
+      expect(screen.getByText('Focusing on B1/B2 level tasks.')).toBeInTheDocument();
+      expect(screen.getByText(/B2 in \d+ days/)).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('updates preferred task types when selecting a custom mix', async () => {

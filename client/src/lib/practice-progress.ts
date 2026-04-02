@@ -28,6 +28,7 @@ function createEmptyTotals(): Record<TaskType, TaskProgressSummary> {
     conjugate_form: { ...EMPTY_SUMMARY, lexemes: {} },
     noun_case_declension: { ...EMPTY_SUMMARY, lexemes: {} },
     adj_ending: { ...EMPTY_SUMMARY, lexemes: {} },
+    b2_writing_prompt: { ...EMPTY_SUMMARY, lexemes: {} },
   };
 }
 

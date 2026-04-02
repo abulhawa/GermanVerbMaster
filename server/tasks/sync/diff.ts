@@ -50,6 +50,7 @@ type FeatureQuery = Partial<Record<FeatureKey, string | number>>;
 type InflectionIndex = Map<string, Map<string, string>>;
 
 const FEATURE_KEY_ORDER: readonly FeatureKey[] = ['tense', 'mood', 'person', 'number', 'aspect', 'case', 'degree'];
+const PRESERVED_MANUAL_TASK_TYPES = new Set<string>(['b2_writing_prompt']);
 
 const SUPPORTED_FEATURE_COMBINATIONS: readonly FeatureKey[][] = [
   ['tense', 'mood', 'person', 'number'],
@@ -181,7 +182,12 @@ export function calculateTaskSyncPlan(input: TaskSyncComputationInput): TaskSync
       continue;
     }
 
+    const hasExpectedTemplates = expectedIds.size > 0 && expectedTypes.size > 0;
+
     if (!expectedIds.has(task.id) || !expectedTypes.has(task.taskType)) {
+      if (hasExpectedTemplates && PRESERVED_MANUAL_TASK_TYPES.has(task.taskType)) {
+        continue;
+      }
       staleTaskIds.push(task.id);
     }
   }

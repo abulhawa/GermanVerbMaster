@@ -16,6 +16,7 @@ export const TASK_TYPE_TO_SCOPE: Record<TaskType, PracticeScope> = {
   conjugate_form: 'verbs',
   noun_case_declension: 'nouns',
   adj_ending: 'adjectives',
+  b2_writing_prompt: 'custom',
 };
 
 export const SCOPE_LABELS: Record<PracticeScope, string> = {
@@ -177,9 +178,10 @@ export function buildPracticeSessionScopeKey(settings: PracticeSettingsState): s
     return `${pos}-${level}`;
   }).filter((value): value is string => Boolean(value));
 
-  if (!segments.length) {
-    return 'default';
+  const baseScopeKey = segments.length ? segments.join('__') : 'default';
+  if (!settings.b2ExamMode) {
+    return baseScopeKey;
   }
 
-  return segments.join('__');
+  return `${baseScopeKey}__b2`;
 }

@@ -6,6 +6,7 @@ import {
   loadPracticeSettings,
   savePracticeSettings,
   updateCefrLevel,
+  updateB2ExamMode,
   updatePreferredTaskTypes,
   updateRendererPreferences,
   createDefaultSettings,
@@ -207,9 +208,25 @@ describe('practice state migrations', () => {
     const settings = loadPracticeSettings();
     expect(settings.cefrLevelByPos.verb).toBe('B1');
     expect(settings.rendererPreferences.conjugate_form.showHints).toBe(false);
+    expect(settings.b2ExamMode).toBe(false);
     expect(localStorage.getItem('practice.settings.migrated')).toBe('1');
     expect(localStorage.getItem('settings')).toBeNull();
     expect(localStorage.getItem('practice.settings')).not.toBeNull();
+  });
+
+  it('normalizes stored settings that predate b2ExamMode', () => {
+    const defaults = createDefaultSettings();
+    const migratedLikePayload = {
+      ...defaults,
+      b2ExamMode: undefined,
+    } as unknown as Record<string, unknown>;
+
+    delete migratedLikePayload.b2ExamMode;
+    localStorage.setItem('practice.settings.migrated', '1');
+    localStorage.setItem('practice.settings', JSON.stringify(migratedLikePayload));
+
+    const loaded = loadPracticeSettings();
+    expect(loaded.b2ExamMode).toBe(false);
   });
 
   it('updates settings helpers', () => {
@@ -220,11 +237,13 @@ describe('practice state migrations', () => {
       taskType: 'conjugate_form',
       preferences: { showHints: false },
     });
+    settings = updateB2ExamMode(settings, true);
 
     savePracticeSettings(settings);
     const loaded = loadPracticeSettings();
     expect(loaded.cefrLevelByPos.verb).toBe('B2');
     expect(loaded.rendererPreferences.conjugate_form.showHints).toBe(false);
+    expect(loaded.b2ExamMode).toBe(true);
   });
 
   it('persists practice session state', () => {

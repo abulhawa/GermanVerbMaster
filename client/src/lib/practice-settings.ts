@@ -1,6 +1,7 @@
 import { resolveLocalStorage } from '@/lib/storage';
 import type { PracticeSettingsRendererPreferences, PracticeSettingsState, TaskType } from '@shared';
 import type { CEFRLevel, LexemePos } from '@shared';
+import { listClientTaskTypes } from '@/lib/tasks';
 
 const STORAGE_KEY = 'practice.settings';
 const LEGACY_STORAGE_KEY = 'settings';
@@ -24,11 +25,13 @@ export function createDefaultSettings(): PracticeSettingsState {
     version: 1,
     defaultTaskType: 'conjugate_form',
     preferredTaskTypes: ['conjugate_form'],
+    b2ExamMode: false,
     cefrLevelByPos: { verb: 'A1' },
     rendererPreferences: {
       conjugate_form: { ...DEFAULT_RENDERER_PREFS },
       noun_case_declension: { ...DEFAULT_RENDERER_PREFS },
       adj_ending: { ...DEFAULT_RENDERER_PREFS },
+      b2_writing_prompt: { ...DEFAULT_RENDERER_PREFS },
     },
     legacyVerbLevel: 'A1',
     migratedFromLegacy: false,
@@ -93,6 +96,29 @@ function parseSettings(raw: string): PracticeSettingsState | null {
   }
 }
 
+function normaliseSettings(parsed: PracticeSettingsState): PracticeSettingsState {
+  const defaults = createDefaultSettings();
+  const availableTaskTypes = new Set(listClientTaskTypes());
+  const preferredTaskTypes = Array.isArray(parsed.preferredTaskTypes)
+    ? parsed.preferredTaskTypes.filter((taskType): taskType is TaskType => availableTaskTypes.has(taskType))
+    : [];
+  const defaultTaskType = availableTaskTypes.has(parsed.defaultTaskType)
+    ? parsed.defaultTaskType
+    : defaults.defaultTaskType;
+
+  return {
+    ...defaults,
+    ...parsed,
+    defaultTaskType,
+    preferredTaskTypes: preferredTaskTypes.length > 0 ? preferredTaskTypes : [defaultTaskType],
+    b2ExamMode: parsed.b2ExamMode === true,
+    rendererPreferences: {
+      ...defaults.rendererPreferences,
+      ...(parsed.rendererPreferences ?? {}),
+    },
+  } satisfies PracticeSettingsState;
+}
+
 function ensureSettings(storage: Storage): PracticeSettingsState {
   const marker = storage.getItem(MIGRATION_MARKER_KEY);
   if (marker !== '1') {
@@ -109,7 +135,7 @@ function ensureSettings(storage: Storage): PracticeSettingsState {
     storage.removeItem(STORAGE_KEY);
     return createDefaultSettings();
   }
-  return parsed;
+  return normaliseSettings(parsed);
 }
 
 export function loadPracticeSettings(): PracticeSettingsState {
@@ -187,6 +213,17 @@ export function updatePreferredTaskTypes(
     ...state,
     preferredTaskTypes: unique.length ? unique : state.preferredTaskTypes,
     defaultTaskType: unique[0] ?? state.defaultTaskType,
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+export function updateB2ExamMode(
+  state: PracticeSettingsState,
+  enabled: boolean,
+): PracticeSettingsState {
+  return {
+    ...state,
+    b2ExamMode: enabled,
     updatedAt: new Date().toISOString(),
   };
 }

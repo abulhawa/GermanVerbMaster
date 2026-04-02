@@ -152,6 +152,35 @@ function createEszettAdjectiveTask(): PracticeTask<'adj_ending'> {
   } satisfies PracticeTask<'adj_ending'>;
 }
 
+function createB2WritingTask(): PracticeTask<'b2_writing_prompt'> {
+  const registry = clientTaskRegistry.b2_writing_prompt;
+  return {
+    taskId: 'b2-task-1',
+    lexemeId: 'lex-b2-1',
+    taskType: 'b2_writing_prompt',
+    pos: 'verb',
+    renderer: registry.renderer,
+    prompt: {
+      scenario: 'Ihr Kollege bittet Sie um eine Stellungnahme zum neuen Projektplan.',
+      wordBankItems: ['wuerde', 'meiner Meinung nach', 'jedoch', 'koennten Sie'],
+      cefrLevel: 'B2',
+      taskInstructions: 'Schreiben Sie eine kurze formelle Antwort in mindestens zwei Saetzen.',
+    },
+    expectedSolution: {
+      keyPhrases: ['wuerde', 'meiner Meinung nach', 'jedoch', 'koennten sie'],
+      grammarFocus: 'Nutzen Sie Konjunktiv II fuer einen hoeflichen Ton.',
+    },
+    queueCap: registry.defaultQueueCap,
+    lexeme: {
+      id: 'lex-b2-1',
+      lemma: 'antworten',
+      metadata: { level: 'B2' },
+    },
+    assignedAt: new Date('2024-01-01T00:00:00.000Z').toISOString(),
+    source: 'seed',
+  } satisfies PracticeTask<'b2_writing_prompt'>;
+}
+
 function getDefaultSettings(): PracticeSettingsState {
   return createDefaultSettings();
 }
@@ -371,6 +400,43 @@ describe('PracticeCard', () => {
         expect.objectContaining({ result: 'correct', submittedResponse: 'heisser' }),
       );
     });
+  });
+
+  it('scores B2 writing prompts via key phrase matching and shows model phrases after submit', async () => {
+    const onResult = vi.fn<(result: PracticeCardResult) => void>();
+    const task = createB2WritingTask();
+    const settings = getDefaultSettings();
+
+    renderWithLocale(<PracticeCard task={task} settings={settings} onResult={onResult} />);
+
+    expect(screen.getByText(task.prompt.scenario)).toBeInTheDocument();
+
+    const input = screen.getByLabelText(/write your b2 response/i);
+    await userEvent.type(
+      input,
+      'Ich wuerde den Vorschlag so umsetzen. Meiner Meinung nach sollten wir den Plan frueher teilen.',
+    );
+    await userEvent.click(screen.getByRole('button', { name: /submit response/i }));
+
+    await waitFor(() => {
+      expect(submitPracticeAttempt).toHaveBeenCalledTimes(1);
+    });
+
+    const payload = vi.mocked(submitPracticeAttempt).mock.calls[0][0];
+    expect(payload.taskType).toBe('b2_writing_prompt');
+    expect(payload.result).toBe('correct');
+    expect(payload.submittedResponse).toContain('Ich wuerde');
+
+    await waitFor(() => {
+      expect(onResult).toHaveBeenCalledWith(expect.objectContaining({ result: 'correct' }));
+    });
+
+    expect(screen.getByText('Model answer phrases')).toBeInTheDocument();
+    expect(screen.getByText('2/4 key phrases matched')).toBeInTheDocument();
+    expect(screen.getAllByText('wuerde').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('meiner Meinung nach').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('jedoch').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('koennten sie').length).toBeGreaterThan(0);
   });
 
   it('displays the CEFR level from lexeme metadata when provided as a string', () => {
