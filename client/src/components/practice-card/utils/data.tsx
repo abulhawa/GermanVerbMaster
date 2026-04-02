@@ -141,8 +141,9 @@ interface ExampleContent {
 }
 
 export function resolveExampleContent(task: PracticeTask): ExampleContent | null {
+  const promptRecord = toRecord(task.prompt);
   return (
-    extractExampleFromCandidate(task.prompt?.example) ??
+    extractExampleFromCandidate(promptRecord?.example) ??
     extractExampleFromMetadata(task.lexeme?.metadata ?? null)
   );
 }

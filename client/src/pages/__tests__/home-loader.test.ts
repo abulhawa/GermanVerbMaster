@@ -43,11 +43,14 @@ describe('fetchTasksForActiveTypes', () => {
     });
 
     expect(fetcher).toHaveBeenCalledTimes(1);
-    expect(fetcher).toHaveBeenCalledWith({
-      taskTypes: ['conjugate_form', 'noun_case_declension'],
-      limit: 5,
-      level: ['A1', 'A2'],
-    });
+    expect(fetcher).toHaveBeenCalledWith(
+      expect.objectContaining({
+        taskTypes: ['conjugate_form', 'noun_case_declension'],
+        limit: 5,
+        level: ['A1', 'A2'],
+      }),
+    );
+    expect(fetcher.mock.calls[0]?.[0]?.shuffleSeed).toEqual(expect.any(String));
     expect(result.tasksByType).toEqual([verbTasks, nounTasks]);
     expect(result.errors).toHaveLength(0);
   });
@@ -66,11 +69,14 @@ describe('fetchTasksForActiveTypes', () => {
     });
 
     expect(fetcher).toHaveBeenCalledTimes(1);
-    expect(fetcher).toHaveBeenCalledWith({
-      taskTypes: ['conjugate_form', 'noun_case_declension'],
-      limit: 5,
-      level: ['A1', 'A2'],
-    });
+    expect(fetcher).toHaveBeenCalledWith(
+      expect.objectContaining({
+        taskTypes: ['conjugate_form', 'noun_case_declension'],
+        limit: 5,
+        level: ['A1', 'A2'],
+      }),
+    );
+    expect(fetcher.mock.calls[0]?.[0]?.shuffleSeed).toEqual(expect.any(String));
     expect(result.tasksByType).toEqual([[], []]);
     expect(result.errors).toEqual([
       { taskType: 'conjugate_form', error },

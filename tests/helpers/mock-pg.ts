@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 
 import { newDb, type IMemoryDb } from 'pg-mem';
 import { Pool, types, type PoolClient, type QueryResult } from 'pg';
@@ -292,6 +292,23 @@ export function createMockPool(): Pool {
       const text = input ?? '';
       const from = Math.max((Number(start) || 1) - 1, 0);
       return text.substring(from);
+    },
+  });
+  mem.public.registerFunction({
+    name: 'md5',
+    args: ['text'],
+    returns: 'text',
+    implementation: (input: string) => createHash('md5').update(input ?? '').digest('hex'),
+  });
+  mem.public.registerFunction({
+    name: 'jsonb_array_length',
+    args: ['jsonb'],
+    returns: 'int4',
+    implementation: (value: unknown) => {
+      if (!Array.isArray(value)) {
+        throw new Error('cannot get array length of a scalar');
+      }
+      return value.length;
     },
   });
 
