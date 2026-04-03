@@ -10,6 +10,7 @@ import { B2Countdown } from '@/components/b2-countdown';
 import { PracticeCard, type PracticeCardResult } from '@/components/practice-card';
 import type { PracticeScope } from '@/components/practice-mode-switcher';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuthSession } from '@/auth/session';
 import { updateCefrLevel, updatePreferredTaskTypes } from '@/lib/practice-settings';
 import { recordTaskResult } from '@/lib/practice-progress';
@@ -62,7 +63,6 @@ const HOME_SECTION_IDS = {
 
 export default function Home() {
   const { settings, updateSettings } = usePracticeSettings();
-  const sessionScopeKey = useMemo(() => buildPracticeSessionScopeKey(settings), [settings]);
   const authSession = useAuthSession();
   const authSessionUserId = authSession.data?.user?.id ?? null;
   const userId = authSession.status === 'pending' ? undefined : authSessionUserId;
@@ -83,13 +83,24 @@ export default function Home() {
 
   const scope = computeScope(settings);
   const isB2ExamMode = settings.b2ExamMode === true;
+  const [activePracticeTab, setActivePracticeTab] = useState<'words' | 'writing'>('words');
+  const sessionScopeKey = useMemo(() => {
+    const baseScopeKey = buildPracticeSessionScopeKey(settings);
+    if (!isB2ExamMode) {
+      return `${baseScopeKey}__words`;
+    }
+    return `${baseScopeKey}__${activePracticeTab}`;
+  }, [activePracticeTab, isB2ExamMode, settings]);
   const activeTaskTypes = useMemo(() => {
+    if (isB2ExamMode && activePracticeTab === 'writing') {
+      return ['b2_writing_prompt'] satisfies TaskType[];
+    }
+
     if (isB2ExamMode) {
       return [
         'conjugate_form',
         'adj_ending',
         'noun_case_declension',
-        'b2_writing_prompt',
       ] satisfies TaskType[];
     }
 
@@ -97,13 +108,24 @@ export default function Home() {
       ? settings.preferredTaskTypes
       : [settings.defaultTaskType];
     return normalisePreferredTaskTypes(preferred);
-  }, [isB2ExamMode, settings.preferredTaskTypes, settings.defaultTaskType]);
+  }, [activePracticeTab, isB2ExamMode, settings.preferredTaskTypes, settings.defaultTaskType]);
   const levelOverride = useMemo<CEFRLevel[] | undefined>(
-    () => (isB2ExamMode ? ['B1', 'B2'] : undefined),
-    [isB2ExamMode],
+    () => {
+      if (!isB2ExamMode) {
+        return undefined;
+      }
+      return activePracticeTab === 'writing' ? ['B2'] : ['B1', 'B2'];
+    },
+    [activePracticeTab, isB2ExamMode],
   );
   const verbLevel = getVerbLevel(settings);
   const verbLevelLabelId = useId();
+
+  useEffect(() => {
+    if (!isB2ExamMode && activePracticeTab !== 'words') {
+      setActivePracticeTab('words');
+    }
+  }, [activePracticeTab, isB2ExamMode]);
 
   const resolveLevelForPos = useCallback(
     (pos: LexemePos): CEFRLevel => {
@@ -349,6 +371,22 @@ export default function Home() {
                     </div>
                   ) : activeTask ? (
                     <div id={HOME_SECTION_IDS.activeCardWrapper}>
+                      {isB2ExamMode ? (
+                        <Tabs
+                          value={activePracticeTab}
+                          onValueChange={(value) => setActivePracticeTab(value as 'words' | 'writing')}
+                          className="mb-4"
+                        >
+                          <TabsList className="grid h-10 w-full max-w-xs grid-cols-2 rounded-full bg-card/60 p-1">
+                            <TabsTrigger value="words" className="rounded-full">
+                              {translations.home.practiceTabs.words}
+                            </TabsTrigger>
+                            <TabsTrigger value="writing" className="rounded-full">
+                              {translations.home.practiceTabs.writing}
+                            </TabsTrigger>
+                          </TabsList>
+                        </Tabs>
+                      ) : null}
                       {isB2ExamMode ? (
                         <div className="mb-4 rounded-2xl border border-warning-border bg-warning-muted px-4 py-3 text-sm text-warning-muted-foreground">
                           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-warning-strong">

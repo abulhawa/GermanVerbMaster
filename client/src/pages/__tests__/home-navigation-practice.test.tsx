@@ -142,7 +142,7 @@ describe('Home navigation - practice workflows', () => {
     });
   });
 
-  it('hard-overrides task types and level filter when B2 exam mode is active', async () => {
+  it('keeps B2 writing on a separate tab from word tasks', async () => {
     vi.useFakeTimers({ toFake: ['Date'] });
     vi.setSystemTime(new Date('2026-04-02T12:00:00.000Z'));
 
@@ -165,9 +165,9 @@ describe('Home navigation - practice workflows', () => {
       await waitFor(() => {
         expect(mockFetchPracticeTasks).toHaveBeenCalledWith(
           expect.objectContaining({
-            taskTypes: ['conjugate_form', 'adj_ending', 'noun_case_declension', 'b2_writing_prompt'],
+            taskTypes: ['conjugate_form', 'adj_ending', 'noun_case_declension'],
             level: ['B1', 'B2'],
-            limit: 4,
+            limit: 5,
           }),
         );
       });
@@ -175,6 +175,20 @@ describe('Home navigation - practice workflows', () => {
       expect(await screen.findByText('B2 Exam Mode')).toBeInTheDocument();
       expect(screen.getByText('Focusing on B1/B2 level tasks.')).toBeInTheDocument();
       expect(screen.getByText(/B2 in \d+ days/)).toBeInTheDocument();
+
+      mockFetchPracticeTasks.mockClear();
+
+      await userEvent.click(await screen.findByRole('tab', { name: /writing/i }));
+
+      await waitFor(() => {
+        expect(mockFetchPracticeTasks).toHaveBeenCalledWith(
+          expect.objectContaining({
+            taskTypes: ['b2_writing_prompt'],
+            level: ['B2'],
+            limit: 15,
+          }),
+        );
+      });
     } finally {
       vi.useRealTimers();
     }

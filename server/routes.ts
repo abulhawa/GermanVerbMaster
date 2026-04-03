@@ -6,6 +6,7 @@ import { createTaskRouter } from "./routes/tasks.js";
 import { createAdminRouter } from "./routes/admin.js";
 import { isAdminFeatureEnabled } from "./config.js";
 import { createMicrosoftOAuthRouter } from "./routes/microsoft-oauth.js";
+import { createAiRouter } from "./routes/ai.js";
 
 // The routing surface is split across domain-specific routers located in
 // server/routes/*.ts. This file now focuses on wiring those routers together in
@@ -17,12 +18,14 @@ export function registerRoutes(app: Express): void {
   const microsoftOAuthRouter = createMicrosoftOAuthRouter();
   const authRouter = createAuthRouter();
   const taskRouter = createTaskRouter();
+  const aiRouter = createAiRouter();
   const practiceHistoryRouter = createPracticeHistoryRouter();
 
   app.use(healthRouter);
   app.use(microsoftOAuthRouter);
   app.use("/api", authRouter);
   app.use("/api", taskRouter);
+  app.use("/api", aiRouter);
   app.use("/api", practiceHistoryRouter);
   if (isAdminFeatureEnabled()) {
     const adminRouter = createAdminRouter();

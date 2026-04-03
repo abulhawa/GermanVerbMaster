@@ -1,15 +1,8 @@
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type KeyboardEvent,
-} from 'react';
-import { Loader2 } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
+import { AlertTriangle, CheckCircle2, Loader2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { submitPracticeAttempt } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslations } from '@/locales';
@@ -18,30 +11,43 @@ import type { CEFRLevel } from '@shared';
 import { ActionButtonContent, formatShortcutKey } from '../components/action-button-content';
 import { PracticeCardReviewControls } from '../components/practice-card-review-controls';
 import { PracticeCardScaffold } from '../components/practice-card-scaffold';
-import { usePracticeCardHotkeys } from '../hooks/use-practice-card-hotkeys';
 import type { RendererProps } from '../types';
 import { createErrorToast, createOfflineToast } from '../utils/data';
 
-function countSentences(value: string): number {
-  return value
-    .split(/[.!?]+/)
-    .map((sentence) => sentence.trim())
-    .filter((sentence) => sentence.length > 0).length;
+const MAX_RESPONSE_LENGTH = 500;
+
+interface B2FeedbackResult {
+  score: number;
+  result: 'correct' | 'incorrect';
+  strengths: string[];
+  improvements: string[];
+  correctedSentence?: string;
+  keyPhrasesFound: string[];
 }
 
-function formatTemplate(template: string, replacements: Record<string, string>): string {
-  return Object.entries(replacements).reduce((message, [token, value]) => {
-    return message.replaceAll(`{${token}}`, value);
-  }, template);
-}
-
-function getMatchedPhrases(response: string, keyPhrases: string[]): string[] {
-  const normalizedResponse = response.trim().toLocaleLowerCase();
-  if (!normalizedResponse || keyPhrases.length === 0) {
-    return [];
+function clampScore(score: number): number {
+  if (!Number.isFinite(score)) {
+    return 0;
   }
+  return Math.max(0, Math.min(100, Math.round(score)));
+}
 
-  return keyPhrases.filter((phrase) => normalizedResponse.includes(phrase.toLocaleLowerCase()));
+function normalisePhraseSet(phrases: string[]): Set<string> {
+  return new Set(
+    phrases
+      .map((phrase) => phrase.trim().toLocaleLowerCase())
+      .filter((phrase) => phrase.length > 0),
+  );
+}
+
+function getScoreBadgeClass(score: number): string {
+  if (score >= 70) {
+    return 'border-success-border/70 bg-success-muted text-success-foreground';
+  }
+  if (score >= 60) {
+    return 'border-warning-border/70 bg-warning-muted text-warning-foreground';
+  }
+  return 'border-destructive/60 bg-destructive/15 text-destructive';
 }
 
 export function B2WritingPromptRenderer({
@@ -59,24 +65,184 @@ export function B2WritingPromptRenderer({
   const b2Copy = copy.b2Writing;
   const [responseText, setResponseText] = useState('');
   const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showGrammarFocus, setShowGrammarFocus] = useState(false);
+  const [feedback, setFeedback] = useState<B2FeedbackResult | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isPersisting, setIsPersisting] = useState(false);
   const startTimeRef = useRef(Date.now());
 
   useEffect(() => {
     setResponseText('');
     setStatus('idle');
-    setShowGrammarFocus(false);
-    setIsSubmitting(false);
+    setFeedback(null);
+    setIsAnalyzing(false);
+    setIsPersisting(false);
     startTimeRef.current = Date.now();
   }, [task.taskId]);
 
   const keyPhrases = task.expectedSolution?.keyPhrases ?? [];
-  const matchedPhrases = useMemo(
-    () => getMatchedPhrases(responseText, keyPhrases),
-    [responseText, keyPhrases],
+  const keyPhraseSet = useMemo(() => normalisePhraseSet(keyPhrases), [keyPhrases]);
+  const usedWordBankSet = useMemo(() => {
+    const normalizedResponse = responseText.toLocaleLowerCase();
+    return new Set(
+      task.prompt.wordBankItems.filter((item) =>
+        normalizedResponse.includes(item.toLocaleLowerCase()),
+      ),
+    );
+  }, [responseText, task.prompt.wordBankItems]);
+  const canSubmit =
+    status === 'idle' &&
+    !isAnalyzing &&
+    !isPersisting &&
+    responseText.trim().length > 0;
+
+  const handleWordBankInsert = (phrase: string) => {
+    if (status !== 'idle' || isAnalyzing || isPersisting) {
+      return;
+    }
+
+    setResponseText((previous) => {
+      const trimmedEnd = previous.replace(/\s+$/, '');
+      const spacer = trimmedEnd.length > 0 ? ' ' : '';
+      const nextValue = `${trimmedEnd}${spacer}${phrase}`;
+      return nextValue.slice(0, MAX_RESPONSE_LENGTH);
+    });
+  };
+
+  const handleSubmit = async () => {
+    if (!canSubmit) {
+      return;
+    }
+
+    const submitted = responseText.trim();
+    if (!submitted) {
+      return;
+    }
+
+    setIsAnalyzing(true);
+    setFeedback(null);
+
+    try {
+      const feedbackResponse = await fetch('/api/b2/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          scenario: task.prompt.scenario,
+          userResponse: submitted,
+          keyPhrases,
+          grammarFocus: task.expectedSolution?.grammarFocus ?? '',
+        }),
+      });
+
+      if (!feedbackResponse.ok) {
+        const body = (await feedbackResponse.json().catch(() => ({ error: b2Copy.analysisFailed }))) as {
+          error?: string;
+        };
+        throw new Error(body.error ?? b2Copy.analysisFailed);
+      }
+
+      const feedbackPayload = (await feedbackResponse.json()) as B2FeedbackResult;
+      const normalizedFeedback: B2FeedbackResult = {
+        ...feedbackPayload,
+        score: clampScore(feedbackPayload.score),
+        strengths: Array.isArray(feedbackPayload.strengths)
+          ? feedbackPayload.strengths.slice(0, 2)
+          : [],
+        improvements: Array.isArray(feedbackPayload.improvements)
+          ? feedbackPayload.improvements.slice(0, 2)
+          : [],
+        keyPhrasesFound: Array.isArray(feedbackPayload.keyPhrasesFound)
+          ? feedbackPayload.keyPhrasesFound
+          : [],
+      };
+
+      const answeredAt = new Date().toISOString();
+      const timeSpentMs = Date.now() - startTimeRef.current;
+      const promptSummary = `${task.prompt.scenario} ${task.prompt.taskInstructions}`.trim();
+      const result = normalizedFeedback.result;
+
+      setFeedback(normalizedFeedback);
+      setStatus(result);
+      setIsAnalyzing(false);
+
+      const payload = {
+        taskId: task.taskId,
+        lexemeId: task.lexemeId,
+        taskType: task.taskType,
+        pos: task.pos,
+        renderer: task.renderer,
+        result,
+        submittedResponse: submitted,
+        expectedResponse: task.expectedSolution,
+        promptSummary,
+        timeSpentMs,
+        answeredAt,
+        cefrLevel: task.lexeme.metadata?.level as CEFRLevel | undefined,
+      } as const;
+
+      try {
+        onResult({
+          task,
+          result,
+          submittedResponse: submitted,
+          expectedResponse: task.expectedSolution,
+          promptSummary,
+          timeSpentMs,
+          answeredAt,
+        });
+      } catch {
+        // Ignore callback errors so persistence still runs.
+      }
+
+      setIsPersisting(true);
+      void submitPracticeAttempt(payload)
+        .then(({ queued }) => {
+          if (queued) {
+            createOfflineToast(copy, toast)();
+          }
+        })
+        .catch((error) => {
+          const fallbackMessage = copy.error.generic;
+          const message = error instanceof Error && error.message ? error.message : fallbackMessage;
+          createErrorToast(copy, toast, message);
+          setStatus('idle');
+          setFeedback(null);
+        })
+        .finally(() => {
+          setIsPersisting(false);
+        });
+    } catch (error) {
+      setIsAnalyzing(false);
+      const fallbackMessage = b2Copy.analysisFailed;
+      const message = error instanceof Error && error.message ? error.message : fallbackMessage;
+      createErrorToast(copy, toast, message);
+    }
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+    if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+      event.preventDefault();
+      void handleSubmit();
+    }
+  };
+
+  const canSkip = Boolean(onSkip) && !isAnalyzing && !isPersisting && status === 'idle';
+  const feedbackFoundSet = useMemo(
+    () => normalisePhraseSet(feedback?.keyPhrasesFound ?? []),
+    [feedback?.keyPhrasesFound],
   );
-  const hasSentenceRequirement = countSentences(responseText) >= 2;
+
+  const promptSection = (
+    <>
+      <h1 className="sr-only">{task.lexeme.lemma}</h1>
+      <div className="w-full max-w-3xl rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-4 text-left">
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-warning-strong">
+          {b2Copy.scenarioLabel}
+        </p>
+        <p className="mt-2 text-sm text-primary-foreground/90">{task.prompt.scenario}</p>
+        <p className="mt-3 text-sm text-primary-foreground/80">{task.prompt.taskInstructions}</p>
+      </div>
+    </>
+  );
 
   const reviewControls = (
     <PracticeCardReviewControls
@@ -89,108 +255,6 @@ export function B2WritingPromptRenderer({
     />
   );
 
-  const handleWordBankInsert = (phrase: string) => {
-    setResponseText((previous) => {
-      const spacer = previous.trim().length > 0 ? ' ' : '';
-      return `${previous}${spacer}${phrase}`.trimStart();
-    });
-  };
-
-  const handleSubmit = async () => {
-    if (isSubmitting || status !== 'idle' || !hasSentenceRequirement) {
-      return;
-    }
-
-    const submitted = responseText.trim();
-    if (!submitted) {
-      return;
-    }
-
-    const matchRatio = keyPhrases.length > 0 ? matchedPhrases.length / keyPhrases.length : 0;
-    const result = matchRatio >= 0.5 ? 'correct' : 'incorrect';
-    const answeredAt = new Date().toISOString();
-    const timeSpentMs = Date.now() - startTimeRef.current;
-    const promptSummary = `${task.prompt.scenario} ${task.prompt.taskInstructions}`.trim();
-
-    const payload = {
-      taskId: task.taskId,
-      lexemeId: task.lexemeId,
-      taskType: task.taskType,
-      pos: task.pos,
-      renderer: task.renderer,
-      result,
-      submittedResponse: submitted,
-      expectedResponse: task.expectedSolution,
-      promptSummary,
-      timeSpentMs,
-      answeredAt,
-      cefrLevel: task.lexeme.metadata?.level as CEFRLevel | undefined,
-    } as const;
-
-    setIsSubmitting(true);
-    setStatus(result);
-    try {
-      onResult({
-        task,
-        result,
-        submittedResponse: submitted,
-        expectedResponse: task.expectedSolution,
-        promptSummary,
-        timeSpentMs,
-        answeredAt,
-      });
-    } catch {
-      // ignore parent callback exceptions
-    }
-
-    void submitPracticeAttempt(payload)
-      .then(({ queued }) => {
-        if (queued) {
-          createOfflineToast(copy, toast)();
-        }
-      })
-      .catch((error) => {
-        const fallbackMessage = copy.error.generic;
-        const message = error instanceof Error && error.message ? error.message : fallbackMessage;
-        createErrorToast(copy, toast, message);
-        setStatus('idle');
-      })
-      .finally(() => {
-        setIsSubmitting(false);
-      });
-  };
-
-  const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
-    if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
-      event.preventDefault();
-      void handleSubmit();
-    }
-  };
-
-  const canSkip = Boolean(onSkip) && !isSubmitting && status === 'idle';
-
-  usePracticeCardHotkeys({
-    status,
-    onContinue,
-    onSkip,
-    canSkip,
-  });
-
-  const promptSection = (
-    <>
-      <h1 className="sr-only">{task.lexeme.lemma}</h1>
-      <div className="w-full max-w-3xl rounded-2xl border border-warning-border/70 bg-warning-muted px-4 py-3 text-left">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-warning-strong">
-          {b2Copy.scenarioLabel}
-        </p>
-        <p className="mt-2 text-sm text-warning-muted-foreground">{task.prompt.scenario}</p>
-      </div>
-      <h2 className="max-w-3xl text-3xl font-semibold leading-tight text-primary-foreground sm:text-4xl">
-        {task.prompt.taskInstructions}
-      </h2>
-    </>
-  );
-
   const answerSection = (
     <div className="flex flex-col gap-4">
       <div className="space-y-2">
@@ -198,65 +262,58 @@ export function B2WritingPromptRenderer({
           {b2Copy.wordBankLabel}
         </p>
         <div className="flex flex-wrap gap-2">
-          {task.prompt.wordBankItems.map((phrase) => (
-            <Button
-              key={phrase}
-              type="button"
-              size="sm"
-              variant="secondary"
-              className="rounded-full"
-              onClick={() => handleWordBankInsert(phrase)}
-              disabled={status !== 'idle' || isSubmitting}
-            >
-              {phrase}
-            </Button>
-          ))}
+          {task.prompt.wordBankItems.map((phrase) => {
+            const used = usedWordBankSet.has(phrase);
+            return (
+              <Button
+                key={phrase}
+                type="button"
+                size="sm"
+                variant="secondary"
+                className={`rounded-full ${used ? 'opacity-60' : ''}`}
+                onClick={() => handleWordBankInsert(phrase)}
+                disabled={status !== 'idle' || isAnalyzing || isPersisting}
+              >
+                <span className="inline-flex items-center gap-1.5">
+                  <span>{phrase}</span>
+                  {used ? <span aria-hidden>✓</span> : null}
+                </span>
+              </Button>
+            );
+          })}
         </div>
       </div>
 
       <div className="space-y-2">
-        <p className="text-left text-xs font-semibold uppercase tracking-[0.22em] text-primary-foreground/80">
-          {b2Copy.responseLabel}
-        </p>
         <Textarea
           value={responseText}
-          onChange={(event) => setResponseText(event.target.value)}
+          onChange={(event) => setResponseText(event.target.value.slice(0, MAX_RESPONSE_LENGTH))}
           onKeyDown={handleKeyDown}
           placeholder={b2Copy.placeholder}
           aria-label={b2Copy.ariaLabel}
-          className="min-h-[150px] bg-card/95 text-base text-foreground"
-          disabled={status !== 'idle' || isSubmitting}
+          rows={3}
+          maxLength={MAX_RESPONSE_LENGTH}
+          lang="de"
+          spellCheck
+          className="min-h-[120px] w-full bg-card/95 text-base text-foreground"
+          disabled={status !== 'idle' || isAnalyzing || isPersisting}
         />
-        {!hasSentenceRequirement && status === 'idle' ? (
-          <p className="text-left text-xs text-warning-strong">{b2Copy.sentenceRequirement}</p>
-        ) : null}
+        <p className="text-right text-xs text-primary-foreground/70">
+          {responseText.length} / {MAX_RESPONSE_LENGTH} Zeichen
+        </p>
       </div>
-
-      <Collapsible open={showGrammarFocus} onOpenChange={setShowGrammarFocus}>
-        <CollapsibleTrigger asChild>
-          <Button type="button" variant="outline" className="w-fit">
-            {showGrammarFocus ? b2Copy.hideGrammarFocus : b2Copy.showGrammarFocus}
-          </Button>
-        </CollapsibleTrigger>
-        <CollapsibleContent className="mt-2 rounded-xl border border-border/60 bg-card/80 px-3 py-2 text-left text-sm text-primary-foreground/90">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary-foreground/70">
-            {b2Copy.grammarFocusLabel}
-          </p>
-          <p className="mt-1">{task.expectedSolution?.grammarFocus}</p>
-        </CollapsibleContent>
-      </Collapsible>
 
       <Button
         type="button"
         onClick={() => void handleSubmit()}
-        disabled={status !== 'idle' || isSubmitting || !hasSentenceRequirement || !responseText.trim()}
+        disabled={!canSubmit}
         size="lg"
         className="h-12 w-full max-w-[min(80vw,24rem)] rounded-full"
       >
         <ActionButtonContent
           label={
             <span className="flex items-center gap-2">
-              {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
+              {isAnalyzing ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
               <span>{b2Copy.submit}</span>
             </span>
           }
@@ -264,27 +321,84 @@ export function B2WritingPromptRenderer({
         />
       </Button>
 
-      {status !== 'idle' ? (
-        <div className="rounded-2xl border border-border/60 bg-card/80 px-4 py-3 text-left">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary-foreground/70">
-            {b2Copy.modelAnswerLabel}
-          </p>
-          <p className="mt-1 text-sm text-primary-foreground/80">
-            {formatTemplate(b2Copy.matchSummary, {
-              matched: String(matchedPhrases.length),
-              total: String(keyPhrases.length),
-            })}
-          </p>
-          <ul className="mt-3 space-y-1 text-sm">
-            {keyPhrases.map((phrase) => {
-              const matched = matchedPhrases.includes(phrase);
-              return (
-                <li key={phrase} className={matched ? 'text-success-strong' : 'text-primary-foreground/80'}>
-                  {phrase}
+      {isAnalyzing ? (
+        <div className="flex items-center gap-2 rounded-2xl border border-border/60 bg-card/80 px-4 py-3 text-sm text-primary-foreground/80">
+          <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+          <span>{b2Copy.loadingAnalysis}</span>
+        </div>
+      ) : null}
+
+      {feedback ? (
+        <div className="space-y-3 rounded-2xl border border-border/60 bg-card/80 px-4 py-4 text-left">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-sm font-semibold text-primary-foreground">{b2Copy.feedbackLabel}</p>
+            <span
+              className={`rounded-full border px-3 py-1 text-xs font-semibold ${getScoreBadgeClass(feedback.score)}`}
+            >
+              {b2Copy.scoreLabel} {feedback.score}
+            </span>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-success-strong">
+              {b2Copy.strengthsLabel}
+            </p>
+            <ul className="mt-2 space-y-1 text-sm text-primary-foreground/90">
+              {(feedback.strengths.length ? feedback.strengths : [b2Copy.noStrengths]).map((entry) => (
+                <li key={entry} className="flex items-start gap-2">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 text-success-strong" aria-hidden />
+                  <span>{entry}</span>
                 </li>
-              );
-            })}
-          </ul>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-warning-strong">
+              {b2Copy.improvementsLabel}
+            </p>
+            <ul className="mt-2 space-y-1 text-sm text-primary-foreground/90">
+              {(feedback.improvements.length ? feedback.improvements : [b2Copy.noImprovements]).map((entry) => (
+                <li key={entry} className="flex items-start gap-2">
+                  <AlertTriangle className="mt-0.5 h-4 w-4 text-warning-strong" aria-hidden />
+                  <span>{entry}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {feedback.correctedSentence ? (
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground/70">
+                {b2Copy.correctionLabel}
+              </p>
+              <p className="mt-1 text-sm text-primary-foreground/90">{feedback.correctedSentence}</p>
+            </div>
+          ) : null}
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground/70">
+              {b2Copy.keyPhrasesLabel}
+            </p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {keyPhrases.map((phrase) => {
+                const normalized = phrase.trim().toLocaleLowerCase();
+                const found = keyPhraseSet.has(normalized) && feedbackFoundSet.has(normalized);
+                return (
+                  <span
+                    key={phrase}
+                    className={`rounded-full border px-2.5 py-1 text-xs ${
+                      found
+                        ? 'border-success-border/60 bg-success-muted text-success-foreground'
+                        : 'border-destructive/50 bg-destructive/10 text-destructive line-through'
+                    }`}
+                  >
+                    {phrase}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
         </div>
       ) : null}
 
@@ -318,3 +432,4 @@ export function B2WritingPromptRenderer({
     />
   );
 }
+

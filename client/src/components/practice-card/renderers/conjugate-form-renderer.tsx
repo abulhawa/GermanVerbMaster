@@ -12,6 +12,7 @@ import { HelpCircle, Loader2, Volume2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { usePronunciationHint } from '@/hooks/use-pronunciation-hint';
 import { submitPracticeAttempt } from '@/lib/api';
 import { speak } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -56,6 +57,11 @@ export function ConjugateFormRenderer({
   const [showExample, setShowExample] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAnswerRevealed, setIsAnswerRevealed] = useState(false);
+  const {
+    hint: pronunciationHint,
+    isLoading: isPronunciationHintLoading,
+    fetchHint,
+  } = usePronunciationHint(task.lexeme.lemma, task.expectedSolution?.form ?? '');
   const toggleExample = useCallback(() => {
     setShowExample((value) => !value);
   }, []);
@@ -228,13 +234,41 @@ export function ConjugateFormRenderer({
 
   const statusIndicator = (
     <AnimatePresence>
-      <PracticeStatusBadge
-        copy={copy}
-        status={status}
-        expectedForms={expectedForms}
-        displayAnswer={task.expectedSolution?.form ?? undefined}
-        showAnswer={isAnswerRevealed}
-      />
+      <div className="flex flex-col items-center gap-2">
+        <PracticeStatusBadge
+          copy={copy}
+          status={status}
+          expectedForms={expectedForms}
+          displayAnswer={task.expectedSolution?.form ?? undefined}
+          showAnswer={isAnswerRevealed}
+        />
+        {status !== 'idle' ? (
+          <div className="flex flex-col items-center gap-2">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => void fetchHint()}
+              disabled={isPronunciationHintLoading}
+              className="h-8 rounded-full border border-border/50 bg-card/30 px-3 text-xs text-primary-foreground/90 hover:bg-card/50"
+            >
+              {isPronunciationHintLoading ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
+                  <span>🔊 Aussprache</span>
+                </span>
+              ) : (
+                "🔊 Aussprache"
+              )}
+            </Button>
+            {pronunciationHint ? (
+              <p className="rounded-full border border-border/50 bg-card/35 px-3 py-1 text-xs text-primary-foreground/80">
+                {pronunciationHint}
+              </p>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
     </AnimatePresence>
   );
 

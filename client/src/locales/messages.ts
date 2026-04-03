@@ -1,4 +1,4 @@
-import type { TaskType } from '@shared';
+﻿import type { TaskType } from '@shared';
 
 export const SUPPORTED_LOCALES = ['en', 'de'] as const;
 export type Locale = (typeof SUPPORTED_LOCALES)[number];
@@ -102,6 +102,16 @@ export interface PracticeCardMessages {
     placeholder: string;
     ariaLabel: string;
     submit: string;
+    loadingAnalysis: string;
+    analysisFailed: string;
+    feedbackLabel: string;
+    scoreLabel: string;
+    strengthsLabel: string;
+    noStrengths: string;
+    improvementsLabel: string;
+    noImprovements: string;
+    correctionLabel: string;
+    keyPhrasesLabel: string;
     scenarioLabel: string;
     wordBankLabel: string;
     responseLabel: string;
@@ -215,6 +225,10 @@ export interface HomeMessages {
   b2Countdown: {
     upcoming: string;
     today: string;
+  };
+  practiceTabs: {
+    words: string;
+    writing: string;
   };
 }
 
@@ -384,6 +398,10 @@ const MESSAGES: Record<Locale, AppMessages> = {
       b2Countdown: {
         upcoming: '📅 B2 in {days} days',
         today: '📅 B2 today! Viel Erfolg! 🍀',
+      },
+      practiceTabs: {
+        words: 'Words',
+        writing: 'Writing',
       },
     },
     settingsDialog: {
@@ -578,6 +596,16 @@ const MESSAGES: Record<Locale, AppMessages> = {
         placeholder: 'Write your formal response in German...',
         ariaLabel: 'Write your B2 response',
         submit: 'Submit response',
+        loadingAnalysis: 'Analyzing your response...',
+        analysisFailed: 'Unable to analyze your response right now.',
+        feedbackLabel: 'Feedback',
+        scoreLabel: 'Score:',
+        strengthsLabel: 'Strengths:',
+        noStrengths: 'No specific strengths detected yet.',
+        improvementsLabel: 'Improvements:',
+        noImprovements: 'No additional improvements suggested.',
+        correctionLabel: 'Correction:',
+        keyPhrasesLabel: 'Key phrases:',
         scenarioLabel: 'Scenario',
         wordBankLabel: 'Word bank',
         responseLabel: 'Your response',
@@ -721,6 +749,10 @@ const MESSAGES: Record<Locale, AppMessages> = {
       b2Countdown: {
         upcoming: '📅 B2 in {days} Tagen',
         today: '📅 B2 heute! Viel Erfolg! 🍀',
+      },
+      practiceTabs: {
+        words: 'Wörter',
+        writing: 'Schreiben',
       },
     },
     settingsDialog: {
@@ -912,9 +944,19 @@ const MESSAGES: Record<Locale, AppMessages> = {
         instruction: 'Bilde die {degreeLabel}form von „{lemma}“',
       },
       b2Writing: {
-        placeholder: 'Schreibe deine formelle Antwort auf Deutsch...',
+        placeholder: 'Schreiben Sie Ihre Antwort auf Deutsch...',
         ariaLabel: 'B2-Antwort eingeben',
         submit: 'Antwort einreichen',
+        loadingAnalysis: 'Analysiere Ihre Antwort...',
+        analysisFailed: 'Ihre Antwort konnte gerade nicht analysiert werden.',
+        feedbackLabel: 'Feedback',
+        scoreLabel: 'Punktzahl:',
+        strengthsLabel: 'Stärken:',
+        noStrengths: 'Noch keine klaren Stärken erkannt.',
+        improvementsLabel: 'Verbesserungen:',
+        noImprovements: 'Keine weiteren Verbesserungen vorgeschlagen.',
+        correctionLabel: 'Korrektur:',
+        keyPhrasesLabel: 'Schlüsselphrasen:',
         scenarioLabel: 'Szenario',
         wordBankLabel: 'Wortbank',
         responseLabel: 'Deine Antwort',

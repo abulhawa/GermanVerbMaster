@@ -1,4 +1,4 @@
-import { describe, expect, it, beforeEach, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -196,6 +196,10 @@ describe('PracticeCard', () => {
       configurable: true,
       writable: true,
     });
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   it('submits correct answers and emits result metadata', async () => {
@@ -402,7 +406,25 @@ describe('PracticeCard', () => {
     });
   });
 
-  it('scores B2 writing prompts via key phrase matching and shows model phrases after submit', async () => {
+  it('requests AI feedback for B2 writing prompts and renders the returned feedback', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          score: 72,
+          result: 'correct',
+          strengths: ['Polite formal tone', 'Clear structure'],
+          improvements: ['Use more precise connectors'],
+          correctedSentence: 'Ich würde den Plan jedoch früher kommunizieren.',
+          keyPhrasesFound: ['wuerde', 'meiner Meinung nach'],
+        }),
+        {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      ),
+    );
+    vi.stubGlobal('fetch', fetchMock as unknown as typeof fetch);
+
     const onResult = vi.fn<(result: PracticeCardResult) => void>();
     const task = createB2WritingTask();
     const settings = getDefaultSettings();
@@ -419,6 +441,13 @@ describe('PracticeCard', () => {
     await userEvent.click(screen.getByRole('button', { name: /submit response/i }));
 
     await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/b2/feedback',
+        expect.objectContaining({ method: 'POST' }),
+      );
+    });
+
+    await waitFor(() => {
       expect(submitPracticeAttempt).toHaveBeenCalledTimes(1);
     });
 
@@ -431,8 +460,11 @@ describe('PracticeCard', () => {
       expect(onResult).toHaveBeenCalledWith(expect.objectContaining({ result: 'correct' }));
     });
 
-    expect(screen.getByText('Model answer phrases')).toBeInTheDocument();
-    expect(screen.getByText('2/4 key phrases matched')).toBeInTheDocument();
+    expect(screen.getByText('Feedback')).toBeInTheDocument();
+    expect(screen.getByText('Strengths:')).toBeInTheDocument();
+    expect(screen.getByText('Improvements:')).toBeInTheDocument();
+    expect(screen.getByText('Correction:')).toBeInTheDocument();
+    expect(screen.getByText('Key phrases:')).toBeInTheDocument();
     expect(screen.getAllByText('wuerde').length).toBeGreaterThan(0);
     expect(screen.getAllByText('meiner Meinung nach').length).toBeGreaterThan(0);
     expect(screen.getAllByText('jedoch').length).toBeGreaterThan(0);

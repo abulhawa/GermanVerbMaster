@@ -37,6 +37,8 @@ export type MinimalTaskRow = {
   pos: string | undefined;
   renderer: string | undefined;
   lexemeId: string | undefined;
+  lexemeLemma: string | null;
+  solution: unknown;
   frequencyRank: number | null | undefined;
 };
 
@@ -98,6 +100,10 @@ export function mapMinimalTaskRow(row: RawTaskRow): MinimalTaskRow {
     pos: getRowValue<string | undefined>(row, "pos"),
     renderer: getRowValue<string | undefined>(row, "renderer"),
     lexemeId: getRowValue<string | undefined>(row, "lexemeId", "lexeme_id"),
+    lexemeLemma:
+      getRowValue<string | null>(row, "lexemeLemma", "lexeme_lemma", "lemma") ??
+      null,
+    solution: getRowValue<unknown>(row, "solution"),
     frequencyRank: getRowValue<number | null | undefined>(row, "frequencyRank", "frequency_rank"),
   };
 }
@@ -370,6 +376,8 @@ export async function fetchTaskRowById(taskId: string): Promise<MinimalTaskRow |
         pos: taskSpecs.pos,
         renderer: taskSpecs.renderer,
         lexemeId: taskSpecs.lexemeId,
+        lexemeLemma: lexemes.lemma,
+        solution: taskSpecs.solution,
         frequencyRank: lexemes.frequencyRank,
       })
       .from(taskSpecs)

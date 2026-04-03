@@ -6,11 +6,15 @@ import type {
   LexemePos,
 } from '@shared';
 
-import { clientTaskRegistry, listClientTaskTypes } from '@/lib/tasks';
+import { clientTaskRegistry } from '@/lib/tasks';
 
 export type PracticeScope = 'all' | 'verbs' | 'nouns' | 'adjectives' | 'custom';
 
-export const AVAILABLE_TASK_TYPES = listClientTaskTypes();
+export const AVAILABLE_TASK_TYPES: TaskType[] = [
+  'conjugate_form',
+  'noun_case_declension',
+  'adj_ending',
+];
 
 export const TASK_TYPE_TO_SCOPE: Record<TaskType, PracticeScope> = {
   conjugate_form: 'verbs',

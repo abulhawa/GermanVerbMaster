@@ -1,7 +1,6 @@
 import { resolveLocalStorage } from '@/lib/storage';
 import type { PracticeSettingsRendererPreferences, PracticeSettingsState, TaskType } from '@shared';
 import type { CEFRLevel, LexemePos } from '@shared';
-import { listClientTaskTypes } from '@/lib/tasks';
 
 const STORAGE_KEY = 'practice.settings';
 const LEGACY_STORAGE_KEY = 'settings';
@@ -98,7 +97,11 @@ function parseSettings(raw: string): PracticeSettingsState | null {
 
 function normaliseSettings(parsed: PracticeSettingsState): PracticeSettingsState {
   const defaults = createDefaultSettings();
-  const availableTaskTypes = new Set(listClientTaskTypes());
+  const availableTaskTypes = new Set<TaskType>([
+    'conjugate_form',
+    'noun_case_declension',
+    'adj_ending',
+  ]);
   const preferredTaskTypes = Array.isArray(parsed.preferredTaskTypes)
     ? parsed.preferredTaskTypes.filter((taskType): taskType is TaskType => availableTaskTypes.has(taskType))
     : [];

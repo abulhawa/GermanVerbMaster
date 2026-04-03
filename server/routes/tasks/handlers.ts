@@ -34,6 +34,31 @@ import {
   findTaskIdByLexemeAndType,
 } from "./queries.js";
 import { logStructured } from "../../logger.js";
+import { checkAnswerLeniency } from "../../services/groq-leniency.js";
+
+const LENIENCY_SUPPORTED_TASK_TYPES = new Set<TaskType>([
+  "conjugate_form",
+  "noun_case_declension",
+  "adj_ending",
+]);
+
+function normaliseCandidateAnswer(value: unknown): string | null {
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed : null;
+  }
+
+  if (value && typeof value === "object") {
+    const record = value as Record<string, unknown>;
+    const formValue = record.form;
+    if (typeof formValue === "string") {
+      const trimmed = formValue.trim();
+      return trimmed.length > 0 ? trimmed : null;
+    }
+  }
+
+  return null;
+}
 
 export function createListTasksHandler(): RequestHandler {
   return async (req, res, next) => {
@@ -309,8 +334,52 @@ export function createSubmitTaskHandler(): RequestHandler {
     const resolvedCefrLevel = normaliseCefrLevel(payload.cefrLevel) ?? null;
     const attemptTimestamp = submittedAt ?? new Date();
     const serialisedLevel = serialisePracticeLogLevel(resolvedCefrLevel);
+    const submittedForm = normaliseCandidateAnswer(
+      payload.submittedResponse ?? payload.answer,
+    );
+    const expectedForm =
+      normaliseCandidateAnswer(taskRow.solution) ??
+      normaliseCandidateAnswer(payload.expectedResponse);
+    const taskTypeForLeniency = taskRow.taskType as TaskType;
+    let persistedResult = payload.result;
+    let leniencyApplied = false;
+    let leniencyReason: string | undefined;
 
     try {
+      if (
+        payload.result === "incorrect" &&
+        process.env.GROQ_API_KEY &&
+        submittedForm &&
+        expectedForm &&
+        LENIENCY_SUPPORTED_TASK_TYPES.has(taskTypeForLeniency)
+      ) {
+        const leniencyResult = await checkAnswerLeniency({
+          lemma: taskRow.lexemeLemma ?? taskRow.lexemeId ?? payload.lexemeId,
+          taskType: taskTypeForLeniency,
+          expectedForm,
+          submittedForm,
+          cefrLevel: resolvedCefrLevel ?? undefined,
+        });
+
+        if (leniencyResult.isAcceptable && leniencyResult.confidence !== "low") {
+          persistedResult = "correct";
+          leniencyApplied = true;
+          leniencyReason = leniencyResult.reason;
+          logStructured({
+            event: "submission.leniency_override",
+            source: "submission",
+            data: {
+              taskId: resolvedTaskId,
+              taskType: taskTypeForLeniency,
+              expectedForm,
+              submittedForm,
+              reason: leniencyResult.reason,
+              confidence: leniencyResult.confidence,
+            },
+          });
+        }
+      }
+
       const queueCap = registryEntry.queueCap;
 
       await db.insert(practiceHistory).values({
@@ -321,7 +390,7 @@ export function createSubmitTaskHandler(): RequestHandler {
         renderer: taskRow.renderer!,
         deviceId: payload.deviceId,
         userId: sessionUserId,
-        result: payload.result,
+        result: persistedResult,
         responseMs,
         submittedAt: attemptTimestamp,
         answeredAt: answeredAt ?? submittedAt ?? null,
@@ -354,6 +423,7 @@ export function createSubmitTaskHandler(): RequestHandler {
         taskId: resolvedTaskId,
         deviceId: payload.deviceId,
         queueCap,
+        ...(leniencyApplied ? { leniencyApplied: true, leniencyReason } : {}),
       });
 
       // Log structured submission timing
