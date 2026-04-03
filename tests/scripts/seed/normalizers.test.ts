@@ -72,7 +72,8 @@ describe('seed normalizers', () => {
     );
 
     expect(merged?.preposition?.cases).toEqual(['Akkusativ', 'Dativ']);
-    expect(merged?.notes).toEqual(['movement', 'usage']);
+    expect(merged?.preposition?.notes).toEqual(['movement']);
+    expect(merged?.notes).toEqual(['usage']);
     expect(merged?.tags).toEqual(['additional', 'core']);
   });
 

@@ -36,15 +36,6 @@ describe('seed loaders', () => {
           examples: [
             { sentence: 'Ich laufe nach Hause.', translations: { en: 'I run home.' } },
           ],
-        },
-        {
-          lemma: 'laufen',
-          english: 'to jog',
-          verb: {
-            praeteritum: 'lief',
-            partizipIi: 'gelaufen',
-            perfekt: 'ist gelaufen',
-          },
           approved: true,
         },
       ]);

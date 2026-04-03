@@ -11,6 +11,7 @@ process.env.NODE_ENV = process.env.NODE_ENV ?? defaultNodeEnv;
 let serverInstance: ReturnType<typeof createServer> | undefined;
 let isShuttingDown = false;
 const trackedSockets = new Set<Socket>();
+const GRACEFUL_SHUTDOWN_TIMEOUT_MS = 10_000;
 
 function trackConnections(server: ReturnType<typeof createServer>): void {
   server.on("connection", (socket) => {
@@ -52,6 +53,22 @@ async function closeServer(): Promise<void> {
   destroyOpenSockets();
 }
 
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, context: string): Promise<T> {
+  let timeoutId: NodeJS.Timeout | undefined;
+
+  return await new Promise<T>((resolve, reject) => {
+    timeoutId = setTimeout(() => {
+      reject(new Error(`${context} timed out after ${timeoutMs}ms`));
+    }, timeoutMs);
+
+    promise.then(resolve, reject);
+  }).finally(() => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+  });
+}
+
 async function shutdown(signal: NodeJS.Signals): Promise<void> {
   if (isShuttingDown) {
     return;
@@ -64,13 +81,13 @@ async function shutdown(signal: NodeJS.Signals): Promise<void> {
   let shutdownError: unknown;
 
   try {
-    await closeServer();
+    await withTimeout(closeServer(), GRACEFUL_SHUTDOWN_TIMEOUT_MS, "server shutdown");
   } catch (error) {
     shutdownError = error ?? shutdownError;
   }
 
   try {
-    await getPool().end();
+    await withTimeout(getPool().end(), GRACEFUL_SHUTDOWN_TIMEOUT_MS, "database pool shutdown");
   } catch (error) {
     if (shutdownError) {
       logError(error, "server-shutdown");

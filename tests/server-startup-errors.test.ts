@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
 
 const mocks = vi.hoisted(() => {
+  const onMock = vi.fn();
   const listenMock = vi.fn(
     (_port: number, _host: string, callback?: () => void) => {
       callback?.();
@@ -15,13 +16,19 @@ const mocks = vi.hoisted(() => {
       set: vi.fn(),
       use: vi.fn(),
     })),
-    createServerMock: vi.fn(() => ({
-      listen: listenMock,
-      close: vi.fn((callback?: (error?: Error | null) => void) => {
-        callback?.(null);
-      }),
-    })),
+    createServerMock: vi.fn(() => {
+      const server = {
+        listen: listenMock,
+        close: vi.fn((callback?: (error?: Error | null) => void) => {
+          callback?.(null);
+        }),
+        on: onMock,
+      };
+      onMock.mockImplementation(() => server);
+      return server;
+    }),
     listenMock,
+    onMock,
   };
 });
 

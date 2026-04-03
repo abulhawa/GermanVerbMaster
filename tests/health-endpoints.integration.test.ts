@@ -6,12 +6,20 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { createApiApp } from "../server/api/app.js";
 
-const queryMock = vi.fn();
-const mockPool = { query: queryMock };
-const getPoolMock = vi.fn(() => mockPool);
+const mocks = vi.hoisted(() => {
+  const queryMock = vi.fn();
+  const mockPool = { query: queryMock };
+  const getPoolMock = vi.fn(() => mockPool);
+
+  return {
+    queryMock,
+    mockPool,
+    getPoolMock,
+  };
+});
 
 vi.mock("../db/client.js", () => ({
-  getPool: getPoolMock,
+  getPool: mocks.getPoolMock,
 }));
 
 function createEmptyRouter(): ReturnType<typeof Router> {
@@ -66,9 +74,9 @@ async function close(server: ReturnType<typeof createServer>): Promise<void> {
 }
 
 afterEach(() => {
-  queryMock.mockReset();
-  getPoolMock.mockReset();
-  getPoolMock.mockReturnValue(mockPool);
+  mocks.queryMock.mockReset();
+  mocks.getPoolMock.mockReset();
+  mocks.getPoolMock.mockReturnValue(mocks.mockPool);
 });
 
 describe("health endpoints", () => {
@@ -82,14 +90,14 @@ describe("health endpoints", () => {
       const response = await fetch(`http://127.0.0.1:${port}/healthz`);
       expect(response.status).toBe(200);
       expect(await response.json()).toEqual({ status: "ok" });
-      expect(getPoolMock).not.toHaveBeenCalled();
+      expect(mocks.getPoolMock).not.toHaveBeenCalled();
     } finally {
       await close(server);
     }
   });
 
   it("responds with 200 OK for /readyz when the database is reachable", async () => {
-    queryMock.mockResolvedValueOnce({ rows: [] });
+    mocks.queryMock.mockResolvedValueOnce({ rows: [] });
 
     const app = createApiApp({ enableCors: false });
     const server = createServer(app);
@@ -100,7 +108,7 @@ describe("health endpoints", () => {
       const response = await fetch(`http://127.0.0.1:${port}/readyz`);
       expect(response.status).toBe(200);
       expect(await response.json()).toEqual({ status: "ready" });
-      expect(queryMock).toHaveBeenCalledWith("select 1");
+      expect(mocks.queryMock).toHaveBeenCalledWith("select 1");
     } finally {
       await close(server);
     }
@@ -108,7 +116,7 @@ describe("health endpoints", () => {
 
   it("propagates database errors from /readyz", async () => {
     const error = new Error("database offline");
-    queryMock.mockRejectedValueOnce(error);
+    mocks.queryMock.mockRejectedValueOnce(error);
 
     const app = createApiApp({ enableCors: false });
     const server = createServer(app);

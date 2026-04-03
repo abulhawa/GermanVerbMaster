@@ -83,14 +83,12 @@ describe('seed persistence', () => {
 
   it('syncs legacy words by deleting missing entries and inserting batches', async () => {
     const db = new FakeDb([{ lemma: 'alt', pos: 'N' }]);
-    const insertSpy = vi.spyOn(persistence, 'insertWordsBatch');
 
     await persistence.syncLegacyWords(db as unknown as any, aggregated);
 
     expect(db.deleteCalls).toBe(1);
-    expect(insertSpy).toHaveBeenCalledWith(db, aggregated);
-
-    insertSpy.mockRestore();
+    expect(db.inserted).toHaveLength(1);
+    expect(db.inserted[0]?.[0]).toMatchObject({ lemma: 'laufen', pos: 'V' });
   });
 
   it('delegates lexeme inventory upsert and returns counts', async () => {

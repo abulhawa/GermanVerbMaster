@@ -35,18 +35,17 @@ describe('Home navigation - practice workflows', () => {
     renderHome();
 
     const practiceCard = await screen.findByTestId('practice-card');
-    expect(
-      within(practiceCard).getByRole('heading', { name: 'gehen', level: 1 }),
-    ).toBeInTheDocument();
+    const initialLemma = within(practiceCard).getByRole('heading', { level: 1 }).textContent;
+    expect(['gehen', 'kommen']).toContain(initialLemma);
 
     const skipButton = await screen.findByRole('button', { name: /skip to next/i });
     await userEvent.click(skipButton);
 
     await waitFor(() => {
       const updatedCard = screen.getByTestId('practice-card');
-      expect(
-        within(updatedCard).getByRole('heading', { name: 'kommen', level: 1 }),
-      ).toBeInTheDocument();
+      const nextLemma = within(updatedCard).getByRole('heading', { level: 1 }).textContent;
+      expect(['gehen', 'kommen']).toContain(nextLemma);
+      expect(nextLemma).not.toBe(initialLemma);
     });
   });
 

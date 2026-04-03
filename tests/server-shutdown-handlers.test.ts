@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 const mocks = vi.hoisted(() => {
   let closeCallback: ((error?: Error | null) => void) | undefined;
+  const onMock = vi.fn();
 
   const listenMock = vi.fn(
     (_port: number, _host: string, callback?: () => void) => {
@@ -16,10 +17,15 @@ const mocks = vi.hoisted(() => {
   const endMock = vi.fn<[], Promise<void>>();
 
   return {
-    createServerMock: vi.fn(() => ({
-      listen: listenMock,
-      close: closeMock,
-    })),
+    createServerMock: vi.fn(() => {
+      const server = {
+        listen: listenMock,
+        close: closeMock,
+        on: onMock,
+      };
+      onMock.mockImplementation(() => server);
+      return server;
+    }),
     createApiAppMock: vi.fn(() => ({
       set: vi.fn(),
       use: vi.fn(),
@@ -31,12 +37,14 @@ const mocks = vi.hoisted(() => {
     })),
     listenMock,
     closeMock,
+    onMock,
     endMock,
     invokeCloseCallback(error?: Error | null) {
       closeCallback?.(error ?? null);
     },
     resetMocks() {
       closeCallback = undefined;
+      onMock.mockReset();
     },
   };
 });

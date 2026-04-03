@@ -58,7 +58,7 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@supabase/supabase-js": "^2.75.1",
     "@tanstack/react-query": "^5.90.5",
-    "better-auth": "^1.4.2",
+    "better-auth": "^1.5.6",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -70,7 +70,7 @@
     "drizzle-zod": "^0.8.3",
     "embla-carousel-react": "^8.6.0",
     "express": "^5.2.1",
-    "express-rate-limit": "^8.2.1",
+    "express-rate-limit": "^8.3.2",
     "framer-motion": "^12.23.24",
     "helmet": "^7.2.0",
     "input-otp": "^1.4.2",
@@ -116,7 +116,7 @@
     "tsx": "^4.20.6",
     "typescript": "5.9.3",
     "vite": "^7.1.11",
-    "vite-plugin-pwa": "^1.1.0",
+    "vite-plugin-pwa": "^1.2.0",
     "vitest": "^3.2.4"
   },
   "overrides": {
@@ -128,6 +128,7 @@
         "esbuild": "0.25.11"
       }
     },
+    "serialize-javascript": "^7.0.5",
     "glob": "9.3.5",
     "sourcemap-codec": "npm:@jridgewell/sourcemap-codec@1.5.0"
   }
