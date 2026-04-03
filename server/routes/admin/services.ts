@@ -7,7 +7,10 @@ import {
   getExampleTranslation,
   normalizeWordExamples,
 } from "@shared";
-import { mergeLegacyExampleFields, type WordUpdateInput } from "./schemas.js";
+import { MANUAL_ADMIN_SOURCE } from "@shared/content-sources";
+import { buildGroqWordEnrichment } from "../../services/groq-word-enrichment.js";
+import { rebuildDerivedContentFromWords } from "./content-sync.js";
+import { mergeLegacyExampleFields, type WordCreateInput, type WordUpdateInput } from "./schemas.js";
 
 export interface WordListFilters {
   pos?: string | null;
@@ -92,15 +95,10 @@ export async function findWordById(id: number) {
   return word ? presentWord(word) : null;
 }
 
-export async function updateWordById(id: number, data: WordUpdateInput) {
-  const existing = await db.query.words.findFirst({
-    where: eq(words.id, id),
-  });
-
-  if (!existing) {
-    return null;
-  }
-
+function buildWordMutationUpdates(existing: Word, data: WordUpdateInput): {
+  updates: Record<string, unknown>;
+  hasContentUpdates: boolean;
+} {
   const updates: Record<string, unknown> = {};
 
   const assign = <K extends keyof WordUpdateInput, C extends keyof Word>(key: K, column: C) => {
@@ -183,8 +181,108 @@ export async function updateWordById(id: number, data: WordUpdateInput) {
   updates.complete = complete;
 
   const hasContentUpdates = Object.keys(updates).some((key) =>
-    !["approved", "complete", "updatedAt", "enrichmentAppliedAt", "enrichmentMethod"].includes(key),
+    !["approved", "complete", "enrichmentAppliedAt", "enrichmentMethod"].includes(key),
   );
+
+  return {
+    updates,
+    hasContentUpdates,
+  };
+}
+
+async function findWordByLemmaAndPos(lemma: string, pos: Word["pos"]): Promise<Word | null> {
+  const existing = await db.query.words.findFirst({
+    where: and(sql`lower(${words.lemma}) = lower(${lemma})`, eq(words.pos, pos)),
+  });
+  return existing ?? null;
+}
+
+export async function createWord(data: WordCreateInput) {
+  const lemma = data.lemma.trim();
+  const pos = data.pos;
+  const duplicate = await findWordByLemmaAndPos(lemma, pos);
+
+  if (duplicate) {
+    throw new Error("WORD_ALREADY_EXISTS");
+  }
+
+  const draftWord: Word = {
+    id: 0,
+    lemma,
+    pos,
+    level: null,
+    english: null,
+    exampleDe: null,
+    exampleEn: null,
+    gender: null,
+    plural: null,
+    separable: null,
+    aux: null,
+    praesensIch: null,
+    praesensEr: null,
+    praeteritum: null,
+    partizipIi: null,
+    perfekt: null,
+    comparative: null,
+    superlative: null,
+    approved: false,
+    complete: false,
+    exportUid: "00000000-0000-0000-0000-000000000000",
+    exportedAt: null,
+    translations: null,
+    examples: null,
+    posAttributes: null,
+    enrichmentAppliedAt: null,
+    enrichmentMethod: null,
+    createdAt: new Date(0),
+    updatedAt: new Date(0),
+    sourcesCsv: null,
+    sourceNotes: null,
+  };
+
+  const { updates, hasContentUpdates } = buildWordMutationUpdates(draftWord, data);
+
+  if (hasContentUpdates && !Object.prototype.hasOwnProperty.call(updates, "enrichmentAppliedAt")) {
+    updates.enrichmentAppliedAt = sql`now()`;
+  }
+  if (hasContentUpdates && !Object.prototype.hasOwnProperty.call(updates, "enrichmentMethod")) {
+    updates.enrichmentMethod = "manual_entry";
+  }
+
+  const [created] = await db
+    .insert(words)
+    .values({
+      lemma,
+      pos,
+      sourcesCsv: MANUAL_ADMIN_SOURCE,
+      sourceNotes: "Created via admin console",
+      ...updates,
+    })
+    .returning();
+
+  await rebuildDerivedContentFromWords();
+
+  const refreshed = await db.query.words.findFirst({
+    where: eq(words.id, created.id),
+  });
+
+  if (!refreshed) {
+    throw new Error("WORD_CREATE_FAILED");
+  }
+
+  return presentWord(refreshed);
+}
+
+export async function updateWordById(id: number, data: WordUpdateInput) {
+  const existing = await db.query.words.findFirst({
+    where: eq(words.id, id),
+  });
+
+  if (!existing) {
+    return null;
+  }
+
+  const { updates, hasContentUpdates } = buildWordMutationUpdates(existing, data);
 
   if (hasContentUpdates && !Object.prototype.hasOwnProperty.call(updates, "enrichmentAppliedAt")) {
     updates.enrichmentAppliedAt = sql`now()`;
@@ -195,6 +293,7 @@ export async function updateWordById(id: number, data: WordUpdateInput) {
   updates.updatedAt = sql`now()`;
 
   await db.update(words).set(updates).where(eq(words.id, id));
+  await rebuildDerivedContentFromWords();
 
   const refreshed = await db.query.words.findFirst({
     where: eq(words.id, id),
@@ -205,6 +304,31 @@ export async function updateWordById(id: number, data: WordUpdateInput) {
   }
 
   return presentWord(refreshed);
+}
+
+export async function enrichWordById(
+  id: number,
+  options: {
+    overwrite?: boolean;
+  } = {},
+) {
+  const existing = await db.query.words.findFirst({
+    where: eq(words.id, id),
+  });
+
+  if (!existing) {
+    return null;
+  }
+
+  const enrichment = await buildGroqWordEnrichment(existing, {
+    overwrite: options.overwrite,
+  });
+
+  if (Object.keys(enrichment).length === 0) {
+    return presentWord(existing);
+  }
+
+  return updateWordById(id, enrichment);
 }
 
 function computeWordCompleteness(word: Pick<Word, "pos"> & Partial<Word>): boolean {

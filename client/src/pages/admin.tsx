@@ -19,9 +19,12 @@ import {
   type ApprovalFilter,
   type CompleteFilter,
 } from './admin/constants';
+import { AdminWordCreator } from './admin/components/admin-word-creator';
 import { AdminWordFilters } from './admin/components/admin-word-filters';
 import { AdminWordTable } from './admin/components/admin-word-table';
 import { useAdminWordsQuery } from './admin/hooks/use-admin-words-query';
+import { useCreateWordMutation } from './admin/hooks/use-create-word-mutation';
+import { useEnrichWordMutation } from './admin/hooks/use-enrich-word-mutation';
 import { useUpdateWordMutation } from './admin/hooks/use-update-word-mutation';
 
 const AdminWordsPage = () => {
@@ -77,6 +80,30 @@ const AdminWordsPage = () => {
     },
   });
 
+  const createMutation = useCreateWordMutation({
+    token: normalizedAdminToken,
+    invalidateKey: wordsQuery.queryKey,
+    onError: (error) => {
+      toast({
+        title: 'Create failed',
+        description: error instanceof Error ? error.message : String(error),
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const enrichMutation = useEnrichWordMutation({
+    token: normalizedAdminToken,
+    invalidateKey: wordsQuery.queryKey,
+    onError: (error) => {
+      toast({
+        title: 'Enrichment failed',
+        description: error instanceof Error ? error.message : String(error),
+        variant: 'destructive',
+      });
+    },
+  });
+
   const words = wordsQuery.data?.data ?? [];
   const pagination = wordsQuery.data?.pagination ?? null;
 
@@ -100,6 +127,32 @@ const AdminWordsPage = () => {
   const handleSubmitWord = (wordId: number, payload: Record<string, unknown>) => {
     updateMutation.mutate({ id: wordId, payload });
     setSelectedWordId(null);
+  };
+
+  const handleCreateWord = async (
+    payload: Record<string, unknown>,
+    options: { enrichAfterCreate: boolean },
+  ) => {
+    const created = await createMutation.mutateAsync({ payload });
+
+    if (options.enrichAfterCreate) {
+      await enrichMutation.mutateAsync({ id: created.id });
+      toast({ title: 'Word created and enriched' });
+      return;
+    }
+
+    toast({ title: 'Word created' });
+  };
+
+  const handleEnrichWord = (word: Word) => {
+    enrichMutation.mutate(
+      { id: word.id },
+      {
+        onSuccess: () => {
+          toast({ title: `Enriched ${word.lemma}` });
+        },
+      },
+    );
   };
 
   const { data: authSession } = useAuthSession();
@@ -173,10 +226,18 @@ const AdminWordsPage = () => {
             id={ADMIN_PAGE_IDS.filterCard}
           >
             <CardHeader className="space-y-2">
-              <CardTitle>Admin: Words</CardTitle>
-              <CardDescription>
-                Review and edit the aggregated lexicon. Filters update the API query in real time.
-              </CardDescription>
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div className="space-y-2">
+                  <CardTitle>Admin: Words</CardTitle>
+                  <CardDescription>
+                    Review and edit the aggregated lexicon. Filters update the API query in real time.
+                  </CardDescription>
+                </div>
+                <AdminWordCreator
+                  onSubmit={handleCreateWord}
+                  isSubmitting={createMutation.isPending || enrichMutation.isPending}
+                />
+              </div>
             </CardHeader>
             <CardContent className="space-y-6">
               <AdminWordFilters
@@ -208,11 +269,13 @@ const AdminWordsPage = () => {
                 fallbackPerPage={perPage}
                 onPageChange={handlePageChange}
                 onToggleApproval={(word) => updateMutation.mutate({ id: word.id, payload: { approved: !word.approved } })}
+                onEnrichWord={handleEnrichWord}
                 selectedWordId={selectedWordId}
                 onOpenEditor={handleOpenEditor}
                 onCloseEditor={handleCloseEditor}
                 onSubmitWord={handleSubmitWord}
                 isSubmitting={updateMutation.isPending}
+                enrichingWordId={enrichMutation.isPending ? enrichMutation.variables?.id ?? null : null}
               />
             </CardContent>
           </Card>

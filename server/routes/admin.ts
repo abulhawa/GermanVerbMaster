@@ -6,9 +6,11 @@ import {
   parsePageParam,
   parseTriState,
   parseWordId,
+  wordCreateSchema,
+  wordEnrichmentRequestSchema,
   wordUpdateSchema,
 } from "./admin/schemas.js";
-import { findWordById, listWords, updateWordById } from "./admin/services.js";
+import { createWord, enrichWordById, findWordById, listWords, updateWordById } from "./admin/services.js";
 import {
   getSessionUserId,
   isRecord,
@@ -75,6 +77,27 @@ export function createAdminRouter(): Router {
     }
   });
 
+  router.post("/words", requireAdminAccess, async (req, res) => {
+    try {
+      const parsed = wordCreateSchema.safeParse(req.body ?? {});
+      if (!parsed.success) {
+        return sendError(res, 400, "Invalid word payload", "INVALID_WORD_INPUT");
+      }
+
+      const created = await createWord(parsed.data);
+      res.status(201).json(created);
+    } catch (error) {
+      console.error("Error creating word:", error);
+      if (error instanceof Error && error.message === "WORD_ALREADY_EXISTS") {
+        return sendError(res, 409, "Word already exists", "WORD_ALREADY_EXISTS");
+      }
+      if (error instanceof Error && error.message === "WORD_CREATE_FAILED") {
+        return sendError(res, 500, "Failed to create word", "WORD_CREATE_FAILED");
+      }
+      sendError(res, 500, "Failed to create word", "WORD_CREATE_FAILED");
+    }
+  });
+
   router.get("/words/:id", requireAdminAccess, async (req, res) => {
     try {
       const id = parseWordId(req.params.id);
@@ -119,6 +142,36 @@ export function createAdminRouter(): Router {
         return sendError(res, 500, "Failed to update word", "WORD_UPDATE_FAILED");
       }
       sendError(res, 500, "Failed to update word", "WORD_UPDATE_FAILED");
+    }
+  });
+
+  router.post("/words/:id/enrich", requireAdminAccess, async (req, res) => {
+    try {
+      const id = parseWordId(req.params.id);
+      if (!id) {
+        return sendError(res, 400, "Invalid word id", "INVALID_WORD_ID");
+      }
+
+      if (!process.env.GROQ_API_KEY) {
+        return sendError(res, 503, "AI enrichment not available", "GROQ_UNAVAILABLE");
+      }
+
+      const parsed = wordEnrichmentRequestSchema.safeParse(req.body ?? {});
+      if (!parsed.success) {
+        return sendError(res, 400, "Invalid enrichment payload", "INVALID_WORD_ENRICH_INPUT");
+      }
+
+      const enriched = await enrichWordById(id, {
+        overwrite: parsed.data.overwrite,
+      });
+      if (!enriched) {
+        return sendError(res, 404, "Word not found", "WORD_NOT_FOUND");
+      }
+
+      res.json(enriched);
+    } catch (error) {
+      console.error("Error enriching word:", error);
+      sendError(res, 500, "Failed to enrich word", "WORD_ENRICH_FAILED");
     }
   });
 

@@ -26,11 +26,13 @@ interface AdminWordTableProps {
   fallbackPerPage: number;
   onPageChange: (page: number) => void;
   onToggleApproval: (word: Word) => void;
+  onEnrichWord: (word: Word) => void;
   selectedWordId: number | null;
   onOpenEditor: (word: Word) => void;
   onCloseEditor: () => void;
   onSubmitWord: (wordId: number, payload: Record<string, unknown>) => void;
   isSubmitting: boolean;
+  enrichingWordId?: number | null;
 }
 
 export function AdminWordTable({
@@ -43,11 +45,13 @@ export function AdminWordTable({
   fallbackPerPage,
   onPageChange,
   onToggleApproval,
+  onEnrichWord,
   selectedWordId,
   onOpenEditor,
   onCloseEditor,
   onSubmitWord,
   isSubmitting,
+  enrichingWordId,
 }: AdminWordTableProps) {
   const totalWords = pagination?.total ?? 0;
   const totalPages = pagination?.totalPages ?? 0;
@@ -196,6 +200,17 @@ export function AdminWordTable({
                       </Button>
                     }
                   />
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="rounded-xl"
+                    title="Enrich missing fields with Groq"
+                    aria-label="Enrich missing fields with Groq"
+                    onClick={() => onEnrichWord(word)}
+                    disabled={Boolean(enrichingWordId) || isSubmitting}
+                  >
+                    {enrichingWordId === word.id ? 'AI…' : 'AI'}
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}

@@ -2,6 +2,8 @@ import { z } from "zod";
 import { canonicalizeExamples, type WordExample } from "@shared";
 import { isRecord } from "../shared.js";
 
+const partOfSpeechSchema = z.enum(["V", "N", "Adj", "Adv", "Pron", "Det", "Pr\u00e4p", "Konj", "Num", "Part", "Interj"]);
+
 const optionalText = (max: number) =>
   z
     .preprocess((value) => {
@@ -200,6 +202,23 @@ export const wordUpdateSchema = z
   .strict();
 
 export type WordUpdateInput = z.infer<typeof wordUpdateSchema>;
+
+export const wordCreateSchema = wordUpdateSchema
+  .extend({
+    lemma: trimmedString(200),
+    pos: partOfSpeechSchema,
+  })
+  .strict();
+
+export type WordCreateInput = z.infer<typeof wordCreateSchema>;
+
+export const wordEnrichmentRequestSchema = z
+  .object({
+    overwrite: optionalBoolean,
+  })
+  .strict();
+
+export type WordEnrichmentRequest = z.infer<typeof wordEnrichmentRequestSchema>;
 
 export function parseTriState(value: unknown): boolean | undefined {
   if (value === undefined) return undefined;

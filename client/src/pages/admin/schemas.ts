@@ -22,6 +22,13 @@ export const wordFormSchema = z.object({
 
 export type WordFormState = z.infer<typeof wordFormSchema>;
 
+export const createWordFormSchema = wordFormSchema.extend({
+  lemma: z.string(),
+  pos: z.enum(['V', 'N', 'Adj', 'Adv', 'Pron', 'Det', 'Pr\u00e4p', 'Konj', 'Num', 'Part', 'Interj']),
+});
+
+export type CreateWordFormState = z.infer<typeof createWordFormSchema>;
+
 export function createFormState(word: Word): WordFormState {
   return {
     level: word.level ?? '',
@@ -39,6 +46,28 @@ export function createFormState(word: Word): WordFormState {
     perfekt: word.perfekt ?? '',
     comparative: word.comparative ?? '',
     superlative: word.superlative ?? '',
+  };
+}
+
+export function createEmptyWordFormState(pos: Word['pos'] = 'V'): CreateWordFormState {
+  return {
+    lemma: '',
+    pos,
+    level: '',
+    english: '',
+    exampleDe: '',
+    exampleEn: '',
+    gender: '',
+    plural: '',
+    separable: 'unset',
+    aux: 'unset',
+    praesensIch: '',
+    praesensEr: '',
+    praeteritum: '',
+    partizipIi: '',
+    perfekt: '',
+    comparative: '',
+    superlative: '',
   };
 }
 
@@ -92,4 +121,12 @@ export function preparePayload(form: WordFormState, pos: Word['pos']) {
   }
 
   return payload;
+}
+
+export function prepareCreatePayload(form: CreateWordFormState) {
+  return {
+    lemma: form.lemma.trim(),
+    pos: form.pos,
+    ...preparePayload(form, form.pos),
+  };
 }

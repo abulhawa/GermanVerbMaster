@@ -62,6 +62,10 @@ vi.mock('../db/schema.js', async () => {
   return actual;
 });
 
+vi.mock('../server/routes/admin/content-sync.js', () => ({
+  rebuildDerivedContentFromWords: vi.fn(async () => {}),
+}));
+
 describe('Admin words API', () => {
   beforeEach(() => {
     vi.clearAllMocks();

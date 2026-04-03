@@ -1,6 +1,7 @@
 import { sql } from 'drizzle-orm';
 
 import { words } from '@db/schema';
+import { MANUAL_ADMIN_SOURCE } from '@shared/content-sources';
 
 import { buildLexemeInventory, upsertLexemeInventory as persistLexemeInventory } from '../etl/golden';
 import { chunkArray } from '../etl/utils';
@@ -103,10 +104,15 @@ export async function syncLegacyWords(
   db: DatabaseClient,
   wordsToUpsert: AggregatedWordWithKey[],
 ): Promise<void> {
-  const existing = await db.select({ lemma: words.lemma, pos: words.pos }).from(words);
+  const existing = await db
+    .select({ lemma: words.lemma, pos: words.pos, sourcesCsv: words.sourcesCsv })
+    .from(words);
   const desiredKeys = new Set(wordsToUpsert.map((word) => word.key));
 
-  const wordsToDelete = existing.filter((row) => !desiredKeys.has(keyFor(row.lemma, row.pos)));
+  const wordsToDelete = existing.filter(
+    (row) =>
+      row.sourcesCsv !== MANUAL_ADMIN_SOURCE && !desiredKeys.has(keyFor(row.lemma, row.pos)),
+  );
 
   for (const batch of chunkArray(wordsToDelete, WORDS_BATCH_SIZE)) {
     await deleteWordBatch(db, batch);
