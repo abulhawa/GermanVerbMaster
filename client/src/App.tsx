@@ -12,6 +12,7 @@ import { PracticeSettingsProvider } from "@/contexts/practice-settings-context";
 import { ADMIN_FEATURE_ENABLED } from "@/config/admin-feature";
 
 const HomePage = lazy(() => import("@/pages/home"));
+const WritingPage = lazy(() => import("@/pages/writing"));
 const AnswerHistoryPage = lazy(() => import("@/pages/answer-history"));
 const AnalyticsPage = lazy(() => import("@/pages/analytics"));
 const AdminPage = ADMIN_FEATURE_ENABLED ? lazy(() => import("@/pages/admin")) : null;
@@ -23,6 +24,7 @@ function Router() {
     <Suspense fallback={<RouteFallback />}>
       <Switch>
         <Route path="/" component={HomePage} />
+        <Route path="/writing" component={WritingPage} />
         <Route path="/answers" component={AnswerHistoryPage} />
         <Route path="/analytics" component={AnalyticsPage} />
         {ADMIN_FEATURE_ENABLED && AdminPage ? <Route path="/admin" component={AdminPage} /> : null}

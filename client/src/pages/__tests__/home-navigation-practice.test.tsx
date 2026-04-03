@@ -142,7 +142,7 @@ describe('Home navigation - practice workflows', () => {
     });
   });
 
-  it('keeps B2 writing on a separate tab from word tasks', async () => {
+  it('keeps B2 word practice separate and exposes writing in navigation', async () => {
     vi.useFakeTimers({ toFake: ['Date'] });
     vi.setSystemTime(new Date('2026-04-02T12:00:00.000Z'));
 
@@ -175,20 +175,8 @@ describe('Home navigation - practice workflows', () => {
       expect(await screen.findByText('B2 Exam Mode')).toBeInTheDocument();
       expect(screen.getByText('Focusing on B1/B2 level tasks.')).toBeInTheDocument();
       expect(screen.getByText(/B2 in \d+ days/)).toBeInTheDocument();
-
-      mockFetchPracticeTasks.mockClear();
-
-      await userEvent.click(await screen.findByRole('tab', { name: /writing/i }));
-
-      await waitFor(() => {
-        expect(mockFetchPracticeTasks).toHaveBeenCalledWith(
-          expect.objectContaining({
-            taskTypes: ['b2_writing_prompt'],
-            level: ['B2'],
-            limit: 15,
-          }),
-        );
-      });
+      expect(screen.queryByRole('tab', { name: /writing/i })).not.toBeInTheDocument();
+      expect(screen.getAllByRole('link', { name: /writing/i }).length).toBeGreaterThan(0);
     } finally {
       vi.useRealTimers();
     }

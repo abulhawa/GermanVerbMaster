@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Sparkles, History, Compass, Settings2 } from "lucide-react";
+import { Sparkles, PenLine, History, Compass, Settings2 } from "lucide-react";
 import { ADMIN_FEATURE_ENABLED } from "@/config/admin-feature";
 
 export interface AppNavigationItem {
@@ -15,6 +15,12 @@ const BASE_PRIMARY_NAVIGATION_ITEMS: AppNavigationItem[] = [
     href: "/",
     label: "Practice",
     icon: Sparkles,
+    exact: true,
+  },
+  {
+    href: "/writing",
+    label: "Writing",
+    icon: PenLine,
     exact: true,
   },
   {

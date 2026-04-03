@@ -5,6 +5,7 @@ import type { RenderResult } from '@testing-library/react';
 import { vi, type Mock } from 'vitest';
 
 import Home from '@/pages/home';
+import WritingPage from '@/pages/writing';
 import type { PracticeTask, MultiTaskFetchOptions } from '@/lib/tasks';
 import { createDefaultSettings } from '@/lib/practice-settings';
 import type { PracticeSettingsState, TaskType } from '@shared';
@@ -216,6 +217,22 @@ export function renderHome(): RenderResult {
       <QueryClientProvider client={client}>
         <PracticeSettingsProvider>
           <Home />
+        </PracticeSettingsProvider>
+      </QueryClientProvider>
+    </LocaleProvider>,
+  );
+}
+
+export function renderWritingPage(): RenderResult {
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+
+  return render(
+    <LocaleProvider>
+      <QueryClientProvider client={client}>
+        <PracticeSettingsProvider>
+          <WritingPage />
         </PracticeSettingsProvider>
       </QueryClientProvider>
     </LocaleProvider>,
