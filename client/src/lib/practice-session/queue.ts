@@ -133,6 +133,12 @@ function refillQueueFromLeitner(
   return { queue: nextQueue, leitner, reviewStarted };
 }
 
+function buildRecentHistory(recent: string[], taskId: string): string[] {
+  const filteredRecent = recent.filter((id) => id !== taskId);
+  filteredRecent.unshift(taskId);
+  return filteredRecent.slice(0, MAX_RECENT_HISTORY);
+}
+
 export function enqueueTasks(
   state: PracticeSessionState,
   tasks: PracticeTask[],
@@ -209,9 +215,7 @@ export function enqueueTasks(
 export function completeTask(state: PracticeSessionState, taskId: string, result?: PracticeResult): PracticeSessionState {
   const nextCompleted = state.completed.includes(taskId) ? state.completed : [...state.completed, taskId];
   const remainingQueue = state.queue.filter((id) => id !== taskId);
-  const filteredRecent = state.recent.filter((id) => id !== taskId);
-  filteredRecent.unshift(taskId);
-  const nextRecent = filteredRecent.slice(0, MAX_RECENT_HISTORY);
+  const nextRecent = buildRecentHistory(state.recent, taskId);
 
   let nextLeitner = cloneLeitnerState(state.leitner);
   let reviewSession = state.isReviewSession;
@@ -281,6 +285,77 @@ export function completeTask(state: PracticeSessionState, taskId: string, result
   return {
     ...state,
     completed: nextCompleted,
+    queue: remainingQueue,
+    activeTaskId: nextActive,
+    recent: nextRecent,
+    leitner: nextLeitner,
+    isReviewSession: reviewSession,
+  } satisfies PracticeSessionState;
+}
+
+export function skipTask(state: PracticeSessionState, taskId: string): PracticeSessionState {
+  const remainingQueue = state.queue.filter((id) => id !== taskId);
+  const nextRecent = buildRecentHistory(state.recent, taskId);
+
+  let nextLeitner = cloneLeitnerState(state.leitner);
+  let reviewSession = state.isReviewSession;
+
+  if (nextLeitner) {
+    const existingEntry = nextLeitner.entries[taskId];
+    const entry = existingEntry ?? {
+      box: 0,
+      dueStep: nextLeitner.step,
+      seen: 0,
+    } satisfies LeitnerEntryState;
+
+    if (!existingEntry) {
+      nextLeitner.entries[taskId] = entry;
+      nextLeitner.totalUnique += 1;
+    }
+
+    const previousSeen = entry.seen;
+    nextLeitner.step += 1;
+    entry.seen = previousSeen + 1;
+    if (previousSeen === 0 && nextLeitner.seenUnique < nextLeitner.totalUnique) {
+      nextLeitner.seenUnique += 1;
+    }
+
+    // Skips should move the card behind the rest of the current batch so the
+    // refill logic does not immediately surface it again.
+    const deferSteps = Math.max(1, remainingQueue.length + 1);
+    entry.dueStep = nextLeitner.step + deferSteps;
+    nextLeitner.entries[taskId] = entry;
+
+    const { queue: replenishedQueue, leitner: updatedLeitner } = refillQueueFromLeitner(
+      remainingQueue,
+      nextLeitner,
+    );
+
+    nextLeitner = updatedLeitner;
+    if (updatedLeitner) {
+      if (updatedLeitner.seenUnique < updatedLeitner.totalUnique) {
+        reviewSession = false;
+      }
+    } else {
+      reviewSession = false;
+    }
+
+    const nextActive = replenishedQueue[0] ?? null;
+
+    return {
+      ...state,
+      queue: replenishedQueue,
+      activeTaskId: nextActive,
+      recent: nextRecent,
+      leitner: nextLeitner,
+      isReviewSession: reviewSession,
+    } satisfies PracticeSessionState;
+  }
+
+  const nextActive = remainingQueue[0] ?? null;
+
+  return {
+    ...state,
     queue: remainingQueue,
     activeTaskId: nextActive,
     recent: nextRecent,

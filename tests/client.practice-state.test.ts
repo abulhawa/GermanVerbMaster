@@ -17,6 +17,7 @@ import {
   resetSession,
   savePracticeSession,
   completeTask,
+  skipTask,
   createEmptySessionState,
   clearSessionQueue,
 } from '@/lib/practice-session';
@@ -362,6 +363,39 @@ describe('practice state migrations', () => {
     expect(cleared.recent).toContain(practiceTask.taskId);
     expect(cleared.leitner).toBeNull();
     expect(cleared.isReviewSession).toBe(false);
+  });
+
+  it('defers skipped tasks until the rest of the current queue has been seen', () => {
+    const base = {
+      ...createEmptySessionState(),
+      queue: [practiceTask.taskId, practiceTaskTwo.taskId],
+      activeTaskId: practiceTask.taskId,
+      leitner: {
+        intervals: [1, 3, 6],
+        step: 0,
+        entries: {
+          [practiceTask.taskId]: { box: 0, dueStep: 0, seen: 0 },
+          [practiceTaskTwo.taskId]: { box: 0, dueStep: 0, seen: 0 },
+        },
+        seenUnique: 0,
+        totalUnique: 2,
+        serverExhausted: false,
+      },
+    };
+
+    const skipped = skipTask(base, practiceTask.taskId);
+    expect(skipped.queue).toEqual([practiceTaskTwo.taskId]);
+    expect(skipped.activeTaskId).toBe(practiceTaskTwo.taskId);
+    expect(skipped.completed).toHaveLength(0);
+    expect(skipped.recent).toContain(practiceTask.taskId);
+    expect(skipped.leitner?.seenUnique).toBe(1);
+    expect(skipped.leitner?.entries[practiceTask.taskId]?.seen).toBe(1);
+    expect(skipped.leitner?.entries[practiceTask.taskId]?.dueStep).toBeGreaterThan(skipped.leitner?.step ?? 0);
+
+    const afterRemainingTask = completeTask(skipped, practiceTaskTwo.taskId, 'correct');
+    expect(afterRemainingTask.queue).toContain(practiceTask.taskId);
+    expect(afterRemainingTask.completed).toContain(practiceTaskTwo.taskId);
+    expect(afterRemainingTask.completed).not.toContain(practiceTask.taskId);
   });
 
   it('schedules tasks with a Leitner rotation after they are answered', () => {

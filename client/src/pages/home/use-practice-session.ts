@@ -8,6 +8,7 @@ import {
   loadPracticeSession,
   markLeitnerServerExhausted,
   savePracticeSession,
+  skipTask,
   type PracticeSessionState,
 } from '@/lib/practice-session';
 import type { PracticeTask, MultiTaskFetchOptions } from '@/lib/tasks';
@@ -465,20 +466,7 @@ export function useHomePracticeSession({
       return;
     }
 
-    setSession((prev) => {
-      const remaining = prev.queue.filter((id) => id !== activeTask.taskId);
-      return {
-        ...prev,
-        queue: remaining,
-        activeTaskId: remaining[0] ?? null,
-      };
-    });
-
-    setTasksById((prev) => {
-      const next = { ...prev };
-      delete next[activeTask.taskId];
-      return next;
-    });
+    setSession((prev) => skipTask(prev, activeTask.taskId));
   }, [activeTask]);
 
   const reloadQueue = useCallback(async (options?: QueueReloadOptions) => {
