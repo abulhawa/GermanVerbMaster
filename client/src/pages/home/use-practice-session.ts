@@ -270,9 +270,7 @@ export function useHomePracticeSession({
       const shouldResetExclusions = replace && mode === 'shuffle';
       const exclusionSources = shouldResetExclusions
         ? []
-        : replace
-          ? [...currentSession.queue, ...currentSession.recent]
-          : currentSession.queue;
+        : [...currentSession.queue, ...currentSession.recent];
       const excludeTaskIds = Array.from(new Set(exclusionSources)).slice(0, MAX_EXCLUDE_TASK_IDS);
       const normalizedExcludeTaskIds = excludeTaskIds.length ? excludeTaskIds : undefined;
       const baseSignature = createQueueSignature(baseQueue, activeTaskTypes);

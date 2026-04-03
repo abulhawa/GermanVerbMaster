@@ -145,7 +145,7 @@ export function enqueueTasks(
   options: { replace?: boolean; ignoreRecent?: boolean } = {},
 ): PracticeSessionState {
   const { replace = false } = options;
-  const ignoreRecent = options.ignoreRecent ?? (replace || Boolean(state.leitner));
+  const ignoreRecent = options.ignoreRecent ?? replace;
   const nextQueue = replace ? [] : [...state.queue];
   const seen = new Set(nextQueue);
 
@@ -254,17 +254,17 @@ export function completeTask(state: PracticeSessionState, taskId: string, result
     const { queue: replenishedQueue, leitner: updatedLeitner, reviewStarted } = refillQueueFromLeitner(
       remainingQueue,
       nextLeitner,
-      { forceAtLeastOne: true },
     );
 
     nextLeitner = updatedLeitner;
     if (updatedLeitner) {
-      if (updatedLeitner.seenUnique >= updatedLeitner.totalUnique && updatedLeitner.totalUnique > 0) {
-        reviewSession = true;
-      }
-      if (reviewStarted) {
-        reviewSession = true;
-      }
+      reviewSession =
+        reviewStarted ||
+        (updatedLeitner.seenUnique >= updatedLeitner.totalUnique &&
+          updatedLeitner.totalUnique > 0 &&
+          replenishedQueue.length > 0);
+    } else {
+      reviewSession = false;
     }
 
     const nextActive = replenishedQueue[0] ?? null;

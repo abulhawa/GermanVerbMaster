@@ -321,11 +321,11 @@ describe('practice state migrations', () => {
     const completed = completeTask(queued, practiceTask.taskId, 'correct');
 
     expect(completed.recent).toContain(practiceTask.taskId);
-    expect(completed.queue).toContain(practiceTask.taskId);
-    expect(completed.isReviewSession).toBe(true);
+    expect(completed.queue).not.toContain(practiceTask.taskId);
+    expect(completed.isReviewSession).toBe(false);
 
     const toppedUp = enqueueTasks(completed, [practiceTask]);
-    expect(toppedUp.queue.filter((id) => id === practiceTask.taskId)).toHaveLength(1);
+    expect(toppedUp.queue).not.toContain(practiceTask.taskId);
   });
 
   it('skips enqueuing tasks that are not due yet when new tasks are fetched', () => {
@@ -393,9 +393,10 @@ describe('practice state migrations', () => {
     expect(skipped.leitner?.entries[practiceTask.taskId]?.dueStep).toBeGreaterThan(skipped.leitner?.step ?? 0);
 
     const afterRemainingTask = completeTask(skipped, practiceTaskTwo.taskId, 'correct');
-    expect(afterRemainingTask.queue).toContain(practiceTask.taskId);
+    expect(afterRemainingTask.queue).not.toContain(practiceTask.taskId);
     expect(afterRemainingTask.completed).toContain(practiceTaskTwo.taskId);
     expect(afterRemainingTask.completed).not.toContain(practiceTask.taskId);
+    expect(afterRemainingTask.activeTaskId).toBeNull();
   });
 
   it('schedules tasks with a Leitner rotation after they are answered', () => {
@@ -403,12 +404,14 @@ describe('practice state migrations', () => {
     const queued = enqueueTasks(base, [practiceTask]);
 
     const firstCompletion = completeTask(queued, practiceTask.taskId, 'correct');
-    expect(firstCompletion.queue).toContain(practiceTask.taskId);
+    expect(firstCompletion.queue).not.toContain(practiceTask.taskId);
     expect(firstCompletion.leitner?.entries[practiceTask.taskId]?.seen).toBe(1);
-    expect(firstCompletion.isReviewSession).toBe(true);
+    expect(firstCompletion.leitner?.entries[practiceTask.taskId]?.box).toBe(1);
+    expect(firstCompletion.isReviewSession).toBe(false);
 
-    const secondCompletion = completeTask(firstCompletion, practiceTask.taskId, 'incorrect');
+    const refreshed = enqueueTasks(firstCompletion, [practiceTask], { replace: true });
+    const secondCompletion = completeTask(refreshed, practiceTask.taskId, 'incorrect');
     expect(secondCompletion.leitner?.entries[practiceTask.taskId]?.box).toBe(0);
-    expect(secondCompletion.queue).toContain(practiceTask.taskId);
+    expect(secondCompletion.queue).not.toContain(practiceTask.taskId);
   });
 });

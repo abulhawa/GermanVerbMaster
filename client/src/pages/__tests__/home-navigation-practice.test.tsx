@@ -49,6 +49,70 @@ describe('Home navigation - practice workflows', () => {
     });
   });
 
+  it('excludes skipped tasks when refilling the queue', async () => {
+    mockFetchPracticeTasks.mockResolvedValueOnce({
+      conjugate_form: [
+        createConjugationTask('task-1', 'gehen'),
+        createConjugationTask('task-2', 'kommen'),
+      ],
+    });
+    mockFetchPracticeTasks.mockResolvedValue({ conjugate_form: [] });
+
+    renderHome();
+
+    const practiceCard = await screen.findByTestId('practice-card');
+    const initialLemma = within(practiceCard).getByRole('heading', { level: 1 }).textContent;
+    const skippedTaskId = initialLemma === 'gehen' ? 'task-1' : 'task-2';
+
+    const skipButton = await screen.findByRole('button', { name: /skip to next/i });
+    await userEvent.click(skipButton);
+
+    await waitFor(() => {
+      expect(mockFetchPracticeTasks.mock.calls.length).toBeGreaterThanOrEqual(2);
+    });
+
+    expect(
+      mockFetchPracticeTasks.mock.calls
+        .slice(1)
+        .some(([options]) => options.excludeTaskIds?.includes(skippedTaskId)),
+    ).toBe(true);
+  });
+
+  it('excludes completed tasks when refilling the queue', async () => {
+    mockFetchPracticeTasks.mockResolvedValueOnce({
+      conjugate_form: [
+        createConjugationTask('task-1', 'gehen'),
+        createConjugationTask('task-2', 'kommen'),
+      ],
+    });
+    mockFetchPracticeTasks.mockResolvedValue({ conjugate_form: [] });
+
+    renderHome();
+
+    const practiceCard = await screen.findByTestId('practice-card');
+    const initialLemma = within(practiceCard).getByRole('heading', { level: 1 }).textContent ?? '';
+    const completedTaskId = initialLemma === 'gehen' ? 'task-1' : 'task-2';
+
+    const answerInput = within(practiceCard).getByRole('textbox');
+    await userEvent.type(answerInput, `${initialLemma}-pp`);
+
+    const submitButton = within(practiceCard).getByRole('button', { name: /check/i });
+    await userEvent.click(submitButton);
+
+    const nextButton = await screen.findByRole('button', { name: /next question/i });
+    await userEvent.click(nextButton);
+
+    await waitFor(() => {
+      expect(mockFetchPracticeTasks.mock.calls.length).toBeGreaterThanOrEqual(2);
+    });
+
+    expect(
+      mockFetchPracticeTasks.mock.calls
+        .slice(1)
+        .some(([options]) => options.excludeTaskIds?.includes(completedTaskId)),
+    ).toBe(true);
+  });
+
   it('reloads practice tasks for the selected verb level', async () => {
     seedPracticeSettings();
 
