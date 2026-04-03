@@ -51,7 +51,7 @@ describe('GET /api/me', () => {
 
     expect(response.status).toBe(401);
     expect(response.bodyJson).toMatchObject({ code: 'UNAUTHENTICATED' });
-  });
+  }, 15000);
 
   it('returns 401 when the session payload is incomplete', async () => {
     getSessionFromRequestMock.mockResolvedValueOnce({

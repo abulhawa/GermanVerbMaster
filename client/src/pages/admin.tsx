@@ -14,6 +14,7 @@ import type { Word } from '@shared';
 
 import {
   ADMIN_PAGE_IDS,
+  ADMIN_TOKEN_STORAGE_KEY,
   PAGE_DEBUG_ID,
   type AdminWordFilters as AdminWordFiltersState,
   type ApprovalFilter,
@@ -28,7 +29,7 @@ import { useEnrichWordMutation } from './admin/hooks/use-enrich-word-mutation';
 import { useUpdateWordMutation } from './admin/hooks/use-update-word-mutation';
 
 const AdminWordsPage = () => {
-  const [adminToken, setAdminToken] = useState(() => localStorage.getItem('gvm-admin-token') ?? '');
+  const [adminToken, setAdminToken] = useState(() => localStorage.getItem(ADMIN_TOKEN_STORAGE_KEY) ?? '');
   const [search, setSearch] = useState('');
   const [pos, setPos] = useState<Word['pos'] | 'ALL'>('ALL');
   const [level, setLevel] = useState<string>('All');
@@ -43,7 +44,7 @@ const AdminWordsPage = () => {
   const normalizedAdminToken = adminToken.trim();
 
   useEffect(() => {
-    localStorage.setItem('gvm-admin-token', normalizedAdminToken);
+    localStorage.setItem(ADMIN_TOKEN_STORAGE_KEY, normalizedAdminToken);
   }, [normalizedAdminToken]);
 
   useEffect(() => {
@@ -217,6 +218,16 @@ const AdminWordsPage = () => {
                   id={`${PAGE_DEBUG_ID}-topbar-analytics-button`}
                 >
                   Open analytics
+                </Button>
+              </Link>
+              <Link href="/admin/enrichment">
+                <Button
+                  variant="secondary"
+                  className="rounded-2xl px-5"
+                  debugId={`${PAGE_DEBUG_ID}-topbar-enrichment-button`}
+                  id={`${PAGE_DEBUG_ID}-topbar-enrichment-button`}
+                >
+                  Open enrichment
                 </Button>
               </Link>
             </div>

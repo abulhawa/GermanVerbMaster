@@ -3,6 +3,7 @@ import type { Word } from '@shared';
 export type ApprovalFilter = 'all' | 'approved' | 'pending';
 export type CompleteFilter = 'all' | 'complete' | 'incomplete';
 
+export const ADMIN_TOKEN_STORAGE_KEY = 'gvm-admin-token';
 export const PER_PAGE_OPTIONS = [25, 50, 100, 200] as const;
 
 export const POS_OPTIONS: Array<{ label: string; value: Word['pos'] | 'ALL' }> = [

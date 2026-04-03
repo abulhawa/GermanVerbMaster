@@ -6,11 +6,19 @@ import {
   parsePageParam,
   parseTriState,
   parseWordId,
+  wordBatchEnrichmentRequestSchema,
   wordCreateSchema,
   wordEnrichmentRequestSchema,
   wordUpdateSchema,
 } from "./admin/schemas.js";
-import { createWord, enrichWordById, findWordById, listWords, updateWordById } from "./admin/services.js";
+import {
+  createWord,
+  enrichWordById,
+  findWordById,
+  listWords,
+  runWordEnrichmentBatch,
+  updateWordById,
+} from "./admin/services.js";
 import {
   getSessionUserId,
   isRecord,
@@ -172,6 +180,34 @@ export function createAdminRouter(): Router {
     } catch (error) {
       console.error("Error enriching word:", error);
       sendError(res, 500, "Failed to enrich word", "WORD_ENRICH_FAILED");
+    }
+  });
+
+  router.post("/admin/enrichment/run", requireAdminAccess, async (req, res) => {
+    try {
+      if (!process.env.GROQ_API_KEY) {
+        return sendError(res, 503, "AI enrichment not available", "GROQ_UNAVAILABLE");
+      }
+
+      const parsed = wordBatchEnrichmentRequestSchema.safeParse(req.body ?? {});
+      if (!parsed.success) {
+        return sendError(res, 400, "Invalid enrichment payload", "INVALID_WORD_ENRICH_INPUT");
+      }
+
+      const result = await runWordEnrichmentBatch({
+        limit: parsed.data.limit ?? 25,
+        mode: parsed.data.mode ?? "pending",
+        onlyIncomplete: parsed.data.onlyIncomplete ?? true,
+        overwrite: parsed.data.overwrite ?? false,
+        pos: parsed.data.pos ?? null,
+        level: parsed.data.level ?? null,
+      });
+
+      res.setHeader("Cache-Control", "no-store");
+      res.json(result);
+    } catch (error) {
+      console.error("Error running batch enrichment:", error);
+      sendError(res, 500, "Failed to run enrichment", "WORD_ENRICH_FAILED");
     }
   });
 

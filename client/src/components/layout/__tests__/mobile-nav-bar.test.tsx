@@ -26,6 +26,9 @@ const PracticeIcon = forwardRef<SVGSVGElement, LucideProps>((props, ref) => (
 const AnalyticsIcon = forwardRef<SVGSVGElement, LucideProps>((props, ref) => (
   <svg ref={ref} data-testid="analytics-icon" aria-hidden {...props} />
 )) as LucideIcon;
+const AdminIcon = forwardRef<SVGSVGElement, LucideProps>((props, ref) => (
+  <svg ref={ref} data-testid="admin-icon" aria-hidden {...props} />
+)) as LucideIcon;
 
 const items: AppNavigationItem[] = [
   { href: '/', label: 'Practice', icon: PracticeIcon, exact: true },
@@ -70,5 +73,21 @@ describe('MobileNavBar', () => {
     });
 
     expect(practiceLinkAfterClick).not.toHaveAttribute('aria-current');
+  });
+
+  it('keeps the admin navigation item active on nested admin routes', () => {
+    render(
+      <MemoryRouter initialPath="/admin/enrichment">
+        <MobileNavBar
+          items={[
+            { href: '/', label: 'Practice', icon: PracticeIcon, exact: true },
+            { href: '/admin', label: 'Admin tools', icon: AdminIcon },
+          ]}
+        />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole('link', { name: 'Admin tools' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', { name: 'Practice' })).not.toHaveAttribute('aria-current');
   });
 });

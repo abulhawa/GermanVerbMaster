@@ -220,6 +220,29 @@ export const wordEnrichmentRequestSchema = z
 
 export type WordEnrichmentRequest = z.infer<typeof wordEnrichmentRequestSchema>;
 
+const optionalPositiveInteger = (min: number, max: number) =>
+  z
+    .preprocess((value) => {
+      if (value === undefined) return undefined;
+      if (value === null) return undefined;
+      const parsed = Number.parseInt(String(value), 10);
+      return Number.isFinite(parsed) ? parsed : value;
+    }, z.number().int().min(min).max(max))
+    .optional();
+
+export const wordBatchEnrichmentRequestSchema = z
+  .object({
+    limit: optionalPositiveInteger(1, 200),
+    mode: z.enum(["pending", "approved", "all"]).optional(),
+    onlyIncomplete: optionalBoolean,
+    overwrite: optionalBoolean,
+    pos: partOfSpeechSchema.optional(),
+    level: optionalLevel,
+  })
+  .strict();
+
+export type WordBatchEnrichmentRequest = z.infer<typeof wordBatchEnrichmentRequestSchema>;
+
 export function parseTriState(value: unknown): boolean | undefined {
   if (value === undefined) return undefined;
   const normalized = String(value).trim().toLowerCase();

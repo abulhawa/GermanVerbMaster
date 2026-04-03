@@ -35,6 +35,29 @@ export interface WordListResult {
   pagination: PaginationMeta;
 }
 
+export interface WordEnrichmentBatchItem {
+  id: number;
+  lemma: string;
+  pos: Word["pos"];
+  updated: boolean;
+  fields: string[];
+}
+
+export interface WordEnrichmentBatchResult {
+  scanned: number;
+  updated: number;
+  words: WordEnrichmentBatchItem[];
+}
+
+export interface RunWordEnrichmentBatchInput {
+  limit: number;
+  mode: "pending" | "approved" | "all";
+  onlyIncomplete?: boolean;
+  overwrite?: boolean;
+  pos?: Word["pos"] | null;
+  level?: string | null;
+}
+
 export async function listWords(filters: WordListFilters): Promise<WordListResult> {
   const { pos, level, approvalFilter, completeFilter, enrichedFilter, search, page, perPage } = filters;
 
@@ -338,6 +361,69 @@ export async function enrichWordById(
   }
 
   return updateWordById(id, enrichment);
+}
+
+export async function runWordEnrichmentBatch(
+  input: RunWordEnrichmentBatchInput,
+): Promise<WordEnrichmentBatchResult> {
+  const { limit, mode, onlyIncomplete = true, overwrite = false, pos = null, level = null } = input;
+
+  const conditions: any[] = [];
+  if (mode === "pending") {
+    conditions.push(eq(words.approved, false));
+  } else if (mode === "approved") {
+    conditions.push(eq(words.approved, true));
+  }
+  if (onlyIncomplete) {
+    conditions.push(eq(words.complete, false));
+  }
+  if (pos) {
+    conditions.push(eq(words.pos, pos));
+  }
+  if (level) {
+    conditions.push(eq(words.level, level));
+  }
+
+  const baseQuery = conditions.length
+    ? db.select().from(words).where(and(...conditions))
+    : db.select().from(words);
+  const orderedQuery = baseQuery.orderBy(sql`lower(${words.lemma})`, sql`lower(${words.pos})`);
+  const candidates = await orderedQuery.limit(limit);
+
+  const results: WordEnrichmentBatchItem[] = [];
+  let updatedCount = 0;
+
+  for (const candidate of candidates) {
+    const enrichment = await buildGroqWordEnrichment(candidate, { overwrite });
+    const fields = Object.keys(enrichment).filter(
+      (field) => field !== "enrichmentAppliedAt" && field !== "enrichmentMethod",
+    );
+
+    if (fields.length > 0) {
+      await updateWordById(candidate.id, enrichment, {
+        rebuildDerivedContent: false,
+      });
+      updatedCount += 1;
+    }
+
+    results.push({
+      id: candidate.id,
+      lemma: candidate.lemma,
+      pos: candidate.pos,
+      updated: fields.length > 0,
+      fields,
+    });
+  }
+
+  if (updatedCount > 0) {
+    await rebuildDerivedContentFromWords();
+  }
+
+  return {
+    scanned: candidates.length,
+    updated: updatedCount,
+    words: results,
+  };
 }
 
 function computeWordCompleteness(word: Pick<Word, "pos"> & Partial<Word>): boolean {

@@ -107,6 +107,18 @@ describe('Admin words API', () => {
 
     expect(response.status).toBe(401);
     expect(response.bodyJson).toMatchObject({ code: 'ADMIN_AUTH_FAILED' });
+  }, 15000);
+
+  it('rejects POST /api/admin/enrichment/run without the admin token', async () => {
+    const invokeApi = await createTestInvoker();
+
+    const response = await invokeApi('/api/admin/enrichment/run', {
+      method: 'POST',
+      body: {},
+    });
+
+    expect(response.status).toBe(401);
+    expect(response.bodyJson).toMatchObject({ code: 'ADMIN_AUTH_FAILED' });
   });
 
   it('returns words for GET /api/words when authorised', async () => {

@@ -40,7 +40,6 @@ const BASE_PRIMARY_NAVIGATION_ITEMS: AppNavigationItem[] = [
           label: "Admin tools",
           icon: Settings2,
           requiresAdmin: true,
-          exact: true,
         },
       ] as const satisfies readonly AppNavigationItem[])
     : []),
