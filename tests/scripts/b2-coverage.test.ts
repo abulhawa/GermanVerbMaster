@@ -20,12 +20,15 @@ describe('B2 canonical inventory coverage', () => {
       Adj: b2Words.filter((entry) => entry.pos === 'Adj'),
     };
 
-    expect(byPos.V.length).toBeGreaterThanOrEqual(10);
-    expect(byPos.N.length).toBeGreaterThanOrEqual(10);
-    expect(byPos.Adj.length).toBeGreaterThanOrEqual(10);
+    expect(byPos.V.length).toBeGreaterThanOrEqual(20);
+    expect(byPos.N.length).toBeGreaterThanOrEqual(40);
+    expect(byPos.Adj.length).toBeGreaterThanOrEqual(14);
 
-    expect(byPos.V.some((entry) => entry.lemma === 'erläutern')).toBe(true);
+    expect(byPos.V.some((entry) => entry.lemma === 'erl\u00E4utern')).toBe(true);
+    expect(byPos.V.some((entry) => entry.lemma === 'anordnen')).toBe(true);
     expect(byPos.N.some((entry) => entry.lemma === 'Vereinbarung')).toBe(true);
+    expect(byPos.N.some((entry) => entry.lemma === 'Filiale')).toBe(true);
     expect(byPos.Adj.some((entry) => entry.lemma === 'nachvollziehbar')).toBe(true);
+    expect(byPos.Adj.some((entry) => entry.lemma === 'untergeordnet')).toBe(true);
   });
 });

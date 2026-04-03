@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import type { Word } from '@db';
 
 import {
+  closePoolSafely,
   needsEnrichment,
   runEnrichmentBatch,
   sanitizeEnrichmentUpdates,
@@ -175,5 +176,13 @@ describe('enrich-pos-jsonl script helpers', () => {
     expect(seedDatabase).toHaveBeenCalledTimes(2);
     expect(exportPos).toHaveBeenCalledTimes(2);
     expect(rebuildTaskSpecs).toHaveBeenCalledTimes(1);
+  });
+
+  it('ignores pools that were already closed by a nested rebuild command', async () => {
+    await expect(
+      closePoolSafely({
+        end: vi.fn().mockRejectedValue(new Error('Called end on pool more than once')),
+      }),
+    ).resolves.toBeUndefined();
   });
 });

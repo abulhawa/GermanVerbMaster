@@ -268,6 +268,17 @@ const defaultDeps: BatchDeps = {
   rebuildTaskSpecs,
 };
 
+export async function closePoolSafely(pool: { end(): Promise<void> }): Promise<void> {
+  try {
+    await pool.end();
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('Called end on pool more than once')) {
+      return;
+    }
+    throw error;
+  }
+}
+
 export async function main(argv: readonly string[] = process.argv.slice(2)): Promise<void> {
   const scriptPath = fileURLToPath(import.meta.url);
   const rootDir = path.resolve(path.dirname(scriptPath), '..');
@@ -280,7 +291,7 @@ export async function main(argv: readonly string[] = process.argv.slice(2)): Pro
       `Selected ${summary.selected} words, updated ${summary.updated}, exported ${summary.exportedPos.join(', ') || 'none'}.`,
     );
   } finally {
-    await pool.end();
+    await closePoolSafely(pool);
   }
 }
 

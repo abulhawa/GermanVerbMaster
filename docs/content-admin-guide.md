@@ -17,8 +17,8 @@ The admin dashboard at `/admin` now manages verbs, nouns, and adjectives from a 
 5. Save changes to issue a `PATCH /api/words/:id` request. Successful edits automatically refresh the table and invalidate cached rows.
 
 ## Coordinating with ETL & offline bundles
-1. After curating a batch, run `npm run seed` to re-aggregate source CSVs and refresh deterministic task specs in the database via the template registry.
-2. When promoting new POS content, reseed after QA signs off on the regenerated tasks and monitor the `/api/tasks` responses during the first live session.
+1. After curating a batch, run `npm run seed` to re-aggregate source CSVs, then run `npm run build:tasks` to refresh deterministic task specs in the database.
+2. When promoting new POS content, reseed and rebuild tasks after QA signs off, then monitor the `/api/tasks` responses during the first live session.
 3. Exercise `/api/tasks` or the practice UI to confirm learners receive the refreshed prompts before sign-off.
 
 ## Exporting approved words to JSONL
@@ -57,5 +57,5 @@ When publishing to cloud storage, replicate the same hierarchy under `exports/la
 ## Troubleshooting checklist
 - **Unauthorized responses**: confirm the admin token matches the `.env` value and that the request includes the `x-admin-token` header.
 - **Missing noun/adjective fields**: verify the lexeme schema feature flag remains enabled; falling back to the legacy stack hides the new form controls.
-- **Practice queue issues**: reseed to regenerate tasks, inspect `/api/tasks` responses for malformed payloads, fix upstream data issues, and reseed before retrying.
+- **Practice queue issues**: reseed and run `npm run build:tasks`, inspect `/api/tasks` responses for malformed payloads, fix upstream data issues, then reseed and rebuild before retrying.
 - **Need a clean slate**: run `npm run db:reset` to drop and recreate the `public` schema, clear drizzle metadata, and wipe everything under `data/` except `data/pos/`. Follow up with `npm run db:push` to reapply migrations before seeding or restoring JSONL snapshots.
