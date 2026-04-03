@@ -160,10 +160,6 @@ export function createAdminRouter(): Router {
         return sendError(res, 400, "Invalid word id", "INVALID_WORD_ID");
       }
 
-      if (!process.env.GROQ_API_KEY) {
-        return sendError(res, 503, "AI enrichment not available", "GROQ_UNAVAILABLE");
-      }
-
       const parsed = wordEnrichmentRequestSchema.safeParse(req.body ?? {});
       if (!parsed.success) {
         return sendError(res, 400, "Invalid enrichment payload", "INVALID_WORD_ENRICH_INPUT");
@@ -185,10 +181,6 @@ export function createAdminRouter(): Router {
 
   router.post("/admin/enrichment/run", requireAdminAccess, async (req, res) => {
     try {
-      if (!process.env.GROQ_API_KEY) {
-        return sendError(res, 503, "AI enrichment not available", "GROQ_UNAVAILABLE");
-      }
-
       const parsed = wordBatchEnrichmentRequestSchema.safeParse(req.body ?? {});
       if (!parsed.success) {
         return sendError(res, 400, "Invalid enrichment payload", "INVALID_WORD_ENRICH_INPUT");

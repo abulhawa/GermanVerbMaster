@@ -8,7 +8,7 @@ import {
   normalizeWordExamples,
 } from "@shared";
 import { MANUAL_ADMIN_SOURCE } from "@shared/content-sources";
-import { buildGroqWordEnrichment } from "../../services/groq-word-enrichment.js";
+import { buildProviderFirstWordEnrichment } from "../../services/provider-word-enrichment.js";
 import { rebuildDerivedContentFromWords } from "./content-sync.js";
 import { mergeLegacyExampleFields, type WordCreateInput, type WordUpdateInput } from "./schemas.js";
 
@@ -352,7 +352,7 @@ export async function enrichWordById(
     return null;
   }
 
-  const enrichment = await buildGroqWordEnrichment(existing, {
+  const enrichment = await buildProviderFirstWordEnrichment(existing, {
     overwrite: options.overwrite,
   });
 
@@ -394,7 +394,7 @@ export async function runWordEnrichmentBatch(
   let updatedCount = 0;
 
   for (const candidate of candidates) {
-    const enrichment = await buildGroqWordEnrichment(candidate, { overwrite });
+    const enrichment = await buildProviderFirstWordEnrichment(candidate, { overwrite });
     const fields = Object.keys(enrichment).filter(
       (field) => field !== "enrichmentAppliedAt" && field !== "enrichmentMethod",
     );

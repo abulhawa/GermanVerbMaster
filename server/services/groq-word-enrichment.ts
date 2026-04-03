@@ -62,6 +62,46 @@ export interface GroqWordEnrichmentOptions {
   overwrite?: boolean;
 }
 
+function getAllowedEnrichmentKeys(word: Word): ReadonlySet<keyof WordUpdateInput> {
+  const common: Array<keyof WordUpdateInput> = [
+    'english',
+    'exampleDe',
+    'exampleEn',
+    'posAttributes',
+  ];
+
+  switch (word.pos) {
+    case 'V':
+      return new Set([
+        ...common,
+        'separable',
+        'aux',
+        'praesensIch',
+        'praesensEr',
+        'praeteritum',
+        'partizipIi',
+        'perfekt',
+      ]);
+    case 'N':
+      return new Set([...common, 'gender', 'plural']);
+    case 'Adj':
+    case 'Adv':
+      return new Set([...common, 'comparative', 'superlative']);
+    default:
+      return new Set(common);
+  }
+}
+
+function sanitizeRawEnrichmentForWord(
+  word: Word,
+  enrichment: Record<string, unknown>,
+): Record<string, unknown> {
+  const allowedKeys = getAllowedEnrichmentKeys(word);
+  return Object.fromEntries(
+    Object.entries(enrichment).filter(([key]) => allowedKeys.has(key as keyof WordUpdateInput)),
+  );
+}
+
 function extractJsonObject(content: string | null | undefined): string {
   const text = typeof content === 'string' ? content.trim() : '';
   if (!text) {
@@ -264,8 +304,9 @@ export async function buildGroqWordEnrichment(
 
     const payload = extractJsonObject(response.choices[0]?.message?.content);
     const rawEnrichment = JSON.parse(payload) as Record<string, unknown>;
-    const enrichment = wordEnrichmentSchema.parse(rawEnrichment);
-    const updates = toWordUpdatePayload(word, rawEnrichment, enrichment, options);
+    const sanitizedEnrichment = sanitizeRawEnrichmentForWord(word, rawEnrichment);
+    const enrichment = wordEnrichmentSchema.parse(sanitizedEnrichment);
+    const updates = toWordUpdatePayload(word, sanitizedEnrichment, enrichment, options);
 
     logStructured({
       event: 'groq.word_enrichment',
