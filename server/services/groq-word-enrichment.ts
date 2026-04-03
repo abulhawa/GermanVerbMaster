@@ -23,6 +23,20 @@ const optionalTrimmedString = z
     return trimmed.length > 0 ? trimmed : null;
   });
 
+const optionalTrimmedStringArray = z
+  .union([z.array(z.string().trim().min(1)), z.null()])
+  .optional()
+  .transform((value) => (Array.isArray(value) ? value : undefined));
+
+const GROQ_GENDER_MAP: Record<string, string> = {
+  masculine: 'der',
+  feminine: 'die',
+  neuter: 'das',
+  m: 'der',
+  f: 'die',
+  n: 'das',
+};
+
 const wordEnrichmentSchema = z
   .object({
     english: optionalTrimmedString,
@@ -45,8 +59,8 @@ const wordEnrichmentSchema = z
         notes: z.array(z.string().trim().min(1)).optional(),
         preposition: z
           .object({
-            cases: z.array(z.string().trim().min(1)).optional(),
-            notes: z.array(z.string().trim().min(1)).optional(),
+            cases: optionalTrimmedStringArray,
+            notes: optionalTrimmedStringArray,
           })
           .partial()
           .nullable()
@@ -97,9 +111,16 @@ function sanitizeRawEnrichmentForWord(
   enrichment: Record<string, unknown>,
 ): Record<string, unknown> {
   const allowedKeys = getAllowedEnrichmentKeys(word);
-  return Object.fromEntries(
+  const sanitized = Object.fromEntries(
     Object.entries(enrichment).filter(([key]) => allowedKeys.has(key as keyof WordUpdateInput)),
   );
+
+  if (word.pos === 'N' && typeof sanitized.gender === 'string') {
+    const normalized = sanitized.gender.trim().toLowerCase();
+    sanitized.gender = GROQ_GENDER_MAP[normalized] ?? sanitized.gender;
+  }
+
+  return sanitized;
 }
 
 function extractJsonObject(content: string | null | undefined): string {
