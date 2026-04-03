@@ -27,6 +27,7 @@ export interface ExistingTaskSpecRow {
   id: string;
   lexemeId: string;
   taskType: string;
+  revision: number;
 }
 
 export async function fetchUpdatedLexemeIds(
@@ -149,7 +150,12 @@ export async function fetchExistingTaskSpecRows(
   const db = getDb();
 
   const query = db
-    .select({ id: taskSpecs.id, lexemeId: taskSpecs.lexemeId, taskType: taskSpecs.taskType })
+    .select({
+      id: taskSpecs.id,
+      lexemeId: taskSpecs.lexemeId,
+      taskType: taskSpecs.taskType,
+      revision: taskSpecs.revision,
+    })
     .from(taskSpecs);
 
   if (lexemeIds && lexemeIds.length > 0) {

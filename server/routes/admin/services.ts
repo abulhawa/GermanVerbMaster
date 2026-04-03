@@ -273,7 +273,14 @@ export async function createWord(data: WordCreateInput) {
   return presentWord(refreshed);
 }
 
-export async function updateWordById(id: number, data: WordUpdateInput) {
+export async function updateWordById(
+  id: number,
+  data: WordUpdateInput,
+  options: {
+    rebuildDerivedContent?: boolean;
+  } = {},
+) {
+  const { rebuildDerivedContent = true } = options;
   const existing = await db.query.words.findFirst({
     where: eq(words.id, id),
   });
@@ -293,7 +300,9 @@ export async function updateWordById(id: number, data: WordUpdateInput) {
   updates.updatedAt = sql`now()`;
 
   await db.update(words).set(updates).where(eq(words.id, id));
-  await rebuildDerivedContentFromWords();
+  if (rebuildDerivedContent) {
+    await rebuildDerivedContentFromWords();
+  }
 
   const refreshed = await db.query.words.findFirst({
     where: eq(words.id, id),

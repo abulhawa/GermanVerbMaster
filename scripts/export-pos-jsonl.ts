@@ -283,7 +283,10 @@ function buildExamples(row: WordRow): Array<{ de?: string; en?: string }> {
   return examples;
 }
 
-async function exportPos(pos: SupportedPos, outputDir: string): Promise<{ count: number; file: string }> {
+export async function exportPos(
+  pos: SupportedPos,
+  outputDir: string,
+): Promise<{ count: number; file: string }> {
   const definition = POS_EXPORTS[pos];
   const db = getDb();
   const filters = definition.synonyms ? [pos, ...definition.synonyms] : [pos];
@@ -323,7 +326,7 @@ async function exportPos(pos: SupportedPos, outputDir: string): Promise<{ count:
   return { count: entries.length, file: filePath };
 }
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const argv = process.argv.slice(2);
   const filtered = parseArgs(argv);
   const targets: SupportedPos[] = filtered ?? (Object.keys(POS_EXPORTS) as SupportedPos[]);
@@ -347,7 +350,12 @@ async function main(): Promise<void> {
   console.log('POS JSONL export complete.');
 }
 
-main().catch((error) => {
-  console.error('Failed to export POS JSONL files', error);
-  process.exit(1);
-});
+const scriptPath = fileURLToPath(import.meta.url);
+const invokedPath = path.resolve(process.argv[1] ?? '');
+
+if (scriptPath === invokedPath) {
+  main().catch((error) => {
+    console.error('Failed to export POS JSONL files', error);
+    process.exit(1);
+  });
+}

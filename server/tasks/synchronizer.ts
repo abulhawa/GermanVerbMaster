@@ -219,6 +219,14 @@ interface ExecuteSyncPlanOptions {
   fetchedAllLexemes: boolean;
 }
 
+function buildTaskRevisionKey(task: {
+  lexemeId: string;
+  taskType: string;
+  revision?: number | null;
+}): string {
+  return `${task.lexemeId}:${task.taskType}:${task.revision ?? 0}`;
+}
+
 async function executeSyncPlan(options: ExecuteSyncPlanOptions): Promise<TaskSyncPlan> {
   const { lexemeRows, since, fetchedAllLexemes, previousCheckpoint } = options;
   const statsForLogging = createEmptyStats({ lexemesConsidered: lexemeRows.length });
@@ -280,6 +288,36 @@ async function executeSyncPlan(options: ExecuteSyncPlanOptions): Promise<TaskSyn
     },
   });
 
+  const staleTaskIdSet = new Set(plan.staleTaskIds);
+  const staleGeneratedTasksByRevisionKey = new Map(
+    existingTasks
+      .filter((task) => staleTaskIdSet.has(task.id))
+      .map((task) => [buildTaskRevisionKey(task), task] as const),
+  );
+  const preInsertConflictingTaskIds = Array.from(
+    new Set(
+      plan.inserts.flatMap((task) => {
+        const existingTask = staleGeneratedTasksByRevisionKey.get(buildTaskRevisionKey(task));
+        if (!existingTask || existingTask.id === task.id) {
+          return [];
+        }
+        return [existingTask.id];
+      }),
+    ),
+  );
+
+  if (preInsertConflictingTaskIds.length > 0) {
+    await processChunksWithRetry(
+      chunkArray(preInsertConflictingTaskIds, DELETE_CHUNK_SIZE),
+      async (chunk) => {
+        await deleteTaskSpecsById(chunk);
+      },
+      { operation: 'task_sync.predelete' },
+    );
+  }
+
+  const preInsertConflictingTaskIdSet = new Set(preInsertConflictingTaskIds);
+
   const insertChunks = plan.inserts.length > 0 ? chunkArray(plan.inserts, INSERT_CHUNK_SIZE) : [];
   if (insertChunks.length > 0) {
     await processChunksWithRetry(
@@ -291,7 +329,11 @@ async function executeSyncPlan(options: ExecuteSyncPlanOptions): Promise<TaskSyn
     );
   }
 
-  const deleteChunks = plan.staleTaskIds.length > 0 ? chunkArray(plan.staleTaskIds, DELETE_CHUNK_SIZE) : [];
+  const remainingStaleTaskIds = plan.staleTaskIds.filter(
+    (id) => !preInsertConflictingTaskIdSet.has(id),
+  );
+  const deleteChunks =
+    remainingStaleTaskIds.length > 0 ? chunkArray(remainingStaleTaskIds, DELETE_CHUNK_SIZE) : [];
   if (deleteChunks.length > 0) {
     await processChunksWithRetry(
       deleteChunks,

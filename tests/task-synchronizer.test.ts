@@ -345,6 +345,59 @@ describe('task synchronizer delta sync', () => {
     expect(refreshedTasks.some((row) => row.id === partizipTaskId)).toBe(false);
   });
 
+  it('replaces stale rows when a revision tuple already exists under a different task id', async () => {
+    const fullSync = await ensureTaskSpecsSynced();
+    expect(fullSync.checkpoint).toBeTruthy();
+    const initialCheckpoint = fullSync.checkpoint!;
+
+    const targetLexemeId = await getLexemeIdByLemma('gehen');
+
+    const originalTasks = await drizzleDb
+      .select({ id: taskSpecsTable.id, taskType: taskSpecsTable.taskType, revision: taskSpecsTable.revision })
+      .from(taskSpecsTable)
+      .where(eq(taskSpecsTable.lexemeId, targetLexemeId));
+
+    const revisionOneTask = originalTasks.find((row) => row.revision === 1);
+    expect(revisionOneTask).toBeTruthy();
+
+    const legacyTaskId = 'task:legacy-revision-slot';
+
+    await drizzleDb.delete(taskSpecsTable).where(eq(taskSpecsTable.id, revisionOneTask!.id));
+    await drizzleDb.insert(taskSpecsTable).values({
+      id: legacyTaskId,
+      lexemeId: targetLexemeId,
+      pos: 'verb',
+      taskType: revisionOneTask!.taskType,
+      renderer: 'conjugate_form',
+      prompt: { instructions: 'legacy prompt' },
+      solution: { form: 'legacy form' },
+      metadata: { source: 'legacy-test-row' },
+      revision: revisionOneTask!.revision,
+    });
+
+    await drizzleDb
+      .update(lexemesTable)
+      .set({ updatedAt: new Date(initialCheckpoint.lastSyncedAt.getTime() + 1000) })
+      .where(eq(lexemesTable.id, targetLexemeId));
+
+    resetTaskSpecSync();
+    await expect(ensureTaskSpecsSynced()).resolves.toBeTruthy();
+
+    const persistedCanonicalTask = await drizzleDb
+      .select({ id: taskSpecsTable.id })
+      .from(taskSpecsTable)
+      .where(eq(taskSpecsTable.id, revisionOneTask!.id))
+      .limit(1);
+    expect(persistedCanonicalTask).toHaveLength(1);
+
+    const persistedLegacyTask = await drizzleDb
+      .select({ id: taskSpecsTable.id })
+      .from(taskSpecsTable)
+      .where(eq(taskSpecsTable.id, legacyTaskId))
+      .limit(1);
+    expect(persistedLegacyTask).toHaveLength(0);
+  });
+
   it('preserves manual b2_writing_prompt tasks during stale type pruning', async () => {
     const fullSync = await ensureTaskSpecsSynced();
     expect(fullSync.checkpoint).toBeTruthy();
