@@ -157,6 +157,42 @@ describe('Home navigation - practice workflows', () => {
     });
   });
 
+  it('reshuffles exhausted queues when manually reloading', async () => {
+    seedPracticeSettings({
+      preferredTaskTypes: ['conjugate_form'],
+      defaultTaskType: 'conjugate_form',
+      cefrLevelByPos: { verb: 'B2' },
+      legacyVerbLevel: 'B2',
+    });
+
+    const recycledTask = createConjugationTask('task-b2', 'bewerten');
+
+    mockFetchPracticeTasks.mockImplementation(async ({ excludeTaskIds }) => {
+      if (excludeTaskIds?.includes(recycledTask.taskId)) {
+        return { conjugate_form: [] };
+      }
+
+      return { conjugate_form: [recycledTask] };
+    });
+
+    renderHome();
+
+    await screen.findByTestId('practice-card');
+
+    const skipButton = await screen.findByRole('button', { name: /skip to next/i });
+    await userEvent.click(skipButton);
+
+    await screen.findByText(/no tasks are queued right now/i);
+
+    const reloadButton = screen.getByRole('button', { name: /reload tasks/i });
+    await userEvent.click(reloadButton);
+
+    await waitFor(() => {
+      const card = screen.getByTestId('practice-card');
+      expect(within(card).getByRole('heading', { name: 'bewerten', level: 1 })).toBeInTheDocument();
+    });
+  });
+
   it('requests tasks for each preferred task type in settings', async () => {
     seedPracticeSettings({
       preferredTaskTypes: ['conjugate_form', 'noun_case_declension'],

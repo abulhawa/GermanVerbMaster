@@ -272,7 +272,7 @@ export default function Home() {
   );
 
   const handleReloadQueue = useCallback(() => {
-    triggerQueueReload();
+    triggerQueueReload({ mode: 'shuffle' });
   }, [triggerQueueReload]);
 
   useEffect(() => {

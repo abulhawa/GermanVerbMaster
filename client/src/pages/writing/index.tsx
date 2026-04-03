@@ -195,7 +195,7 @@ export default function WritingPage() {
   );
 
   const handleReloadQueue = useCallback(() => {
-    triggerQueueReload();
+    triggerQueueReload({ mode: 'shuffle' });
   }, [triggerQueueReload]);
 
   useEffect(() => {

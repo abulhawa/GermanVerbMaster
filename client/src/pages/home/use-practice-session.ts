@@ -184,8 +184,10 @@ export function useHomePracticeSession({
   const [pendingReloadRequest, setPendingReloadRequest] = useState<
     { mode: QueueReloadMode; nonce: number } | null
   >(null);
+  const suppressAutoFetchRef = useRef(false);
   const enqueueReloadRequest = useCallback((mode: QueueReloadMode = 'default') => {
     reloadRequestNonceRef.current += 1;
+    suppressAutoFetchRef.current = true;
     setPendingReloadRequest({ mode, nonce: reloadRequestNonceRef.current });
   }, []);
   const requestQueueReload = useCallback(
@@ -369,6 +371,10 @@ export function useHomePracticeSession({
   );
 
   useEffect(() => {
+    if (suppressAutoFetchRef.current) {
+      return;
+    }
+
     if (hasBlockingFetchError) {
       return;
     }
@@ -428,7 +434,13 @@ export function useHomePracticeSession({
     setTasksById({});
     setSession((prev) => clearSessionQueue(prev));
     lastFailedQueueSignatureRef.current = null;
-    void fetchAndEnqueueTasks({ replace: true, mode });
+    void (async () => {
+      try {
+        await fetchAndEnqueueTasks({ replace: true, mode });
+      } finally {
+        suppressAutoFetchRef.current = false;
+      }
+    })();
   }, [pendingReloadRequest, fetchAndEnqueueTasks]);
 
   const continueToNext = useCallback(() => {
