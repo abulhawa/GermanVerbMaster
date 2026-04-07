@@ -1,265 +1,245 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Privacy Policy – GermanVerbMaster Android</title>
-  <meta name="description" content="Privacy policy for the GermanVerbMaster Android app." />
-  <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://gvm.qortxai.com/privacy" />
-  <style>
-    :root {
-      --bg: #f5f2eb;
-      --ink: #1a1a18;
-      --muted: #6b6860;
-      --accent: #2d5a3d;
-      --rule: #d8d3c8;
-      --card: #ffffff;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Privacy Policy | GermanVerbMaster</title>
+    <meta name="description" content="Privacy Policy for the GermanVerbMaster Android app by Qortx AI." />
+    <link rel="canonical" href="https://gvm.qortxai.com/privacy" />
+    <style>
+      /* ── Design tokens (mirrors sudoku-site/styles.css) ── */
+      :root {
+        --navy-900: #102040;
+        --navy-800: #1e3358;
+        --cream-100: #f8eed8;
+        --cream-200: #f0dfa8;
+        --paper-100: #f7f1e8;
+        --paper-200: #efe3d4;
+        --panel-100: #fff9f0;
+        --ink-900: #2b1f18;
+        --ink-800: #3e2e24;
+        --ink-700: #5e4d40;
+        --brown-700: #604030;
+        --brown-800: #503020;
+        --line: #d5c2aa;
+        --line-strong: #c5ab8d;
+        --max-shell: 1180px;
+        --max-prose: 790px;
+      }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      * { box-sizing: border-box; }
 
-    body {
-      background: var(--bg);
-      color: var(--ink);
-      font-family: Georgia, 'Times New Roman', serif;
-      font-size: 16px;
-      line-height: 1.8;
-      min-height: 100vh;
-    }
+      html, body {
+        margin: 0;
+        min-height: 100%;
+        padding: 0;
+      }
 
-    header {
-      background: var(--accent);
-      color: #fff;
-      padding: 52px 24px 44px;
-      text-align: center;
-    }
+      body {
+        font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.68;
+        background: var(--paper-100);
+        color: var(--ink-900);
+      }
 
-    .app-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-family: ui-sans-serif, system-ui, sans-serif;
-      font-size: 12px;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      opacity: .7;
-      margin-bottom: 20px;
-    }
+      a {
+        color: var(--brown-700);
+        text-underline-offset: 0.15em;
+      }
 
-    .dot { width: 6px; height: 6px; background: #8ecfa0; border-radius: 50%; }
+      a:hover { color: var(--brown-800); }
 
-    header h1 {
-      font-size: clamp(1.8rem, 5vw, 2.8rem);
-      font-weight: 400;
-      line-height: 1.2;
-      margin-bottom: 10px;
-      letter-spacing: -.01em;
-    }
+      a:focus-visible {
+        outline: 2px solid var(--brown-700);
+        outline-offset: 2px;
+      }
 
-    header p {
-      font-family: ui-sans-serif, system-ui, sans-serif;
-      font-size: 13px;
-      opacity: .6;
-    }
+      /* ── Shell ── */
+      .site-shell {
+        width: min(100%, var(--max-shell));
+        margin: 0 auto;
+        padding: 1.05rem 1rem 3rem;
+      }
 
-    main {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 52px 24px 80px;
-    }
+      /* ── Header ── */
+      .site-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.7rem 0;
+        border-bottom: 1px solid var(--line);
+      }
 
-    .meta {
-      font-family: ui-sans-serif, system-ui, sans-serif;
-      font-size: 13px;
-      color: var(--muted);
-      padding-bottom: 28px;
-      margin-bottom: 44px;
-      border-bottom: 1px solid var(--rule);
-      display: flex;
-      gap: 24px;
-      flex-wrap: wrap;
-    }
+      .brand {
+        color: var(--ink-900);
+        text-decoration: none;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
 
-    .meta span strong { color: var(--ink); font-weight: 600; }
+      .top-nav {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.5rem 1rem;
+      }
 
-    section { margin-bottom: 44px; }
+      .top-nav a {
+        color: var(--ink-700);
+        text-decoration: none;
+        font-size: 0.93rem;
+        font-weight: 600;
+      }
 
-    h2 {
-      font-size: 1.2rem;
-      font-weight: 400;
-      color: var(--accent);
-      margin-bottom: 16px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--rule);
-      font-family: ui-sans-serif, system-ui, sans-serif;
-      letter-spacing: .01em;
-      text-transform: uppercase;
-      font-size: 11.5px;
-      font-weight: 600;
-    }
+      .top-nav a[aria-current="page"],
+      .top-nav a:hover {
+        color: var(--ink-900);
+      }
 
-    p { margin-bottom: 14px; color: #2a2a28; }
-    p:last-child { margin-bottom: 0; }
+      /* ── Prose area ── */
+      .prose-wrap {
+        max-width: var(--max-prose);
+        margin: 1.75rem auto 0;
+      }
 
-    .summary-box {
-      background: var(--card);
-      border-left: 3px solid var(--accent);
-      padding: 16px 20px;
-      margin: 18px 0;
-      border-radius: 3px;
-      font-family: ui-sans-serif, system-ui, sans-serif;
-      font-size: 15px;
-      color: #2a2a28;
-    }
+      .prose { max-width: var(--max-prose); }
 
-    .summary-box strong { color: var(--accent); }
+      .prose h1 {
+        margin: 0;
+        font-size: clamp(2.05rem, 4.3vw, 3rem);
+        line-height: 1.12;
+        letter-spacing: -0.018em;
+      }
 
-    ul {
-      list-style: none;
-      margin: 12px 0;
-      padding: 0;
-    }
+      .prose .subtitle {
+        margin: 0.62rem 0 1.62rem;
+        color: var(--ink-700);
+        font-style: italic;
+      }
 
-    ul li {
-      padding: 5px 0 5px 20px;
-      position: relative;
-      color: #2a2a28;
-      font-family: ui-sans-serif, system-ui, sans-serif;
-      font-size: 15px;
-    }
+      .prose h2 {
+        margin-top: 2.35rem;
+        margin-bottom: 0.66rem;
+        font-size: 1.44rem;
+        line-height: 1.24;
+        letter-spacing: -0.01em;
+      }
 
-    ul li::before {
-      content: '–';
-      position: absolute;
-      left: 0;
-      color: var(--accent);
-    }
+      .prose p,
+      .prose li { color: var(--ink-800); }
 
-    .contact-box {
-      background: var(--accent);
-      color: #fff;
-      border-radius: 6px;
-      padding: 26px 30px;
-    }
+      .prose p { margin: 0 0 1.02rem; }
 
-    .contact-box h3 {
-      font-family: ui-sans-serif, system-ui, sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      opacity: .7;
-      margin-bottom: 14px;
-    }
+      .prose ul {
+        margin: 0 0 1.05rem;
+        padding-left: 1.32rem;
+      }
 
-    .contact-box p { color: rgba(255,255,255,.82); margin-bottom: 6px; }
-    .contact-box a { color: #8ecfa0; text-decoration: none; font-weight: 500; }
+      .prose li { margin-bottom: 0.44rem; }
 
-    footer {
-      text-align: center;
-      padding: 28px 24px;
-      border-top: 1px solid var(--rule);
-      font-family: ui-sans-serif, system-ui, sans-serif;
-      font-size: 12px;
-      color: var(--muted);
-    }
+      .prose strong { color: #2b1f18; }
 
-    footer a { color: var(--accent); text-decoration: none; }
+      /* ── Footer ── */
+      .site-footer {
+        margin-top: 2.2rem;
+        border-top: 1px solid var(--line);
+        padding-top: 0.9rem;
+        color: var(--ink-700);
+        font-size: 0.88rem;
+      }
 
-    @media (max-width: 480px) {
-      header { padding: 36px 20px 32px; }
-      main { padding: 36px 20px 60px; }
-    }
-  </style>
-</head>
-<body>
+      /* ── Responsive ── */
+      @media (max-width: 760px) {
+        .site-shell { padding: 0.85rem 0.88rem 2.4rem; }
 
-<header>
-  <div class="app-label">
-    <div class="dot"></div>
-    GermanVerbMaster · Android App
-    <div class="dot"></div>
-  </div>
-  <h1>Privacy Policy</h1>
-  <p>qortxai.com &nbsp;·&nbsp; Ali Abulhawa</p>
-</header>
+        .site-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.74rem;
+        }
 
-<main>
-  <div class="meta">
-    <span>Effective: <strong>May 1, 2025</strong></span>
-    <span>Last updated: <strong>April 7, 2026</strong></span>
-  </div>
+        .top-nav {
+          width: 100%;
+          justify-content: flex-start;
+          gap: 0.42rem 0.84rem;
+        }
 
-  <section>
-    <h2>Overview</h2>
-    <p>GermanVerbMaster ("the App") is a German language learning application for Android, developed by Ali Abulhawa (qortxai.com). This Privacy Policy explains what information the App collects, how it is used, and your rights as a user.</p>
-    <div class="summary-box">
-      <strong>Summary:</strong> GermanVerbMaster does not collect, transmit, or share any personal data. All progress and settings are stored locally on your device only.
+        .top-nav a {
+          font-size: 0.875rem;
+          line-height: 1.24;
+        }
+
+        .prose-wrap { margin-top: 1.25rem; }
+
+        .prose h1 { font-size: clamp(1.84rem, 8vw, 2.35rem); }
+
+        .prose .subtitle { margin-bottom: 1.3rem; }
+
+        .prose h2 {
+          margin-top: 1.95rem;
+          font-size: 1.3rem;
+        }
+      }
+    </style>
+  </head>
+  <body class="privacy-page">
+    <div class="site-shell">
+      <header class="site-header">
+        <a class="brand" href="https://gvm.qortxai.com">GermanVerbMaster</a>
+        <nav class="top-nav" aria-label="Primary">
+          <a href="https://gvm.qortxai.com">Home</a>
+          <a href="/privacy" aria-current="page">Privacy</a>
+        </nav>
+      </header>
+
+      <main class="prose-wrap">
+        <article class="prose" aria-labelledby="privacy-title">
+          <h1 id="privacy-title">Privacy Policy</h1>
+          <p class="subtitle">GermanVerbMaster – Android App</p>
+
+          <p><strong>Last updated:</strong> April 7, 2026</p>
+
+          <p>This Privacy Policy explains how <strong>GermanVerbMaster</strong> ("the App"), developed by <strong>Qortx AI</strong>, handles data.</p>
+
+          <h2>1. Overview</h2>
+          <p>GermanVerbMaster is an offline-first German language learning app. We do not require an account and we do not run our own backend for user data.</p>
+
+          <h2>2. Information We Process</h2>
+          <ul>
+            <li><strong>Local data only:</strong> quiz scores, practice history, and settings are stored on your device in app-private storage.</li>
+            <li><strong>No account data:</strong> no sign-in, email, phone number, or profile is required to use the App.</li>
+            <li><strong>No tracking:</strong> we do not collect location, advertising ID, contacts, or usage analytics for tracking purposes.</li>
+          </ul>
+
+          <h2>3. Data Sharing and Third Parties</h2>
+          <p>We do not sell, rent, or share your personal data with third parties. The App does not include third-party advertising or analytics SDKs.</p>
+
+          <h2>4. Internet Access</h2>
+          <p>If the App requests internet access, it is used solely to load verb and grammar content from our servers or to check for updates. No personal data is transmitted during these operations.</p>
+
+          <h2>5. Data Retention and Deletion</h2>
+          <p>Data is retained locally on your device until you delete it. You can remove data at any time by clearing app storage in your Android device settings or by uninstalling the App.</p>
+
+          <h2>6. Security</h2>
+          <p>App data is stored in Android app-private storage and protected by Android's application sandbox.</p>
+
+          <h2>7. Children's Privacy</h2>
+          <p>The App is not directed to children under 13, and we do not knowingly collect personal information from children.</p>
+
+          <h2>8. Changes to This Privacy Policy</h2>
+          <p>We may update this Privacy Policy from time to time. Updates will be posted on this page with a revised "Last updated" date.</p>
+
+          <h2>9. Contact Us</h2>
+          <p>If you have questions about this Privacy Policy, contact us at:</p>
+          <p><a href="mailto:qortxai@outlook.com">qortxai@outlook.com</a></p>
+        </article>
+      </main>
+
+      <footer class="site-footer">
+        <p>&copy; 2026 Qortx AI. All rights reserved.</p>
+      </footer>
     </div>
-  </section>
-
-  <section>
-    <h2>Information We Do Not Collect</h2>
-    <p>The App does not collect any of the following:</p>
-    <ul>
-      <li>Personal identifiers (name, email address, phone number)</li>
-      <li>Location data (coarse or precise)</li>
-      <li>Device identifiers or advertising IDs</li>
-      <li>Usage analytics or telemetry</li>
-      <li>Contacts, photos, microphone, or camera data</li>
-      <li>Financial or payment information</li>
-    </ul>
-  </section>
-
-  <section>
-    <h2>Local Data Storage</h2>
-    <p>Any data generated through your use of the App — such as quiz scores, practice history, and preferences — is stored exclusively on your device using Android's local storage mechanisms. This data never leaves your device and is not accessible to the developer or any third party.</p>
-    <p>You can delete this data at any time by clearing the App's data in your Android device settings, or by uninstalling the App.</p>
-  </section>
-
-  <section>
-    <h2>Internet Access</h2>
-    <p>If the App requests internet access, it is used solely for the following optional purposes:</p>
-    <ul>
-      <li>Loading verb or grammar content from our servers</li>
-      <li>Checking for application updates (where applicable)</li>
-    </ul>
-    <p>No personal data is transmitted during any of these operations. Requests are made anonymously and do not include any device or user identifiers.</p>
-  </section>
-
-  <section>
-    <h2>Third-Party Services</h2>
-    <p>The App does not integrate any third-party analytics SDKs, advertising networks, or user tracking libraries (such as Google Analytics, Firebase Analytics, Facebook SDK, or similar services).</p>
-    <p>If you downloaded the App from the Google Play Store, Google's own Privacy Policy governs any data Google collects as part of their platform. The developer has no access to any data Google may collect independently.</p>
-  </section>
-
-  <section>
-    <h2>Children's Privacy</h2>
-    <p>GermanVerbMaster is a general-purpose language learning tool suitable for all ages. Because we do not collect any personal data from any users, the App is safe for children to use. We do not knowingly collect information from children under the age of 13 (or the applicable minimum age in your jurisdiction).</p>
-  </section>
-
-  <section>
-    <h2>Changes to This Policy</h2>
-    <p>We may update this Privacy Policy from time to time. If we make significant changes, the "Last updated" date at the top of this page will be revised accordingly. Your continued use of the App after any changes constitutes acceptance of the updated policy.</p>
-    <p>We encourage you to review this page periodically for any updates.</p>
-  </section>
-
-  <section>
-    <h2>Contact</h2>
-    <div class="contact-box">
-      <h3>Questions or concerns</h3>
-      <p>If you have any questions about this Privacy Policy or how the App handles data, please reach out:</p>
-      <p>Developer: <strong>Ali Abulhawa</strong></p>
-      <p>Website: <a href="https://qortxai.com" target="_blank">qortxai.com</a></p>
-      <p>Email: <a href="mailto:qortxai@outlook.com">qortxai@outlook.com</a></p>
-    </div>
-  </section>
-</main>
-
-<footer>
-  <p>&copy; 2025–2026 Ali Abulhawa · <a href="https://qortxai.com">qortxai.com</a> · <a href="https://gvm.qortxai.com">GermanVerbMaster</a></p>
-</footer>
-
-</body>
+  </body>
 </html>
