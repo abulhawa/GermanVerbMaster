@@ -8,7 +8,9 @@ import {
 
 import { chunkArray } from '../utils';
 import {
+  INFLECTION_UPSERT_CHUNK_SIZE,
   INFLECTION_DELETE_CHUNK_SIZE,
+  LEXEME_UPSERT_CHUNK_SIZE,
   TASK_DELETE_CHUNK_SIZE,
   type DrizzleDatabase,
   type LexemeInventory,
@@ -36,21 +38,23 @@ export async function upsertLexemeInventory(
   }
 
   if (inventory.lexemes.length > 0) {
-    await db
-      .insert(lexemesTable)
-      .values(inventory.lexemes)
-      .onConflictDoUpdate({
-        target: lexemesTable.id,
-        set: {
-          lemma: sql`excluded.lemma`,
-          pos: sql`excluded.pos`,
-          gender: sql`excluded.gender`,
-          metadata: sql`excluded.metadata`,
-          frequencyRank: sql`excluded.frequency_rank`,
-          sourceIds: sql`excluded.source_ids`,
-          updatedAt: sql`now()`,
-        },
-      });
+    for (const chunk of chunkArray(inventory.lexemes, LEXEME_UPSERT_CHUNK_SIZE)) {
+      await db
+        .insert(lexemesTable)
+        .values(chunk)
+        .onConflictDoUpdate({
+          target: lexemesTable.id,
+          set: {
+            lemma: sql`excluded.lemma`,
+            pos: sql`excluded.pos`,
+            gender: sql`excluded.gender`,
+            metadata: sql`excluded.metadata`,
+            frequencyRank: sql`excluded.frequency_rank`,
+            sourceIds: sql`excluded.source_ids`,
+            updatedAt: sql`now()`,
+          },
+        });
+    }
   }
 
   const inflectionsByLexeme = new Map<string, Set<string>>();
@@ -88,20 +92,22 @@ export async function upsertLexemeInventory(
   }
 
   if (inventory.inflections.length > 0) {
-    await db
-      .insert(inflectionsTable)
-      .values(inventory.inflections)
-      .onConflictDoUpdate({
-        target: inflectionsTable.id,
-        set: {
-          form: sql`excluded.form`,
-          features: sql`excluded.features`,
-          audioAsset: sql`excluded.audio_asset`,
-          sourceRevision: sql`excluded.source_revision`,
-          checksum: sql`excluded.checksum`,
-          updatedAt: sql`now()`,
-        },
-      });
+    for (const chunk of chunkArray(inventory.inflections, INFLECTION_UPSERT_CHUNK_SIZE)) {
+      await db
+        .insert(inflectionsTable)
+        .values(chunk)
+        .onConflictDoUpdate({
+          target: inflectionsTable.id,
+          set: {
+            form: sql`excluded.form`,
+            features: sql`excluded.features`,
+            audioAsset: sql`excluded.audio_asset`,
+            sourceRevision: sql`excluded.source_revision`,
+            checksum: sql`excluded.checksum`,
+            updatedAt: sql`now()`,
+          },
+        });
+    }
   }
 }
 

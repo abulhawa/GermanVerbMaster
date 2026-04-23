@@ -208,6 +208,18 @@ export function normalizeStringArray(values: Array<string | null | undefined>): 
   return result;
 }
 
+export function mergeDelimitedMetadata(
+  existing: string | null | undefined,
+  incoming: string | null | undefined,
+): string | null {
+  const values = normalizeStringArray([
+    ...(existing?.split(';') ?? []),
+    ...(incoming?.split(';') ?? []),
+  ]);
+
+  return values.length > 0 ? values.join(';') : null;
+}
+
 export function mergeTranslations(
   existing: WordTranslation[] | null | undefined,
   incoming: WordTranslation[] | null | undefined,

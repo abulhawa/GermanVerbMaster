@@ -6,6 +6,7 @@ import { vi, type Mock } from 'vitest';
 
 import Home from '@/pages/home';
 import WritingPage from '@/pages/writing';
+import WortschatzPage from '@/pages/wortschatz';
 import type { PracticeTask, MultiTaskFetchOptions } from '@/lib/tasks';
 import { createDefaultSettings } from '@/lib/practice-settings';
 import type { PracticeSettingsState, TaskType } from '@shared';
@@ -233,6 +234,22 @@ export function renderWritingPage(): RenderResult {
       <QueryClientProvider client={client}>
         <PracticeSettingsProvider>
           <WritingPage />
+        </PracticeSettingsProvider>
+      </QueryClientProvider>
+    </LocaleProvider>,
+  );
+}
+
+export function renderWortschatzPage(): RenderResult {
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+
+  return render(
+    <LocaleProvider>
+      <QueryClientProvider client={client}>
+        <PracticeSettingsProvider>
+          <WortschatzPage />
         </PracticeSettingsProvider>
       </QueryClientProvider>
     </LocaleProvider>,

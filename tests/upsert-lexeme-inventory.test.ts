@@ -2,6 +2,10 @@ import { describe, expect, it } from 'vitest';
 
 import { buildLexemeInventory, upsertLexemeInventory } from '../scripts/etl/golden';
 import type { AggregatedWord } from '../scripts/etl/types';
+import {
+  INFLECTION_UPSERT_CHUNK_SIZE,
+  LEXEME_UPSERT_CHUNK_SIZE,
+} from '../scripts/etl/golden/types';
 import { setupTestDatabase } from './helpers/pg';
 
 function createVerb(): AggregatedWord {
@@ -66,5 +70,72 @@ describe('upsertLexemeInventory', () => {
     } finally {
       await context.cleanup();
     }
+  });
+
+  it('chunks lexeme and inflection upserts to stay below driver parameter limits', async () => {
+    class FakeDb {
+      public lexemeInsertSizes: number[] = [];
+      public inflectionInsertSizes: number[] = [];
+
+      select() {
+        const result = {
+          where: async () => [],
+          then: (resolve: (value: []) => unknown) => Promise.resolve(resolve([])),
+        };
+        return {
+          from: () => result,
+        };
+      }
+
+      delete() {
+        return {
+          where: async () => {},
+        };
+      }
+
+      insert() {
+        return {
+          values: (values: Array<Record<string, unknown>>) => {
+            const firstValue = values[0] ?? {};
+            const bucket =
+              'language' in firstValue ? this.lexemeInsertSizes : this.inflectionInsertSizes;
+            bucket.push(values.length);
+
+            return {
+              onConflictDoUpdate: async () => {},
+            };
+          },
+        };
+      }
+    }
+
+    const db = new FakeDb();
+    const inventory = {
+      lexemes: Array.from({ length: LEXEME_UPSERT_CHUNK_SIZE + 25 }, (_, index) => ({
+        id: `lex:${index}`,
+        lemma: `Wort ${index}`,
+        language: 'de',
+        pos: 'noun' as const,
+        gender: 'das',
+        metadata: {},
+        frequencyRank: null,
+        sourceIds: ['seed'],
+      })),
+      inflections: Array.from({ length: INFLECTION_UPSERT_CHUNK_SIZE + 25 }, (_, index) => ({
+        id: `inf:${index}`,
+        lexemeId: `lex:${index}`,
+        form: `Form ${index}`,
+        features: { slot: 'lemma' },
+        audioAsset: null,
+        sourceRevision: 'seed:test',
+        checksum: `sum${index}`,
+      })),
+      attribution: [],
+    };
+
+    await upsertLexemeInventory(db as unknown as Parameters<typeof upsertLexemeInventory>[0], inventory);
+
+    expect(db.lexemeInsertSizes).toEqual([LEXEME_UPSERT_CHUNK_SIZE, 25]);
+    expect(db.inflectionInsertSizes).toEqual([INFLECTION_UPSERT_CHUNK_SIZE, 25]);
   });
 });

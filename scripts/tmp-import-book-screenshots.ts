@@ -1,5 +1,7 @@
 import { appendFile, readFile } from 'node:fs/promises';
 
+import type { EnrichmentMethod } from '@shared';
+
 import { aggregateWords } from './seed/loaders/words.js';
 
 type SupportedPos = 'N' | 'V' | 'Adj';
@@ -39,7 +41,7 @@ type WordRecord = {
   }> | null;
   posAttributes: Record<string, unknown> | null;
   enrichmentAppliedAt: Date | null;
-  enrichmentMethod: string | null;
+  enrichmentMethod: EnrichmentMethod | null;
   createdAt: Date;
   updatedAt: Date;
   sourcesCsv: string | null;

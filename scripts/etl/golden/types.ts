@@ -4,6 +4,8 @@ import type { LexemePos, TaskType } from '@shared/task-registry';
 
 import type { AttributionEntry } from './attribution';
 
+export const LEXEME_UPSERT_CHUNK_SIZE = 1000;
+export const INFLECTION_UPSERT_CHUNK_SIZE = 1000;
 export const INFLECTION_DELETE_CHUNK_SIZE = 500;
 export const TASK_DELETE_CHUNK_SIZE = 1000;
 

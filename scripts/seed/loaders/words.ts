@@ -7,6 +7,7 @@ import { LEVEL_ORDER } from '../constants';
 import {
   createExampleFallback,
   mergeExamples,
+  mergeDelimitedMetadata,
   mergeTranslations,
   mergeWordPosAttributes,
   normaliseBoolean,
@@ -17,6 +18,7 @@ import {
   pickLatestTimestamp,
 } from '../normalizers';
 import type { AggregatedWordWithKey, BasePosJsonRecord, RawWordRow } from '../types';
+import { loadBundledWortschatzRows } from './wortschatz';
 
 interface VerbJsonRecord extends BasePosJsonRecord {
   verb?: {
@@ -120,6 +122,8 @@ function mergeWord(existing: RawWordRow | null, incoming: RawWordRow): RawWordRo
     incoming.enrichmentAppliedAt ?? null,
   );
   merged.enrichmentMethod = existing.enrichmentMethod ?? incoming.enrichmentMethod ?? null;
+  merged.sourcesCsv = mergeDelimitedMetadata(existing.sourcesCsv, incoming.sourcesCsv);
+  merged.sourceNotes = mergeDelimitedMetadata(existing.sourceNotes, incoming.sourceNotes);
   if (incoming.approved !== undefined && incoming.approved !== null) {
     merged.approved = incoming.approved;
   } else if (merged.approved === undefined) {
@@ -566,6 +570,7 @@ export async function loadPosWordRowsFromDisk(rootDir: string): Promise<RawWordR
 
 export async function aggregateWords(rootDir: string): Promise<AggregatedWordWithKey[]> {
   const posRows = await loadPosWordRowsFromDisk(rootDir);
+  const bundledWortschatzRows = await loadBundledWortschatzRows(rootDir);
   const aggregated = new Map<string, RawWordRow>();
 
   const upsertAggregatedRow = (row: RawWordRow | null | undefined) => {
@@ -579,6 +584,9 @@ export async function aggregateWords(rootDir: string): Promise<AggregatedWordWit
   };
 
   for (const row of posRows) {
+    upsertAggregatedRow(row);
+  }
+  for (const row of bundledWortschatzRows) {
     upsertAggregatedRow(row);
   }
 
@@ -611,6 +619,8 @@ export async function aggregateWords(rootDir: string): Promise<AggregatedWordWit
       examples: value.examples ?? null,
       enrichmentAppliedAt: value.enrichmentAppliedAt ?? null,
       enrichmentMethod: value.enrichmentMethod ?? null,
+      sourcesCsv: value.sourcesCsv ?? null,
+      sourceNotes: value.sourceNotes ?? null,
     });
   }
 

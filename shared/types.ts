@@ -87,6 +87,18 @@ export interface Word {
   updatedAt: Date;
 }
 
+export interface WortschatzWord {
+  id: number;
+  lemma: string;
+  pos: PartOfSpeech;
+  level: string | null;
+  english: string | null;
+  exampleDe: string | null;
+  exampleEn: string | null;
+  gender: string | null;
+  plural: string | null;
+}
+
 export interface GermanVerb {
   infinitive: string;
   english: string;

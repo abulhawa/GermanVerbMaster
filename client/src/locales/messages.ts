@@ -1,4 +1,5 @@
 ﻿import type { TaskType } from '@shared';
+import type { PartOfSpeech } from '@shared';
 
 export const SUPPORTED_LOCALES = ['en', 'de'] as const;
 export type Locale = (typeof SUPPORTED_LOCALES)[number];
@@ -240,6 +241,68 @@ export interface SettingsDialogMessages {
   };
 }
 
+export interface WortschatzMessages {
+  kicker: string;
+  pageDescription: string;
+  datasetBadge: string;
+  tabs: {
+    drill: string;
+    list: string;
+  };
+  search: {
+    label: string;
+    placeholder: string;
+  };
+  filters: {
+    label: string;
+    title: string;
+    description: string;
+    reset: string;
+  };
+  metrics: {
+    mastered: string;
+    accuracy: string;
+    remaining: string;
+    total: string;
+    progressLabel: string;
+    progressDetail: string;
+  };
+  posLabels: Record<PartOfSpeech, string>;
+  list: {
+    emptyTitle: string;
+    emptyDescription: string;
+    sectionCount: string;
+    pronunciationLabel: string;
+    translationLabel: string;
+    exampleLabel: string;
+    pluralLabel: string;
+    noTranslation: string;
+    noExample: string;
+  };
+  drill: {
+    heading: string;
+    description: string;
+    emptyTitle: string;
+    emptyDescription: string;
+    completedTitle: string;
+    completedDescription: string;
+    frontPrompt: string;
+    backPrompt: string;
+    showAnswer: string;
+    hideAnswer: string;
+    correct: string;
+    incorrect: string;
+    restart: string;
+    pronunciationLabel: string;
+    queueProgressLabel: string;
+  };
+  errors: {
+    loadTitle: string;
+    loadDescription: string;
+    retry: string;
+  };
+}
+
 export interface AuthMessages {
   sidebar: {
     signedOutTitle: string;
@@ -320,6 +383,7 @@ export interface AppMessages {
   practiceCard: PracticeCardMessages;
   progressDisplay: ProgressDisplayMessages;
   home: HomeMessages;
+  wortschatz: WortschatzMessages;
   settingsDialog: SettingsDialogMessages;
   auth: AuthMessages;
 }
@@ -402,6 +466,80 @@ const MESSAGES: Record<Locale, AppMessages> = {
       practiceTabs: {
         words: 'Words',
         writing: 'Writing',
+      },
+    },
+    wortschatz: {
+      kicker: 'Vocabulary practice',
+      pageDescription:
+        'Review the bundled B2 Beruf vocabulary set as a searchable list or run a self-contained Schnell-Drill session.',
+      datasetBadge: 'B2 Beruf',
+      tabs: {
+        drill: 'Schnell-Drill',
+        list: 'Wortliste',
+      },
+      search: {
+        label: 'Search vocabulary',
+        placeholder: 'Search by German, English, or example',
+      },
+      filters: {
+        label: 'Filters',
+        title: 'Part-of-speech filters',
+        description: 'Limit the current list and drill queue to the word classes you want to review.',
+        reset: 'Reset filters',
+      },
+      metrics: {
+        mastered: 'Mastered',
+        accuracy: 'Accuracy',
+        remaining: 'Remaining',
+        total: 'Attempts',
+        progressLabel: 'Mastery progress',
+        progressDetail: '{count} of {total} filtered words marked correct at least once.',
+      },
+      posLabels: {
+        V: 'Verbs',
+        N: 'Nouns',
+        Adj: 'Adjectives',
+        Adv: 'Adverbs',
+        Pron: 'Pronouns',
+        Det: 'Determiners',
+        Präp: 'Prepositions',
+        Konj: 'Conjunctions',
+        Num: 'Numerals',
+        Part: 'Particles',
+        Interj: 'Interjections',
+      },
+      list: {
+        emptyTitle: 'No vocabulary matches these filters',
+        emptyDescription: 'Adjust the search query or reset the part-of-speech filters to show more entries.',
+        sectionCount: '{count} entries',
+        pronunciationLabel: 'Pronounce',
+        translationLabel: 'English',
+        exampleLabel: 'Example',
+        pluralLabel: 'Plural',
+        noTranslation: 'No translation available yet.',
+        noExample: 'No example sentence available yet.',
+      },
+      drill: {
+        heading: 'Schnell-Drill',
+        description: 'Flip each card, judge your recall, and keep an eye on mastery for the current filtered set.',
+        emptyTitle: 'No drill cards are available',
+        emptyDescription: 'Adjust the search query or reset the part-of-speech filters to build a new drill queue.',
+        completedTitle: 'Drill complete',
+        completedDescription: 'You reached the end of the current queue. Restart to reshuffle the same filtered set.',
+        frontPrompt: 'Recall the meaning before flipping the card.',
+        backPrompt: 'Check the meaning and example before marking the card.',
+        showAnswer: 'Show answer',
+        hideAnswer: 'Hide answer',
+        correct: 'Correct',
+        incorrect: 'Incorrect',
+        restart: 'Restart drill',
+        pronunciationLabel: 'Pronounce',
+        queueProgressLabel: 'Drill queue progress',
+      },
+      errors: {
+        loadTitle: 'Unable to load Wortschatz',
+        loadDescription: 'Try again to reload the bundled vocabulary list.',
+        retry: 'Retry',
       },
     },
     settingsDialog: {
@@ -753,6 +891,80 @@ const MESSAGES: Record<Locale, AppMessages> = {
       practiceTabs: {
         words: 'Wörter',
         writing: 'Schreiben',
+      },
+    },
+    wortschatz: {
+      kicker: 'Wortschatztraining',
+      pageDescription:
+        'Durchsuche die gebündelte B2-Beruf-Wortliste oder übe sie direkt im eigenständigen Schnell-Drill.',
+      datasetBadge: 'B2 Beruf',
+      tabs: {
+        drill: 'Schnell-Drill',
+        list: 'Wortliste',
+      },
+      search: {
+        label: 'Wortschatz durchsuchen',
+        placeholder: 'Nach Deutsch, Englisch oder Beispiel suchen',
+      },
+      filters: {
+        label: 'Filter',
+        title: 'Filter nach Wortart',
+        description: 'Begrenze Liste und Drill-Warteschlange auf die Wortarten, die du gerade wiederholen möchtest.',
+        reset: 'Filter zurücksetzen',
+      },
+      metrics: {
+        mastered: 'Beherrscht',
+        accuracy: 'Genauigkeit',
+        remaining: 'Verbleibend',
+        total: 'Versuche',
+        progressLabel: 'Fortschritt der Beherrschung',
+        progressDetail: '{count} von {total} gefilterten Wörtern wurden mindestens einmal korrekt markiert.',
+      },
+      posLabels: {
+        V: 'Verben',
+        N: 'Nomen',
+        Adj: 'Adjektive',
+        Adv: 'Adverbien',
+        Pron: 'Pronomen',
+        Det: 'Artikel',
+        Präp: 'Präpositionen',
+        Konj: 'Konjunktionen',
+        Num: 'Numerale',
+        Part: 'Partikeln',
+        Interj: 'Interjektionen',
+      },
+      list: {
+        emptyTitle: 'Kein Wortschatz passt zu diesen Filtern',
+        emptyDescription: 'Passe die Suche an oder setze die Wortart-Filter zurück, um mehr Einträge zu sehen.',
+        sectionCount: '{count} Einträge',
+        pronunciationLabel: 'Aussprechen',
+        translationLabel: 'Englisch',
+        exampleLabel: 'Beispiel',
+        pluralLabel: 'Plural',
+        noTranslation: 'Noch keine Übersetzung verfügbar.',
+        noExample: 'Noch kein Beispielsatz verfügbar.',
+      },
+      drill: {
+        heading: 'Schnell-Drill',
+        description: 'Drehe jede Karte um, bewerte deinen Abruf und behalte die Beherrschung der aktuellen Filtermenge im Blick.',
+        emptyTitle: 'Keine Drill-Karten verfügbar',
+        emptyDescription: 'Passe die Suche an oder setze die Wortart-Filter zurück, um eine neue Drill-Warteschlange zu erstellen.',
+        completedTitle: 'Drill abgeschlossen',
+        completedDescription: 'Du hast das Ende der aktuellen Warteschlange erreicht. Starte neu, um dieselbe Filtermenge erneut zu mischen.',
+        frontPrompt: 'Rufe zuerst die Bedeutung ab, bevor du die Karte aufdeckst.',
+        backPrompt: 'Prüfe Bedeutung und Beispiel, bevor du die Karte bewertest.',
+        showAnswer: 'Antwort zeigen',
+        hideAnswer: 'Antwort ausblenden',
+        correct: 'Korrekt',
+        incorrect: 'Falsch',
+        restart: 'Drill neu starten',
+        pronunciationLabel: 'Aussprechen',
+        queueProgressLabel: 'Fortschritt der Drill-Warteschlange',
+      },
+      errors: {
+        loadTitle: 'Wortschatz konnte nicht geladen werden',
+        loadDescription: 'Versuche es erneut, um die gebündelte Wortliste nachzuladen.',
+        retry: 'Erneut versuchen',
       },
     },
     settingsDialog: {

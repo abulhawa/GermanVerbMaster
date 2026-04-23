@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   createExampleFallback,
+  mergeDelimitedMetadata,
   mergeWordPosAttributes,
   normaliseBoolean,
   normaliseExamples,
@@ -75,6 +76,12 @@ describe('seed normalizers', () => {
     expect(merged?.preposition?.notes).toEqual(['movement']);
     expect(merged?.notes).toEqual(['usage']);
     expect(merged?.tags).toEqual(['additional', 'core']);
+  });
+
+  it('merges delimited metadata without duplicating values', () => {
+    expect(mergeDelimitedMetadata('android_b2_beruf;manual', 'manual;seed')).toBe(
+      'android_b2_beruf;manual;seed',
+    );
   });
 
   it('normalizes string arrays', () => {
