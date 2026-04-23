@@ -27,12 +27,6 @@ Preview deployments can include additional origins (for example, `https://<branc
 3. Because `npm run build` invokes the validation script automatically, Vercel builds will abort if any required variable is missing or misconfigured. Fix the reported error and redeploy.
 4. Record completion of this checklist in the release issue before promoting the deployment.
 
-## Deployment behaviour
-
-- Vercel now uses `npm run build:vercel` as the build entrypoint.
-- Production deployments (`VERCEL_ENV=production`) automatically run `npm run seed`, then `npm run build:tasks`, and finally `npm run build`.
-- Preview and development deployments skip the seed/task rebuild step and run only `npm run build`.
-
 Following this checklist ensures database access, authentication, transactional email, and admin automation stay functional in production.
 
 ## Health and readiness probes
