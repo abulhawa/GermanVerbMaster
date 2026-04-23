@@ -83,7 +83,7 @@ describe('seed loaders', () => {
       await setupPosFile(tmpRoot, 'nouns.jsonl', [
         {
           lemma: 'Projekt',
-          level: 'B2',
+          level: 'B1',
           english: 'project',
           noun: { gender: 'das', plural: 'Projekte' },
           examples: [
@@ -107,6 +107,7 @@ describe('seed loaders', () => {
       expect(aggregated[0]).toMatchObject({
         lemma: 'Projekt',
         pos: 'N',
+        level: 'B2 Beruf',
         english: 'project',
         gender: 'das',
         plural: 'Projekte',

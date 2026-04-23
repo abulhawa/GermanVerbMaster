@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
+import { ANDROID_B2_BERUF_SOURCE } from '@shared/content-sources';
 import type { PartOfSpeech, WordPosAttributes } from '@shared/types';
 
 import { LEVEL_ORDER } from '../constants';
@@ -80,6 +81,17 @@ export function keyFor(lemma: string, pos: string): string {
   return `${lemma.toLowerCase()}::${pos}`;
 }
 
+function hasSourceTag(value: string | null | undefined, target: string): boolean {
+  if (!value) {
+    return false;
+  }
+
+  return value
+    .split(';')
+    .map((token) => token.trim())
+    .some((token) => token === target);
+}
+
 function pickPreferredLevel(existing: string | null, incoming: string | null): string | null {
   if (!existing) return incoming ?? null;
   if (!incoming) return existing;
@@ -96,9 +108,6 @@ function pickPreferredLevel(existing: string | null, incoming: string | null): s
 function mergeWord(existing: RawWordRow | null, incoming: RawWordRow): RawWordRow {
   if (!existing) return { ...incoming };
   const merged: RawWordRow = { ...existing };
-
-  const preferredLevel = pickPreferredLevel(existing.level ?? null, incoming.level ?? null);
-  merged.level = preferredLevel;
 
   merged.english = existing.english ?? incoming.english ?? null;
   merged.exampleDe = existing.exampleDe ?? incoming.exampleDe ?? null;
@@ -124,6 +133,11 @@ function mergeWord(existing: RawWordRow | null, incoming: RawWordRow): RawWordRo
   merged.enrichmentMethod = existing.enrichmentMethod ?? incoming.enrichmentMethod ?? null;
   merged.sourcesCsv = mergeDelimitedMetadata(existing.sourcesCsv, incoming.sourcesCsv);
   merged.sourceNotes = mergeDelimitedMetadata(existing.sourceNotes, incoming.sourceNotes);
+  const preferredLevel = pickPreferredLevel(existing.level ?? null, incoming.level ?? null);
+  merged.level =
+    hasSourceTag(merged.sourcesCsv, ANDROID_B2_BERUF_SOURCE) && incoming.level
+      ? incoming.level
+      : preferredLevel;
   if (incoming.approved !== undefined && incoming.approved !== null) {
     merged.approved = incoming.approved;
   } else if (merged.approved === undefined) {
