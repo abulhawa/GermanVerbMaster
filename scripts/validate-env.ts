@@ -83,23 +83,19 @@ function validateDatabaseUrl(): ValidationResult[] {
   return results;
 }
 
-function validateBetterAuthSecrets(): ValidationResult[] {
+function validateSupabaseAuthConfiguration(): ValidationResult[] {
   const results: ValidationResult[] = [];
-  const betterAuthSecret = getEnv("BETTER_AUTH_SECRET");
-  const authSecret = getEnv("AUTH_SECRET");
+  const supabaseUrl = getEnv("SUPABASE_URL") ?? getEnv("VITE_SUPABASE_URL");
+  const supabaseAnonKey = getEnv("SUPABASE_ANON_KEY") ?? getEnv("VITE_SUPABASE_ANON_KEY");
 
-  if (!betterAuthSecret && !authSecret) {
-    addResult(results, "error", "Provide BETTER_AUTH_SECRET (preferred) or AUTH_SECRET so Better Auth can sign cookies and tokens.");
-    return results;
+  if (!supabaseUrl) {
+    addResult(results, "error", "SUPABASE_URL or VITE_SUPABASE_URL is missing. Use the same Supabase project as the Android app.");
+  } else if (!/^https:\/\/.+\.supabase\.co$/i.test(supabaseUrl)) {
+    addResult(results, "warning", "SUPABASE_URL should point at the production Supabase project URL used by Android.");
   }
 
-  const secret = betterAuthSecret ?? authSecret ?? "";
-  if (secret.length < 32) {
-    addResult(
-      results,
-      "error",
-      "The configured Better Auth secret should be at least 32 characters. Generate a 64-byte random string for production."
-    );
+  if (!supabaseAnonKey) {
+    addResult(results, "error", "SUPABASE_ANON_KEY or VITE_SUPABASE_ANON_KEY is missing. Web auth cannot verify Supabase sessions without it.");
   }
 
   return results;
@@ -108,14 +104,9 @@ function validateBetterAuthSecrets(): ValidationResult[] {
 function validateAppOrigins(): ValidationResult[] {
   const results: ValidationResult[] = [];
   const appOrigins = parseOrigins(getEnv("APP_ORIGIN"));
-  const betterAuthUrl = getEnv("BETTER_AUTH_URL");
 
   if (appOrigins.length === 0) {
-    const baseMessage = "APP_ORIGIN must include at least one HTTPS origin so CORS and Better Auth callbacks resolve correctly.";
-    const betterAuthReminder =
-      "APP_ORIGIN is still required even when BETTER_AUTH_URL is defined because the API uses it to resolve allowed origins.";
-
-    addResult(results, "error", betterAuthUrl ? `${baseMessage} ${betterAuthReminder}` : baseMessage);
+    addResult(results, "error", "APP_ORIGIN must include at least one HTTPS origin so CORS resolves correctly.");
   } else {
     for (const origin of appOrigins) {
       if (!origin.startsWith("https://")) {
@@ -129,16 +120,6 @@ function validateAppOrigins(): ValidationResult[] {
       if (/localhost|127\.0\.0\.1/i.test(origin)) {
         addResult(results, "error", "APP_ORIGIN still references localhost. Replace it with the public production domain.");
       }
-    }
-  }
-
-  if (betterAuthUrl) {
-    if (!betterAuthUrl.startsWith("https://")) {
-      addResult(results, "error", "BETTER_AUTH_URL must start with https:// when defined. Use the canonical production domain.");
-    }
-
-    if (/localhost|127\.0\.0\.1/i.test(betterAuthUrl)) {
-      addResult(results, "error", "BETTER_AUTH_URL references localhost. Set it to the production domain so email links resolve correctly.");
     }
   }
 
@@ -191,7 +172,7 @@ function main() {
 
   const validations = [
     ...validateDatabaseUrl(),
-    ...validateBetterAuthSecrets(),
+    ...validateSupabaseAuthConfiguration(),
     ...validateAppOrigins(),
     ...validateResendConfiguration(),
     ...validateAdminToken(),

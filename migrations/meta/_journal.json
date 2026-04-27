@@ -43,6 +43,13 @@
       "when": 1760647453783,
       "tag": "0005_add_practice_log_scope_idx",
       "breakpoints": false
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1760647454783,
+      "tag": "0006_add_mobile_history_table",
+      "breakpoints": false
     }
   ]
 }

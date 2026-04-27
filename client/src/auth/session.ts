@@ -1,4 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { User } from '@supabase/supabase-js';
+
+import { getSupabaseClient } from '@/lib/supabase';
 
 export interface SessionUser {
   id: string;
@@ -23,7 +27,7 @@ export interface SessionResponse {
 
 export type AuthSessionState = SessionResponse | null;
 
-const SESSION_QUERY_KEY = ["auth", "session"] as const;
+const SESSION_QUERY_KEY = ['auth', 'session'] as const;
 
 interface EmailCredentials {
   email: string;
@@ -35,167 +39,163 @@ interface EmailPayload {
   email: string;
 }
 
-function isNonEmptyString(value: unknown): value is string {
-  return typeof value === "string" && value.trim().length > 0;
-}
+function mapSupabaseUser(user: User, expiresAt?: number): SessionResponse {
+  const metadata = user.user_metadata ?? {};
+  const appMetadata = user.app_metadata ?? {};
+  const name =
+    typeof metadata.full_name === 'string'
+      ? metadata.full_name
+      : typeof metadata.name === 'string'
+        ? metadata.name
+        : null;
+  const image =
+    typeof metadata.avatar_url === 'string'
+      ? metadata.avatar_url
+      : typeof metadata.picture === 'string'
+        ? metadata.picture
+        : null;
+  const role = typeof appMetadata.role === 'string' ? appMetadata.role : 'standard';
 
-async function requestJson<T>(input: RequestInfo | URL, init?: RequestInit): Promise<T> {
-  const response = await fetch(input, {
-    ...init,
-    headers: {
-      "content-type": "application/json",
-      ...(init?.headers ?? {}),
+  return {
+    session: {
+      id: user.id,
+      expiresAt: expiresAt ? new Date(expiresAt * 1000).toISOString() : null,
     },
-    credentials: "include",
-  });
-
-  const isJson = response.headers.get("content-type")?.includes("application/json");
-
-  if (!response.ok) {
-    if (isJson) {
-      try {
-        const payload = (await response.json()) as Record<string, unknown>;
-        const message =
-          (typeof payload.error === "string" && payload.error.trim()) ||
-          (typeof payload.message === "string" && payload.message.trim()) ||
-          (typeof payload.code === "string" && payload.code.trim()) ||
-          null;
-        if (message) {
-          throw new Error(message);
-        }
-      } catch (error) {
-        if (error instanceof Error) {
-          throw error;
-        }
-      }
-    }
-
-    throw new Error(response.statusText || "Request failed");
-  }
-
-  if (!isJson || response.status === 204) {
-    return undefined as T;
-  }
-
-  return (await response.json()) as T;
+    user: {
+      id: user.id,
+      name,
+      email: user.email ?? null,
+      image,
+      emailVerified: Boolean(user.email_confirmed_at),
+      role,
+      createdAt: user.created_at ?? null,
+      updatedAt: user.updated_at ?? null,
+    },
+  };
 }
 
 async function fetchSession(): Promise<AuthSessionState> {
-  try {
-    const response = await fetch("/api/me", {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        accept: "application/json",
-      },
-    });
-
-    if (response.status === 401) {
-      return null;
-    }
-
-    if (!response.ok) {
-      const error = await safeParseError(response);
-      throw new Error(error ?? response.statusText ?? "Failed to load session");
-    }
-
-    return (await response.json()) as SessionResponse;
-  } catch (error) {
-    if (error instanceof Error && error.name === "AbortError") {
-      throw error;
-    }
-    throw error instanceof Error ? error : new Error("Failed to load session");
-  }
-}
-
-async function safeParseError(response: Response): Promise<string | null> {
-  const contentType = response.headers.get("content-type");
-  if (!contentType || !contentType.includes("application/json")) {
+  const supabase = getSupabaseClient();
+  if (!supabase) {
     return null;
   }
 
-  try {
-    const payload = (await response.json()) as Record<string, unknown>;
-    const fields = [payload.error, payload.message, payload.code];
-    for (const field of fields) {
-      if (isNonEmptyString(field)) {
-        return field;
-      }
-    }
-  } catch {
-    return null;
+  const { data, error } = await supabase.auth.getSession();
+  if (error) {
+    throw error;
   }
 
-  return null;
+  const session = data.session;
+  return session?.user ? mapSupabaseUser(session.user, session.expires_at) : null;
 }
 
 async function signInWithEmail(credentials: EmailCredentials): Promise<void> {
-  await requestJson<unknown>("/api/auth/sign-in/email", {
-    method: "POST",
-    body: JSON.stringify({
-      email: credentials.email,
-      password: credentials.password,
-    }),
+  const supabase = getSupabaseClient();
+  if (!supabase) {
+    throw new Error('Supabase Auth is not configured.');
+  }
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email: credentials.email,
+    password: credentials.password,
   });
+
+  if (error) {
+    throw error;
+  }
 }
 
 async function signUpWithEmail(credentials: EmailCredentials): Promise<void> {
-  await requestJson<unknown>("/api/auth/sign-up/email", {
-    method: "POST",
-    body: JSON.stringify({
-      email: credentials.email,
-      password: credentials.password,
-      name: credentials.name,
-    }),
+  const supabase = getSupabaseClient();
+  if (!supabase) {
+    throw new Error('Supabase Auth is not configured.');
+  }
+
+  const { error } = await supabase.auth.signUp({
+    email: credentials.email,
+    password: credentials.password,
+    options: {
+      data: credentials.name ? { name: credentials.name, full_name: credentials.name } : undefined,
+      emailRedirectTo: window.location.origin,
+    },
   });
+
+  if (error) {
+    throw error;
+  }
 }
 
 async function signOutRequest(): Promise<void> {
-  await requestJson<unknown>("/api/auth/sign-out", {
-    method: "POST",
-    body: JSON.stringify({ all: true }),
-  });
+  const supabase = getSupabaseClient();
+  if (!supabase) {
+    return;
+  }
+
+  const { error } = await supabase.auth.signOut();
+  if (error) {
+    throw error;
+  }
 }
 
 async function resendVerificationEmailRequest(email: string): Promise<void> {
-  await requestJson<unknown>("/api/auth/send-verification-email", {
-    method: "POST",
-    body: JSON.stringify({ email }),
+  const supabase = getSupabaseClient();
+  if (!supabase) {
+    throw new Error('Supabase Auth is not configured.');
+  }
+
+  const { error } = await supabase.auth.resend({
+    type: 'signup',
+    email,
+    options: {
+      emailRedirectTo: window.location.origin,
+    },
   });
+
+  if (error) {
+    throw error;
+  }
 }
 
 async function requestPasswordResetEmail(email: string): Promise<void> {
-  await requestJson<unknown>("/api/auth/request-password-reset", {
-    method: "POST",
-    body: JSON.stringify({ email }),
+  const supabase = getSupabaseClient();
+  if (!supabase) {
+    throw new Error('Supabase Auth is not configured.');
+  }
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin,
   });
+
+  if (error) {
+    throw error;
+  }
 }
 
 export function useAuthSession() {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      return undefined;
+    }
+
+    const { data } = supabase.auth.onAuthStateChange(() => {
+      void queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY });
+    });
+
+    return () => data.subscription.unsubscribe();
+  }, [queryClient]);
+
   return useQuery<AuthSessionState, Error>({
     queryKey: SESSION_QUERY_KEY,
-    queryFn: async () => {
-      try {
-        return await fetchSession();
-      } catch (error) {
-        if (error instanceof Response && error.status === 401) {
-          return null;
-        }
-        throw error;
-      }
-    },
+    queryFn: fetchSession,
     staleTime: 60_000,
     gcTime: 5 * 60_000,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    retry: (failureCount, error) => {
-      if (error instanceof Error) {
-        if (error.name === "AbortError") return false;
-        if ((error as any).status === 401) return false;
-      }
-      return failureCount < 2;
-    },
+    retry: false,
   });
 }
 
@@ -204,15 +204,12 @@ export function useSignInMutation() {
   return useMutation<void, Error, EmailCredentials>({
     mutationFn: signInWithEmail,
     onSuccess: async () => {
-      // After successful sign in, set session to null first to prevent stale data
-      queryClient.setQueryData(SESSION_QUERY_KEY, null);
       await queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY });
     },
     onError: () => {
-      // On error, ensure session is null to prevent loops
       queryClient.setQueryData(SESSION_QUERY_KEY, null);
     },
-    retry: false
+    retry: false,
   });
 }
 
@@ -239,17 +236,13 @@ export function useSignOutMutation() {
 
 export function useResendVerificationEmailMutation() {
   return useMutation<void, Error, EmailPayload>({
-    mutationFn: async ({ email }) => {
-      await resendVerificationEmailRequest(email);
-    },
+    mutationFn: async ({ email }) => resendVerificationEmailRequest(email),
   });
 }
 
 export function useRequestPasswordResetMutation() {
   return useMutation<void, Error, EmailPayload>({
-    mutationFn: async ({ email }) => {
-      await requestPasswordResetEmail(email);
-    },
+    mutationFn: async ({ email }) => requestPasswordResetEmail(email),
   });
 }
 

@@ -12,7 +12,9 @@ function repoRoot(): string {
 describe('B2 canonical inventory coverage', () => {
   it('includes a reusable approved B2 inventory across verbs, nouns, and adjectives', async () => {
     const aggregated = await aggregateWords(repoRoot());
-    const b2Words = aggregated.filter((entry) => entry.level === 'B2' && entry.approved && entry.complete);
+    const b2Words = aggregated.filter(
+      (entry) => (entry.level === 'B2' || entry.level === 'B2 Beruf') && entry.approved && entry.complete,
+    );
 
     const byPos = {
       V: b2Words.filter((entry) => entry.pos === 'V'),

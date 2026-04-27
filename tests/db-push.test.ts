@@ -36,6 +36,7 @@ describe('applyMigrations', () => {
         'lexemes',
         'task_specs',
         'practice_history',
+        'user_practice_history',
       ]),
     );
 

@@ -9,6 +9,7 @@ import {
 } from '@shared/task-registry';
 import type { CEFRLevel } from '@shared';
 import { getDeviceId } from '@/lib/device';
+import { createSupabaseAuthHeaders } from '@/lib/supabase';
 const DEFAULT_TASK_LIMIT = 25;
 
 export type TaskPrompt<T extends TaskType = TaskType> = z.infer<(typeof sharedTaskRegistry)[T]['promptSchema']>;
@@ -151,6 +152,7 @@ interface TaskFeedResult {
 async function fetchFromTaskFeed(options: TaskFetchOptions): Promise<TaskFeedResult> {
   const query = buildTasksQuery(options);
   const response = await fetch(createApiUrl('/api/tasks', query ? new URLSearchParams(query) : undefined), {
+    headers: await createSupabaseAuthHeaders(),
     signal: options.signal,
   });
 

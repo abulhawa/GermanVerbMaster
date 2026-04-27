@@ -1,16 +1,13 @@
 /* @vitest-environment jsdom */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { ANDROID_B2_BERUF_VERSION } from '@shared/content-sources';
 import type { WortschatzWord } from '@shared';
 
-import {
-  renderWortschatzPage,
-  setupHomeNavigationTest,
-} from './home-navigation/utils';
+import { renderWortschatzPage, setupHomeNavigationTest } from './home-navigation/utils';
 
 const FIXTURE_WORDS: WortschatzWord[] = [
   {
@@ -48,14 +45,14 @@ const FIXTURE_WORDS: WortschatzWord[] = [
   },
   {
     id: 4,
-    lemma: 'zuverlässig',
-    pos: 'Adj',
-    level: 'B2',
-    english: 'reliable',
-    exampleDe: 'Sie arbeitet zuverlässig.',
-    exampleEn: 'She works reliably.',
-    gender: null,
-    plural: null,
+    lemma: 'Haus',
+    pos: 'N',
+    level: 'A1',
+    english: 'house',
+    exampleDe: 'Das Haus ist groß.',
+    exampleEn: 'The house is large.',
+    gender: 'das',
+    plural: 'Häuser',
   },
 ];
 
@@ -69,10 +66,7 @@ function requestToUrl(input: RequestInfo | URL): string {
   return (input as Request).url;
 }
 
-function installWortschatzFetch(
-  words: WortschatzWord[],
-  datasetVersion: string = ANDROID_B2_BERUF_VERSION,
-) {
+function installWortschatzFetch(words: WortschatzWord[], datasetVersion: string = ANDROID_B2_BERUF_VERSION) {
   const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
     const url = requestToUrl(input);
     if (url.includes('/api/wortschatz/words')) {
@@ -86,7 +80,7 @@ function installWortschatzFetch(
     }
 
     if (url.includes('/api/auth/providers')) {
-      return new Response(JSON.stringify({ providers: [] }), {
+      return new Response(JSON.stringify({ providers: ['google'] }), {
         status: 200,
         headers: {
           'Content-Type': 'application/json',
@@ -121,12 +115,16 @@ describe('Wortschatz page', () => {
     vi.unstubAllGlobals();
   });
 
-  it('renders the dedicated route surface and marks Wortschatz navigation active', async () => {
+  it('renders the Android-like default tab, countdown, search, and icon filter layout', async () => {
     const fetchMock = installWortschatzFetch(FIXTURE_WORDS);
 
     renderWortschatzPage();
 
     expect(await screen.findByRole('heading', { name: 'Wortschatz' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Schnell-Drill' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('tab', { name: 'Wortliste' })).toBeInTheDocument();
+    expect(screen.getByLabelText('Search vocabulary')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Filters' })).toBeInTheDocument();
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledWith(
@@ -139,62 +137,101 @@ describe('Wortschatz page', () => {
     expect(navigationLinks.some((link) => link.getAttribute('aria-current') === 'page')).toBe(true);
   });
 
-  it('filters the word list by search query and selected parts of speech', async () => {
+  it('filters by level, part of speech, and the Alle level chip', async () => {
     installWortschatzFetch(FIXTURE_WORDS);
     const user = userEvent.setup();
 
     renderWortschatzPage();
 
-    await screen.findByRole('tab', { name: 'Wortliste' });
-    await user.click(screen.getByRole('tab', { name: 'Wortliste' }));
+    await user.click(await screen.findByRole('tab', { name: 'Wortliste' }));
+
+    expect(await screen.findByText('der Arbeitsvertrag')).toBeInTheDocument();
+    expect(screen.queryByText('das Haus')).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Filters' }));
-    await user.click(screen.getByLabelText('Verbs'));
-    await user.click(screen.getByLabelText('Adjectives'));
-    await user.click(document.body);
+    await user.click(screen.getAllByRole('button', { name: 'All' })[0]!);
+
+    expect(await screen.findByText('das Haus')).toBeInTheDocument();
+
+    await user.click(await screen.findByRole('button', { name: 'Verbs' }));
 
     const searchInput = screen.getByLabelText('Search vocabulary');
     await user.type(searchInput, 'timeline');
 
-    expect(await screen.findByRole('heading', { name: /Projekt/ })).toBeInTheDocument();
+    expect(await screen.findByText('das Projekt')).toBeInTheDocument();
     expect(screen.queryByText(/bewerben/)).not.toBeInTheDocument();
-    expect(screen.queryByText(/zuverlässig/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Arbeitsvertrag/)).not.toBeInTheDocument();
   });
 
-  it('runs the Schnell-Drill flow through flip, result marking, completion, and restart', async () => {
+  it('renders dense grouped rows with noun article, plural, examples, and speaker controls', async () => {
+    installWortschatzFetch(FIXTURE_WORDS);
+    const user = userEvent.setup();
+
+    renderWortschatzPage();
+
+    await user.click(await screen.findByRole('tab', { name: 'Wortliste' }));
+
+    const list = await screen.findByText('der Arbeitsvertrag');
+    const row = list.closest('article');
+    expect(row).not.toBeNull();
+    expect(within(row as HTMLElement).getByText(/Arbeitsverträge/)).toBeInTheDocument();
+    expect(within(row as HTMLElement).getByText('Der Arbeitsvertrag ist unterschrieben.')).toBeInTheDocument();
+    expect(within(row as HTMLElement).getByText('employment contract')).toBeInTheDocument();
+    expect(within(row as HTMLElement).getByLabelText('Pronounce der Arbeitsvertrag')).toBeInTheDocument();
+    expect(within(row as HTMLElement).getByLabelText('Pronounce example')).toBeInTheDocument();
+  });
+
+  it('runs the flip-card flow through reveal, wrong/correct advance, completion, and restart', async () => {
     installWortschatzFetch(FIXTURE_WORDS.slice(0, 2));
     const user = userEvent.setup();
 
     renderWortschatzPage();
 
-    expect(await screen.findByRole('button', { name: 'Show answer' })).toBeInTheDocument();
+    expect(await screen.findByText('Tap to reveal')).toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: 'Show answer' }));
-    await user.click(screen.getByRole('button', { name: 'Correct' }));
+    await user.click(screen.getByText('Tap to reveal'));
+    expect(await screen.findByRole('button', { name: 'Back to question' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Incorrect' }));
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: 'Show answer' })).toBeInTheDocument();
+      expect(screen.getByText('Tap to reveal')).toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole('button', { name: 'Show answer' }));
-    await user.click(screen.getByRole('button', { name: 'Incorrect' }));
+    await user.click(screen.getByText('Tap to reveal'));
+    await user.click(screen.getByRole('button', { name: 'Correct' }));
 
     expect(await screen.findByText('Drill complete')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Restart drill' }));
-
-    expect(await screen.findByRole('button', { name: 'Show answer' })).toBeInTheDocument();
+    expect(await screen.findByText('Tap to reveal')).toBeInTheDocument();
   });
 
-  it('restores persisted state for the same dataset version and resets drill mastery when the dataset changes', async () => {
+  it('supports swipe gestures after reveal without practice submission or history calls', async () => {
+    const fetchMock = installWortschatzFetch([FIXTURE_WORDS[0]!]);
+
+    renderWortschatzPage();
+
+    await screen.findByText('Tap to reveal');
+    fireEvent.click(screen.getByText('Tap to reveal'));
+
+    const card = screen.getByRole('button', { name: /employment contract/i });
+    fireEvent.pointerDown(card, { clientX: 10 });
+    fireEvent.pointerMove(card, { clientX: 130 });
+    expect(screen.getAllByText('Correct').length).toBeGreaterThan(0);
+    fireEvent.pointerUp(card, { clientX: 130 });
+
+    expect(await screen.findByText('Drill complete')).toBeInTheDocument();
+    expect(fetchMock).not.toHaveBeenCalledWith(expect.stringContaining('/api/submission'), expect.anything());
+  });
+
+  it('restores local tab/search/filter/drill mastery and resets mastery when the dataset changes', async () => {
     const user = userEvent.setup();
 
     installWortschatzFetch([FIXTURE_WORDS[0]!], 'wortschatz-v1');
     const firstRender = renderWortschatzPage();
 
-    await screen.findByRole('button', { name: 'Show answer' });
-    await user.click(screen.getByRole('button', { name: 'Show answer' }));
+    await screen.findByText('Tap to reveal');
+    await user.click(screen.getByText('Tap to reveal'));
     await user.click(screen.getByRole('button', { name: 'Correct' }));
     await user.click(screen.getByRole('tab', { name: 'Wortliste' }));
     await user.type(screen.getByLabelText('Search vocabulary'), 'vertrag');
@@ -206,7 +243,8 @@ describe('Wortschatz page', () => {
 
     expect(await screen.findByDisplayValue('vertrag')).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: 'Wortliste' })).toHaveAttribute('aria-selected', 'true');
-    expect(await screen.findByText('1/1')).toBeInTheDocument();
+    await user.click(screen.getByRole('tab', { name: 'Schnell-Drill' }));
+    expect(await screen.findByText(/1\/1 words/)).toBeInTheDocument();
 
     secondRender.unmount();
 
@@ -214,20 +252,22 @@ describe('Wortschatz page', () => {
     renderWortschatzPage();
 
     expect(await screen.findByDisplayValue('vertrag')).toBeInTheDocument();
-    expect(await screen.findByText('0/1')).toBeInTheDocument();
+    await user.click(screen.getByRole('tab', { name: 'Schnell-Drill' }));
+    expect(await screen.findByText(/0\/1 words/)).toBeInTheDocument();
   });
 
-  it('uses speech synthesis for pronunciation actions', async () => {
+  it('uses speech synthesis for lemma and example pronunciation actions', async () => {
     installWortschatzFetch([FIXTURE_WORDS[0]!]);
     const user = userEvent.setup();
 
     renderWortschatzPage();
 
-    await screen.findByRole('button', { name: /pronounce/i });
-    await user.click(screen.getByRole('button', { name: /pronounce/i }));
+    await user.click(await screen.findByRole('tab', { name: 'Wortliste' }));
+    await user.click(screen.getByLabelText('Pronounce der Arbeitsvertrag'));
+    await user.click(screen.getByLabelText('Pronounce example'));
 
-    expect(window.speechSynthesis.cancel).toHaveBeenCalledTimes(1);
-    expect(window.speechSynthesis.speak).toHaveBeenCalledTimes(1);
+    expect(window.speechSynthesis.cancel).toHaveBeenCalledTimes(2);
+    expect(window.speechSynthesis.speak).toHaveBeenCalledTimes(2);
   });
 
   it('opens the mobile filter sheet on small screens', async () => {
@@ -241,7 +281,8 @@ describe('Wortschatz page', () => {
     await user.click(screen.getByRole('button', { name: 'Filters' }));
 
     const sheet = await screen.findByRole('dialog');
-    expect(within(sheet).getAllByText('Part-of-speech filters').length).toBeGreaterThan(0);
-    expect(within(sheet).getByLabelText('Verbs')).toBeInTheDocument();
+    expect(within(sheet).getByText('Level')).toBeInTheDocument();
+    expect(within(sheet).getByRole('button', { name: 'B2 Beruf' })).toBeInTheDocument();
+    expect(within(sheet).getByRole('button', { name: 'Verbs' })).toBeInTheDocument();
   });
 });

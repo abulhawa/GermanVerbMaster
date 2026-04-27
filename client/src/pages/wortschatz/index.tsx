@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import type { PointerEvent } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { BookOpen, CheckCircle2, Filter, RotateCcw, Sparkles, Volume2, XCircle } from 'lucide-react';
+import { Check, CheckCircle2, Filter, RotateCcw, Search, Volume2, X } from 'lucide-react';
 
 import { useAuthSession } from '@/auth/session';
+import { B2Countdown } from '@/components/b2-countdown';
 import { AppShell } from '@/components/layout/app-shell';
 import { MobileNavBar } from '@/components/layout/mobile-nav-bar';
 import { getPrimaryNavigationItems } from '@/components/layout/navigation';
@@ -10,7 +12,6 @@ import { SidebarNavButton } from '@/components/layout/sidebar-nav-button';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -27,42 +28,43 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useTranslations } from '@/locales';
-import { speak } from '@/lib/utils';
 import { fetchWortschatzWords, WORTSCHATZ_QUERY_KEY } from '@/lib/wortschatz';
 import {
+  ALL_WORTSCHATZ_LEVELS,
   ALL_WORTSCHATZ_POS,
+  DEFAULT_WORTSCHATZ_LEVELS,
   loadWortschatzState,
   saveWortschatzState,
+  type WortschatzLevelFilter,
   type WortschatzStorageState,
 } from '@/lib/wortschatz-storage';
+import { cn, speak } from '@/lib/utils';
 import type { PartOfSpeech, WortschatzWord } from '@shared';
+
+const B2_EXAM_DATE = new Date(2026, 3, 30);
+const SWIPE_THRESHOLD_PX = 80;
 
 const WORTSCHATZ_IDS = {
   page: 'wortschatz-page',
-  header: 'wortschatz-header',
-  tabs: 'wortschatz-tabs',
   search: 'wortschatz-search',
   filters: 'wortschatz-filters',
-  drillCard: 'wortschatz-drill-card',
   listSection: 'wortschatz-list-section',
+  drillCard: 'wortschatz-drill-card',
 } as const;
 
 function arraysEqual<T>(left: T[], right: T[]): boolean {
-  if (left.length !== right.length) {
-    return false;
-  }
-
-  for (let index = 0; index < left.length; index += 1) {
-    if (left[index] !== right[index]) {
-      return false;
-    }
-  }
-
-  return true;
+  return left.length === right.length && left.every((item, index) => item === right[index]);
 }
 
 function normalizeSearchQuery(value: string): string {
   return value.trim().toLowerCase();
+}
+
+function formatTemplate(template: string, values: Record<string, string>): string {
+  return Object.entries(values).reduce(
+    (message, [key, value]) => message.replaceAll(`{${key}}`, value),
+    template,
+  );
 }
 
 function wordMatchesSearch(word: WortschatzWord, searchQuery: string): boolean {
@@ -70,23 +72,31 @@ function wordMatchesSearch(word: WortschatzWord, searchQuery: string): boolean {
     return true;
   }
 
-  const haystack = [
-    word.lemma,
-    word.english,
-    word.exampleDe,
-    word.exampleEn,
-    word.gender,
-    word.plural,
-  ]
+  return [word.lemma, word.english, word.exampleDe, word.exampleEn, word.gender, word.plural]
     .filter((value): value is string => Boolean(value))
     .join(' ')
-    .toLowerCase();
-
-  return haystack.includes(searchQuery);
+    .toLowerCase()
+    .includes(searchQuery);
 }
 
-function buildFilterSignature(searchQuery: string, selectedPos: PartOfSpeech[]): string {
-  return `${searchQuery}__${[...selectedPos].sort().join(',')}`;
+function wordMatchesLevels(word: WortschatzWord, selectedLevels: WortschatzLevelFilter[]): boolean {
+  if (selectedLevels.length === 0) {
+    return true;
+  }
+
+  if (selectedLevels.includes('B2 Beruf')) {
+    return word.level === 'B2' || word.level === null;
+  }
+
+  return selectedLevels.some((level) => word.level === level);
+}
+
+function buildFilterSignature(
+  searchQuery: string,
+  selectedLevels: WortschatzLevelFilter[],
+  selectedPos: PartOfSpeech[],
+): string {
+  return `${searchQuery}__${[...selectedLevels].sort().join(',')}__${[...selectedPos].sort().join(',')}`;
 }
 
 function createDrillSeed(): string {
@@ -148,11 +158,7 @@ function resetDrillState(
 }
 
 function formatWordHeading(word: WortschatzWord): string {
-  if (word.pos === 'N' && word.gender) {
-    return `${word.gender} ${word.lemma}`;
-  }
-
-  return word.lemma;
+  return word.pos === 'N' && word.gender ? `${word.gender} ${word.lemma}` : word.lemma;
 }
 
 function groupWordsByPos(words: WortschatzWord[]) {
@@ -167,6 +173,10 @@ function groupWordsByPos(words: WortschatzWord[]) {
   return grouped;
 }
 
+function toggleListValue<T>(current: T[], value: T): T[] {
+  return current.includes(value) ? current.filter((item) => item !== value) : [...current, value];
+}
+
 export default function WortschatzPage() {
   const authSession = useAuthSession();
   const translations = useTranslations();
@@ -175,6 +185,8 @@ export default function WortschatzPage() {
   const navigationItems = getPrimaryNavigationItems(authSession.data?.user.role ?? null);
   const [storageState, setStorageState] = useState(() => loadWortschatzState());
   const [isAnswerVisible, setIsAnswerVisible] = useState(false);
+  const [pointerStartX, setPointerStartX] = useState<number | null>(null);
+  const [swipeHint, setSwipeHint] = useState<'correct' | 'incorrect' | null>(null);
 
   const wortschatzQuery = useQuery({
     queryKey: WORTSCHATZ_QUERY_KEY,
@@ -186,25 +198,29 @@ export default function WortschatzPage() {
   const availablePos = ALL_WORTSCHATZ_POS.filter((pos) => words.some((word) => word.pos === pos));
   const selectedPos = storageState.selectedPos.filter((pos) => availablePos.includes(pos));
   const effectiveSelectedPos = selectedPos.length > 0 ? selectedPos : availablePos;
+  const selectedLevels = storageState.selectedLevels;
   const normalizedSearchQuery = normalizeSearchQuery(storageState.searchQuery);
-  const filteredWords = words.filter(
-    (word) =>
-      (effectiveSelectedPos.length === 0 || effectiveSelectedPos.includes(word.pos)) &&
-      wordMatchesSearch(word, normalizedSearchQuery),
+  const filteredWords = useMemo(
+    () =>
+      words.filter(
+        (word) =>
+          wordMatchesLevels(word, selectedLevels) &&
+          (effectiveSelectedPos.length === 0 || effectiveSelectedPos.includes(word.pos)) &&
+          wordMatchesSearch(word, normalizedSearchQuery),
+      ),
+    [effectiveSelectedPos, normalizedSearchQuery, selectedLevels, words],
   );
-  const filterSignature = buildFilterSignature(normalizedSearchQuery, effectiveSelectedPos);
+  const filterSignature = buildFilterSignature(normalizedSearchQuery, selectedLevels, effectiveSelectedPos);
   const wordsById = new Map(words.map((word) => [word.id, word] as const));
   const groupedWords = groupWordsByPos(filteredWords);
   const masteredWordIds = new Set(storageState.masteredWordIds);
   const masteredVisibleCount = filteredWords.filter((word) => masteredWordIds.has(word.id)).length;
   const masteredProgress =
     filteredWords.length > 0 ? Math.round((masteredVisibleCount / filteredWords.length) * 100) : 0;
-  const totalAttempts = storageState.correctCount + storageState.wrongCount;
-  const accuracy = totalAttempts > 0 ? Math.round((storageState.correctCount / totalAttempts) * 100) : null;
   const currentWordId = storageState.drillOrder[storageState.drillIndex] ?? null;
   const currentWord = currentWordId ? wordsById.get(currentWordId) ?? null : null;
   const isDrillComplete = filteredWords.length > 0 && storageState.drillIndex >= storageState.drillOrder.length;
-  const remainingCount = currentWord ? Math.max(storageState.drillOrder.length - storageState.drillIndex - 1, 0) : 0;
+  const activeFilterCount = selectedLevels.length + (selectedPos.length === availablePos.length ? 0 : selectedPos.length);
 
   useEffect(() => {
     saveWortschatzState(storageState);
@@ -217,23 +233,17 @@ export default function WortschatzPage() {
 
     setStorageState((previous) => {
       let next = previous;
-
       const nextSelectedPos = previous.selectedPos.filter((pos) => availablePos.includes(pos));
       const resolvedSelectedPos = nextSelectedPos.length > 0 ? nextSelectedPos : availablePos;
+
       if (!arraysEqual(previous.selectedPos, resolvedSelectedPos)) {
-        next = {
-          ...next,
-          selectedPos: resolvedSelectedPos,
-        };
+        next = { ...next, selectedPos: resolvedSelectedPos };
       }
 
       const validWordIds = new Set(words.map((word) => word.id));
       const prunedMastery = next.masteredWordIds.filter((id) => validWordIds.has(id));
       if (!arraysEqual(next.masteredWordIds, prunedMastery)) {
-        next = {
-          ...next,
-          masteredWordIds: prunedMastery,
-        };
+        next = { ...next, masteredWordIds: prunedMastery };
       }
 
       const datasetChanged = next.datasetVersion !== datasetVersion;
@@ -272,95 +282,105 @@ export default function WortschatzPage() {
       }
 
       if (!arraysEqual(next.drillOrder, nextDrillOrder)) {
-        next = {
-          ...next,
-          drillOrder: nextDrillOrder,
-        };
+        next = { ...next, drillOrder: nextDrillOrder };
       }
 
       const clampedIndex = Math.min(next.drillIndex, next.drillOrder.length);
-      if (clampedIndex !== next.drillIndex) {
-        next = {
-          ...next,
-          drillIndex: clampedIndex,
-        };
-      }
-
-      return next;
+      return clampedIndex === next.drillIndex ? next : { ...next, drillIndex: clampedIndex };
     });
   }, [availablePos, datasetVersion, filterSignature, filteredWords, words]);
 
   useEffect(() => {
     setIsAnswerVisible(false);
+    setSwipeHint(null);
   }, [currentWordId, storageState.activeTab]);
 
   const sidebar = (
     <div className="flex h-full flex-col justify-between gap-8">
-      <div className="space-y-6">
-        <div className="space-y-3">
-          <div className="grid gap-2">
-            {navigationItems.map((item) => (
-              <SidebarNavButton
-                key={item.href}
-                href={item.href}
-                icon={item.icon}
-                label={item.label}
-                exact={item.exact}
-              />
-            ))}
-          </div>
-        </div>
+      <div className="grid gap-2">
+        {navigationItems.map((item) => (
+          <SidebarNavButton key={item.href} href={item.href} icon={item.icon} label={item.label} exact={item.exact} />
+        ))}
       </div>
     </div>
   );
 
+  const updateLevels = (level: WortschatzLevelFilter | 'all') => {
+    setStorageState((previous) => ({
+      ...previous,
+      selectedLevels:
+        level === 'all'
+          ? []
+          : toggleListValue(previous.selectedLevels, level).filter((item) => ALL_WORTSCHATZ_LEVELS.includes(item)),
+    }));
+  };
+
+  const updatePos = (pos: PartOfSpeech | 'all') => {
+    setStorageState((previous) => ({
+      ...previous,
+      selectedPos:
+        pos === 'all'
+          ? [...availablePos]
+          : toggleListValue(previous.selectedPos.filter((item) => availablePos.includes(item)), pos),
+    }));
+  };
+
   const filterPanel = (
-    <div className="space-y-4">
-      <div className="space-y-1">
-        <p className="text-sm font-semibold text-foreground">{copy.filters.title}</p>
-        <p className="text-xs text-muted-foreground">{copy.filters.description}</p>
-      </div>
+    <div className="space-y-5">
       <div className="space-y-2">
-        {availablePos.map((pos) => {
-          const checkboxId = `wortschatz-pos-${pos}`;
-          const checked = effectiveSelectedPos.includes(pos);
-          return (
-            <div
-              key={pos}
-              className="flex items-center gap-3 rounded-2xl border border-border/60 bg-muted/30 px-3 py-2"
+        <p className="text-sm font-semibold text-foreground">{copy.filters.levelTitle}</p>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant={selectedLevels.length === 0 ? 'default' : 'outline'}
+            className="rounded-full"
+            onClick={() => updateLevels('all')}
+          >
+            {copy.filters.all}
+          </Button>
+          {ALL_WORTSCHATZ_LEVELS.map((level) => (
+            <Button
+              key={level}
+              type="button"
+              size="sm"
+              variant={selectedLevels.includes(level) ? 'default' : 'outline'}
+              className="rounded-full"
+              onClick={() => updateLevels(level)}
             >
-              <Checkbox
-                id={checkboxId}
-                checked={checked}
-                onCheckedChange={(value) => {
-                  const shouldCheck = Boolean(value);
-                  setStorageState((previous) => {
-                    const currentSelection = previous.selectedPos.filter((item) => availablePos.includes(item));
-                    const baseSelection = currentSelection.length > 0 ? currentSelection : availablePos;
-
-                    if (!shouldCheck && baseSelection.length <= 1 && baseSelection.includes(pos)) {
-                      return previous;
-                    }
-
-                    const nextSelection = shouldCheck
-                      ? Array.from(new Set([...baseSelection, pos]))
-                      : baseSelection.filter((item) => item !== pos);
-
-                    return {
-                      ...previous,
-                      selectedPos: nextSelection,
-                    };
-                  });
-                }}
-                aria-label={copy.posLabels[pos]}
-              />
-              <Label htmlFor={checkboxId} className="text-sm text-foreground">
-                {copy.posLabels[pos]}
-              </Label>
-            </div>
-          );
-        })}
+              {copy.levelLabels[level]}
+            </Button>
+          ))}
+        </div>
       </div>
+
+      <div className="space-y-2">
+        <p className="text-sm font-semibold text-foreground">{copy.filters.posTitle}</p>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant={selectedPos.length === availablePos.length ? 'default' : 'outline'}
+            className="rounded-full"
+            onClick={() => updatePos('all')}
+          >
+            {copy.filters.all}
+          </Button>
+          {availablePos.map((pos) => (
+            <Button
+              key={pos}
+              type="button"
+              size="sm"
+              variant={effectiveSelectedPos.includes(pos) ? 'default' : 'outline'}
+              className="rounded-full"
+              onClick={() => updatePos(pos)}
+            >
+              {copy.posLabels[pos]}
+            </Button>
+          ))}
+        </div>
+      </div>
+
       <Button
         type="button"
         variant="outline"
@@ -368,6 +388,7 @@ export default function WortschatzPage() {
         onClick={() =>
           setStorageState((previous) => ({
             ...previous,
+            selectedLevels: [...DEFAULT_WORTSCHATZ_LEVELS],
             selectedPos: [...availablePos],
           }))
         }
@@ -377,20 +398,21 @@ export default function WortschatzPage() {
     </div>
   );
 
+  const filterButton = (
+    <Button type="button" variant="outline" className="relative rounded-2xl" aria-label={copy.filters.label} id={WORTSCHATZ_IDS.filters}>
+      <Filter className="h-4 w-4" aria-hidden />
+      <span className="sr-only">{copy.filters.label}</span>
+      {activeFilterCount > 0 ? (
+        <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[11px] font-semibold text-primary-foreground">
+          {activeFilterCount}
+        </span>
+      ) : null}
+    </Button>
+  );
+
   const filterControl = isMobile ? (
     <Sheet>
-      <SheetTrigger asChild>
-        <Button
-          type="button"
-          variant="outline"
-          className="rounded-2xl"
-          aria-label={copy.filters.label}
-          id={WORTSCHATZ_IDS.filters}
-        >
-          <Filter className="h-4 w-4" aria-hidden />
-          {copy.filters.label}
-        </Button>
-      </SheetTrigger>
+      <SheetTrigger asChild>{filterButton}</SheetTrigger>
       <SheetContent side="bottom" className="rounded-t-[28px]">
         <SheetHeader>
           <SheetTitle>{copy.filters.title}</SheetTitle>
@@ -401,23 +423,8 @@ export default function WortschatzPage() {
     </Sheet>
   ) : (
     <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          type="button"
-          variant="outline"
-          className="rounded-2xl"
-          aria-label={copy.filters.label}
-          id={WORTSCHATZ_IDS.filters}
-        >
-          <Filter className="h-4 w-4" aria-hidden />
-          {copy.filters.label}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent
-        align="end"
-        sideOffset={12}
-        className="w-[320px] rounded-3xl border border-border/60 bg-card p-5 shadow-xl"
-      >
+      <PopoverTrigger asChild>{filterButton}</PopoverTrigger>
+      <PopoverContent align="end" sideOffset={12} className="w-[360px] rounded-3xl border border-border/60 bg-card p-5 shadow-xl">
         {filterPanel}
       </PopoverContent>
     </Popover>
@@ -453,63 +460,104 @@ export default function WortschatzPage() {
         drillIndex: Math.min(previous.drillIndex + 1, previous.drillOrder.length),
       };
     });
+    setSwipeHint(null);
   };
+
+  const handleCardPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (isAnswerVisible) {
+      setPointerStartX(event.clientX);
+    }
+  };
+
+  const handleCardPointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    if (pointerStartX === null || !isAnswerVisible) {
+      return;
+    }
+
+    const delta = event.clientX - pointerStartX;
+    setSwipeHint(delta > SWIPE_THRESHOLD_PX ? 'correct' : delta < -SWIPE_THRESHOLD_PX ? 'incorrect' : null);
+  };
+
+  const handleCardPointerUp = (event: PointerEvent<HTMLDivElement>) => {
+    if (pointerStartX === null || !isAnswerVisible) {
+      setPointerStartX(null);
+      return;
+    }
+
+    const delta = event.clientX - pointerStartX;
+    setPointerStartX(null);
+
+    if (delta > SWIPE_THRESHOLD_PX) {
+      handleDrillResult('correct');
+    } else if (delta < -SWIPE_THRESHOLD_PX) {
+      handleDrillResult('incorrect');
+    } else {
+      setSwipeHint(null);
+    }
+  };
+
+  const renderLoading = () => (
+    <Card className="rounded-3xl border border-border/60 bg-card/80 shadow-soft shadow-primary/5">
+      <CardHeader>
+        <Skeleton className="h-6 w-44" />
+        <Skeleton className="h-4 w-72" />
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <Skeleton className="h-48 w-full rounded-3xl" />
+        <div className="grid gap-3 sm:grid-cols-3">
+          <Skeleton className="h-11 w-full rounded-2xl" />
+          <Skeleton className="h-11 w-full rounded-2xl" />
+          <Skeleton className="h-11 w-full rounded-2xl" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderError = () => (
+    <Card className="rounded-3xl border border-destructive/40 bg-card/85 shadow-soft shadow-primary/5">
+      <CardHeader>
+        <CardTitle>{copy.errors.loadTitle}</CardTitle>
+        <CardDescription>{copy.errors.loadDescription}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Button type="button" className="rounded-2xl" onClick={() => void wortschatzQuery.refetch()}>
+          {copy.errors.retry}
+        </Button>
+      </CardContent>
+    </Card>
+  );
 
   return (
     <div id={WORTSCHATZ_IDS.page}>
       <AppShell sidebar={sidebar} mobileNav={<MobileNavBar items={navigationItems} />}>
-        <div className="space-y-6">
-          <section
-            className="space-y-4 rounded-3xl border border-border/60 bg-card/85 p-6 shadow-soft shadow-primary/5"
-            id={WORTSCHATZ_IDS.header}
-          >
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div className="space-y-2">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant="secondary" className="rounded-full px-3 py-1">
-                    {copy.datasetBadge}
-                  </Badge>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                    {copy.kicker}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <h1 className="flex items-center gap-2 text-2xl font-semibold text-foreground">
-                    <BookOpen className="h-6 w-6 text-primary" aria-hidden />
-                    Wortschatz
-                  </h1>
-                  <p className="max-w-3xl text-sm text-muted-foreground">{copy.pageDescription}</p>
-                </div>
+        <div className="space-y-5">
+          <section className="space-y-4 rounded-3xl border border-border/60 bg-card/85 p-4 shadow-soft shadow-primary/5 sm:p-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h1 className="text-2xl font-semibold text-foreground">Wortschatz</h1>
+                <p className="text-sm text-muted-foreground">{copy.pageDescription}</p>
               </div>
-              <div className="grid min-w-[240px] gap-2 rounded-3xl border border-border/60 bg-background/80 p-4 sm:grid-cols-3">
-                <div className="space-y-1">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                    {copy.metrics.mastered}
-                  </p>
-                  <p className="text-lg font-semibold text-foreground">
-                    {masteredVisibleCount}/{filteredWords.length}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                    {copy.metrics.accuracy}
-                  </p>
-                  <p className="text-lg font-semibold text-foreground">
-                    {accuracy === null ? '–' : `${accuracy}%`}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                    {copy.metrics.remaining}
-                  </p>
-                  <p className="text-lg font-semibold text-foreground">{currentWord ? remainingCount : 0}</p>
-                </div>
-              </div>
+              <B2Countdown examDate={B2_EXAM_DATE} isActive />
             </div>
 
-            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-              <div className="flex flex-1 flex-col gap-3 sm:flex-row">
-                <div className="flex-1">
+            <Tabs
+              value={storageState.activeTab}
+              onValueChange={(value) =>
+                setStorageState((previous) => ({ ...previous, activeTab: value === 'list' ? 'list' : 'drill' }))
+              }
+            >
+              <TabsList className="grid h-auto w-full grid-cols-2 rounded-2xl bg-muted/60 p-1">
+                <TabsTrigger className="rounded-xl py-2.5" value="drill">
+                  {copy.tabs.drill}
+                </TabsTrigger>
+                <TabsTrigger className="rounded-xl py-2.5" value="list">
+                  {copy.tabs.list}
+                </TabsTrigger>
+              </TabsList>
+
+              <div className="mt-4 flex gap-2">
+                <div className="relative min-w-0 flex-1">
+                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
                   <Label htmlFor={WORTSCHATZ_IDS.search} className="sr-only">
                     {copy.search.label}
                   </Label>
@@ -517,131 +565,106 @@ export default function WortschatzPage() {
                     id={WORTSCHATZ_IDS.search}
                     value={storageState.searchQuery}
                     onChange={(event) =>
-                      setStorageState((previous) => ({
-                        ...previous,
-                        searchQuery: event.target.value,
-                      }))
+                      setStorageState((previous) => ({ ...previous, searchQuery: event.target.value }))
                     }
+                    className="pl-9"
                     placeholder={copy.search.placeholder}
                   />
                 </div>
-                <div>{filterControl}</div>
+                {filterControl}
               </div>
-              <div className="min-w-[220px]">
-                <Progress value={masteredProgress} aria-label={copy.metrics.progressLabel} />
-                <p className="mt-2 text-xs text-muted-foreground">
-                  {copy.metrics.progressDetail
-                    .replace('{count}', String(masteredVisibleCount))
-                    .replace('{total}', String(filteredWords.length))}
-                </p>
-              </div>
-            </div>
-          </section>
 
-          <Tabs
-            value={storageState.activeTab}
-            onValueChange={(value) =>
-              setStorageState((previous) => ({
-                ...previous,
-                activeTab: value === 'list' ? 'list' : 'drill',
-              }))
-            }
-            id={WORTSCHATZ_IDS.tabs}
-          >
-            <TabsList className="h-auto rounded-3xl bg-muted/60 p-1.5">
-              <TabsTrigger className="rounded-2xl px-5 py-2.5" value="drill">
-                {copy.tabs.drill}
-              </TabsTrigger>
-              <TabsTrigger className="rounded-2xl px-5 py-2.5" value="list">
-                {copy.tabs.list}
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="drill" className="space-y-6">
-              {wortschatzQuery.isLoading ? (
-                <Card className="rounded-3xl border border-border/60 bg-card/80 shadow-soft shadow-primary/5">
-                  <CardHeader>
-                    <Skeleton className="h-6 w-44" />
-                    <Skeleton className="h-4 w-72" />
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <Skeleton className="h-36 w-full rounded-3xl" />
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      <Skeleton className="h-11 w-full rounded-2xl" />
-                      <Skeleton className="h-11 w-full rounded-2xl" />
-                    </div>
-                  </CardContent>
-                </Card>
-              ) : wortschatzQuery.error ? (
-                <Card className="rounded-3xl border border-destructive/40 bg-card/85 shadow-soft shadow-primary/5">
-                  <CardHeader>
-                    <CardTitle>{copy.errors.loadTitle}</CardTitle>
-                    <CardDescription>{copy.errors.loadDescription}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Button type="button" className="rounded-2xl" onClick={() => void wortschatzQuery.refetch()}>
-                      {copy.errors.retry}
-                    </Button>
-                  </CardContent>
-                </Card>
-              ) : filteredWords.length === 0 ? (
-                <Card className="rounded-3xl border border-border/60 bg-card/80 shadow-soft shadow-primary/5">
-                  <CardHeader>
-                    <CardTitle>{copy.drill.emptyTitle}</CardTitle>
-                    <CardDescription>{copy.drill.emptyDescription}</CardDescription>
-                  </CardHeader>
-                </Card>
-              ) : isDrillComplete ? (
-                <Card className="rounded-3xl border border-border/60 bg-card/80 shadow-soft shadow-primary/5">
-                  <CardHeader>
-                    <div className="flex items-center gap-3">
-                      <CheckCircle2 className="h-6 w-6 text-primary" aria-hidden />
-                      <div>
-                        <CardTitle>{copy.drill.completedTitle}</CardTitle>
-                        <CardDescription>{copy.drill.completedDescription}</CardDescription>
+              <TabsContent value="drill" className="mt-5 space-y-4">
+                {wortschatzQuery.isLoading ? renderLoading() : null}
+                {wortschatzQuery.error ? renderError() : null}
+                {!wortschatzQuery.isLoading && !wortschatzQuery.error && filteredWords.length === 0 ? (
+                  <Card className="rounded-3xl border border-border/60 bg-card/80 shadow-soft shadow-primary/5">
+                    <CardHeader>
+                      <CardTitle>{copy.drill.emptyTitle}</CardTitle>
+                      <CardDescription>{copy.drill.emptyDescription}</CardDescription>
+                    </CardHeader>
+                  </Card>
+                ) : null}
+                {!wortschatzQuery.isLoading && !wortschatzQuery.error && isDrillComplete ? (
+                  <Card className="rounded-3xl border border-border/60 bg-card/80 shadow-soft shadow-primary/5">
+                    <CardHeader>
+                      <div className="flex items-center gap-3">
+                        <CheckCircle2 className="h-6 w-6 text-primary" aria-hidden />
+                        <div>
+                          <CardTitle>{copy.drill.completedTitle}</CardTitle>
+                          <CardDescription>{copy.drill.completedDescription}</CardDescription>
+                        </div>
                       </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
+                    </CardHeader>
+                    <CardContent>
+                      <Button type="button" className="rounded-2xl" onClick={handleRestartDrill}>
+                        <RotateCcw className="h-4 w-4" aria-hidden />
+                        {copy.drill.restart}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ) : null}
+                {!wortschatzQuery.isLoading && !wortschatzQuery.error && currentWord && !isDrillComplete ? (
+                  <section className="space-y-4" id={WORTSCHATZ_IDS.drillCard}>
                     <div className="grid gap-3 sm:grid-cols-3">
-                      <div className="rounded-2xl border border-border/60 bg-background/80 p-4">
-                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                          {copy.metrics.mastered}
-                        </p>
-                        <p className="mt-1 text-lg font-semibold text-foreground">
-                          {masteredVisibleCount}/{filteredWords.length}
-                        </p>
+                      <div className="rounded-2xl border border-success-border/60 bg-success-muted/70 px-4 py-3">
+                        <p className="text-xs font-semibold text-success-muted-foreground">{copy.drill.correct}</p>
+                        <p className="text-lg font-semibold text-success-foreground">{storageState.correctCount}</p>
                       </div>
-                      <div className="rounded-2xl border border-border/60 bg-background/80 p-4">
-                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                          {copy.metrics.accuracy}
-                        </p>
-                        <p className="mt-1 text-lg font-semibold text-foreground">
-                          {accuracy === null ? '–' : `${accuracy}%`}
-                        </p>
+                      <div className="rounded-2xl border border-destructive/40 bg-destructive/10 px-4 py-3">
+                        <p className="text-xs font-semibold text-destructive">{copy.drill.incorrect}</p>
+                        <p className="text-lg font-semibold text-destructive">{storageState.wrongCount}</p>
                       </div>
-                      <div className="rounded-2xl border border-border/60 bg-background/80 p-4">
-                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                          {copy.metrics.total}
+                      <div className="rounded-2xl border border-border/60 bg-background/80 px-4 py-3">
+                        <p className="text-xs font-semibold text-muted-foreground">{copy.metrics.mastered}</p>
+                        <p className="text-lg font-semibold text-foreground">
+                          {masteredVisibleCount}/{filteredWords.length} {copy.metrics.words}
                         </p>
-                        <p className="mt-1 text-lg font-semibold text-foreground">{totalAttempts}</p>
                       </div>
                     </div>
-                    <Button type="button" className="rounded-2xl" onClick={handleRestartDrill}>
-                      <RotateCcw className="h-4 w-4" aria-hidden />
-                      {copy.drill.restart}
-                    </Button>
-                  </CardContent>
-                </Card>
-              ) : currentWord ? (
-                <Card
-                  className="rounded-3xl border border-border/60 bg-card/80 shadow-soft shadow-primary/5"
-                  id={WORTSCHATZ_IDS.drillCard}
-                >
-                  <CardHeader className="space-y-4">
-                    <div className="flex flex-wrap items-start justify-between gap-3">
-                      <div className="space-y-2">
-                        <div className="flex flex-wrap items-center gap-2">
+
+                    <div className="space-y-2">
+                      <Progress value={masteredProgress} aria-label={copy.metrics.progressLabel} />
+                      <p className="text-xs text-muted-foreground">
+                        {formatTemplate(copy.metrics.progressDetail, {
+                          count: String(masteredVisibleCount),
+                          total: String(filteredWords.length),
+                        })}
+                      </p>
+                    </div>
+
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      className={cn(
+                        'relative min-h-[340px] touch-pan-y overflow-hidden rounded-3xl border border-border/60 bg-card p-5 shadow-soft shadow-primary/5 transition-transform',
+                        isAnswerVisible ? 'cursor-grab' : 'cursor-pointer',
+                      )}
+                      onClick={() => setIsAnswerVisible(true)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
+                          setIsAnswerVisible(true);
+                        }
+                      }}
+                      onPointerDown={handleCardPointerDown}
+                      onPointerMove={handleCardPointerMove}
+                      onPointerUp={handleCardPointerUp}
+                    >
+                      {swipeHint ? (
+                        <div
+                          className={cn(
+                            'absolute inset-0 z-indicator flex items-center justify-center text-lg font-semibold',
+                            swipeHint === 'correct'
+                              ? 'bg-success-muted/90 text-success-muted-foreground'
+                              : 'bg-destructive/15 text-destructive',
+                          )}
+                        >
+                          {swipeHint === 'correct' ? copy.drill.correct : copy.drill.incorrect}
+                        </div>
+                      ) : null}
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex flex-wrap gap-2">
                           <Badge variant="secondary" className="rounded-full px-3 py-1">
                             {copy.datasetBadge}
                           </Badge>
@@ -649,221 +672,166 @@ export default function WortschatzPage() {
                             {copy.posLabels[currentWord.pos]}
                           </Badge>
                         </div>
-                        <CardTitle>{copy.drill.heading}</CardTitle>
-                        <CardDescription>{copy.drill.description}</CardDescription>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="rounded-full"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            speak(formatWordHeading(currentWord));
+                          }}
+                          aria-label={`${copy.drill.pronunciationLabel} ${currentWord.lemma}`}
+                        >
+                          <Volume2 className="h-5 w-5" aria-hidden />
+                        </Button>
                       </div>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="rounded-2xl"
-                        onClick={() => speak(formatWordHeading(currentWord))}
-                        aria-label={`${copy.drill.pronunciationLabel} ${currentWord.lemma}`}
-                      >
-                        <Volume2 className="h-4 w-4" aria-hidden />
-                        {copy.drill.pronunciationLabel}
-                      </Button>
-                    </div>
-                    <Progress
-                      value={
-                        storageState.drillOrder.length > 0
-                          ? Math.round((storageState.drillIndex / storageState.drillOrder.length) * 100)
-                          : 0
-                      }
-                      aria-label={copy.drill.queueProgressLabel}
-                    />
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="rounded-3xl border border-border/60 bg-background/80 p-6">
-                      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                        {isAnswerVisible ? copy.drill.backPrompt : copy.drill.frontPrompt}
-                      </p>
-                      <div className="mt-4 space-y-3">
-                        <h2 className="text-3xl font-semibold text-foreground">{formatWordHeading(currentWord)}</h2>
-                        {currentWord.plural ? (
-                          <p className="text-sm text-muted-foreground">
-                            {copy.list.pluralLabel}:{' '}
-                            <span className="font-medium text-foreground">{currentWord.plural}</span>
-                          </p>
-                        ) : null}
-                        {isAnswerVisible ? (
-                          <div className="space-y-3 rounded-2xl border border-border/60 bg-card/70 p-4">
-                            <p className="text-lg font-medium text-foreground">
+
+                      <div className="flex min-h-[230px] flex-col items-center justify-center gap-4 text-center">
+                        {!isAnswerVisible ? (
+                          <>
+                            <h2 className="text-4xl font-semibold text-foreground">{formatWordHeading(currentWord)}</h2>
+                            <p className="text-sm text-muted-foreground">{copy.drill.tapToReveal}</p>
+                          </>
+                        ) : (
+                          <>
+                            <p className="text-2xl font-semibold text-foreground">
                               {currentWord.english ?? copy.list.noTranslation}
                             </p>
-                            {currentWord.exampleDe ? (
-                              <div className="space-y-1 text-sm text-muted-foreground">
-                                <p className="font-medium text-foreground">{currentWord.exampleDe}</p>
-                                {currentWord.exampleEn ? <p>{currentWord.exampleEn}</p> : null}
-                              </div>
-                            ) : (
-                              <p className="text-sm text-muted-foreground">{copy.list.noExample}</p>
-                            )}
-                          </div>
-                        ) : null}
+                            <div className="max-w-2xl space-y-2 text-sm">
+                              {currentWord.exampleDe ? (
+                                <div className="flex items-start justify-center gap-2">
+                                  <p className="font-medium text-foreground">{currentWord.exampleDe}</p>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 rounded-full"
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                      speak(currentWord.exampleDe ?? '');
+                                    }}
+                                    aria-label={copy.list.examplePronunciationLabel}
+                                  >
+                                    <Volume2 className="h-4 w-4" aria-hidden />
+                                  </Button>
+                                </div>
+                              ) : null}
+                              {currentWord.exampleEn ? <p className="text-muted-foreground">{currentWord.exampleEn}</p> : null}
+                            </div>
+                          </>
+                        )}
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap gap-3">
-                      <Button
-                        type="button"
-                        variant={isAnswerVisible ? 'secondary' : 'default'}
-                        className="min-w-[180px] rounded-2xl"
-                        onClick={() => setIsAnswerVisible((previous) => !previous)}
-                      >
-                        <Sparkles className="h-4 w-4" aria-hidden />
-                        {isAnswerVisible ? copy.drill.hideAnswer : copy.drill.showAnswer}
-                      </Button>
+                    <div className="grid min-h-[52px] gap-2 sm:grid-cols-3">
                       {isAnswerVisible ? (
                         <>
-                          <Button
-                            type="button"
-                            className="min-w-[160px] rounded-2xl"
-                            onClick={() => handleDrillResult('correct')}
-                          >
-                            <CheckCircle2 className="h-4 w-4" aria-hidden />
-                            {copy.drill.correct}
+                          <Button type="button" variant="secondary" className="rounded-2xl" onClick={() => setIsAnswerVisible(false)}>
+                            {copy.drill.backToQuestion}
                           </Button>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            className="min-w-[160px] rounded-2xl"
-                            onClick={() => handleDrillResult('incorrect')}
-                          >
-                            <XCircle className="h-4 w-4" aria-hidden />
+                          <Button type="button" variant="outline" className="rounded-2xl" onClick={() => handleDrillResult('incorrect')}>
+                            <X className="h-4 w-4" aria-hidden />
                             {copy.drill.incorrect}
+                          </Button>
+                          <Button type="button" className="rounded-2xl" onClick={() => handleDrillResult('correct')}>
+                            <Check className="h-4 w-4" aria-hidden />
+                            {copy.drill.correct}
                           </Button>
                         </>
                       ) : null}
                     </div>
-                  </CardContent>
-                </Card>
-              ) : null}
-            </TabsContent>
+                  </section>
+                ) : null}
+              </TabsContent>
 
-            <TabsContent value="list" className="space-y-6">
-              {wortschatzQuery.isLoading ? (
-                <div className="space-y-4">
-                  {Array.from({ length: 3 }).map((_, index) => (
-                    <Card key={index} className="rounded-3xl border border-border/60 bg-card/80 shadow-soft shadow-primary/5">
-                      <CardHeader>
-                        <Skeleton className="h-6 w-36" />
-                        <Skeleton className="h-4 w-56" />
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        <Skeleton className="h-20 w-full rounded-2xl" />
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : wortschatzQuery.error ? (
-                <Card className="rounded-3xl border border-destructive/40 bg-card/85 shadow-soft shadow-primary/5">
-                  <CardHeader>
-                    <CardTitle>{copy.errors.loadTitle}</CardTitle>
-                    <CardDescription>{copy.errors.loadDescription}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Button type="button" className="rounded-2xl" onClick={() => void wortschatzQuery.refetch()}>
-                      {copy.errors.retry}
-                    </Button>
-                  </CardContent>
-                </Card>
-              ) : filteredWords.length === 0 ? (
-                <Card className="rounded-3xl border border-border/60 bg-card/80 shadow-soft shadow-primary/5">
-                  <CardHeader>
-                    <CardTitle>{copy.list.emptyTitle}</CardTitle>
-                    <CardDescription>{copy.list.emptyDescription}</CardDescription>
-                  </CardHeader>
-                </Card>
-              ) : (
-                <div className="space-y-6" id={WORTSCHATZ_IDS.listSection}>
-                  {availablePos
-                    .filter((pos) => groupedWords.has(pos))
-                    .map((pos) => {
-                      const entries = groupedWords.get(pos) ?? [];
-                      return (
-                        <section key={pos} className="space-y-4">
-                          <div className="flex items-center justify-between gap-3">
-                            <div>
-                              <h2 className="text-lg font-semibold text-foreground">{copy.posLabels[pos]}</h2>
-                              <p className="text-sm text-muted-foreground">
-                                {copy.list.sectionCount.replace('{count}', String(entries.length))}
-                              </p>
+              <TabsContent value="list" className="mt-5 space-y-5">
+                {wortschatzQuery.isLoading ? renderLoading() : null}
+                {wortschatzQuery.error ? renderError() : null}
+                {!wortschatzQuery.isLoading && !wortschatzQuery.error && filteredWords.length === 0 ? (
+                  <Card className="rounded-3xl border border-border/60 bg-card/80 shadow-soft shadow-primary/5">
+                    <CardHeader>
+                      <CardTitle>{copy.list.emptyTitle}</CardTitle>
+                      <CardDescription>{copy.list.emptyDescription}</CardDescription>
+                    </CardHeader>
+                  </Card>
+                ) : null}
+                {!wortschatzQuery.isLoading && !wortschatzQuery.error && filteredWords.length > 0 ? (
+                  <div className="space-y-5" id={WORTSCHATZ_IDS.listSection}>
+                    {availablePos
+                      .filter((pos) => groupedWords.has(pos))
+                      .map((pos) => {
+                        const entries = groupedWords.get(pos) ?? [];
+                        return (
+                          <section key={pos} className="space-y-2">
+                            <div className="flex items-center justify-between gap-3 px-1">
+                              <h2 className="text-base font-semibold text-foreground">{copy.posLabels[pos]}</h2>
+                              <Badge variant="outline" className="rounded-full px-3 py-1">
+                                {formatTemplate(copy.list.sectionCount, { count: String(entries.length) })}
+                              </Badge>
                             </div>
-                            <Badge variant="outline" className="rounded-full px-3 py-1">
-                              {entries.length}
-                            </Badge>
-                          </div>
-                          <div className="grid gap-4">
-                            {entries.map((word) => (
-                              <Card
-                                key={word.id}
-                                className="rounded-3xl border border-border/60 bg-card/80 shadow-soft shadow-primary/5"
-                              >
-                                <CardHeader>
-                                  <div className="flex flex-wrap items-start justify-between gap-3">
-                                    <div className="space-y-2">
-                                      <div className="flex flex-wrap items-center gap-2">
-                                        <Badge variant="secondary" className="rounded-full px-3 py-1">
-                                          {copy.datasetBadge}
-                                        </Badge>
-                                        <Badge variant="outline" className="rounded-full px-3 py-1">
-                                          {copy.posLabels[word.pos]}
-                                        </Badge>
+                            <div className="overflow-hidden rounded-2xl border border-border/60 bg-card/80">
+                              {entries.map((word) => (
+                                <article
+                                  key={word.id}
+                                  className="grid gap-3 border-b border-border/60 p-4 last:border-b-0 md:grid-cols-[minmax(0,1fr)_minmax(180px,260px)]"
+                                >
+                                  <div className="min-w-0 space-y-2">
+                                    <div className="flex items-start gap-2">
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-9 w-9 shrink-0 rounded-full"
+                                        onClick={() => speak(formatWordHeading(word))}
+                                        aria-label={`${copy.list.pronunciationLabel} ${formatWordHeading(word)}`}
+                                      >
+                                        <Volume2 className="h-4 w-4" aria-hidden />
+                                      </Button>
+                                      <div className="min-w-0">
+                                        <h3 className="text-base font-semibold text-foreground">{formatWordHeading(word)}</h3>
+                                        {word.plural ? (
+                                          <p className="text-xs text-muted-foreground">
+                                            {copy.list.pluralLabel}: <span className="font-medium text-foreground">{word.plural}</span>
+                                          </p>
+                                        ) : null}
                                       </div>
-                                      <CardTitle>{formatWordHeading(word)}</CardTitle>
-                                      <CardDescription>{word.english ?? copy.list.noTranslation}</CardDescription>
                                     </div>
-                                    <Button
-                                      type="button"
-                                      variant="outline"
-                                      className="rounded-2xl"
-                                      onClick={() => speak(formatWordHeading(word))}
-                                      aria-label={`${copy.list.pronunciationLabel} ${word.lemma}`}
-                                    >
-                                      <Volume2 className="h-4 w-4" aria-hidden />
-                                      {copy.list.pronunciationLabel}
-                                    </Button>
-                                  </div>
-                                </CardHeader>
-                                <CardContent className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
-                                  <div className="space-y-3 rounded-2xl border border-border/60 bg-background/80 p-4">
-                                    {word.plural ? (
-                                      <p className="text-sm text-muted-foreground">
-                                        {copy.list.pluralLabel}:{' '}
-                                        <span className="font-medium text-foreground">{word.plural}</span>
-                                      </p>
-                                    ) : null}
-                                    <p className="text-sm text-muted-foreground">
-                                      {copy.list.translationLabel}:{' '}
-                                      <span className="font-medium text-foreground">
-                                        {word.english ?? copy.list.noTranslation}
-                                      </span>
-                                    </p>
-                                  </div>
-                                  <div className="space-y-2 rounded-2xl border border-border/60 bg-background/80 p-4">
-                                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                                      {copy.list.exampleLabel}
-                                    </p>
                                     {word.exampleDe ? (
-                                      <div className="space-y-1 text-sm text-muted-foreground">
-                                        <p className="font-medium text-foreground">{word.exampleDe}</p>
-                                        {word.exampleEn ? <p>{word.exampleEn}</p> : null}
+                                      <div className="flex items-start gap-2 pl-11 text-sm">
+                                        <div className="min-w-0">
+                                          <p className="font-medium text-foreground">{word.exampleDe}</p>
+                                          {word.exampleEn ? <p className="text-muted-foreground">{word.exampleEn}</p> : null}
+                                        </div>
+                                        <Button
+                                          type="button"
+                                          variant="ghost"
+                                          size="icon"
+                                          className="h-8 w-8 shrink-0 rounded-full"
+                                          onClick={() => speak(word.exampleDe ?? '')}
+                                          aria-label={copy.list.examplePronunciationLabel}
+                                        >
+                                          <Volume2 className="h-4 w-4" aria-hidden />
+                                        </Button>
                                       </div>
                                     ) : (
-                                      <p className="text-sm text-muted-foreground">{copy.list.noExample}</p>
+                                      <p className="pl-11 text-sm text-muted-foreground">{copy.list.noExample}</p>
                                     )}
                                   </div>
-                                </CardContent>
-                              </Card>
-                            ))}
-                          </div>
-                        </section>
-                      );
-                    })}
-                </div>
-              )}
-            </TabsContent>
-          </Tabs>
+                                  <p className="self-start text-sm font-medium text-foreground md:text-right">
+                                    {word.english ?? copy.list.noTranslation}
+                                  </p>
+                                </article>
+                              ))}
+                            </div>
+                          </section>
+                        );
+                      })}
+                  </div>
+                ) : null}
+              </TabsContent>
+            </Tabs>
+          </section>
         </div>
       </AppShell>
     </div>

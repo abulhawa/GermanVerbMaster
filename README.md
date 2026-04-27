@@ -13,9 +13,9 @@ Requires Node.js 22.0.0 or newer and npm 10+ (see `package.json` engines field).
    - `DATABASE_URL` – Postgres connection string (e.g. Supabase or local `postgres://` URL).
    - `DATABASE_SSL` / `PGSSLMODE` – set to `disable` when connecting to a local instance without TLS.
    - `APP_ORIGIN` – a comma-separated allow list used for CORS. Required in production; development falls back to localhost origins when unset.
-   - `BETTER_AUTH_SECRET` – 64-byte secret used to sign Better Auth cookies and tokens.
-   - `BETTER_AUTH_URL` – external base URL Better Auth should use when generating callbacks (defaults to `http://localhost:5000`).
-   - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` – optional credentials for Google OAuth sign-in.
+   - `SUPABASE_URL` / `SUPABASE_ANON_KEY` – Supabase project used by the server to verify web auth tokens.
+   - `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` – the same Supabase project exposed to the browser for Supabase Auth.
+   - Google OAuth is configured in Supabase Auth; use the same Supabase project as Android to preserve mobile history.
    - `MICROSOFT_CLIENT_ID` / `MICROSOFT_CLIENT_SECRET` – optional credentials for Microsoft OAuth sign-in.
    - `ENABLE_LEXEME_SCHEMA` – disable to fall back to the legacy verb-only stack (defaults to `true`).
 3. Apply the latest migrations to your Postgres database:
@@ -57,11 +57,11 @@ Before running `npm run db:push` or `npm run seed` in any managed environment, s
 - `DATABASE_URL` (required) – Postgres connection string for the production database.
 - `DATABASE_SSL` / `PGSSLMODE` (optional) – leave unset to negotiate TLS automatically or set to `disable` when targeting a local database without SSL.
 - `APP_ORIGIN` (required in production) – comma-separated allow list of trusted origins that should be able to hit the production API. Development builds fall back to `http://localhost` / `http://127.0.0.1` ports used by Vite.
-- `BETTER_AUTH_SECRET` – secret shared with Better Auth for signing cookies and tokens.
-- `BETTER_AUTH_URL` – public base URL Better Auth should advertise in emails and OAuth callbacks.
+- `SUPABASE_URL` / `SUPABASE_ANON_KEY` – Supabase project used by the server to verify web auth tokens.
+- `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` – the same Supabase project exposed to the browser for Supabase Auth.
 - `RESEND_API_KEY` – Resend production API key used to deliver verification and password reset emails.
 - `RESEND_FROM_EMAIL` – verified sender (e.g. `German Verb Master <no-reply@example.com>`). Defaults to Resend's sandbox sender when omitted.
-- `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` – optional Google OAuth credentials.
+- Google OAuth is configured in Supabase Auth; use the same Supabase project as Android so web Google login resolves to the same Supabase user ID and preserves `user_practice_history`.
 - `MICROSOFT_CLIENT_ID` / `MICROSOFT_CLIENT_SECRET` – optional Microsoft OAuth credentials.
 - `ENABLE_ADMIN_FEATURES` – toggles admin-only APIs and the `/admin` dashboard (defaults to `true` outside production, `false` in production).
 - `ADMIN_API_TOKEN` (optional) – required when admin features are enabled to authenticate ingestion tools targeting `/api/admin/*` routes.

@@ -2,6 +2,7 @@ import { Suspense, lazy, useEffect } from "react";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { sessionQueryKey } from "@/auth/session";
+import { getSupabaseClient } from "@/lib/supabase";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { useSyncQueue } from "@/hooks/use-sync-queue";
@@ -60,12 +61,43 @@ function App() {
     void queryClient.fetchQuery({
       queryKey: sessionQueryKey,
       queryFn: async () => {
-        const res = await fetch('/api/me', { credentials: 'include', headers: { accept: 'application/json' } });
-        if (!res.ok) {
-          if (res.status === 401) return null;
-          throw new Error(`Failed to prefetch session: ${res.status}`);
-        }
-        return res.json();
+        const supabase = getSupabaseClient();
+        if (!supabase) return null;
+        const { data, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        return data.session?.user
+          ? {
+              session: {
+                id: data.session.user.id,
+                expiresAt: data.session.expires_at
+                  ? new Date(data.session.expires_at * 1000).toISOString()
+                  : null,
+              },
+              user: {
+                id: data.session.user.id,
+                name:
+                  typeof data.session.user.user_metadata?.full_name === "string"
+                    ? data.session.user.user_metadata.full_name
+                    : typeof data.session.user.user_metadata?.name === "string"
+                      ? data.session.user.user_metadata.name
+                      : null,
+                email: data.session.user.email ?? null,
+                image:
+                  typeof data.session.user.user_metadata?.avatar_url === "string"
+                    ? data.session.user.user_metadata.avatar_url
+                    : typeof data.session.user.user_metadata?.picture === "string"
+                      ? data.session.user.user_metadata.picture
+                      : null,
+                emailVerified: Boolean(data.session.user.email_confirmed_at),
+                role:
+                  typeof data.session.user.app_metadata?.role === "string"
+                    ? data.session.user.app_metadata.role
+                    : "standard",
+                createdAt: data.session.user.created_at ?? null,
+                updatedAt: data.session.user.updated_at ?? null,
+              },
+            }
+          : null;
       },
     }).catch(() => undefined);
   }, []);

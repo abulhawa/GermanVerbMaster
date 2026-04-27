@@ -269,7 +269,7 @@ export const practiceHistory = pgTable(
     taskType: text("task_type").notNull(),
     renderer: text("renderer").notNull(),
     deviceId: text("device_id").notNull(),
-    userId: text("user_id").references(() => authUsers.id),
+    userId: text("user_id"),
     result: practiceResultEnum("result").notNull(),
     responseMs: integer("response_ms").notNull(),
     submittedAt: timestamp("submitted_at", { withTimezone: true }).defaultNow().notNull(),
@@ -301,7 +301,7 @@ export const practiceLog = pgTable(
     pos: text("pos").notNull(),
     taskType: text("task_type").notNull(),
     deviceId: text("device_id"),
-    userId: text("user_id").references(() => authUsers.id, { onDelete: "cascade" }),
+    userId: text("user_id"),
     cefrLevel: text("cefr_level").notNull().default("__"),
     attemptedAt: timestamp("attempted_at", { withTimezone: true }).defaultNow().notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
@@ -315,6 +315,34 @@ export const practiceLog = pgTable(
     index("practice_log_user_idx").on(table.userId),
     uniqueIndex("practice_log_user_task_idx").on(table.taskId, table.userId, table.cefrLevel),
     uniqueIndex("practice_log_device_task_idx").on(table.taskId, table.deviceId, table.cefrLevel),
+  ],
+);
+
+export const userPracticeHistory = pgTable(
+  "user_practice_history",
+  {
+    id: serial("id").primaryKey(),
+    userId: text("user_id").notNull(),
+    taskId: text("task_id").notNull(),
+    lexemeId: text("lexeme_id").notNull(),
+    lemma: text("lemma").notNull(),
+    pos: text("pos").notNull(),
+    taskType: text("task_type").notNull(),
+    renderer: text("renderer").notNull(),
+    deviceId: text("device_id").notNull(),
+    result: practiceResultEnum("result").notNull(),
+    submittedAnswer: text("submitted_answer").notNull(),
+    correctAnswer: text("correct_answer").notNull(),
+    responseMs: integer("response_ms").notNull(),
+    cefrLevel: text("cefr_level"),
+    hintsUsed: boolean("hints_used").notNull().default(false),
+    submittedAt: timestamp("submitted_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("user_practice_history_user_idx").on(table.userId),
+    index("user_practice_history_task_idx").on(table.taskId),
+    index("user_practice_history_submitted_idx").on(table.submittedAt),
+    index("user_practice_history_device_idx").on(table.deviceId),
   ],
 );
 
@@ -348,4 +376,7 @@ export type InsertPracticeHistory = typeof practiceHistory.$inferInsert;
 
 export type PracticeLog = typeof practiceLog.$inferSelect;
 export type InsertPracticeLog = typeof practiceLog.$inferInsert;
+
+export type UserPracticeHistory = typeof userPracticeHistory.$inferSelect;
+export type InsertUserPracticeHistory = typeof userPracticeHistory.$inferInsert;
 

@@ -6,6 +6,10 @@ const STORAGE_KEY = 'wortschatz.state';
 const STORAGE_CONTEXT = 'wortschatz';
 
 export type WortschatzTab = 'drill' | 'list';
+export type WortschatzLevelFilter = 'B2 Beruf' | 'A1' | 'A2' | 'B1' | 'B2' | 'C1';
+
+export const ALL_WORTSCHATZ_LEVELS: WortschatzLevelFilter[] = ['B2 Beruf', 'A1', 'A2', 'B1', 'B2', 'C1'];
+export const DEFAULT_WORTSCHATZ_LEVELS: WortschatzLevelFilter[] = ['B2 Beruf'];
 
 export const ALL_WORTSCHATZ_POS: PartOfSpeech[] = [
   'N',
@@ -24,6 +28,7 @@ export const ALL_WORTSCHATZ_POS: PartOfSpeech[] = [
 export interface WortschatzStorageState {
   activeTab: WortschatzTab;
   searchQuery: string;
+  selectedLevels: WortschatzLevelFilter[];
   selectedPos: PartOfSpeech[];
   drillSeed: string | null;
   drillOrder: number[];
@@ -59,6 +64,28 @@ function sanitizeSelectedPos(value: unknown): PartOfSpeech[] {
   return selected.length > 0 ? selected : [...ALL_WORTSCHATZ_POS];
 }
 
+function isLevelFilter(value: unknown): value is WortschatzLevelFilter {
+  return typeof value === 'string' && ALL_WORTSCHATZ_LEVELS.includes(value as WortschatzLevelFilter);
+}
+
+function sanitizeSelectedLevels(value: unknown): WortschatzLevelFilter[] {
+  if (!Array.isArray(value)) {
+    return [...DEFAULT_WORTSCHATZ_LEVELS];
+  }
+
+  const seen = new Set<WortschatzLevelFilter>();
+  const selected: WortschatzLevelFilter[] = [];
+  for (const item of value) {
+    if (!isLevelFilter(item) || seen.has(item)) {
+      continue;
+    }
+    seen.add(item);
+    selected.push(item);
+  }
+
+  return selected;
+}
+
 function sanitizeNumberList(value: unknown): number[] {
   if (!Array.isArray(value)) {
     return [];
@@ -81,6 +108,7 @@ export function createEmptyWortschatzState(): WortschatzStorageState {
   return {
     activeTab: 'drill',
     searchQuery: '',
+    selectedLevels: [...DEFAULT_WORTSCHATZ_LEVELS],
     selectedPos: [...ALL_WORTSCHATZ_POS],
     drillSeed: null,
     drillOrder: [],
@@ -103,6 +131,7 @@ function parseStoredState(raw: string): WortschatzStorageState | null {
     return {
       activeTab: parsed.activeTab === 'list' ? 'list' : 'drill',
       searchQuery: typeof parsed.searchQuery === 'string' ? parsed.searchQuery : '',
+      selectedLevels: sanitizeSelectedLevels((parsed as Partial<WortschatzStorageState>).selectedLevels),
       selectedPos: sanitizeSelectedPos(parsed.selectedPos),
       drillSeed:
         typeof parsed.drillSeed === 'string' && parsed.drillSeed.trim().length > 0

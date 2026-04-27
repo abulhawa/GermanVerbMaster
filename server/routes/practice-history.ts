@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { and, desc, eq, or, sql, type SQL } from "drizzle-orm";
 import { z } from "zod";
-import { db, lexemes, practiceHistory } from "@db";
+import { db, lexemes, practiceHistory, userPracticeHistory } from "@db";
 import type {
   AnswerHistoryLexemeSnapshot,
   LexemePos,
@@ -46,6 +46,22 @@ type PracticeHistoryRow = {
   metadata: Record<string, unknown> | null;
   lexemeLemma: string | null;
   lexemeMetadata: Record<string, unknown> | null;
+};
+
+type UserPracticeHistoryRow = {
+  id: number;
+  taskId: string;
+  lexemeId: string;
+  lemma: string;
+  pos: string;
+  taskType: string;
+  renderer: string;
+  result: PracticeResult;
+  submittedAnswer: string;
+  correctAnswer: string;
+  responseMs: number;
+  submittedAt: Date;
+  cefrLevel: string | null;
 };
 
 function buildLexemeSnapshotFromRow(
@@ -129,6 +145,41 @@ function toAnswerHistoryItem(row: PracticeHistoryRow): TaskAnswerHistoryItem {
   } satisfies TaskAnswerHistoryItem;
 }
 
+function toUserPracticeHistoryItem(row: UserPracticeHistoryRow): TaskAnswerHistoryItem {
+  const cefrLevel = normaliseCefrLevel(row.cefrLevel);
+  const promptSummary = `${row.lemma} - ${row.taskType.replace(/[_-]+/g, " ")}`;
+
+  return {
+    id: `user_practice_history:${row.id}`,
+    taskId: row.taskId,
+    lexemeId: row.lexemeId,
+    taskType: row.taskType as TaskType,
+    pos: row.pos as LexemePos,
+    renderer: row.renderer,
+    result: row.result,
+    submittedResponse: row.submittedAnswer,
+    expectedResponse: row.correctAnswer,
+    promptSummary,
+    answeredAt: row.submittedAt.toISOString(),
+    timeSpentMs: row.responseMs,
+    timeSpent: row.responseMs,
+    cefrLevel,
+    mode: undefined,
+    attemptedAnswer: row.submittedAnswer,
+    correctAnswer: row.correctAnswer,
+    prompt: promptSummary,
+    level: cefrLevel,
+    lexeme: {
+      id: row.lexemeId,
+      lemma: row.lemma,
+      pos: row.pos as LexemePos,
+      level: cefrLevel,
+    },
+    verb: undefined,
+    legacyVerb: undefined,
+  } satisfies TaskAnswerHistoryItem;
+}
+
 export function createPracticeHistoryRouter(): Router {
   const router = Router();
 
@@ -142,14 +193,50 @@ export function createPracticeHistoryRouter(): Router {
       });
     }
 
-    const { limit, result, level, deviceId } = parsed.data;
-    const sessionUserId = getSessionUserId(req.authSession);
+      const { limit, result, level, deviceId } = parsed.data;
+      const sessionUserId = getSessionUserId(req.authSession);
 
-    if (!sessionUserId && !deviceId) {
-      return sendError(res, 400, "Device identifier required", "DEVICE_ID_REQUIRED");
-    }
+      if (!sessionUserId && !deviceId) {
+        return sendError(res, 400, "Device identifier required", "DEVICE_ID_REQUIRED");
+      }
 
-    try {
+      try {
+      if (sessionUserId) {
+        const mobileFilters: SQL[] = [eq(userPracticeHistory.userId, sessionUserId)];
+
+        if (result) {
+          mobileFilters.push(eq(userPracticeHistory.result, result));
+        }
+
+        if (level) {
+          mobileFilters.push(eq(userPracticeHistory.cefrLevel, level));
+        }
+
+        const rows = await db
+          .select({
+            id: userPracticeHistory.id,
+            taskId: userPracticeHistory.taskId,
+            lexemeId: userPracticeHistory.lexemeId,
+            lemma: userPracticeHistory.lemma,
+            pos: userPracticeHistory.pos,
+            taskType: userPracticeHistory.taskType,
+            renderer: userPracticeHistory.renderer,
+            result: userPracticeHistory.result,
+            submittedAnswer: userPracticeHistory.submittedAnswer,
+            correctAnswer: userPracticeHistory.correctAnswer,
+            responseMs: userPracticeHistory.responseMs,
+            submittedAt: userPracticeHistory.submittedAt,
+            cefrLevel: userPracticeHistory.cefrLevel,
+          })
+          .from(userPracticeHistory)
+          .where(and(...mobileFilters))
+          .orderBy(desc(userPracticeHistory.submittedAt), desc(userPracticeHistory.id))
+          .limit(limit);
+
+        res.setHeader("Cache-Control", "no-store");
+        return res.json({ history: rows.map((row) => toUserPracticeHistoryItem(row as UserPracticeHistoryRow)) });
+      }
+
       const attributeFilters: Array<ReturnType<typeof eq>> = [];
 
       if (result) {
@@ -232,6 +319,15 @@ export function createPracticeHistoryRouter(): Router {
 
     const { deviceId } = parsed.data;
     const sessionUserId = getSessionUserId(req.authSession);
+
+    if (sessionUserId && !deviceId) {
+      return sendError(
+        res,
+        403,
+        "Clearing synced mobile-compatible history is disabled",
+        "SYNCED_HISTORY_CLEAR_DISABLED",
+      );
+    }
 
     if (!sessionUserId && !deviceId) {
       return sendError(res, 400, "Device identifier required", "DEVICE_ID_REQUIRED");

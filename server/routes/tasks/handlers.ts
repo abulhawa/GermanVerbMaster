@@ -6,6 +6,7 @@ import {
   lexemes,
   practiceHistory,
   taskSpecs,
+  userPracticeHistory,
 } from "@db";
 import { ensureTaskSpecCacheFresh } from "../../cache/task-specs-cache.js";
 import { logPracticeAttempt } from "../../practice-log.js";
@@ -58,6 +59,27 @@ function normaliseCandidateAnswer(value: unknown): string | null {
   }
 
   return null;
+}
+
+function serialiseHistoryAnswer(value: unknown): string {
+  const candidate = normaliseCandidateAnswer(value);
+  if (candidate) {
+    return candidate;
+  }
+
+  if (typeof value === "string") {
+    return value;
+  }
+
+  if (value === null || typeof value === "undefined") {
+    return "";
+  }
+
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return String(value);
+  }
 }
 
 export function createListTasksHandler(): RequestHandler {
@@ -382,30 +404,50 @@ export function createSubmitTaskHandler(): RequestHandler {
 
       const queueCap = registryEntry.queueCap;
 
-      await db.insert(practiceHistory).values({
-        taskId: resolvedTaskId,
-        lexemeId: taskRow.lexemeId!,
-        pos: taskRow.pos!,
-        taskType: taskRow.taskType!,
-        renderer: taskRow.renderer!,
-        deviceId: payload.deviceId,
-        userId: sessionUserId,
-        result: persistedResult,
-        responseMs,
-        submittedAt: attemptTimestamp,
-        answeredAt: answeredAt ?? submittedAt ?? null,
-        queuedAt: queuedAt ?? null,
-        cefrLevel: resolvedCefrLevel,
-        hintsUsed: payload.hintsUsed ?? false,
-        metadata: {
-          submittedResponse: payload.submittedResponse ?? payload.answer ?? null,
-          expectedResponse: payload.expectedResponse ?? null,
-          promptSummary: typeof payload.promptSummary === "string" ? payload.promptSummary : null,
-          queueCap,
-          frequencyRank: taskRow.frequencyRank ?? null,
-          legacyVerb: payload.legacyVerb ?? null,
-        },
-      });
+      if (sessionUserId) {
+        await db.insert(userPracticeHistory).values({
+          userId: sessionUserId,
+          taskId: resolvedTaskId,
+          lexemeId: taskRow.lexemeId!,
+          lemma: taskRow.lexemeLemma ?? taskRow.lexemeId!,
+          pos: taskRow.pos!,
+          taskType: taskRow.taskType!,
+          renderer: taskRow.renderer!,
+          deviceId: payload.deviceId,
+          result: persistedResult,
+          submittedAnswer: serialiseHistoryAnswer(payload.submittedResponse ?? payload.answer),
+          correctAnswer: serialiseHistoryAnswer(payload.expectedResponse ?? expectedForm ?? taskRow.solution),
+          responseMs,
+          cefrLevel: resolvedCefrLevel,
+          hintsUsed: payload.hintsUsed ?? false,
+          submittedAt: attemptTimestamp,
+        });
+      } else {
+        await db.insert(practiceHistory).values({
+          taskId: resolvedTaskId,
+          lexemeId: taskRow.lexemeId!,
+          pos: taskRow.pos!,
+          taskType: taskRow.taskType!,
+          renderer: taskRow.renderer!,
+          deviceId: payload.deviceId,
+          userId: null,
+          result: persistedResult,
+          responseMs,
+          submittedAt: attemptTimestamp,
+          answeredAt: answeredAt ?? submittedAt ?? null,
+          queuedAt: queuedAt ?? null,
+          cefrLevel: resolvedCefrLevel,
+          hintsUsed: payload.hintsUsed ?? false,
+          metadata: {
+            submittedResponse: payload.submittedResponse ?? payload.answer ?? null,
+            expectedResponse: payload.expectedResponse ?? null,
+            promptSummary: typeof payload.promptSummary === "string" ? payload.promptSummary : null,
+            queueCap,
+            frequencyRank: taskRow.frequencyRank ?? null,
+            legacyVerb: payload.legacyVerb ?? null,
+          },
+        });
+      }
 
       await logPracticeAttempt(db, {
         taskId: resolvedTaskId,

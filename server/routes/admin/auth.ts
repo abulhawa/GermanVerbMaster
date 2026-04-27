@@ -21,7 +21,7 @@ export function requireAdminAccess(req: Request, res: Response, next: NextFuncti
 
   if (!adminAuthWarningLogged) {
     console.warn(
-      "ADMIN_API_TOKEN is not configured; admin routes now require an authenticated Better Auth admin session.",
+      "ADMIN_API_TOKEN is not configured; admin routes now require an authenticated Supabase admin session.",
     );
     adminAuthWarningLogged = true;
   }

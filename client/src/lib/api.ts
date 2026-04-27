@@ -3,6 +3,7 @@ import type { CEFRLevel, TaskAnswerHistoryItem, TaskAttemptPayload } from '@shar
 import { practiceDb, practiceDbReady, type PendingAttempt } from './db';
 import { getDeviceId } from './device';
 import { recordSubmissionMetric } from './metrics';
+import { createSupabaseAuthHeaders } from './supabase';
 
 const TASK_ENDPOINT = '/api/submission';
 const PRACTICE_HISTORY_ENDPOINT = '/api/practice/history';
@@ -84,9 +85,10 @@ async function queueAttempt(payload: TaskAttemptPayload): Promise<void> {
 }
 
 async function sendAttempt(payload: TaskAttemptPayload): Promise<Response> {
+  const headers = await createSupabaseAuthHeaders({ 'Content-Type': 'application/json' });
   return fetch(TASK_ENDPOINT, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify(payload),
   });
 }
@@ -277,7 +279,7 @@ export async function fetchPracticeHistory(filters: PracticeHistoryFilters): Pro
     query ? `${PRACTICE_HISTORY_ENDPOINT}?${query}` : PRACTICE_HISTORY_ENDPOINT,
     {
       method: 'GET',
-      headers: { Accept: 'application/json' },
+      headers: await createSupabaseAuthHeaders({ Accept: 'application/json' }),
     },
   );
 
@@ -293,7 +295,7 @@ export async function fetchPracticeHistory(filters: PracticeHistoryFilters): Pro
 export async function clearPracticeHistory(filters: { deviceId: string }): Promise<void> {
   const response = await fetch(PRACTICE_HISTORY_ENDPOINT, {
     method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await createSupabaseAuthHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify({ deviceId: filters.deviceId }),
   });
 

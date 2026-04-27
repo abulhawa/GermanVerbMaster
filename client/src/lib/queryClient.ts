@@ -1,10 +1,12 @@
 import { QueryClient } from "@tanstack/react-query";
+import { createSupabaseAuthHeaders } from "@/lib/supabase";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       queryFn: async ({ queryKey }) => {
         const res = await fetch(queryKey[0] as string, {
+          headers: await createSupabaseAuthHeaders(),
           credentials: "include",
         });
 

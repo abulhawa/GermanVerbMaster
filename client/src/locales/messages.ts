@@ -257,6 +257,9 @@ export interface WortschatzMessages {
     label: string;
     title: string;
     description: string;
+    all: string;
+    levelTitle: string;
+    posTitle: string;
     reset: string;
   };
   metrics: {
@@ -264,15 +267,18 @@ export interface WortschatzMessages {
     accuracy: string;
     remaining: string;
     total: string;
+    words: string;
     progressLabel: string;
     progressDetail: string;
   };
+  levelLabels: Record<'B2 Beruf' | 'A1' | 'A2' | 'B1' | 'B2' | 'C1', string>;
   posLabels: Record<PartOfSpeech, string>;
   list: {
     emptyTitle: string;
     emptyDescription: string;
     sectionCount: string;
     pronunciationLabel: string;
+    examplePronunciationLabel: string;
     translationLabel: string;
     exampleLabel: string;
     pluralLabel: string;
@@ -290,6 +296,8 @@ export interface WortschatzMessages {
     backPrompt: string;
     showAnswer: string;
     hideAnswer: string;
+    tapToReveal: string;
+    backToQuestion: string;
     correct: string;
     incorrect: string;
     restart: string;
@@ -485,6 +493,9 @@ const MESSAGES: Record<Locale, AppMessages> = {
         label: 'Filters',
         title: 'Part-of-speech filters',
         description: 'Limit the current list and drill queue to the word classes you want to review.',
+        all: 'All',
+        levelTitle: 'Level',
+        posTitle: 'Part of speech',
         reset: 'Reset filters',
       },
       metrics: {
@@ -492,8 +503,17 @@ const MESSAGES: Record<Locale, AppMessages> = {
         accuracy: 'Accuracy',
         remaining: 'Remaining',
         total: 'Attempts',
+        words: 'words',
         progressLabel: 'Mastery progress',
         progressDetail: '{count} of {total} filtered words marked correct at least once.',
+      },
+      levelLabels: {
+        'B2 Beruf': 'B2 Beruf',
+        A1: 'A1',
+        A2: 'A2',
+        B1: 'B1',
+        B2: 'B2',
+        C1: 'C1',
       },
       posLabels: {
         V: 'Verbs',
@@ -513,6 +533,7 @@ const MESSAGES: Record<Locale, AppMessages> = {
         emptyDescription: 'Adjust the search query or reset the part-of-speech filters to show more entries.',
         sectionCount: '{count} entries',
         pronunciationLabel: 'Pronounce',
+        examplePronunciationLabel: 'Pronounce example',
         translationLabel: 'English',
         exampleLabel: 'Example',
         pluralLabel: 'Plural',
@@ -530,6 +551,8 @@ const MESSAGES: Record<Locale, AppMessages> = {
         backPrompt: 'Check the meaning and example before marking the card.',
         showAnswer: 'Show answer',
         hideAnswer: 'Hide answer',
+        tapToReveal: 'Tap to reveal',
+        backToQuestion: 'Back to question',
         correct: 'Correct',
         incorrect: 'Incorrect',
         restart: 'Restart drill',
@@ -910,6 +933,9 @@ const MESSAGES: Record<Locale, AppMessages> = {
         label: 'Filter',
         title: 'Filter nach Wortart',
         description: 'Begrenze Liste und Drill-Warteschlange auf die Wortarten, die du gerade wiederholen möchtest.',
+        all: 'Alle',
+        levelTitle: 'Niveau',
+        posTitle: 'Wortart',
         reset: 'Filter zurücksetzen',
       },
       metrics: {
@@ -917,8 +943,17 @@ const MESSAGES: Record<Locale, AppMessages> = {
         accuracy: 'Genauigkeit',
         remaining: 'Verbleibend',
         total: 'Versuche',
+        words: 'Wörter',
         progressLabel: 'Fortschritt der Beherrschung',
         progressDetail: '{count} von {total} gefilterten Wörtern wurden mindestens einmal korrekt markiert.',
+      },
+      levelLabels: {
+        'B2 Beruf': 'B2 Beruf',
+        A1: 'A1',
+        A2: 'A2',
+        B1: 'B1',
+        B2: 'B2',
+        C1: 'C1',
       },
       posLabels: {
         V: 'Verben',
@@ -938,6 +973,7 @@ const MESSAGES: Record<Locale, AppMessages> = {
         emptyDescription: 'Passe die Suche an oder setze die Wortart-Filter zurück, um mehr Einträge zu sehen.',
         sectionCount: '{count} Einträge',
         pronunciationLabel: 'Aussprechen',
+        examplePronunciationLabel: 'Beispiel aussprechen',
         translationLabel: 'Englisch',
         exampleLabel: 'Beispiel',
         pluralLabel: 'Plural',
@@ -955,6 +991,8 @@ const MESSAGES: Record<Locale, AppMessages> = {
         backPrompt: 'Prüfe Bedeutung und Beispiel, bevor du die Karte bewertest.',
         showAnswer: 'Antwort zeigen',
         hideAnswer: 'Antwort ausblenden',
+        tapToReveal: 'Tippen zum Aufdecken',
+        backToQuestion: 'Zurück zur Frage',
         correct: 'Korrekt',
         incorrect: 'Falsch',
         restart: 'Drill neu starten',
