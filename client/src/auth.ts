@@ -1,4 +1,4 @@
-import { getSupabaseClient } from '@/lib/supabase';
+import { getSupabaseAuthRedirectUrl, getSupabaseClient } from '@/lib/supabase';
 
 function requireSupabaseClient() {
   const supabase = getSupabaseClient();
@@ -13,7 +13,7 @@ export async function signInWithGoogle() {
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: window.location.href,
+      redirectTo: getSupabaseAuthRedirectUrl(),
       queryParams: {
         access_type: 'offline',
         prompt: 'consent',
