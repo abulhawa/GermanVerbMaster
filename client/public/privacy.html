@@ -209,7 +209,7 @@
           <h2>2. Information We Process</h2>
           <ul>
             <li><strong>Local data only:</strong> quiz scores, practice history, and settings are stored on your device in app-private storage.</li>
-            <li><strong>Optional account data:</strong> if you sign in with Google, we process your Google sign-in token through Supabase Auth and may store your account identifier and email address for authentication and sync.</li>
+            <li><strong>Optional account data:</strong> if you sign in with Google, we process your Google sign-in token through Supabase Auth and use your authenticated account identifier for sync. Your email address may be provided by Google/Supabase Auth and shown in the App's Account screen, but it is not stored in the App's practice-history records.</li>
             <li><strong>Synced practice data:</strong> if signed in, practice history such as task identifiers, answers/results, timestamps, and related progress metadata may be synced to our Supabase backend so your progress can be available across devices.</li>
             <li><strong>No tracking:</strong> we do not collect location, advertising ID, contacts, or usage analytics for tracking purposes.</li>
           </ul>
