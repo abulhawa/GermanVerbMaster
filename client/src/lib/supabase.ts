@@ -15,12 +15,12 @@ function trimTrailingSlash(value: string): string {
 }
 
 function resolveDefaultAuthSiteUrl(location: Location | URL = window.location): string {
-  if (configuredAuthSiteUrl?.trim()) {
-    return trimTrailingSlash(configuredAuthSiteUrl.trim());
-  }
-
   if (import.meta.env.PROD) {
     return PRODUCTION_AUTH_SITE_URL;
+  }
+
+  if (configuredAuthSiteUrl?.trim()) {
+    return trimTrailingSlash(configuredAuthSiteUrl.trim());
   }
 
   const currentOrigin = location.origin;
