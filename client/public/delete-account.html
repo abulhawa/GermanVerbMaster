@@ -3,11 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Privacy Policy | German Master</title>
-    <meta name="description" content="Privacy Policy for the German Master Android app by Qortx AI." />
-    <link rel="canonical" href="https://gvm.qortxai.com/privacy" />
+    <title>Account Deletion | German Master</title>
+    <meta name="description" content="Request deletion of your German Master Android app account and associated data." />
+    <link rel="canonical" href="https://gvm.qortxai.com/delete-account" />
     <style>
-      /* ── Design tokens (mirrors sudoku-site/styles.css) ── */
       :root {
         --navy-900: #102040;
         --navy-800: #1e3358;
@@ -54,14 +53,12 @@
         outline-offset: 2px;
       }
 
-      /* ── Shell ── */
       .site-shell {
         width: min(100%, var(--max-shell));
         margin: 0 auto;
         padding: 1.05rem 1rem 3rem;
       }
 
-      /* ── Header ── */
       .site-header {
         display: flex;
         align-items: center;
@@ -98,7 +95,6 @@
         color: var(--ink-900);
       }
 
-      /* ── Prose area ── */
       .prose-wrap {
         max-width: var(--max-prose);
         margin: 1.75rem auto 0;
@@ -141,7 +137,6 @@
 
       .prose strong { color: #2b1f18; }
 
-      /* ── Footer ── */
       .site-footer {
         margin-top: 2.2rem;
         border-top: 1px solid var(--line);
@@ -150,7 +145,6 @@
         font-size: 0.88rem;
       }
 
-      /* ── Responsive ── */
       @media (max-width: 760px) {
         .site-shell { padding: 0.85rem 0.88rem 2.4rem; }
 
@@ -190,52 +184,41 @@
         <a class="brand" href="https://gvm.qortxai.com">German Master</a>
         <nav class="top-nav" aria-label="Primary">
           <a href="https://gvm.qortxai.com">Home</a>
-          <a href="/privacy" aria-current="page">Privacy</a>
-          <a href="/delete-account">Delete account</a>
+          <a href="/privacy">Privacy</a>
+          <a href="/delete-account" aria-current="page">Delete account</a>
         </nav>
       </header>
 
       <main class="prose-wrap">
-        <article class="prose" aria-labelledby="privacy-title">
-          <h1 id="privacy-title">Privacy Policy</h1>
-          <p class="subtitle">German Master – Android App</p>
+        <article class="prose" aria-labelledby="deletion-title">
+          <h1 id="deletion-title">Account Deletion</h1>
+          <p class="subtitle">German Master - Android App</p>
 
           <p><strong>Last updated:</strong> April 27, 2026</p>
 
-          <p>This Privacy Policy explains how <strong>German Master</strong> ("the App"), developed by <strong>Qortx AI</strong>, handles data.</p>
+          <p>This page explains how to request deletion of your <strong>German Master</strong> app account and associated synced data. German Master is developed by <strong>Qortx AI</strong>.</p>
 
-          <h2>1. Overview</h2>
-          <p>German Master is an offline-first German language learning app. You can use the App without signing in. If you choose to sign in with Google, the App can sync your practice progress across devices through our Supabase backend.</p>
+          <h2>How to request deletion</h2>
+          <p>
+            Send an email to <a href="mailto:qortxai@outlook.com?subject=Delete%20German%20Master%20account">qortxai@outlook.com</a>
+            from the Google account you used to sign in to the app. Use the subject line <strong>Delete German Master account</strong>.
+          </p>
+          <p>If you cannot send the request from the same Google account, include the email address used for Google sign-in so we can verify and locate the account.</p>
 
-          <h2>2. Information We Process</h2>
+          <h2>Data deleted</h2>
+          <p>After verification, we delete your app account record and associated synced practice data, including:</p>
           <ul>
-            <li><strong>Local data only:</strong> quiz scores, practice history, and settings are stored on your device in app-private storage.</li>
-            <li><strong>Optional account data:</strong> if you sign in with Google, we process your Google sign-in token through Supabase Auth and use your authenticated account identifier for sync. Your email address may be provided by Google/Supabase Auth and shown in the App's Account screen, but it is not stored in the App's practice-history records.</li>
-            <li><strong>Synced practice data:</strong> if signed in, practice history such as task identifiers, answers/results, timestamps, and related progress metadata may be synced to our Supabase backend so your progress can be available across devices.</li>
-            <li><strong>No tracking:</strong> we do not collect location, advertising ID, contacts, or usage analytics for tracking purposes.</li>
+            <li>OAuth-linked user identifier and email address</li>
+            <li>Device sync identifier</li>
+            <li>Submitted answers, correct answers, and result history</li>
+            <li>Response timing, CEFR level, hints used, and timestamps</li>
           </ul>
 
-          <h2>3. Data Sharing and Third Parties</h2>
-          <p>We do not sell or rent your personal data. The App uses Google Sign-In for optional authentication and Supabase for authentication, content delivery, and optional progress sync. The App does not include third-party advertising or analytics SDKs.</p>
+          <h2>Local device data</h2>
+          <p>Local app data stored only on your device can be removed by clearing German Master app storage in Android settings or uninstalling the app.</p>
 
-          <h2>4. Internet Access</h2>
-          <p>The App uses internet access to load or update German learning content, authenticate signed-in users, and sync practice history when you are signed in. If you do not sign in, your practice history remains local to your device.</p>
-
-          <h2>5. Data Retention and Deletion</h2>
-          <p>Local data is retained on your device until you delete it. You can remove local data at any time by clearing app storage in your Android device settings or by uninstalling the App. If you signed in and want synced account or practice data deleted from our backend, use the <a href="/delete-account">account deletion request page</a>.</p>
-
-          <h2>6. Security</h2>
-          <p>Local app data is stored in Android app-private storage and protected by Android's application sandbox. Synced data is transmitted to Supabase over encrypted network connections and associated with your authenticated account.</p>
-
-          <h2>7. Children's Privacy</h2>
-          <p>The App is not directed to children under 13, and we do not knowingly collect personal information from children.</p>
-
-          <h2>8. Changes to This Privacy Policy</h2>
-          <p>We may update this Privacy Policy from time to time. Updates will be posted on this page with a revised "Last updated" date.</p>
-
-          <h2>9. Contact Us</h2>
-          <p>If you have questions about this Privacy Policy, contact us at:</p>
-          <p><a href="mailto:qortxai@outlook.com">qortxai@outlook.com</a></p>
+          <h2>Processing time</h2>
+          <p>Account deletion requests are processed within 30 days. Some records may be retained only when required for legal, security, fraud-prevention, or abuse-prevention purposes.</p>
         </article>
       </main>
 
