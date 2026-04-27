@@ -67,7 +67,7 @@
     "csv-parse": "^6.1.0",
     "date-fns": "^4.1.0",
     "dexie": "^4.2.1",
-    "drizzle-orm": "^0.44.6",
+    "drizzle-orm": "^0.45.2",
     "drizzle-zod": "^0.8.3",
     "embla-carousel-react": "^8.6.0",
     "express": "^5.2.1",
